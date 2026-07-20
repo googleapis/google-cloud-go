@@ -38,6 +38,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	grpccodes "google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
@@ -86,6 +87,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 	}
 
 	topicID := "t"
+	topicName := fmt.Sprintf("projects/%s/topics/%s", testutil.ProjID(), topicID)
 
 	expectedSpans := tracetest.SpanStubs{
 		tracetest.SpanStub{
@@ -99,7 +101,8 @@ func TestTrace_PublishSpan(t *testing.T) {
 				semconv.MessagingMessageIDKey.String("m0"),
 				semconv.MessagingSystemGCPPubsub,
 				semconv.MessagingMessageBodySize(len(m.Data)),
-				attribute.String(gcpProjectIDAttribute, projName),
+				attribute.String(gcpProjectID, projName),
+				attribute.String(gcpResourceName, topicName),
 			},
 			Events: []sdktrace.Event{
 				{
@@ -148,7 +151,8 @@ func TestTrace_PublishSpan(t *testing.T) {
 				semconv.MessagingDestinationName(topicID),
 				semconv.CodeFunction("publishMessageBundle"),
 				semconv.MessagingBatchMessageCount(1),
-				attribute.String(gcpProjectIDAttribute, projName),
+				attribute.String(gcpProjectID, projName),
+				attribute.String(gcpResourceName, topicName),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub/v2",
@@ -165,7 +169,6 @@ func TestTrace_PublishSpan(t *testing.T) {
 			},
 		},
 	}
-	topicName := fmt.Sprintf("projects/%s/topics/%s", testutil.ProjID(), topicID)
 	publisher := mustCreateTopic(t, c, topicName)
 	defer publisher.Stop()
 	if m.OrderingKey != "" {
@@ -338,8 +341,15 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 	expectedSpans := tracetest.SpanStubs{
 		tracetest.SpanStub{
 			Name:     fmt.Sprintf("%s %s", subID, processSpanName),
-			SpanKind: trace.SpanKindInternal,
+			SpanKind: trace.SpanKindConsumer,
 			Attributes: []attribute.KeyValue{
+				semconv.MessagingMessageIDKey.String("m0"),
+				semconv.MessagingMessageBodySize(len(m.Data)),
+				semconv.MessagingGCPPubsubMessageOrderingKey(m.OrderingKey),
+				attribute.String(gcpProjectID, projName),
+				attribute.String(gcpResourceName, subName),
+				semconv.MessagingSystemGCPPubsub,
+				semconv.MessagingDestinationName(subID),
 				semconv.MessagingOperationTypeDeliver,
 			},
 			Events: []sdktrace.Event{
@@ -354,21 +364,20 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 		},
 		tracetest.SpanStub{
 			Name:     fmt.Sprintf("%s %s", subID, subscribeSpanName),
-			SpanKind: trace.SpanKindConsumer,
+			SpanKind: trace.SpanKindInternal,
 			Attributes: []attribute.KeyValue{
-				semconv.CodeFunction("receive"),
-				semconv.MessagingBatchMessageCount(1),
+				semconv.MessagingMessageIDKey.String("m0"),
+				semconv.MessagingMessageBodySize(len(m.Data)),
+				semconv.MessagingGCPPubsubMessageOrderingKey(m.OrderingKey),
+				attribute.String(gcpProjectID, projName),
+				attribute.String(gcpResourceName, subName),
+				semconv.MessagingSystemGCPPubsub,
 				semconv.MessagingDestinationName(subID),
 				attribute.Bool(eosAttribute, enableEOS),
-				// Hardcoded since the fake server always returns m0 first.
-				semconv.MessagingMessageIDKey.String("m0"),
-				// The fake server uses message ID as ackID, this is not the case with live service.
 				semconv.MessagingGCPPubsubMessageAckID("m0"),
-				semconv.MessagingGCPPubsubMessageOrderingKey(m.OrderingKey),
+				semconv.MessagingBatchMessageCount(1),
+				semconv.CodeFunction("receive"),
 				attribute.String(resultAttribute, resultAcked),
-				semconv.MessagingSystemGCPPubsub,
-				semconv.MessagingMessageBodySize(len(m.Data)),
-				attribute.String(gcpProjectIDAttribute, projName),
 			},
 			Events: []sdktrace.Event{
 				{
@@ -422,11 +431,12 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				},
 			},
 			Attributes: []attribute.KeyValue{
-				semconv.CodeFunction("sendAck"),
-				semconv.MessagingBatchMessageCount(1),
+				attribute.String(gcpProjectID, projName),
+				attribute.String(gcpResourceName, subName),
 				semconv.MessagingSystemGCPPubsub,
 				semconv.MessagingDestinationName(subID),
-				attribute.String(gcpProjectIDAttribute, projName),
+				semconv.MessagingBatchMessageCount(1),
+				semconv.CodeFunction("sendAck"),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub/v2",
@@ -449,13 +459,14 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				},
 			},
 			Attributes: []attribute.KeyValue{
-				semconv.CodeFunction("sendModAck"),
-				attribute.Bool(receiptModackAttribute, true),
-				semconv.MessagingGCPPubsubMessageAckDeadline(10),
-				semconv.MessagingBatchMessageCount(1),
+				attribute.String(gcpProjectID, projName),
+				attribute.String(gcpResourceName, subName),
 				semconv.MessagingSystemGCPPubsub,
 				semconv.MessagingDestinationName(subID),
-				attribute.String(gcpProjectIDAttribute, projName),
+				semconv.MessagingBatchMessageCount(1),
+				semconv.CodeFunction("sendModAck"),
+				semconv.MessagingGCPPubsubMessageAckDeadline(10),
+				attribute.Bool(receiptModackAttribute, true),
 			},
 		},
 	}
@@ -466,6 +477,79 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 		return sortSpanStub(a, b)
 	})
 	compareSpans(t, got, expectedSpans)
+}
+
+func TestTrace_ExactlyOnceSubscribeSpansError(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	srv := pstest.NewServer(pstest.WithErrorInjection("Acknowledge", grpccodes.PermissionDenied, "insufficient permission"))
+	defer srv.Close()
+	client, err := NewClientWithConfig(ctx, projName,
+		&ClientConfig{EnableOpenTelemetryTracing: true},
+		option.WithEndpoint(srv.Addr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithTelemetryDisabled(),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+
+	e := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
+	defer tp.Shutdown(ctx)
+	otel.SetTracerProvider(tp)
+
+	topicName := fmt.Sprintf("projects/%s/topics/t", projName)
+	subName := fmt.Sprintf("projects/%s/subscriptions/s", projName)
+	publisher := mustCreateTopic(t, client, topicName)
+	sub := mustCreateSubConfig(t, client, &pb.Subscription{
+		Name:                      subName,
+		Topic:                     topicName,
+		EnableExactlyOnceDelivery: true,
+	})
+
+	r := publisher.Publish(ctx, &Message{Data: []byte("test")})
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("failed to publish: %v", err)
+	}
+
+	sub.Receive(ctx, func(ctx context.Context, msg *Message) {
+		ar := msg.AckWithResult()
+		_, getErr := ar.Get(context.Background())
+		if getErr == nil {
+			t.Error("expected error from ack")
+		}
+		cancel()
+	})
+
+	spans := getSpans(e)
+	// Find the subscribe span and verify status.
+	var foundSubscribe bool
+	var foundAck bool
+	expectedSubName := fmt.Sprintf("s %s", subscribeSpanName)
+	expectedAckName := fmt.Sprintf("s %s", ackSpanName)
+	for _, s := range spans {
+		if s.Name == expectedSubName {
+			foundSubscribe = true
+			if s.Status.Code != codes.Error {
+				t.Errorf("expected subscribeSpan status to be Error, got %v", s.Status.Code)
+			}
+		}
+		if s.Name == expectedAckName {
+			foundAck = true
+			if s.Status.Code != codes.Error {
+				t.Errorf("expected ackSpan status to be Error, got %v", s.Status.Code)
+			}
+		}
+	}
+	if !foundSubscribe {
+		t.Errorf("subscribeSpan not found")
+	}
+	if !foundAck {
+		t.Errorf("ackSpan not found")
+	}
 }
 
 func TestTrace_TracingNotEnabled(t *testing.T) {
@@ -586,13 +670,14 @@ func getPublishSpanStubsWithError(topicID string, m *Message, err error) tracete
 			Name:     fmt.Sprintf("%s %s", topicID, createSpanName),
 			SpanKind: trace.SpanKindProducer,
 			Attributes: []attribute.KeyValue{
-				semconv.CodeFunction("Publish"),
-				semconv.MessagingDestinationName(topicID),
 				semconv.MessagingMessageIDKey.String(""),
 				semconv.MessagingMessageBodySize(len(m.Data)),
 				semconv.MessagingGCPPubsubMessageOrderingKey(m.OrderingKey),
+				attribute.String(gcpProjectID, projName),
+				attribute.String(gcpResourceName, fmt.Sprintf("projects/%s/topics/%s", projName, topicID)),
 				semconv.MessagingSystemGCPPubsub,
-				attribute.String(gcpProjectIDAttribute, projName),
+				semconv.MessagingDestinationName(topicID),
+				semconv.CodeFunction("Publish"),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub/v2",

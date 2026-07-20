@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -141,7 +143,7 @@ type VersionsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *VersionsClient) Close() error {
 	return c.internalClient.Close()
@@ -281,6 +283,16 @@ type versionsGRPCClient struct {
 // Manages versions of a service.
 func NewVersionsClient(ctx context.Context, opts ...option.ClientOption) (*VersionsClient, error) {
 	clientOpts := defaultVersionsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	if newVersionsClientHook != nil {
 		hookOpts, err := newVersionsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -302,6 +314,24 @@ func NewVersionsClient(ctx context.Context, opts ...option.ClientOption) (*Versi
 		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListVersions = append(client.CallOptions.ListVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetVersion = append(client.CallOptions.GetVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateVersion = append(client.CallOptions.CreateVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateVersion = append(client.CallOptions.UpdateVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteVersion = append(client.CallOptions.DeleteVersion, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -338,7 +368,7 @@ func (c *versionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *versionsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -371,6 +401,16 @@ type versionsRESTClient struct {
 // Manages versions of a service.
 func NewVersionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*VersionsClient, error) {
 	clientOpts := append(defaultVersionsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -384,6 +424,25 @@ func NewVersionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*V
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListVersions = append(callOpts.ListVersions, gax.WithClientMetrics(metrics))
+		callOpts.GetVersion = append(callOpts.GetVersion, gax.WithClientMetrics(metrics))
+		callOpts.CreateVersion = append(callOpts.CreateVersion, gax.WithClientMetrics(metrics))
+		callOpts.UpdateVersion = append(callOpts.UpdateVersion, gax.WithClientMetrics(metrics))
+		callOpts.DeleteVersion = append(callOpts.DeleteVersion, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -421,7 +480,7 @@ func (c *versionsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *versionsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -440,9 +499,12 @@ func (c *versionsGRPCClient) ListVersions(ctx context.Context, req *appenginepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Versions/ListVersions")
+	}
 	opts = append((*c.CallOptions).ListVersions[0:len((*c.CallOptions).ListVersions):len((*c.CallOptions).ListVersions)], opts...)
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*appenginepb.ListVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.Version, string, error) {
 		resp := &appenginepb.ListVersionsResponse{}
 		if pageToken != "" {
@@ -486,6 +548,9 @@ func (c *versionsGRPCClient) GetVersion(ctx context.Context, req *appenginepb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Versions/GetVersion")
+	}
 	opts = append((*c.CallOptions).GetVersion[0:len((*c.CallOptions).GetVersion):len((*c.CallOptions).GetVersion)], opts...)
 	var resp *appenginepb.Version
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -504,6 +569,9 @@ func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *appenginepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Versions/CreateVersion")
+	}
 	opts = append((*c.CallOptions).CreateVersion[0:len((*c.CallOptions).CreateVersion):len((*c.CallOptions).CreateVersion)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -514,8 +582,12 @@ func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *appenginepb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.CreateVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -524,6 +596,9 @@ func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *appenginepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Versions/UpdateVersion")
+	}
 	opts = append((*c.CallOptions).UpdateVersion[0:len((*c.CallOptions).UpdateVersion):len((*c.CallOptions).UpdateVersion)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -534,8 +609,12 @@ func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *appenginepb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.UpdateVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -544,6 +623,9 @@ func (c *versionsGRPCClient) DeleteVersion(ctx context.Context, req *appenginepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Versions/DeleteVersion")
+	}
 	opts = append((*c.CallOptions).DeleteVersion[0:len((*c.CallOptions).DeleteVersion):len((*c.CallOptions).DeleteVersion)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -554,15 +636,19 @@ func (c *versionsGRPCClient) DeleteVersion(ctx context.Context, req *appenginepb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.DeleteVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
 // ListVersions lists the versions of a service.
 func (c *versionsRESTClient) ListVersions(ctx context.Context, req *appenginepb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*appenginepb.ListVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.Version, string, error) {
 		resp := &appenginepb.ListVersionsResponse{}
@@ -664,6 +750,10 @@ func (c *versionsRESTClient) GetVersion(ctx context.Context, req *appenginepb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Versions/GetVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/services/*/versions/*}")
+	}
 	opts = append((*c.CallOptions).GetVersion[0:len((*c.CallOptions).GetVersion):len((*c.CallOptions).GetVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.Version{}
@@ -721,6 +811,10 @@ func (c *versionsRESTClient) CreateVersion(ctx context.Context, req *appenginepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Versions/CreateVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=apps/*/services/*}/versions")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -749,8 +843,12 @@ func (c *versionsRESTClient) CreateVersion(ctx context.Context, req *appenginepb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.CreateVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -832,6 +930,10 @@ func (c *versionsRESTClient) UpdateVersion(ctx context.Context, req *appenginepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Versions/UpdateVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/services/*/versions/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -860,8 +962,12 @@ func (c *versionsRESTClient) UpdateVersion(ctx context.Context, req *appenginepb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.UpdateVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -885,6 +991,10 @@ func (c *versionsRESTClient) DeleteVersion(ctx context.Context, req *appenginepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Versions/DeleteVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/services/*/versions/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -913,8 +1023,12 @@ func (c *versionsRESTClient) DeleteVersion(ctx context.Context, req *appenginepb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.DeleteVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -923,7 +1037,7 @@ func (c *versionsRESTClient) DeleteVersion(ctx context.Context, req *appenginepb
 // The name must be that of a previously created CreateVersionOperation, possibly from a different process.
 func (c *versionsGRPCClient) CreateVersionOperation(name string) *CreateVersionOperation {
 	return &CreateVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.CreateVersionOperation"),
 	}
 }
 
@@ -932,7 +1046,7 @@ func (c *versionsGRPCClient) CreateVersionOperation(name string) *CreateVersionO
 func (c *versionsRESTClient) CreateVersionOperation(name string) *CreateVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.CreateVersionOperation"),
 		pollPath: override,
 	}
 }
@@ -941,7 +1055,7 @@ func (c *versionsRESTClient) CreateVersionOperation(name string) *CreateVersionO
 // The name must be that of a previously created DeleteVersionOperation, possibly from a different process.
 func (c *versionsGRPCClient) DeleteVersionOperation(name string) *DeleteVersionOperation {
 	return &DeleteVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.DeleteVersionOperation"),
 	}
 }
 
@@ -950,7 +1064,7 @@ func (c *versionsGRPCClient) DeleteVersionOperation(name string) *DeleteVersionO
 func (c *versionsRESTClient) DeleteVersionOperation(name string) *DeleteVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.DeleteVersionOperation"),
 		pollPath: override,
 	}
 }
@@ -959,7 +1073,7 @@ func (c *versionsRESTClient) DeleteVersionOperation(name string) *DeleteVersionO
 // The name must be that of a previously created UpdateVersionOperation, possibly from a different process.
 func (c *versionsGRPCClient) UpdateVersionOperation(name string) *UpdateVersionOperation {
 	return &UpdateVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.UpdateVersionOperation"),
 	}
 }
 
@@ -968,7 +1082,7 @@ func (c *versionsGRPCClient) UpdateVersionOperation(name string) *UpdateVersionO
 func (c *versionsRESTClient) UpdateVersionOperation(name string) *UpdateVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.UpdateVersionOperation"),
 		pollPath: override,
 	}
 }

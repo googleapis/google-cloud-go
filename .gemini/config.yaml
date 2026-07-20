@@ -11,3 +11,6 @@ code_review:
     summary: false
     code_review: true
     include_drafts: true
+ignore_patterns:
+  - "*.pb.go"
+  - "**/internal/version.go"

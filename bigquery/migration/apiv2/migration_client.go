@@ -26,6 +26,7 @@ import (
 
 	migrationpb "cloud.google.com/go/bigquery/migration/apiv2/migrationpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -140,7 +141,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -224,6 +225,16 @@ type gRPCClient struct {
 // Service to handle EDW migrations.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquerymigration",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/migration/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquerymigration.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -245,6 +256,26 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquerymigration",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/migration/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerymigration.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateMigrationWorkflow = append(client.CallOptions.CreateMigrationWorkflow, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetMigrationWorkflow = append(client.CallOptions.GetMigrationWorkflow, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMigrationWorkflows = append(client.CallOptions.ListMigrationWorkflows, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteMigrationWorkflow = append(client.CallOptions.DeleteMigrationWorkflow, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartMigrationWorkflow = append(client.CallOptions.StartMigrationWorkflow, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetMigrationSubtask = append(client.CallOptions.GetMigrationSubtask, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMigrationSubtasks = append(client.CallOptions.ListMigrationSubtasks, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -270,7 +301,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -281,6 +312,12 @@ func (c *gRPCClient) CreateMigrationWorkflow(ctx context.Context, req *migration
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2.MigrationService/CreateMigrationWorkflow")
+	}
 	opts = append((*c.CallOptions).CreateMigrationWorkflow[0:len((*c.CallOptions).CreateMigrationWorkflow):len((*c.CallOptions).CreateMigrationWorkflow)], opts...)
 	var resp *migrationpb.MigrationWorkflow
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -299,6 +336,12 @@ func (c *gRPCClient) GetMigrationWorkflow(ctx context.Context, req *migrationpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2.MigrationService/GetMigrationWorkflow")
+	}
 	opts = append((*c.CallOptions).GetMigrationWorkflow[0:len((*c.CallOptions).GetMigrationWorkflow):len((*c.CallOptions).GetMigrationWorkflow)], opts...)
 	var resp *migrationpb.MigrationWorkflow
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -317,9 +360,15 @@ func (c *gRPCClient) ListMigrationWorkflows(ctx context.Context, req *migrationp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2.MigrationService/ListMigrationWorkflows")
+	}
 	opts = append((*c.CallOptions).ListMigrationWorkflows[0:len((*c.CallOptions).ListMigrationWorkflows):len((*c.CallOptions).ListMigrationWorkflows)], opts...)
 	it := &MigrationWorkflowIterator{}
-	req = proto.Clone(req).(*migrationpb.ListMigrationWorkflowsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationpb.MigrationWorkflow, string, error) {
 		resp := &migrationpb.ListMigrationWorkflowsResponse{}
 		if pageToken != "" {
@@ -363,6 +412,12 @@ func (c *gRPCClient) DeleteMigrationWorkflow(ctx context.Context, req *migration
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2.MigrationService/DeleteMigrationWorkflow")
+	}
 	opts = append((*c.CallOptions).DeleteMigrationWorkflow[0:len((*c.CallOptions).DeleteMigrationWorkflow):len((*c.CallOptions).DeleteMigrationWorkflow)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -377,6 +432,12 @@ func (c *gRPCClient) StartMigrationWorkflow(ctx context.Context, req *migrationp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2.MigrationService/StartMigrationWorkflow")
+	}
 	opts = append((*c.CallOptions).StartMigrationWorkflow[0:len((*c.CallOptions).StartMigrationWorkflow):len((*c.CallOptions).StartMigrationWorkflow)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -391,6 +452,12 @@ func (c *gRPCClient) GetMigrationSubtask(ctx context.Context, req *migrationpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2.MigrationService/GetMigrationSubtask")
+	}
 	opts = append((*c.CallOptions).GetMigrationSubtask[0:len((*c.CallOptions).GetMigrationSubtask):len((*c.CallOptions).GetMigrationSubtask)], opts...)
 	var resp *migrationpb.MigrationSubtask
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -409,9 +476,15 @@ func (c *gRPCClient) ListMigrationSubtasks(ctx context.Context, req *migrationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2.MigrationService/ListMigrationSubtasks")
+	}
 	opts = append((*c.CallOptions).ListMigrationSubtasks[0:len((*c.CallOptions).ListMigrationSubtasks):len((*c.CallOptions).ListMigrationSubtasks)], opts...)
 	it := &MigrationSubtaskIterator{}
-	req = proto.Clone(req).(*migrationpb.ListMigrationSubtasksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationpb.MigrationSubtask, string, error) {
 		resp := &migrationpb.ListMigrationSubtasksResponse{}
 		if pageToken != "" {

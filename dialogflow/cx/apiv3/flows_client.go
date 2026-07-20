@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -373,7 +375,7 @@ type FlowsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *FlowsClient) Close() error {
 	return c.internalClient.Close()
@@ -523,14 +525,13 @@ func (c *FlowsClient) GetLocation(ctx context.Context, req *locationpb.GetLocati
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -590,6 +591,16 @@ type flowsGRPCClient struct {
 // Service for managing Flows.
 func NewFlowsClient(ctx context.Context, opts ...option.ClientOption) (*FlowsClient, error) {
 	clientOpts := defaultFlowsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dialogflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dialogflow/cx/apiv3",
+			"gcp.client.language": "go",
+			"url.domain":          "dialogflow.googleapis.com",
+		}))
+	}
 	if newFlowsClientHook != nil {
 		hookOpts, err := newFlowsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -613,6 +624,34 @@ func NewFlowsClient(ctx context.Context, opts ...option.ClientOption) (*FlowsCli
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateFlow = append(client.CallOptions.CreateFlow, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFlow = append(client.CallOptions.DeleteFlow, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListFlows = append(client.CallOptions.ListFlows, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFlow = append(client.CallOptions.GetFlow, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateFlow = append(client.CallOptions.UpdateFlow, gax.WithClientMetrics(metrics))
+		client.CallOptions.TrainFlow = append(client.CallOptions.TrainFlow, gax.WithClientMetrics(metrics))
+		client.CallOptions.ValidateFlow = append(client.CallOptions.ValidateFlow, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFlowValidationResult = append(client.CallOptions.GetFlowValidationResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportFlow = append(client.CallOptions.ImportFlow, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportFlow = append(client.CallOptions.ExportFlow, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -649,7 +688,7 @@ func (c *flowsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *flowsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -682,6 +721,16 @@ type flowsRESTClient struct {
 // Service for managing Flows.
 func NewFlowsRESTClient(ctx context.Context, opts ...option.ClientOption) (*FlowsClient, error) {
 	clientOpts := append(defaultFlowsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dialogflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dialogflow/cx/apiv3",
+			"gcp.client.language": "go",
+			"url.domain":          "dialogflow.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -695,6 +744,35 @@ func NewFlowsRESTClient(ctx context.Context, opts ...option.ClientOption) (*Flow
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateFlow = append(callOpts.CreateFlow, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFlow = append(callOpts.DeleteFlow, gax.WithClientMetrics(metrics))
+		callOpts.ListFlows = append(callOpts.ListFlows, gax.WithClientMetrics(metrics))
+		callOpts.GetFlow = append(callOpts.GetFlow, gax.WithClientMetrics(metrics))
+		callOpts.UpdateFlow = append(callOpts.UpdateFlow, gax.WithClientMetrics(metrics))
+		callOpts.TrainFlow = append(callOpts.TrainFlow, gax.WithClientMetrics(metrics))
+		callOpts.ValidateFlow = append(callOpts.ValidateFlow, gax.WithClientMetrics(metrics))
+		callOpts.GetFlowValidationResult = append(callOpts.GetFlowValidationResult, gax.WithClientMetrics(metrics))
+		callOpts.ImportFlow = append(callOpts.ImportFlow, gax.WithClientMetrics(metrics))
+		callOpts.ExportFlow = append(callOpts.ExportFlow, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -732,7 +810,7 @@ func (c *flowsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *flowsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -751,6 +829,12 @@ func (c *flowsGRPCClient) CreateFlow(ctx context.Context, req *cxpb.CreateFlowRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/CreateFlow")
+	}
 	opts = append((*c.CallOptions).CreateFlow[0:len((*c.CallOptions).CreateFlow):len((*c.CallOptions).CreateFlow)], opts...)
 	var resp *cxpb.Flow
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -769,6 +853,12 @@ func (c *flowsGRPCClient) DeleteFlow(ctx context.Context, req *cxpb.DeleteFlowRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/DeleteFlow")
+	}
 	opts = append((*c.CallOptions).DeleteFlow[0:len((*c.CallOptions).DeleteFlow):len((*c.CallOptions).DeleteFlow)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -783,9 +873,15 @@ func (c *flowsGRPCClient) ListFlows(ctx context.Context, req *cxpb.ListFlowsRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/ListFlows")
+	}
 	opts = append((*c.CallOptions).ListFlows[0:len((*c.CallOptions).ListFlows):len((*c.CallOptions).ListFlows)], opts...)
 	it := &FlowIterator{}
-	req = proto.Clone(req).(*cxpb.ListFlowsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Flow, string, error) {
 		resp := &cxpb.ListFlowsResponse{}
 		if pageToken != "" {
@@ -829,6 +925,12 @@ func (c *flowsGRPCClient) GetFlow(ctx context.Context, req *cxpb.GetFlowRequest,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/GetFlow")
+	}
 	opts = append((*c.CallOptions).GetFlow[0:len((*c.CallOptions).GetFlow):len((*c.CallOptions).GetFlow)], opts...)
 	var resp *cxpb.Flow
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -847,6 +949,9 @@ func (c *flowsGRPCClient) UpdateFlow(ctx context.Context, req *cxpb.UpdateFlowRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/UpdateFlow")
+	}
 	opts = append((*c.CallOptions).UpdateFlow[0:len((*c.CallOptions).UpdateFlow):len((*c.CallOptions).UpdateFlow)], opts...)
 	var resp *cxpb.Flow
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -865,6 +970,12 @@ func (c *flowsGRPCClient) TrainFlow(ctx context.Context, req *cxpb.TrainFlowRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/TrainFlow")
+	}
 	opts = append((*c.CallOptions).TrainFlow[0:len((*c.CallOptions).TrainFlow):len((*c.CallOptions).TrainFlow)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -875,8 +986,12 @@ func (c *flowsGRPCClient) TrainFlow(ctx context.Context, req *cxpb.TrainFlowRequ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.TrainFlowOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &TrainFlowOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -885,6 +1000,12 @@ func (c *flowsGRPCClient) ValidateFlow(ctx context.Context, req *cxpb.ValidateFl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/ValidateFlow")
+	}
 	opts = append((*c.CallOptions).ValidateFlow[0:len((*c.CallOptions).ValidateFlow):len((*c.CallOptions).ValidateFlow)], opts...)
 	var resp *cxpb.FlowValidationResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -903,6 +1024,12 @@ func (c *flowsGRPCClient) GetFlowValidationResult(ctx context.Context, req *cxpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/GetFlowValidationResult")
+	}
 	opts = append((*c.CallOptions).GetFlowValidationResult[0:len((*c.CallOptions).GetFlowValidationResult):len((*c.CallOptions).GetFlowValidationResult)], opts...)
 	var resp *cxpb.FlowValidationResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -921,6 +1048,12 @@ func (c *flowsGRPCClient) ImportFlow(ctx context.Context, req *cxpb.ImportFlowRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/ImportFlow")
+	}
 	opts = append((*c.CallOptions).ImportFlow[0:len((*c.CallOptions).ImportFlow):len((*c.CallOptions).ImportFlow)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -931,8 +1064,12 @@ func (c *flowsGRPCClient) ImportFlow(ctx context.Context, req *cxpb.ImportFlowRe
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ImportFlowOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportFlowOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -941,6 +1078,12 @@ func (c *flowsGRPCClient) ExportFlow(ctx context.Context, req *cxpb.ExportFlowRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/ExportFlow")
+	}
 	opts = append((*c.CallOptions).ExportFlow[0:len((*c.CallOptions).ExportFlow):len((*c.CallOptions).ExportFlow)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -951,8 +1094,12 @@ func (c *flowsGRPCClient) ExportFlow(ctx context.Context, req *cxpb.ExportFlowRe
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ExportFlowOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportFlowOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -961,6 +1108,9 @@ func (c *flowsGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -979,9 +1129,12 @@ func (c *flowsGRPCClient) ListLocations(ctx context.Context, req *locationpb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1025,6 +1178,9 @@ func (c *flowsGRPCClient) CancelOperation(ctx context.Context, req *longrunningp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1039,6 +1195,9 @@ func (c *flowsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1057,9 +1216,12 @@ func (c *flowsGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1131,6 +1293,13 @@ func (c *flowsRESTClient) CreateFlow(ctx context.Context, req *cxpb.CreateFlowRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/CreateFlow")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*/agents/*}/flows")
+	}
 	opts = append((*c.CallOptions).CreateFlow[0:len((*c.CallOptions).CreateFlow):len((*c.CallOptions).CreateFlow)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cxpb.Flow{}
@@ -1184,6 +1353,13 @@ func (c *flowsRESTClient) DeleteFlow(ctx context.Context, req *cxpb.DeleteFlowRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/DeleteFlow")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/agents/*/flows/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1203,7 +1379,7 @@ func (c *flowsRESTClient) DeleteFlow(ctx context.Context, req *cxpb.DeleteFlowRe
 // ListFlows returns the list of all flows in the specified agent.
 func (c *flowsRESTClient) ListFlows(ctx context.Context, req *cxpb.ListFlowsRequest, opts ...gax.CallOption) *FlowIterator {
 	it := &FlowIterator{}
-	req = proto.Clone(req).(*cxpb.ListFlowsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Flow, string, error) {
 		resp := &cxpb.ListFlowsResponse{}
@@ -1303,6 +1479,13 @@ func (c *flowsRESTClient) GetFlow(ctx context.Context, req *cxpb.GetFlowRequest,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/GetFlow")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/agents/*/flows/*}")
+	}
 	opts = append((*c.CallOptions).GetFlow[0:len((*c.CallOptions).GetFlow):len((*c.CallOptions).GetFlow)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cxpb.Flow{}
@@ -1374,6 +1557,10 @@ func (c *flowsRESTClient) UpdateFlow(ctx context.Context, req *cxpb.UpdateFlowRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/UpdateFlow")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{flow.name=projects/*/locations/*/agents/*/flows/*}")
+	}
 	opts = append((*c.CallOptions).UpdateFlow[0:len((*c.CallOptions).UpdateFlow):len((*c.CallOptions).UpdateFlow)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cxpb.Flow{}
@@ -1445,6 +1632,13 @@ func (c *flowsRESTClient) TrainFlow(ctx context.Context, req *cxpb.TrainFlowRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/TrainFlow")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/agents/*/flows/*}:train")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1473,8 +1667,12 @@ func (c *flowsRESTClient) TrainFlow(ctx context.Context, req *cxpb.TrainFlowRequ
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.TrainFlowOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &TrainFlowOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1506,6 +1704,13 @@ func (c *flowsRESTClient) ValidateFlow(ctx context.Context, req *cxpb.ValidateFl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/ValidateFlow")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/agents/*/flows/*}:validate")
+	}
 	opts = append((*c.CallOptions).ValidateFlow[0:len((*c.CallOptions).ValidateFlow):len((*c.CallOptions).ValidateFlow)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cxpb.FlowValidationResult{}
@@ -1560,6 +1765,13 @@ func (c *flowsRESTClient) GetFlowValidationResult(ctx context.Context, req *cxpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/GetFlowValidationResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/agents/*/flows/*/validationResult}")
+	}
 	opts = append((*c.CallOptions).GetFlowValidationResult[0:len((*c.CallOptions).GetFlowValidationResult):len((*c.CallOptions).GetFlowValidationResult)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cxpb.FlowValidationResult{}
@@ -1630,6 +1842,13 @@ func (c *flowsRESTClient) ImportFlow(ctx context.Context, req *cxpb.ImportFlowRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/ImportFlow")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*/agents/*}/flows:import")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1658,8 +1877,12 @@ func (c *flowsRESTClient) ImportFlow(ctx context.Context, req *cxpb.ImportFlowRe
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ImportFlowOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportFlowOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1702,6 +1925,13 @@ func (c *flowsRESTClient) ExportFlow(ctx context.Context, req *cxpb.ExportFlowRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3.Flows/ExportFlow")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/agents/*/flows/*}:export")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1730,8 +1960,12 @@ func (c *flowsRESTClient) ExportFlow(ctx context.Context, req *cxpb.ExportFlowRe
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ExportFlowOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportFlowOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1755,6 +1989,10 @@ func (c *flowsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -1789,14 +2027,13 @@ func (c *flowsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -1805,7 +2042,7 @@ func (c *flowsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 // implementation and version.
 func (c *flowsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1902,6 +2139,10 @@ func (c *flowsRESTClient) CancelOperation(ctx context.Context, req *longrunningp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1937,6 +2178,10 @@ func (c *flowsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1971,7 +2216,7 @@ func (c *flowsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *flowsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -2056,7 +2301,7 @@ func (c *flowsRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 // The name must be that of a previously created ExportFlowOperation, possibly from a different process.
 func (c *flowsGRPCClient) ExportFlowOperation(name string) *ExportFlowOperation {
 	return &ExportFlowOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ExportFlowOperation"),
 	}
 }
 
@@ -2065,7 +2310,7 @@ func (c *flowsGRPCClient) ExportFlowOperation(name string) *ExportFlowOperation 
 func (c *flowsRESTClient) ExportFlowOperation(name string) *ExportFlowOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &ExportFlowOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ExportFlowOperation"),
 		pollPath: override,
 	}
 }
@@ -2074,7 +2319,7 @@ func (c *flowsRESTClient) ExportFlowOperation(name string) *ExportFlowOperation 
 // The name must be that of a previously created ImportFlowOperation, possibly from a different process.
 func (c *flowsGRPCClient) ImportFlowOperation(name string) *ImportFlowOperation {
 	return &ImportFlowOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ImportFlowOperation"),
 	}
 }
 
@@ -2083,7 +2328,7 @@ func (c *flowsGRPCClient) ImportFlowOperation(name string) *ImportFlowOperation 
 func (c *flowsRESTClient) ImportFlowOperation(name string) *ImportFlowOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &ImportFlowOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ImportFlowOperation"),
 		pollPath: override,
 	}
 }
@@ -2092,7 +2337,7 @@ func (c *flowsRESTClient) ImportFlowOperation(name string) *ImportFlowOperation 
 // The name must be that of a previously created TrainFlowOperation, possibly from a different process.
 func (c *flowsGRPCClient) TrainFlowOperation(name string) *TrainFlowOperation {
 	return &TrainFlowOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.TrainFlowOperation"),
 	}
 }
 
@@ -2101,7 +2346,7 @@ func (c *flowsGRPCClient) TrainFlowOperation(name string) *TrainFlowOperation {
 func (c *flowsRESTClient) TrainFlowOperation(name string) *TrainFlowOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &TrainFlowOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.TrainFlowOperation"),
 		pollPath: override,
 	}
 }

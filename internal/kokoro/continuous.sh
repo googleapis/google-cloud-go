@@ -36,7 +36,7 @@ export GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES=database-01
 export GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID=gcloud-golang-firestore-tests
 # TODO(codyoss): Update this
 export GCLOUD_TESTS_GOLANG_FIRESTORE_KEY=$KOKORO_KEYSTORE_DIR/72523_go_firestore_integration_service_account
-export GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES=database-02
+export GCLOUD_TESTS_GOLANG_FIRESTORE_ENTERPRISE_DATABASES=database-enterprise-01
 # TODO(codyoss): Update this
 export GCLOUD_TESTS_API_KEY=$(cat $KOKORO_KEYSTORE_DIR/72523_go_gcloud_tests_api_key)
 export GCLOUD_TESTS_GOLANG_KEYRING=projects/dulcet-port-762/locations/us/keyRings/go-integration-test
@@ -61,6 +61,8 @@ export GCLOUD_TESTS_BIGTABLE_KEYRING=projects/dulcet-port-762/locations/us-centr
 export GCLOUD_TESTS_BIGTABLE_CLUSTER="gc-bt-it-cluster"
 export GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER="gc-bt-it-cluster-02"
 export GCLOUD_TESTS_BIGTABLE_INSTANCE="gc-bt-it-instance"
+export GCLOUD_TESTS_BIGTABLE_TAG_KEY="gc-bt-it-tag-key"
+export GCLOUD_TESTS_BIGTABLE_TAG_VALUE="gc-bt-it-tag-value"
 
 # Universe domain variables. Tests will be skipped if TEST_UNIVERSE_DOMAIN is removed.
 export TEST_UNIVERSE_DOMAIN=$(cat ${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-domain)
@@ -109,6 +111,10 @@ runDirectoryTests() {
   fi
   if [[ $PWD == *"bigquery/benchmarks" ]]; then
     # bigquery/benchmarks: build constraints exclude all Go files
+    return
+  fi
+  if [[ "$PWD/" == *"/examples/"* && "$PWD/" != *"/internal/examples/"* ]]; then
+    # examples: build constraints exclude all Go files
     return
   fi
   if { [[ $PWD == *"/internal/"* ]] ||

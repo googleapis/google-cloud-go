@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -141,7 +143,7 @@ type DomainMappingsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DomainMappingsClient) Close() error {
 	return c.internalClient.Close()
@@ -242,6 +244,16 @@ type domainMappingsGRPCClient struct {
 // Manages domains serving an application.
 func NewDomainMappingsClient(ctx context.Context, opts ...option.ClientOption) (*DomainMappingsClient, error) {
 	clientOpts := defaultDomainMappingsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	if newDomainMappingsClientHook != nil {
 		hookOpts, err := newDomainMappingsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -263,6 +275,24 @@ func NewDomainMappingsClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListDomainMappings = append(client.CallOptions.ListDomainMappings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDomainMapping = append(client.CallOptions.GetDomainMapping, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDomainMapping = append(client.CallOptions.CreateDomainMapping, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDomainMapping = append(client.CallOptions.UpdateDomainMapping, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDomainMapping = append(client.CallOptions.DeleteDomainMapping, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -299,7 +329,7 @@ func (c *domainMappingsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *domainMappingsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -332,6 +362,16 @@ type domainMappingsRESTClient struct {
 // Manages domains serving an application.
 func NewDomainMappingsRESTClient(ctx context.Context, opts ...option.ClientOption) (*DomainMappingsClient, error) {
 	clientOpts := append(defaultDomainMappingsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -345,6 +385,25 @@ func NewDomainMappingsRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListDomainMappings = append(callOpts.ListDomainMappings, gax.WithClientMetrics(metrics))
+		callOpts.GetDomainMapping = append(callOpts.GetDomainMapping, gax.WithClientMetrics(metrics))
+		callOpts.CreateDomainMapping = append(callOpts.CreateDomainMapping, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDomainMapping = append(callOpts.UpdateDomainMapping, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDomainMapping = append(callOpts.DeleteDomainMapping, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -382,7 +441,7 @@ func (c *domainMappingsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *domainMappingsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -401,9 +460,12 @@ func (c *domainMappingsGRPCClient) ListDomainMappings(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.DomainMappings/ListDomainMappings")
+	}
 	opts = append((*c.CallOptions).ListDomainMappings[0:len((*c.CallOptions).ListDomainMappings):len((*c.CallOptions).ListDomainMappings)], opts...)
 	it := &DomainMappingIterator{}
-	req = proto.Clone(req).(*appenginepb.ListDomainMappingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.DomainMapping, string, error) {
 		resp := &appenginepb.ListDomainMappingsResponse{}
 		if pageToken != "" {
@@ -447,6 +509,9 @@ func (c *domainMappingsGRPCClient) GetDomainMapping(ctx context.Context, req *ap
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.DomainMappings/GetDomainMapping")
+	}
 	opts = append((*c.CallOptions).GetDomainMapping[0:len((*c.CallOptions).GetDomainMapping):len((*c.CallOptions).GetDomainMapping)], opts...)
 	var resp *appenginepb.DomainMapping
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -465,6 +530,9 @@ func (c *domainMappingsGRPCClient) CreateDomainMapping(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.DomainMappings/CreateDomainMapping")
+	}
 	opts = append((*c.CallOptions).CreateDomainMapping[0:len((*c.CallOptions).CreateDomainMapping):len((*c.CallOptions).CreateDomainMapping)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -475,8 +543,12 @@ func (c *domainMappingsGRPCClient) CreateDomainMapping(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.CreateDomainMappingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDomainMappingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -485,6 +557,9 @@ func (c *domainMappingsGRPCClient) UpdateDomainMapping(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.DomainMappings/UpdateDomainMapping")
+	}
 	opts = append((*c.CallOptions).UpdateDomainMapping[0:len((*c.CallOptions).UpdateDomainMapping):len((*c.CallOptions).UpdateDomainMapping)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -495,8 +570,12 @@ func (c *domainMappingsGRPCClient) UpdateDomainMapping(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.UpdateDomainMappingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDomainMappingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -505,6 +584,9 @@ func (c *domainMappingsGRPCClient) DeleteDomainMapping(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.DomainMappings/DeleteDomainMapping")
+	}
 	opts = append((*c.CallOptions).DeleteDomainMapping[0:len((*c.CallOptions).DeleteDomainMapping):len((*c.CallOptions).DeleteDomainMapping)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -515,15 +597,19 @@ func (c *domainMappingsGRPCClient) DeleteDomainMapping(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.DeleteDomainMappingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDomainMappingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
 // ListDomainMappings lists the domain mappings on an application.
 func (c *domainMappingsRESTClient) ListDomainMappings(ctx context.Context, req *appenginepb.ListDomainMappingsRequest, opts ...gax.CallOption) *DomainMappingIterator {
 	it := &DomainMappingIterator{}
-	req = proto.Clone(req).(*appenginepb.ListDomainMappingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.DomainMapping, string, error) {
 		resp := &appenginepb.ListDomainMappingsResponse{}
@@ -617,6 +703,10 @@ func (c *domainMappingsRESTClient) GetDomainMapping(ctx context.Context, req *ap
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.DomainMappings/GetDomainMapping")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/domainMappings/*}")
+	}
 	opts = append((*c.CallOptions).GetDomainMapping[0:len((*c.CallOptions).GetDomainMapping):len((*c.CallOptions).GetDomainMapping)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.DomainMapping{}
@@ -679,6 +769,10 @@ func (c *domainMappingsRESTClient) CreateDomainMapping(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.DomainMappings/CreateDomainMapping")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=apps/*}/domainMappings")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -707,8 +801,12 @@ func (c *domainMappingsRESTClient) CreateDomainMapping(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.CreateDomainMappingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDomainMappingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -749,6 +847,10 @@ func (c *domainMappingsRESTClient) UpdateDomainMapping(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.DomainMappings/UpdateDomainMapping")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/domainMappings/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -777,8 +879,12 @@ func (c *domainMappingsRESTClient) UpdateDomainMapping(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.UpdateDomainMappingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDomainMappingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -804,6 +910,10 @@ func (c *domainMappingsRESTClient) DeleteDomainMapping(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.DomainMappings/DeleteDomainMapping")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/domainMappings/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -832,8 +942,12 @@ func (c *domainMappingsRESTClient) DeleteDomainMapping(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.DeleteDomainMappingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDomainMappingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -842,7 +956,7 @@ func (c *domainMappingsRESTClient) DeleteDomainMapping(ctx context.Context, req 
 // The name must be that of a previously created CreateDomainMappingOperation, possibly from a different process.
 func (c *domainMappingsGRPCClient) CreateDomainMappingOperation(name string) *CreateDomainMappingOperation {
 	return &CreateDomainMappingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.CreateDomainMappingOperation"),
 	}
 }
 
@@ -851,7 +965,7 @@ func (c *domainMappingsGRPCClient) CreateDomainMappingOperation(name string) *Cr
 func (c *domainMappingsRESTClient) CreateDomainMappingOperation(name string) *CreateDomainMappingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDomainMappingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.CreateDomainMappingOperation"),
 		pollPath: override,
 	}
 }
@@ -860,7 +974,7 @@ func (c *domainMappingsRESTClient) CreateDomainMappingOperation(name string) *Cr
 // The name must be that of a previously created DeleteDomainMappingOperation, possibly from a different process.
 func (c *domainMappingsGRPCClient) DeleteDomainMappingOperation(name string) *DeleteDomainMappingOperation {
 	return &DeleteDomainMappingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.DeleteDomainMappingOperation"),
 	}
 }
 
@@ -869,7 +983,7 @@ func (c *domainMappingsGRPCClient) DeleteDomainMappingOperation(name string) *De
 func (c *domainMappingsRESTClient) DeleteDomainMappingOperation(name string) *DeleteDomainMappingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDomainMappingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.DeleteDomainMappingOperation"),
 		pollPath: override,
 	}
 }
@@ -878,7 +992,7 @@ func (c *domainMappingsRESTClient) DeleteDomainMappingOperation(name string) *De
 // The name must be that of a previously created UpdateDomainMappingOperation, possibly from a different process.
 func (c *domainMappingsGRPCClient) UpdateDomainMappingOperation(name string) *UpdateDomainMappingOperation {
 	return &UpdateDomainMappingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.UpdateDomainMappingOperation"),
 	}
 }
 
@@ -887,7 +1001,7 @@ func (c *domainMappingsGRPCClient) UpdateDomainMappingOperation(name string) *Up
 func (c *domainMappingsRESTClient) UpdateDomainMappingOperation(name string) *UpdateDomainMappingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDomainMappingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.UpdateDomainMappingOperation"),
 		pollPath: override,
 	}
 }

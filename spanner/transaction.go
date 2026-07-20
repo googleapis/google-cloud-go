@@ -20,6 +20,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"runtime"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -357,12 +359,19 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		}
 		clientContext = mergeClientContext(clientContext, opts.ClientContext)
 	}
+	if requestTag == "" {
+		if rot, ok := t.txReadEnv.(*ReadOnlyTransaction); ok && rot.cachedRequestTag != "" {
+			requestTag = rot.cachedRequestTag
+		}
+	}
 	var setTransactionID func(transactionID)
 	if _, ok := ts.Selector.(*sppb.TransactionSelector_Begin); ok {
 		setTransactionID = t.setTransactionID
 	} else {
 		setTransactionID = nil
 	}
+	retryResourceExhausted := shouldRetryResourceExhaustedInStreaming(client)
+	allowRetryResourceExhaustedWithoutDelay := shouldAllowRetryResourceExhaustedWithoutDelayInStreaming(client)
 	return streamWithTransactionCallbacks(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
@@ -409,7 +418,9 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		t.updatePrecommitToken,
 		t.setTimestamp,
 		t.release,
-		asGRPCSpannerClient(client),
+		requestIDHeaderProviderFromSpannerClient(client),
+		retryResourceExhausted,
+		allowRetryResourceExhaustedWithoutDelay,
 	)
 }
 
@@ -720,6 +731,8 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		setTransactionID = nil
 	}
 	client := sh.getClient()
+	retryResourceExhausted := shouldRetryResourceExhaustedInStreaming(client)
+	allowRetryResourceExhaustedWithoutDelay := shouldAllowRetryResourceExhaustedWithoutDelayInStreaming(client)
 	return streamWithTransactionCallbacks(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
@@ -760,7 +773,9 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		t.updatePrecommitToken,
 		t.setTimestamp,
 		t.release,
-		asGRPCSpannerClient(client))
+		requestIDHeaderProviderFromSpannerClient(client),
+		retryResourceExhausted,
+		allowRetryResourceExhaustedWithoutDelay)
 }
 
 func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, options QueryOptions) (*sppb.ExecuteSqlRequest, *sessionHandle, error) {
@@ -782,6 +797,12 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 	if options.Mode != nil {
 		mode = *options.Mode
 	}
+	requestTag := options.RequestTag
+	if requestTag == "" {
+		if rot, ok := t.txReadEnv.(*ReadOnlyTransaction); ok && rot.cachedRequestTag != "" {
+			requestTag = rot.cachedRequestTag
+		}
+	}
 	req := &sppb.ExecuteSqlRequest{
 		Session:             sid,
 		Transaction:         ts,
@@ -791,7 +812,7 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		Params:              params,
 		ParamTypes:          paramTypes,
 		QueryOptions:        options.Options,
-		RequestOptions:      createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag, mergeClientContext(t.clientContext, options.ClientContext)),
+		RequestOptions:      createRequestOptions(options.Priority, requestTag, t.txOpts.TransactionTag, mergeClientContext(t.clientContext, options.ClientContext)),
 		DataBoostEnabled:    options.DataBoostEnabled,
 		DirectedReadOptions: options.DirectedReadOptions,
 		LastStatement:       options.LastStatement,
@@ -878,6 +899,7 @@ type ReadOnlyTransaction struct {
 	beginTransactionOption BeginTransactionOption
 	// isLongRunningTransaction indicates whether the transaction is long-running or not.
 	isLongRunningTransaction bool
+	cachedRequestTag         string
 }
 
 // errTxInitTimeout returns error for timeout in waiting for initialization of
@@ -996,13 +1018,14 @@ func (t *ReadOnlyTransaction) acquire(ctx context.Context) (*sessionHandle, *spp
 
 func (t *ReadOnlyTransaction) acquireSingleUse(ctx context.Context) (*sessionHandle, *sppb.TransactionSelector, error) {
 	t.mu.Lock()
-	defer t.mu.Unlock()
 	switch t.state {
 	case txClosed:
+		t.mu.Unlock()
 		// A closed single-use transaction can never be reused.
 		return nil, nil, errTxClosed()
 	case txNew:
 		t.state = txClosed
+		t.mu.Unlock()
 		ts := &sppb.TransactionSelector{
 			Selector: &sppb.TransactionSelector_SingleUse{
 				SingleUse: &sppb.TransactionOptions{
@@ -1019,10 +1042,13 @@ func (t *ReadOnlyTransaction) acquireSingleUse(ctx context.Context) (*sessionHan
 
 		// Install session handle into t, which can be used for readonly
 		// operations later.
+		t.mu.Lock()
 		t.sh = sh
+		t.mu.Unlock()
 		return sh, ts, nil
 	}
 	us := t.state
+	t.mu.Unlock()
 
 	// SingleUse transaction should only be in either txNew state or txClosed
 	// state.
@@ -1283,9 +1309,13 @@ func (t *ReadOnlyTransaction) WithBeginTransactionOption(option BeginTransaction
 //
 // # Aborted transactions
 //
-// Application code does not need to retry explicitly; RunInTransaction will
-// automatically retry a transaction if an attempt results in an abort. The lock
-// priority of a transaction increases after each prior aborted transaction,
+// Application code does not need to retry explicitly; ReadWriteTransaction will
+// automatically retry a transaction if an attempt results in an abort. If the
+// transaction function returns an ABORTED error while the server-side
+// transaction is still active, the client rolls back that transaction before
+// retrying. A rollback failure is returned as FAILED_PRECONDITION instead of
+// being retried because the transaction may still hold locks. The lock priority
+// of a transaction increases after each prior transaction aborted by Spanner,
 // meaning that the next attempt has a slightly better chance of success than
 // before.
 //
@@ -1310,14 +1340,14 @@ type ReadWriteTransaction struct {
 	// txReadOnly contains methods for performing transactional reads.
 	txReadOnly
 	// tx is the transaction ID in Cloud Spanner that uniquely identifies the
-	// ReadWriteTransaction. It is set only once in ReadWriteTransaction.begin()
-	// during the initialization of ReadWriteTransaction.
+	// ReadWriteTransaction. It is set during transaction initialization and
+	// cleared after rolling back an application-requested retry.
 	tx             transactionID
 	previousTx     transactionID
 	precommitToken *sppb.MultiplexedSessionPrecommitToken
 
-	// txReadyOrClosed is for broadcasting that transaction ID has been returned
-	// by Cloud Spanner or that transaction is closed.
+	// txReadyOrClosed is for broadcasting that the transaction ID has been
+	// returned by Cloud Spanner, or that the transaction is aborted or closed.
 	txReadyOrClosed chan struct{}
 	// mu protects concurrent access to the internal states of
 	// ReadWriteTransaction.
@@ -1558,12 +1588,21 @@ func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sp
 	for {
 		t.mu.Lock()
 		switch t.state {
-		case txClosed:
+		case txClosed, txAborted:
+			// txClosed is set by setTransactionID(nil) when an inlined begin fails.
+			// txAborted is set by markTxAbortedOnError for the same path (and for
+			// genuine server aborts). With no transaction id there is nothing to
+			// continue; signal failed inline begin so the runner retries with an
+			// explicit BeginTransaction.
+			state := t.state
 			if t.tx == nil {
 				t.mu.Unlock()
 				return nil, nil, t.updateTxState(errInlineBeginTransactionFailed(nil))
 			}
 			t.mu.Unlock()
+			if state == txAborted {
+				return nil, nil, spannerError(codes.Aborted, "transaction was aborted")
+			}
 			return nil, nil, errTxClosed()
 		case txNew:
 			// State transit to txInit so that only one TransactionSelector::begin
@@ -1578,7 +1617,8 @@ func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sp
 					Begin: &sppb.TransactionOptions{
 						Mode: &sppb.TransactionOptions_ReadWrite_{
 							ReadWrite: &sppb.TransactionOptions_ReadWrite{
-								ReadLockMode: t.txOpts.ReadLockMode,
+								ReadLockMode:                            t.txOpts.ReadLockMode,
+								MultiplexedSessionPreviousTransactionId: t.previousTx,
 							},
 						},
 						ExcludeTxnFromChangeStreams: t.txOpts.ExcludeTxnFromChangeStreams,
@@ -1766,6 +1806,7 @@ func (t *ReadWriteTransaction) begin(ctx context.Context, mutation *sppb.Mutatio
 	t.mu.Lock()
 	if t.tx != nil {
 		t.state = txActive
+		t.mu.Unlock()
 		return nil
 	}
 	sh := t.sh
@@ -1845,7 +1886,11 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	t.mu.Lock()
 	mutationProtos, selectedMutationProto, err := mutationsProto(t.wb)
 	if t.tx == nil {
-		if t.state == txClosed {
+		// txClosed is set by setTransactionID(nil) when an inlined begin fails.
+		// txAborted is set by markTxAbortedOnError for the same failure once
+		// updateTxStateFunc is installed (it also converts the error to Aborted).
+		// Both mean there is no live server-side transaction to commit.
+		if t.state == txClosed || t.state == txAborted {
 			// inline begin transaction failed
 			t.mu.Unlock()
 			return resp, t.updateTxState(errInlineBeginTransactionFailed(nil))
@@ -1922,31 +1967,94 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	return resp, err
 }
 
-// rollback is called when a commit is aborted or the transaction body runs
-// into error.
+// rollback ends the active server-side transaction and ignores rollback RPC
+// errors. Callers that must confirm rollback before proceeding use
+// rollbackWithError.
 func (t *ReadWriteTransaction) rollback(ctx context.Context) {
+	_ = t.rollbackWithError(ctx)
+}
+
+// rollbackWithError ends the active server-side transaction and returns any
+// error from the rollback RPC.
+func (t *ReadWriteTransaction) rollbackWithError(ctx context.Context) error {
 	t.mu.Lock()
 	// Forbid further operations on rollbacked transaction.
 	t.state = txClosed
 	if t.tx == nil {
 		t.mu.Unlock()
-		return
+		return nil
 	}
 	sh := t.sh
+	txID := t.tx
 	t.mu.Unlock()
 	// In case that sessionHandle was destroyed but transaction body fails to
 	// report it.
 	if sh == nil {
-		return
+		return spannerError(codes.FailedPrecondition, "transaction has no session")
 	}
 	sid, client := sh.getID(), sh.getClient()
 	if sid == "" || client == nil {
-		return
+		return errSessionClosed(sh)
 	}
-	_ = client.Rollback(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.RollbackRequest{
+	return ToSpannerError(client.Rollback(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.RollbackRequest{
 		Session:       sid,
-		TransactionId: t.tx,
-	})
+		TransactionId: txID,
+	}))
+}
+
+// errRollbackBeforeRetry converts a rollback failure into a non-retryable
+// Spanner error. The outer transaction runner retries on Aborted, Internal, and
+// ResourceExhausted; a failed rollback must not re-enter that loop while the
+// original server-side transaction may still hold locks.
+func errRollbackBeforeRetry(err error) error {
+	if err == nil {
+		return nil
+	}
+	return spannerErrorf(codes.FailedPrecondition, "failed to roll back transaction before retry: %v", err)
+}
+
+// markTxAbortedOnError records that Spanner aborted this transaction when an
+// RPC returns codes.Aborted, or when an inline begin fails (converted to
+// Aborted). This is the reliable signal that the server-side transaction is no
+// longer alive and its locks have been released.
+func (t *ReadWriteTransaction) markTxAbortedOnError(err error) error {
+	if isFailedInlineBeginTransaction(err) {
+		t.mu.Lock()
+		t.markAbortedAndWakeLocked()
+		t.mu.Unlock()
+
+		// Convert the Internal error to an Aborted error to indicate to the
+		// caller that they should retry the transaction.
+		wrapped := errors.Unwrap(err)
+		if wrapped == nil {
+			wrapped = err
+		}
+		msg := wrapped.Error()
+		return spannerError(codes.Aborted, msg)
+	}
+	if ErrCode(err) == codes.Aborted {
+		t.mu.Lock()
+		t.markAbortedAndWakeLocked()
+		t.mu.Unlock()
+	}
+	return err
+}
+
+// markAbortedAndWakeLocked sets state to txAborted and wakes any operations
+// waiting for inline-begin initialization. Caller must hold t.mu.
+//
+// When a streaming ABORTED arrives through updateTxState during txInit, we
+// must close txReadyOrClosed the same way setTransactionID(nil) does; otherwise
+// concurrent acquires remain blocked. Only close while leaving txInit/txNew so
+// we do not double-close after commit (which already closed the channel) or
+// after setTransactionID(nil).
+func (t *ReadWriteTransaction) markAbortedAndWakeLocked() {
+	prev := t.state
+	t.state = txAborted
+	if prev == txInit || prev == txNew {
+		close(t.txReadyOrClosed)
+		t.txReadyOrClosed = make(chan struct{})
+	}
 }
 
 // runInTransaction executes f under a read-write transaction context.
@@ -1962,14 +2070,48 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 		errDuringCommit = err != nil
 	}
 	if err != nil {
+		if isAbortedErr(err) {
+			t.mu.Lock()
+			abortedByServer := t.state == txAborted
+			txID := t.tx
+			t.mu.Unlock()
+			if abortedByServer {
+				if txID != nil {
+					// Server-initiated abort: Spanner already released locks.
+					// Carry the transaction id so the retry inherits wound-wait
+					// priority.
+					t.previousTx = txID
+					return resp, err
+				}
+				// Aborted with no transaction id is typically a failed inline
+				// begin that markTxAbortedOnError converted to Aborted. Preserve
+				// failed-inline-begin retry semantics (immediate retry, no
+				// abort backoff) used by runWithRetryOnAbortedOrFailedInlineBegin.
+				return resp, errInlineBeginTransactionFailed(err)
+			}
+			// Application returned codes.Aborted without Spanner aborting the
+			// transaction. The server-side transaction is still alive and holds
+			// locks; roll it back before retrying. Do not carry this
+			// transaction's id as previousTx: a rolled-back transaction has no
+			// wound-wait priority to inherit.
+			// Detach cancellation so the rollback is not cancelled / skipped,
+			// while preserving trace context and other context values.
+			if rollbackErr := t.rollbackWithError(context.WithoutCancel(ctx)); rollbackErr != nil {
+				// Surface a non-retryable error so runWithRetryOnAbortedOrFailedInlineBegin
+				// does not start a new attempt while the original transaction
+				// may still hold locks (e.g. if Rollback itself returned Aborted).
+				return resp, errRollbackBeforeRetry(rollbackErr)
+			}
+			// Detach the rolled-back transaction id so a retry cannot reuse it
+			// (e.g. ExplicitBeginTransaction reuses the transaction object and
+			// calls begin, which would otherwise treat the old id as active).
+			t.mu.Lock()
+			t.tx = nil
+			t.mu.Unlock()
+			return resp, err
+		}
 		if t.tx != nil {
 			t.previousTx = t.tx
-		}
-		if isAbortedErr(err) {
-			// Retry the transaction using the same session on ABORT error.
-			// Cloud Spanner will create the new transaction with the previous
-			// one's wound-wait priority.
-			return resp, err
 		}
 		if isFailedInlineBeginTransaction(err) {
 			return resp, err
@@ -2082,28 +2224,7 @@ func newReadWriteStmtBasedTransactionWithSessionHandle(ctx context.Context, c *C
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
 	t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
-	t.txReadOnly.updateTxStateFunc = func(err error) error {
-		if isFailedInlineBeginTransaction(err) {
-			t.mu.Lock()
-			t.state = txAborted
-			t.mu.Unlock()
-
-			// Convert the Internal error to an Aborted error to indicate to the caller that they should retry the
-			// transaction.
-			wrapped := errors.Unwrap(err)
-			if wrapped == nil {
-				wrapped = err
-			}
-			msg := wrapped.Error()
-			return spannerError(codes.Aborted, msg)
-		}
-		if ErrCode(err) == codes.Aborted {
-			t.mu.Lock()
-			t.state = txAborted
-			t.mu.Unlock()
-		}
-		return err
-	}
+	t.txReadOnly.updateTxStateFunc = t.markTxAbortedOnError
 
 	t.txOpts = c.txo.merge(options)
 	t.txReadOnly.clientContext = mergeClientContext(c.clientContext, t.txOpts.ClientContext)
@@ -2308,4 +2429,67 @@ type transactionBeginOptions struct {
 	previousTx    transactionID
 	mutation      *sppb.Mutation
 	clientContext *sppb.RequestOptions_ClientContext
+}
+
+func getCallStackTag(packages []string, limit int) string {
+	if limit <= 0 {
+		limit = 50
+	}
+	pc := make([]uintptr, limit)
+	// Skip runtime.Callers and getCallStackTag frames
+	n := runtime.Callers(2, pc)
+	if n == 0 {
+		return ""
+	}
+	pc = pc[:n]
+	frames := runtime.CallersFrames(pc)
+	for {
+		frame, more := frames.Next()
+		if frame.Function != "" && isEligibleFrame(frame.Function, packages) {
+			tag := formatFrameTag(frame.Function)
+			if len(tag) > 50 {
+				tag = tag[len(tag)-50:]
+			}
+			// Tags must start with a letter and contain only letters, numbers, underscores, and hyphens.
+			tag = strings.TrimLeft(tag, "0123456789_-")
+			if tag != "" {
+				return tag
+			}
+		}
+		if !more {
+			break
+		}
+	}
+	return ""
+}
+
+func isEligibleFrame(fn string, packages []string) bool {
+	if strings.HasPrefix(fn, "runtime.") || strings.HasPrefix(fn, "reflect.") || strings.HasPrefix(fn, "sync.") {
+		return false
+	}
+	if len(packages) > 0 {
+		for _, pkg := range packages {
+			if strings.HasPrefix(fn, pkg) || strings.Contains(fn, "/"+pkg) {
+				return true
+			}
+		}
+		return false
+	}
+	if strings.Contains(fn, "cloud.google.com/go/spanner") {
+		return false
+	}
+	return true
+}
+
+func formatFrameTag(fn string) string {
+	idx := strings.LastIndex(fn, "/")
+	if idx >= 0 {
+		fn = fn[idx+1:]
+	}
+	return strings.Map(func(r rune) rune {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' || r == '-' {
+			return r
+		}
+		return '_'
+	}, fn)
 }

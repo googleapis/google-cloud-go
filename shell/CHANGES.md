@@ -1,5 +1,18 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/shell/v1.12.0...shell/v1.13.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/shell%2Fv1.12.0) (2026-04-30)
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/shell%2Fv1.11.0) (2026-04-13)
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/shell%2Fv1.10.0) (2026-04-09)
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/shell%2Fv1.9.0) (2026-04-02)
 
 ## [1.8.7](https://github.com/googleapis/google-cloud-go/compare/shell/v1.8.6...shell/v1.8.7) (2025-09-22)

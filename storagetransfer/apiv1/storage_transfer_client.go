@@ -31,6 +31,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	storagetransferpb "cloud.google.com/go/storagetransfer/apiv1/storagetransferpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -510,7 +512,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -695,6 +697,16 @@ type gRPCClient struct {
 // source external to Google to a Cloud Storage bucket.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "storagetransfer",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/storagetransfer/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "storagetransfer.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -717,6 +729,36 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "storagetransfer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/storagetransfer/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "storagetransfer.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetGoogleServiceAccount = append(client.CallOptions.GetGoogleServiceAccount, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTransferJob = append(client.CallOptions.CreateTransferJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTransferJob = append(client.CallOptions.UpdateTransferJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTransferJob = append(client.CallOptions.GetTransferJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTransferJobs = append(client.CallOptions.ListTransferJobs, gax.WithClientMetrics(metrics))
+		client.CallOptions.PauseTransferOperation = append(client.CallOptions.PauseTransferOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResumeTransferOperation = append(client.CallOptions.ResumeTransferOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.RunTransferJob = append(client.CallOptions.RunTransferJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTransferJob = append(client.CallOptions.DeleteTransferJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAgentPool = append(client.CallOptions.CreateAgentPool, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAgentPool = append(client.CallOptions.UpdateAgentPool, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAgentPool = append(client.CallOptions.GetAgentPool, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAgentPools = append(client.CallOptions.ListAgentPools, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAgentPool = append(client.CallOptions.DeleteAgentPool, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -753,7 +795,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -788,6 +830,16 @@ type restClient struct {
 // source external to Google to a Cloud Storage bucket.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "storagetransfer",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/storagetransfer/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "storagetransfer.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -801,6 +853,37 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "storagetransfer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/storagetransfer/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "storagetransfer.googleapis.com",
+			}),
+		)
+
+		callOpts.GetGoogleServiceAccount = append(callOpts.GetGoogleServiceAccount, gax.WithClientMetrics(metrics))
+		callOpts.CreateTransferJob = append(callOpts.CreateTransferJob, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTransferJob = append(callOpts.UpdateTransferJob, gax.WithClientMetrics(metrics))
+		callOpts.GetTransferJob = append(callOpts.GetTransferJob, gax.WithClientMetrics(metrics))
+		callOpts.ListTransferJobs = append(callOpts.ListTransferJobs, gax.WithClientMetrics(metrics))
+		callOpts.PauseTransferOperation = append(callOpts.PauseTransferOperation, gax.WithClientMetrics(metrics))
+		callOpts.ResumeTransferOperation = append(callOpts.ResumeTransferOperation, gax.WithClientMetrics(metrics))
+		callOpts.RunTransferJob = append(callOpts.RunTransferJob, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTransferJob = append(callOpts.DeleteTransferJob, gax.WithClientMetrics(metrics))
+		callOpts.CreateAgentPool = append(callOpts.CreateAgentPool, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAgentPool = append(callOpts.UpdateAgentPool, gax.WithClientMetrics(metrics))
+		callOpts.GetAgentPool = append(callOpts.GetAgentPool, gax.WithClientMetrics(metrics))
+		callOpts.ListAgentPools = append(callOpts.ListAgentPools, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAgentPool = append(callOpts.DeleteAgentPool, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -838,7 +921,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -857,6 +940,9 @@ func (c *gRPCClient) GetGoogleServiceAccount(ctx context.Context, req *storagetr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/GetGoogleServiceAccount")
+	}
 	opts = append((*c.CallOptions).GetGoogleServiceAccount[0:len((*c.CallOptions).GetGoogleServiceAccount):len((*c.CallOptions).GetGoogleServiceAccount)], opts...)
 	var resp *storagetransferpb.GoogleServiceAccount
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -872,6 +958,9 @@ func (c *gRPCClient) GetGoogleServiceAccount(ctx context.Context, req *storagetr
 
 func (c *gRPCClient) CreateTransferJob(ctx context.Context, req *storagetransferpb.CreateTransferJobRequest, opts ...gax.CallOption) (*storagetransferpb.TransferJob, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/CreateTransferJob")
+	}
 	opts = append((*c.CallOptions).CreateTransferJob[0:len((*c.CallOptions).CreateTransferJob):len((*c.CallOptions).CreateTransferJob)], opts...)
 	var resp *storagetransferpb.TransferJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -890,6 +979,9 @@ func (c *gRPCClient) UpdateTransferJob(ctx context.Context, req *storagetransfer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/UpdateTransferJob")
+	}
 	opts = append((*c.CallOptions).UpdateTransferJob[0:len((*c.CallOptions).UpdateTransferJob):len((*c.CallOptions).UpdateTransferJob)], opts...)
 	var resp *storagetransferpb.TransferJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -908,6 +1000,9 @@ func (c *gRPCClient) GetTransferJob(ctx context.Context, req *storagetransferpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/GetTransferJob")
+	}
 	opts = append((*c.CallOptions).GetTransferJob[0:len((*c.CallOptions).GetTransferJob):len((*c.CallOptions).GetTransferJob)], opts...)
 	var resp *storagetransferpb.TransferJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -923,9 +1018,12 @@ func (c *gRPCClient) GetTransferJob(ctx context.Context, req *storagetransferpb.
 
 func (c *gRPCClient) ListTransferJobs(ctx context.Context, req *storagetransferpb.ListTransferJobsRequest, opts ...gax.CallOption) *TransferJobIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/ListTransferJobs")
+	}
 	opts = append((*c.CallOptions).ListTransferJobs[0:len((*c.CallOptions).ListTransferJobs):len((*c.CallOptions).ListTransferJobs)], opts...)
 	it := &TransferJobIterator{}
-	req = proto.Clone(req).(*storagetransferpb.ListTransferJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storagetransferpb.TransferJob, string, error) {
 		resp := &storagetransferpb.ListTransferJobsResponse{}
 		if pageToken != "" {
@@ -969,6 +1067,9 @@ func (c *gRPCClient) PauseTransferOperation(ctx context.Context, req *storagetra
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/PauseTransferOperation")
+	}
 	opts = append((*c.CallOptions).PauseTransferOperation[0:len((*c.CallOptions).PauseTransferOperation):len((*c.CallOptions).PauseTransferOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -983,6 +1084,9 @@ func (c *gRPCClient) ResumeTransferOperation(ctx context.Context, req *storagetr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/ResumeTransferOperation")
+	}
 	opts = append((*c.CallOptions).ResumeTransferOperation[0:len((*c.CallOptions).ResumeTransferOperation):len((*c.CallOptions).ResumeTransferOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -997,6 +1101,9 @@ func (c *gRPCClient) RunTransferJob(ctx context.Context, req *storagetransferpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/RunTransferJob")
+	}
 	opts = append((*c.CallOptions).RunTransferJob[0:len((*c.CallOptions).RunTransferJob):len((*c.CallOptions).RunTransferJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1007,8 +1114,12 @@ func (c *gRPCClient) RunTransferJob(ctx context.Context, req *storagetransferpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*storagetransfer.RunTransferJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunTransferJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1017,6 +1128,9 @@ func (c *gRPCClient) DeleteTransferJob(ctx context.Context, req *storagetransfer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/DeleteTransferJob")
+	}
 	opts = append((*c.CallOptions).DeleteTransferJob[0:len((*c.CallOptions).DeleteTransferJob):len((*c.CallOptions).DeleteTransferJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1031,6 +1145,9 @@ func (c *gRPCClient) CreateAgentPool(ctx context.Context, req *storagetransferpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/CreateAgentPool")
+	}
 	opts = append((*c.CallOptions).CreateAgentPool[0:len((*c.CallOptions).CreateAgentPool):len((*c.CallOptions).CreateAgentPool)], opts...)
 	var resp *storagetransferpb.AgentPool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1049,6 +1166,9 @@ func (c *gRPCClient) UpdateAgentPool(ctx context.Context, req *storagetransferpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/UpdateAgentPool")
+	}
 	opts = append((*c.CallOptions).UpdateAgentPool[0:len((*c.CallOptions).UpdateAgentPool):len((*c.CallOptions).UpdateAgentPool)], opts...)
 	var resp *storagetransferpb.AgentPool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1067,6 +1187,9 @@ func (c *gRPCClient) GetAgentPool(ctx context.Context, req *storagetransferpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/GetAgentPool")
+	}
 	opts = append((*c.CallOptions).GetAgentPool[0:len((*c.CallOptions).GetAgentPool):len((*c.CallOptions).GetAgentPool)], opts...)
 	var resp *storagetransferpb.AgentPool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1085,9 +1208,12 @@ func (c *gRPCClient) ListAgentPools(ctx context.Context, req *storagetransferpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/ListAgentPools")
+	}
 	opts = append((*c.CallOptions).ListAgentPools[0:len((*c.CallOptions).ListAgentPools):len((*c.CallOptions).ListAgentPools)], opts...)
 	it := &AgentPoolIterator{}
-	req = proto.Clone(req).(*storagetransferpb.ListAgentPoolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storagetransferpb.AgentPool, string, error) {
 		resp := &storagetransferpb.ListAgentPoolsResponse{}
 		if pageToken != "" {
@@ -1131,6 +1257,9 @@ func (c *gRPCClient) DeleteAgentPool(ctx context.Context, req *storagetransferpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/DeleteAgentPool")
+	}
 	opts = append((*c.CallOptions).DeleteAgentPool[0:len((*c.CallOptions).DeleteAgentPool):len((*c.CallOptions).DeleteAgentPool)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1145,6 +1274,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1159,6 +1291,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1177,9 +1312,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1244,6 +1382,10 @@ func (c *restClient) GetGoogleServiceAccount(ctx context.Context, req *storagetr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/GetGoogleServiceAccount")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/googleServiceAccounts/{project_id}")
+	}
 	opts = append((*c.CallOptions).GetGoogleServiceAccount[0:len((*c.CallOptions).GetGoogleServiceAccount):len((*c.CallOptions).GetGoogleServiceAccount)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &storagetransferpb.GoogleServiceAccount{}
@@ -1298,6 +1440,10 @@ func (c *restClient) CreateTransferJob(ctx context.Context, req *storagetransfer
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/CreateTransferJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/transferJobs")
+	}
 	opts = append((*c.CallOptions).CreateTransferJob[0:len((*c.CallOptions).CreateTransferJob):len((*c.CallOptions).CreateTransferJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &storagetransferpb.TransferJob{}
@@ -1361,6 +1507,10 @@ func (c *restClient) UpdateTransferJob(ctx context.Context, req *storagetransfer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/UpdateTransferJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{job_name=transferJobs/**}")
+	}
 	opts = append((*c.CallOptions).UpdateTransferJob[0:len((*c.CallOptions).UpdateTransferJob):len((*c.CallOptions).UpdateTransferJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &storagetransferpb.TransferJob{}
@@ -1412,6 +1562,10 @@ func (c *restClient) GetTransferJob(ctx context.Context, req *storagetransferpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/GetTransferJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{job_name=transferJobs/**}")
+	}
 	opts = append((*c.CallOptions).GetTransferJob[0:len((*c.CallOptions).GetTransferJob):len((*c.CallOptions).GetTransferJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &storagetransferpb.TransferJob{}
@@ -1446,7 +1600,7 @@ func (c *restClient) GetTransferJob(ctx context.Context, req *storagetransferpb.
 // ListTransferJobs lists transfer jobs.
 func (c *restClient) ListTransferJobs(ctx context.Context, req *storagetransferpb.ListTransferJobsRequest, opts ...gax.CallOption) *TransferJobIterator {
 	it := &TransferJobIterator{}
-	req = proto.Clone(req).(*storagetransferpb.ListTransferJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storagetransferpb.TransferJob, string, error) {
 		resp := &storagetransferpb.ListTransferJobsResponse{}
@@ -1547,6 +1701,10 @@ func (c *restClient) PauseTransferOperation(ctx context.Context, req *storagetra
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/PauseTransferOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=transferOperations/**}:pause")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1588,6 +1746,10 @@ func (c *restClient) ResumeTransferOperation(ctx context.Context, req *storagetr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/ResumeTransferOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=transferOperations/**}:resume")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1632,6 +1794,10 @@ func (c *restClient) RunTransferJob(ctx context.Context, req *storagetransferpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/RunTransferJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{job_name=transferJobs/**}:run")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1660,8 +1826,12 @@ func (c *restClient) RunTransferJob(ctx context.Context, req *storagetransferpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*storagetransfer.RunTransferJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunTransferJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1687,6 +1857,10 @@ func (c *restClient) DeleteTransferJob(ctx context.Context, req *storagetransfer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/DeleteTransferJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{job_name=transferJobs/**}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1730,6 +1904,10 @@ func (c *restClient) CreateAgentPool(ctx context.Context, req *storagetransferpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/CreateAgentPool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id=*}/agentPools")
+	}
 	opts = append((*c.CallOptions).CreateAgentPool[0:len((*c.CallOptions).CreateAgentPool):len((*c.CallOptions).CreateAgentPool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &storagetransferpb.AgentPool{}
@@ -1794,6 +1972,10 @@ func (c *restClient) UpdateAgentPool(ctx context.Context, req *storagetransferpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/UpdateAgentPool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{agent_pool.name=projects/*/agentPools/*}")
+	}
 	opts = append((*c.CallOptions).UpdateAgentPool[0:len((*c.CallOptions).UpdateAgentPool):len((*c.CallOptions).UpdateAgentPool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &storagetransferpb.AgentPool{}
@@ -1844,6 +2026,10 @@ func (c *restClient) GetAgentPool(ctx context.Context, req *storagetransferpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/GetAgentPool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/agentPools/*}")
+	}
 	opts = append((*c.CallOptions).GetAgentPool[0:len((*c.CallOptions).GetAgentPool):len((*c.CallOptions).GetAgentPool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &storagetransferpb.AgentPool{}
@@ -1878,7 +2064,7 @@ func (c *restClient) GetAgentPool(ctx context.Context, req *storagetransferpb.Ge
 // ListAgentPools lists agent pools.
 func (c *restClient) ListAgentPools(ctx context.Context, req *storagetransferpb.ListAgentPoolsRequest, opts ...gax.CallOption) *AgentPoolIterator {
 	it := &AgentPoolIterator{}
-	req = proto.Clone(req).(*storagetransferpb.ListAgentPoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storagetransferpb.AgentPool, string, error) {
 		resp := &storagetransferpb.ListAgentPoolsResponse{}
@@ -1975,6 +2161,10 @@ func (c *restClient) DeleteAgentPool(ctx context.Context, req *storagetransferpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storagetransfer.v1.StorageTransferService/DeleteAgentPool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/agentPools/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2036,6 +2226,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=transferOperations/**}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2071,6 +2265,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=transferOperations/**}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -2106,7 +2304,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // time in reverse chronological order.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -2191,7 +2389,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created RunTransferJobOperation, possibly from a different process.
 func (c *gRPCClient) RunTransferJobOperation(name string) *RunTransferJobOperation {
 	return &RunTransferJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*storagetransfer.RunTransferJobOperation"),
 	}
 }
 
@@ -2200,7 +2398,7 @@ func (c *gRPCClient) RunTransferJobOperation(name string) *RunTransferJobOperati
 func (c *restClient) RunTransferJobOperation(name string) *RunTransferJobOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RunTransferJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*storagetransfer.RunTransferJobOperation"),
 		pollPath: override,
 	}
 }

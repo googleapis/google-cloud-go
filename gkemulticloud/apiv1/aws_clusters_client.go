@@ -29,6 +29,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -273,7 +275,7 @@ type AwsClustersClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *AwsClustersClient) Close() error {
 	return c.internalClient.Close()
@@ -543,6 +545,16 @@ type awsClustersGRPCClient struct {
 // Deprecated: AwsClusters may be removed in a future version.
 func NewAwsClustersClient(ctx context.Context, opts ...option.ClientOption) (*AwsClustersClient, error) {
 	clientOpts := defaultAwsClustersGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "gkemulticloud",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/gkemulticloud/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "gkemulticloud.googleapis.com",
+		}))
+	}
 	if newAwsClustersClientHook != nil {
 		hookOpts, err := newAwsClustersClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -565,6 +577,39 @@ func NewAwsClustersClient(ctx context.Context, opts ...option.ClientOption) (*Aw
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "gkemulticloud",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkemulticloud/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "gkemulticloud.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAwsCluster = append(client.CallOptions.CreateAwsCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAwsCluster = append(client.CallOptions.UpdateAwsCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAwsCluster = append(client.CallOptions.GetAwsCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAwsClusters = append(client.CallOptions.ListAwsClusters, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAwsCluster = append(client.CallOptions.DeleteAwsCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateAwsClusterAgentToken = append(client.CallOptions.GenerateAwsClusterAgentToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateAwsAccessToken = append(client.CallOptions.GenerateAwsAccessToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAwsNodePool = append(client.CallOptions.CreateAwsNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAwsNodePool = append(client.CallOptions.UpdateAwsNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.RollbackAwsNodePoolUpdate = append(client.CallOptions.RollbackAwsNodePoolUpdate, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAwsNodePool = append(client.CallOptions.GetAwsNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAwsNodePools = append(client.CallOptions.ListAwsNodePools, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAwsNodePool = append(client.CallOptions.DeleteAwsNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAwsOpenIdConfig = append(client.CallOptions.GetAwsOpenIdConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAwsJsonWebKeys = append(client.CallOptions.GetAwsJsonWebKeys, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAwsServerConfig = append(client.CallOptions.GetAwsServerConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -601,7 +646,7 @@ func (c *awsClustersGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *awsClustersGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -612,6 +657,12 @@ func (c *awsClustersGRPCClient) CreateAwsCluster(ctx context.Context, req *gkemu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/CreateAwsCluster")
+	}
 	opts = append((*c.CallOptions).CreateAwsCluster[0:len((*c.CallOptions).CreateAwsCluster):len((*c.CallOptions).CreateAwsCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -622,8 +673,12 @@ func (c *awsClustersGRPCClient) CreateAwsCluster(ctx context.Context, req *gkemu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.CreateAwsClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAwsClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -632,6 +687,9 @@ func (c *awsClustersGRPCClient) UpdateAwsCluster(ctx context.Context, req *gkemu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/UpdateAwsCluster")
+	}
 	opts = append((*c.CallOptions).UpdateAwsCluster[0:len((*c.CallOptions).UpdateAwsCluster):len((*c.CallOptions).UpdateAwsCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -642,8 +700,12 @@ func (c *awsClustersGRPCClient) UpdateAwsCluster(ctx context.Context, req *gkemu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.UpdateAwsClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAwsClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -652,6 +714,12 @@ func (c *awsClustersGRPCClient) GetAwsCluster(ctx context.Context, req *gkemulti
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/GetAwsCluster")
+	}
 	opts = append((*c.CallOptions).GetAwsCluster[0:len((*c.CallOptions).GetAwsCluster):len((*c.CallOptions).GetAwsCluster)], opts...)
 	var resp *gkemulticloudpb.AwsCluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -670,9 +738,15 @@ func (c *awsClustersGRPCClient) ListAwsClusters(ctx context.Context, req *gkemul
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/ListAwsClusters")
+	}
 	opts = append((*c.CallOptions).ListAwsClusters[0:len((*c.CallOptions).ListAwsClusters):len((*c.CallOptions).ListAwsClusters)], opts...)
 	it := &AwsClusterIterator{}
-	req = proto.Clone(req).(*gkemulticloudpb.ListAwsClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkemulticloudpb.AwsCluster, string, error) {
 		resp := &gkemulticloudpb.ListAwsClustersResponse{}
 		if pageToken != "" {
@@ -716,6 +790,12 @@ func (c *awsClustersGRPCClient) DeleteAwsCluster(ctx context.Context, req *gkemu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/DeleteAwsCluster")
+	}
 	opts = append((*c.CallOptions).DeleteAwsCluster[0:len((*c.CallOptions).DeleteAwsCluster):len((*c.CallOptions).DeleteAwsCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -726,8 +806,12 @@ func (c *awsClustersGRPCClient) DeleteAwsCluster(ctx context.Context, req *gkemu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.DeleteAwsClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAwsClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -736,6 +820,12 @@ func (c *awsClustersGRPCClient) GenerateAwsClusterAgentToken(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetAwsCluster()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/GenerateAwsClusterAgentToken")
+	}
 	opts = append((*c.CallOptions).GenerateAwsClusterAgentToken[0:len((*c.CallOptions).GenerateAwsClusterAgentToken):len((*c.CallOptions).GenerateAwsClusterAgentToken)], opts...)
 	var resp *gkemulticloudpb.GenerateAwsClusterAgentTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -754,6 +844,12 @@ func (c *awsClustersGRPCClient) GenerateAwsAccessToken(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetAwsCluster()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/GenerateAwsAccessToken")
+	}
 	opts = append((*c.CallOptions).GenerateAwsAccessToken[0:len((*c.CallOptions).GenerateAwsAccessToken):len((*c.CallOptions).GenerateAwsAccessToken)], opts...)
 	var resp *gkemulticloudpb.GenerateAwsAccessTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -772,6 +868,12 @@ func (c *awsClustersGRPCClient) CreateAwsNodePool(ctx context.Context, req *gkem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/CreateAwsNodePool")
+	}
 	opts = append((*c.CallOptions).CreateAwsNodePool[0:len((*c.CallOptions).CreateAwsNodePool):len((*c.CallOptions).CreateAwsNodePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -782,8 +884,12 @@ func (c *awsClustersGRPCClient) CreateAwsNodePool(ctx context.Context, req *gkem
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.CreateAwsNodePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAwsNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -792,6 +898,9 @@ func (c *awsClustersGRPCClient) UpdateAwsNodePool(ctx context.Context, req *gkem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/UpdateAwsNodePool")
+	}
 	opts = append((*c.CallOptions).UpdateAwsNodePool[0:len((*c.CallOptions).UpdateAwsNodePool):len((*c.CallOptions).UpdateAwsNodePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -802,8 +911,12 @@ func (c *awsClustersGRPCClient) UpdateAwsNodePool(ctx context.Context, req *gkem
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.UpdateAwsNodePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAwsNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -812,6 +925,12 @@ func (c *awsClustersGRPCClient) RollbackAwsNodePoolUpdate(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/RollbackAwsNodePoolUpdate")
+	}
 	opts = append((*c.CallOptions).RollbackAwsNodePoolUpdate[0:len((*c.CallOptions).RollbackAwsNodePoolUpdate):len((*c.CallOptions).RollbackAwsNodePoolUpdate)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -822,8 +941,12 @@ func (c *awsClustersGRPCClient) RollbackAwsNodePoolUpdate(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.RollbackAwsNodePoolUpdateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RollbackAwsNodePoolUpdateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -832,6 +955,12 @@ func (c *awsClustersGRPCClient) GetAwsNodePool(ctx context.Context, req *gkemult
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/GetAwsNodePool")
+	}
 	opts = append((*c.CallOptions).GetAwsNodePool[0:len((*c.CallOptions).GetAwsNodePool):len((*c.CallOptions).GetAwsNodePool)], opts...)
 	var resp *gkemulticloudpb.AwsNodePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -850,9 +979,15 @@ func (c *awsClustersGRPCClient) ListAwsNodePools(ctx context.Context, req *gkemu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/ListAwsNodePools")
+	}
 	opts = append((*c.CallOptions).ListAwsNodePools[0:len((*c.CallOptions).ListAwsNodePools):len((*c.CallOptions).ListAwsNodePools)], opts...)
 	it := &AwsNodePoolIterator{}
-	req = proto.Clone(req).(*gkemulticloudpb.ListAwsNodePoolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkemulticloudpb.AwsNodePool, string, error) {
 		resp := &gkemulticloudpb.ListAwsNodePoolsResponse{}
 		if pageToken != "" {
@@ -896,6 +1031,12 @@ func (c *awsClustersGRPCClient) DeleteAwsNodePool(ctx context.Context, req *gkem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/DeleteAwsNodePool")
+	}
 	opts = append((*c.CallOptions).DeleteAwsNodePool[0:len((*c.CallOptions).DeleteAwsNodePool):len((*c.CallOptions).DeleteAwsNodePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -906,8 +1047,12 @@ func (c *awsClustersGRPCClient) DeleteAwsNodePool(ctx context.Context, req *gkem
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.DeleteAwsNodePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAwsNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -916,6 +1061,12 @@ func (c *awsClustersGRPCClient) GetAwsOpenIdConfig(ctx context.Context, req *gke
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetAwsCluster()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/GetAwsOpenIdConfig")
+	}
 	opts = append((*c.CallOptions).GetAwsOpenIdConfig[0:len((*c.CallOptions).GetAwsOpenIdConfig):len((*c.CallOptions).GetAwsOpenIdConfig)], opts...)
 	var resp *gkemulticloudpb.AwsOpenIdConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -934,6 +1085,12 @@ func (c *awsClustersGRPCClient) GetAwsJsonWebKeys(ctx context.Context, req *gkem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetAwsCluster()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/GetAwsJsonWebKeys")
+	}
 	opts = append((*c.CallOptions).GetAwsJsonWebKeys[0:len((*c.CallOptions).GetAwsJsonWebKeys):len((*c.CallOptions).GetAwsJsonWebKeys)], opts...)
 	var resp *gkemulticloudpb.AwsJsonWebKeys
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -952,6 +1109,12 @@ func (c *awsClustersGRPCClient) GetAwsServerConfig(ctx context.Context, req *gke
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkemulticloud.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkemulticloud.v1.AwsClusters/GetAwsServerConfig")
+	}
 	opts = append((*c.CallOptions).GetAwsServerConfig[0:len((*c.CallOptions).GetAwsServerConfig):len((*c.CallOptions).GetAwsServerConfig)], opts...)
 	var resp *gkemulticloudpb.AwsServerConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -970,6 +1133,9 @@ func (c *awsClustersGRPCClient) CancelOperation(ctx context.Context, req *longru
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -984,6 +1150,9 @@ func (c *awsClustersGRPCClient) DeleteOperation(ctx context.Context, req *longru
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -998,6 +1167,9 @@ func (c *awsClustersGRPCClient) GetOperation(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1016,9 +1188,12 @@ func (c *awsClustersGRPCClient) ListOperations(ctx context.Context, req *longrun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1061,7 +1236,7 @@ func (c *awsClustersGRPCClient) ListOperations(ctx context.Context, req *longrun
 // The name must be that of a previously created CreateAwsClusterOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) CreateAwsClusterOperation(name string) *CreateAwsClusterOperation {
 	return &CreateAwsClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.CreateAwsClusterOperation"),
 	}
 }
 
@@ -1069,7 +1244,7 @@ func (c *awsClustersGRPCClient) CreateAwsClusterOperation(name string) *CreateAw
 // The name must be that of a previously created CreateAwsNodePoolOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) CreateAwsNodePoolOperation(name string) *CreateAwsNodePoolOperation {
 	return &CreateAwsNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.CreateAwsNodePoolOperation"),
 	}
 }
 
@@ -1077,7 +1252,7 @@ func (c *awsClustersGRPCClient) CreateAwsNodePoolOperation(name string) *CreateA
 // The name must be that of a previously created DeleteAwsClusterOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) DeleteAwsClusterOperation(name string) *DeleteAwsClusterOperation {
 	return &DeleteAwsClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.DeleteAwsClusterOperation"),
 	}
 }
 
@@ -1085,7 +1260,7 @@ func (c *awsClustersGRPCClient) DeleteAwsClusterOperation(name string) *DeleteAw
 // The name must be that of a previously created DeleteAwsNodePoolOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) DeleteAwsNodePoolOperation(name string) *DeleteAwsNodePoolOperation {
 	return &DeleteAwsNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.DeleteAwsNodePoolOperation"),
 	}
 }
 
@@ -1093,7 +1268,7 @@ func (c *awsClustersGRPCClient) DeleteAwsNodePoolOperation(name string) *DeleteA
 // The name must be that of a previously created RollbackAwsNodePoolUpdateOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) RollbackAwsNodePoolUpdateOperation(name string) *RollbackAwsNodePoolUpdateOperation {
 	return &RollbackAwsNodePoolUpdateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.RollbackAwsNodePoolUpdateOperation"),
 	}
 }
 
@@ -1101,7 +1276,7 @@ func (c *awsClustersGRPCClient) RollbackAwsNodePoolUpdateOperation(name string) 
 // The name must be that of a previously created UpdateAwsClusterOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) UpdateAwsClusterOperation(name string) *UpdateAwsClusterOperation {
 	return &UpdateAwsClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.UpdateAwsClusterOperation"),
 	}
 }
 
@@ -1109,6 +1284,6 @@ func (c *awsClustersGRPCClient) UpdateAwsClusterOperation(name string) *UpdateAw
 // The name must be that of a previously created UpdateAwsNodePoolOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) UpdateAwsNodePoolOperation(name string) *UpdateAwsNodePoolOperation {
 	return &UpdateAwsNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.UpdateAwsNodePoolOperation"),
 	}
 }

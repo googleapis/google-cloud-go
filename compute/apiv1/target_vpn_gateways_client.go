@@ -29,6 +29,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -127,7 +128,7 @@ type TargetVpnGatewaysClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *TargetVpnGatewaysClient) Close() error {
 	return c.internalClient.Close()
@@ -209,6 +210,16 @@ type targetVpnGatewaysRESTClient struct {
 // The TargetVpnGateways API.
 func NewTargetVpnGatewaysRESTClient(ctx context.Context, opts ...option.ClientOption) (*TargetVpnGatewaysClient, error) {
 	clientOpts := append(defaultTargetVpnGatewaysRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -222,6 +233,26 @@ func NewTargetVpnGatewaysRESTClient(ctx context.Context, opts ...option.ClientOp
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientMetrics(metrics))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -259,7 +290,7 @@ func (c *targetVpnGatewaysRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *targetVpnGatewaysRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -283,7 +314,7 @@ func (c *targetVpnGatewaysRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *targetVpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetVpnGatewaysRequest, opts ...gax.CallOption) *TargetVpnGatewaysScopedListPairIterator {
 	it := &TargetVpnGatewaysScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListTargetVpnGatewaysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]TargetVpnGatewaysScopedListPair, string, error) {
 		resp := &computepb.TargetVpnGatewayAggregatedList{}
@@ -400,6 +431,13 @@ func (c *targetVpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/targetVpnGateways/%v", req.GetProject(), req.GetRegion(), req.GetTargetVpnGateway()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.TargetVpnGateways/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/targetVpnGateways/{target_vpn_gateway}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -453,6 +491,13 @@ func (c *targetVpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/targetVpnGateways/%v", req.GetProject(), req.GetRegion(), req.GetTargetVpnGateway()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.TargetVpnGateways/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/targetVpnGateways/{target_vpn_gateway}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TargetVpnGateway{}
@@ -513,6 +558,13 @@ func (c *targetVpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v", req.GetProject(), req.GetRegion()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.TargetVpnGateways/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/targetVpnGateways")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -556,7 +608,7 @@ func (c *targetVpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb
 // project and region.
 func (c *targetVpnGatewaysRESTClient) List(ctx context.Context, req *computepb.ListTargetVpnGatewaysRequest, opts ...gax.CallOption) *TargetVpnGatewayIterator {
 	it := &TargetVpnGatewayIterator{}
-	req = proto.Clone(req).(*computepb.ListTargetVpnGatewaysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.TargetVpnGateway, string, error) {
 		resp := &computepb.TargetVpnGatewayList{}
@@ -668,6 +720,13 @@ func (c *targetVpnGatewaysRESTClient) SetLabels(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/regions/%v/targetVpnGateways/%v", req.GetProject(), req.GetRegion(), req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.TargetVpnGateways/SetLabels")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/targetVpnGateways/{resource}/setLabels")
+	}
 	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

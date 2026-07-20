@@ -1,0 +1,2559 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.networksecurity.v1",
+  "libraryPackage": "cloud.google.com/go/networksecurity/apiv1",
+  "services": {
+    "AddressGroupService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AddressGroupClient",
+          "rpcs": {
+            "AddAddressGroupItems": {
+              "methods": [
+                "AddAddressGroupItems"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CloneAddressGroupItems": {
+              "methods": [
+                "CloneAddressGroupItems"
+              ]
+            },
+            "CreateAddressGroup": {
+              "methods": [
+                "CreateAddressGroup"
+              ]
+            },
+            "DeleteAddressGroup": {
+              "methods": [
+                "DeleteAddressGroup"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAddressGroup": {
+              "methods": [
+                "GetAddressGroup"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAddressGroupReferences": {
+              "methods": [
+                "ListAddressGroupReferences"
+              ]
+            },
+            "ListAddressGroups": {
+              "methods": [
+                "ListAddressGroups"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RemoveAddressGroupItems": {
+              "methods": [
+                "RemoveAddressGroupItems"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAddressGroup": {
+              "methods": [
+                "UpdateAddressGroup"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AddressGroupClient",
+          "rpcs": {
+            "AddAddressGroupItems": {
+              "methods": [
+                "AddAddressGroupItems"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CloneAddressGroupItems": {
+              "methods": [
+                "CloneAddressGroupItems"
+              ]
+            },
+            "CreateAddressGroup": {
+              "methods": [
+                "CreateAddressGroup"
+              ]
+            },
+            "DeleteAddressGroup": {
+              "methods": [
+                "DeleteAddressGroup"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAddressGroup": {
+              "methods": [
+                "GetAddressGroup"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAddressGroupReferences": {
+              "methods": [
+                "ListAddressGroupReferences"
+              ]
+            },
+            "ListAddressGroups": {
+              "methods": [
+                "ListAddressGroups"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RemoveAddressGroupItems": {
+              "methods": [
+                "RemoveAddressGroupItems"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAddressGroup": {
+              "methods": [
+                "UpdateAddressGroup"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "DnsThreatDetectorService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DnsThreatDetectorClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDnsThreatDetector": {
+              "methods": [
+                "CreateDnsThreatDetector"
+              ]
+            },
+            "DeleteDnsThreatDetector": {
+              "methods": [
+                "DeleteDnsThreatDetector"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDnsThreatDetector": {
+              "methods": [
+                "GetDnsThreatDetector"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDnsThreatDetectors": {
+              "methods": [
+                "ListDnsThreatDetectors"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateDnsThreatDetector": {
+              "methods": [
+                "UpdateDnsThreatDetector"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DnsThreatDetectorClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDnsThreatDetector": {
+              "methods": [
+                "CreateDnsThreatDetector"
+              ]
+            },
+            "DeleteDnsThreatDetector": {
+              "methods": [
+                "DeleteDnsThreatDetector"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDnsThreatDetector": {
+              "methods": [
+                "GetDnsThreatDetector"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDnsThreatDetectors": {
+              "methods": [
+                "ListDnsThreatDetectors"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateDnsThreatDetector": {
+              "methods": [
+                "UpdateDnsThreatDetector"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "FirewallActivation": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FirewallActivationClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateFirewallEndpoint": {
+              "methods": [
+                "CreateFirewallEndpoint"
+              ]
+            },
+            "CreateFirewallEndpointAssociation": {
+              "methods": [
+                "CreateFirewallEndpointAssociation"
+              ]
+            },
+            "CreateProjectFirewallEndpoint": {
+              "methods": [
+                "CreateProjectFirewallEndpoint"
+              ]
+            },
+            "DeleteFirewallEndpoint": {
+              "methods": [
+                "DeleteFirewallEndpoint"
+              ]
+            },
+            "DeleteFirewallEndpointAssociation": {
+              "methods": [
+                "DeleteFirewallEndpointAssociation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteProjectFirewallEndpoint": {
+              "methods": [
+                "DeleteProjectFirewallEndpoint"
+              ]
+            },
+            "GetFirewallEndpoint": {
+              "methods": [
+                "GetFirewallEndpoint"
+              ]
+            },
+            "GetFirewallEndpointAssociation": {
+              "methods": [
+                "GetFirewallEndpointAssociation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProjectFirewallEndpoint": {
+              "methods": [
+                "GetProjectFirewallEndpoint"
+              ]
+            },
+            "ListFirewallEndpointAssociations": {
+              "methods": [
+                "ListFirewallEndpointAssociations"
+              ]
+            },
+            "ListFirewallEndpoints": {
+              "methods": [
+                "ListFirewallEndpoints"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListProjectFirewallEndpoints": {
+              "methods": [
+                "ListProjectFirewallEndpoints"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFirewallEndpoint": {
+              "methods": [
+                "UpdateFirewallEndpoint"
+              ]
+            },
+            "UpdateFirewallEndpointAssociation": {
+              "methods": [
+                "UpdateFirewallEndpointAssociation"
+              ]
+            },
+            "UpdateProjectFirewallEndpoint": {
+              "methods": [
+                "UpdateProjectFirewallEndpoint"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FirewallActivationClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateFirewallEndpoint": {
+              "methods": [
+                "CreateFirewallEndpoint"
+              ]
+            },
+            "CreateFirewallEndpointAssociation": {
+              "methods": [
+                "CreateFirewallEndpointAssociation"
+              ]
+            },
+            "CreateProjectFirewallEndpoint": {
+              "methods": [
+                "CreateProjectFirewallEndpoint"
+              ]
+            },
+            "DeleteFirewallEndpoint": {
+              "methods": [
+                "DeleteFirewallEndpoint"
+              ]
+            },
+            "DeleteFirewallEndpointAssociation": {
+              "methods": [
+                "DeleteFirewallEndpointAssociation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteProjectFirewallEndpoint": {
+              "methods": [
+                "DeleteProjectFirewallEndpoint"
+              ]
+            },
+            "GetFirewallEndpoint": {
+              "methods": [
+                "GetFirewallEndpoint"
+              ]
+            },
+            "GetFirewallEndpointAssociation": {
+              "methods": [
+                "GetFirewallEndpointAssociation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProjectFirewallEndpoint": {
+              "methods": [
+                "GetProjectFirewallEndpoint"
+              ]
+            },
+            "ListFirewallEndpointAssociations": {
+              "methods": [
+                "ListFirewallEndpointAssociations"
+              ]
+            },
+            "ListFirewallEndpoints": {
+              "methods": [
+                "ListFirewallEndpoints"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListProjectFirewallEndpoints": {
+              "methods": [
+                "ListProjectFirewallEndpoints"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFirewallEndpoint": {
+              "methods": [
+                "UpdateFirewallEndpoint"
+              ]
+            },
+            "UpdateFirewallEndpointAssociation": {
+              "methods": [
+                "UpdateFirewallEndpointAssociation"
+              ]
+            },
+            "UpdateProjectFirewallEndpoint": {
+              "methods": [
+                "UpdateProjectFirewallEndpoint"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Intercept": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "InterceptClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateInterceptDeployment": {
+              "methods": [
+                "CreateInterceptDeployment"
+              ]
+            },
+            "CreateInterceptDeploymentGroup": {
+              "methods": [
+                "CreateInterceptDeploymentGroup"
+              ]
+            },
+            "CreateInterceptEndpointGroup": {
+              "methods": [
+                "CreateInterceptEndpointGroup"
+              ]
+            },
+            "CreateInterceptEndpointGroupAssociation": {
+              "methods": [
+                "CreateInterceptEndpointGroupAssociation"
+              ]
+            },
+            "DeleteInterceptDeployment": {
+              "methods": [
+                "DeleteInterceptDeployment"
+              ]
+            },
+            "DeleteInterceptDeploymentGroup": {
+              "methods": [
+                "DeleteInterceptDeploymentGroup"
+              ]
+            },
+            "DeleteInterceptEndpointGroup": {
+              "methods": [
+                "DeleteInterceptEndpointGroup"
+              ]
+            },
+            "DeleteInterceptEndpointGroupAssociation": {
+              "methods": [
+                "DeleteInterceptEndpointGroupAssociation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetInterceptDeployment": {
+              "methods": [
+                "GetInterceptDeployment"
+              ]
+            },
+            "GetInterceptDeploymentGroup": {
+              "methods": [
+                "GetInterceptDeploymentGroup"
+              ]
+            },
+            "GetInterceptEndpointGroup": {
+              "methods": [
+                "GetInterceptEndpointGroup"
+              ]
+            },
+            "GetInterceptEndpointGroupAssociation": {
+              "methods": [
+                "GetInterceptEndpointGroupAssociation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListInterceptDeploymentGroups": {
+              "methods": [
+                "ListInterceptDeploymentGroups"
+              ]
+            },
+            "ListInterceptDeployments": {
+              "methods": [
+                "ListInterceptDeployments"
+              ]
+            },
+            "ListInterceptEndpointGroupAssociations": {
+              "methods": [
+                "ListInterceptEndpointGroupAssociations"
+              ]
+            },
+            "ListInterceptEndpointGroups": {
+              "methods": [
+                "ListInterceptEndpointGroups"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateInterceptDeployment": {
+              "methods": [
+                "UpdateInterceptDeployment"
+              ]
+            },
+            "UpdateInterceptDeploymentGroup": {
+              "methods": [
+                "UpdateInterceptDeploymentGroup"
+              ]
+            },
+            "UpdateInterceptEndpointGroup": {
+              "methods": [
+                "UpdateInterceptEndpointGroup"
+              ]
+            },
+            "UpdateInterceptEndpointGroupAssociation": {
+              "methods": [
+                "UpdateInterceptEndpointGroupAssociation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "InterceptClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateInterceptDeployment": {
+              "methods": [
+                "CreateInterceptDeployment"
+              ]
+            },
+            "CreateInterceptDeploymentGroup": {
+              "methods": [
+                "CreateInterceptDeploymentGroup"
+              ]
+            },
+            "CreateInterceptEndpointGroup": {
+              "methods": [
+                "CreateInterceptEndpointGroup"
+              ]
+            },
+            "CreateInterceptEndpointGroupAssociation": {
+              "methods": [
+                "CreateInterceptEndpointGroupAssociation"
+              ]
+            },
+            "DeleteInterceptDeployment": {
+              "methods": [
+                "DeleteInterceptDeployment"
+              ]
+            },
+            "DeleteInterceptDeploymentGroup": {
+              "methods": [
+                "DeleteInterceptDeploymentGroup"
+              ]
+            },
+            "DeleteInterceptEndpointGroup": {
+              "methods": [
+                "DeleteInterceptEndpointGroup"
+              ]
+            },
+            "DeleteInterceptEndpointGroupAssociation": {
+              "methods": [
+                "DeleteInterceptEndpointGroupAssociation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetInterceptDeployment": {
+              "methods": [
+                "GetInterceptDeployment"
+              ]
+            },
+            "GetInterceptDeploymentGroup": {
+              "methods": [
+                "GetInterceptDeploymentGroup"
+              ]
+            },
+            "GetInterceptEndpointGroup": {
+              "methods": [
+                "GetInterceptEndpointGroup"
+              ]
+            },
+            "GetInterceptEndpointGroupAssociation": {
+              "methods": [
+                "GetInterceptEndpointGroupAssociation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListInterceptDeploymentGroups": {
+              "methods": [
+                "ListInterceptDeploymentGroups"
+              ]
+            },
+            "ListInterceptDeployments": {
+              "methods": [
+                "ListInterceptDeployments"
+              ]
+            },
+            "ListInterceptEndpointGroupAssociations": {
+              "methods": [
+                "ListInterceptEndpointGroupAssociations"
+              ]
+            },
+            "ListInterceptEndpointGroups": {
+              "methods": [
+                "ListInterceptEndpointGroups"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateInterceptDeployment": {
+              "methods": [
+                "UpdateInterceptDeployment"
+              ]
+            },
+            "UpdateInterceptDeploymentGroup": {
+              "methods": [
+                "UpdateInterceptDeploymentGroup"
+              ]
+            },
+            "UpdateInterceptEndpointGroup": {
+              "methods": [
+                "UpdateInterceptEndpointGroup"
+              ]
+            },
+            "UpdateInterceptEndpointGroupAssociation": {
+              "methods": [
+                "UpdateInterceptEndpointGroupAssociation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Mirroring": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "MirroringClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateMirroringDeployment": {
+              "methods": [
+                "CreateMirroringDeployment"
+              ]
+            },
+            "CreateMirroringDeploymentGroup": {
+              "methods": [
+                "CreateMirroringDeploymentGroup"
+              ]
+            },
+            "CreateMirroringEndpointGroup": {
+              "methods": [
+                "CreateMirroringEndpointGroup"
+              ]
+            },
+            "CreateMirroringEndpointGroupAssociation": {
+              "methods": [
+                "CreateMirroringEndpointGroupAssociation"
+              ]
+            },
+            "DeleteMirroringDeployment": {
+              "methods": [
+                "DeleteMirroringDeployment"
+              ]
+            },
+            "DeleteMirroringDeploymentGroup": {
+              "methods": [
+                "DeleteMirroringDeploymentGroup"
+              ]
+            },
+            "DeleteMirroringEndpointGroup": {
+              "methods": [
+                "DeleteMirroringEndpointGroup"
+              ]
+            },
+            "DeleteMirroringEndpointGroupAssociation": {
+              "methods": [
+                "DeleteMirroringEndpointGroupAssociation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetMirroringDeployment": {
+              "methods": [
+                "GetMirroringDeployment"
+              ]
+            },
+            "GetMirroringDeploymentGroup": {
+              "methods": [
+                "GetMirroringDeploymentGroup"
+              ]
+            },
+            "GetMirroringEndpointGroup": {
+              "methods": [
+                "GetMirroringEndpointGroup"
+              ]
+            },
+            "GetMirroringEndpointGroupAssociation": {
+              "methods": [
+                "GetMirroringEndpointGroupAssociation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListMirroringDeploymentGroups": {
+              "methods": [
+                "ListMirroringDeploymentGroups"
+              ]
+            },
+            "ListMirroringDeployments": {
+              "methods": [
+                "ListMirroringDeployments"
+              ]
+            },
+            "ListMirroringEndpointGroupAssociations": {
+              "methods": [
+                "ListMirroringEndpointGroupAssociations"
+              ]
+            },
+            "ListMirroringEndpointGroups": {
+              "methods": [
+                "ListMirroringEndpointGroups"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateMirroringDeployment": {
+              "methods": [
+                "UpdateMirroringDeployment"
+              ]
+            },
+            "UpdateMirroringDeploymentGroup": {
+              "methods": [
+                "UpdateMirroringDeploymentGroup"
+              ]
+            },
+            "UpdateMirroringEndpointGroup": {
+              "methods": [
+                "UpdateMirroringEndpointGroup"
+              ]
+            },
+            "UpdateMirroringEndpointGroupAssociation": {
+              "methods": [
+                "UpdateMirroringEndpointGroupAssociation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "MirroringClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateMirroringDeployment": {
+              "methods": [
+                "CreateMirroringDeployment"
+              ]
+            },
+            "CreateMirroringDeploymentGroup": {
+              "methods": [
+                "CreateMirroringDeploymentGroup"
+              ]
+            },
+            "CreateMirroringEndpointGroup": {
+              "methods": [
+                "CreateMirroringEndpointGroup"
+              ]
+            },
+            "CreateMirroringEndpointGroupAssociation": {
+              "methods": [
+                "CreateMirroringEndpointGroupAssociation"
+              ]
+            },
+            "DeleteMirroringDeployment": {
+              "methods": [
+                "DeleteMirroringDeployment"
+              ]
+            },
+            "DeleteMirroringDeploymentGroup": {
+              "methods": [
+                "DeleteMirroringDeploymentGroup"
+              ]
+            },
+            "DeleteMirroringEndpointGroup": {
+              "methods": [
+                "DeleteMirroringEndpointGroup"
+              ]
+            },
+            "DeleteMirroringEndpointGroupAssociation": {
+              "methods": [
+                "DeleteMirroringEndpointGroupAssociation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetMirroringDeployment": {
+              "methods": [
+                "GetMirroringDeployment"
+              ]
+            },
+            "GetMirroringDeploymentGroup": {
+              "methods": [
+                "GetMirroringDeploymentGroup"
+              ]
+            },
+            "GetMirroringEndpointGroup": {
+              "methods": [
+                "GetMirroringEndpointGroup"
+              ]
+            },
+            "GetMirroringEndpointGroupAssociation": {
+              "methods": [
+                "GetMirroringEndpointGroupAssociation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListMirroringDeploymentGroups": {
+              "methods": [
+                "ListMirroringDeploymentGroups"
+              ]
+            },
+            "ListMirroringDeployments": {
+              "methods": [
+                "ListMirroringDeployments"
+              ]
+            },
+            "ListMirroringEndpointGroupAssociations": {
+              "methods": [
+                "ListMirroringEndpointGroupAssociations"
+              ]
+            },
+            "ListMirroringEndpointGroups": {
+              "methods": [
+                "ListMirroringEndpointGroups"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateMirroringDeployment": {
+              "methods": [
+                "UpdateMirroringDeployment"
+              ]
+            },
+            "UpdateMirroringDeploymentGroup": {
+              "methods": [
+                "UpdateMirroringDeploymentGroup"
+              ]
+            },
+            "UpdateMirroringEndpointGroup": {
+              "methods": [
+                "UpdateMirroringEndpointGroup"
+              ]
+            },
+            "UpdateMirroringEndpointGroupAssociation": {
+              "methods": [
+                "UpdateMirroringEndpointGroupAssociation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "NetworkSecurity": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAuthorizationPolicy": {
+              "methods": [
+                "CreateAuthorizationPolicy"
+              ]
+            },
+            "CreateAuthzPolicy": {
+              "methods": [
+                "CreateAuthzPolicy"
+              ]
+            },
+            "CreateBackendAuthenticationConfig": {
+              "methods": [
+                "CreateBackendAuthenticationConfig"
+              ]
+            },
+            "CreateClientTlsPolicy": {
+              "methods": [
+                "CreateClientTlsPolicy"
+              ]
+            },
+            "CreateGatewaySecurityPolicy": {
+              "methods": [
+                "CreateGatewaySecurityPolicy"
+              ]
+            },
+            "CreateGatewaySecurityPolicyRule": {
+              "methods": [
+                "CreateGatewaySecurityPolicyRule"
+              ]
+            },
+            "CreateServerTlsPolicy": {
+              "methods": [
+                "CreateServerTlsPolicy"
+              ]
+            },
+            "CreateTlsInspectionPolicy": {
+              "methods": [
+                "CreateTlsInspectionPolicy"
+              ]
+            },
+            "CreateUrlList": {
+              "methods": [
+                "CreateUrlList"
+              ]
+            },
+            "DeleteAuthorizationPolicy": {
+              "methods": [
+                "DeleteAuthorizationPolicy"
+              ]
+            },
+            "DeleteAuthzPolicy": {
+              "methods": [
+                "DeleteAuthzPolicy"
+              ]
+            },
+            "DeleteBackendAuthenticationConfig": {
+              "methods": [
+                "DeleteBackendAuthenticationConfig"
+              ]
+            },
+            "DeleteClientTlsPolicy": {
+              "methods": [
+                "DeleteClientTlsPolicy"
+              ]
+            },
+            "DeleteGatewaySecurityPolicy": {
+              "methods": [
+                "DeleteGatewaySecurityPolicy"
+              ]
+            },
+            "DeleteGatewaySecurityPolicyRule": {
+              "methods": [
+                "DeleteGatewaySecurityPolicyRule"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteServerTlsPolicy": {
+              "methods": [
+                "DeleteServerTlsPolicy"
+              ]
+            },
+            "DeleteTlsInspectionPolicy": {
+              "methods": [
+                "DeleteTlsInspectionPolicy"
+              ]
+            },
+            "DeleteUrlList": {
+              "methods": [
+                "DeleteUrlList"
+              ]
+            },
+            "GetAuthorizationPolicy": {
+              "methods": [
+                "GetAuthorizationPolicy"
+              ]
+            },
+            "GetAuthzPolicy": {
+              "methods": [
+                "GetAuthzPolicy"
+              ]
+            },
+            "GetBackendAuthenticationConfig": {
+              "methods": [
+                "GetBackendAuthenticationConfig"
+              ]
+            },
+            "GetClientTlsPolicy": {
+              "methods": [
+                "GetClientTlsPolicy"
+              ]
+            },
+            "GetGatewaySecurityPolicy": {
+              "methods": [
+                "GetGatewaySecurityPolicy"
+              ]
+            },
+            "GetGatewaySecurityPolicyRule": {
+              "methods": [
+                "GetGatewaySecurityPolicyRule"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetServerTlsPolicy": {
+              "methods": [
+                "GetServerTlsPolicy"
+              ]
+            },
+            "GetTlsInspectionPolicy": {
+              "methods": [
+                "GetTlsInspectionPolicy"
+              ]
+            },
+            "GetUrlList": {
+              "methods": [
+                "GetUrlList"
+              ]
+            },
+            "ListAuthorizationPolicies": {
+              "methods": [
+                "ListAuthorizationPolicies"
+              ]
+            },
+            "ListAuthzPolicies": {
+              "methods": [
+                "ListAuthzPolicies"
+              ]
+            },
+            "ListBackendAuthenticationConfigs": {
+              "methods": [
+                "ListBackendAuthenticationConfigs"
+              ]
+            },
+            "ListClientTlsPolicies": {
+              "methods": [
+                "ListClientTlsPolicies"
+              ]
+            },
+            "ListGatewaySecurityPolicies": {
+              "methods": [
+                "ListGatewaySecurityPolicies"
+              ]
+            },
+            "ListGatewaySecurityPolicyRules": {
+              "methods": [
+                "ListGatewaySecurityPolicyRules"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServerTlsPolicies": {
+              "methods": [
+                "ListServerTlsPolicies"
+              ]
+            },
+            "ListTlsInspectionPolicies": {
+              "methods": [
+                "ListTlsInspectionPolicies"
+              ]
+            },
+            "ListUrlLists": {
+              "methods": [
+                "ListUrlLists"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAuthorizationPolicy": {
+              "methods": [
+                "UpdateAuthorizationPolicy"
+              ]
+            },
+            "UpdateAuthzPolicy": {
+              "methods": [
+                "UpdateAuthzPolicy"
+              ]
+            },
+            "UpdateBackendAuthenticationConfig": {
+              "methods": [
+                "UpdateBackendAuthenticationConfig"
+              ]
+            },
+            "UpdateClientTlsPolicy": {
+              "methods": [
+                "UpdateClientTlsPolicy"
+              ]
+            },
+            "UpdateGatewaySecurityPolicy": {
+              "methods": [
+                "UpdateGatewaySecurityPolicy"
+              ]
+            },
+            "UpdateGatewaySecurityPolicyRule": {
+              "methods": [
+                "UpdateGatewaySecurityPolicyRule"
+              ]
+            },
+            "UpdateServerTlsPolicy": {
+              "methods": [
+                "UpdateServerTlsPolicy"
+              ]
+            },
+            "UpdateTlsInspectionPolicy": {
+              "methods": [
+                "UpdateTlsInspectionPolicy"
+              ]
+            },
+            "UpdateUrlList": {
+              "methods": [
+                "UpdateUrlList"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAuthorizationPolicy": {
+              "methods": [
+                "CreateAuthorizationPolicy"
+              ]
+            },
+            "CreateAuthzPolicy": {
+              "methods": [
+                "CreateAuthzPolicy"
+              ]
+            },
+            "CreateBackendAuthenticationConfig": {
+              "methods": [
+                "CreateBackendAuthenticationConfig"
+              ]
+            },
+            "CreateClientTlsPolicy": {
+              "methods": [
+                "CreateClientTlsPolicy"
+              ]
+            },
+            "CreateGatewaySecurityPolicy": {
+              "methods": [
+                "CreateGatewaySecurityPolicy"
+              ]
+            },
+            "CreateGatewaySecurityPolicyRule": {
+              "methods": [
+                "CreateGatewaySecurityPolicyRule"
+              ]
+            },
+            "CreateServerTlsPolicy": {
+              "methods": [
+                "CreateServerTlsPolicy"
+              ]
+            },
+            "CreateTlsInspectionPolicy": {
+              "methods": [
+                "CreateTlsInspectionPolicy"
+              ]
+            },
+            "CreateUrlList": {
+              "methods": [
+                "CreateUrlList"
+              ]
+            },
+            "DeleteAuthorizationPolicy": {
+              "methods": [
+                "DeleteAuthorizationPolicy"
+              ]
+            },
+            "DeleteAuthzPolicy": {
+              "methods": [
+                "DeleteAuthzPolicy"
+              ]
+            },
+            "DeleteBackendAuthenticationConfig": {
+              "methods": [
+                "DeleteBackendAuthenticationConfig"
+              ]
+            },
+            "DeleteClientTlsPolicy": {
+              "methods": [
+                "DeleteClientTlsPolicy"
+              ]
+            },
+            "DeleteGatewaySecurityPolicy": {
+              "methods": [
+                "DeleteGatewaySecurityPolicy"
+              ]
+            },
+            "DeleteGatewaySecurityPolicyRule": {
+              "methods": [
+                "DeleteGatewaySecurityPolicyRule"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteServerTlsPolicy": {
+              "methods": [
+                "DeleteServerTlsPolicy"
+              ]
+            },
+            "DeleteTlsInspectionPolicy": {
+              "methods": [
+                "DeleteTlsInspectionPolicy"
+              ]
+            },
+            "DeleteUrlList": {
+              "methods": [
+                "DeleteUrlList"
+              ]
+            },
+            "GetAuthorizationPolicy": {
+              "methods": [
+                "GetAuthorizationPolicy"
+              ]
+            },
+            "GetAuthzPolicy": {
+              "methods": [
+                "GetAuthzPolicy"
+              ]
+            },
+            "GetBackendAuthenticationConfig": {
+              "methods": [
+                "GetBackendAuthenticationConfig"
+              ]
+            },
+            "GetClientTlsPolicy": {
+              "methods": [
+                "GetClientTlsPolicy"
+              ]
+            },
+            "GetGatewaySecurityPolicy": {
+              "methods": [
+                "GetGatewaySecurityPolicy"
+              ]
+            },
+            "GetGatewaySecurityPolicyRule": {
+              "methods": [
+                "GetGatewaySecurityPolicyRule"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetServerTlsPolicy": {
+              "methods": [
+                "GetServerTlsPolicy"
+              ]
+            },
+            "GetTlsInspectionPolicy": {
+              "methods": [
+                "GetTlsInspectionPolicy"
+              ]
+            },
+            "GetUrlList": {
+              "methods": [
+                "GetUrlList"
+              ]
+            },
+            "ListAuthorizationPolicies": {
+              "methods": [
+                "ListAuthorizationPolicies"
+              ]
+            },
+            "ListAuthzPolicies": {
+              "methods": [
+                "ListAuthzPolicies"
+              ]
+            },
+            "ListBackendAuthenticationConfigs": {
+              "methods": [
+                "ListBackendAuthenticationConfigs"
+              ]
+            },
+            "ListClientTlsPolicies": {
+              "methods": [
+                "ListClientTlsPolicies"
+              ]
+            },
+            "ListGatewaySecurityPolicies": {
+              "methods": [
+                "ListGatewaySecurityPolicies"
+              ]
+            },
+            "ListGatewaySecurityPolicyRules": {
+              "methods": [
+                "ListGatewaySecurityPolicyRules"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServerTlsPolicies": {
+              "methods": [
+                "ListServerTlsPolicies"
+              ]
+            },
+            "ListTlsInspectionPolicies": {
+              "methods": [
+                "ListTlsInspectionPolicies"
+              ]
+            },
+            "ListUrlLists": {
+              "methods": [
+                "ListUrlLists"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAuthorizationPolicy": {
+              "methods": [
+                "UpdateAuthorizationPolicy"
+              ]
+            },
+            "UpdateAuthzPolicy": {
+              "methods": [
+                "UpdateAuthzPolicy"
+              ]
+            },
+            "UpdateBackendAuthenticationConfig": {
+              "methods": [
+                "UpdateBackendAuthenticationConfig"
+              ]
+            },
+            "UpdateClientTlsPolicy": {
+              "methods": [
+                "UpdateClientTlsPolicy"
+              ]
+            },
+            "UpdateGatewaySecurityPolicy": {
+              "methods": [
+                "UpdateGatewaySecurityPolicy"
+              ]
+            },
+            "UpdateGatewaySecurityPolicyRule": {
+              "methods": [
+                "UpdateGatewaySecurityPolicyRule"
+              ]
+            },
+            "UpdateServerTlsPolicy": {
+              "methods": [
+                "UpdateServerTlsPolicy"
+              ]
+            },
+            "UpdateTlsInspectionPolicy": {
+              "methods": [
+                "UpdateTlsInspectionPolicy"
+              ]
+            },
+            "UpdateUrlList": {
+              "methods": [
+                "UpdateUrlList"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "OrganizationAddressGroupService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "OrganizationAddressGroupClient",
+          "rpcs": {
+            "AddAddressGroupItems": {
+              "methods": [
+                "AddAddressGroupItems"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CloneAddressGroupItems": {
+              "methods": [
+                "CloneAddressGroupItems"
+              ]
+            },
+            "CreateAddressGroup": {
+              "methods": [
+                "CreateAddressGroup"
+              ]
+            },
+            "DeleteAddressGroup": {
+              "methods": [
+                "DeleteAddressGroup"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAddressGroup": {
+              "methods": [
+                "GetAddressGroup"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAddressGroupReferences": {
+              "methods": [
+                "ListAddressGroupReferences"
+              ]
+            },
+            "ListAddressGroups": {
+              "methods": [
+                "ListAddressGroups"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RemoveAddressGroupItems": {
+              "methods": [
+                "RemoveAddressGroupItems"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAddressGroup": {
+              "methods": [
+                "UpdateAddressGroup"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "OrganizationAddressGroupClient",
+          "rpcs": {
+            "AddAddressGroupItems": {
+              "methods": [
+                "AddAddressGroupItems"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CloneAddressGroupItems": {
+              "methods": [
+                "CloneAddressGroupItems"
+              ]
+            },
+            "CreateAddressGroup": {
+              "methods": [
+                "CreateAddressGroup"
+              ]
+            },
+            "DeleteAddressGroup": {
+              "methods": [
+                "DeleteAddressGroup"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAddressGroup": {
+              "methods": [
+                "GetAddressGroup"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAddressGroupReferences": {
+              "methods": [
+                "ListAddressGroupReferences"
+              ]
+            },
+            "ListAddressGroups": {
+              "methods": [
+                "ListAddressGroups"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RemoveAddressGroupItems": {
+              "methods": [
+                "RemoveAddressGroupItems"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAddressGroup": {
+              "methods": [
+                "UpdateAddressGroup"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "OrganizationSecurityProfileGroupService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "OrganizationSecurityProfileGroupClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSecurityProfile": {
+              "methods": [
+                "CreateSecurityProfile"
+              ]
+            },
+            "CreateSecurityProfileGroup": {
+              "methods": [
+                "CreateSecurityProfileGroup"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSecurityProfile": {
+              "methods": [
+                "DeleteSecurityProfile"
+              ]
+            },
+            "DeleteSecurityProfileGroup": {
+              "methods": [
+                "DeleteSecurityProfileGroup"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSecurityProfile": {
+              "methods": [
+                "GetSecurityProfile"
+              ]
+            },
+            "GetSecurityProfileGroup": {
+              "methods": [
+                "GetSecurityProfileGroup"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSecurityProfileGroups": {
+              "methods": [
+                "ListSecurityProfileGroups"
+              ]
+            },
+            "ListSecurityProfiles": {
+              "methods": [
+                "ListSecurityProfiles"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateSecurityProfile": {
+              "methods": [
+                "UpdateSecurityProfile"
+              ]
+            },
+            "UpdateSecurityProfileGroup": {
+              "methods": [
+                "UpdateSecurityProfileGroup"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "OrganizationSecurityProfileGroupClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSecurityProfile": {
+              "methods": [
+                "CreateSecurityProfile"
+              ]
+            },
+            "CreateSecurityProfileGroup": {
+              "methods": [
+                "CreateSecurityProfileGroup"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSecurityProfile": {
+              "methods": [
+                "DeleteSecurityProfile"
+              ]
+            },
+            "DeleteSecurityProfileGroup": {
+              "methods": [
+                "DeleteSecurityProfileGroup"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSecurityProfile": {
+              "methods": [
+                "GetSecurityProfile"
+              ]
+            },
+            "GetSecurityProfileGroup": {
+              "methods": [
+                "GetSecurityProfileGroup"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSecurityProfileGroups": {
+              "methods": [
+                "ListSecurityProfileGroups"
+              ]
+            },
+            "ListSecurityProfiles": {
+              "methods": [
+                "ListSecurityProfiles"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateSecurityProfile": {
+              "methods": [
+                "UpdateSecurityProfile"
+              ]
+            },
+            "UpdateSecurityProfileGroup": {
+              "methods": [
+                "UpdateSecurityProfileGroup"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SSERealmService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SSERealmClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSACAttachment": {
+              "methods": [
+                "CreateSACAttachment"
+              ]
+            },
+            "CreateSACRealm": {
+              "methods": [
+                "CreateSACRealm"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSACAttachment": {
+              "methods": [
+                "DeleteSACAttachment"
+              ]
+            },
+            "DeleteSACRealm": {
+              "methods": [
+                "DeleteSACRealm"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSACAttachment": {
+              "methods": [
+                "GetSACAttachment"
+              ]
+            },
+            "GetSACRealm": {
+              "methods": [
+                "GetSACRealm"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSACAttachments": {
+              "methods": [
+                "ListSACAttachments"
+              ]
+            },
+            "ListSACRealms": {
+              "methods": [
+                "ListSACRealms"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SSERealmClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSACAttachment": {
+              "methods": [
+                "CreateSACAttachment"
+              ]
+            },
+            "CreateSACRealm": {
+              "methods": [
+                "CreateSACRealm"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSACAttachment": {
+              "methods": [
+                "DeleteSACAttachment"
+              ]
+            },
+            "DeleteSACRealm": {
+              "methods": [
+                "DeleteSACRealm"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSACAttachment": {
+              "methods": [
+                "GetSACAttachment"
+              ]
+            },
+            "GetSACRealm": {
+              "methods": [
+                "GetSACRealm"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSACAttachments": {
+              "methods": [
+                "ListSACAttachments"
+              ]
+            },
+            "ListSACRealms": {
+              "methods": [
+                "ListSACRealms"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SecurityProfileGroupService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SecurityProfileGroupClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSecurityProfile": {
+              "methods": [
+                "CreateSecurityProfile"
+              ]
+            },
+            "CreateSecurityProfileGroup": {
+              "methods": [
+                "CreateSecurityProfileGroup"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSecurityProfile": {
+              "methods": [
+                "DeleteSecurityProfile"
+              ]
+            },
+            "DeleteSecurityProfileGroup": {
+              "methods": [
+                "DeleteSecurityProfileGroup"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSecurityProfile": {
+              "methods": [
+                "GetSecurityProfile"
+              ]
+            },
+            "GetSecurityProfileGroup": {
+              "methods": [
+                "GetSecurityProfileGroup"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSecurityProfileGroups": {
+              "methods": [
+                "ListSecurityProfileGroups"
+              ]
+            },
+            "ListSecurityProfiles": {
+              "methods": [
+                "ListSecurityProfiles"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateSecurityProfile": {
+              "methods": [
+                "UpdateSecurityProfile"
+              ]
+            },
+            "UpdateSecurityProfileGroup": {
+              "methods": [
+                "UpdateSecurityProfileGroup"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SecurityProfileGroupClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSecurityProfile": {
+              "methods": [
+                "CreateSecurityProfile"
+              ]
+            },
+            "CreateSecurityProfileGroup": {
+              "methods": [
+                "CreateSecurityProfileGroup"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSecurityProfile": {
+              "methods": [
+                "DeleteSecurityProfile"
+              ]
+            },
+            "DeleteSecurityProfileGroup": {
+              "methods": [
+                "DeleteSecurityProfileGroup"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSecurityProfile": {
+              "methods": [
+                "GetSecurityProfile"
+              ]
+            },
+            "GetSecurityProfileGroup": {
+              "methods": [
+                "GetSecurityProfileGroup"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSecurityProfileGroups": {
+              "methods": [
+                "ListSecurityProfileGroups"
+              ]
+            },
+            "ListSecurityProfiles": {
+              "methods": [
+                "ListSecurityProfiles"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateSecurityProfile": {
+              "methods": [
+                "UpdateSecurityProfile"
+              ]
+            },
+            "UpdateSecurityProfileGroup": {
+              "methods": [
+                "UpdateSecurityProfileGroup"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

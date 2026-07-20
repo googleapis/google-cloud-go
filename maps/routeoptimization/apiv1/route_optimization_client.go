@@ -31,6 +31,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	routeoptimizationpb "cloud.google.com/go/maps/routeoptimization/apiv1/routeoptimizationpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -167,7 +169,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -368,6 +370,16 @@ type gRPCClient struct {
 //	  at least one of latitude and longitude must be non-zero.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "routeoptimization",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/routeoptimization/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "routeoptimization.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -390,6 +402,24 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "routeoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routeoptimization/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "routeoptimization.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.OptimizeTours = append(client.CallOptions.OptimizeTours, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchOptimizeTours = append(client.CallOptions.BatchOptimizeTours, gax.WithClientMetrics(metrics))
+		client.CallOptions.OptimizeToursLongRunning = append(client.CallOptions.OptimizeToursLongRunning, gax.WithClientMetrics(metrics))
+		client.CallOptions.OptimizeToursUri = append(client.CallOptions.OptimizeToursUri, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -426,7 +456,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -485,6 +515,16 @@ type restClient struct {
 //	  at least one of latitude and longitude must be non-zero.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "routeoptimization",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/routeoptimization/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "routeoptimization.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -498,6 +538,25 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "routeoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/routeoptimization/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "routeoptimization.googleapis.com",
+			}),
+		)
+
+		callOpts.OptimizeTours = append(callOpts.OptimizeTours, gax.WithClientMetrics(metrics))
+		callOpts.BatchOptimizeTours = append(callOpts.BatchOptimizeTours, gax.WithClientMetrics(metrics))
+		callOpts.OptimizeToursLongRunning = append(callOpts.OptimizeToursLongRunning, gax.WithClientMetrics(metrics))
+		callOpts.OptimizeToursUri = append(callOpts.OptimizeToursUri, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -535,7 +594,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -554,6 +613,9 @@ func (c *gRPCClient) OptimizeTours(ctx context.Context, req *routeoptimizationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.routeoptimization.v1.RouteOptimization/OptimizeTours")
+	}
 	opts = append((*c.CallOptions).OptimizeTours[0:len((*c.CallOptions).OptimizeTours):len((*c.CallOptions).OptimizeTours)], opts...)
 	var resp *routeoptimizationpb.OptimizeToursResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -572,6 +634,9 @@ func (c *gRPCClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.routeoptimization.v1.RouteOptimization/BatchOptimizeTours")
+	}
 	opts = append((*c.CallOptions).BatchOptimizeTours[0:len((*c.CallOptions).BatchOptimizeTours):len((*c.CallOptions).BatchOptimizeTours)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -582,8 +647,12 @@ func (c *gRPCClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*routeoptimization.BatchOptimizeToursOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchOptimizeToursOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -592,6 +661,9 @@ func (c *gRPCClient) OptimizeToursLongRunning(ctx context.Context, req *routeopt
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.routeoptimization.v1.RouteOptimization/OptimizeToursLongRunning")
+	}
 	opts = append((*c.CallOptions).OptimizeToursLongRunning[0:len((*c.CallOptions).OptimizeToursLongRunning):len((*c.CallOptions).OptimizeToursLongRunning)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -602,8 +674,12 @@ func (c *gRPCClient) OptimizeToursLongRunning(ctx context.Context, req *routeopt
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*routeoptimization.OptimizeToursLongRunningOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &OptimizeToursLongRunningOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -612,6 +688,9 @@ func (c *gRPCClient) OptimizeToursUri(ctx context.Context, req *routeoptimizatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.routeoptimization.v1.RouteOptimization/OptimizeToursUri")
+	}
 	opts = append((*c.CallOptions).OptimizeToursUri[0:len((*c.CallOptions).OptimizeToursUri):len((*c.CallOptions).OptimizeToursUri)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -622,8 +701,12 @@ func (c *gRPCClient) OptimizeToursUri(ctx context.Context, req *routeoptimizatio
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*routeoptimization.OptimizeToursUriOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &OptimizeToursUriOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -632,6 +715,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -683,6 +769,10 @@ func (c *restClient) OptimizeTours(ctx context.Context, req *routeoptimizationpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.routeoptimization.v1.RouteOptimization/OptimizeTours")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}:optimizeTours")
+	}
 	opts = append((*c.CallOptions).OptimizeTours[0:len((*c.CallOptions).OptimizeTours):len((*c.CallOptions).OptimizeTours)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &routeoptimizationpb.OptimizeToursResponse{}
@@ -760,6 +850,10 @@ func (c *restClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.routeoptimization.v1.RouteOptimization/BatchOptimizeTours")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}:batchOptimizeTours")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -788,8 +882,12 @@ func (c *restClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*routeoptimization.BatchOptimizeToursOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchOptimizeToursOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -838,6 +936,10 @@ func (c *restClient) OptimizeToursLongRunning(ctx context.Context, req *routeopt
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.routeoptimization.v1.RouteOptimization/OptimizeToursLongRunning")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}:optimizeToursLongRunning")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -866,8 +968,12 @@ func (c *restClient) OptimizeToursLongRunning(ctx context.Context, req *routeopt
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*routeoptimization.OptimizeToursLongRunningOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &OptimizeToursLongRunningOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -923,6 +1029,10 @@ func (c *restClient) OptimizeToursUri(ctx context.Context, req *routeoptimizatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.routeoptimization.v1.RouteOptimization/OptimizeToursUri")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}:OptimizeToursUri")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -951,8 +1061,12 @@ func (c *restClient) OptimizeToursUri(ctx context.Context, req *routeoptimizatio
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*routeoptimization.OptimizeToursUriOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &OptimizeToursUriOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -976,6 +1090,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1011,7 +1129,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // The name must be that of a previously created BatchOptimizeToursOperation, possibly from a different process.
 func (c *gRPCClient) BatchOptimizeToursOperation(name string) *BatchOptimizeToursOperation {
 	return &BatchOptimizeToursOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*routeoptimization.BatchOptimizeToursOperation"),
 	}
 }
 
@@ -1020,7 +1138,7 @@ func (c *gRPCClient) BatchOptimizeToursOperation(name string) *BatchOptimizeTour
 func (c *restClient) BatchOptimizeToursOperation(name string) *BatchOptimizeToursOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BatchOptimizeToursOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*routeoptimization.BatchOptimizeToursOperation"),
 		pollPath: override,
 	}
 }
@@ -1029,7 +1147,7 @@ func (c *restClient) BatchOptimizeToursOperation(name string) *BatchOptimizeTour
 // The name must be that of a previously created OptimizeToursLongRunningOperation, possibly from a different process.
 func (c *gRPCClient) OptimizeToursLongRunningOperation(name string) *OptimizeToursLongRunningOperation {
 	return &OptimizeToursLongRunningOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*routeoptimization.OptimizeToursLongRunningOperation"),
 	}
 }
 
@@ -1038,7 +1156,7 @@ func (c *gRPCClient) OptimizeToursLongRunningOperation(name string) *OptimizeTou
 func (c *restClient) OptimizeToursLongRunningOperation(name string) *OptimizeToursLongRunningOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &OptimizeToursLongRunningOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*routeoptimization.OptimizeToursLongRunningOperation"),
 		pollPath: override,
 	}
 }
@@ -1047,7 +1165,7 @@ func (c *restClient) OptimizeToursLongRunningOperation(name string) *OptimizeTou
 // The name must be that of a previously created OptimizeToursUriOperation, possibly from a different process.
 func (c *gRPCClient) OptimizeToursUriOperation(name string) *OptimizeToursUriOperation {
 	return &OptimizeToursUriOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*routeoptimization.OptimizeToursUriOperation"),
 	}
 }
 
@@ -1056,7 +1174,7 @@ func (c *gRPCClient) OptimizeToursUriOperation(name string) *OptimizeToursUriOpe
 func (c *restClient) OptimizeToursUriOperation(name string) *OptimizeToursUriOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &OptimizeToursUriOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*routeoptimization.OptimizeToursUriOperation"),
 		pollPath: override,
 	}
 }

@@ -42,6 +42,7 @@ const (
 	stageNameRemoveFields    = "remove_fields"
 	stageNameReplaceWith     = "replace_with"
 	stageNameSample          = "sample"
+	stageNameSearch          = "search"
 	stageNameSelect          = "select"
 	stageNameSort            = "sort"
 	stageNameUnion           = "union"
@@ -156,6 +157,9 @@ func (s *inputStageDocuments) name() string { return stageNameDocuments }
 func (s *inputStageDocuments) toProto() (*pb.Pipeline_Stage, error) {
 	args := make([]*pb.Value, len(s.refs))
 	for i, ref := range s.refs {
+		if ref == nil {
+			return nil, fmt.Errorf("firestore: inputStageDocuments contains nil reference")
+		}
 		args[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/" + ref.shortPath}}
 	}
 	optionsPb, err := stageOptionsToProto(s.options)
@@ -381,6 +385,9 @@ func (s *findNearestStage) toProto() (*pb.Pipeline_Stage, error) {
 	default:
 		return nil, errInvalidArg("FindNearest", s.vectorField, "string", "FieldPath", "Expression")
 	}
+	if propertyExpr == nil {
+		return nil, fmt.Errorf("firestore: internal error: findNearestStage vectorField resolved to nil expression")
+	}
 	propPb, err := propertyExpr.toProto()
 	if err != nil {
 		return nil, err
@@ -494,6 +501,9 @@ func (s *removeFieldsStage) toProto() (*pb.Pipeline_Stage, error) {
 	}
 	args := make([]*pb.Value, len(fields))
 	for i, f := range fields {
+		if f == nil {
+			return nil, fmt.Errorf("firestore: internal error: removeFieldsStage contains nil expression")
+		}
 		pb, err := f.toProto()
 		if err != nil {
 			return nil, err
@@ -531,6 +541,9 @@ func (s *replaceWithStage) toProto() (*pb.Pipeline_Stage, error) {
 		expr = v
 	default:
 		return nil, errInvalidArg("ReplaceWith", s.fieldpathOrExpr, "string", "FieldPath", "Expression")
+	}
+	if expr == nil {
+		return nil, fmt.Errorf("firestore: internal error: replaceWithStage fieldpathOrExpr resolved to nil expression")
 	}
 	exprPb, err := expr.toProto()
 	if err != nil {
@@ -580,6 +593,143 @@ func (s *sampleStage) toProto() (*pb.Pipeline_Stage, error) {
 	}, nil
 }
 
+type searchStage struct {
+	options map[string]any
+}
+
+func newSearchStage(options map[string]any) (*searchStage, error) {
+	return &searchStage{options: options}, nil
+}
+func (s *searchStage) name() string { return stageNameSearch }
+func (s *searchStage) toProto() (*pb.Pipeline_Stage, error) {
+	if len(s.options) == 0 {
+		return &pb.Pipeline_Stage{
+			Name: s.name(),
+			Args: []*pb.Value{},
+		}, nil
+	}
+
+	optionsPb := make(map[string]*pb.Value)
+
+	for k, v := range s.options {
+		switch k {
+		case "query":
+			var queryExpr Expression
+			switch qv := v.(type) {
+			case string:
+				queryExpr = DocumentMatches(qv)
+			case BooleanExpression:
+				queryExpr = qv
+			default:
+				return nil, errInvalidArg("Search", v, "string", "BooleanExpression")
+			}
+			if queryExpr == nil {
+				return nil, fmt.Errorf("firestore: internal error: searchStage query resolved to nil expression")
+			}
+			queryPb, err := queryExpr.toProto()
+			if err != nil {
+				return nil, err
+			}
+			optionsPb[k] = queryPb
+
+		case "add_fields":
+			fields, ok := v.([]Selectable)
+			if !ok {
+				return nil, fmt.Errorf("firestore: invalid type for Search add_fields: %T", v)
+			}
+			mapVal, err := projectionsToMapValue(fields)
+			if err != nil {
+				return nil, err
+			}
+			optionsPb[k] = mapVal
+
+		case "sort":
+			orders, ok := v.([]Ordering)
+			if !ok {
+				return nil, fmt.Errorf("firestore: invalid type for Search sort: %T", v)
+			}
+			sortVals := make([]*pb.Value, len(orders))
+			for i, so := range orders {
+				fieldPb, err := so.Expr.toProto()
+				if err != nil {
+					return nil, err
+				}
+				sortVals[i] = &pb.Value{
+					ValueType: &pb.Value_MapValue{
+						MapValue: &pb.MapValue{
+							Fields: map[string]*pb.Value{
+								"direction": {
+									ValueType: &pb.Value_StringValue{
+										StringValue: string(so.Direction),
+									},
+								},
+								"expression": fieldPb,
+							},
+						},
+					},
+				}
+			}
+			optionsPb[k] = &pb.Value{
+				ValueType: &pb.Value_ArrayValue{
+					ArrayValue: &pb.ArrayValue{
+						Values: sortVals,
+					},
+				},
+			}
+
+		case "retrieval_depth":
+			switch depth := v.(type) {
+			case int64:
+				optionsPb[k] = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: depth}}
+			case int:
+				optionsPb[k] = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(depth)}}
+			default:
+				return nil, fmt.Errorf("firestore: invalid type for Search retrieval_depth: %T", v)
+			}
+
+		case "limit":
+			switch limit := v.(type) {
+			case int64:
+				optionsPb[k] = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: limit}}
+			case int:
+				optionsPb[k] = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(limit)}}
+			default:
+				return nil, fmt.Errorf("firestore: invalid type for Search limit: %T", v)
+			}
+
+		case "offset":
+			switch offset := v.(type) {
+			case int64:
+				optionsPb[k] = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: offset}}
+			case int:
+				optionsPb[k] = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(offset)}}
+			default:
+				return nil, fmt.Errorf("firestore: invalid type for Search offset: %T", v)
+			}
+
+		case "language_code":
+			s, ok := v.(string)
+			if !ok {
+				return nil, fmt.Errorf("firestore: invalid type for Search language_code: %T", v)
+			}
+			optionsPb[k] = &pb.Value{ValueType: &pb.Value_StringValue{StringValue: s}}
+
+		default:
+			valPb, _, err := toProtoValue(reflect.ValueOf(v))
+			if err != nil {
+				return nil, fmt.Errorf("firestore: error converting stage option %q: %w", k, err)
+			}
+			optionsPb[k] = valPb
+		}
+	}
+
+	return &pb.Pipeline_Stage{
+		Name:    s.name(),
+		Args:    []*pb.Value{},
+		Options: optionsPb,
+	}, nil
+}
+
 type selectStage struct {
 	fields  []any
 	options map[string]any
@@ -621,6 +771,9 @@ func (s *sortStage) name() string { return stageNameSort }
 func (s *sortStage) toProto() (*pb.Pipeline_Stage, error) {
 	sortOrders := make([]*pb.Value, len(s.orders))
 	for i, so := range s.orders {
+		if so.Expr == nil {
+			return nil, fmt.Errorf("firestore: internal error: sortStage contains ordering with nil expression")
+		}
 		fieldPb, err := so.Expr.toProto()
 		if err != nil {
 			return nil, err
@@ -661,6 +814,9 @@ func newUnionStage(other *Pipeline, options map[string]any) (*unionStage, error)
 }
 func (s *unionStage) name() string { return stageNameUnion }
 func (s *unionStage) toProto() (*pb.Pipeline_Stage, error) {
+	if s.other == nil {
+		return nil, fmt.Errorf("firestore: internal error: unionStage contains nil pipeline")
+	}
 	otherPb, err := s.other.toProto()
 	if err != nil {
 		return nil, err
@@ -689,6 +845,9 @@ func newUnnestStage(callerName string, field Selectable, options map[string]any)
 }
 func (s *unnestStage) name() string { return stageNameUnnest }
 func (s *unnestStage) toProto() (*pb.Pipeline_Stage, error) {
+	if s.field == nil {
+		return nil, fmt.Errorf("firestore: internal error: unnestStage contains nil field")
+	}
 	alias, expr := s.field.getSelectionDetails()
 	exprPb, err := expr.toProto()
 	if err != nil {
@@ -753,6 +912,9 @@ func newWhereStage(condition BooleanExpression, options map[string]any) (*whereS
 }
 func (s *whereStage) name() string { return stageNameWhere }
 func (s *whereStage) toProto() (*pb.Pipeline_Stage, error) {
+	if s.condition == nil {
+		return nil, fmt.Errorf("firestore: internal error: whereStage condition is nil")
+	}
 	argsPb, err := s.condition.toProto()
 	if err != nil {
 		return nil, err

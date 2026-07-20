@@ -50,6 +50,7 @@ import (
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 
@@ -147,6 +148,30 @@ func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config
 		t.Fatal(err)
 	}
 	// Multiplexed sessions are always enabled - wait for session creation
+	waitFor(t, func() error {
+		client.sm.mu.Lock()
+		defer client.sm.mu.Unlock()
+		if client.sm.multiplexedSession == nil {
+			return errInvalidSession
+		}
+		return nil
+	})
+	return server, client, func() {
+		client.Close()
+		serverTeardown()
+	}
+}
+
+func setupMockedTestServerWithAddrAndConfig(t *testing.T, addr string, config ClientConfig) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServerWithAddr(t, addr)
+	ctx := context.Background()
+	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
+	var err error
+	client, err = NewClientWithConfig(ctx, formattedDatabase, config, opts...)
+	if err != nil {
+		serverTeardown()
+		t.Fatal(err)
+	}
 	waitFor(t, func() error {
 		client.sm.mu.Lock()
 		defer client.sm.mu.Unlock()
@@ -289,6 +314,39 @@ func TestValidDatabaseName(t *testing.T) {
 		if err, wantErr := validDatabaseName(d), "should conform to pattern"; !strings.Contains(err.Error(), wantErr) {
 			t.Errorf("validateDatabaseName(%q) = %q, want error pattern %q", validDbURI, err, wantErr)
 		}
+	}
+}
+
+func TestClientConfigValidation(t *testing.T) {
+	tests := []struct {
+		name   string
+		config ClientConfig
+	}{
+		{
+			name: "invalid config - options set on CLOUD type",
+			config: ClientConfig{
+				Type:         CLOUD,
+				UsePlainText: true,
+			},
+		},
+		{
+			name: "invalid config - options set on unspecified type",
+			config: ClientConfig{
+				CaCertificateFile: "ca.pem",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", tt.config)
+			if err == nil {
+				t.Fatalf("NewClientWithConfig() expected error, got nil")
+			}
+			if ErrCode(err) != codes.InvalidArgument || !strings.Contains(err.Error(), "can only be set when Type is OMNI") {
+				t.Errorf("NewClientWithConfig() unexpected error: %v", err)
+			}
+		})
 	}
 }
 
@@ -705,6 +763,1965 @@ func serverErrorWithMinimalRetryDelay(code codes.Code, msg string) error {
 	}
 	st, _ = st.WithDetails(retry)
 	return st.Err()
+}
+
+func waitForLocationAwareEndpointHealthy(t *testing.T, client *Client, address string) {
+	t.Helper()
+
+	waitForCondition(t, time.Second, func() bool {
+		if client == nil || client.locationRouter == nil || client.locationRouter.endpointCache == nil {
+			return false
+		}
+		endpoint := client.locationRouter.endpointCache.Get(context.Background(), address)
+		return endpoint != nil && endpoint.IsHealthy()
+	})
+}
+
+func waitForLocationAwareEndpointActiveRequestCount(t *testing.T, client *Client, address string, want int) {
+	t.Helper()
+
+	waitForCondition(t, time.Second, func() bool {
+		if client == nil || client.locationRouter == nil || client.locationRouter.endpointCache == nil {
+			return false
+		}
+		endpoint := client.locationRouter.endpointCache.Get(context.Background(), address)
+		return endpoint != nil && endpoint.ActiveRequestCount() == want
+	})
+}
+
+func waitForLocationAwareEndpointActiveRequestsAtLeast(t *testing.T, client *Client, address string, min int) {
+	t.Helper()
+
+	waitForCondition(t, time.Second, func() bool {
+		if client == nil || client.locationRouter == nil || client.locationRouter.endpointCache == nil {
+			return false
+		}
+		endpoint := client.locationRouter.endpointCache.Get(context.Background(), address)
+		return endpoint != nil && endpoint.ActiveRequestCount() >= min
+	})
+}
+
+type locationAwareQueryStreamHarness struct {
+	client         *Client
+	replicaHarness *SharedBackendSpannerReplicaHarness
+	leaderAddress  string
+	replicaAddress string
+}
+
+func newLocationAwareQueryStreamHarness(t *testing.T) (*locationAwareQueryStreamHarness, func()) {
+	t.Helper()
+
+	replicaHarness, clientOpts, teardownReplicas := NewSharedBackendSpannerReplicaHarness(t, 2)
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		replicaHarness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		teardownReplicas()
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	if client.locationRouter == nil {
+		client.Close()
+		teardownReplicas()
+		t.Fatal("expected location router to be enabled")
+	}
+
+	client.locationRouter.finder.useDeterministicRandom()
+
+	routeReq := &sppb.ExecuteSqlRequest{Sql: SelectSingerIDAlbumIDAlbumTitleFromAlbums}
+	client.locationRouter.finder.recipeCache.computeQueryKeys(routeReq)
+	client.locationRouter.finder.update(createQueryRecipeCacheUpdate(routeReq.GetRoutingHint().GetOperationUid(), "b"))
+	client.locationRouter.finder.recipeCache.computeQueryKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = replicaHarness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: replicaHarness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ExecuteSqlRequest)
+		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == replicaHarness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, replicaHarness.ReplicaAddresses[1])
+
+	return &locationAwareQueryStreamHarness{
+			client:         client,
+			replicaHarness: replicaHarness,
+			leaderAddress:  replicaHarness.ReplicaAddresses[0],
+			replicaAddress: replicaHarness.ReplicaAddresses[1],
+		}, func() {
+			client.Close()
+			teardownReplicas()
+		}
+}
+
+func (h *locationAwareQueryStreamHarness) query(ctx context.Context) *RowIterator {
+	return h.client.Single().Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+}
+
+func (h *locationAwareQueryStreamHarness) leaderRequests() []proto.Message {
+	return h.replicaHarness.Replicas[0].Requests(MethodExecuteStreamingSql)
+}
+
+func (h *locationAwareQueryStreamHarness) replicaRequests() []proto.Message {
+	return h.replicaHarness.Replicas[1].Requests(MethodExecuteStreamingSql)
+}
+
+type locationAwareReadStreamHarness struct {
+	client         *Client
+	replicaHarness *SharedBackendSpannerReplicaHarness
+	leaderAddress  string
+	replicaAddress string
+}
+
+func newLocationAwareReadStreamHarness(t *testing.T) (*locationAwareReadStreamHarness, func()) {
+	t.Helper()
+
+	replicaHarness, clientOpts, teardownReplicas := NewSharedBackendSpannerReplicaHarness(t, 2)
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		replicaHarness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		teardownReplicas()
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	if client.locationRouter == nil {
+		client.Close()
+		teardownReplicas()
+		t.Fatal("expected location router to be enabled")
+	}
+
+	client.locationRouter.finder.useDeterministicRandom()
+	client.locationRouter.finder.update(createReadRecipeCacheUpdate("Albums"))
+
+	kset, err := KeySets(Key{"b"}).keySetProto()
+	if err != nil {
+		client.Close()
+		teardownReplicas()
+		t.Fatalf("keySetProto() failed: %v", err)
+	}
+	routeReq := &sppb.ReadRequest{
+		Table:   "Albums",
+		Columns: []string{"SingerId", "AlbumId", "AlbumTitle"},
+		KeySet:  kset,
+	}
+	client.locationRouter.finder.recipeCache.computeReadKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = replicaHarness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: replicaHarness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == replicaHarness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, replicaHarness.ReplicaAddresses[1])
+
+	return &locationAwareReadStreamHarness{
+			client:         client,
+			replicaHarness: replicaHarness,
+			leaderAddress:  replicaHarness.ReplicaAddresses[0],
+			replicaAddress: replicaHarness.ReplicaAddresses[1],
+		}, func() {
+			client.Close()
+			teardownReplicas()
+		}
+}
+
+func (h *locationAwareReadStreamHarness) read(ctx context.Context) *RowIterator {
+	return h.client.Single().Read(ctx, "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+}
+
+func (h *locationAwareReadStreamHarness) leaderRequests() []proto.Message {
+	return h.replicaHarness.Replicas[0].Requests(MethodStreamingRead)
+}
+
+func (h *locationAwareReadStreamHarness) replicaRequests() []proto.Message {
+	return h.replicaHarness.Replicas[1].Requests(MethodStreamingRead)
+}
+
+func TestLocationAwareExecuteSql_ReroutesToNextReplicaAndMarksCooldownScopes(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodExecuteSql, status.Error(codes.ResourceExhausted, "busy"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+
+	update := createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.observeResultSet(&sppb.ResultSet{CacheUpdate: update})
+
+	sh, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() failed: %v", err)
+	}
+	defer sh.recycle()
+
+	req := &sppb.ExecuteSqlRequest{
+		Session: sh.getID(),
+		Sql:     SelectFooFromBar,
+		RoutingHint: &sppb.RoutingHint{
+			Key: []byte("b"),
+		},
+		Params: &structpb.Struct{},
+	}
+
+	// 5s timeout (vs default 1s) absorbs scheduling jitter under -race + CI load.
+	waitForCondition(t, 5*time.Second, func() bool {
+		prepared := proto.Clone(req).(*sppb.ExecuteSqlRequest)
+		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForCondition(t, 5*time.Second, func() bool {
+		if client.locationRouter == nil || client.locationRouter.endpointCache == nil {
+			return false
+		}
+		endpoint := client.locationRouter.endpointCache.Get(context.Background(), harness.ReplicaAddresses[1])
+		return endpoint != nil && endpoint.IsHealthy()
+	})
+
+	lac, ok := sh.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
+	}
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
+		return n - 1
+	})
+
+	callOpts := testCallOptionsWithRequestID("1.proc.1.1.55.1")
+	resp, err := lac.ExecuteSql(context.Background(), req, callOpts...)
+	if err != nil {
+		t.Fatalf("ExecuteSql() returned unexpected error: %v", err)
+	}
+	if resp == nil {
+		t.Fatal("ExecuteSql() returned nil response")
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodExecuteSql)
+	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteSql)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A ExecuteSql request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B ExecuteSql request count = %d, want %d", got, want)
+	}
+	replicaAReq, ok := replicaARequests[0].(*sppb.ExecuteSqlRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.ExecuteSqlRequest", replicaARequests[0])
+	}
+	if got, want := replicaAReq.GetSession(), sh.getID(); got != want {
+		t.Fatalf("replica A session = %q, want %q", got, want)
+	}
+
+	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to enter overload cooldown after RESOURCE_EXHAUSTED", harness.ReplicaAddresses[0])
+	}
+}
+
+func TestLocationAwareExecuteStreamingSql_NextCallSkipsExcludedEndpoint(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodExecuteStreamingSql, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+
+	update := createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.observeResultSet(&sppb.ResultSet{CacheUpdate: update})
+
+	sh, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() failed: %v", err)
+	}
+	defer sh.recycle()
+
+	req := &sppb.ExecuteSqlRequest{
+		Session: sh.getID(),
+		Sql:     SelectFooFromBar,
+		RoutingHint: &sppb.RoutingHint{
+			Key: []byte("b"),
+		},
+		Params: &structpb.Struct{},
+	}
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(req).(*sppb.ExecuteSqlRequest)
+		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	lac, ok := sh.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
+	}
+
+	firstCallOpts := testCallOptionsWithRequestID("1.proc.1.1.58.1")
+	stream, err := lac.ExecuteStreamingSql(context.Background(), req, firstCallOpts...)
+	if err != nil {
+		t.Fatalf("ExecuteStreamingSql() returned unexpected stream creation error: %v", err)
+	}
+	_, err = stream.Recv()
+	if status.Code(err) != codes.ResourceExhausted {
+		t.Fatalf("first stream Recv() error = %v, want RESOURCE_EXHAUSTED", err)
+	}
+
+	secondCallOpts := testCallOptionsWithRequestID("1.proc.1.1.58.2")
+	stream, err = lac.ExecuteStreamingSql(context.Background(), req, secondCallOpts...)
+	if err != nil {
+		t.Fatalf("retry ExecuteStreamingSql() returned unexpected stream creation error: %v", err)
+	}
+	_, err = stream.Recv()
+	if err != nil {
+		t.Fatalf("retry stream Recv() returned unexpected error: %v", err)
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodExecuteStreamingSql)
+	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteStreamingSql)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A ExecuteStreamingSql request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B ExecuteStreamingSql request count = %d, want %d", got, want)
+	}
+	replicaAReq, ok := replicaARequests[0].(*sppb.ExecuteSqlRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.ExecuteSqlRequest", replicaARequests[0])
+	}
+	replicaBReq, ok := replicaBRequests[0].(*sppb.ExecuteSqlRequest)
+	if !ok {
+		t.Fatalf("replica B request type = %T, want *spannerpb.ExecuteSqlRequest", replicaBRequests[0])
+	}
+	if got, want := replicaAReq.GetSession(), sh.getID(); got != want {
+		t.Fatalf("replica A session = %q, want %q", got, want)
+	}
+	if got, want := replicaBReq.GetSession(), sh.getID(); got != want {
+		t.Fatalf("replica B session = %q, want %q", got, want)
+	}
+
+}
+
+func TestClient_Single_StreamingReadReroutesOnResourceExhaustedForBypassTraffic(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodStreamingRead, status.Error(codes.ResourceExhausted, "busy"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+
+	client.locationRouter.finder.update(createReadRecipeCacheUpdate("Albums"))
+
+	kset, err := KeySets(Key{"b"}).keySetProto()
+	if err != nil {
+		t.Fatalf("keySetProto() failed: %v", err)
+	}
+	routeReq := &sppb.ReadRequest{
+		Table:   "Albums",
+		Columns: []string{"SingerId", "AlbumId", "AlbumTitle"},
+		KeySet:  kset,
+	}
+	client.locationRouter.finder.recipeCache.computeReadKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("iter.Next() returned nil row")
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodStreamingRead)
+	replicaBRequests := harness.Replicas[1].Requests(MethodStreamingRead)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A StreamingRead request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B StreamingRead request count = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodStreamingRead)); got != 0 {
+		t.Fatalf("default replica StreamingRead request count = %d, want 0", got)
+	}
+
+	replicaAReq, ok := replicaARequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.ReadRequest", replicaARequests[0])
+	}
+	if got := replicaAReq.GetResumeToken(); got != nil {
+		t.Fatalf("replica A resume token = %v, want nil on first attempt", got)
+	}
+}
+
+func TestClient_Single_StreamingReadCooldownSkipsReplicaOnNextRequestForBypassTraffic(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodStreamingRead, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+
+	client.locationRouter.finder.update(createReadRecipeCacheUpdate("Albums"))
+
+	kset, err := KeySets(Key{"b"}).keySetProto()
+	if err != nil {
+		t.Fatalf("keySetProto() failed: %v", err)
+	}
+	routeReq := &sppb.ReadRequest{
+		Table:   "Albums",
+		Columns: []string{"SingerId", "AlbumId", "AlbumTitle"},
+		KeySet:  kset,
+	}
+	client.locationRouter.finder.recipeCache.computeReadKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	sh, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() failed: %v", err)
+	}
+	_, ok := sh.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		sh.recycle()
+		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
+	}
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	cooldownTracker := newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
+		return n - 1
+	})
+	client.sm.setLocationAwareState(client.locationRouter, cooldownTracker)
+	sh.recycle()
+
+	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	row, err := iter.Next()
+	if err != nil {
+		iter.Stop()
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		iter.Stop()
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	iter.Stop()
+	if !cooldownTracker.isCoolingDown(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to enter cooldown", harness.ReplicaAddresses[0])
+	}
+
+	iter = client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	row, err = iter.Next()
+	if err != nil {
+		iter.Stop()
+		t.Fatalf("second iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		iter.Stop()
+		t.Fatal("second iter.Next() returned nil row")
+	}
+	iter.Stop()
+
+	replicaARequests := harness.Replicas[0].Requests(MethodStreamingRead)
+	replicaBRequests := harness.Replicas[1].Requests(MethodStreamingRead)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A StreamingRead request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 2; got != want {
+		t.Fatalf("replica B StreamingRead request count = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodStreamingRead)); got != 0 {
+		t.Fatalf("default replica StreamingRead request count = %d, want 0", got)
+	}
+
+	replicaAReq, ok := replicaARequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.ReadRequest", replicaARequests[0])
+	}
+	if got := replicaAReq.GetResumeToken(); got != nil {
+		t.Fatalf("replica A resume token = %v, want nil on failed stream-open attempt", got)
+	}
+	for i, req := range replicaBRequests {
+		readReq, ok := req.(*sppb.ReadRequest)
+		if !ok {
+			t.Fatalf("replica B request[%d] type = %T, want *spannerpb.ReadRequest", i, req)
+		}
+		if got := readReq.GetResumeToken(); got != nil {
+			t.Fatalf("replica B request[%d] resume token = %v, want nil", i, got)
+		}
+	}
+}
+
+func TestClient_LocationAwareWrappersShareStateAcrossHandles(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	clientOpts = append(clientOpts, option.WithGRPCConnectionPool(1))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	sh1, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() first handle failed: %v", err)
+	}
+	defer sh1.recycle()
+	sh2, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() second handle failed: %v", err)
+	}
+	defer sh2.recycle()
+
+	lac1, ok := sh1.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("first handle client type = %T, want *locationAwareSpannerClient", sh1.getClient())
+	}
+	lac2, ok := sh2.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("second handle client type = %T, want *locationAwareSpannerClient", sh2.getClient())
+	}
+	if lac1 == lac2 {
+		t.Fatalf("expected a fresh location-aware wrapper per handle")
+	}
+	if lac1.endpointCooldowns != lac2.endpointCooldowns {
+		t.Fatalf("expected handles to share cooldown tracker")
+	}
+	if lac1.state != lac2.state {
+		t.Fatalf("expected handles to share client-level location-aware state")
+	}
+}
+
+func TestClient_Single_QueryActiveRequestCountBalancedOnSuccess(t *testing.T) {
+	t.Parallel()
+
+	h, teardown := newLocationAwareQueryStreamHarness(t)
+	defer teardown()
+
+	iter := h.query(context.Background())
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	waitForLocationAwareEndpointActiveRequestsAtLeast(t, h.client, h.leaderAddress, 1)
+
+	for {
+		_, err = iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("iter.Next() returned unexpected error: %v", err)
+		}
+	}
+
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.leaderAddress, 0)
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.replicaAddress, 0)
+}
+
+func TestClient_Single_QueryActiveRequestCountBalancedOnEarlyStop(t *testing.T) {
+	t.Parallel()
+
+	h, teardown := newLocationAwareQueryStreamHarness(t)
+	defer teardown()
+
+	iter := h.query(context.Background())
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	waitForLocationAwareEndpointActiveRequestsAtLeast(t, h.client, h.leaderAddress, 1)
+
+	iter.Stop()
+
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.leaderAddress, 0)
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.replicaAddress, 0)
+}
+
+func TestClient_Single_QueryActiveRequestCountBalancedOnOpenFailure(t *testing.T) {
+	t.Parallel()
+
+	h, teardown := newLocationAwareQueryStreamHarness(t)
+	defer teardown()
+	h.replicaHarness.Replicas[0].PutMethodErrors(MethodExecuteStreamingSql, status.Error(codes.FailedPrecondition, "boom"))
+
+	iter := h.query(context.Background())
+	defer iter.Stop()
+
+	_, err := iter.Next()
+	if status.Code(err) != codes.FailedPrecondition {
+		t.Fatalf("iter.Next() error = %v, want FAILED_PRECONDITION", err)
+	}
+
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.leaderAddress, 0)
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.replicaAddress, 0)
+	if got, want := len(h.leaderRequests()), 1; got != want {
+		t.Fatalf("leader ExecuteStreamingSql request count = %d, want %d", got, want)
+	}
+	if got := len(h.replicaRequests()); got != 0 {
+		t.Fatalf("alternate replica ExecuteStreamingSql request count = %d, want 0", got)
+	}
+}
+
+func TestClient_Single_QueryActiveRequestCountBalancedOnMidStreamNonRetryableFailure(t *testing.T) {
+	t.Parallel()
+
+	h, teardown := newLocationAwareQueryStreamHarness(t)
+	defer teardown()
+	h.replicaHarness.Backend.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Error(codes.FailedPrecondition, "stream broken"),
+		},
+	)
+
+	iter := h.query(context.Background())
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	waitForLocationAwareEndpointActiveRequestsAtLeast(t, h.client, h.leaderAddress, 1)
+
+	for {
+		_, err = iter.Next()
+		if err != nil {
+			break
+		}
+	}
+	if status.Code(err) != codes.FailedPrecondition {
+		t.Fatalf("iter.Next() error = %v, want FAILED_PRECONDITION", err)
+	}
+
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.leaderAddress, 0)
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.replicaAddress, 0)
+	if got, want := len(h.leaderRequests()), 1; got != want {
+		t.Fatalf("leader ExecuteStreamingSql request count = %d, want %d", got, want)
+	}
+	if got := len(h.replicaRequests()); got != 0 {
+		t.Fatalf("alternate replica ExecuteStreamingSql request count = %d, want 0", got)
+	}
+}
+
+func TestClient_Single_QueryActiveRequestCountBalancedOnMidStreamRetryableFailure(t *testing.T) {
+	t.Parallel()
+
+	h, teardown := newLocationAwareQueryStreamHarness(t)
+	defer teardown()
+	h.replicaHarness.Backend.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Error(codes.Unavailable, "stream unavailable"),
+		},
+	)
+
+	iter := h.query(context.Background())
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	waitForLocationAwareEndpointActiveRequestsAtLeast(t, h.client, h.leaderAddress, 1)
+
+	for {
+		_, err = iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("iter.Next() returned unexpected error: %v", err)
+		}
+	}
+
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.leaderAddress, 0)
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.replicaAddress, 0)
+	if got, want := len(h.leaderRequests()), 1; got != want {
+		t.Fatalf("leader ExecuteStreamingSql request count = %d, want %d", got, want)
+	}
+	if got, want := len(h.replicaRequests()), 1; got != want {
+		t.Fatalf("alternate replica ExecuteStreamingSql request count = %d, want %d", got, want)
+	}
+}
+
+func TestClient_Single_ReadActiveRequestCountBalancedOnEarlyStop(t *testing.T) {
+	t.Parallel()
+
+	h, teardown := newLocationAwareReadStreamHarness(t)
+	defer teardown()
+
+	iter := h.read(context.Background())
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	waitForLocationAwareEndpointActiveRequestsAtLeast(t, h.client, h.leaderAddress, 1)
+
+	iter.Stop()
+
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.leaderAddress, 0)
+	waitForLocationAwareEndpointActiveRequestCount(t, h.client, h.replicaAddress, 0)
+	if got, want := len(h.leaderRequests()), 1; got != want {
+		t.Fatalf("leader StreamingRead request count = %d, want %d", got, want)
+	}
+	if got := len(h.replicaRequests()); got != 0 {
+		t.Fatalf("alternate replica StreamingRead request count = %d, want 0", got)
+	}
+}
+
+func TestClient_Single_StreamingReadMidStreamRecvFailureWithoutRetryInfoRetriesForBypassTraffic(t *testing.T) {
+	t.Parallel()
+
+	restore := setMaxBytesBetweenResumeTokens()
+	defer restore()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Backend.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Error(codes.ResourceExhausted, "busy"),
+		},
+	)
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+
+	client.locationRouter.finder.update(createReadRecipeCacheUpdate("Albums"))
+
+	kset, err := KeySets(Key{"b"}).keySetProto()
+	if err != nil {
+		t.Fatalf("keySetProto() failed: %v", err)
+	}
+	routeReq := &sppb.ReadRequest{
+		Table:   "Albums",
+		Columns: []string{"SingerId", "AlbumId", "AlbumTitle"},
+		KeySet:  kset,
+	}
+	client.locationRouter.finder.recipeCache.computeReadKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatalf("second iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("second iter.Next() returned nil row")
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodStreamingRead)
+	replicaBRequests := harness.Replicas[1].Requests(MethodStreamingRead)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A StreamingRead request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B StreamingRead request count = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodStreamingRead)); got != 0 {
+		t.Fatalf("default replica StreamingRead request count = %d, want 0", got)
+	}
+
+	replicaAReq, ok := replicaARequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.ReadRequest", replicaARequests[0])
+	}
+	if got := replicaAReq.GetResumeToken(); got != nil {
+		t.Fatalf("replica A resume token = %v, want nil on first stream attempt", got)
+	}
+	replicaBReq, ok := replicaBRequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica B request type = %T, want *spannerpb.ReadRequest", replicaBRequests[0])
+	}
+	if got, want := string(replicaBReq.GetResumeToken()), string(EncodeResumeToken(1)); got != want {
+		t.Fatalf("replica B resume token = %v, want %v", replicaBReq.GetResumeToken(), EncodeResumeToken(1))
+	}
+}
+
+func TestClient_Single_StreamingReadMidStreamRecvFailureWithRetryInfoRetriesForBypassTraffic(t *testing.T) {
+	t.Parallel()
+
+	restore := setMaxBytesBetweenResumeTokens()
+	defer restore()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Backend.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"),
+		},
+	)
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+
+	client.locationRouter.finder.update(createReadRecipeCacheUpdate("Albums"))
+
+	kset, err := KeySets(Key{"b"}).keySetProto()
+	if err != nil {
+		t.Fatalf("keySetProto() failed: %v", err)
+	}
+	routeReq := &sppb.ReadRequest{
+		Table:   "Albums",
+		Columns: []string{"SingerId", "AlbumId", "AlbumTitle"},
+		KeySet:  kset,
+	}
+	client.locationRouter.finder.recipeCache.computeReadKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	row, err = iter.Next()
+	if err != nil {
+		t.Fatalf("second iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("second iter.Next() returned nil row")
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodStreamingRead)
+	replicaBRequests := harness.Replicas[1].Requests(MethodStreamingRead)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A StreamingRead request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B StreamingRead request count = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodStreamingRead)); got != 0 {
+		t.Fatalf("default replica StreamingRead request count = %d, want 0", got)
+	}
+
+	replicaAReq, ok := replicaARequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.ReadRequest", replicaARequests[0])
+	}
+	if got := replicaAReq.GetResumeToken(); got != nil {
+		t.Fatalf("replica A resume token = %v, want nil on first stream attempt", got)
+	}
+	replicaBReq, ok := replicaBRequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica B request type = %T, want *spannerpb.ReadRequest", replicaBRequests[0])
+	}
+	if got, want := string(replicaBReq.GetResumeToken()), string(EncodeResumeToken(1)); got != want {
+		t.Fatalf("replica B resume token = %v, want %v", replicaBReq.GetResumeToken(), EncodeResumeToken(1))
+	}
+}
+
+func TestClient_Single_StreamingReadMidStreamRecvFailureWithoutRetryInfoReturnsErrorWithoutBypass(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	server.TestSpanner.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Error(codes.ResourceExhausted, "busy"),
+		},
+	)
+
+	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first iter.Next() returned nil row")
+	}
+
+	_, err = iter.Next()
+	if status.Code(err) != codes.ResourceExhausted {
+		t.Fatalf("second iter.Next() error = %v, want RESOURCE_EXHAUSTED", err)
+	}
+}
+
+func createReadRecipeCacheUpdate(table string) *sppb.CacheUpdate {
+	return &sppb.CacheUpdate{
+		DatabaseId: 7,
+		KeyRecipes: &sppb.RecipeList{
+			SchemaGeneration: []byte("1"),
+			Recipe: []*sppb.KeyRecipe{
+				{
+					Target: &sppb.KeyRecipe_TableName{TableName: table},
+					Part: []*sppb.KeyRecipe_Part{
+						{Tag: 1},
+						{
+							Order:     sppb.KeyRecipe_Part_ASCENDING,
+							NullOrder: sppb.KeyRecipe_Part_NULLS_FIRST,
+							Type:      &sppb.Type{Code: sppb.TypeCode_STRING},
+							ValueType: &sppb.KeyRecipe_Part_Identifier{Identifier: "k"},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func createQueryRecipeCacheUpdate(operationUID uint64, key string) *sppb.CacheUpdate {
+	return &sppb.CacheUpdate{
+		DatabaseId: 7,
+		KeyRecipes: &sppb.RecipeList{
+			SchemaGeneration: []byte("1"),
+			Recipe: []*sppb.KeyRecipe{
+				{
+					Target: &sppb.KeyRecipe_OperationUid{OperationUid: operationUID},
+					Part: []*sppb.KeyRecipe_Part{
+						{Tag: 1},
+						{
+							Order:     sppb.KeyRecipe_Part_ASCENDING,
+							NullOrder: sppb.KeyRecipe_Part_NULLS_FIRST,
+							Type:      &sppb.Type{Code: sppb.TypeCode_STRING},
+							ValueType: &sppb.KeyRecipe_Part_Value{Value: structpb.NewStringValue(key)},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndEndpointBecomesEligibleAfterExpiry(t *testing.T) {
+	t.Parallel()
+	withIsolatedEndpointLatencyRegistry(t)
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodExecuteSql, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	update := createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.observeResultSet(&sppb.ResultSet{CacheUpdate: update})
+
+	sh, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() failed: %v", err)
+	}
+	defer sh.recycle()
+
+	req := &sppb.ExecuteSqlRequest{
+		Session: sh.getID(),
+		Sql:     SelectFooFromBar,
+		RoutingHint: &sppb.RoutingHint{
+			Key: []byte("b"),
+		},
+		Params: &structpb.Struct{},
+	}
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(req).(*sppb.ExecuteSqlRequest)
+		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	lac, ok := sh.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
+	}
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
+		return n - 1
+	})
+
+	if _, err := lac.ExecuteSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.80.1")...); err != nil {
+		t.Fatalf("first ExecuteSql() returned unexpected error: %v", err)
+	}
+	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to enter cooldown", harness.ReplicaAddresses[0])
+	}
+
+	if _, err := lac.ExecuteSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.80.2")...); err != nil {
+		t.Fatalf("second ExecuteSql() returned unexpected error: %v", err)
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodExecuteSql)
+	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteSql)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A ExecuteSql request count after cooldown reroute = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 2; got != want {
+		t.Fatalf("replica B ExecuteSql request count after cooldown reroute = %d, want %d", got, want)
+	}
+
+	clock.Advance(2 * time.Minute)
+	clearEndpointLatencyRegistry()
+	client.locationRouter.finder.useDeterministicRandom()
+
+	if _, err := lac.ExecuteSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.80.3")...); err != nil {
+		t.Fatalf("third ExecuteSql() returned unexpected error: %v", err)
+	}
+	if lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q cooldown to remain expired after cooldown-window re-entry", harness.ReplicaAddresses[0])
+	}
+	if _, ok := lac.endpointCooldowns.entries[harness.ReplicaAddresses[0]]; !ok {
+		t.Fatalf("expected routed address %q failure state to remain tracked until quiet-window reset", harness.ReplicaAddresses[0])
+	}
+
+	replicaARequests = harness.Replicas[0].Requests(MethodExecuteSql)
+	replicaBRequests = harness.Replicas[1].Requests(MethodExecuteSql)
+	if got, want := len(replicaARequests), 2; got != want {
+		t.Fatalf("replica A ExecuteSql request count after cooldown expiry = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 2; got != want {
+		t.Fatalf("replica B ExecuteSql request count after cooldown expiry = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodExecuteSql)); got != 0 {
+		t.Fatalf("default replica ExecuteSql request count after cooldown expiry = %d, want 0", got)
+	}
+}
+
+func TestLocationAwareExecuteSql_CooldownRetriesAlternateReplicaWhenAllRoutedReplicasCoolingDown(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodExecuteSql, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy-a"))
+	harness.Replicas[1].PutMethodErrors(MethodExecuteSql, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy-b"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+	client.locationRouter.finder.useDeterministicRandom()
+
+	update := createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.observeResultSet(&sppb.ResultSet{CacheUpdate: update})
+
+	sh, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() failed: %v", err)
+	}
+	defer sh.recycle()
+
+	req := &sppb.ExecuteSqlRequest{
+		Session: sh.getID(),
+		Sql:     SelectFooFromBar,
+		RoutingHint: &sppb.RoutingHint{
+			Key: []byte("b"),
+		},
+		Params: &structpb.Struct{},
+	}
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(req).(*sppb.ExecuteSqlRequest)
+		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	lac, ok := sh.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
+	}
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
+		return n - 1
+	})
+
+	if _, err := lac.ExecuteSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.81.1")...); err != nil {
+		t.Fatalf("ExecuteSql() returned unexpected error: %v", err)
+	}
+	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to enter cooldown", harness.ReplicaAddresses[0])
+	}
+	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[1]) {
+		t.Fatalf("expected second routed address %q to enter cooldown", harness.ReplicaAddresses[1])
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodExecuteSql)
+	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteSql)
+	defaultRequests := harness.DefaultReplica.Requests(MethodExecuteSql)
+	if got, want := len(replicaARequests), 2; got != want {
+		t.Fatalf("replica A ExecuteSql request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B ExecuteSql request count = %d, want %d", got, want)
+	}
+	if got, want := len(defaultRequests), 0; got != want {
+		t.Fatalf("default ExecuteSql request count = %d, want %d", got, want)
+	}
+}
+
+func TestClient_Single_QueryReroutesOnUnavailableForBypassTraffic(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodExecuteStreamingSql, status.Error(codes.Unavailable, "replica unavailable"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+	client.locationRouter.finder.useDeterministicRandom()
+
+	routeReq := &sppb.ExecuteSqlRequest{Sql: SelectSingerIDAlbumIDAlbumTitleFromAlbums}
+	client.locationRouter.finder.recipeCache.computeQueryKeys(routeReq)
+	client.locationRouter.finder.update(createQueryRecipeCacheUpdate(routeReq.GetRoutingHint().GetOperationUid(), "b"))
+	client.locationRouter.finder.recipeCache.computeQueryKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ExecuteSqlRequest)
+		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	iter := client.Single().Query(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		t.Fatal("iter.Next() returned nil row")
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodExecuteStreamingSql)
+	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteStreamingSql)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A ExecuteStreamingSql request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B ExecuteStreamingSql request count = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodExecuteStreamingSql)); got != 0 {
+		t.Fatalf("default replica ExecuteStreamingSql request count = %d, want 0", got)
+	}
+}
+
+func TestClient_Single_StreamingReadUnavailableSkipsReplicaOnNextRequestForBypassTraffic(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodStreamingRead, status.Error(codes.Unavailable, "replica unavailable"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+	client.locationRouter.finder.useDeterministicRandom()
+
+	client.locationRouter.finder.update(createReadRecipeCacheUpdate("Albums"))
+
+	kset, err := KeySets(Key{"b"}).keySetProto()
+	if err != nil {
+		t.Fatalf("keySetProto() failed: %v", err)
+	}
+	routeReq := &sppb.ReadRequest{
+		Table:   "Albums",
+		Columns: []string{"SingerId", "AlbumId", "AlbumTitle"},
+		KeySet:  kset,
+	}
+	client.locationRouter.finder.recipeCache.computeReadKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	sh, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() failed: %v", err)
+	}
+	if _, ok := sh.getClient().(*locationAwareSpannerClient); !ok {
+		sh.recycle()
+		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
+	}
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	cooldownTracker := newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
+		return n - 1
+	})
+	client.sm.setLocationAwareState(client.locationRouter, cooldownTracker)
+	sh.recycle()
+
+	iter := client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	row, err := iter.Next()
+	if err != nil {
+		iter.Stop()
+		t.Fatalf("first iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		iter.Stop()
+		t.Fatal("first iter.Next() returned nil row")
+	}
+	iter.Stop()
+	if !cooldownTracker.isCoolingDown(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to enter cooldown", harness.ReplicaAddresses[0])
+	}
+
+	iter = client.Single().Read(context.Background(), "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	row, err = iter.Next()
+	if err != nil {
+		iter.Stop()
+		t.Fatalf("second iter.Next() returned unexpected error: %v", err)
+	}
+	if row == nil {
+		iter.Stop()
+		t.Fatal("second iter.Next() returned nil row")
+	}
+	iter.Stop()
+
+	replicaARequests := harness.Replicas[0].Requests(MethodStreamingRead)
+	replicaBRequests := harness.Replicas[1].Requests(MethodStreamingRead)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A StreamingRead request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 2; got != want {
+		t.Fatalf("replica B StreamingRead request count = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodStreamingRead)); got != 0 {
+		t.Fatalf("default replica StreamingRead request count = %d, want 0", got)
+	}
+}
+
+func TestClient_Single_StreamingReadConcurrentStrongReadsRecordEndpointScoreForBypassTraffic(t *testing.T) {
+	t.Parallel()
+	withIsolatedEndpointLatencyRegistry(t)
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 1)
+	defer teardown()
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	if client.locationRouter == nil {
+		t.Fatal("expected location router to be enabled")
+	}
+
+	client.locationRouter.finder.update(createReadRecipeCacheUpdate("Albums"))
+
+	kset, err := KeySets(Key{"b"}).keySetProto()
+	if err != nil {
+		t.Fatalf("keySetProto() failed: %v", err)
+	}
+	routeReq := &sppb.ReadRequest{
+		Table:   "Albums",
+		Columns: []string{"SingerId", "AlbumId", "AlbumTitle"},
+		KeySet:  kset,
+	}
+	client.locationRouter.finder.recipeCache.computeReadKeys(routeReq)
+	update := createRangeCacheUpdateForHint(routeReq.GetRoutingHint())
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	client.locationRouter.finder.update(update)
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(routeReq).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[0])
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	group, groupCtx := errgroup.WithContext(ctx)
+	for i := 0; i < 8; i++ {
+		group.Go(func() error {
+			iter := client.Single().Read(groupCtx, "Albums", KeySets(Key{"b"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+			defer iter.Stop()
+
+			row, err := iter.Next()
+			if err != nil {
+				return err
+			}
+			if row == nil {
+				return fmt.Errorf("iter.Next() returned nil row")
+			}
+			return nil
+		})
+	}
+	if err := group.Wait(); err != nil {
+		t.Fatalf("concurrent Single().Read() failed: %v", err)
+	}
+
+	operationUID := routeReq.GetRoutingHint().GetOperationUid()
+	if operationUID == 0 {
+		t.Fatal("expected routing hint operation UID to be populated")
+	}
+	waitForCondition(t, time.Second, func() bool {
+		return endpointLatencyRegistryHasScore(operationUID, true, harness.ReplicaAddresses[0])
+	})
+
+	replicaRequests := harness.Replicas[0].Requests(MethodStreamingRead)
+	if got := len(replicaRequests); got != 8 {
+		t.Fatalf("replica StreamingRead request count = %d, want 8", got)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodStreamingRead)); got != 0 {
+		t.Fatalf("default replica StreamingRead request count = %d, want 0", got)
+	}
+}
+
+func TestLocationAwareExecuteStreamingSql_CooldownRoutesToNextReplicaAndEndpointBecomesEligibleAfterExpiry(t *testing.T) {
+	t.Parallel()
+	withIsolatedEndpointLatencyRegistry(t)
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodExecuteStreamingSql, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	update := createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.observeResultSet(&sppb.ResultSet{CacheUpdate: update})
+
+	sh, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() failed: %v", err)
+	}
+	defer sh.recycle()
+
+	req := &sppb.ExecuteSqlRequest{
+		Session: sh.getID(),
+		Sql:     SelectFooFromBar,
+		RoutingHint: &sppb.RoutingHint{
+			Key: []byte("b"),
+		},
+		Params: &structpb.Struct{},
+	}
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(req).(*sppb.ExecuteSqlRequest)
+		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	lac, ok := sh.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
+	}
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
+		return n - 1
+	})
+
+	stream, err := lac.ExecuteStreamingSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.82.1")...)
+	if err != nil {
+		t.Fatalf("first ExecuteStreamingSql() returned unexpected stream creation error: %v", err)
+	}
+	_, err = stream.Recv()
+	if status.Code(err) != codes.ResourceExhausted {
+		t.Fatalf("first stream Recv() error = %v, want RESOURCE_EXHAUSTED", err)
+	}
+	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to enter cooldown", harness.ReplicaAddresses[0])
+	}
+
+	stream, err = lac.ExecuteStreamingSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.82.2")...)
+	if err != nil {
+		t.Fatalf("second ExecuteStreamingSql() returned unexpected stream creation error: %v", err)
+	}
+	_, err = stream.Recv()
+	if err != nil {
+		t.Fatalf("second stream Recv() returned unexpected error: %v", err)
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodExecuteStreamingSql)
+	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteStreamingSql)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A ExecuteStreamingSql request count after cooldown reroute = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B ExecuteStreamingSql request count after cooldown reroute = %d, want %d", got, want)
+	}
+
+	clock.Advance(2 * time.Minute)
+	clearEndpointLatencyRegistry()
+	client.locationRouter.finder.useDeterministicRandom()
+
+	stream, err = lac.ExecuteStreamingSql(context.Background(), req, testCallOptionsWithRequestID("1.proc.1.1.82.3")...)
+	if err != nil {
+		t.Fatalf("third ExecuteStreamingSql() returned unexpected stream creation error: %v", err)
+	}
+	_, err = stream.Recv()
+	if err != nil {
+		t.Fatalf("third stream Recv() returned unexpected error: %v", err)
+	}
+	if lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q cooldown to remain expired after cooldown-window re-entry", harness.ReplicaAddresses[0])
+	}
+	if _, ok := lac.endpointCooldowns.entries[harness.ReplicaAddresses[0]]; !ok {
+		t.Fatalf("expected routed address %q failure state to remain tracked until quiet-window reset", harness.ReplicaAddresses[0])
+	}
+
+	replicaARequests = harness.Replicas[0].Requests(MethodExecuteStreamingSql)
+	replicaBRequests = harness.Replicas[1].Requests(MethodExecuteStreamingSql)
+	if got, want := len(replicaARequests), 2; got != want {
+		t.Fatalf("replica A ExecuteStreamingSql request count after cooldown expiry = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B ExecuteStreamingSql request count after cooldown expiry = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodExecuteStreamingSql)); got != 0 {
+		t.Fatalf("default replica ExecuteStreamingSql request count after cooldown expiry = %d, want 0", got)
+	}
+}
+
+func TestLocationAwareRead_ReroutesToNextReplicaAndMarksCooldownScopes(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodRead, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	update := createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.observeResultSet(&sppb.ResultSet{CacheUpdate: update})
+
+	sh, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() failed: %v", err)
+	}
+	defer sh.recycle()
+
+	req := &sppb.ReadRequest{
+		Session:     sh.getID(),
+		Table:       "BAR",
+		Columns:     []string{"FOO"},
+		RoutingHint: &sppb.RoutingHint{Key: []byte("b")},
+	}
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(req).(*sppb.ReadRequest)
+		endpoint := client.locationRouter.prepareReadRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	lac, ok := sh.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
+	}
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
+		return n - 1
+	})
+
+	callOpts := testCallOptionsWithRequestID("1.proc.1.1.56.1")
+	resp, err := lac.Read(context.Background(), req, callOpts...)
+	if err != nil {
+		t.Fatalf("Read() returned unexpected error: %v", err)
+	}
+	if resp == nil {
+		t.Fatal("Read() returned nil response")
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodRead)
+	replicaBRequests := harness.Replicas[1].Requests(MethodRead)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A Read request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B Read request count = %d, want %d", got, want)
+	}
+	replicaAReq, ok := replicaARequests[0].(*sppb.ReadRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.ReadRequest", replicaARequests[0])
+	}
+	if got, want := replicaAReq.GetSession(), sh.getID(); got != want {
+		t.Fatalf("replica A session = %q, want %q", got, want)
+	}
+
+	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to enter overload cooldown after RESOURCE_EXHAUSTED", harness.ReplicaAddresses[0])
+	}
+}
+
+func TestLocationAwareBeginTransaction_ReroutesToNextReplicaAndMarksCooldownScopes(t *testing.T) {
+	t.Parallel()
+
+	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
+	defer teardown()
+	harness.Replicas[0].PutMethodErrors(MethodBeginTransaction, serverErrorWithMinimalRetryDelay(codes.ResourceExhausted, "busy"))
+
+	client, err := makeClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{
+			DisableNativeMetrics: true,
+			IsExperimentalHost:   true,
+		},
+		harness.DefaultAddress,
+		clientOpts...,
+	)
+	if err != nil {
+		t.Fatalf("makeClientWithConfig() failed: %v", err)
+	}
+	defer client.Close()
+
+	client.locationRouter.observeResultSet(&sppb.ResultSet{CacheUpdate: createMutationRecipeCacheUpdate()})
+
+	sh, err := client.sm.takeMultiplexed(context.Background())
+	if err != nil {
+		t.Fatalf("takeMultiplexed() failed: %v", err)
+	}
+	defer sh.recycle()
+
+	req := &sppb.BeginTransactionRequest{
+		Session:     sh.getID(),
+		MutationKey: createInsertMutation("a"),
+	}
+	var routingHint *sppb.RoutingHint
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(req).(*sppb.BeginTransactionRequest)
+		client.locationRouter.prepareBeginTransactionRequest(context.Background(), prepared)
+		hint := prepared.GetRoutingHint()
+		if hint == nil || len(hint.GetKey()) == 0 {
+			return false
+		}
+		routingHint = proto.Clone(hint).(*sppb.RoutingHint)
+		return true
+	})
+	update := createRangeCacheUpdateForHint(routingHint)
+	update.Group[0].Tablets[0].ServerAddress = harness.ReplicaAddresses[0]
+	update.Group[0].Tablets = append(update.Group[0].Tablets, &sppb.Tablet{
+		TabletUid:     12,
+		ServerAddress: harness.ReplicaAddresses[1],
+		Role:          sppb.Tablet_READ_WRITE,
+		Incarnation:   []byte("i2"),
+	})
+	client.locationRouter.observeResultSet(&sppb.ResultSet{CacheUpdate: update})
+
+	waitForCondition(t, time.Second, func() bool {
+		prepared := proto.Clone(req).(*sppb.BeginTransactionRequest)
+		endpoint := client.locationRouter.prepareBeginTransactionRequest(context.Background(), prepared)
+		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
+	})
+	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+
+	lac, ok := sh.getClient().(*locationAwareSpannerClient)
+	if !ok {
+		t.Fatalf("session client type = %T, want *locationAwareSpannerClient", sh.getClient())
+	}
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
+		return n - 1
+	})
+
+	callOpts := testCallOptionsWithRequestID("1.proc.1.1.57.1")
+	resp, err := lac.BeginTransaction(context.Background(), req, callOpts...)
+	if err != nil {
+		t.Fatalf("BeginTransaction() returned unexpected error: %v", err)
+	}
+	if resp == nil {
+		t.Fatal("BeginTransaction() returned nil response")
+	}
+
+	replicaARequests := harness.Replicas[0].Requests(MethodBeginTransaction)
+	replicaBRequests := harness.Replicas[1].Requests(MethodBeginTransaction)
+	if got, want := len(replicaARequests), 1; got != want {
+		t.Fatalf("replica A BeginTransaction request count = %d, want %d", got, want)
+	}
+	if got, want := len(replicaBRequests), 1; got != want {
+		t.Fatalf("replica B BeginTransaction request count = %d, want %d", got, want)
+	}
+	if got := len(harness.DefaultReplica.Requests(MethodBeginTransaction)); got != 0 {
+		t.Fatalf("default replica BeginTransaction request count = %d, want 0", got)
+	}
+	replicaAReq, ok := replicaARequests[0].(*sppb.BeginTransactionRequest)
+	if !ok {
+		t.Fatalf("replica A request type = %T, want *spannerpb.BeginTransactionRequest", replicaARequests[0])
+	}
+	if got, want := replicaAReq.GetSession(), sh.getID(); got != want {
+		t.Fatalf("replica A session = %q, want %q", got, want)
+	}
+
+	if !lac.endpointCooldowns.isCoolingDown(harness.ReplicaAddresses[0]) {
+		t.Fatalf("expected routed address %q to enter overload cooldown after RESOURCE_EXHAUSTED", harness.ReplicaAddresses[0])
+	}
 }
 
 func TestClient_Single_InvalidArgument(t *testing.T) {
@@ -1632,6 +3649,416 @@ func TestClient_ReadWriteTransactionCommitAborted(t *testing.T) {
 	}, 2); err != nil {
 		t.Fatal(err)
 	}
+}
+
+// TestClient_ReadWriteTransaction_FabricatedAbortTriggersRollback verifies that
+// when the transaction body returns a client-fabricated codes.Aborted error
+// after a successful statement, the client rolls back the still-live server
+// transaction before retrying so locks are released.
+func TestClient_ReadWriteTransaction_FabricatedAbortTriggersRollback(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	var attempts int
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		c, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+			return fmt.Errorf("update count mismatch\nGot:  %v\nWant: %v", g, w)
+		}
+		if attempts == 1 {
+			// Fabricated abort: Spanner did not abort this transaction.
+			return status.Error(codes.Aborted, "application requested retry")
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("unexpected number of attempts: %d, expected %d", g, w)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	// After rolling back the fabricated-abort attempt the client clears the
+	// transaction id, so the retry uses an explicit BeginTransaction.
+	if err := compareRequests([]interface{}{
+		&sppb.CreateSessionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.RollbackRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+	rollbacks := requestsOfType(requests, reflect.TypeOf(&sppb.RollbackRequest{}))
+	if g, w := len(rollbacks), 1; g != w {
+		t.Fatalf("rollback count mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+	if len(rollbacks[0].(*sppb.RollbackRequest).TransactionId) == 0 {
+		t.Fatal("expected RollbackRequest with a non-empty transaction id")
+	}
+}
+
+// TestClient_ReadWriteTransaction_ServerAbortDoesNotRollback is a regression
+// guard: a genuine Spanner ABORTED on commit must not send Rollback (the server
+// already released locks) and must still retry and commit successfully.
+func TestClient_ReadWriteTransaction_ServerAbortDoesNotRollback(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction, SimulatedExecutionTime{
+		Errors: []error{status.Error(codes.Aborted, "Transaction aborted")},
+	})
+
+	var attempts int
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		c, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+			return fmt.Errorf("update count mismatch\nGot:  %v\nWant: %v", g, w)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("unexpected number of attempts: %d, expected %d", g, w)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.CreateSessionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+	rollbacks := requestsOfType(requests, reflect.TypeOf(&sppb.RollbackRequest{}))
+	if g, w := len(rollbacks), 0; g != w {
+		t.Fatalf("rollback count mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+}
+
+// TestClient_ReadWriteTransaction_FabricatedAbortBeforeAnyRPC verifies that
+// returning codes.Aborted before any RPC (inline begin still pending) does not
+// send a RollbackRequest with an empty/nil transaction id, and still retries
+// successfully.
+func TestClient_ReadWriteTransaction_FabricatedAbortBeforeAnyRPC(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	var attempts int
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		if attempts == 1 {
+			return status.Error(codes.Aborted, "application requested retry before any RPC")
+		}
+		c, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+			return fmt.Errorf("update count mismatch\nGot:  %v\nWant: %v", g, w)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("unexpected number of attempts: %d, expected %d", g, w)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	// No server-side transaction was started on attempt 1, so rollback is a
+	// no-op (no RollbackRequest). Attempt 2 uses an explicit BeginTransaction
+	// because the prior attempt closed the transaction state.
+	if err := compareRequests([]interface{}{
+		&sppb.CreateSessionRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+	rollbacks := requestsOfType(requests, reflect.TypeOf(&sppb.RollbackRequest{}))
+	if g, w := len(rollbacks), 0; g != w {
+		t.Fatalf("rollback count mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+}
+
+// TestClient_ReadWriteTransaction_FabricatedAbortWithExplicitBegin verifies that
+// a body-fabricated codes.Aborted under ExplicitBeginTransaction rolls back,
+// starts a new transaction on retry (new BeginTransactionRequest), and commits
+// without deadlocking on the rolled-back transaction id.
+func TestClient_ReadWriteTransaction_FabricatedAbortWithExplicitBegin(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	var attempts int
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		c, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+			return fmt.Errorf("update count mismatch\nGot:  %v\nWant: %v", g, w)
+		}
+		if attempts == 1 {
+			return status.Error(codes.Aborted, "application requested retry")
+		}
+		return nil
+	}, TransactionOptions{BeginTransactionOption: ExplicitBeginTransaction})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("unexpected number of attempts: %d, expected %d", g, w)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.CreateSessionRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.RollbackRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+	rollbacks := requestsOfType(requests, reflect.TypeOf(&sppb.RollbackRequest{}))
+	if g, w := len(rollbacks), 1; g != w {
+		t.Fatalf("rollback count mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+	if len(rollbacks[0].(*sppb.RollbackRequest).TransactionId) == 0 {
+		t.Fatal("expected RollbackRequest with a non-empty transaction id")
+	}
+	begins := requestsOfType(requests, reflect.TypeOf(&sppb.BeginTransactionRequest{}))
+	if g, w := len(begins), 2; g != w {
+		t.Fatalf("BeginTransaction count mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+}
+
+func TestReadWriteTransaction_FabricatedAbortReturnsRollbackError(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		name        string
+		rollbackErr error
+	}{
+		{name: "FailedPrecondition", rollbackErr: status.Error(codes.FailedPrecondition, "rollback failed")},
+		// Retryable-looking rollback failures must still be non-retryable to the
+		// outer transaction runner so a new attempt is not started while locks
+		// may still be held.
+		{name: "Aborted", rollbackErr: status.Error(codes.Aborted, "rollback aborted")},
+		{name: "Internal", rollbackErr: status.Error(codes.Internal, "rollback internal")},
+		{name: "ResourceExhausted", rollbackErr: status.Error(codes.ResourceExhausted, "rollback resource exhausted")},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rpcClient := &mockSpannerClient{rollbackErr: tc.rollbackErr}
+			txID := transactionID("transaction-id")
+			tx := &ReadWriteTransaction{
+				txReadOnly: txReadOnly{
+					sh: &sessionHandle{
+						session: &session{id: "session-id"},
+						client:  rpcClient,
+					},
+				},
+				tx:              txID,
+				txReadyOrClosed: make(chan struct{}),
+				state:           txActive,
+			}
+
+			var attempts int
+			err := runWithRetryOnAbortedOrFailedInlineBegin(context.Background(), func(ctx context.Context) error {
+				attempts++
+				// Re-arm state for a synthetic outer retry that must not happen.
+				tx.state = txActive
+				tx.tx = txID
+				_, err := tx.runInTransaction(ctx, func(context.Context, *ReadWriteTransaction) error {
+					return status.Error(codes.Aborted, "application requested retry")
+				})
+				return err
+			})
+			if g, w := ErrCode(err), codes.FailedPrecondition; g != w {
+				t.Fatalf("error code mismatch\nGot:  %v\nWant: %v", g, w)
+			}
+			if !strings.Contains(err.Error(), "failed to roll back transaction before retry") {
+				t.Fatalf("error message mismatch\nGot: %v", err)
+			}
+			if g, w := attempts, 1; g != w {
+				t.Fatalf("outer retry attempts mismatch\nGot:  %v\nWant: %v", g, w)
+			}
+			if g, w := rpcClient.rollbackCount, 1; g != w {
+				t.Fatalf("rollback count mismatch\nGot:  %v\nWant: %v", g, w)
+			}
+			if g, w := string(tx.tx), string(txID); g != w {
+				t.Fatalf("transaction id mismatch\nGot:  %v\nWant: %v", g, w)
+			}
+		})
+	}
+}
+
+type txInitWaitContext struct {
+	context.Context
+	once    sync.Once
+	entered chan struct{}
+}
+
+func (c *txInitWaitContext) Done() <-chan struct{} {
+	c.once.Do(func() { close(c.entered) })
+	return c.Context.Done()
+}
+
+// testInlineStreamingAbortWakesConcurrentAcquire covers the regression where a
+// genuine streaming ABORTED during inline begin left concurrent acquire waiters
+// blocked because txInit->txAborted did not close txReadyOrClosed.
+func testInlineStreamingAbortWakesConcurrentAcquire(t *testing.T, streamMethod string, runStream func(context.Context, *ReadWriteTransaction) error) {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	server.TestSpanner.PutExecutionTime(streamMethod, SimulatedExecutionTime{
+		Errors: []error{status.Error(codes.Aborted, "Transaction aborted")},
+	})
+	server.TestSpanner.Freeze()
+	unfrozen := false
+	defer func() {
+		if !unfrozen {
+			server.TestSpanner.Unfreeze()
+		}
+	}()
+
+	var attempts int
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		if attempts > 1 {
+			// Retry path: single statement after the aborted inline begin.
+			_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+			return err
+		}
+
+		streamErrCh := make(chan error, 1)
+		go func() {
+			streamErrCh <- runStream(ctx, tx)
+		}()
+
+		waitDeadline := time.After(2 * time.Second)
+	waitForStream:
+		for {
+			select {
+			case req := <-server.TestSpanner.ReceivedRequests():
+				switch req.(type) {
+				case *sppb.ExecuteSqlRequest, *sppb.ReadRequest:
+					break waitForStream
+				}
+			case <-waitDeadline:
+				t.Fatal("timed out waiting for inline streaming request")
+			case <-ctx.Done():
+				t.Fatal(ctx.Err())
+			}
+		}
+
+		waitCtx := &txInitWaitContext{Context: ctx, entered: make(chan struct{})}
+		updateErrCh := make(chan error, 1)
+		go func() {
+			_, err := tx.Update(waitCtx, NewStatement(UpdateBarSetFoo))
+			updateErrCh <- err
+		}()
+		select {
+		case <-waitCtx.entered:
+		case <-time.After(2 * time.Second):
+			t.Fatal("timed out waiting for concurrent acquire")
+		case <-ctx.Done():
+			t.Fatal(ctx.Err())
+		}
+		server.TestSpanner.Unfreeze()
+		unfrozen = true
+
+		var streamErr, updateErr error
+		for i := 0; i < 2; i++ {
+			select {
+			case streamErr = <-streamErrCh:
+				streamErrCh = nil
+			case updateErr = <-updateErrCh:
+				updateErrCh = nil
+			case <-time.After(3 * time.Second):
+				t.Fatal("concurrent acquire remained blocked after inline-begin ABORTED")
+			case <-ctx.Done():
+				t.Fatal(ctx.Err())
+			}
+		}
+		// Prefer the streaming abort (or either error) so the runner retries.
+		if streamErr != nil {
+			return streamErr
+		}
+		return updateErr
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("unexpected number of attempts: %d, expected %d", g, w)
+	}
+}
+
+// TestClient_ReadWriteTransaction_InlineStreamingQueryAbortWakesConcurrentAcquire
+// verifies that a genuine ABORTED on an inline Query wakes concurrent acquire
+// waiters and the transaction retries successfully.
+func TestClient_ReadWriteTransaction_InlineStreamingQueryAbortWakesConcurrentAcquire(t *testing.T) {
+	t.Parallel()
+	testInlineStreamingAbortWakesConcurrentAcquire(t, MethodExecuteStreamingSql, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				return nil
+			}
+			if err != nil {
+				return err
+			}
+		}
+	})
+}
+
+// TestClient_ReadWriteTransaction_InlineStreamingReadAbortWakesConcurrentAcquire
+// verifies that a genuine ABORTED on an inline Read wakes concurrent acquire
+// waiters and the transaction retries successfully.
+func TestClient_ReadWriteTransaction_InlineStreamingReadAbortWakesConcurrentAcquire(t *testing.T) {
+	t.Parallel()
+	testInlineStreamingAbortWakesConcurrentAcquire(t, MethodStreamingRead, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				return nil
+			}
+			if err != nil {
+				return err
+			}
+		}
+	})
 }
 
 func TestClient_ReadWriteTransaction_BufferedWriteBeforeAbortedFirstSqlStatement(t *testing.T) {

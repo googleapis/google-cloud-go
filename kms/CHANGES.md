@@ -1,6 +1,22 @@
 # Changes
 
 
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.31.0...kms/v1.32.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+* Update API sources and regenerate ([#20109](https://github.com/googleapis/google-cloud-go/issues/20109)) ([4314d30](https://github.com/googleapis/google-cloud-go/commit/4314d305008d9a4b2d9f464d07519f8081b2277d))
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.31.0) (2026-05-07)
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.30.0) (2026-04-30)
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.29.0) (2026-04-13)
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.28.0) (2026-04-09)
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.27.0) (2026-04-02)
 
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.26.0) (2026-02-19)

@@ -1,5 +1,13 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/orgpolicy%2Fv1.20.0) (2026-05-07)
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/orgpolicy%2Fv1.19.0) (2026-04-30)
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/orgpolicy%2Fv1.18.0) (2026-04-13)
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/orgpolicy%2Fv1.17.0) (2026-04-09)
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/orgpolicy%2Fv1.16.0) (2026-04-02)
 
 ## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.15.0...orgpolicy/v1.15.1) (2025-09-18)

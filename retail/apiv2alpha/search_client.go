@@ -29,6 +29,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -153,7 +154,7 @@ type SearchClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *SearchClient) Close() error {
 	return c.internalClient.Close()
@@ -222,6 +223,16 @@ type searchGRPCClient struct {
 // Enable Retail Search on Cloud Console before using this feature.
 func NewSearchClient(ctx context.Context, opts ...option.ClientOption) (*SearchClient, error) {
 	clientOpts := defaultSearchGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "retail",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/retail/apiv2alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "retail.googleapis.com",
+		}))
+	}
 	if newSearchClientHook != nil {
 		hookOpts, err := newSearchClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -244,6 +255,22 @@ func NewSearchClient(ctx context.Context, opts ...option.ClientOption) (*SearchC
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Search = append(client.CallOptions.Search, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -269,7 +296,7 @@ func (c *searchGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *searchGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -300,6 +327,16 @@ type searchRESTClient struct {
 // Enable Retail Search on Cloud Console before using this feature.
 func NewSearchRESTClient(ctx context.Context, opts ...option.ClientOption) (*SearchClient, error) {
 	clientOpts := append(defaultSearchRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "retail",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/retail/apiv2alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "retail.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -313,6 +350,23 @@ func NewSearchRESTClient(ctx context.Context, opts ...option.ClientOption) (*Sea
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.Search = append(callOpts.Search, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	return &SearchClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -340,7 +394,7 @@ func (c *searchRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *searchRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -359,9 +413,15 @@ func (c *searchGRPCClient) Search(ctx context.Context, req *retailpb.SearchReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetBranch()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.SearchService/Search")
+	}
 	opts = append((*c.CallOptions).Search[0:len((*c.CallOptions).Search):len((*c.CallOptions).Search)], opts...)
 	it := &SearchResponse_SearchResultIterator{}
-	req = proto.Clone(req).(*retailpb.SearchRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*retailpb.SearchResponse_SearchResult, string, error) {
 		resp := &retailpb.SearchResponse{}
 		if pageToken != "" {
@@ -405,6 +465,9 @@ func (c *searchGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -423,9 +486,12 @@ func (c *searchGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -470,7 +536,7 @@ func (c *searchGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 // Enable Retail Search on Cloud Console before using this feature.
 func (c *searchRESTClient) Search(ctx context.Context, req *retailpb.SearchRequest, opts ...gax.CallOption) *SearchResponse_SearchResultIterator {
 	it := &SearchResponse_SearchResultIterator{}
-	req = proto.Clone(req).(*retailpb.SearchRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*retailpb.SearchResponse_SearchResult, string, error) {
@@ -564,6 +630,10 @@ func (c *searchRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{name=projects/*/locations/*/catalogs/*/branches/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -598,7 +668,7 @@ func (c *searchRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *searchRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

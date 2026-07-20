@@ -1,5 +1,27 @@
 # Changes
 
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.29.0...networkmanagement/v1.30.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.28.0...networkmanagement/v1.29.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.28.0) (2026-05-07)
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.27.0) (2026-04-30)
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.26.0) (2026-04-13)
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.25.0) (2026-04-09)
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.24.0) (2026-04-02)
 
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.23.0) (2026-03-05)

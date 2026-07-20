@@ -30,6 +30,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	notebookspb "cloud.google.com/go/notebooks/apiv1/notebookspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -342,7 +344,7 @@ type NotebookClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *NotebookClient) Close() error {
 	return c.internalClient.Close()
@@ -770,6 +772,16 @@ type notebookGRPCClient struct {
 // API v1 service for Cloud AI Platform Notebooks.
 func NewNotebookClient(ctx context.Context, opts ...option.ClientOption) (*NotebookClient, error) {
 	clientOpts := defaultNotebookGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "notebooks",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/notebooks/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "notebooks.googleapis.com",
+		}))
+	}
 	if newNotebookClientHook != nil {
 		hookOpts, err := newNotebookClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -794,6 +806,62 @@ func NewNotebookClient(ctx context.Context, opts ...option.ClientOption) (*Noteb
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "notebooks",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/notebooks/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "notebooks.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.RegisterInstance = append(client.CallOptions.RegisterInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetInstanceAccelerator = append(client.CallOptions.SetInstanceAccelerator, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetInstanceMachineType = append(client.CallOptions.SetInstanceMachineType, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateInstanceConfig = append(client.CallOptions.UpdateInstanceConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateShieldedInstanceConfig = append(client.CallOptions.UpdateShieldedInstanceConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetInstanceLabels = append(client.CallOptions.SetInstanceLabels, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateInstanceMetadataItems = append(client.CallOptions.UpdateInstanceMetadataItems, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartInstance = append(client.CallOptions.StartInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.StopInstance = append(client.CallOptions.StopInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResetInstance = append(client.CallOptions.ResetInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReportInstanceInfo = append(client.CallOptions.ReportInstanceInfo, gax.WithClientMetrics(metrics))
+		client.CallOptions.IsInstanceUpgradeable = append(client.CallOptions.IsInstanceUpgradeable, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInstanceHealth = append(client.CallOptions.GetInstanceHealth, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpgradeInstance = append(client.CallOptions.UpgradeInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.RollbackInstance = append(client.CallOptions.RollbackInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.DiagnoseInstance = append(client.CallOptions.DiagnoseInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpgradeInstanceInternal = append(client.CallOptions.UpgradeInstanceInternal, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEnvironments = append(client.CallOptions.ListEnvironments, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEnvironment = append(client.CallOptions.GetEnvironment, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateEnvironment = append(client.CallOptions.CreateEnvironment, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEnvironment = append(client.CallOptions.DeleteEnvironment, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSchedules = append(client.CallOptions.ListSchedules, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSchedule = append(client.CallOptions.GetSchedule, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSchedule = append(client.CallOptions.DeleteSchedule, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSchedule = append(client.CallOptions.CreateSchedule, gax.WithClientMetrics(metrics))
+		client.CallOptions.TriggerSchedule = append(client.CallOptions.TriggerSchedule, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListExecutions = append(client.CallOptions.ListExecutions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetExecution = append(client.CallOptions.GetExecution, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteExecution = append(client.CallOptions.DeleteExecution, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateExecution = append(client.CallOptions.CreateExecution, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -830,7 +898,7 @@ func (c *notebookGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *notebookGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -841,9 +909,12 @@ func (c *notebookGRPCClient) ListInstances(ctx context.Context, req *notebookspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/ListInstances")
+	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*notebookspb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*notebookspb.Instance, string, error) {
 		resp := &notebookspb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -887,6 +958,9 @@ func (c *notebookGRPCClient) GetInstance(ctx context.Context, req *notebookspb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/GetInstance")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *notebookspb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -905,6 +979,9 @@ func (c *notebookGRPCClient) CreateInstance(ctx context.Context, req *notebooksp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/CreateInstance")
+	}
 	opts = append((*c.CallOptions).CreateInstance[0:len((*c.CallOptions).CreateInstance):len((*c.CallOptions).CreateInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -915,8 +992,12 @@ func (c *notebookGRPCClient) CreateInstance(ctx context.Context, req *notebooksp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -925,6 +1006,9 @@ func (c *notebookGRPCClient) RegisterInstance(ctx context.Context, req *notebook
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/RegisterInstance")
+	}
 	opts = append((*c.CallOptions).RegisterInstance[0:len((*c.CallOptions).RegisterInstance):len((*c.CallOptions).RegisterInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -935,8 +1019,12 @@ func (c *notebookGRPCClient) RegisterInstance(ctx context.Context, req *notebook
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.RegisterInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RegisterInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -945,6 +1033,9 @@ func (c *notebookGRPCClient) SetInstanceAccelerator(ctx context.Context, req *no
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/SetInstanceAccelerator")
+	}
 	opts = append((*c.CallOptions).SetInstanceAccelerator[0:len((*c.CallOptions).SetInstanceAccelerator):len((*c.CallOptions).SetInstanceAccelerator)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -955,8 +1046,12 @@ func (c *notebookGRPCClient) SetInstanceAccelerator(ctx context.Context, req *no
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.SetInstanceAcceleratorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SetInstanceAcceleratorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -965,6 +1060,9 @@ func (c *notebookGRPCClient) SetInstanceMachineType(ctx context.Context, req *no
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/SetInstanceMachineType")
+	}
 	opts = append((*c.CallOptions).SetInstanceMachineType[0:len((*c.CallOptions).SetInstanceMachineType):len((*c.CallOptions).SetInstanceMachineType)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -975,8 +1073,12 @@ func (c *notebookGRPCClient) SetInstanceMachineType(ctx context.Context, req *no
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.SetInstanceMachineTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SetInstanceMachineTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -985,6 +1087,9 @@ func (c *notebookGRPCClient) UpdateInstanceConfig(ctx context.Context, req *note
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/UpdateInstanceConfig")
+	}
 	opts = append((*c.CallOptions).UpdateInstanceConfig[0:len((*c.CallOptions).UpdateInstanceConfig):len((*c.CallOptions).UpdateInstanceConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -995,8 +1100,12 @@ func (c *notebookGRPCClient) UpdateInstanceConfig(ctx context.Context, req *note
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.UpdateInstanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1005,6 +1114,9 @@ func (c *notebookGRPCClient) UpdateShieldedInstanceConfig(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/UpdateShieldedInstanceConfig")
+	}
 	opts = append((*c.CallOptions).UpdateShieldedInstanceConfig[0:len((*c.CallOptions).UpdateShieldedInstanceConfig):len((*c.CallOptions).UpdateShieldedInstanceConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1015,8 +1127,12 @@ func (c *notebookGRPCClient) UpdateShieldedInstanceConfig(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.UpdateShieldedInstanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateShieldedInstanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1025,6 +1141,9 @@ func (c *notebookGRPCClient) SetInstanceLabels(ctx context.Context, req *noteboo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/SetInstanceLabels")
+	}
 	opts = append((*c.CallOptions).SetInstanceLabels[0:len((*c.CallOptions).SetInstanceLabels):len((*c.CallOptions).SetInstanceLabels)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1035,8 +1154,12 @@ func (c *notebookGRPCClient) SetInstanceLabels(ctx context.Context, req *noteboo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.SetInstanceLabelsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SetInstanceLabelsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1045,6 +1168,9 @@ func (c *notebookGRPCClient) UpdateInstanceMetadataItems(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/UpdateInstanceMetadataItems")
+	}
 	opts = append((*c.CallOptions).UpdateInstanceMetadataItems[0:len((*c.CallOptions).UpdateInstanceMetadataItems):len((*c.CallOptions).UpdateInstanceMetadataItems)], opts...)
 	var resp *notebookspb.UpdateInstanceMetadataItemsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1063,6 +1189,9 @@ func (c *notebookGRPCClient) DeleteInstance(ctx context.Context, req *notebooksp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/DeleteInstance")
+	}
 	opts = append((*c.CallOptions).DeleteInstance[0:len((*c.CallOptions).DeleteInstance):len((*c.CallOptions).DeleteInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1073,8 +1202,12 @@ func (c *notebookGRPCClient) DeleteInstance(ctx context.Context, req *notebooksp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1083,6 +1216,9 @@ func (c *notebookGRPCClient) StartInstance(ctx context.Context, req *notebookspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/StartInstance")
+	}
 	opts = append((*c.CallOptions).StartInstance[0:len((*c.CallOptions).StartInstance):len((*c.CallOptions).StartInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1093,8 +1229,12 @@ func (c *notebookGRPCClient) StartInstance(ctx context.Context, req *notebookspb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.StartInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1103,6 +1243,9 @@ func (c *notebookGRPCClient) StopInstance(ctx context.Context, req *notebookspb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/StopInstance")
+	}
 	opts = append((*c.CallOptions).StopInstance[0:len((*c.CallOptions).StopInstance):len((*c.CallOptions).StopInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1113,8 +1256,12 @@ func (c *notebookGRPCClient) StopInstance(ctx context.Context, req *notebookspb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.StopInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1123,6 +1270,9 @@ func (c *notebookGRPCClient) ResetInstance(ctx context.Context, req *notebookspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/ResetInstance")
+	}
 	opts = append((*c.CallOptions).ResetInstance[0:len((*c.CallOptions).ResetInstance):len((*c.CallOptions).ResetInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1133,8 +1283,12 @@ func (c *notebookGRPCClient) ResetInstance(ctx context.Context, req *notebookspb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.ResetInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResetInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1143,6 +1297,9 @@ func (c *notebookGRPCClient) ReportInstanceInfo(ctx context.Context, req *notebo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/ReportInstanceInfo")
+	}
 	opts = append((*c.CallOptions).ReportInstanceInfo[0:len((*c.CallOptions).ReportInstanceInfo):len((*c.CallOptions).ReportInstanceInfo)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1153,8 +1310,12 @@ func (c *notebookGRPCClient) ReportInstanceInfo(ctx context.Context, req *notebo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.ReportInstanceInfoOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReportInstanceInfoOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1163,6 +1324,9 @@ func (c *notebookGRPCClient) IsInstanceUpgradeable(ctx context.Context, req *not
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/IsInstanceUpgradeable")
+	}
 	opts = append((*c.CallOptions).IsInstanceUpgradeable[0:len((*c.CallOptions).IsInstanceUpgradeable):len((*c.CallOptions).IsInstanceUpgradeable)], opts...)
 	var resp *notebookspb.IsInstanceUpgradeableResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1181,6 +1345,12 @@ func (c *notebookGRPCClient) GetInstanceHealth(ctx context.Context, req *noteboo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/GetInstanceHealth")
+	}
 	opts = append((*c.CallOptions).GetInstanceHealth[0:len((*c.CallOptions).GetInstanceHealth):len((*c.CallOptions).GetInstanceHealth)], opts...)
 	var resp *notebookspb.GetInstanceHealthResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1199,6 +1369,9 @@ func (c *notebookGRPCClient) UpgradeInstance(ctx context.Context, req *notebooks
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/UpgradeInstance")
+	}
 	opts = append((*c.CallOptions).UpgradeInstance[0:len((*c.CallOptions).UpgradeInstance):len((*c.CallOptions).UpgradeInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1209,8 +1382,12 @@ func (c *notebookGRPCClient) UpgradeInstance(ctx context.Context, req *notebooks
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.UpgradeInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpgradeInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1219,6 +1396,9 @@ func (c *notebookGRPCClient) RollbackInstance(ctx context.Context, req *notebook
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/RollbackInstance")
+	}
 	opts = append((*c.CallOptions).RollbackInstance[0:len((*c.CallOptions).RollbackInstance):len((*c.CallOptions).RollbackInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1229,8 +1409,12 @@ func (c *notebookGRPCClient) RollbackInstance(ctx context.Context, req *notebook
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.RollbackInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RollbackInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1239,6 +1423,12 @@ func (c *notebookGRPCClient) DiagnoseInstance(ctx context.Context, req *notebook
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/DiagnoseInstance")
+	}
 	opts = append((*c.CallOptions).DiagnoseInstance[0:len((*c.CallOptions).DiagnoseInstance):len((*c.CallOptions).DiagnoseInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1249,8 +1439,12 @@ func (c *notebookGRPCClient) DiagnoseInstance(ctx context.Context, req *notebook
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.DiagnoseInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DiagnoseInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1259,6 +1453,9 @@ func (c *notebookGRPCClient) UpgradeInstanceInternal(ctx context.Context, req *n
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/UpgradeInstanceInternal")
+	}
 	opts = append((*c.CallOptions).UpgradeInstanceInternal[0:len((*c.CallOptions).UpgradeInstanceInternal):len((*c.CallOptions).UpgradeInstanceInternal)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1269,8 +1466,12 @@ func (c *notebookGRPCClient) UpgradeInstanceInternal(ctx context.Context, req *n
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.UpgradeInstanceInternalOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpgradeInstanceInternalOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1279,9 +1480,12 @@ func (c *notebookGRPCClient) ListEnvironments(ctx context.Context, req *notebook
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/ListEnvironments")
+	}
 	opts = append((*c.CallOptions).ListEnvironments[0:len((*c.CallOptions).ListEnvironments):len((*c.CallOptions).ListEnvironments)], opts...)
 	it := &EnvironmentIterator{}
-	req = proto.Clone(req).(*notebookspb.ListEnvironmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*notebookspb.Environment, string, error) {
 		resp := &notebookspb.ListEnvironmentsResponse{}
 		if pageToken != "" {
@@ -1325,6 +1529,9 @@ func (c *notebookGRPCClient) GetEnvironment(ctx context.Context, req *notebooksp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/GetEnvironment")
+	}
 	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
 	var resp *notebookspb.Environment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1343,6 +1550,9 @@ func (c *notebookGRPCClient) CreateEnvironment(ctx context.Context, req *noteboo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/CreateEnvironment")
+	}
 	opts = append((*c.CallOptions).CreateEnvironment[0:len((*c.CallOptions).CreateEnvironment):len((*c.CallOptions).CreateEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1353,8 +1563,12 @@ func (c *notebookGRPCClient) CreateEnvironment(ctx context.Context, req *noteboo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.CreateEnvironmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1363,6 +1577,9 @@ func (c *notebookGRPCClient) DeleteEnvironment(ctx context.Context, req *noteboo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/DeleteEnvironment")
+	}
 	opts = append((*c.CallOptions).DeleteEnvironment[0:len((*c.CallOptions).DeleteEnvironment):len((*c.CallOptions).DeleteEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1373,8 +1590,12 @@ func (c *notebookGRPCClient) DeleteEnvironment(ctx context.Context, req *noteboo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.DeleteEnvironmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1383,9 +1604,15 @@ func (c *notebookGRPCClient) ListSchedules(ctx context.Context, req *notebookspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/ListSchedules")
+	}
 	opts = append((*c.CallOptions).ListSchedules[0:len((*c.CallOptions).ListSchedules):len((*c.CallOptions).ListSchedules)], opts...)
 	it := &ScheduleIterator{}
-	req = proto.Clone(req).(*notebookspb.ListSchedulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*notebookspb.Schedule, string, error) {
 		resp := &notebookspb.ListSchedulesResponse{}
 		if pageToken != "" {
@@ -1429,6 +1656,12 @@ func (c *notebookGRPCClient) GetSchedule(ctx context.Context, req *notebookspb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/GetSchedule")
+	}
 	opts = append((*c.CallOptions).GetSchedule[0:len((*c.CallOptions).GetSchedule):len((*c.CallOptions).GetSchedule)], opts...)
 	var resp *notebookspb.Schedule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1447,6 +1680,12 @@ func (c *notebookGRPCClient) DeleteSchedule(ctx context.Context, req *notebooksp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/DeleteSchedule")
+	}
 	opts = append((*c.CallOptions).DeleteSchedule[0:len((*c.CallOptions).DeleteSchedule):len((*c.CallOptions).DeleteSchedule)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1457,8 +1696,12 @@ func (c *notebookGRPCClient) DeleteSchedule(ctx context.Context, req *notebooksp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.DeleteScheduleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteScheduleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1467,6 +1710,12 @@ func (c *notebookGRPCClient) CreateSchedule(ctx context.Context, req *notebooksp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/CreateSchedule")
+	}
 	opts = append((*c.CallOptions).CreateSchedule[0:len((*c.CallOptions).CreateSchedule):len((*c.CallOptions).CreateSchedule)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1477,8 +1726,12 @@ func (c *notebookGRPCClient) CreateSchedule(ctx context.Context, req *notebooksp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.CreateScheduleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateScheduleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1487,6 +1740,12 @@ func (c *notebookGRPCClient) TriggerSchedule(ctx context.Context, req *notebooks
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/TriggerSchedule")
+	}
 	opts = append((*c.CallOptions).TriggerSchedule[0:len((*c.CallOptions).TriggerSchedule):len((*c.CallOptions).TriggerSchedule)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1497,8 +1756,12 @@ func (c *notebookGRPCClient) TriggerSchedule(ctx context.Context, req *notebooks
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.TriggerScheduleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &TriggerScheduleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1507,9 +1770,15 @@ func (c *notebookGRPCClient) ListExecutions(ctx context.Context, req *notebooksp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/ListExecutions")
+	}
 	opts = append((*c.CallOptions).ListExecutions[0:len((*c.CallOptions).ListExecutions):len((*c.CallOptions).ListExecutions)], opts...)
 	it := &ExecutionIterator{}
-	req = proto.Clone(req).(*notebookspb.ListExecutionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*notebookspb.Execution, string, error) {
 		resp := &notebookspb.ListExecutionsResponse{}
 		if pageToken != "" {
@@ -1553,6 +1822,12 @@ func (c *notebookGRPCClient) GetExecution(ctx context.Context, req *notebookspb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/GetExecution")
+	}
 	opts = append((*c.CallOptions).GetExecution[0:len((*c.CallOptions).GetExecution):len((*c.CallOptions).GetExecution)], opts...)
 	var resp *notebookspb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1571,6 +1846,12 @@ func (c *notebookGRPCClient) DeleteExecution(ctx context.Context, req *notebooks
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/DeleteExecution")
+	}
 	opts = append((*c.CallOptions).DeleteExecution[0:len((*c.CallOptions).DeleteExecution):len((*c.CallOptions).DeleteExecution)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1581,8 +1862,12 @@ func (c *notebookGRPCClient) DeleteExecution(ctx context.Context, req *notebooks
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.DeleteExecutionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteExecutionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1591,6 +1876,12 @@ func (c *notebookGRPCClient) CreateExecution(ctx context.Context, req *notebooks
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.NotebookService/CreateExecution")
+	}
 	opts = append((*c.CallOptions).CreateExecution[0:len((*c.CallOptions).CreateExecution):len((*c.CallOptions).CreateExecution)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1601,8 +1892,12 @@ func (c *notebookGRPCClient) CreateExecution(ctx context.Context, req *notebooks
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.CreateExecutionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateExecutionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1611,6 +1906,9 @@ func (c *notebookGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1629,9 +1927,12 @@ func (c *notebookGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1675,6 +1976,12 @@ func (c *notebookGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1693,6 +2000,12 @@ func (c *notebookGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1711,6 +2024,12 @@ func (c *notebookGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1729,6 +2048,9 @@ func (c *notebookGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1743,6 +2065,9 @@ func (c *notebookGRPCClient) DeleteOperation(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1757,6 +2082,9 @@ func (c *notebookGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1775,9 +2103,12 @@ func (c *notebookGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1820,7 +2151,7 @@ func (c *notebookGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 // The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
 func (c *notebookGRPCClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
 	return &CreateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.CreateEnvironmentOperation"),
 	}
 }
 
@@ -1828,7 +2159,7 @@ func (c *notebookGRPCClient) CreateEnvironmentOperation(name string) *CreateEnvi
 // The name must be that of a previously created CreateExecutionOperation, possibly from a different process.
 func (c *notebookGRPCClient) CreateExecutionOperation(name string) *CreateExecutionOperation {
 	return &CreateExecutionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.CreateExecutionOperation"),
 	}
 }
 
@@ -1836,7 +2167,7 @@ func (c *notebookGRPCClient) CreateExecutionOperation(name string) *CreateExecut
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.CreateInstanceOperation"),
 	}
 }
 
@@ -1844,7 +2175,7 @@ func (c *notebookGRPCClient) CreateInstanceOperation(name string) *CreateInstanc
 // The name must be that of a previously created CreateScheduleOperation, possibly from a different process.
 func (c *notebookGRPCClient) CreateScheduleOperation(name string) *CreateScheduleOperation {
 	return &CreateScheduleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.CreateScheduleOperation"),
 	}
 }
 
@@ -1852,7 +2183,7 @@ func (c *notebookGRPCClient) CreateScheduleOperation(name string) *CreateSchedul
 // The name must be that of a previously created DeleteEnvironmentOperation, possibly from a different process.
 func (c *notebookGRPCClient) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
 	return &DeleteEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.DeleteEnvironmentOperation"),
 	}
 }
 
@@ -1860,7 +2191,7 @@ func (c *notebookGRPCClient) DeleteEnvironmentOperation(name string) *DeleteEnvi
 // The name must be that of a previously created DeleteExecutionOperation, possibly from a different process.
 func (c *notebookGRPCClient) DeleteExecutionOperation(name string) *DeleteExecutionOperation {
 	return &DeleteExecutionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.DeleteExecutionOperation"),
 	}
 }
 
@@ -1868,7 +2199,7 @@ func (c *notebookGRPCClient) DeleteExecutionOperation(name string) *DeleteExecut
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.DeleteInstanceOperation"),
 	}
 }
 
@@ -1876,7 +2207,7 @@ func (c *notebookGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanc
 // The name must be that of a previously created DeleteScheduleOperation, possibly from a different process.
 func (c *notebookGRPCClient) DeleteScheduleOperation(name string) *DeleteScheduleOperation {
 	return &DeleteScheduleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.DeleteScheduleOperation"),
 	}
 }
 
@@ -1884,7 +2215,7 @@ func (c *notebookGRPCClient) DeleteScheduleOperation(name string) *DeleteSchedul
 // The name must be that of a previously created DiagnoseInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) DiagnoseInstanceOperation(name string) *DiagnoseInstanceOperation {
 	return &DiagnoseInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.DiagnoseInstanceOperation"),
 	}
 }
 
@@ -1892,7 +2223,7 @@ func (c *notebookGRPCClient) DiagnoseInstanceOperation(name string) *DiagnoseIns
 // The name must be that of a previously created RegisterInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) RegisterInstanceOperation(name string) *RegisterInstanceOperation {
 	return &RegisterInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.RegisterInstanceOperation"),
 	}
 }
 
@@ -1900,7 +2231,7 @@ func (c *notebookGRPCClient) RegisterInstanceOperation(name string) *RegisterIns
 // The name must be that of a previously created ReportInstanceInfoOperation, possibly from a different process.
 func (c *notebookGRPCClient) ReportInstanceInfoOperation(name string) *ReportInstanceInfoOperation {
 	return &ReportInstanceInfoOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.ReportInstanceInfoOperation"),
 	}
 }
 
@@ -1908,7 +2239,7 @@ func (c *notebookGRPCClient) ReportInstanceInfoOperation(name string) *ReportIns
 // The name must be that of a previously created ResetInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) ResetInstanceOperation(name string) *ResetInstanceOperation {
 	return &ResetInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.ResetInstanceOperation"),
 	}
 }
 
@@ -1916,7 +2247,7 @@ func (c *notebookGRPCClient) ResetInstanceOperation(name string) *ResetInstanceO
 // The name must be that of a previously created RollbackInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) RollbackInstanceOperation(name string) *RollbackInstanceOperation {
 	return &RollbackInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.RollbackInstanceOperation"),
 	}
 }
 
@@ -1924,7 +2255,7 @@ func (c *notebookGRPCClient) RollbackInstanceOperation(name string) *RollbackIns
 // The name must be that of a previously created SetInstanceAcceleratorOperation, possibly from a different process.
 func (c *notebookGRPCClient) SetInstanceAcceleratorOperation(name string) *SetInstanceAcceleratorOperation {
 	return &SetInstanceAcceleratorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.SetInstanceAcceleratorOperation"),
 	}
 }
 
@@ -1932,7 +2263,7 @@ func (c *notebookGRPCClient) SetInstanceAcceleratorOperation(name string) *SetIn
 // The name must be that of a previously created SetInstanceLabelsOperation, possibly from a different process.
 func (c *notebookGRPCClient) SetInstanceLabelsOperation(name string) *SetInstanceLabelsOperation {
 	return &SetInstanceLabelsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.SetInstanceLabelsOperation"),
 	}
 }
 
@@ -1940,7 +2271,7 @@ func (c *notebookGRPCClient) SetInstanceLabelsOperation(name string) *SetInstanc
 // The name must be that of a previously created SetInstanceMachineTypeOperation, possibly from a different process.
 func (c *notebookGRPCClient) SetInstanceMachineTypeOperation(name string) *SetInstanceMachineTypeOperation {
 	return &SetInstanceMachineTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.SetInstanceMachineTypeOperation"),
 	}
 }
 
@@ -1948,7 +2279,7 @@ func (c *notebookGRPCClient) SetInstanceMachineTypeOperation(name string) *SetIn
 // The name must be that of a previously created StartInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) StartInstanceOperation(name string) *StartInstanceOperation {
 	return &StartInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.StartInstanceOperation"),
 	}
 }
 
@@ -1956,7 +2287,7 @@ func (c *notebookGRPCClient) StartInstanceOperation(name string) *StartInstanceO
 // The name must be that of a previously created StopInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) StopInstanceOperation(name string) *StopInstanceOperation {
 	return &StopInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.StopInstanceOperation"),
 	}
 }
 
@@ -1964,7 +2295,7 @@ func (c *notebookGRPCClient) StopInstanceOperation(name string) *StopInstanceOpe
 // The name must be that of a previously created TriggerScheduleOperation, possibly from a different process.
 func (c *notebookGRPCClient) TriggerScheduleOperation(name string) *TriggerScheduleOperation {
 	return &TriggerScheduleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.TriggerScheduleOperation"),
 	}
 }
 
@@ -1972,7 +2303,7 @@ func (c *notebookGRPCClient) TriggerScheduleOperation(name string) *TriggerSched
 // The name must be that of a previously created UpdateInstanceConfigOperation, possibly from a different process.
 func (c *notebookGRPCClient) UpdateInstanceConfigOperation(name string) *UpdateInstanceConfigOperation {
 	return &UpdateInstanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.UpdateInstanceConfigOperation"),
 	}
 }
 
@@ -1980,7 +2311,7 @@ func (c *notebookGRPCClient) UpdateInstanceConfigOperation(name string) *UpdateI
 // The name must be that of a previously created UpdateShieldedInstanceConfigOperation, possibly from a different process.
 func (c *notebookGRPCClient) UpdateShieldedInstanceConfigOperation(name string) *UpdateShieldedInstanceConfigOperation {
 	return &UpdateShieldedInstanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.UpdateShieldedInstanceConfigOperation"),
 	}
 }
 
@@ -1988,7 +2319,7 @@ func (c *notebookGRPCClient) UpdateShieldedInstanceConfigOperation(name string) 
 // The name must be that of a previously created UpgradeInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) UpgradeInstanceOperation(name string) *UpgradeInstanceOperation {
 	return &UpgradeInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.UpgradeInstanceOperation"),
 	}
 }
 
@@ -1996,6 +2327,6 @@ func (c *notebookGRPCClient) UpgradeInstanceOperation(name string) *UpgradeInsta
 // The name must be that of a previously created UpgradeInstanceInternalOperation, possibly from a different process.
 func (c *notebookGRPCClient) UpgradeInstanceInternalOperation(name string) *UpgradeInstanceInternalOperation {
 	return &UpgradeInstanceInternalOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.UpgradeInstanceInternalOperation"),
 	}
 }

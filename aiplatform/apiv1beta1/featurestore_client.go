@@ -32,6 +32,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -644,6 +645,16 @@ type featurestoreGRPCClient struct {
 // The service that handles CRUD and List for resources for Featurestore.
 func NewFeaturestoreClient(ctx context.Context, opts ...option.ClientOption) (*FeaturestoreClient, error) {
 	clientOpts := defaultFeaturestoreGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "aiplatform",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/aiplatform/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "aiplatform.googleapis.com",
+		}))
+	}
 	if newFeaturestoreClientHook != nil {
 		hookOpts, err := newFeaturestoreClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -668,6 +679,50 @@ func NewFeaturestoreClient(ctx context.Context, opts ...option.ClientOption) (*F
 		locationsClient:    locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "aiplatform",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/aiplatform/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "aiplatform.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateFeaturestore = append(client.CallOptions.CreateFeaturestore, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFeaturestore = append(client.CallOptions.GetFeaturestore, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListFeaturestores = append(client.CallOptions.ListFeaturestores, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateFeaturestore = append(client.CallOptions.UpdateFeaturestore, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFeaturestore = append(client.CallOptions.DeleteFeaturestore, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateEntityType = append(client.CallOptions.CreateEntityType, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEntityType = append(client.CallOptions.GetEntityType, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEntityTypes = append(client.CallOptions.ListEntityTypes, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateEntityType = append(client.CallOptions.UpdateEntityType, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEntityType = append(client.CallOptions.DeleteEntityType, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateFeature = append(client.CallOptions.CreateFeature, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCreateFeatures = append(client.CallOptions.BatchCreateFeatures, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFeature = append(client.CallOptions.GetFeature, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListFeatures = append(client.CallOptions.ListFeatures, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateFeature = append(client.CallOptions.UpdateFeature, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFeature = append(client.CallOptions.DeleteFeature, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportFeatureValues = append(client.CallOptions.ImportFeatureValues, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchReadFeatureValues = append(client.CallOptions.BatchReadFeatureValues, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportFeatureValues = append(client.CallOptions.ExportFeatureValues, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFeatureValues = append(client.CallOptions.DeleteFeatureValues, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchFeatures = append(client.CallOptions.SearchFeatures, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -737,6 +792,16 @@ type featurestoreRESTClient struct {
 // The service that handles CRUD and List for resources for Featurestore.
 func NewFeaturestoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*FeaturestoreClient, error) {
 	clientOpts := append(defaultFeaturestoreRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "aiplatform",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/aiplatform/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "aiplatform.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -750,6 +815,51 @@ func NewFeaturestoreRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "aiplatform",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/aiplatform/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "aiplatform.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateFeaturestore = append(callOpts.CreateFeaturestore, gax.WithClientMetrics(metrics))
+		callOpts.GetFeaturestore = append(callOpts.GetFeaturestore, gax.WithClientMetrics(metrics))
+		callOpts.ListFeaturestores = append(callOpts.ListFeaturestores, gax.WithClientMetrics(metrics))
+		callOpts.UpdateFeaturestore = append(callOpts.UpdateFeaturestore, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFeaturestore = append(callOpts.DeleteFeaturestore, gax.WithClientMetrics(metrics))
+		callOpts.CreateEntityType = append(callOpts.CreateEntityType, gax.WithClientMetrics(metrics))
+		callOpts.GetEntityType = append(callOpts.GetEntityType, gax.WithClientMetrics(metrics))
+		callOpts.ListEntityTypes = append(callOpts.ListEntityTypes, gax.WithClientMetrics(metrics))
+		callOpts.UpdateEntityType = append(callOpts.UpdateEntityType, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEntityType = append(callOpts.DeleteEntityType, gax.WithClientMetrics(metrics))
+		callOpts.CreateFeature = append(callOpts.CreateFeature, gax.WithClientMetrics(metrics))
+		callOpts.BatchCreateFeatures = append(callOpts.BatchCreateFeatures, gax.WithClientMetrics(metrics))
+		callOpts.GetFeature = append(callOpts.GetFeature, gax.WithClientMetrics(metrics))
+		callOpts.ListFeatures = append(callOpts.ListFeatures, gax.WithClientMetrics(metrics))
+		callOpts.UpdateFeature = append(callOpts.UpdateFeature, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFeature = append(callOpts.DeleteFeature, gax.WithClientMetrics(metrics))
+		callOpts.ImportFeatureValues = append(callOpts.ImportFeatureValues, gax.WithClientMetrics(metrics))
+		callOpts.BatchReadFeatureValues = append(callOpts.BatchReadFeatureValues, gax.WithClientMetrics(metrics))
+		callOpts.ExportFeatureValues = append(callOpts.ExportFeatureValues, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFeatureValues = append(callOpts.DeleteFeatureValues, gax.WithClientMetrics(metrics))
+		callOpts.SearchFeatures = append(callOpts.SearchFeatures, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -806,6 +916,12 @@ func (c *featurestoreGRPCClient) CreateFeaturestore(ctx context.Context, req *ai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/CreateFeaturestore")
+	}
 	opts = append((*c.CallOptions).CreateFeaturestore[0:len((*c.CallOptions).CreateFeaturestore):len((*c.CallOptions).CreateFeaturestore)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -826,6 +942,12 @@ func (c *featurestoreGRPCClient) GetFeaturestore(ctx context.Context, req *aipla
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/GetFeaturestore")
+	}
 	opts = append((*c.CallOptions).GetFeaturestore[0:len((*c.CallOptions).GetFeaturestore):len((*c.CallOptions).GetFeaturestore)], opts...)
 	var resp *aiplatformpb.Featurestore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -844,6 +966,12 @@ func (c *featurestoreGRPCClient) ListFeaturestores(ctx context.Context, req *aip
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/ListFeaturestores")
+	}
 	opts = append((*c.CallOptions).ListFeaturestores[0:len((*c.CallOptions).ListFeaturestores):len((*c.CallOptions).ListFeaturestores)], opts...)
 	it := &FeaturestoreIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListFeaturestoresRequest)
@@ -890,6 +1018,9 @@ func (c *featurestoreGRPCClient) UpdateFeaturestore(ctx context.Context, req *ai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/UpdateFeaturestore")
+	}
 	opts = append((*c.CallOptions).UpdateFeaturestore[0:len((*c.CallOptions).UpdateFeaturestore):len((*c.CallOptions).UpdateFeaturestore)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -910,6 +1041,12 @@ func (c *featurestoreGRPCClient) DeleteFeaturestore(ctx context.Context, req *ai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/DeleteFeaturestore")
+	}
 	opts = append((*c.CallOptions).DeleteFeaturestore[0:len((*c.CallOptions).DeleteFeaturestore):len((*c.CallOptions).DeleteFeaturestore)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -930,6 +1067,12 @@ func (c *featurestoreGRPCClient) CreateEntityType(ctx context.Context, req *aipl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/CreateEntityType")
+	}
 	opts = append((*c.CallOptions).CreateEntityType[0:len((*c.CallOptions).CreateEntityType):len((*c.CallOptions).CreateEntityType)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -950,6 +1093,12 @@ func (c *featurestoreGRPCClient) GetEntityType(ctx context.Context, req *aiplatf
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/GetEntityType")
+	}
 	opts = append((*c.CallOptions).GetEntityType[0:len((*c.CallOptions).GetEntityType):len((*c.CallOptions).GetEntityType)], opts...)
 	var resp *aiplatformpb.EntityType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -968,6 +1117,12 @@ func (c *featurestoreGRPCClient) ListEntityTypes(ctx context.Context, req *aipla
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/ListEntityTypes")
+	}
 	opts = append((*c.CallOptions).ListEntityTypes[0:len((*c.CallOptions).ListEntityTypes):len((*c.CallOptions).ListEntityTypes)], opts...)
 	it := &EntityTypeIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListEntityTypesRequest)
@@ -1014,6 +1169,9 @@ func (c *featurestoreGRPCClient) UpdateEntityType(ctx context.Context, req *aipl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/UpdateEntityType")
+	}
 	opts = append((*c.CallOptions).UpdateEntityType[0:len((*c.CallOptions).UpdateEntityType):len((*c.CallOptions).UpdateEntityType)], opts...)
 	var resp *aiplatformpb.EntityType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1032,6 +1190,12 @@ func (c *featurestoreGRPCClient) DeleteEntityType(ctx context.Context, req *aipl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/DeleteEntityType")
+	}
 	opts = append((*c.CallOptions).DeleteEntityType[0:len((*c.CallOptions).DeleteEntityType):len((*c.CallOptions).DeleteEntityType)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1052,6 +1216,12 @@ func (c *featurestoreGRPCClient) CreateFeature(ctx context.Context, req *aiplatf
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/CreateFeature")
+	}
 	opts = append((*c.CallOptions).CreateFeature[0:len((*c.CallOptions).CreateFeature):len((*c.CallOptions).CreateFeature)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1072,6 +1242,12 @@ func (c *featurestoreGRPCClient) BatchCreateFeatures(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/BatchCreateFeatures")
+	}
 	opts = append((*c.CallOptions).BatchCreateFeatures[0:len((*c.CallOptions).BatchCreateFeatures):len((*c.CallOptions).BatchCreateFeatures)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1092,6 +1268,12 @@ func (c *featurestoreGRPCClient) GetFeature(ctx context.Context, req *aiplatform
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/GetFeature")
+	}
 	opts = append((*c.CallOptions).GetFeature[0:len((*c.CallOptions).GetFeature):len((*c.CallOptions).GetFeature)], opts...)
 	var resp *aiplatformpb.Feature
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1110,6 +1292,12 @@ func (c *featurestoreGRPCClient) ListFeatures(ctx context.Context, req *aiplatfo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/ListFeatures")
+	}
 	opts = append((*c.CallOptions).ListFeatures[0:len((*c.CallOptions).ListFeatures):len((*c.CallOptions).ListFeatures)], opts...)
 	it := &FeatureIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListFeaturesRequest)
@@ -1156,6 +1344,9 @@ func (c *featurestoreGRPCClient) UpdateFeature(ctx context.Context, req *aiplatf
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/UpdateFeature")
+	}
 	opts = append((*c.CallOptions).UpdateFeature[0:len((*c.CallOptions).UpdateFeature):len((*c.CallOptions).UpdateFeature)], opts...)
 	var resp *aiplatformpb.Feature
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1174,6 +1365,12 @@ func (c *featurestoreGRPCClient) DeleteFeature(ctx context.Context, req *aiplatf
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/DeleteFeature")
+	}
 	opts = append((*c.CallOptions).DeleteFeature[0:len((*c.CallOptions).DeleteFeature):len((*c.CallOptions).DeleteFeature)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1194,6 +1391,12 @@ func (c *featurestoreGRPCClient) ImportFeatureValues(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEntityType()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/ImportFeatureValues")
+	}
 	opts = append((*c.CallOptions).ImportFeatureValues[0:len((*c.CallOptions).ImportFeatureValues):len((*c.CallOptions).ImportFeatureValues)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1214,6 +1417,12 @@ func (c *featurestoreGRPCClient) BatchReadFeatureValues(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetFeaturestore()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/BatchReadFeatureValues")
+	}
 	opts = append((*c.CallOptions).BatchReadFeatureValues[0:len((*c.CallOptions).BatchReadFeatureValues):len((*c.CallOptions).BatchReadFeatureValues)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1234,6 +1443,12 @@ func (c *featurestoreGRPCClient) ExportFeatureValues(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEntityType()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/ExportFeatureValues")
+	}
 	opts = append((*c.CallOptions).ExportFeatureValues[0:len((*c.CallOptions).ExportFeatureValues):len((*c.CallOptions).ExportFeatureValues)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1254,6 +1469,12 @@ func (c *featurestoreGRPCClient) DeleteFeatureValues(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEntityType()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/DeleteFeatureValues")
+	}
 	opts = append((*c.CallOptions).DeleteFeatureValues[0:len((*c.CallOptions).DeleteFeatureValues):len((*c.CallOptions).DeleteFeatureValues)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1274,6 +1495,12 @@ func (c *featurestoreGRPCClient) SearchFeatures(ctx context.Context, req *aiplat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetLocation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/SearchFeatures")
+	}
 	opts = append((*c.CallOptions).SearchFeatures[0:len((*c.CallOptions).SearchFeatures):len((*c.CallOptions).SearchFeatures)], opts...)
 	it := &FeatureIterator{}
 	req = proto.Clone(req).(*aiplatformpb.SearchFeaturesRequest)
@@ -1320,6 +1547,9 @@ func (c *featurestoreGRPCClient) GetLocation(ctx context.Context, req *locationp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1338,6 +1568,9 @@ func (c *featurestoreGRPCClient) ListLocations(ctx context.Context, req *locatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -1384,6 +1617,12 @@ func (c *featurestoreGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1402,6 +1641,12 @@ func (c *featurestoreGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1420,6 +1665,12 @@ func (c *featurestoreGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1438,6 +1689,9 @@ func (c *featurestoreGRPCClient) CancelOperation(ctx context.Context, req *longr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1452,6 +1706,9 @@ func (c *featurestoreGRPCClient) DeleteOperation(ctx context.Context, req *longr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1466,6 +1723,9 @@ func (c *featurestoreGRPCClient) GetOperation(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1484,6 +1744,9 @@ func (c *featurestoreGRPCClient) ListOperations(ctx context.Context, req *longru
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1530,6 +1793,9 @@ func (c *featurestoreGRPCClient) WaitOperation(ctx context.Context, req *longrun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/WaitOperation")
+	}
 	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1570,6 +1836,13 @@ func (c *featurestoreRESTClient) CreateFeaturestore(ctx context.Context, req *ai
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/CreateFeaturestore")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/featurestores")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1623,6 +1896,13 @@ func (c *featurestoreRESTClient) GetFeaturestore(ctx context.Context, req *aipla
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/GetFeaturestore")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/featurestores/*}")
+	}
 	opts = append((*c.CallOptions).GetFeaturestore[0:len((*c.CallOptions).GetFeaturestore):len((*c.CallOptions).GetFeaturestore)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.Featurestore{}
@@ -1778,6 +2058,10 @@ func (c *featurestoreRESTClient) UpdateFeaturestore(ctx context.Context, req *ai
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/UpdateFeaturestore")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{featurestore.name=projects/*/locations/*/featurestores/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1835,6 +2119,13 @@ func (c *featurestoreRESTClient) DeleteFeaturestore(ctx context.Context, req *ai
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/DeleteFeaturestore")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/featurestores/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1896,6 +2187,13 @@ func (c *featurestoreRESTClient) CreateEntityType(ctx context.Context, req *aipl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/CreateEntityType")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/featurestores/*}/entityTypes")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1949,6 +2247,13 @@ func (c *featurestoreRESTClient) GetEntityType(ctx context.Context, req *aiplatf
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/GetEntityType")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/featurestores/*/entityTypes/*}")
+	}
 	opts = append((*c.CallOptions).GetEntityType[0:len((*c.CallOptions).GetEntityType):len((*c.CallOptions).GetEntityType)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.EntityType{}
@@ -2104,6 +2409,10 @@ func (c *featurestoreRESTClient) UpdateEntityType(ctx context.Context, req *aipl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/UpdateEntityType")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{entity_type.name=projects/*/locations/*/featurestores/*/entityTypes/*}")
+	}
 	opts = append((*c.CallOptions).UpdateEntityType[0:len((*c.CallOptions).UpdateEntityType):len((*c.CallOptions).UpdateEntityType)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.EntityType{}
@@ -2158,6 +2467,13 @@ func (c *featurestoreRESTClient) DeleteEntityType(ctx context.Context, req *aipl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/DeleteEntityType")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/featurestores/*/entityTypes/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2219,6 +2535,13 @@ func (c *featurestoreRESTClient) CreateFeature(ctx context.Context, req *aiplatf
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/CreateFeature")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/featurestores/*/entityTypes/*}/features")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2278,6 +2601,13 @@ func (c *featurestoreRESTClient) BatchCreateFeatures(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/BatchCreateFeatures")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/featurestores/*/entityTypes/*}/features:batchCreate")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2348,6 +2678,13 @@ func (c *featurestoreRESTClient) GetFeature(ctx context.Context, req *aiplatform
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/GetFeature")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/featurestores/*/entityTypes/*/features/*}")
+	}
 	opts = append((*c.CallOptions).GetFeature[0:len((*c.CallOptions).GetFeature):len((*c.CallOptions).GetFeature)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.Feature{}
@@ -2506,6 +2843,10 @@ func (c *featurestoreRESTClient) UpdateFeature(ctx context.Context, req *aiplatf
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/UpdateFeature")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{feature.name=projects/*/locations/*/featurestores/*/entityTypes/*/features/*}")
+	}
 	opts = append((*c.CallOptions).UpdateFeature[0:len((*c.CallOptions).UpdateFeature):len((*c.CallOptions).UpdateFeature)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.Feature{}
@@ -2556,6 +2897,13 @@ func (c *featurestoreRESTClient) DeleteFeature(ctx context.Context, req *aiplatf
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/DeleteFeature")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/featurestores/*/entityTypes/*/features/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2636,6 +2984,13 @@ func (c *featurestoreRESTClient) ImportFeatureValues(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEntityType()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/ImportFeatureValues")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{entity_type=projects/*/locations/*/featurestores/*/entityTypes/*}:importFeatureValues")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2700,6 +3055,13 @@ func (c *featurestoreRESTClient) BatchReadFeatureValues(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetFeaturestore()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/BatchReadFeatureValues")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{featurestore=projects/*/locations/*/featurestores/*}:batchReadFeatureValues")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2759,6 +3121,13 @@ func (c *featurestoreRESTClient) ExportFeatureValues(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEntityType()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/ExportFeatureValues")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{entity_type=projects/*/locations/*/featurestores/*/entityTypes/*}:exportFeatureValues")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2827,6 +3196,13 @@ func (c *featurestoreRESTClient) DeleteFeatureValues(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEntityType()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.FeaturestoreService/DeleteFeatureValues")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{entity_type=projects/*/locations/*/featurestores/*/entityTypes/*}:deleteFeatureValues")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2961,6 +3337,10 @@ func (c *featurestoreRESTClient) GetLocation(ctx context.Context, req *locationp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -3099,6 +3479,13 @@ func (c *featurestoreRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/locations/*/featurestores/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -3159,6 +3546,13 @@ func (c *featurestoreRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/locations/*/featurestores/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -3221,6 +3615,13 @@ func (c *featurestoreRESTClient) TestIamPermissions(ctx context.Context, req *ia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/locations/*/featurestores/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -3271,6 +3672,10 @@ func (c *featurestoreRESTClient) CancelOperation(ctx context.Context, req *longr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3306,6 +3711,10 @@ func (c *featurestoreRESTClient) DeleteOperation(ctx context.Context, req *longr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3341,6 +3750,10 @@ func (c *featurestoreRESTClient) GetOperation(ctx context.Context, req *longrunn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -3482,6 +3895,10 @@ func (c *featurestoreRESTClient) WaitOperation(ctx context.Context, req *longrun
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/WaitOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*/operations/*}:wait")
+	}
 	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

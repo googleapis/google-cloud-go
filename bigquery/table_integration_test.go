@@ -321,6 +321,43 @@ func TestIntegration_TableMetadata(t *testing.T) {
 	}
 }
 
+func TestIntegration_ResetTableClustering(t *testing.T) {
+	// https://github.com/googleapis/google-cloud-go/issues/14451
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	startClustering := &Clustering{Fields: []string{"name"}}
+	endClustering := &Clustering{Fields: []string{}}
+	targetTable := dataset.Table("reset_table_clustering")
+	err := targetTable.Create(ctx, &TableMetadata{
+		Schema:     schema,
+		Clustering: startClustering,
+	})
+	if err != nil {
+		t.Fatalf("create table failed: %v", err)
+	}
+	meta, err := targetTable.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("metadata get failed: %v", err)
+	}
+	if diff := testutil.Diff(meta.Clustering, startClustering); diff != "" {
+		t.Fatalf("clustering start difference, got=-, want=+:\n%s", diff)
+	}
+	// Reset clustering to an empty list.
+	updated, err := targetTable.Update(ctx, TableMetadataToUpdate{
+		Clustering: endClustering,
+	}, meta.ETag)
+	if err != nil {
+		t.Fatalf("update failed: %v", err)
+	}
+	if updated.Clustering != nil {
+		t.Errorf("expected clustering to be cleared, but was present with %d fields", len(updated.Clustering.Fields))
+	}
+
+}
+
 func TestIntegration_TableMetadataOptions(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")

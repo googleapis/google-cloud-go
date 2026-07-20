@@ -59,14 +59,14 @@ func createAgentEngineAndWait(t testing.TB, tt testing.TB, client *Client, confi
 	if config.Description == "" {
 		config.Description = "You can remove this agent engine if it is older than 10 minutes. It must be an orphan AE."
 	}
-	createOp, err := client.AgentEngines.create(tt.Context(), config)
+	createOp, err := client.AgentEngines.Create(tt.Context(), config)
 	if err != nil {
 		tt.Fatalf("create() failed unexpectedly: %v", err)
 	}
 	reasoningEngineName := getResourceNameFromOperation(createOp.Name)
 	tt.Cleanup(cleanupAgentEngine(t, client, reasoningEngineName))
 	operation := func() (*types.AgentEngineOperation, error) {
-		return client.AgentEngines.getAgentOperation(tt.Context(), createOp.Name, nil)
+		return client.AgentEngines.GetAgentOperation(tt.Context(), createOp.Name, nil)
 	}
 	createOp = waitForOperation(t, operation)
 	return createOp.Response
@@ -75,12 +75,12 @@ func createAgentEngineAndWait(t testing.TB, tt testing.TB, client *Client, confi
 func cleanupAgentEngine(t testing.TB, client *Client, name string) func() {
 	return func() {
 		t.Logf("Cleaning up AgentEngine: %s", name)
-		deleteOp, err := client.AgentEngines.delete(t.Context(), name, genai.Ptr(true), nil)
+		deleteOp, err := client.AgentEngines.Delete(t.Context(), name, genai.Ptr(true), nil)
 		if err != nil {
 			t.Logf("cleanup() failed, err: %v", err)
 		} else {
 			operation := func() (*types.AgentEngineOperation, error) {
-				return client.AgentEngines.getAgentOperation(t.Context(), deleteOp.Name, nil)
+				return client.AgentEngines.GetAgentOperation(t.Context(), deleteOp.Name, nil)
 			}
 			waitForOperation(t, operation)
 		}
@@ -94,13 +94,13 @@ func createAgentEngineMemoryAndWait(tt testing.TB, client *Client, re *types.Rea
 		Description: m.Description,
 		Metadata:    m.Metadata,
 	}
-	createOp, err := client.AgentEngines.Memories.create(tt.Context(), re.Name, m.Fact, m.Scope, config)
+	createOp, err := client.AgentEngines.Memories.Create(tt.Context(), re.Name, m.Fact, m.Scope, config)
 	if err != nil {
 		tt.Fatalf("create() failed unexpectedly: %v", err)
 	}
 	if !createOp.Done {
 		operation := func() (*types.AgentEngineMemoryOperation, error) {
-			return client.AgentEngines.Memories.getMemoryOperation(tt.Context(), createOp.Name, nil)
+			return client.AgentEngines.Memories.GetMemoryOperation(tt.Context(), createOp.Name, nil)
 		}
 		waitForOperation(tt, operation)
 	}
@@ -115,13 +115,13 @@ func createAgentEngineSandboxesAndWait(
 	config *types.CreateAgentEngineSandboxConfig,
 ) *types.SandboxEnvironment {
 	tt.Helper()
-	createOp, err := client.AgentEngines.Sandboxes.create(tt.Context(), re.Name, spec, config)
+	createOp, err := client.AgentEngines.Sandboxes.Create(tt.Context(), re.Name, spec, config)
 	if err != nil {
 		tt.Fatalf("create() failed unexpectedly: %v", err)
 	}
 	if !createOp.Done {
 		operation := func() (*types.AgentEngineSandboxOperation, error) {
-			return client.AgentEngines.Sandboxes.getSandboxOperation(tt.Context(), createOp.Name, nil)
+			return client.AgentEngines.Sandboxes.GetSandboxOperation(tt.Context(), createOp.Name, nil)
 		}
 		createOp = waitForOperation(tt, operation)
 	}
@@ -147,13 +147,13 @@ func createAgentEngineSessionAndWait(tt testing.TB, client *Client, re *types.Re
 		TTL:          s.TTL,
 		Labels:       s.Labels,
 	}
-	createOp, err := client.AgentEngines.Sessions.create(tt.Context(), re.Name, s.UserID, config)
+	createOp, err := client.AgentEngines.Sessions.Create(tt.Context(), re.Name, s.UserID, config)
 	if err != nil {
 		tt.Fatalf("create() failed unexpectedly: %v", err)
 	}
 	if !createOp.Done {
 		operation := func() (*types.AgentEngineSessionOperation, error) {
-			return client.AgentEngines.Sessions.getSessionOperation(tt.Context(), createOp.Name, nil)
+			return client.AgentEngines.Sessions.GetSessionOperation(tt.Context(), createOp.Name, nil)
 		}
 		createOp = waitForOperation(tt, operation)
 	}

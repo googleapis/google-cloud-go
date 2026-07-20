@@ -78,6 +78,7 @@ func newTestConsumer(numExpected int32) *testConsumer {
 }
 
 func TestNextClient(t *testing.T) {
+	skipDirectPathTest(t)
 	t.Parallel()
 	if useGRPCgcp {
 		// For GCPMultiEndpoint the nextClient is indirectly tested via TestBatchCreateAndCloseSession.

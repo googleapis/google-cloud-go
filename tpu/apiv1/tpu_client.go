@@ -29,6 +29,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	tpupb "cloud.google.com/go/tpu/apiv1/tpupb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -170,7 +172,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -342,6 +344,16 @@ type gRPCClient struct {
 // TPU API v1
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "tpu",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/tpu/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "tpu.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -365,6 +377,36 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "tpu",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/tpu/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "tpu.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListNodes = append(client.CallOptions.ListNodes, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetNode = append(client.CallOptions.GetNode, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateNode = append(client.CallOptions.CreateNode, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteNode = append(client.CallOptions.DeleteNode, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReimageNode = append(client.CallOptions.ReimageNode, gax.WithClientMetrics(metrics))
+		client.CallOptions.StopNode = append(client.CallOptions.StopNode, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartNode = append(client.CallOptions.StartNode, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTensorFlowVersions = append(client.CallOptions.ListTensorFlowVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTensorFlowVersion = append(client.CallOptions.GetTensorFlowVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAcceleratorTypes = append(client.CallOptions.ListAcceleratorTypes, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAcceleratorType = append(client.CallOptions.GetAcceleratorType, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -401,7 +443,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -412,9 +454,15 @@ func (c *gRPCClient) ListNodes(ctx context.Context, req *tpupb.ListNodesRequest,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/ListNodes")
+	}
 	opts = append((*c.CallOptions).ListNodes[0:len((*c.CallOptions).ListNodes):len((*c.CallOptions).ListNodes)], opts...)
 	it := &NodeIterator{}
-	req = proto.Clone(req).(*tpupb.ListNodesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tpupb.Node, string, error) {
 		resp := &tpupb.ListNodesResponse{}
 		if pageToken != "" {
@@ -458,6 +506,12 @@ func (c *gRPCClient) GetNode(ctx context.Context, req *tpupb.GetNodeRequest, opt
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/GetNode")
+	}
 	opts = append((*c.CallOptions).GetNode[0:len((*c.CallOptions).GetNode):len((*c.CallOptions).GetNode)], opts...)
 	var resp *tpupb.Node
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -476,6 +530,12 @@ func (c *gRPCClient) CreateNode(ctx context.Context, req *tpupb.CreateNodeReques
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/CreateNode")
+	}
 	opts = append((*c.CallOptions).CreateNode[0:len((*c.CallOptions).CreateNode):len((*c.CallOptions).CreateNode)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -486,8 +546,12 @@ func (c *gRPCClient) CreateNode(ctx context.Context, req *tpupb.CreateNodeReques
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*tpu.CreateNodeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -496,6 +560,12 @@ func (c *gRPCClient) DeleteNode(ctx context.Context, req *tpupb.DeleteNodeReques
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/DeleteNode")
+	}
 	opts = append((*c.CallOptions).DeleteNode[0:len((*c.CallOptions).DeleteNode):len((*c.CallOptions).DeleteNode)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -506,8 +576,12 @@ func (c *gRPCClient) DeleteNode(ctx context.Context, req *tpupb.DeleteNodeReques
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*tpu.DeleteNodeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -516,6 +590,9 @@ func (c *gRPCClient) ReimageNode(ctx context.Context, req *tpupb.ReimageNodeRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/ReimageNode")
+	}
 	opts = append((*c.CallOptions).ReimageNode[0:len((*c.CallOptions).ReimageNode):len((*c.CallOptions).ReimageNode)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -526,8 +603,12 @@ func (c *gRPCClient) ReimageNode(ctx context.Context, req *tpupb.ReimageNodeRequ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*tpu.ReimageNodeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReimageNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -536,6 +617,9 @@ func (c *gRPCClient) StopNode(ctx context.Context, req *tpupb.StopNodeRequest, o
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/StopNode")
+	}
 	opts = append((*c.CallOptions).StopNode[0:len((*c.CallOptions).StopNode):len((*c.CallOptions).StopNode)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -546,8 +630,12 @@ func (c *gRPCClient) StopNode(ctx context.Context, req *tpupb.StopNodeRequest, o
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*tpu.StopNodeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -556,6 +644,9 @@ func (c *gRPCClient) StartNode(ctx context.Context, req *tpupb.StartNodeRequest,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/StartNode")
+	}
 	opts = append((*c.CallOptions).StartNode[0:len((*c.CallOptions).StartNode):len((*c.CallOptions).StartNode)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -566,8 +657,12 @@ func (c *gRPCClient) StartNode(ctx context.Context, req *tpupb.StartNodeRequest,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*tpu.StartNodeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -576,9 +671,15 @@ func (c *gRPCClient) ListTensorFlowVersions(ctx context.Context, req *tpupb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/ListTensorFlowVersions")
+	}
 	opts = append((*c.CallOptions).ListTensorFlowVersions[0:len((*c.CallOptions).ListTensorFlowVersions):len((*c.CallOptions).ListTensorFlowVersions)], opts...)
 	it := &TensorFlowVersionIterator{}
-	req = proto.Clone(req).(*tpupb.ListTensorFlowVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tpupb.TensorFlowVersion, string, error) {
 		resp := &tpupb.ListTensorFlowVersionsResponse{}
 		if pageToken != "" {
@@ -622,6 +723,12 @@ func (c *gRPCClient) GetTensorFlowVersion(ctx context.Context, req *tpupb.GetTen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/GetTensorFlowVersion")
+	}
 	opts = append((*c.CallOptions).GetTensorFlowVersion[0:len((*c.CallOptions).GetTensorFlowVersion):len((*c.CallOptions).GetTensorFlowVersion)], opts...)
 	var resp *tpupb.TensorFlowVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -640,9 +747,15 @@ func (c *gRPCClient) ListAcceleratorTypes(ctx context.Context, req *tpupb.ListAc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/ListAcceleratorTypes")
+	}
 	opts = append((*c.CallOptions).ListAcceleratorTypes[0:len((*c.CallOptions).ListAcceleratorTypes):len((*c.CallOptions).ListAcceleratorTypes)], opts...)
 	it := &AcceleratorTypeIterator{}
-	req = proto.Clone(req).(*tpupb.ListAcceleratorTypesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tpupb.AcceleratorType, string, error) {
 		resp := &tpupb.ListAcceleratorTypesResponse{}
 		if pageToken != "" {
@@ -686,6 +799,12 @@ func (c *gRPCClient) GetAcceleratorType(ctx context.Context, req *tpupb.GetAccel
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/GetAcceleratorType")
+	}
 	opts = append((*c.CallOptions).GetAcceleratorType[0:len((*c.CallOptions).GetAcceleratorType):len((*c.CallOptions).GetAcceleratorType)], opts...)
 	var resp *tpupb.AcceleratorType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -704,6 +823,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -722,9 +844,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -768,6 +893,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -782,6 +910,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -796,6 +927,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -814,9 +948,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -859,7 +996,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateNodeOperation, possibly from a different process.
 func (c *gRPCClient) CreateNodeOperation(name string) *CreateNodeOperation {
 	return &CreateNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*tpu.CreateNodeOperation"),
 	}
 }
 
@@ -867,7 +1004,7 @@ func (c *gRPCClient) CreateNodeOperation(name string) *CreateNodeOperation {
 // The name must be that of a previously created DeleteNodeOperation, possibly from a different process.
 func (c *gRPCClient) DeleteNodeOperation(name string) *DeleteNodeOperation {
 	return &DeleteNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*tpu.DeleteNodeOperation"),
 	}
 }
 
@@ -875,7 +1012,7 @@ func (c *gRPCClient) DeleteNodeOperation(name string) *DeleteNodeOperation {
 // The name must be that of a previously created ReimageNodeOperation, possibly from a different process.
 func (c *gRPCClient) ReimageNodeOperation(name string) *ReimageNodeOperation {
 	return &ReimageNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*tpu.ReimageNodeOperation"),
 	}
 }
 
@@ -883,7 +1020,7 @@ func (c *gRPCClient) ReimageNodeOperation(name string) *ReimageNodeOperation {
 // The name must be that of a previously created StartNodeOperation, possibly from a different process.
 func (c *gRPCClient) StartNodeOperation(name string) *StartNodeOperation {
 	return &StartNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*tpu.StartNodeOperation"),
 	}
 }
 
@@ -891,6 +1028,6 @@ func (c *gRPCClient) StartNodeOperation(name string) *StartNodeOperation {
 // The name must be that of a previously created StopNodeOperation, possibly from a different process.
 func (c *gRPCClient) StopNodeOperation(name string) *StopNodeOperation {
 	return &StopNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*tpu.StopNodeOperation"),
 	}
 }

@@ -1,5 +1,13 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/essentialcontacts%2Fv1.12.0) (2026-05-07)
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/essentialcontacts%2Fv1.11.0) (2026-04-30)
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/essentialcontacts%2Fv1.10.0) (2026-04-13)
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/essentialcontacts%2Fv1.9.0) (2026-04-09)
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/essentialcontacts%2Fv1.8.0) (2026-04-02)
 
 ## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/essentialcontacts/v1.7.6...essentialcontacts/v1.7.7) (2025-09-16)

@@ -32,6 +32,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	instancepb "cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -381,7 +383,7 @@ type InstanceAdminClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *InstanceAdminClient) Close() error {
 	return c.internalClient.Close()
@@ -1010,6 +1012,16 @@ type instanceAdminGRPCClient struct {
 // databases in that instance, and their performance may suffer.
 func NewInstanceAdminClient(ctx context.Context, opts ...option.ClientOption) (*InstanceAdminClient, error) {
 	clientOpts := defaultInstanceAdminGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "spanner",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/spanner/admin/instance/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "spanner.googleapis.com",
+		}))
+	}
 	if newInstanceAdminClientHook != nil {
 		hookOpts, err := newInstanceAdminClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -1032,6 +1044,44 @@ func NewInstanceAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "spanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/spanner/admin/instance/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "spanner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstanceConfigs = append(client.CallOptions.ListInstanceConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInstanceConfig = append(client.CallOptions.GetInstanceConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateInstanceConfig = append(client.CallOptions.CreateInstanceConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateInstanceConfig = append(client.CallOptions.UpdateInstanceConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteInstanceConfig = append(client.CallOptions.DeleteInstanceConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListInstanceConfigOperations = append(client.CallOptions.ListInstanceConfigOperations, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListInstancePartitions = append(client.CallOptions.ListInstancePartitions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInstancePartition = append(client.CallOptions.GetInstancePartition, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateInstancePartition = append(client.CallOptions.CreateInstancePartition, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteInstancePartition = append(client.CallOptions.DeleteInstancePartition, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateInstancePartition = append(client.CallOptions.UpdateInstancePartition, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListInstancePartitionOperations = append(client.CallOptions.ListInstancePartitionOperations, gax.WithClientMetrics(metrics))
+		client.CallOptions.MoveInstance = append(client.CallOptions.MoveInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -1068,7 +1118,7 @@ func (c *instanceAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *instanceAdminGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -1121,6 +1171,16 @@ type instanceAdminRESTClient struct {
 // databases in that instance, and their performance may suffer.
 func NewInstanceAdminRESTClient(ctx context.Context, opts ...option.ClientOption) (*InstanceAdminClient, error) {
 	clientOpts := append(defaultInstanceAdminRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "spanner",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/spanner/admin/instance/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "spanner.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1134,6 +1194,45 @@ func NewInstanceAdminRESTClient(ctx context.Context, opts ...option.ClientOption
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "spanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/spanner/admin/instance/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "spanner.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstanceConfigs = append(callOpts.ListInstanceConfigs, gax.WithClientMetrics(metrics))
+		callOpts.GetInstanceConfig = append(callOpts.GetInstanceConfig, gax.WithClientMetrics(metrics))
+		callOpts.CreateInstanceConfig = append(callOpts.CreateInstanceConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateInstanceConfig = append(callOpts.UpdateInstanceConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteInstanceConfig = append(callOpts.DeleteInstanceConfig, gax.WithClientMetrics(metrics))
+		callOpts.ListInstanceConfigOperations = append(callOpts.ListInstanceConfigOperations, gax.WithClientMetrics(metrics))
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientMetrics(metrics))
+		callOpts.ListInstancePartitions = append(callOpts.ListInstancePartitions, gax.WithClientMetrics(metrics))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientMetrics(metrics))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientMetrics(metrics))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientMetrics(metrics))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.GetInstancePartition = append(callOpts.GetInstancePartition, gax.WithClientMetrics(metrics))
+		callOpts.CreateInstancePartition = append(callOpts.CreateInstancePartition, gax.WithClientMetrics(metrics))
+		callOpts.DeleteInstancePartition = append(callOpts.DeleteInstancePartition, gax.WithClientMetrics(metrics))
+		callOpts.UpdateInstancePartition = append(callOpts.UpdateInstancePartition, gax.WithClientMetrics(metrics))
+		callOpts.ListInstancePartitionOperations = append(callOpts.ListInstancePartitionOperations, gax.WithClientMetrics(metrics))
+		callOpts.MoveInstance = append(callOpts.MoveInstance, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1171,7 +1270,7 @@ func (c *instanceAdminRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *instanceAdminRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -1190,9 +1289,15 @@ func (c *instanceAdminGRPCClient) ListInstanceConfigs(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/ListInstanceConfigs")
+	}
 	opts = append((*c.CallOptions).ListInstanceConfigs[0:len((*c.CallOptions).ListInstanceConfigs):len((*c.CallOptions).ListInstanceConfigs)], opts...)
 	it := &InstanceConfigIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstanceConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*instancepb.InstanceConfig, string, error) {
 		resp := &instancepb.ListInstanceConfigsResponse{}
 		if pageToken != "" {
@@ -1236,6 +1341,12 @@ func (c *instanceAdminGRPCClient) GetInstanceConfig(ctx context.Context, req *in
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/GetInstanceConfig")
+	}
 	opts = append((*c.CallOptions).GetInstanceConfig[0:len((*c.CallOptions).GetInstanceConfig):len((*c.CallOptions).GetInstanceConfig)], opts...)
 	var resp *instancepb.InstanceConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1254,6 +1365,12 @@ func (c *instanceAdminGRPCClient) CreateInstanceConfig(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/CreateInstanceConfig")
+	}
 	opts = append((*c.CallOptions).CreateInstanceConfig[0:len((*c.CallOptions).CreateInstanceConfig):len((*c.CallOptions).CreateInstanceConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1264,8 +1381,12 @@ func (c *instanceAdminGRPCClient) CreateInstanceConfig(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.CreateInstanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1274,6 +1395,9 @@ func (c *instanceAdminGRPCClient) UpdateInstanceConfig(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/UpdateInstanceConfig")
+	}
 	opts = append((*c.CallOptions).UpdateInstanceConfig[0:len((*c.CallOptions).UpdateInstanceConfig):len((*c.CallOptions).UpdateInstanceConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1284,8 +1408,12 @@ func (c *instanceAdminGRPCClient) UpdateInstanceConfig(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.UpdateInstanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1294,6 +1422,12 @@ func (c *instanceAdminGRPCClient) DeleteInstanceConfig(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/DeleteInstanceConfig")
+	}
 	opts = append((*c.CallOptions).DeleteInstanceConfig[0:len((*c.CallOptions).DeleteInstanceConfig):len((*c.CallOptions).DeleteInstanceConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1308,9 +1442,15 @@ func (c *instanceAdminGRPCClient) ListInstanceConfigOperations(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/ListInstanceConfigOperations")
+	}
 	opts = append((*c.CallOptions).ListInstanceConfigOperations[0:len((*c.CallOptions).ListInstanceConfigOperations):len((*c.CallOptions).ListInstanceConfigOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstanceConfigOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &instancepb.ListInstanceConfigOperationsResponse{}
 		if pageToken != "" {
@@ -1354,9 +1494,15 @@ func (c *instanceAdminGRPCClient) ListInstances(ctx context.Context, req *instan
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/ListInstances")
+	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*instancepb.Instance, string, error) {
 		resp := &instancepb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -1400,9 +1546,15 @@ func (c *instanceAdminGRPCClient) ListInstancePartitions(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/ListInstancePartitions")
+	}
 	opts = append((*c.CallOptions).ListInstancePartitions[0:len((*c.CallOptions).ListInstancePartitions):len((*c.CallOptions).ListInstancePartitions)], opts...)
 	it := &InstancePartitionIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstancePartitionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*instancepb.InstancePartition, string, error) {
 		resp := &instancepb.ListInstancePartitionsResponse{}
 		if pageToken != "" {
@@ -1446,6 +1598,12 @@ func (c *instanceAdminGRPCClient) GetInstance(ctx context.Context, req *instance
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/GetInstance")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *instancepb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1464,6 +1622,12 @@ func (c *instanceAdminGRPCClient) CreateInstance(ctx context.Context, req *insta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/CreateInstance")
+	}
 	opts = append((*c.CallOptions).CreateInstance[0:len((*c.CallOptions).CreateInstance):len((*c.CallOptions).CreateInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1474,8 +1638,12 @@ func (c *instanceAdminGRPCClient) CreateInstance(ctx context.Context, req *insta
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1484,6 +1652,9 @@ func (c *instanceAdminGRPCClient) UpdateInstance(ctx context.Context, req *insta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/UpdateInstance")
+	}
 	opts = append((*c.CallOptions).UpdateInstance[0:len((*c.CallOptions).UpdateInstance):len((*c.CallOptions).UpdateInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1494,8 +1665,12 @@ func (c *instanceAdminGRPCClient) UpdateInstance(ctx context.Context, req *insta
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1504,6 +1679,12 @@ func (c *instanceAdminGRPCClient) DeleteInstance(ctx context.Context, req *insta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/DeleteInstance")
+	}
 	opts = append((*c.CallOptions).DeleteInstance[0:len((*c.CallOptions).DeleteInstance):len((*c.CallOptions).DeleteInstance)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1518,6 +1699,12 @@ func (c *instanceAdminGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1536,6 +1723,12 @@ func (c *instanceAdminGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1554,6 +1747,12 @@ func (c *instanceAdminGRPCClient) TestIamPermissions(ctx context.Context, req *i
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1572,6 +1771,12 @@ func (c *instanceAdminGRPCClient) GetInstancePartition(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/GetInstancePartition")
+	}
 	opts = append((*c.CallOptions).GetInstancePartition[0:len((*c.CallOptions).GetInstancePartition):len((*c.CallOptions).GetInstancePartition)], opts...)
 	var resp *instancepb.InstancePartition
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1590,6 +1795,12 @@ func (c *instanceAdminGRPCClient) CreateInstancePartition(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/CreateInstancePartition")
+	}
 	opts = append((*c.CallOptions).CreateInstancePartition[0:len((*c.CallOptions).CreateInstancePartition):len((*c.CallOptions).CreateInstancePartition)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1600,8 +1811,12 @@ func (c *instanceAdminGRPCClient) CreateInstancePartition(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.CreateInstancePartitionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstancePartitionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1610,6 +1825,12 @@ func (c *instanceAdminGRPCClient) DeleteInstancePartition(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/DeleteInstancePartition")
+	}
 	opts = append((*c.CallOptions).DeleteInstancePartition[0:len((*c.CallOptions).DeleteInstancePartition):len((*c.CallOptions).DeleteInstancePartition)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1624,6 +1845,9 @@ func (c *instanceAdminGRPCClient) UpdateInstancePartition(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/UpdateInstancePartition")
+	}
 	opts = append((*c.CallOptions).UpdateInstancePartition[0:len((*c.CallOptions).UpdateInstancePartition):len((*c.CallOptions).UpdateInstancePartition)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1634,8 +1858,12 @@ func (c *instanceAdminGRPCClient) UpdateInstancePartition(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.UpdateInstancePartitionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstancePartitionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1644,9 +1872,15 @@ func (c *instanceAdminGRPCClient) ListInstancePartitionOperations(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/ListInstancePartitionOperations")
+	}
 	opts = append((*c.CallOptions).ListInstancePartitionOperations[0:len((*c.CallOptions).ListInstancePartitionOperations):len((*c.CallOptions).ListInstancePartitionOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstancePartitionOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &instancepb.ListInstancePartitionOperationsResponse{}
 		if pageToken != "" {
@@ -1690,6 +1924,12 @@ func (c *instanceAdminGRPCClient) MoveInstance(ctx context.Context, req *instanc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/MoveInstance")
+	}
 	opts = append((*c.CallOptions).MoveInstance[0:len((*c.CallOptions).MoveInstance):len((*c.CallOptions).MoveInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1700,8 +1940,12 @@ func (c *instanceAdminGRPCClient) MoveInstance(ctx context.Context, req *instanc
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.MoveInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1710,6 +1954,9 @@ func (c *instanceAdminGRPCClient) CancelOperation(ctx context.Context, req *long
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1724,6 +1971,9 @@ func (c *instanceAdminGRPCClient) DeleteOperation(ctx context.Context, req *long
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1738,6 +1988,9 @@ func (c *instanceAdminGRPCClient) GetOperation(ctx context.Context, req *longrun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1756,9 +2009,12 @@ func (c *instanceAdminGRPCClient) ListOperations(ctx context.Context, req *longr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1803,7 +2059,7 @@ func (c *instanceAdminGRPCClient) ListOperations(ctx context.Context, req *longr
 // configurations.
 func (c *instanceAdminRESTClient) ListInstanceConfigs(ctx context.Context, req *instancepb.ListInstanceConfigsRequest, opts ...gax.CallOption) *InstanceConfigIterator {
 	it := &InstanceConfigIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstanceConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*instancepb.InstanceConfig, string, error) {
 		resp := &instancepb.ListInstanceConfigsResponse{}
@@ -1897,6 +2153,13 @@ func (c *instanceAdminRESTClient) GetInstanceConfig(ctx context.Context, req *in
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/GetInstanceConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/instanceConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetInstanceConfig[0:len((*c.CallOptions).GetInstanceConfig):len((*c.CallOptions).GetInstanceConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &instancepb.InstanceConfig{}
@@ -1995,6 +2258,13 @@ func (c *instanceAdminRESTClient) CreateInstanceConfig(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/CreateInstanceConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/instanceConfigs")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2023,8 +2293,12 @@ func (c *instanceAdminRESTClient) CreateInstanceConfig(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.CreateInstanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2101,6 +2375,10 @@ func (c *instanceAdminRESTClient) UpdateInstanceConfig(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/UpdateInstanceConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{instance_config.name=projects/*/instanceConfigs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2129,8 +2407,12 @@ func (c *instanceAdminRESTClient) UpdateInstanceConfig(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.UpdateInstanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2167,6 +2449,13 @@ func (c *instanceAdminRESTClient) DeleteInstanceConfig(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/DeleteInstanceConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/instanceConfigs/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2196,7 +2485,7 @@ func (c *instanceAdminRESTClient) DeleteInstanceConfig(ctx context.Context, req 
 // from the most recently started operation.
 func (c *instanceAdminRESTClient) ListInstanceConfigOperations(ctx context.Context, req *instancepb.ListInstanceConfigOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstanceConfigOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &instancepb.ListInstanceConfigOperationsResponse{}
@@ -2277,7 +2566,7 @@ func (c *instanceAdminRESTClient) ListInstanceConfigOperations(ctx context.Conte
 // ListInstances lists all instances in the given project.
 func (c *instanceAdminRESTClient) ListInstances(ctx context.Context, req *instancepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*instancepb.Instance, string, error) {
 		resp := &instancepb.ListInstancesResponse{}
@@ -2365,7 +2654,7 @@ func (c *instanceAdminRESTClient) ListInstances(ctx context.Context, req *instan
 // ListInstancePartitions lists all instance partitions for the given instance.
 func (c *instanceAdminRESTClient) ListInstancePartitions(ctx context.Context, req *instancepb.ListInstancePartitionsRequest, opts ...gax.CallOption) *InstancePartitionIterator {
 	it := &InstancePartitionIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstancePartitionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*instancepb.InstancePartition, string, error) {
 		resp := &instancepb.ListInstancePartitionsResponse{}
@@ -2473,6 +2762,13 @@ func (c *instanceAdminRESTClient) GetInstance(ctx context.Context, req *instance
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/GetInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/instances/*}")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &instancepb.Instance{}
@@ -2567,6 +2863,13 @@ func (c *instanceAdminRESTClient) CreateInstance(ctx context.Context, req *insta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/CreateInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/instances")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2595,8 +2898,12 @@ func (c *instanceAdminRESTClient) CreateInstance(ctx context.Context, req *insta
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2668,6 +2975,10 @@ func (c *instanceAdminRESTClient) UpdateInstance(ctx context.Context, req *insta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/UpdateInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{instance.name=projects/*/instances/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2696,8 +3007,12 @@ func (c *instanceAdminRESTClient) UpdateInstance(ctx context.Context, req *insta
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2731,6 +3046,13 @@ func (c *instanceAdminRESTClient) DeleteInstance(ctx context.Context, req *insta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/DeleteInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/instances/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2776,6 +3098,13 @@ func (c *instanceAdminRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/instances/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -2836,6 +3165,13 @@ func (c *instanceAdminRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/instances/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -2897,6 +3233,13 @@ func (c *instanceAdminRESTClient) TestIamPermissions(ctx context.Context, req *i
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/instances/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -2947,6 +3290,13 @@ func (c *instanceAdminRESTClient) GetInstancePartition(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/GetInstancePartition")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/instances/*/instancePartitions/*}")
+	}
 	opts = append((*c.CallOptions).GetInstancePartition[0:len((*c.CallOptions).GetInstancePartition):len((*c.CallOptions).GetInstancePartition)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &instancepb.InstancePartition{}
@@ -3044,6 +3394,13 @@ func (c *instanceAdminRESTClient) CreateInstancePartition(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/CreateInstancePartition")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/instances/*}/instancePartitions")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3072,8 +3429,12 @@ func (c *instanceAdminRESTClient) CreateInstancePartition(ctx context.Context, r
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.CreateInstancePartitionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstancePartitionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3106,6 +3467,13 @@ func (c *instanceAdminRESTClient) DeleteInstancePartition(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/DeleteInstancePartition")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/instances/*/instancePartitions/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3193,6 +3561,10 @@ func (c *instanceAdminRESTClient) UpdateInstancePartition(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/UpdateInstancePartition")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{instance_partition.name=projects/*/instances/*/instancePartitions/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3221,8 +3593,12 @@ func (c *instanceAdminRESTClient) UpdateInstancePartition(ctx context.Context, r
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.UpdateInstancePartitionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstancePartitionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3243,7 +3619,7 @@ func (c *instanceAdminRESTClient) UpdateInstancePartition(ctx context.Context, r
 // parent.
 func (c *instanceAdminRESTClient) ListInstancePartitionOperations(ctx context.Context, req *instancepb.ListInstancePartitionOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstancePartitionOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &instancepb.ListInstancePartitionOperationsResponse{}
@@ -3424,6 +3800,13 @@ func (c *instanceAdminRESTClient) MoveInstance(ctx context.Context, req *instanc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.admin.instance.v1.InstanceAdmin/MoveInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/instances/*}:move")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3452,8 +3835,12 @@ func (c *instanceAdminRESTClient) MoveInstance(ctx context.Context, req *instanc
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.MoveInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3477,6 +3864,10 @@ func (c *instanceAdminRESTClient) CancelOperation(ctx context.Context, req *long
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/instances/*/databases/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3512,6 +3903,10 @@ func (c *instanceAdminRESTClient) DeleteOperation(ctx context.Context, req *long
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/instances/*/databases/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3547,6 +3942,10 @@ func (c *instanceAdminRESTClient) GetOperation(ctx context.Context, req *longrun
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/instances/*/databases/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -3581,7 +3980,7 @@ func (c *instanceAdminRESTClient) GetOperation(ctx context.Context, req *longrun
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *instanceAdminRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -3666,7 +4065,7 @@ func (c *instanceAdminRESTClient) ListOperations(ctx context.Context, req *longr
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.CreateInstanceOperation"),
 	}
 }
 
@@ -3675,7 +4074,7 @@ func (c *instanceAdminGRPCClient) CreateInstanceOperation(name string) *CreateIn
 func (c *instanceAdminRESTClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.CreateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -3684,7 +4083,7 @@ func (c *instanceAdminRESTClient) CreateInstanceOperation(name string) *CreateIn
 // The name must be that of a previously created CreateInstanceConfigOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) CreateInstanceConfigOperation(name string) *CreateInstanceConfigOperation {
 	return &CreateInstanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.CreateInstanceConfigOperation"),
 	}
 }
 
@@ -3693,7 +4092,7 @@ func (c *instanceAdminGRPCClient) CreateInstanceConfigOperation(name string) *Cr
 func (c *instanceAdminRESTClient) CreateInstanceConfigOperation(name string) *CreateInstanceConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstanceConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.CreateInstanceConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -3702,7 +4101,7 @@ func (c *instanceAdminRESTClient) CreateInstanceConfigOperation(name string) *Cr
 // The name must be that of a previously created CreateInstancePartitionOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) CreateInstancePartitionOperation(name string) *CreateInstancePartitionOperation {
 	return &CreateInstancePartitionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.CreateInstancePartitionOperation"),
 	}
 }
 
@@ -3711,7 +4110,7 @@ func (c *instanceAdminGRPCClient) CreateInstancePartitionOperation(name string) 
 func (c *instanceAdminRESTClient) CreateInstancePartitionOperation(name string) *CreateInstancePartitionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstancePartitionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.CreateInstancePartitionOperation"),
 		pollPath: override,
 	}
 }
@@ -3720,7 +4119,7 @@ func (c *instanceAdminRESTClient) CreateInstancePartitionOperation(name string) 
 // The name must be that of a previously created MoveInstanceOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) MoveInstanceOperation(name string) *MoveInstanceOperation {
 	return &MoveInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.MoveInstanceOperation"),
 	}
 }
 
@@ -3729,7 +4128,7 @@ func (c *instanceAdminGRPCClient) MoveInstanceOperation(name string) *MoveInstan
 func (c *instanceAdminRESTClient) MoveInstanceOperation(name string) *MoveInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &MoveInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.MoveInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -3738,7 +4137,7 @@ func (c *instanceAdminRESTClient) MoveInstanceOperation(name string) *MoveInstan
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.UpdateInstanceOperation"),
 	}
 }
 
@@ -3747,7 +4146,7 @@ func (c *instanceAdminGRPCClient) UpdateInstanceOperation(name string) *UpdateIn
 func (c *instanceAdminRESTClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.UpdateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -3756,7 +4155,7 @@ func (c *instanceAdminRESTClient) UpdateInstanceOperation(name string) *UpdateIn
 // The name must be that of a previously created UpdateInstanceConfigOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) UpdateInstanceConfigOperation(name string) *UpdateInstanceConfigOperation {
 	return &UpdateInstanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.UpdateInstanceConfigOperation"),
 	}
 }
 
@@ -3765,7 +4164,7 @@ func (c *instanceAdminGRPCClient) UpdateInstanceConfigOperation(name string) *Up
 func (c *instanceAdminRESTClient) UpdateInstanceConfigOperation(name string) *UpdateInstanceConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInstanceConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.UpdateInstanceConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -3774,7 +4173,7 @@ func (c *instanceAdminRESTClient) UpdateInstanceConfigOperation(name string) *Up
 // The name must be that of a previously created UpdateInstancePartitionOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) UpdateInstancePartitionOperation(name string) *UpdateInstancePartitionOperation {
 	return &UpdateInstancePartitionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.UpdateInstancePartitionOperation"),
 	}
 }
 
@@ -3783,7 +4182,7 @@ func (c *instanceAdminGRPCClient) UpdateInstancePartitionOperation(name string) 
 func (c *instanceAdminRESTClient) UpdateInstancePartitionOperation(name string) *UpdateInstancePartitionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInstancePartitionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.UpdateInstancePartitionOperation"),
 		pollPath: override,
 	}
 }

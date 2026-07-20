@@ -49,7 +49,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := iam.NewPolicyBindingsClient(ctx)
+//	c, err := iam.NewAccessPoliciesClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -63,11 +63,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &iampb.CreatePolicyBindingRequest{
+//	req := &iampb.CreateAccessPolicyRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv3beta/iampb#CreatePolicyBindingRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv3beta/iampb#CreateAccessPolicyRequest.
 //	}
-//	op, err := c.CreatePolicyBinding(ctx, req)
+//	op, err := c.CreateAccessPolicy(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -81,7 +81,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewPolicyBindingsClient is used for authentication requests and
+// The ctx passed to NewAccessPoliciesClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -158,7 +160,7 @@ type ApiHubPluginClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ApiHubPluginClient) Close() error {
 	return c.internalClient.Close()
@@ -365,6 +367,16 @@ type apiHubPluginRESTClient struct {
 // This service is used for managing plugins inside the API Hub.
 func NewApiHubPluginRESTClient(ctx context.Context, opts ...option.ClientOption) (*ApiHubPluginClient, error) {
 	clientOpts := append(defaultApiHubPluginRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "apihub",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/apihub/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "apihub.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -378,6 +390,40 @@ func NewApiHubPluginRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.GetPlugin = append(callOpts.GetPlugin, gax.WithClientMetrics(metrics))
+		callOpts.EnablePlugin = append(callOpts.EnablePlugin, gax.WithClientMetrics(metrics))
+		callOpts.DisablePlugin = append(callOpts.DisablePlugin, gax.WithClientMetrics(metrics))
+		callOpts.CreatePlugin = append(callOpts.CreatePlugin, gax.WithClientMetrics(metrics))
+		callOpts.ListPlugins = append(callOpts.ListPlugins, gax.WithClientMetrics(metrics))
+		callOpts.DeletePlugin = append(callOpts.DeletePlugin, gax.WithClientMetrics(metrics))
+		callOpts.CreatePluginInstance = append(callOpts.CreatePluginInstance, gax.WithClientMetrics(metrics))
+		callOpts.ExecutePluginInstanceAction = append(callOpts.ExecutePluginInstanceAction, gax.WithClientMetrics(metrics))
+		callOpts.GetPluginInstance = append(callOpts.GetPluginInstance, gax.WithClientMetrics(metrics))
+		callOpts.ListPluginInstances = append(callOpts.ListPluginInstances, gax.WithClientMetrics(metrics))
+		callOpts.EnablePluginInstanceAction = append(callOpts.EnablePluginInstanceAction, gax.WithClientMetrics(metrics))
+		callOpts.DisablePluginInstanceAction = append(callOpts.DisablePluginInstanceAction, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePluginInstance = append(callOpts.UpdatePluginInstance, gax.WithClientMetrics(metrics))
+		callOpts.DeletePluginInstance = append(callOpts.DeletePluginInstance, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -415,7 +461,7 @@ func (c *apiHubPluginRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *apiHubPluginRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -449,6 +495,13 @@ func (c *apiHubPluginRESTClient) GetPlugin(ctx context.Context, req *apihubpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/GetPlugin")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*}")
+	}
 	opts = append((*c.CallOptions).GetPlugin[0:len((*c.CallOptions).GetPlugin):len((*c.CallOptions).GetPlugin)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Plugin{}
@@ -506,6 +559,13 @@ func (c *apiHubPluginRESTClient) EnablePlugin(ctx context.Context, req *apihubpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/EnablePlugin")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*}:enable")
+	}
 	opts = append((*c.CallOptions).EnablePlugin[0:len((*c.CallOptions).EnablePlugin):len((*c.CallOptions).EnablePlugin)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Plugin{}
@@ -563,6 +623,13 @@ func (c *apiHubPluginRESTClient) DisablePlugin(ctx context.Context, req *apihubp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/DisablePlugin")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*}:disable")
+	}
 	opts = append((*c.CallOptions).DisablePlugin[0:len((*c.CallOptions).DisablePlugin):len((*c.CallOptions).DisablePlugin)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Plugin{}
@@ -624,6 +691,13 @@ func (c *apiHubPluginRESTClient) CreatePlugin(ctx context.Context, req *apihubpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/CreatePlugin")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/plugins")
+	}
 	opts = append((*c.CallOptions).CreatePlugin[0:len((*c.CallOptions).CreatePlugin):len((*c.CallOptions).CreatePlugin)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Plugin{}
@@ -658,7 +732,7 @@ func (c *apiHubPluginRESTClient) CreatePlugin(ctx context.Context, req *apihubpb
 // ListPlugins list all the plugins in a given project and location.
 func (c *apiHubPluginRESTClient) ListPlugins(ctx context.Context, req *apihubpb.ListPluginsRequest, opts ...gax.CallOption) *PluginIterator {
 	it := &PluginIterator{}
-	req = proto.Clone(req).(*apihubpb.ListPluginsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.Plugin, string, error) {
 		resp := &apihubpb.ListPluginsResponse{}
@@ -756,6 +830,13 @@ func (c *apiHubPluginRESTClient) DeletePlugin(ctx context.Context, req *apihubpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/DeletePlugin")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -784,8 +865,12 @@ func (c *apiHubPluginRESTClient) DeletePlugin(ctx context.Context, req *apihubpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.DeletePluginOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePluginOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -819,6 +904,13 @@ func (c *apiHubPluginRESTClient) CreatePluginInstance(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/CreatePluginInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/plugins/*}/instances")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -847,8 +939,12 @@ func (c *apiHubPluginRESTClient) CreatePluginInstance(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.CreatePluginInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePluginInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -878,6 +974,13 @@ func (c *apiHubPluginRESTClient) ExecutePluginInstanceAction(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/ExecutePluginInstanceAction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*/instances/*}:executeAction")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -906,8 +1009,12 @@ func (c *apiHubPluginRESTClient) ExecutePluginInstanceAction(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.ExecutePluginInstanceActionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExecutePluginInstanceActionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -931,6 +1038,13 @@ func (c *apiHubPluginRESTClient) GetPluginInstance(ctx context.Context, req *api
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/GetPluginInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*/instances/*}")
+	}
 	opts = append((*c.CallOptions).GetPluginInstance[0:len((*c.CallOptions).GetPluginInstance):len((*c.CallOptions).GetPluginInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.PluginInstance{}
@@ -966,7 +1080,7 @@ func (c *apiHubPluginRESTClient) GetPluginInstance(ctx context.Context, req *api
 // - can be used as wildcard value for {plugin_id}
 func (c *apiHubPluginRESTClient) ListPluginInstances(ctx context.Context, req *apihubpb.ListPluginInstancesRequest, opts ...gax.CallOption) *PluginInstanceIterator {
 	it := &PluginInstanceIterator{}
-	req = proto.Clone(req).(*apihubpb.ListPluginInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.PluginInstance, string, error) {
 		resp := &apihubpb.ListPluginInstancesResponse{}
@@ -1069,6 +1183,13 @@ func (c *apiHubPluginRESTClient) EnablePluginInstanceAction(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/EnablePluginInstanceAction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*/instances/*}:enableAction")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1097,8 +1218,12 @@ func (c *apiHubPluginRESTClient) EnablePluginInstanceAction(ctx context.Context,
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.EnablePluginInstanceActionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EnablePluginInstanceActionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1128,6 +1253,13 @@ func (c *apiHubPluginRESTClient) DisablePluginInstanceAction(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/DisablePluginInstanceAction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*/instances/*}:disableAction")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1156,8 +1288,12 @@ func (c *apiHubPluginRESTClient) DisablePluginInstanceAction(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.DisablePluginInstanceActionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DisablePluginInstanceActionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1213,6 +1349,10 @@ func (c *apiHubPluginRESTClient) UpdatePluginInstance(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/UpdatePluginInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{plugin_instance.name=projects/*/locations/*/plugins/*/instances/*}")
+	}
 	opts = append((*c.CallOptions).UpdatePluginInstance[0:len((*c.CallOptions).UpdatePluginInstance):len((*c.CallOptions).UpdatePluginInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.PluginInstance{}
@@ -1263,6 +1403,13 @@ func (c *apiHubPluginRESTClient) DeletePluginInstance(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/DeletePluginInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*/instances/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1291,8 +1438,12 @@ func (c *apiHubPluginRESTClient) DeletePluginInstance(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.DeletePluginInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePluginInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1316,6 +1467,10 @@ func (c *apiHubPluginRESTClient) GetLocation(ctx context.Context, req *locationp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -1350,7 +1505,7 @@ func (c *apiHubPluginRESTClient) GetLocation(ctx context.Context, req *locationp
 // ListLocations lists information about the supported locations for this service.
 func (c *apiHubPluginRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1453,6 +1608,10 @@ func (c *apiHubPluginRESTClient) CancelOperation(ctx context.Context, req *longr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1488,6 +1647,10 @@ func (c *apiHubPluginRESTClient) DeleteOperation(ctx context.Context, req *longr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1523,6 +1686,10 @@ func (c *apiHubPluginRESTClient) GetOperation(ctx context.Context, req *longrunn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1557,7 +1724,7 @@ func (c *apiHubPluginRESTClient) GetOperation(ctx context.Context, req *longrunn
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *apiHubPluginRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1643,7 +1810,7 @@ func (c *apiHubPluginRESTClient) ListOperations(ctx context.Context, req *longru
 func (c *apiHubPluginRESTClient) CreatePluginInstanceOperation(name string) *CreatePluginInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePluginInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.CreatePluginInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -1653,7 +1820,7 @@ func (c *apiHubPluginRESTClient) CreatePluginInstanceOperation(name string) *Cre
 func (c *apiHubPluginRESTClient) DeletePluginOperation(name string) *DeletePluginOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePluginOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.DeletePluginOperation"),
 		pollPath: override,
 	}
 }
@@ -1663,7 +1830,7 @@ func (c *apiHubPluginRESTClient) DeletePluginOperation(name string) *DeletePlugi
 func (c *apiHubPluginRESTClient) DeletePluginInstanceOperation(name string) *DeletePluginInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePluginInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.DeletePluginInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -1673,7 +1840,7 @@ func (c *apiHubPluginRESTClient) DeletePluginInstanceOperation(name string) *Del
 func (c *apiHubPluginRESTClient) DisablePluginInstanceActionOperation(name string) *DisablePluginInstanceActionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DisablePluginInstanceActionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.DisablePluginInstanceActionOperation"),
 		pollPath: override,
 	}
 }
@@ -1683,7 +1850,7 @@ func (c *apiHubPluginRESTClient) DisablePluginInstanceActionOperation(name strin
 func (c *apiHubPluginRESTClient) EnablePluginInstanceActionOperation(name string) *EnablePluginInstanceActionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &EnablePluginInstanceActionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.EnablePluginInstanceActionOperation"),
 		pollPath: override,
 	}
 }
@@ -1693,7 +1860,7 @@ func (c *apiHubPluginRESTClient) EnablePluginInstanceActionOperation(name string
 func (c *apiHubPluginRESTClient) ExecutePluginInstanceActionOperation(name string) *ExecutePluginInstanceActionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExecutePluginInstanceActionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.ExecutePluginInstanceActionOperation"),
 		pollPath: override,
 	}
 }

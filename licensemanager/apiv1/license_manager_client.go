@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -344,7 +346,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -524,6 +526,16 @@ type gRPCClient struct {
 // Service describing handlers for resources
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "licensemanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/licensemanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "licensemanager.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -547,6 +559,38 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "licensemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/licensemanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "licensemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConfigurations = append(client.CallOptions.ListConfigurations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetConfiguration = append(client.CallOptions.GetConfiguration, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateConfiguration = append(client.CallOptions.CreateConfiguration, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateConfiguration = append(client.CallOptions.UpdateConfiguration, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteConfiguration = append(client.CallOptions.DeleteConfiguration, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeactivateConfiguration = append(client.CallOptions.DeactivateConfiguration, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReactivateConfiguration = append(client.CallOptions.ReactivateConfiguration, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryConfigurationLicenseUsage = append(client.CallOptions.QueryConfigurationLicenseUsage, gax.WithClientMetrics(metrics))
+		client.CallOptions.AggregateUsage = append(client.CallOptions.AggregateUsage, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListProducts = append(client.CallOptions.ListProducts, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetProduct = append(client.CallOptions.GetProduct, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -583,7 +627,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -616,6 +660,16 @@ type restClient struct {
 // Service describing handlers for resources
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "licensemanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/licensemanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "licensemanager.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -629,6 +683,39 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "licensemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/licensemanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "licensemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConfigurations = append(callOpts.ListConfigurations, gax.WithClientMetrics(metrics))
+		callOpts.GetConfiguration = append(callOpts.GetConfiguration, gax.WithClientMetrics(metrics))
+		callOpts.CreateConfiguration = append(callOpts.CreateConfiguration, gax.WithClientMetrics(metrics))
+		callOpts.UpdateConfiguration = append(callOpts.UpdateConfiguration, gax.WithClientMetrics(metrics))
+		callOpts.DeleteConfiguration = append(callOpts.DeleteConfiguration, gax.WithClientMetrics(metrics))
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientMetrics(metrics))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientMetrics(metrics))
+		callOpts.DeactivateConfiguration = append(callOpts.DeactivateConfiguration, gax.WithClientMetrics(metrics))
+		callOpts.ReactivateConfiguration = append(callOpts.ReactivateConfiguration, gax.WithClientMetrics(metrics))
+		callOpts.QueryConfigurationLicenseUsage = append(callOpts.QueryConfigurationLicenseUsage, gax.WithClientMetrics(metrics))
+		callOpts.AggregateUsage = append(callOpts.AggregateUsage, gax.WithClientMetrics(metrics))
+		callOpts.ListProducts = append(callOpts.ListProducts, gax.WithClientMetrics(metrics))
+		callOpts.GetProduct = append(callOpts.GetProduct, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -666,7 +753,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -685,9 +772,15 @@ func (c *gRPCClient) ListConfigurations(ctx context.Context, req *licensemanager
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/ListConfigurations")
+	}
 	opts = append((*c.CallOptions).ListConfigurations[0:len((*c.CallOptions).ListConfigurations):len((*c.CallOptions).ListConfigurations)], opts...)
 	it := &ConfigurationIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.ListConfigurationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Configuration, string, error) {
 		resp := &licensemanagerpb.ListConfigurationsResponse{}
 		if pageToken != "" {
@@ -731,6 +824,12 @@ func (c *gRPCClient) GetConfiguration(ctx context.Context, req *licensemanagerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/GetConfiguration")
+	}
 	opts = append((*c.CallOptions).GetConfiguration[0:len((*c.CallOptions).GetConfiguration):len((*c.CallOptions).GetConfiguration)], opts...)
 	var resp *licensemanagerpb.Configuration
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -749,6 +848,12 @@ func (c *gRPCClient) CreateConfiguration(ctx context.Context, req *licensemanage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/CreateConfiguration")
+	}
 	opts = append((*c.CallOptions).CreateConfiguration[0:len((*c.CallOptions).CreateConfiguration):len((*c.CallOptions).CreateConfiguration)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -759,8 +864,12 @@ func (c *gRPCClient) CreateConfiguration(ctx context.Context, req *licensemanage
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.CreateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -769,6 +878,9 @@ func (c *gRPCClient) UpdateConfiguration(ctx context.Context, req *licensemanage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/UpdateConfiguration")
+	}
 	opts = append((*c.CallOptions).UpdateConfiguration[0:len((*c.CallOptions).UpdateConfiguration):len((*c.CallOptions).UpdateConfiguration)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -779,8 +891,12 @@ func (c *gRPCClient) UpdateConfiguration(ctx context.Context, req *licensemanage
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.UpdateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -789,6 +905,12 @@ func (c *gRPCClient) DeleteConfiguration(ctx context.Context, req *licensemanage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/DeleteConfiguration")
+	}
 	opts = append((*c.CallOptions).DeleteConfiguration[0:len((*c.CallOptions).DeleteConfiguration):len((*c.CallOptions).DeleteConfiguration)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -799,8 +921,12 @@ func (c *gRPCClient) DeleteConfiguration(ctx context.Context, req *licensemanage
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.DeleteConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -809,9 +935,15 @@ func (c *gRPCClient) ListInstances(ctx context.Context, req *licensemanagerpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/ListInstances")
+	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Instance, string, error) {
 		resp := &licensemanagerpb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -855,6 +987,12 @@ func (c *gRPCClient) GetInstance(ctx context.Context, req *licensemanagerpb.GetI
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/GetInstance")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *licensemanagerpb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -873,6 +1011,12 @@ func (c *gRPCClient) DeactivateConfiguration(ctx context.Context, req *licensema
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/DeactivateConfiguration")
+	}
 	opts = append((*c.CallOptions).DeactivateConfiguration[0:len((*c.CallOptions).DeactivateConfiguration):len((*c.CallOptions).DeactivateConfiguration)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -883,8 +1027,12 @@ func (c *gRPCClient) DeactivateConfiguration(ctx context.Context, req *licensema
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.DeactivateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeactivateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -893,6 +1041,12 @@ func (c *gRPCClient) ReactivateConfiguration(ctx context.Context, req *licensema
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/ReactivateConfiguration")
+	}
 	opts = append((*c.CallOptions).ReactivateConfiguration[0:len((*c.CallOptions).ReactivateConfiguration):len((*c.CallOptions).ReactivateConfiguration)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -903,8 +1057,12 @@ func (c *gRPCClient) ReactivateConfiguration(ctx context.Context, req *licensema
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.ReactivateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReactivateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -913,6 +1071,12 @@ func (c *gRPCClient) QueryConfigurationLicenseUsage(ctx context.Context, req *li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/QueryConfigurationLicenseUsage")
+	}
 	opts = append((*c.CallOptions).QueryConfigurationLicenseUsage[0:len((*c.CallOptions).QueryConfigurationLicenseUsage):len((*c.CallOptions).QueryConfigurationLicenseUsage)], opts...)
 	var resp *licensemanagerpb.QueryConfigurationLicenseUsageResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -931,9 +1095,15 @@ func (c *gRPCClient) AggregateUsage(ctx context.Context, req *licensemanagerpb.A
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/AggregateUsage")
+	}
 	opts = append((*c.CallOptions).AggregateUsage[0:len((*c.CallOptions).AggregateUsage):len((*c.CallOptions).AggregateUsage)], opts...)
 	it := &UsageIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.AggregateUsageRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Usage, string, error) {
 		resp := &licensemanagerpb.AggregateUsageResponse{}
 		if pageToken != "" {
@@ -977,9 +1147,15 @@ func (c *gRPCClient) ListProducts(ctx context.Context, req *licensemanagerpb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/ListProducts")
+	}
 	opts = append((*c.CallOptions).ListProducts[0:len((*c.CallOptions).ListProducts):len((*c.CallOptions).ListProducts)], opts...)
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.ListProductsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Product, string, error) {
 		resp := &licensemanagerpb.ListProductsResponse{}
 		if pageToken != "" {
@@ -1023,6 +1199,12 @@ func (c *gRPCClient) GetProduct(ctx context.Context, req *licensemanagerpb.GetPr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/GetProduct")
+	}
 	opts = append((*c.CallOptions).GetProduct[0:len((*c.CallOptions).GetProduct):len((*c.CallOptions).GetProduct)], opts...)
 	var resp *licensemanagerpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1041,6 +1223,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1059,9 +1244,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1105,6 +1293,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1119,6 +1310,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1133,6 +1327,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1151,9 +1348,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1195,7 +1395,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListConfigurations lists Configurations in a given project and location.
 func (c *restClient) ListConfigurations(ctx context.Context, req *licensemanagerpb.ListConfigurationsRequest, opts ...gax.CallOption) *ConfigurationIterator {
 	it := &ConfigurationIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.ListConfigurationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Configuration, string, error) {
 		resp := &licensemanagerpb.ListConfigurationsResponse{}
@@ -1295,6 +1495,13 @@ func (c *restClient) GetConfiguration(ctx context.Context, req *licensemanagerpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/GetConfiguration")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/configurations/*}")
+	}
 	opts = append((*c.CallOptions).GetConfiguration[0:len((*c.CallOptions).GetConfiguration):len((*c.CallOptions).GetConfiguration)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &licensemanagerpb.Configuration{}
@@ -1356,6 +1563,13 @@ func (c *restClient) CreateConfiguration(ctx context.Context, req *licensemanage
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/CreateConfiguration")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/configurations")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1384,8 +1598,12 @@ func (c *restClient) CreateConfiguration(ctx context.Context, req *licensemanage
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.CreateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1426,6 +1644,10 @@ func (c *restClient) UpdateConfiguration(ctx context.Context, req *licensemanage
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/UpdateConfiguration")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{configuration.name=projects/*/locations/*/configurations/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1454,8 +1676,12 @@ func (c *restClient) UpdateConfiguration(ctx context.Context, req *licensemanage
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.UpdateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1482,6 +1708,13 @@ func (c *restClient) DeleteConfiguration(ctx context.Context, req *licensemanage
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/DeleteConfiguration")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/configurations/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1510,8 +1743,12 @@ func (c *restClient) DeleteConfiguration(ctx context.Context, req *licensemanage
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.DeleteConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1519,7 +1756,7 @@ func (c *restClient) DeleteConfiguration(ctx context.Context, req *licensemanage
 // ListInstances lists Instances in a given project and location.
 func (c *restClient) ListInstances(ctx context.Context, req *licensemanagerpb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Instance, string, error) {
 		resp := &licensemanagerpb.ListInstancesResponse{}
@@ -1619,6 +1856,13 @@ func (c *restClient) GetInstance(ctx context.Context, req *licensemanagerpb.GetI
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/GetInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &licensemanagerpb.Instance{}
@@ -1675,6 +1919,13 @@ func (c *restClient) DeactivateConfiguration(ctx context.Context, req *licensema
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/DeactivateConfiguration")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/configurations/*}:deactivate")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1703,8 +1954,12 @@ func (c *restClient) DeactivateConfiguration(ctx context.Context, req *licensema
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.DeactivateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeactivateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1734,6 +1989,13 @@ func (c *restClient) ReactivateConfiguration(ctx context.Context, req *licensema
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/ReactivateConfiguration")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/configurations/*}:reactivate")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1762,8 +2024,12 @@ func (c *restClient) ReactivateConfiguration(ctx context.Context, req *licensema
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.ReactivateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReactivateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1801,6 +2067,13 @@ func (c *restClient) QueryConfigurationLicenseUsage(ctx context.Context, req *li
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/QueryConfigurationLicenseUsage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/configurations/*}:queryLicenseUsage")
+	}
 	opts = append((*c.CallOptions).QueryConfigurationLicenseUsage[0:len((*c.CallOptions).QueryConfigurationLicenseUsage):len((*c.CallOptions).QueryConfigurationLicenseUsage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &licensemanagerpb.QueryConfigurationLicenseUsageResponse{}
@@ -1835,7 +2108,7 @@ func (c *restClient) QueryConfigurationLicenseUsage(ctx context.Context, req *li
 // AggregateUsage aggregates Usage per Instance for a Configuration.
 func (c *restClient) AggregateUsage(ctx context.Context, req *licensemanagerpb.AggregateUsageRequest, opts ...gax.CallOption) *UsageIterator {
 	it := &UsageIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.AggregateUsageRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Usage, string, error) {
 		resp := &licensemanagerpb.AggregateUsageResponse{}
@@ -1933,7 +2206,7 @@ func (c *restClient) AggregateUsage(ctx context.Context, req *licensemanagerpb.A
 // ListProducts lists Products in a given project and location.
 func (c *restClient) ListProducts(ctx context.Context, req *licensemanagerpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.ListProductsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Product, string, error) {
 		resp := &licensemanagerpb.ListProductsResponse{}
@@ -2033,6 +2306,13 @@ func (c *restClient) GetProduct(ctx context.Context, req *licensemanagerpb.GetPr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//licensemanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.licensemanager.v1.LicenseManager/GetProduct")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/products/*}")
+	}
 	opts = append((*c.CallOptions).GetProduct[0:len((*c.CallOptions).GetProduct):len((*c.CallOptions).GetProduct)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &licensemanagerpb.Product{}
@@ -2083,6 +2363,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -2117,7 +2401,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2220,6 +2504,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2255,6 +2543,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2290,6 +2582,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -2324,7 +2620,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -2409,7 +2705,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateConfigurationOperation, possibly from a different process.
 func (c *gRPCClient) CreateConfigurationOperation(name string) *CreateConfigurationOperation {
 	return &CreateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.CreateConfigurationOperation"),
 	}
 }
 
@@ -2418,7 +2714,7 @@ func (c *gRPCClient) CreateConfigurationOperation(name string) *CreateConfigurat
 func (c *restClient) CreateConfigurationOperation(name string) *CreateConfigurationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.CreateConfigurationOperation"),
 		pollPath: override,
 	}
 }
@@ -2427,7 +2723,7 @@ func (c *restClient) CreateConfigurationOperation(name string) *CreateConfigurat
 // The name must be that of a previously created DeactivateConfigurationOperation, possibly from a different process.
 func (c *gRPCClient) DeactivateConfigurationOperation(name string) *DeactivateConfigurationOperation {
 	return &DeactivateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.DeactivateConfigurationOperation"),
 	}
 }
 
@@ -2436,7 +2732,7 @@ func (c *gRPCClient) DeactivateConfigurationOperation(name string) *DeactivateCo
 func (c *restClient) DeactivateConfigurationOperation(name string) *DeactivateConfigurationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeactivateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.DeactivateConfigurationOperation"),
 		pollPath: override,
 	}
 }
@@ -2445,7 +2741,7 @@ func (c *restClient) DeactivateConfigurationOperation(name string) *DeactivateCo
 // The name must be that of a previously created DeleteConfigurationOperation, possibly from a different process.
 func (c *gRPCClient) DeleteConfigurationOperation(name string) *DeleteConfigurationOperation {
 	return &DeleteConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.DeleteConfigurationOperation"),
 	}
 }
 
@@ -2454,7 +2750,7 @@ func (c *gRPCClient) DeleteConfigurationOperation(name string) *DeleteConfigurat
 func (c *restClient) DeleteConfigurationOperation(name string) *DeleteConfigurationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.DeleteConfigurationOperation"),
 		pollPath: override,
 	}
 }
@@ -2463,7 +2759,7 @@ func (c *restClient) DeleteConfigurationOperation(name string) *DeleteConfigurat
 // The name must be that of a previously created ReactivateConfigurationOperation, possibly from a different process.
 func (c *gRPCClient) ReactivateConfigurationOperation(name string) *ReactivateConfigurationOperation {
 	return &ReactivateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.ReactivateConfigurationOperation"),
 	}
 }
 
@@ -2472,7 +2768,7 @@ func (c *gRPCClient) ReactivateConfigurationOperation(name string) *ReactivateCo
 func (c *restClient) ReactivateConfigurationOperation(name string) *ReactivateConfigurationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ReactivateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.ReactivateConfigurationOperation"),
 		pollPath: override,
 	}
 }
@@ -2481,7 +2777,7 @@ func (c *restClient) ReactivateConfigurationOperation(name string) *ReactivateCo
 // The name must be that of a previously created UpdateConfigurationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateConfigurationOperation(name string) *UpdateConfigurationOperation {
 	return &UpdateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.UpdateConfigurationOperation"),
 	}
 }
 
@@ -2490,7 +2786,7 @@ func (c *gRPCClient) UpdateConfigurationOperation(name string) *UpdateConfigurat
 func (c *restClient) UpdateConfigurationOperation(name string) *UpdateConfigurationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.UpdateConfigurationOperation"),
 		pollPath: override,
 	}
 }

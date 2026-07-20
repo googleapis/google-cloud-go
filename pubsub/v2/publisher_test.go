@@ -415,3 +415,47 @@ func TestPublishCompression(t *testing.T) {
 		t.Errorf("publish result got err: %v", err)
 	}
 }
+
+func TestPublishFlowControl_OversizedLeak(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic := fmt.Sprintf("projects/%s/topics/test-topic", testutil.ProjID())
+	publisher := mustCreateTopic(t, c, topic)
+	defer publisher.Stop()
+
+	publisher.PublishSettings.FlowControlSettings = FlowControlSettings{
+		MaxOutstandingMessages: 1,
+		LimitExceededBehavior:  FlowControlBlock,
+	}
+	// Flush immediately
+	publisher.PublishSettings.CountThreshold = 1
+	publisher.PublishSettings.DelayThreshold = time.Millisecond
+
+	// Oversized message should fail.
+	// MaxPublishRequestBytes is 1e7 (10MB).
+	big := &Message{Data: make([]byte, 11*1024*1024)}
+	res := publisher.Publish(ctx, big)
+	if _, err := res.Get(ctx); !errors.Is(err, ErrOversizedMessage) {
+		t.Fatalf("got %v, want ErrOversizedMessage", err)
+	}
+
+	// Subsequent publish should not block.
+	done := make(chan struct{})
+	go func() {
+		res2 := publishSingleMessage(ctx, publisher, "small")
+		// We need to set a response in fake server for this to complete.
+		addSingleResponse(srv, "1")
+		_, _ = res2.Get(ctx)
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		// OK
+	case <-time.After(3 * time.Second):
+		t.Fatal("BUG: publish blocked, credit leaked by oversized message")
+	}
+}

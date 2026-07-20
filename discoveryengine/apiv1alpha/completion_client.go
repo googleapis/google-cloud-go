@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -303,7 +305,7 @@ type CompletionClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CompletionClient) Close() error {
 	return c.internalClient.Close()
@@ -428,6 +430,16 @@ type completionGRPCClient struct {
 // Service for Auto-Completion.
 func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*CompletionClient, error) {
 	clientOpts := defaultCompletionGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "discoveryengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/discoveryengine/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "discoveryengine.googleapis.com",
+		}))
+	}
 	if newCompletionClientHook != nil {
 		hookOpts, err := newCompletionClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -450,6 +462,27 @@ func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*Com
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CompleteQuery = append(client.CallOptions.CompleteQuery, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportSuggestionDenyListEntries = append(client.CallOptions.ImportSuggestionDenyListEntries, gax.WithClientMetrics(metrics))
+		client.CallOptions.PurgeSuggestionDenyListEntries = append(client.CallOptions.PurgeSuggestionDenyListEntries, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportCompletionSuggestions = append(client.CallOptions.ImportCompletionSuggestions, gax.WithClientMetrics(metrics))
+		client.CallOptions.PurgeCompletionSuggestions = append(client.CallOptions.PurgeCompletionSuggestions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -486,7 +519,7 @@ func (c *completionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *completionGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -519,6 +552,16 @@ type completionRESTClient struct {
 // Service for Auto-Completion.
 func NewCompletionRESTClient(ctx context.Context, opts ...option.ClientOption) (*CompletionClient, error) {
 	clientOpts := append(defaultCompletionRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "discoveryengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/discoveryengine/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "discoveryengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -532,6 +575,28 @@ func NewCompletionRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.CompleteQuery = append(callOpts.CompleteQuery, gax.WithClientMetrics(metrics))
+		callOpts.ImportSuggestionDenyListEntries = append(callOpts.ImportSuggestionDenyListEntries, gax.WithClientMetrics(metrics))
+		callOpts.PurgeSuggestionDenyListEntries = append(callOpts.PurgeSuggestionDenyListEntries, gax.WithClientMetrics(metrics))
+		callOpts.ImportCompletionSuggestions = append(callOpts.ImportCompletionSuggestions, gax.WithClientMetrics(metrics))
+		callOpts.PurgeCompletionSuggestions = append(callOpts.PurgeCompletionSuggestions, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -569,7 +634,7 @@ func (c *completionRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *completionRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -588,6 +653,12 @@ func (c *completionGRPCClient) CompleteQuery(ctx context.Context, req *discovery
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetDataStore()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.CompletionService/CompleteQuery")
+	}
 	opts = append((*c.CallOptions).CompleteQuery[0:len((*c.CallOptions).CompleteQuery):len((*c.CallOptions).CompleteQuery)], opts...)
 	var resp *discoveryenginepb.CompleteQueryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -606,6 +677,12 @@ func (c *completionGRPCClient) ImportSuggestionDenyListEntries(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.CompletionService/ImportSuggestionDenyListEntries")
+	}
 	opts = append((*c.CallOptions).ImportSuggestionDenyListEntries[0:len((*c.CallOptions).ImportSuggestionDenyListEntries):len((*c.CallOptions).ImportSuggestionDenyListEntries)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -616,8 +693,12 @@ func (c *completionGRPCClient) ImportSuggestionDenyListEntries(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportSuggestionDenyListEntriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportSuggestionDenyListEntriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -626,6 +707,12 @@ func (c *completionGRPCClient) PurgeSuggestionDenyListEntries(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.CompletionService/PurgeSuggestionDenyListEntries")
+	}
 	opts = append((*c.CallOptions).PurgeSuggestionDenyListEntries[0:len((*c.CallOptions).PurgeSuggestionDenyListEntries):len((*c.CallOptions).PurgeSuggestionDenyListEntries)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -636,8 +723,12 @@ func (c *completionGRPCClient) PurgeSuggestionDenyListEntries(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.PurgeSuggestionDenyListEntriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PurgeSuggestionDenyListEntriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -646,6 +737,12 @@ func (c *completionGRPCClient) ImportCompletionSuggestions(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.CompletionService/ImportCompletionSuggestions")
+	}
 	opts = append((*c.CallOptions).ImportCompletionSuggestions[0:len((*c.CallOptions).ImportCompletionSuggestions):len((*c.CallOptions).ImportCompletionSuggestions)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -656,8 +753,12 @@ func (c *completionGRPCClient) ImportCompletionSuggestions(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportCompletionSuggestionsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportCompletionSuggestionsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -666,6 +767,12 @@ func (c *completionGRPCClient) PurgeCompletionSuggestions(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.CompletionService/PurgeCompletionSuggestions")
+	}
 	opts = append((*c.CallOptions).PurgeCompletionSuggestions[0:len((*c.CallOptions).PurgeCompletionSuggestions):len((*c.CallOptions).PurgeCompletionSuggestions)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -676,8 +783,12 @@ func (c *completionGRPCClient) PurgeCompletionSuggestions(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.PurgeCompletionSuggestionsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PurgeCompletionSuggestionsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -686,6 +797,9 @@ func (c *completionGRPCClient) CancelOperation(ctx context.Context, req *longrun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -700,6 +814,9 @@ func (c *completionGRPCClient) GetOperation(ctx context.Context, req *longrunnin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -718,9 +835,12 @@ func (c *completionGRPCClient) ListOperations(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -788,6 +908,13 @@ func (c *completionRESTClient) CompleteQuery(ctx context.Context, req *discovery
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetDataStore()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.CompletionService/CompleteQuery")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{data_store=projects/*/locations/*/dataStores/*}:completeQuery")
+	}
 	opts = append((*c.CallOptions).CompleteQuery[0:len((*c.CallOptions).CompleteQuery):len((*c.CallOptions).CompleteQuery)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.CompleteQueryResponse{}
@@ -846,6 +973,13 @@ func (c *completionRESTClient) ImportSuggestionDenyListEntries(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.CompletionService/ImportSuggestionDenyListEntries")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=projects/*/locations/*/collections/*/dataStores/*}/suggestionDenyListEntries:import")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -874,8 +1008,12 @@ func (c *completionRESTClient) ImportSuggestionDenyListEntries(ctx context.Conte
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportSuggestionDenyListEntriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportSuggestionDenyListEntriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -907,6 +1045,13 @@ func (c *completionRESTClient) PurgeSuggestionDenyListEntries(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.CompletionService/PurgeSuggestionDenyListEntries")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=projects/*/locations/*/collections/*/dataStores/*}/suggestionDenyListEntries:purge")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -935,8 +1080,12 @@ func (c *completionRESTClient) PurgeSuggestionDenyListEntries(ctx context.Contex
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.PurgeSuggestionDenyListEntriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PurgeSuggestionDenyListEntriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -968,6 +1117,13 @@ func (c *completionRESTClient) ImportCompletionSuggestions(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.CompletionService/ImportCompletionSuggestions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=projects/*/locations/*/collections/*/dataStores/*}/completionSuggestions:import")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -996,8 +1152,12 @@ func (c *completionRESTClient) ImportCompletionSuggestions(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportCompletionSuggestionsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportCompletionSuggestionsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1029,6 +1189,13 @@ func (c *completionRESTClient) PurgeCompletionSuggestions(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.CompletionService/PurgeCompletionSuggestions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=projects/*/locations/*/collections/*/dataStores/*}/completionSuggestions:purge")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1057,8 +1224,12 @@ func (c *completionRESTClient) PurgeCompletionSuggestions(ctx context.Context, r
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.PurgeCompletionSuggestionsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PurgeCompletionSuggestionsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1088,6 +1259,10 @@ func (c *completionRESTClient) CancelOperation(ctx context.Context, req *longrun
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=projects/*/locations/*/collections/*/dataStores/*/branches/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1123,6 +1298,10 @@ func (c *completionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=projects/*/locations/*/collections/*/dataConnector/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1157,7 +1336,7 @@ func (c *completionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *completionRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1242,7 +1421,7 @@ func (c *completionRESTClient) ListOperations(ctx context.Context, req *longrunn
 // The name must be that of a previously created ImportCompletionSuggestionsOperation, possibly from a different process.
 func (c *completionGRPCClient) ImportCompletionSuggestionsOperation(name string) *ImportCompletionSuggestionsOperation {
 	return &ImportCompletionSuggestionsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportCompletionSuggestionsOperation"),
 	}
 }
 
@@ -1251,7 +1430,7 @@ func (c *completionGRPCClient) ImportCompletionSuggestionsOperation(name string)
 func (c *completionRESTClient) ImportCompletionSuggestionsOperation(name string) *ImportCompletionSuggestionsOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &ImportCompletionSuggestionsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportCompletionSuggestionsOperation"),
 		pollPath: override,
 	}
 }
@@ -1260,7 +1439,7 @@ func (c *completionRESTClient) ImportCompletionSuggestionsOperation(name string)
 // The name must be that of a previously created ImportSuggestionDenyListEntriesOperation, possibly from a different process.
 func (c *completionGRPCClient) ImportSuggestionDenyListEntriesOperation(name string) *ImportSuggestionDenyListEntriesOperation {
 	return &ImportSuggestionDenyListEntriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportSuggestionDenyListEntriesOperation"),
 	}
 }
 
@@ -1269,7 +1448,7 @@ func (c *completionGRPCClient) ImportSuggestionDenyListEntriesOperation(name str
 func (c *completionRESTClient) ImportSuggestionDenyListEntriesOperation(name string) *ImportSuggestionDenyListEntriesOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &ImportSuggestionDenyListEntriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportSuggestionDenyListEntriesOperation"),
 		pollPath: override,
 	}
 }
@@ -1278,7 +1457,7 @@ func (c *completionRESTClient) ImportSuggestionDenyListEntriesOperation(name str
 // The name must be that of a previously created PurgeCompletionSuggestionsOperation, possibly from a different process.
 func (c *completionGRPCClient) PurgeCompletionSuggestionsOperation(name string) *PurgeCompletionSuggestionsOperation {
 	return &PurgeCompletionSuggestionsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.PurgeCompletionSuggestionsOperation"),
 	}
 }
 
@@ -1287,7 +1466,7 @@ func (c *completionGRPCClient) PurgeCompletionSuggestionsOperation(name string) 
 func (c *completionRESTClient) PurgeCompletionSuggestionsOperation(name string) *PurgeCompletionSuggestionsOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &PurgeCompletionSuggestionsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.PurgeCompletionSuggestionsOperation"),
 		pollPath: override,
 	}
 }
@@ -1296,7 +1475,7 @@ func (c *completionRESTClient) PurgeCompletionSuggestionsOperation(name string) 
 // The name must be that of a previously created PurgeSuggestionDenyListEntriesOperation, possibly from a different process.
 func (c *completionGRPCClient) PurgeSuggestionDenyListEntriesOperation(name string) *PurgeSuggestionDenyListEntriesOperation {
 	return &PurgeSuggestionDenyListEntriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.PurgeSuggestionDenyListEntriesOperation"),
 	}
 }
 
@@ -1305,7 +1484,7 @@ func (c *completionGRPCClient) PurgeSuggestionDenyListEntriesOperation(name stri
 func (c *completionRESTClient) PurgeSuggestionDenyListEntriesOperation(name string) *PurgeSuggestionDenyListEntriesOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &PurgeSuggestionDenyListEntriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.PurgeSuggestionDenyListEntriesOperation"),
 		pollPath: override,
 	}
 }

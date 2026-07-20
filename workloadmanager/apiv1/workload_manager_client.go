@@ -31,6 +31,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	workloadmanagerpb "cloud.google.com/go/workloadmanager/apiv1/workloadmanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -345,7 +347,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -529,6 +531,16 @@ type gRPCClient struct {
 // your workloads running on Google Cloud.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "workloadmanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/workloadmanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "workloadmanager.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -552,6 +564,37 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "workloadmanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/workloadmanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "workloadmanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListEvaluations = append(client.CallOptions.ListEvaluations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEvaluation = append(client.CallOptions.GetEvaluation, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateEvaluation = append(client.CallOptions.CreateEvaluation, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateEvaluation = append(client.CallOptions.UpdateEvaluation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEvaluation = append(client.CallOptions.DeleteEvaluation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListExecutions = append(client.CallOptions.ListExecutions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetExecution = append(client.CallOptions.GetExecution, gax.WithClientMetrics(metrics))
+		client.CallOptions.RunEvaluation = append(client.CallOptions.RunEvaluation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteExecution = append(client.CallOptions.DeleteExecution, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListExecutionResults = append(client.CallOptions.ListExecutionResults, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRules = append(client.CallOptions.ListRules, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListScannedResources = append(client.CallOptions.ListScannedResources, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -588,7 +631,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -622,6 +665,16 @@ type restClient struct {
 // your workloads running on Google Cloud.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "workloadmanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/workloadmanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "workloadmanager.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -635,6 +688,38 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "workloadmanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/workloadmanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "workloadmanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListEvaluations = append(callOpts.ListEvaluations, gax.WithClientMetrics(metrics))
+		callOpts.GetEvaluation = append(callOpts.GetEvaluation, gax.WithClientMetrics(metrics))
+		callOpts.CreateEvaluation = append(callOpts.CreateEvaluation, gax.WithClientMetrics(metrics))
+		callOpts.UpdateEvaluation = append(callOpts.UpdateEvaluation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEvaluation = append(callOpts.DeleteEvaluation, gax.WithClientMetrics(metrics))
+		callOpts.ListExecutions = append(callOpts.ListExecutions, gax.WithClientMetrics(metrics))
+		callOpts.GetExecution = append(callOpts.GetExecution, gax.WithClientMetrics(metrics))
+		callOpts.RunEvaluation = append(callOpts.RunEvaluation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteExecution = append(callOpts.DeleteExecution, gax.WithClientMetrics(metrics))
+		callOpts.ListExecutionResults = append(callOpts.ListExecutionResults, gax.WithClientMetrics(metrics))
+		callOpts.ListRules = append(callOpts.ListRules, gax.WithClientMetrics(metrics))
+		callOpts.ListScannedResources = append(callOpts.ListScannedResources, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -672,7 +757,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -691,9 +776,15 @@ func (c *gRPCClient) ListEvaluations(ctx context.Context, req *workloadmanagerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/ListEvaluations")
+	}
 	opts = append((*c.CallOptions).ListEvaluations[0:len((*c.CallOptions).ListEvaluations):len((*c.CallOptions).ListEvaluations)], opts...)
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListEvaluationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.Evaluation, string, error) {
 		resp := &workloadmanagerpb.ListEvaluationsResponse{}
 		if pageToken != "" {
@@ -737,6 +828,12 @@ func (c *gRPCClient) GetEvaluation(ctx context.Context, req *workloadmanagerpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/GetEvaluation")
+	}
 	opts = append((*c.CallOptions).GetEvaluation[0:len((*c.CallOptions).GetEvaluation):len((*c.CallOptions).GetEvaluation)], opts...)
 	var resp *workloadmanagerpb.Evaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -755,6 +852,12 @@ func (c *gRPCClient) CreateEvaluation(ctx context.Context, req *workloadmanagerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/CreateEvaluation")
+	}
 	opts = append((*c.CallOptions).CreateEvaluation[0:len((*c.CallOptions).CreateEvaluation):len((*c.CallOptions).CreateEvaluation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -765,8 +868,12 @@ func (c *gRPCClient) CreateEvaluation(ctx context.Context, req *workloadmanagerp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.CreateEvaluationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEvaluationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -775,6 +882,9 @@ func (c *gRPCClient) UpdateEvaluation(ctx context.Context, req *workloadmanagerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/UpdateEvaluation")
+	}
 	opts = append((*c.CallOptions).UpdateEvaluation[0:len((*c.CallOptions).UpdateEvaluation):len((*c.CallOptions).UpdateEvaluation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -785,8 +895,12 @@ func (c *gRPCClient) UpdateEvaluation(ctx context.Context, req *workloadmanagerp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.UpdateEvaluationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEvaluationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -795,6 +909,12 @@ func (c *gRPCClient) DeleteEvaluation(ctx context.Context, req *workloadmanagerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/DeleteEvaluation")
+	}
 	opts = append((*c.CallOptions).DeleteEvaluation[0:len((*c.CallOptions).DeleteEvaluation):len((*c.CallOptions).DeleteEvaluation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -805,8 +925,12 @@ func (c *gRPCClient) DeleteEvaluation(ctx context.Context, req *workloadmanagerp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.DeleteEvaluationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEvaluationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -815,9 +939,15 @@ func (c *gRPCClient) ListExecutions(ctx context.Context, req *workloadmanagerpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/ListExecutions")
+	}
 	opts = append((*c.CallOptions).ListExecutions[0:len((*c.CallOptions).ListExecutions):len((*c.CallOptions).ListExecutions)], opts...)
 	it := &ExecutionIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListExecutionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.Execution, string, error) {
 		resp := &workloadmanagerpb.ListExecutionsResponse{}
 		if pageToken != "" {
@@ -861,6 +991,12 @@ func (c *gRPCClient) GetExecution(ctx context.Context, req *workloadmanagerpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/GetExecution")
+	}
 	opts = append((*c.CallOptions).GetExecution[0:len((*c.CallOptions).GetExecution):len((*c.CallOptions).GetExecution)], opts...)
 	var resp *workloadmanagerpb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -879,6 +1015,12 @@ func (c *gRPCClient) RunEvaluation(ctx context.Context, req *workloadmanagerpb.R
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/RunEvaluation")
+	}
 	opts = append((*c.CallOptions).RunEvaluation[0:len((*c.CallOptions).RunEvaluation):len((*c.CallOptions).RunEvaluation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -889,8 +1031,12 @@ func (c *gRPCClient) RunEvaluation(ctx context.Context, req *workloadmanagerpb.R
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.RunEvaluationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunEvaluationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -899,6 +1045,12 @@ func (c *gRPCClient) DeleteExecution(ctx context.Context, req *workloadmanagerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/DeleteExecution")
+	}
 	opts = append((*c.CallOptions).DeleteExecution[0:len((*c.CallOptions).DeleteExecution):len((*c.CallOptions).DeleteExecution)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -909,8 +1061,12 @@ func (c *gRPCClient) DeleteExecution(ctx context.Context, req *workloadmanagerpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.DeleteExecutionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteExecutionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -919,9 +1075,12 @@ func (c *gRPCClient) ListExecutionResults(ctx context.Context, req *workloadmana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/ListExecutionResults")
+	}
 	opts = append((*c.CallOptions).ListExecutionResults[0:len((*c.CallOptions).ListExecutionResults):len((*c.CallOptions).ListExecutionResults)], opts...)
 	it := &ExecutionResultIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListExecutionResultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.ExecutionResult, string, error) {
 		resp := &workloadmanagerpb.ListExecutionResultsResponse{}
 		if pageToken != "" {
@@ -965,6 +1124,12 @@ func (c *gRPCClient) ListRules(ctx context.Context, req *workloadmanagerpb.ListR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/ListRules")
+	}
 	opts = append((*c.CallOptions).ListRules[0:len((*c.CallOptions).ListRules):len((*c.CallOptions).ListRules)], opts...)
 	var resp *workloadmanagerpb.ListRulesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -983,9 +1148,12 @@ func (c *gRPCClient) ListScannedResources(ctx context.Context, req *workloadmana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/ListScannedResources")
+	}
 	opts = append((*c.CallOptions).ListScannedResources[0:len((*c.CallOptions).ListScannedResources):len((*c.CallOptions).ListScannedResources)], opts...)
 	it := &ScannedResourceIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListScannedResourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.ScannedResource, string, error) {
 		resp := &workloadmanagerpb.ListScannedResourcesResponse{}
 		if pageToken != "" {
@@ -1029,6 +1197,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1047,9 +1218,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1093,6 +1267,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1107,6 +1284,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1121,6 +1301,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1139,9 +1322,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1183,7 +1369,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListEvaluations lists Evaluations in a given project and location.
 func (c *restClient) ListEvaluations(ctx context.Context, req *workloadmanagerpb.ListEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListEvaluationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.Evaluation, string, error) {
 		resp := &workloadmanagerpb.ListEvaluationsResponse{}
@@ -1283,6 +1469,13 @@ func (c *restClient) GetEvaluation(ctx context.Context, req *workloadmanagerpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/GetEvaluation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/evaluations/*}")
+	}
 	opts = append((*c.CallOptions).GetEvaluation[0:len((*c.CallOptions).GetEvaluation):len((*c.CallOptions).GetEvaluation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &workloadmanagerpb.Evaluation{}
@@ -1344,6 +1537,13 @@ func (c *restClient) CreateEvaluation(ctx context.Context, req *workloadmanagerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/CreateEvaluation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/evaluations")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1372,8 +1572,12 @@ func (c *restClient) CreateEvaluation(ctx context.Context, req *workloadmanagerp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.CreateEvaluationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEvaluationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1414,6 +1618,10 @@ func (c *restClient) UpdateEvaluation(ctx context.Context, req *workloadmanagerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/UpdateEvaluation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{evaluation.name=projects/*/locations/*/evaluations/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1442,8 +1650,12 @@ func (c *restClient) UpdateEvaluation(ctx context.Context, req *workloadmanagerp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.UpdateEvaluationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEvaluationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1473,6 +1685,13 @@ func (c *restClient) DeleteEvaluation(ctx context.Context, req *workloadmanagerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/DeleteEvaluation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/evaluations/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1501,8 +1720,12 @@ func (c *restClient) DeleteEvaluation(ctx context.Context, req *workloadmanagerp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.DeleteEvaluationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEvaluationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1510,7 +1733,7 @@ func (c *restClient) DeleteEvaluation(ctx context.Context, req *workloadmanagerp
 // ListExecutions lists Executions in a given project and location.
 func (c *restClient) ListExecutions(ctx context.Context, req *workloadmanagerpb.ListExecutionsRequest, opts ...gax.CallOption) *ExecutionIterator {
 	it := &ExecutionIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListExecutionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.Execution, string, error) {
 		resp := &workloadmanagerpb.ListExecutionsResponse{}
@@ -1610,6 +1833,13 @@ func (c *restClient) GetExecution(ctx context.Context, req *workloadmanagerpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/GetExecution")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/evaluations/*/executions/*}")
+	}
 	opts = append((*c.CallOptions).GetExecution[0:len((*c.CallOptions).GetExecution):len((*c.CallOptions).GetExecution)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &workloadmanagerpb.Execution{}
@@ -1666,6 +1896,13 @@ func (c *restClient) RunEvaluation(ctx context.Context, req *workloadmanagerpb.R
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/RunEvaluation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/evaluations/*}/executions:run")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1694,8 +1931,12 @@ func (c *restClient) RunEvaluation(ctx context.Context, req *workloadmanagerpb.R
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.RunEvaluationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunEvaluationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1722,6 +1963,13 @@ func (c *restClient) DeleteExecution(ctx context.Context, req *workloadmanagerpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/DeleteExecution")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/evaluations/*/executions/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1750,8 +1998,12 @@ func (c *restClient) DeleteExecution(ctx context.Context, req *workloadmanagerpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.DeleteExecutionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteExecutionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1759,7 +2011,7 @@ func (c *restClient) DeleteExecution(ctx context.Context, req *workloadmanagerpb
 // ListExecutionResults lists the result of a single evaluation.
 func (c *restClient) ListExecutionResults(ctx context.Context, req *workloadmanagerpb.ListExecutionResultsRequest, opts ...gax.CallOption) *ExecutionResultIterator {
 	it := &ExecutionResultIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListExecutionResultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.ExecutionResult, string, error) {
 		resp := &workloadmanagerpb.ListExecutionResultsResponse{}
@@ -1871,6 +2123,13 @@ func (c *restClient) ListRules(ctx context.Context, req *workloadmanagerpb.ListR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workloadmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workloadmanager.v1.WorkloadManager/ListRules")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/rules")
+	}
 	opts = append((*c.CallOptions).ListRules[0:len((*c.CallOptions).ListRules):len((*c.CallOptions).ListRules)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &workloadmanagerpb.ListRulesResponse{}
@@ -1905,7 +2164,7 @@ func (c *restClient) ListRules(ctx context.Context, req *workloadmanagerpb.ListR
 // ListScannedResources list all scanned resources for a single Execution.
 func (c *restClient) ListScannedResources(ctx context.Context, req *workloadmanagerpb.ListScannedResourcesRequest, opts ...gax.CallOption) *ScannedResourceIterator {
 	it := &ScannedResourceIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListScannedResourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.ScannedResource, string, error) {
 		resp := &workloadmanagerpb.ListScannedResourcesResponse{}
@@ -2008,6 +2267,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -2050,7 +2313,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 //	to the project.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2153,6 +2416,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2188,6 +2455,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2223,6 +2494,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -2257,7 +2532,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -2342,7 +2617,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateEvaluationOperation, possibly from a different process.
 func (c *gRPCClient) CreateEvaluationOperation(name string) *CreateEvaluationOperation {
 	return &CreateEvaluationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.CreateEvaluationOperation"),
 	}
 }
 
@@ -2351,7 +2626,7 @@ func (c *gRPCClient) CreateEvaluationOperation(name string) *CreateEvaluationOpe
 func (c *restClient) CreateEvaluationOperation(name string) *CreateEvaluationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEvaluationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.CreateEvaluationOperation"),
 		pollPath: override,
 	}
 }
@@ -2360,7 +2635,7 @@ func (c *restClient) CreateEvaluationOperation(name string) *CreateEvaluationOpe
 // The name must be that of a previously created DeleteEvaluationOperation, possibly from a different process.
 func (c *gRPCClient) DeleteEvaluationOperation(name string) *DeleteEvaluationOperation {
 	return &DeleteEvaluationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.DeleteEvaluationOperation"),
 	}
 }
 
@@ -2369,7 +2644,7 @@ func (c *gRPCClient) DeleteEvaluationOperation(name string) *DeleteEvaluationOpe
 func (c *restClient) DeleteEvaluationOperation(name string) *DeleteEvaluationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEvaluationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.DeleteEvaluationOperation"),
 		pollPath: override,
 	}
 }
@@ -2378,7 +2653,7 @@ func (c *restClient) DeleteEvaluationOperation(name string) *DeleteEvaluationOpe
 // The name must be that of a previously created DeleteExecutionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteExecutionOperation(name string) *DeleteExecutionOperation {
 	return &DeleteExecutionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.DeleteExecutionOperation"),
 	}
 }
 
@@ -2387,7 +2662,7 @@ func (c *gRPCClient) DeleteExecutionOperation(name string) *DeleteExecutionOpera
 func (c *restClient) DeleteExecutionOperation(name string) *DeleteExecutionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteExecutionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.DeleteExecutionOperation"),
 		pollPath: override,
 	}
 }
@@ -2396,7 +2671,7 @@ func (c *restClient) DeleteExecutionOperation(name string) *DeleteExecutionOpera
 // The name must be that of a previously created RunEvaluationOperation, possibly from a different process.
 func (c *gRPCClient) RunEvaluationOperation(name string) *RunEvaluationOperation {
 	return &RunEvaluationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.RunEvaluationOperation"),
 	}
 }
 
@@ -2405,7 +2680,7 @@ func (c *gRPCClient) RunEvaluationOperation(name string) *RunEvaluationOperation
 func (c *restClient) RunEvaluationOperation(name string) *RunEvaluationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RunEvaluationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.RunEvaluationOperation"),
 		pollPath: override,
 	}
 }
@@ -2414,7 +2689,7 @@ func (c *restClient) RunEvaluationOperation(name string) *RunEvaluationOperation
 // The name must be that of a previously created UpdateEvaluationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateEvaluationOperation(name string) *UpdateEvaluationOperation {
 	return &UpdateEvaluationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.UpdateEvaluationOperation"),
 	}
 }
 
@@ -2423,7 +2698,7 @@ func (c *gRPCClient) UpdateEvaluationOperation(name string) *UpdateEvaluationOpe
 func (c *restClient) UpdateEvaluationOperation(name string) *UpdateEvaluationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateEvaluationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.UpdateEvaluationOperation"),
 		pollPath: override,
 	}
 }

@@ -32,6 +32,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	servicemanagementpb "cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -226,7 +228,7 @@ type ServiceManagerClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ServiceManagerClient) Close() error {
 	return c.internalClient.Close()
@@ -481,6 +483,16 @@ type serviceManagerGRPCClient struct {
 // API (at https://cloud.google.com/service-infrastructure/docs/overview)
 func NewServiceManagerClient(ctx context.Context, opts ...option.ClientOption) (*ServiceManagerClient, error) {
 	clientOpts := defaultServiceManagerGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "servicemanagement",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/servicemanagement/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "servicemanagement.googleapis.com",
+		}))
+	}
 	if newServiceManagerClientHook != nil {
 		hookOpts, err := newServiceManagerClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -504,6 +516,36 @@ func NewServiceManagerClient(ctx context.Context, opts ...option.ClientOption) (
 		iamPolicyClient:      iampb.NewIAMPolicyClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "servicemanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicemanagement/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "servicemanagement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateService = append(client.CallOptions.CreateService, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteService = append(client.CallOptions.DeleteService, gax.WithClientMetrics(metrics))
+		client.CallOptions.UndeleteService = append(client.CallOptions.UndeleteService, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListServiceConfigs = append(client.CallOptions.ListServiceConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetServiceConfig = append(client.CallOptions.GetServiceConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateServiceConfig = append(client.CallOptions.CreateServiceConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.SubmitConfigSource = append(client.CallOptions.SubmitConfigSource, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListServiceRollouts = append(client.CallOptions.ListServiceRollouts, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetServiceRollout = append(client.CallOptions.GetServiceRollout, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateServiceRollout = append(client.CallOptions.CreateServiceRollout, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateConfigReport = append(client.CallOptions.GenerateConfigReport, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -540,7 +582,7 @@ func (c *serviceManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *serviceManagerGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -574,6 +616,16 @@ type serviceManagerRESTClient struct {
 // API (at https://cloud.google.com/service-infrastructure/docs/overview)
 func NewServiceManagerRESTClient(ctx context.Context, opts ...option.ClientOption) (*ServiceManagerClient, error) {
 	clientOpts := append(defaultServiceManagerRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "servicemanagement",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/servicemanagement/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "servicemanagement.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -587,6 +639,37 @@ func NewServiceManagerRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "servicemanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicemanagement/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "servicemanagement.googleapis.com",
+			}),
+		)
+
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientMetrics(metrics))
+		callOpts.GetService = append(callOpts.GetService, gax.WithClientMetrics(metrics))
+		callOpts.CreateService = append(callOpts.CreateService, gax.WithClientMetrics(metrics))
+		callOpts.DeleteService = append(callOpts.DeleteService, gax.WithClientMetrics(metrics))
+		callOpts.UndeleteService = append(callOpts.UndeleteService, gax.WithClientMetrics(metrics))
+		callOpts.ListServiceConfigs = append(callOpts.ListServiceConfigs, gax.WithClientMetrics(metrics))
+		callOpts.GetServiceConfig = append(callOpts.GetServiceConfig, gax.WithClientMetrics(metrics))
+		callOpts.CreateServiceConfig = append(callOpts.CreateServiceConfig, gax.WithClientMetrics(metrics))
+		callOpts.SubmitConfigSource = append(callOpts.SubmitConfigSource, gax.WithClientMetrics(metrics))
+		callOpts.ListServiceRollouts = append(callOpts.ListServiceRollouts, gax.WithClientMetrics(metrics))
+		callOpts.GetServiceRollout = append(callOpts.GetServiceRollout, gax.WithClientMetrics(metrics))
+		callOpts.CreateServiceRollout = append(callOpts.CreateServiceRollout, gax.WithClientMetrics(metrics))
+		callOpts.GenerateConfigReport = append(callOpts.GenerateConfigReport, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -624,7 +707,7 @@ func (c *serviceManagerRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *serviceManagerRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -640,9 +723,12 @@ func (c *serviceManagerRESTClient) Connection() *grpc.ClientConn {
 }
 func (c *serviceManagerGRPCClient) ListServices(ctx context.Context, req *servicemanagementpb.ListServicesRequest, opts ...gax.CallOption) *ManagedServiceIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/ListServices")
+	}
 	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ManagedServiceIterator{}
-	req = proto.Clone(req).(*servicemanagementpb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicemanagementpb.ManagedService, string, error) {
 		resp := &servicemanagementpb.ListServicesResponse{}
 		if pageToken != "" {
@@ -686,6 +772,9 @@ func (c *serviceManagerGRPCClient) GetService(ctx context.Context, req *servicem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/GetService")
+	}
 	opts = append((*c.CallOptions).GetService[0:len((*c.CallOptions).GetService):len((*c.CallOptions).GetService)], opts...)
 	var resp *servicemanagementpb.ManagedService
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -701,6 +790,9 @@ func (c *serviceManagerGRPCClient) GetService(ctx context.Context, req *servicem
 
 func (c *serviceManagerGRPCClient) CreateService(ctx context.Context, req *servicemanagementpb.CreateServiceRequest, opts ...gax.CallOption) (*CreateServiceOperation, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/CreateService")
+	}
 	opts = append((*c.CallOptions).CreateService[0:len((*c.CallOptions).CreateService):len((*c.CallOptions).CreateService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -711,8 +803,12 @@ func (c *serviceManagerGRPCClient) CreateService(ctx context.Context, req *servi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.CreateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -721,6 +817,9 @@ func (c *serviceManagerGRPCClient) DeleteService(ctx context.Context, req *servi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/DeleteService")
+	}
 	opts = append((*c.CallOptions).DeleteService[0:len((*c.CallOptions).DeleteService):len((*c.CallOptions).DeleteService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -731,8 +830,12 @@ func (c *serviceManagerGRPCClient) DeleteService(ctx context.Context, req *servi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.DeleteServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -741,6 +844,9 @@ func (c *serviceManagerGRPCClient) UndeleteService(ctx context.Context, req *ser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/UndeleteService")
+	}
 	opts = append((*c.CallOptions).UndeleteService[0:len((*c.CallOptions).UndeleteService):len((*c.CallOptions).UndeleteService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -751,8 +857,12 @@ func (c *serviceManagerGRPCClient) UndeleteService(ctx context.Context, req *ser
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.UndeleteServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -761,9 +871,12 @@ func (c *serviceManagerGRPCClient) ListServiceConfigs(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/ListServiceConfigs")
+	}
 	opts = append((*c.CallOptions).ListServiceConfigs[0:len((*c.CallOptions).ListServiceConfigs):len((*c.CallOptions).ListServiceConfigs)], opts...)
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*servicemanagementpb.ListServiceConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*serviceconfigpb.Service, string, error) {
 		resp := &servicemanagementpb.ListServiceConfigsResponse{}
 		if pageToken != "" {
@@ -807,6 +920,9 @@ func (c *serviceManagerGRPCClient) GetServiceConfig(ctx context.Context, req *se
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/GetServiceConfig")
+	}
 	opts = append((*c.CallOptions).GetServiceConfig[0:len((*c.CallOptions).GetServiceConfig):len((*c.CallOptions).GetServiceConfig)], opts...)
 	var resp *serviceconfigpb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -825,6 +941,9 @@ func (c *serviceManagerGRPCClient) CreateServiceConfig(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/CreateServiceConfig")
+	}
 	opts = append((*c.CallOptions).CreateServiceConfig[0:len((*c.CallOptions).CreateServiceConfig):len((*c.CallOptions).CreateServiceConfig)], opts...)
 	var resp *serviceconfigpb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -843,6 +962,9 @@ func (c *serviceManagerGRPCClient) SubmitConfigSource(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/SubmitConfigSource")
+	}
 	opts = append((*c.CallOptions).SubmitConfigSource[0:len((*c.CallOptions).SubmitConfigSource):len((*c.CallOptions).SubmitConfigSource)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -853,8 +975,12 @@ func (c *serviceManagerGRPCClient) SubmitConfigSource(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.SubmitConfigSourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SubmitConfigSourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -863,9 +989,12 @@ func (c *serviceManagerGRPCClient) ListServiceRollouts(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/ListServiceRollouts")
+	}
 	opts = append((*c.CallOptions).ListServiceRollouts[0:len((*c.CallOptions).ListServiceRollouts):len((*c.CallOptions).ListServiceRollouts)], opts...)
 	it := &RolloutIterator{}
-	req = proto.Clone(req).(*servicemanagementpb.ListServiceRolloutsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicemanagementpb.Rollout, string, error) {
 		resp := &servicemanagementpb.ListServiceRolloutsResponse{}
 		if pageToken != "" {
@@ -909,6 +1038,9 @@ func (c *serviceManagerGRPCClient) GetServiceRollout(ctx context.Context, req *s
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/GetServiceRollout")
+	}
 	opts = append((*c.CallOptions).GetServiceRollout[0:len((*c.CallOptions).GetServiceRollout):len((*c.CallOptions).GetServiceRollout)], opts...)
 	var resp *servicemanagementpb.Rollout
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -927,6 +1059,9 @@ func (c *serviceManagerGRPCClient) CreateServiceRollout(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/CreateServiceRollout")
+	}
 	opts = append((*c.CallOptions).CreateServiceRollout[0:len((*c.CallOptions).CreateServiceRollout):len((*c.CallOptions).CreateServiceRollout)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -937,13 +1072,20 @@ func (c *serviceManagerGRPCClient) CreateServiceRollout(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.CreateServiceRolloutOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServiceRolloutOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
 func (c *serviceManagerGRPCClient) GenerateConfigReport(ctx context.Context, req *servicemanagementpb.GenerateConfigReportRequest, opts ...gax.CallOption) (*servicemanagementpb.GenerateConfigReportResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/GenerateConfigReport")
+	}
 	opts = append((*c.CallOptions).GenerateConfigReport[0:len((*c.CallOptions).GenerateConfigReport):len((*c.CallOptions).GenerateConfigReport)], opts...)
 	var resp *servicemanagementpb.GenerateConfigReportResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -962,6 +1104,12 @@ func (c *serviceManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -980,6 +1128,12 @@ func (c *serviceManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -998,6 +1152,12 @@ func (c *serviceManagerGRPCClient) TestIamPermissions(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1013,9 +1173,12 @@ func (c *serviceManagerGRPCClient) TestIamPermissions(ctx context.Context, req *
 
 func (c *serviceManagerGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1061,7 +1224,7 @@ func (c *serviceManagerGRPCClient) ListOperations(ctx context.Context, req *long
 // for.
 func (c *serviceManagerRESTClient) ListServices(ctx context.Context, req *servicemanagementpb.ListServicesRequest, opts ...gax.CallOption) *ManagedServiceIterator {
 	it := &ManagedServiceIterator{}
-	req = proto.Clone(req).(*servicemanagementpb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicemanagementpb.ManagedService, string, error) {
 		resp := &servicemanagementpb.ListServicesResponse{}
@@ -1162,6 +1325,10 @@ func (c *serviceManagerRESTClient) GetService(ctx context.Context, req *servicem
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/GetService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/services/{service_name}")
+	}
 	opts = append((*c.CallOptions).GetService[0:len((*c.CallOptions).GetService):len((*c.CallOptions).GetService)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicemanagementpb.ManagedService{}
@@ -1226,6 +1393,10 @@ func (c *serviceManagerRESTClient) CreateService(ctx context.Context, req *servi
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/CreateService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/services")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1254,8 +1425,12 @@ func (c *serviceManagerRESTClient) CreateService(ctx context.Context, req *servi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.CreateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1286,6 +1461,10 @@ func (c *serviceManagerRESTClient) DeleteService(ctx context.Context, req *servi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/DeleteService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/services/{service_name}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1314,8 +1493,12 @@ func (c *serviceManagerRESTClient) DeleteService(ctx context.Context, req *servi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.DeleteServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1344,6 +1527,10 @@ func (c *serviceManagerRESTClient) UndeleteService(ctx context.Context, req *ser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/UndeleteService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/services/{service_name}:undelete")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1372,8 +1559,12 @@ func (c *serviceManagerRESTClient) UndeleteService(ctx context.Context, req *ser
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.UndeleteServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1382,7 +1573,7 @@ func (c *serviceManagerRESTClient) UndeleteService(ctx context.Context, req *ser
 // from the newest to the oldest.
 func (c *serviceManagerRESTClient) ListServiceConfigs(ctx context.Context, req *servicemanagementpb.ListServiceConfigsRequest, opts ...gax.CallOption) *ServiceIterator {
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*servicemanagementpb.ListServiceConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*serviceconfigpb.Service, string, error) {
 		resp := &servicemanagementpb.ListServiceConfigsResponse{}
@@ -1479,6 +1670,10 @@ func (c *serviceManagerRESTClient) GetServiceConfig(ctx context.Context, req *se
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/GetServiceConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/services/{service_name}/configs/{config_id}")
+	}
 	opts = append((*c.CallOptions).GetServiceConfig[0:len((*c.CallOptions).GetServiceConfig):len((*c.CallOptions).GetServiceConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &serviceconfigpb.Service{}
@@ -1543,6 +1738,10 @@ func (c *serviceManagerRESTClient) CreateServiceConfig(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/CreateServiceConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/services/{service_name}/configs")
+	}
 	opts = append((*c.CallOptions).CreateServiceConfig[0:len((*c.CallOptions).CreateServiceConfig):len((*c.CallOptions).CreateServiceConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &serviceconfigpb.Service{}
@@ -1612,6 +1811,10 @@ func (c *serviceManagerRESTClient) SubmitConfigSource(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/SubmitConfigSource")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/services/{service_name}/configs:submit")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1640,8 +1843,12 @@ func (c *serviceManagerRESTClient) SubmitConfigSource(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.SubmitConfigSourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SubmitConfigSourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1650,7 +1857,7 @@ func (c *serviceManagerRESTClient) SubmitConfigSource(ctx context.Context, req *
 // service, from the newest to the oldest.
 func (c *serviceManagerRESTClient) ListServiceRollouts(ctx context.Context, req *servicemanagementpb.ListServiceRolloutsRequest, opts ...gax.CallOption) *RolloutIterator {
 	it := &RolloutIterator{}
-	req = proto.Clone(req).(*servicemanagementpb.ListServiceRolloutsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicemanagementpb.Rollout, string, error) {
 		resp := &servicemanagementpb.ListServiceRolloutsResponse{}
@@ -1746,6 +1953,10 @@ func (c *serviceManagerRESTClient) GetServiceRollout(ctx context.Context, req *s
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/GetServiceRollout")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/services/{service_name}/rollouts/{rollout_id}")
+	}
 	opts = append((*c.CallOptions).GetServiceRollout[0:len((*c.CallOptions).GetServiceRollout):len((*c.CallOptions).GetServiceRollout)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicemanagementpb.Rollout{}
@@ -1816,6 +2027,10 @@ func (c *serviceManagerRESTClient) CreateServiceRollout(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/CreateServiceRollout")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/services/{service_name}/rollouts")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1844,8 +2059,12 @@ func (c *serviceManagerRESTClient) CreateServiceRollout(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.CreateServiceRolloutOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServiceRolloutOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1882,6 +2101,10 @@ func (c *serviceManagerRESTClient) GenerateConfigReport(ctx context.Context, req
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicemanagement.v1.ServiceManager/GenerateConfigReport")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/services:generateConfigReport")
+	}
 	opts = append((*c.CallOptions).GenerateConfigReport[0:len((*c.CallOptions).GenerateConfigReport):len((*c.CallOptions).GenerateConfigReport)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicemanagementpb.GenerateConfigReportResponse{}
@@ -1939,6 +2162,13 @@ func (c *serviceManagerRESTClient) GetIamPolicy(ctx context.Context, req *iampb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=services/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1999,6 +2229,13 @@ func (c *serviceManagerRESTClient) SetIamPolicy(ctx context.Context, req *iampb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=services/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -2061,6 +2298,13 @@ func (c *serviceManagerRESTClient) TestIamPermissions(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=services/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -2095,7 +2339,7 @@ func (c *serviceManagerRESTClient) TestIamPermissions(ctx context.Context, req *
 // ListOperations lists service operations that match the specified filter in the request.
 func (c *serviceManagerRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -2183,7 +2427,7 @@ func (c *serviceManagerRESTClient) ListOperations(ctx context.Context, req *long
 // The name must be that of a previously created CreateServiceOperation, possibly from a different process.
 func (c *serviceManagerGRPCClient) CreateServiceOperation(name string) *CreateServiceOperation {
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.CreateServiceOperation"),
 	}
 }
 
@@ -2192,7 +2436,7 @@ func (c *serviceManagerGRPCClient) CreateServiceOperation(name string) *CreateSe
 func (c *serviceManagerRESTClient) CreateServiceOperation(name string) *CreateServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.CreateServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -2201,7 +2445,7 @@ func (c *serviceManagerRESTClient) CreateServiceOperation(name string) *CreateSe
 // The name must be that of a previously created CreateServiceRolloutOperation, possibly from a different process.
 func (c *serviceManagerGRPCClient) CreateServiceRolloutOperation(name string) *CreateServiceRolloutOperation {
 	return &CreateServiceRolloutOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.CreateServiceRolloutOperation"),
 	}
 }
 
@@ -2210,7 +2454,7 @@ func (c *serviceManagerGRPCClient) CreateServiceRolloutOperation(name string) *C
 func (c *serviceManagerRESTClient) CreateServiceRolloutOperation(name string) *CreateServiceRolloutOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateServiceRolloutOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.CreateServiceRolloutOperation"),
 		pollPath: override,
 	}
 }
@@ -2219,7 +2463,7 @@ func (c *serviceManagerRESTClient) CreateServiceRolloutOperation(name string) *C
 // The name must be that of a previously created DeleteServiceOperation, possibly from a different process.
 func (c *serviceManagerGRPCClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.DeleteServiceOperation"),
 	}
 }
 
@@ -2228,7 +2472,7 @@ func (c *serviceManagerGRPCClient) DeleteServiceOperation(name string) *DeleteSe
 func (c *serviceManagerRESTClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.DeleteServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -2237,7 +2481,7 @@ func (c *serviceManagerRESTClient) DeleteServiceOperation(name string) *DeleteSe
 // The name must be that of a previously created SubmitConfigSourceOperation, possibly from a different process.
 func (c *serviceManagerGRPCClient) SubmitConfigSourceOperation(name string) *SubmitConfigSourceOperation {
 	return &SubmitConfigSourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.SubmitConfigSourceOperation"),
 	}
 }
 
@@ -2246,7 +2490,7 @@ func (c *serviceManagerGRPCClient) SubmitConfigSourceOperation(name string) *Sub
 func (c *serviceManagerRESTClient) SubmitConfigSourceOperation(name string) *SubmitConfigSourceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &SubmitConfigSourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.SubmitConfigSourceOperation"),
 		pollPath: override,
 	}
 }
@@ -2255,7 +2499,7 @@ func (c *serviceManagerRESTClient) SubmitConfigSourceOperation(name string) *Sub
 // The name must be that of a previously created UndeleteServiceOperation, possibly from a different process.
 func (c *serviceManagerGRPCClient) UndeleteServiceOperation(name string) *UndeleteServiceOperation {
 	return &UndeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.UndeleteServiceOperation"),
 	}
 }
 
@@ -2264,7 +2508,7 @@ func (c *serviceManagerGRPCClient) UndeleteServiceOperation(name string) *Undele
 func (c *serviceManagerRESTClient) UndeleteServiceOperation(name string) *UndeleteServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UndeleteServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.UndeleteServiceOperation"),
 		pollPath: override,
 	}
 }

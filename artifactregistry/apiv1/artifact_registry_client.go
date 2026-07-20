@@ -32,6 +32,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -539,7 +541,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -966,6 +968,16 @@ type gRPCClient struct {
 //	or Version.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "artifactregistry",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/artifactregistry/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "artifactregistry.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -989,6 +1001,72 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "artifactregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/artifactregistry/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "artifactregistry.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListDockerImages = append(client.CallOptions.ListDockerImages, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDockerImage = append(client.CallOptions.GetDockerImage, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMavenArtifacts = append(client.CallOptions.ListMavenArtifacts, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetMavenArtifact = append(client.CallOptions.GetMavenArtifact, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListNpmPackages = append(client.CallOptions.ListNpmPackages, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetNpmPackage = append(client.CallOptions.GetNpmPackage, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPythonPackages = append(client.CallOptions.ListPythonPackages, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPythonPackage = append(client.CallOptions.GetPythonPackage, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportAptArtifacts = append(client.CallOptions.ImportAptArtifacts, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportYumArtifacts = append(client.CallOptions.ImportYumArtifacts, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRepositories = append(client.CallOptions.ListRepositories, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRepository = append(client.CallOptions.GetRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRepository = append(client.CallOptions.CreateRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRepository = append(client.CallOptions.UpdateRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRepository = append(client.CallOptions.DeleteRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPackages = append(client.CallOptions.ListPackages, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPackage = append(client.CallOptions.GetPackage, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePackage = append(client.CallOptions.DeletePackage, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListVersions = append(client.CallOptions.ListVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetVersion = append(client.CallOptions.GetVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteVersion = append(client.CallOptions.DeleteVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchDeleteVersions = append(client.CallOptions.BatchDeleteVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateVersion = append(client.CallOptions.UpdateVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListFiles = append(client.CallOptions.ListFiles, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFile = append(client.CallOptions.GetFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFile = append(client.CallOptions.DeleteFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateFile = append(client.CallOptions.UpdateFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTags = append(client.CallOptions.ListTags, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTag = append(client.CallOptions.GetTag, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTag = append(client.CallOptions.CreateTag, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTag = append(client.CallOptions.UpdateTag, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTag = append(client.CallOptions.DeleteTag, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRule = append(client.CallOptions.CreateRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRules = append(client.CallOptions.ListRules, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRule = append(client.CallOptions.GetRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRule = append(client.CallOptions.UpdateRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRule = append(client.CallOptions.DeleteRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetProjectSettings = append(client.CallOptions.GetProjectSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateProjectSettings = append(client.CallOptions.UpdateProjectSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetVPCSCConfig = append(client.CallOptions.GetVPCSCConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateVPCSCConfig = append(client.CallOptions.UpdateVPCSCConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePackage = append(client.CallOptions.UpdatePackage, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAttachments = append(client.CallOptions.ListAttachments, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAttachment = append(client.CallOptions.GetAttachment, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAttachment = append(client.CallOptions.CreateAttachment, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAttachment = append(client.CallOptions.DeleteAttachment, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportArtifact = append(client.CallOptions.ExportArtifact, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -1025,7 +1103,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -1074,6 +1152,16 @@ type restClient struct {
 //	or Version.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "artifactregistry",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/artifactregistry/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "artifactregistry.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1087,6 +1175,73 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "artifactregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/artifactregistry/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "artifactregistry.googleapis.com",
+			}),
+		)
+
+		callOpts.ListDockerImages = append(callOpts.ListDockerImages, gax.WithClientMetrics(metrics))
+		callOpts.GetDockerImage = append(callOpts.GetDockerImage, gax.WithClientMetrics(metrics))
+		callOpts.ListMavenArtifacts = append(callOpts.ListMavenArtifacts, gax.WithClientMetrics(metrics))
+		callOpts.GetMavenArtifact = append(callOpts.GetMavenArtifact, gax.WithClientMetrics(metrics))
+		callOpts.ListNpmPackages = append(callOpts.ListNpmPackages, gax.WithClientMetrics(metrics))
+		callOpts.GetNpmPackage = append(callOpts.GetNpmPackage, gax.WithClientMetrics(metrics))
+		callOpts.ListPythonPackages = append(callOpts.ListPythonPackages, gax.WithClientMetrics(metrics))
+		callOpts.GetPythonPackage = append(callOpts.GetPythonPackage, gax.WithClientMetrics(metrics))
+		callOpts.ImportAptArtifacts = append(callOpts.ImportAptArtifacts, gax.WithClientMetrics(metrics))
+		callOpts.ImportYumArtifacts = append(callOpts.ImportYumArtifacts, gax.WithClientMetrics(metrics))
+		callOpts.ListRepositories = append(callOpts.ListRepositories, gax.WithClientMetrics(metrics))
+		callOpts.GetRepository = append(callOpts.GetRepository, gax.WithClientMetrics(metrics))
+		callOpts.CreateRepository = append(callOpts.CreateRepository, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRepository = append(callOpts.UpdateRepository, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRepository = append(callOpts.DeleteRepository, gax.WithClientMetrics(metrics))
+		callOpts.ListPackages = append(callOpts.ListPackages, gax.WithClientMetrics(metrics))
+		callOpts.GetPackage = append(callOpts.GetPackage, gax.WithClientMetrics(metrics))
+		callOpts.DeletePackage = append(callOpts.DeletePackage, gax.WithClientMetrics(metrics))
+		callOpts.ListVersions = append(callOpts.ListVersions, gax.WithClientMetrics(metrics))
+		callOpts.GetVersion = append(callOpts.GetVersion, gax.WithClientMetrics(metrics))
+		callOpts.DeleteVersion = append(callOpts.DeleteVersion, gax.WithClientMetrics(metrics))
+		callOpts.BatchDeleteVersions = append(callOpts.BatchDeleteVersions, gax.WithClientMetrics(metrics))
+		callOpts.UpdateVersion = append(callOpts.UpdateVersion, gax.WithClientMetrics(metrics))
+		callOpts.ListFiles = append(callOpts.ListFiles, gax.WithClientMetrics(metrics))
+		callOpts.GetFile = append(callOpts.GetFile, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFile = append(callOpts.DeleteFile, gax.WithClientMetrics(metrics))
+		callOpts.UpdateFile = append(callOpts.UpdateFile, gax.WithClientMetrics(metrics))
+		callOpts.ListTags = append(callOpts.ListTags, gax.WithClientMetrics(metrics))
+		callOpts.GetTag = append(callOpts.GetTag, gax.WithClientMetrics(metrics))
+		callOpts.CreateTag = append(callOpts.CreateTag, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTag = append(callOpts.UpdateTag, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTag = append(callOpts.DeleteTag, gax.WithClientMetrics(metrics))
+		callOpts.CreateRule = append(callOpts.CreateRule, gax.WithClientMetrics(metrics))
+		callOpts.ListRules = append(callOpts.ListRules, gax.WithClientMetrics(metrics))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRule = append(callOpts.UpdateRule, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRule = append(callOpts.DeleteRule, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.GetProjectSettings = append(callOpts.GetProjectSettings, gax.WithClientMetrics(metrics))
+		callOpts.UpdateProjectSettings = append(callOpts.UpdateProjectSettings, gax.WithClientMetrics(metrics))
+		callOpts.GetVPCSCConfig = append(callOpts.GetVPCSCConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateVPCSCConfig = append(callOpts.UpdateVPCSCConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePackage = append(callOpts.UpdatePackage, gax.WithClientMetrics(metrics))
+		callOpts.ListAttachments = append(callOpts.ListAttachments, gax.WithClientMetrics(metrics))
+		callOpts.GetAttachment = append(callOpts.GetAttachment, gax.WithClientMetrics(metrics))
+		callOpts.CreateAttachment = append(callOpts.CreateAttachment, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAttachment = append(callOpts.DeleteAttachment, gax.WithClientMetrics(metrics))
+		callOpts.ExportArtifact = append(callOpts.ExportArtifact, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1124,7 +1279,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -1143,9 +1298,12 @@ func (c *gRPCClient) ListDockerImages(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListDockerImages")
+	}
 	opts = append((*c.CallOptions).ListDockerImages[0:len((*c.CallOptions).ListDockerImages):len((*c.CallOptions).ListDockerImages)], opts...)
 	it := &DockerImageIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListDockerImagesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.DockerImage, string, error) {
 		resp := &artifactregistrypb.ListDockerImagesResponse{}
 		if pageToken != "" {
@@ -1189,6 +1347,12 @@ func (c *gRPCClient) GetDockerImage(ctx context.Context, req *artifactregistrypb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetDockerImage")
+	}
 	opts = append((*c.CallOptions).GetDockerImage[0:len((*c.CallOptions).GetDockerImage):len((*c.CallOptions).GetDockerImage)], opts...)
 	var resp *artifactregistrypb.DockerImage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1207,9 +1371,15 @@ func (c *gRPCClient) ListMavenArtifacts(ctx context.Context, req *artifactregist
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListMavenArtifacts")
+	}
 	opts = append((*c.CallOptions).ListMavenArtifacts[0:len((*c.CallOptions).ListMavenArtifacts):len((*c.CallOptions).ListMavenArtifacts)], opts...)
 	it := &MavenArtifactIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListMavenArtifactsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.MavenArtifact, string, error) {
 		resp := &artifactregistrypb.ListMavenArtifactsResponse{}
 		if pageToken != "" {
@@ -1253,6 +1423,12 @@ func (c *gRPCClient) GetMavenArtifact(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetMavenArtifact")
+	}
 	opts = append((*c.CallOptions).GetMavenArtifact[0:len((*c.CallOptions).GetMavenArtifact):len((*c.CallOptions).GetMavenArtifact)], opts...)
 	var resp *artifactregistrypb.MavenArtifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1271,9 +1447,15 @@ func (c *gRPCClient) ListNpmPackages(ctx context.Context, req *artifactregistryp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListNpmPackages")
+	}
 	opts = append((*c.CallOptions).ListNpmPackages[0:len((*c.CallOptions).ListNpmPackages):len((*c.CallOptions).ListNpmPackages)], opts...)
 	it := &NpmPackageIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListNpmPackagesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.NpmPackage, string, error) {
 		resp := &artifactregistrypb.ListNpmPackagesResponse{}
 		if pageToken != "" {
@@ -1317,6 +1499,12 @@ func (c *gRPCClient) GetNpmPackage(ctx context.Context, req *artifactregistrypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetNpmPackage")
+	}
 	opts = append((*c.CallOptions).GetNpmPackage[0:len((*c.CallOptions).GetNpmPackage):len((*c.CallOptions).GetNpmPackage)], opts...)
 	var resp *artifactregistrypb.NpmPackage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1335,9 +1523,15 @@ func (c *gRPCClient) ListPythonPackages(ctx context.Context, req *artifactregist
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListPythonPackages")
+	}
 	opts = append((*c.CallOptions).ListPythonPackages[0:len((*c.CallOptions).ListPythonPackages):len((*c.CallOptions).ListPythonPackages)], opts...)
 	it := &PythonPackageIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListPythonPackagesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.PythonPackage, string, error) {
 		resp := &artifactregistrypb.ListPythonPackagesResponse{}
 		if pageToken != "" {
@@ -1381,6 +1575,12 @@ func (c *gRPCClient) GetPythonPackage(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetPythonPackage")
+	}
 	opts = append((*c.CallOptions).GetPythonPackage[0:len((*c.CallOptions).GetPythonPackage):len((*c.CallOptions).GetPythonPackage)], opts...)
 	var resp *artifactregistrypb.PythonPackage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1399,6 +1599,9 @@ func (c *gRPCClient) ImportAptArtifacts(ctx context.Context, req *artifactregist
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ImportAptArtifacts")
+	}
 	opts = append((*c.CallOptions).ImportAptArtifacts[0:len((*c.CallOptions).ImportAptArtifacts):len((*c.CallOptions).ImportAptArtifacts)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1409,8 +1612,12 @@ func (c *gRPCClient) ImportAptArtifacts(ctx context.Context, req *artifactregist
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.ImportAptArtifactsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportAptArtifactsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1419,6 +1626,9 @@ func (c *gRPCClient) ImportYumArtifacts(ctx context.Context, req *artifactregist
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ImportYumArtifacts")
+	}
 	opts = append((*c.CallOptions).ImportYumArtifacts[0:len((*c.CallOptions).ImportYumArtifacts):len((*c.CallOptions).ImportYumArtifacts)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1429,8 +1639,12 @@ func (c *gRPCClient) ImportYumArtifacts(ctx context.Context, req *artifactregist
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.ImportYumArtifactsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportYumArtifactsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1439,9 +1653,15 @@ func (c *gRPCClient) ListRepositories(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListRepositories")
+	}
 	opts = append((*c.CallOptions).ListRepositories[0:len((*c.CallOptions).ListRepositories):len((*c.CallOptions).ListRepositories)], opts...)
 	it := &RepositoryIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListRepositoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Repository, string, error) {
 		resp := &artifactregistrypb.ListRepositoriesResponse{}
 		if pageToken != "" {
@@ -1485,6 +1705,12 @@ func (c *gRPCClient) GetRepository(ctx context.Context, req *artifactregistrypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetRepository")
+	}
 	opts = append((*c.CallOptions).GetRepository[0:len((*c.CallOptions).GetRepository):len((*c.CallOptions).GetRepository)], opts...)
 	var resp *artifactregistrypb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1503,6 +1729,12 @@ func (c *gRPCClient) CreateRepository(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/CreateRepository")
+	}
 	opts = append((*c.CallOptions).CreateRepository[0:len((*c.CallOptions).CreateRepository):len((*c.CallOptions).CreateRepository)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1513,8 +1745,12 @@ func (c *gRPCClient) CreateRepository(ctx context.Context, req *artifactregistry
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.CreateRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1523,6 +1759,9 @@ func (c *gRPCClient) UpdateRepository(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdateRepository")
+	}
 	opts = append((*c.CallOptions).UpdateRepository[0:len((*c.CallOptions).UpdateRepository):len((*c.CallOptions).UpdateRepository)], opts...)
 	var resp *artifactregistrypb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1541,6 +1780,12 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteRepository")
+	}
 	opts = append((*c.CallOptions).DeleteRepository[0:len((*c.CallOptions).DeleteRepository):len((*c.CallOptions).DeleteRepository)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1551,8 +1796,12 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *artifactregistry
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeleteRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1561,9 +1810,15 @@ func (c *gRPCClient) ListPackages(ctx context.Context, req *artifactregistrypb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListPackages")
+	}
 	opts = append((*c.CallOptions).ListPackages[0:len((*c.CallOptions).ListPackages):len((*c.CallOptions).ListPackages)], opts...)
 	it := &PackageIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListPackagesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Package, string, error) {
 		resp := &artifactregistrypb.ListPackagesResponse{}
 		if pageToken != "" {
@@ -1607,6 +1862,12 @@ func (c *gRPCClient) GetPackage(ctx context.Context, req *artifactregistrypb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetPackage")
+	}
 	opts = append((*c.CallOptions).GetPackage[0:len((*c.CallOptions).GetPackage):len((*c.CallOptions).GetPackage)], opts...)
 	var resp *artifactregistrypb.Package
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1625,6 +1886,12 @@ func (c *gRPCClient) DeletePackage(ctx context.Context, req *artifactregistrypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeletePackage")
+	}
 	opts = append((*c.CallOptions).DeletePackage[0:len((*c.CallOptions).DeletePackage):len((*c.CallOptions).DeletePackage)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1635,8 +1902,12 @@ func (c *gRPCClient) DeletePackage(ctx context.Context, req *artifactregistrypb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeletePackageOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePackageOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1645,9 +1916,12 @@ func (c *gRPCClient) ListVersions(ctx context.Context, req *artifactregistrypb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListVersions")
+	}
 	opts = append((*c.CallOptions).ListVersions[0:len((*c.CallOptions).ListVersions):len((*c.CallOptions).ListVersions)], opts...)
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Version, string, error) {
 		resp := &artifactregistrypb.ListVersionsResponse{}
 		if pageToken != "" {
@@ -1691,6 +1965,9 @@ func (c *gRPCClient) GetVersion(ctx context.Context, req *artifactregistrypb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetVersion")
+	}
 	opts = append((*c.CallOptions).GetVersion[0:len((*c.CallOptions).GetVersion):len((*c.CallOptions).GetVersion)], opts...)
 	var resp *artifactregistrypb.Version
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1709,6 +1986,9 @@ func (c *gRPCClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteVersion")
+	}
 	opts = append((*c.CallOptions).DeleteVersion[0:len((*c.CallOptions).DeleteVersion):len((*c.CallOptions).DeleteVersion)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1719,8 +1999,12 @@ func (c *gRPCClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeleteVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1729,6 +2013,12 @@ func (c *gRPCClient) BatchDeleteVersions(ctx context.Context, req *artifactregis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/BatchDeleteVersions")
+	}
 	opts = append((*c.CallOptions).BatchDeleteVersions[0:len((*c.CallOptions).BatchDeleteVersions):len((*c.CallOptions).BatchDeleteVersions)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1739,8 +2029,12 @@ func (c *gRPCClient) BatchDeleteVersions(ctx context.Context, req *artifactregis
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.BatchDeleteVersionsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchDeleteVersionsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1749,6 +2043,9 @@ func (c *gRPCClient) UpdateVersion(ctx context.Context, req *artifactregistrypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdateVersion")
+	}
 	opts = append((*c.CallOptions).UpdateVersion[0:len((*c.CallOptions).UpdateVersion):len((*c.CallOptions).UpdateVersion)], opts...)
 	var resp *artifactregistrypb.Version
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1767,9 +2064,15 @@ func (c *gRPCClient) ListFiles(ctx context.Context, req *artifactregistrypb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListFiles")
+	}
 	opts = append((*c.CallOptions).ListFiles[0:len((*c.CallOptions).ListFiles):len((*c.CallOptions).ListFiles)], opts...)
 	it := &FileIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListFilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.File, string, error) {
 		resp := &artifactregistrypb.ListFilesResponse{}
 		if pageToken != "" {
@@ -1813,6 +2116,12 @@ func (c *gRPCClient) GetFile(ctx context.Context, req *artifactregistrypb.GetFil
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetFile")
+	}
 	opts = append((*c.CallOptions).GetFile[0:len((*c.CallOptions).GetFile):len((*c.CallOptions).GetFile)], opts...)
 	var resp *artifactregistrypb.File
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1831,6 +2140,12 @@ func (c *gRPCClient) DeleteFile(ctx context.Context, req *artifactregistrypb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteFile")
+	}
 	opts = append((*c.CallOptions).DeleteFile[0:len((*c.CallOptions).DeleteFile):len((*c.CallOptions).DeleteFile)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1841,8 +2156,12 @@ func (c *gRPCClient) DeleteFile(ctx context.Context, req *artifactregistrypb.Del
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeleteFileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1851,6 +2170,9 @@ func (c *gRPCClient) UpdateFile(ctx context.Context, req *artifactregistrypb.Upd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdateFile")
+	}
 	opts = append((*c.CallOptions).UpdateFile[0:len((*c.CallOptions).UpdateFile):len((*c.CallOptions).UpdateFile)], opts...)
 	var resp *artifactregistrypb.File
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1869,9 +2191,12 @@ func (c *gRPCClient) ListTags(ctx context.Context, req *artifactregistrypb.ListT
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListTags")
+	}
 	opts = append((*c.CallOptions).ListTags[0:len((*c.CallOptions).ListTags):len((*c.CallOptions).ListTags)], opts...)
 	it := &TagIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListTagsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Tag, string, error) {
 		resp := &artifactregistrypb.ListTagsResponse{}
 		if pageToken != "" {
@@ -1915,6 +2240,9 @@ func (c *gRPCClient) GetTag(ctx context.Context, req *artifactregistrypb.GetTagR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetTag")
+	}
 	opts = append((*c.CallOptions).GetTag[0:len((*c.CallOptions).GetTag):len((*c.CallOptions).GetTag)], opts...)
 	var resp *artifactregistrypb.Tag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1933,6 +2261,9 @@ func (c *gRPCClient) CreateTag(ctx context.Context, req *artifactregistrypb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/CreateTag")
+	}
 	opts = append((*c.CallOptions).CreateTag[0:len((*c.CallOptions).CreateTag):len((*c.CallOptions).CreateTag)], opts...)
 	var resp *artifactregistrypb.Tag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1951,6 +2282,9 @@ func (c *gRPCClient) UpdateTag(ctx context.Context, req *artifactregistrypb.Upda
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdateTag")
+	}
 	opts = append((*c.CallOptions).UpdateTag[0:len((*c.CallOptions).UpdateTag):len((*c.CallOptions).UpdateTag)], opts...)
 	var resp *artifactregistrypb.Tag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1969,6 +2303,9 @@ func (c *gRPCClient) DeleteTag(ctx context.Context, req *artifactregistrypb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteTag")
+	}
 	opts = append((*c.CallOptions).DeleteTag[0:len((*c.CallOptions).DeleteTag):len((*c.CallOptions).DeleteTag)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1983,6 +2320,12 @@ func (c *gRPCClient) CreateRule(ctx context.Context, req *artifactregistrypb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/CreateRule")
+	}
 	opts = append((*c.CallOptions).CreateRule[0:len((*c.CallOptions).CreateRule):len((*c.CallOptions).CreateRule)], opts...)
 	var resp *artifactregistrypb.Rule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2001,9 +2344,15 @@ func (c *gRPCClient) ListRules(ctx context.Context, req *artifactregistrypb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListRules")
+	}
 	opts = append((*c.CallOptions).ListRules[0:len((*c.CallOptions).ListRules):len((*c.CallOptions).ListRules)], opts...)
 	it := &RuleIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Rule, string, error) {
 		resp := &artifactregistrypb.ListRulesResponse{}
 		if pageToken != "" {
@@ -2047,6 +2396,12 @@ func (c *gRPCClient) GetRule(ctx context.Context, req *artifactregistrypb.GetRul
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetRule")
+	}
 	opts = append((*c.CallOptions).GetRule[0:len((*c.CallOptions).GetRule):len((*c.CallOptions).GetRule)], opts...)
 	var resp *artifactregistrypb.Rule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2065,6 +2420,9 @@ func (c *gRPCClient) UpdateRule(ctx context.Context, req *artifactregistrypb.Upd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdateRule")
+	}
 	opts = append((*c.CallOptions).UpdateRule[0:len((*c.CallOptions).UpdateRule):len((*c.CallOptions).UpdateRule)], opts...)
 	var resp *artifactregistrypb.Rule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2083,6 +2441,12 @@ func (c *gRPCClient) DeleteRule(ctx context.Context, req *artifactregistrypb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteRule")
+	}
 	opts = append((*c.CallOptions).DeleteRule[0:len((*c.CallOptions).DeleteRule):len((*c.CallOptions).DeleteRule)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2097,6 +2461,12 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2115,6 +2485,12 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2133,6 +2509,12 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2151,6 +2533,12 @@ func (c *gRPCClient) GetProjectSettings(ctx context.Context, req *artifactregist
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetProjectSettings")
+	}
 	opts = append((*c.CallOptions).GetProjectSettings[0:len((*c.CallOptions).GetProjectSettings):len((*c.CallOptions).GetProjectSettings)], opts...)
 	var resp *artifactregistrypb.ProjectSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2169,6 +2557,9 @@ func (c *gRPCClient) UpdateProjectSettings(ctx context.Context, req *artifactreg
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdateProjectSettings")
+	}
 	opts = append((*c.CallOptions).UpdateProjectSettings[0:len((*c.CallOptions).UpdateProjectSettings):len((*c.CallOptions).UpdateProjectSettings)], opts...)
 	var resp *artifactregistrypb.ProjectSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2187,6 +2578,12 @@ func (c *gRPCClient) GetVPCSCConfig(ctx context.Context, req *artifactregistrypb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetVPCSCConfig")
+	}
 	opts = append((*c.CallOptions).GetVPCSCConfig[0:len((*c.CallOptions).GetVPCSCConfig):len((*c.CallOptions).GetVPCSCConfig)], opts...)
 	var resp *artifactregistrypb.VPCSCConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2205,6 +2602,9 @@ func (c *gRPCClient) UpdateVPCSCConfig(ctx context.Context, req *artifactregistr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdateVPCSCConfig")
+	}
 	opts = append((*c.CallOptions).UpdateVPCSCConfig[0:len((*c.CallOptions).UpdateVPCSCConfig):len((*c.CallOptions).UpdateVPCSCConfig)], opts...)
 	var resp *artifactregistrypb.VPCSCConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2223,6 +2623,9 @@ func (c *gRPCClient) UpdatePackage(ctx context.Context, req *artifactregistrypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdatePackage")
+	}
 	opts = append((*c.CallOptions).UpdatePackage[0:len((*c.CallOptions).UpdatePackage):len((*c.CallOptions).UpdatePackage)], opts...)
 	var resp *artifactregistrypb.Package
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2241,9 +2644,15 @@ func (c *gRPCClient) ListAttachments(ctx context.Context, req *artifactregistryp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListAttachments")
+	}
 	opts = append((*c.CallOptions).ListAttachments[0:len((*c.CallOptions).ListAttachments):len((*c.CallOptions).ListAttachments)], opts...)
 	it := &AttachmentIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListAttachmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Attachment, string, error) {
 		resp := &artifactregistrypb.ListAttachmentsResponse{}
 		if pageToken != "" {
@@ -2287,6 +2696,12 @@ func (c *gRPCClient) GetAttachment(ctx context.Context, req *artifactregistrypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetAttachment")
+	}
 	opts = append((*c.CallOptions).GetAttachment[0:len((*c.CallOptions).GetAttachment):len((*c.CallOptions).GetAttachment)], opts...)
 	var resp *artifactregistrypb.Attachment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2305,6 +2720,12 @@ func (c *gRPCClient) CreateAttachment(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/CreateAttachment")
+	}
 	opts = append((*c.CallOptions).CreateAttachment[0:len((*c.CallOptions).CreateAttachment):len((*c.CallOptions).CreateAttachment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2315,8 +2736,12 @@ func (c *gRPCClient) CreateAttachment(ctx context.Context, req *artifactregistry
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.CreateAttachmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAttachmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2325,6 +2750,12 @@ func (c *gRPCClient) DeleteAttachment(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteAttachment")
+	}
 	opts = append((*c.CallOptions).DeleteAttachment[0:len((*c.CallOptions).DeleteAttachment):len((*c.CallOptions).DeleteAttachment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2335,8 +2766,12 @@ func (c *gRPCClient) DeleteAttachment(ctx context.Context, req *artifactregistry
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeleteAttachmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAttachmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2345,6 +2780,12 @@ func (c *gRPCClient) ExportArtifact(ctx context.Context, req *artifactregistrypb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetRepository()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ExportArtifact")
+	}
 	opts = append((*c.CallOptions).ExportArtifact[0:len((*c.CallOptions).ExportArtifact):len((*c.CallOptions).ExportArtifact)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2355,8 +2796,12 @@ func (c *gRPCClient) ExportArtifact(ctx context.Context, req *artifactregistrypb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.ExportArtifactOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportArtifactOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2365,6 +2810,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2383,9 +2831,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2429,6 +2880,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2445,7 +2899,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListDockerImages lists docker images.
 func (c *restClient) ListDockerImages(ctx context.Context, req *artifactregistrypb.ListDockerImagesRequest, opts ...gax.CallOption) *DockerImageIterator {
 	it := &DockerImageIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListDockerImagesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.DockerImage, string, error) {
 		resp := &artifactregistrypb.ListDockerImagesResponse{}
@@ -2542,6 +2996,13 @@ func (c *restClient) GetDockerImage(ctx context.Context, req *artifactregistrypb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetDockerImage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/dockerImages/*}")
+	}
 	opts = append((*c.CallOptions).GetDockerImage[0:len((*c.CallOptions).GetDockerImage):len((*c.CallOptions).GetDockerImage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.DockerImage{}
@@ -2576,7 +3037,7 @@ func (c *restClient) GetDockerImage(ctx context.Context, req *artifactregistrypb
 // ListMavenArtifacts lists maven artifacts.
 func (c *restClient) ListMavenArtifacts(ctx context.Context, req *artifactregistrypb.ListMavenArtifactsRequest, opts ...gax.CallOption) *MavenArtifactIterator {
 	it := &MavenArtifactIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListMavenArtifactsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.MavenArtifact, string, error) {
 		resp := &artifactregistrypb.ListMavenArtifactsResponse{}
@@ -2670,6 +3131,13 @@ func (c *restClient) GetMavenArtifact(ctx context.Context, req *artifactregistry
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetMavenArtifact")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/mavenArtifacts/*}")
+	}
 	opts = append((*c.CallOptions).GetMavenArtifact[0:len((*c.CallOptions).GetMavenArtifact):len((*c.CallOptions).GetMavenArtifact)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.MavenArtifact{}
@@ -2704,7 +3172,7 @@ func (c *restClient) GetMavenArtifact(ctx context.Context, req *artifactregistry
 // ListNpmPackages lists npm packages.
 func (c *restClient) ListNpmPackages(ctx context.Context, req *artifactregistrypb.ListNpmPackagesRequest, opts ...gax.CallOption) *NpmPackageIterator {
 	it := &NpmPackageIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListNpmPackagesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.NpmPackage, string, error) {
 		resp := &artifactregistrypb.ListNpmPackagesResponse{}
@@ -2798,6 +3266,13 @@ func (c *restClient) GetNpmPackage(ctx context.Context, req *artifactregistrypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetNpmPackage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/npmPackages/*}")
+	}
 	opts = append((*c.CallOptions).GetNpmPackage[0:len((*c.CallOptions).GetNpmPackage):len((*c.CallOptions).GetNpmPackage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.NpmPackage{}
@@ -2832,7 +3307,7 @@ func (c *restClient) GetNpmPackage(ctx context.Context, req *artifactregistrypb.
 // ListPythonPackages lists python packages.
 func (c *restClient) ListPythonPackages(ctx context.Context, req *artifactregistrypb.ListPythonPackagesRequest, opts ...gax.CallOption) *PythonPackageIterator {
 	it := &PythonPackageIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListPythonPackagesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.PythonPackage, string, error) {
 		resp := &artifactregistrypb.ListPythonPackagesResponse{}
@@ -2926,6 +3401,13 @@ func (c *restClient) GetPythonPackage(ctx context.Context, req *artifactregistry
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetPythonPackage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/pythonPackages/*}")
+	}
 	opts = append((*c.CallOptions).GetPythonPackage[0:len((*c.CallOptions).GetPythonPackage):len((*c.CallOptions).GetPythonPackage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.PythonPackage{}
@@ -2985,6 +3467,10 @@ func (c *restClient) ImportAptArtifacts(ctx context.Context, req *artifactregist
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ImportAptArtifacts")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/aptArtifacts:import")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3013,8 +3499,12 @@ func (c *restClient) ImportAptArtifacts(ctx context.Context, req *artifactregist
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.ImportAptArtifactsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportAptArtifactsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3047,6 +3537,10 @@ func (c *restClient) ImportYumArtifacts(ctx context.Context, req *artifactregist
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ImportYumArtifacts")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/yumArtifacts:import")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3075,8 +3569,12 @@ func (c *restClient) ImportYumArtifacts(ctx context.Context, req *artifactregist
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.ImportYumArtifactsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportYumArtifactsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3084,7 +3582,7 @@ func (c *restClient) ImportYumArtifacts(ctx context.Context, req *artifactregist
 // ListRepositories lists repositories.
 func (c *restClient) ListRepositories(ctx context.Context, req *artifactregistrypb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
 	it := &RepositoryIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListRepositoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Repository, string, error) {
 		resp := &artifactregistrypb.ListRepositoriesResponse{}
@@ -3184,6 +3682,13 @@ func (c *restClient) GetRepository(ctx context.Context, req *artifactregistrypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}")
+	}
 	opts = append((*c.CallOptions).GetRepository[0:len((*c.CallOptions).GetRepository):len((*c.CallOptions).GetRepository)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.Repository{}
@@ -3243,6 +3748,13 @@ func (c *restClient) CreateRepository(ctx context.Context, req *artifactregistry
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/CreateRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/repositories")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3271,8 +3783,12 @@ func (c *restClient) CreateRepository(ctx context.Context, req *artifactregistry
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.CreateRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3310,6 +3826,10 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *artifactregistry
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdateRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{repository.name=projects/*/locations/*/repositories/*}")
+	}
 	opts = append((*c.CallOptions).UpdateRepository[0:len((*c.CallOptions).UpdateRepository):len((*c.CallOptions).UpdateRepository)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.Repository{}
@@ -3362,6 +3882,13 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *artifactregistry
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3390,8 +3917,12 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *artifactregistry
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeleteRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3399,7 +3930,7 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *artifactregistry
 // ListPackages lists packages.
 func (c *restClient) ListPackages(ctx context.Context, req *artifactregistrypb.ListPackagesRequest, opts ...gax.CallOption) *PackageIterator {
 	it := &PackageIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListPackagesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Package, string, error) {
 		resp := &artifactregistrypb.ListPackagesResponse{}
@@ -3499,6 +4030,13 @@ func (c *restClient) GetPackage(ctx context.Context, req *artifactregistrypb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetPackage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/packages/*}")
+	}
 	opts = append((*c.CallOptions).GetPackage[0:len((*c.CallOptions).GetPackage):len((*c.CallOptions).GetPackage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.Package{}
@@ -3550,6 +4088,13 @@ func (c *restClient) DeletePackage(ctx context.Context, req *artifactregistrypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeletePackage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/packages/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3578,8 +4123,12 @@ func (c *restClient) DeletePackage(ctx context.Context, req *artifactregistrypb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeletePackageOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePackageOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3587,7 +4136,7 @@ func (c *restClient) DeletePackage(ctx context.Context, req *artifactregistrypb.
 // ListVersions lists versions.
 func (c *restClient) ListVersions(ctx context.Context, req *artifactregistrypb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Version, string, error) {
 		resp := &artifactregistrypb.ListVersionsResponse{}
@@ -3693,6 +4242,10 @@ func (c *restClient) GetVersion(ctx context.Context, req *artifactregistrypb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/packages/*/versions/*}")
+	}
 	opts = append((*c.CallOptions).GetVersion[0:len((*c.CallOptions).GetVersion):len((*c.CallOptions).GetVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.Version{}
@@ -3747,6 +4300,10 @@ func (c *restClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/packages/*/versions/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3775,8 +4332,12 @@ func (c *restClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeleteVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3807,6 +4368,13 @@ func (c *restClient) BatchDeleteVersions(ctx context.Context, req *artifactregis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/BatchDeleteVersions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*/packages/*}/versions:batchDelete")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3835,8 +4403,12 @@ func (c *restClient) BatchDeleteVersions(ctx context.Context, req *artifactregis
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.BatchDeleteVersionsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchDeleteVersionsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3874,6 +4446,10 @@ func (c *restClient) UpdateVersion(ctx context.Context, req *artifactregistrypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdateVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{version.name=projects/*/locations/*/repositories/*/packages/*/versions/*}")
+	}
 	opts = append((*c.CallOptions).UpdateVersion[0:len((*c.CallOptions).UpdateVersion):len((*c.CallOptions).UpdateVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.Version{}
@@ -3908,7 +4484,7 @@ func (c *restClient) UpdateVersion(ctx context.Context, req *artifactregistrypb.
 // ListFiles lists files.
 func (c *restClient) ListFiles(ctx context.Context, req *artifactregistrypb.ListFilesRequest, opts ...gax.CallOption) *FileIterator {
 	it := &FileIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListFilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.File, string, error) {
 		resp := &artifactregistrypb.ListFilesResponse{}
@@ -4008,6 +4584,13 @@ func (c *restClient) GetFile(ctx context.Context, req *artifactregistrypb.GetFil
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/files/**}")
+	}
 	opts = append((*c.CallOptions).GetFile[0:len((*c.CallOptions).GetFile):len((*c.CallOptions).GetFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.File{}
@@ -4060,6 +4643,13 @@ func (c *restClient) DeleteFile(ctx context.Context, req *artifactregistrypb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/files/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4088,8 +4678,12 @@ func (c *restClient) DeleteFile(ctx context.Context, req *artifactregistrypb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeleteFileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFileOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4127,6 +4721,10 @@ func (c *restClient) UpdateFile(ctx context.Context, req *artifactregistrypb.Upd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdateFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{file.name=projects/*/locations/*/repositories/*/files/*}")
+	}
 	opts = append((*c.CallOptions).UpdateFile[0:len((*c.CallOptions).UpdateFile):len((*c.CallOptions).UpdateFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.File{}
@@ -4161,7 +4759,7 @@ func (c *restClient) UpdateFile(ctx context.Context, req *artifactregistrypb.Upd
 // ListTags lists tags.
 func (c *restClient) ListTags(ctx context.Context, req *artifactregistrypb.ListTagsRequest, opts ...gax.CallOption) *TagIterator {
 	it := &TagIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListTagsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Tag, string, error) {
 		resp := &artifactregistrypb.ListTagsResponse{}
@@ -4258,6 +4856,10 @@ func (c *restClient) GetTag(ctx context.Context, req *artifactregistrypb.GetTagR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetTag")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/packages/*/tags/*}")
+	}
 	opts = append((*c.CallOptions).GetTag[0:len((*c.CallOptions).GetTag):len((*c.CallOptions).GetTag)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.Tag{}
@@ -4318,6 +4920,10 @@ func (c *restClient) CreateTag(ctx context.Context, req *artifactregistrypb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/CreateTag")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*/packages/*}/tags")
+	}
 	opts = append((*c.CallOptions).CreateTag[0:len((*c.CallOptions).CreateTag):len((*c.CallOptions).CreateTag)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.Tag{}
@@ -4382,6 +4988,10 @@ func (c *restClient) UpdateTag(ctx context.Context, req *artifactregistrypb.Upda
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdateTag")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{tag.name=projects/*/locations/*/repositories/*/packages/*/tags/*}")
+	}
 	opts = append((*c.CallOptions).UpdateTag[0:len((*c.CallOptions).UpdateTag):len((*c.CallOptions).UpdateTag)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.Tag{}
@@ -4432,6 +5042,10 @@ func (c *restClient) DeleteTag(ctx context.Context, req *artifactregistrypb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteTag")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/packages/*/tags/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4477,6 +5091,13 @@ func (c *restClient) CreateRule(ctx context.Context, req *artifactregistrypb.Cre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/CreateRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/rules")
+	}
 	opts = append((*c.CallOptions).CreateRule[0:len((*c.CallOptions).CreateRule):len((*c.CallOptions).CreateRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.Rule{}
@@ -4511,7 +5132,7 @@ func (c *restClient) CreateRule(ctx context.Context, req *artifactregistrypb.Cre
 // ListRules lists rules.
 func (c *restClient) ListRules(ctx context.Context, req *artifactregistrypb.ListRulesRequest, opts ...gax.CallOption) *RuleIterator {
 	it := &RuleIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Rule, string, error) {
 		resp := &artifactregistrypb.ListRulesResponse{}
@@ -4605,6 +5226,13 @@ func (c *restClient) GetRule(ctx context.Context, req *artifactregistrypb.GetRul
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/rules/*}")
+	}
 	opts = append((*c.CallOptions).GetRule[0:len((*c.CallOptions).GetRule):len((*c.CallOptions).GetRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.Rule{}
@@ -4669,6 +5297,10 @@ func (c *restClient) UpdateRule(ctx context.Context, req *artifactregistrypb.Upd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdateRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{rule.name=projects/*/locations/*/repositories/*/rules/*}")
+	}
 	opts = append((*c.CallOptions).UpdateRule[0:len((*c.CallOptions).UpdateRule):len((*c.CallOptions).UpdateRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.Rule{}
@@ -4719,6 +5351,13 @@ func (c *restClient) DeleteRule(ctx context.Context, req *artifactregistrypb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/rules/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4760,6 +5399,13 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -4813,6 +5459,13 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -4869,6 +5522,13 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -4919,6 +5579,13 @@ func (c *restClient) GetProjectSettings(ctx context.Context, req *artifactregist
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetProjectSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/projectSettings}")
+	}
 	opts = append((*c.CallOptions).GetProjectSettings[0:len((*c.CallOptions).GetProjectSettings):len((*c.CallOptions).GetProjectSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.ProjectSettings{}
@@ -4983,6 +5650,10 @@ func (c *restClient) UpdateProjectSettings(ctx context.Context, req *artifactreg
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdateProjectSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{project_settings.name=projects/*/projectSettings}")
+	}
 	opts = append((*c.CallOptions).UpdateProjectSettings[0:len((*c.CallOptions).UpdateProjectSettings):len((*c.CallOptions).UpdateProjectSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.ProjectSettings{}
@@ -5033,6 +5704,13 @@ func (c *restClient) GetVPCSCConfig(ctx context.Context, req *artifactregistrypb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetVPCSCConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/vpcscConfig}")
+	}
 	opts = append((*c.CallOptions).GetVPCSCConfig[0:len((*c.CallOptions).GetVPCSCConfig):len((*c.CallOptions).GetVPCSCConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.VPCSCConfig{}
@@ -5097,6 +5775,10 @@ func (c *restClient) UpdateVPCSCConfig(ctx context.Context, req *artifactregistr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdateVPCSCConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{vpcsc_config.name=projects/*/locations/*/vpcscConfig}")
+	}
 	opts = append((*c.CallOptions).UpdateVPCSCConfig[0:len((*c.CallOptions).UpdateVPCSCConfig):len((*c.CallOptions).UpdateVPCSCConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.VPCSCConfig{}
@@ -5161,6 +5843,10 @@ func (c *restClient) UpdatePackage(ctx context.Context, req *artifactregistrypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/UpdatePackage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{package.name=projects/*/locations/*/repositories/*/packages/*}")
+	}
 	opts = append((*c.CallOptions).UpdatePackage[0:len((*c.CallOptions).UpdatePackage):len((*c.CallOptions).UpdatePackage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.Package{}
@@ -5195,7 +5881,7 @@ func (c *restClient) UpdatePackage(ctx context.Context, req *artifactregistrypb.
 // ListAttachments lists attachments.
 func (c *restClient) ListAttachments(ctx context.Context, req *artifactregistrypb.ListAttachmentsRequest, opts ...gax.CallOption) *AttachmentIterator {
 	it := &AttachmentIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListAttachmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Attachment, string, error) {
 		resp := &artifactregistrypb.ListAttachmentsResponse{}
@@ -5292,6 +5978,13 @@ func (c *restClient) GetAttachment(ctx context.Context, req *artifactregistrypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetAttachment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/attachments/*}")
+	}
 	opts = append((*c.CallOptions).GetAttachment[0:len((*c.CallOptions).GetAttachment):len((*c.CallOptions).GetAttachment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &artifactregistrypb.Attachment{}
@@ -5351,6 +6044,13 @@ func (c *restClient) CreateAttachment(ctx context.Context, req *artifactregistry
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/CreateAttachment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/attachments")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5379,8 +6079,12 @@ func (c *restClient) CreateAttachment(ctx context.Context, req *artifactregistry
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.CreateAttachmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAttachmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5406,6 +6110,13 @@ func (c *restClient) DeleteAttachment(ctx context.Context, req *artifactregistry
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteAttachment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/attachments/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5434,8 +6145,12 @@ func (c *restClient) DeleteAttachment(ctx context.Context, req *artifactregistry
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeleteAttachmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAttachmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5465,6 +6180,13 @@ func (c *restClient) ExportArtifact(ctx context.Context, req *artifactregistrypb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetRepository()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ExportArtifact")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{repository=projects/*/locations/*/repositories/*}:exportArtifact")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5493,8 +6215,12 @@ func (c *restClient) ExportArtifact(ctx context.Context, req *artifactregistrypb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.ExportArtifactOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportArtifactOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5518,6 +6244,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -5560,7 +6290,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 //	to the project.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -5657,6 +6387,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -5692,7 +6426,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // The name must be that of a previously created BatchDeleteVersionsOperation, possibly from a different process.
 func (c *gRPCClient) BatchDeleteVersionsOperation(name string) *BatchDeleteVersionsOperation {
 	return &BatchDeleteVersionsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.BatchDeleteVersionsOperation"),
 	}
 }
 
@@ -5701,7 +6435,7 @@ func (c *gRPCClient) BatchDeleteVersionsOperation(name string) *BatchDeleteVersi
 func (c *restClient) BatchDeleteVersionsOperation(name string) *BatchDeleteVersionsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BatchDeleteVersionsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.BatchDeleteVersionsOperation"),
 		pollPath: override,
 	}
 }
@@ -5710,7 +6444,7 @@ func (c *restClient) BatchDeleteVersionsOperation(name string) *BatchDeleteVersi
 // The name must be that of a previously created CreateAttachmentOperation, possibly from a different process.
 func (c *gRPCClient) CreateAttachmentOperation(name string) *CreateAttachmentOperation {
 	return &CreateAttachmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.CreateAttachmentOperation"),
 	}
 }
 
@@ -5719,7 +6453,7 @@ func (c *gRPCClient) CreateAttachmentOperation(name string) *CreateAttachmentOpe
 func (c *restClient) CreateAttachmentOperation(name string) *CreateAttachmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAttachmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.CreateAttachmentOperation"),
 		pollPath: override,
 	}
 }
@@ -5728,7 +6462,7 @@ func (c *restClient) CreateAttachmentOperation(name string) *CreateAttachmentOpe
 // The name must be that of a previously created CreateRepositoryOperation, possibly from a different process.
 func (c *gRPCClient) CreateRepositoryOperation(name string) *CreateRepositoryOperation {
 	return &CreateRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.CreateRepositoryOperation"),
 	}
 }
 
@@ -5737,7 +6471,7 @@ func (c *gRPCClient) CreateRepositoryOperation(name string) *CreateRepositoryOpe
 func (c *restClient) CreateRepositoryOperation(name string) *CreateRepositoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.CreateRepositoryOperation"),
 		pollPath: override,
 	}
 }
@@ -5746,7 +6480,7 @@ func (c *restClient) CreateRepositoryOperation(name string) *CreateRepositoryOpe
 // The name must be that of a previously created DeleteAttachmentOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAttachmentOperation(name string) *DeleteAttachmentOperation {
 	return &DeleteAttachmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeleteAttachmentOperation"),
 	}
 }
 
@@ -5755,7 +6489,7 @@ func (c *gRPCClient) DeleteAttachmentOperation(name string) *DeleteAttachmentOpe
 func (c *restClient) DeleteAttachmentOperation(name string) *DeleteAttachmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAttachmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeleteAttachmentOperation"),
 		pollPath: override,
 	}
 }
@@ -5764,7 +6498,7 @@ func (c *restClient) DeleteAttachmentOperation(name string) *DeleteAttachmentOpe
 // The name must be that of a previously created DeleteFileOperation, possibly from a different process.
 func (c *gRPCClient) DeleteFileOperation(name string) *DeleteFileOperation {
 	return &DeleteFileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeleteFileOperation"),
 	}
 }
 
@@ -5773,7 +6507,7 @@ func (c *gRPCClient) DeleteFileOperation(name string) *DeleteFileOperation {
 func (c *restClient) DeleteFileOperation(name string) *DeleteFileOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteFileOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeleteFileOperation"),
 		pollPath: override,
 	}
 }
@@ -5782,7 +6516,7 @@ func (c *restClient) DeleteFileOperation(name string) *DeleteFileOperation {
 // The name must be that of a previously created DeletePackageOperation, possibly from a different process.
 func (c *gRPCClient) DeletePackageOperation(name string) *DeletePackageOperation {
 	return &DeletePackageOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeletePackageOperation"),
 	}
 }
 
@@ -5791,7 +6525,7 @@ func (c *gRPCClient) DeletePackageOperation(name string) *DeletePackageOperation
 func (c *restClient) DeletePackageOperation(name string) *DeletePackageOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePackageOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeletePackageOperation"),
 		pollPath: override,
 	}
 }
@@ -5800,7 +6534,7 @@ func (c *restClient) DeletePackageOperation(name string) *DeletePackageOperation
 // The name must be that of a previously created DeleteRepositoryOperation, possibly from a different process.
 func (c *gRPCClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOperation {
 	return &DeleteRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeleteRepositoryOperation"),
 	}
 }
 
@@ -5809,7 +6543,7 @@ func (c *gRPCClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOpe
 func (c *restClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeleteRepositoryOperation"),
 		pollPath: override,
 	}
 }
@@ -5818,7 +6552,7 @@ func (c *restClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOpe
 // The name must be that of a previously created DeleteVersionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteVersionOperation(name string) *DeleteVersionOperation {
 	return &DeleteVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeleteVersionOperation"),
 	}
 }
 
@@ -5827,7 +6561,7 @@ func (c *gRPCClient) DeleteVersionOperation(name string) *DeleteVersionOperation
 func (c *restClient) DeleteVersionOperation(name string) *DeleteVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeleteVersionOperation"),
 		pollPath: override,
 	}
 }
@@ -5836,7 +6570,7 @@ func (c *restClient) DeleteVersionOperation(name string) *DeleteVersionOperation
 // The name must be that of a previously created ExportArtifactOperation, possibly from a different process.
 func (c *gRPCClient) ExportArtifactOperation(name string) *ExportArtifactOperation {
 	return &ExportArtifactOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.ExportArtifactOperation"),
 	}
 }
 
@@ -5845,7 +6579,7 @@ func (c *gRPCClient) ExportArtifactOperation(name string) *ExportArtifactOperati
 func (c *restClient) ExportArtifactOperation(name string) *ExportArtifactOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportArtifactOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.ExportArtifactOperation"),
 		pollPath: override,
 	}
 }
@@ -5854,7 +6588,7 @@ func (c *restClient) ExportArtifactOperation(name string) *ExportArtifactOperati
 // The name must be that of a previously created ImportAptArtifactsOperation, possibly from a different process.
 func (c *gRPCClient) ImportAptArtifactsOperation(name string) *ImportAptArtifactsOperation {
 	return &ImportAptArtifactsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.ImportAptArtifactsOperation"),
 	}
 }
 
@@ -5863,7 +6597,7 @@ func (c *gRPCClient) ImportAptArtifactsOperation(name string) *ImportAptArtifact
 func (c *restClient) ImportAptArtifactsOperation(name string) *ImportAptArtifactsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportAptArtifactsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.ImportAptArtifactsOperation"),
 		pollPath: override,
 	}
 }
@@ -5872,7 +6606,7 @@ func (c *restClient) ImportAptArtifactsOperation(name string) *ImportAptArtifact
 // The name must be that of a previously created ImportYumArtifactsOperation, possibly from a different process.
 func (c *gRPCClient) ImportYumArtifactsOperation(name string) *ImportYumArtifactsOperation {
 	return &ImportYumArtifactsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.ImportYumArtifactsOperation"),
 	}
 }
 
@@ -5881,7 +6615,7 @@ func (c *gRPCClient) ImportYumArtifactsOperation(name string) *ImportYumArtifact
 func (c *restClient) ImportYumArtifactsOperation(name string) *ImportYumArtifactsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportYumArtifactsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.ImportYumArtifactsOperation"),
 		pollPath: override,
 	}
 }

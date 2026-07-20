@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -131,7 +133,7 @@ type ApplicationsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ApplicationsClient) Close() error {
 	return c.internalClient.Close()
@@ -243,6 +245,16 @@ type applicationsGRPCClient struct {
 // Manages App Engine applications.
 func NewApplicationsClient(ctx context.Context, opts ...option.ClientOption) (*ApplicationsClient, error) {
 	clientOpts := defaultApplicationsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	if newApplicationsClientHook != nil {
 		hookOpts, err := newApplicationsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -264,6 +276,23 @@ func NewApplicationsClient(ctx context.Context, opts ...option.ClientOption) (*A
 		logger:             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetApplication = append(client.CallOptions.GetApplication, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateApplication = append(client.CallOptions.CreateApplication, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateApplication = append(client.CallOptions.UpdateApplication, gax.WithClientMetrics(metrics))
+		client.CallOptions.RepairApplication = append(client.CallOptions.RepairApplication, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -300,7 +329,7 @@ func (c *applicationsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *applicationsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -333,6 +362,16 @@ type applicationsRESTClient struct {
 // Manages App Engine applications.
 func NewApplicationsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ApplicationsClient, error) {
 	clientOpts := append(defaultApplicationsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -346,6 +385,24 @@ func NewApplicationsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.GetApplication = append(callOpts.GetApplication, gax.WithClientMetrics(metrics))
+		callOpts.CreateApplication = append(callOpts.CreateApplication, gax.WithClientMetrics(metrics))
+		callOpts.UpdateApplication = append(callOpts.UpdateApplication, gax.WithClientMetrics(metrics))
+		callOpts.RepairApplication = append(callOpts.RepairApplication, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -383,7 +440,7 @@ func (c *applicationsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *applicationsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -402,6 +459,9 @@ func (c *applicationsGRPCClient) GetApplication(ctx context.Context, req *appeng
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Applications/GetApplication")
+	}
 	opts = append((*c.CallOptions).GetApplication[0:len((*c.CallOptions).GetApplication):len((*c.CallOptions).GetApplication)], opts...)
 	var resp *appenginepb.Application
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -417,6 +477,9 @@ func (c *applicationsGRPCClient) GetApplication(ctx context.Context, req *appeng
 
 func (c *applicationsGRPCClient) CreateApplication(ctx context.Context, req *appenginepb.CreateApplicationRequest, opts ...gax.CallOption) (*CreateApplicationOperation, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Applications/CreateApplication")
+	}
 	opts = append((*c.CallOptions).CreateApplication[0:len((*c.CallOptions).CreateApplication):len((*c.CallOptions).CreateApplication)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -427,8 +490,12 @@ func (c *applicationsGRPCClient) CreateApplication(ctx context.Context, req *app
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.CreateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -437,6 +504,9 @@ func (c *applicationsGRPCClient) UpdateApplication(ctx context.Context, req *app
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Applications/UpdateApplication")
+	}
 	opts = append((*c.CallOptions).UpdateApplication[0:len((*c.CallOptions).UpdateApplication):len((*c.CallOptions).UpdateApplication)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -447,8 +517,12 @@ func (c *applicationsGRPCClient) UpdateApplication(ctx context.Context, req *app
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.UpdateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -457,6 +531,9 @@ func (c *applicationsGRPCClient) RepairApplication(ctx context.Context, req *app
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Applications/RepairApplication")
+	}
 	opts = append((*c.CallOptions).RepairApplication[0:len((*c.CallOptions).RepairApplication):len((*c.CallOptions).RepairApplication)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -467,8 +544,12 @@ func (c *applicationsGRPCClient) RepairApplication(ctx context.Context, req *app
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.RepairApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RepairApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -491,6 +572,10 @@ func (c *applicationsRESTClient) GetApplication(ctx context.Context, req *appeng
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Applications/GetApplication")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*}")
+	}
 	opts = append((*c.CallOptions).GetApplication[0:len((*c.CallOptions).GetApplication):len((*c.CallOptions).GetApplication)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.Application{}
@@ -552,6 +637,10 @@ func (c *applicationsRESTClient) CreateApplication(ctx context.Context, req *app
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Applications/CreateApplication")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/apps")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -580,8 +669,12 @@ func (c *applicationsRESTClient) CreateApplication(ctx context.Context, req *app
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.CreateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -626,6 +719,10 @@ func (c *applicationsRESTClient) UpdateApplication(ctx context.Context, req *app
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Applications/UpdateApplication")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -654,8 +751,12 @@ func (c *applicationsRESTClient) UpdateApplication(ctx context.Context, req *app
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.UpdateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -694,6 +795,10 @@ func (c *applicationsRESTClient) RepairApplication(ctx context.Context, req *app
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Applications/RepairApplication")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*}:repair")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -722,8 +827,12 @@ func (c *applicationsRESTClient) RepairApplication(ctx context.Context, req *app
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.RepairApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RepairApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -732,7 +841,7 @@ func (c *applicationsRESTClient) RepairApplication(ctx context.Context, req *app
 // The name must be that of a previously created CreateApplicationOperation, possibly from a different process.
 func (c *applicationsGRPCClient) CreateApplicationOperation(name string) *CreateApplicationOperation {
 	return &CreateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.CreateApplicationOperation"),
 	}
 }
 
@@ -741,7 +850,7 @@ func (c *applicationsGRPCClient) CreateApplicationOperation(name string) *Create
 func (c *applicationsRESTClient) CreateApplicationOperation(name string) *CreateApplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.CreateApplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -750,7 +859,7 @@ func (c *applicationsRESTClient) CreateApplicationOperation(name string) *Create
 // The name must be that of a previously created RepairApplicationOperation, possibly from a different process.
 func (c *applicationsGRPCClient) RepairApplicationOperation(name string) *RepairApplicationOperation {
 	return &RepairApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.RepairApplicationOperation"),
 	}
 }
 
@@ -759,7 +868,7 @@ func (c *applicationsGRPCClient) RepairApplicationOperation(name string) *Repair
 func (c *applicationsRESTClient) RepairApplicationOperation(name string) *RepairApplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RepairApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.RepairApplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -768,7 +877,7 @@ func (c *applicationsRESTClient) RepairApplicationOperation(name string) *Repair
 // The name must be that of a previously created UpdateApplicationOperation, possibly from a different process.
 func (c *applicationsGRPCClient) UpdateApplicationOperation(name string) *UpdateApplicationOperation {
 	return &UpdateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.UpdateApplicationOperation"),
 	}
 }
 
@@ -777,7 +886,7 @@ func (c *applicationsGRPCClient) UpdateApplicationOperation(name string) *Update
 func (c *applicationsRESTClient) UpdateApplicationOperation(name string) *UpdateApplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.UpdateApplicationOperation"),
 		pollPath: override,
 	}
 }

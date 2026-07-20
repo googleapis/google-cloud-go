@@ -23,6 +23,7 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/bttest"
+	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
@@ -39,7 +40,7 @@ func setupFakeServer(project, instance string, config ClientConfig, opt ...grpc.
 	if err != nil {
 		return nil, nil, err
 	}
-	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithStatsHandler(metrics.SharedStatsHandler))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -619,6 +620,7 @@ func TestRetryReverseReadRows(t *testing.T) {
 }
 
 func TestRetryOptionSelection(t *testing.T) {
+	t.Setenv("CBT_BIGTABLE_CONN_POOL", "false")
 	ctx := context.Background()
 	project := "test-project"
 	instance := "test-instance"

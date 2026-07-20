@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -197,7 +199,7 @@ type EngineClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *EngineClient) Close() error {
 	return c.internalClient.Close()
@@ -304,6 +306,16 @@ type engineGRPCClient struct {
 // configuration.
 func NewEngineClient(ctx context.Context, opts ...option.ClientOption) (*EngineClient, error) {
 	clientOpts := defaultEngineGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "discoveryengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/discoveryengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "discoveryengine.googleapis.com",
+		}))
+	}
 	if newEngineClientHook != nil {
 		hookOpts, err := newEngineClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -326,6 +338,27 @@ func NewEngineClient(ctx context.Context, opts ...option.ClientOption) (*EngineC
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateEngine = append(client.CallOptions.CreateEngine, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEngine = append(client.CallOptions.DeleteEngine, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateEngine = append(client.CallOptions.UpdateEngine, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEngine = append(client.CallOptions.GetEngine, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEngines = append(client.CallOptions.ListEngines, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -362,7 +395,7 @@ func (c *engineGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *engineGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -396,6 +429,16 @@ type engineRESTClient struct {
 // configuration.
 func NewEngineRESTClient(ctx context.Context, opts ...option.ClientOption) (*EngineClient, error) {
 	clientOpts := append(defaultEngineRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "discoveryengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/discoveryengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "discoveryengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -409,6 +452,28 @@ func NewEngineRESTClient(ctx context.Context, opts ...option.ClientOption) (*Eng
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateEngine = append(callOpts.CreateEngine, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEngine = append(callOpts.DeleteEngine, gax.WithClientMetrics(metrics))
+		callOpts.UpdateEngine = append(callOpts.UpdateEngine, gax.WithClientMetrics(metrics))
+		callOpts.GetEngine = append(callOpts.GetEngine, gax.WithClientMetrics(metrics))
+		callOpts.ListEngines = append(callOpts.ListEngines, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -446,7 +511,7 @@ func (c *engineRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *engineRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -465,6 +530,12 @@ func (c *engineGRPCClient) CreateEngine(ctx context.Context, req *discoveryengin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/CreateEngine")
+	}
 	opts = append((*c.CallOptions).CreateEngine[0:len((*c.CallOptions).CreateEngine):len((*c.CallOptions).CreateEngine)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -475,8 +546,12 @@ func (c *engineGRPCClient) CreateEngine(ctx context.Context, req *discoveryengin
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.CreateEngineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEngineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -485,6 +560,12 @@ func (c *engineGRPCClient) DeleteEngine(ctx context.Context, req *discoveryengin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/DeleteEngine")
+	}
 	opts = append((*c.CallOptions).DeleteEngine[0:len((*c.CallOptions).DeleteEngine):len((*c.CallOptions).DeleteEngine)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -495,8 +576,12 @@ func (c *engineGRPCClient) DeleteEngine(ctx context.Context, req *discoveryengin
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteEngineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEngineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -505,6 +590,9 @@ func (c *engineGRPCClient) UpdateEngine(ctx context.Context, req *discoveryengin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/UpdateEngine")
+	}
 	opts = append((*c.CallOptions).UpdateEngine[0:len((*c.CallOptions).UpdateEngine):len((*c.CallOptions).UpdateEngine)], opts...)
 	var resp *discoveryenginepb.Engine
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -523,6 +611,12 @@ func (c *engineGRPCClient) GetEngine(ctx context.Context, req *discoveryenginepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/GetEngine")
+	}
 	opts = append((*c.CallOptions).GetEngine[0:len((*c.CallOptions).GetEngine):len((*c.CallOptions).GetEngine)], opts...)
 	var resp *discoveryenginepb.Engine
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -541,9 +635,15 @@ func (c *engineGRPCClient) ListEngines(ctx context.Context, req *discoveryengine
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/ListEngines")
+	}
 	opts = append((*c.CallOptions).ListEngines[0:len((*c.CallOptions).ListEngines):len((*c.CallOptions).ListEngines)], opts...)
 	it := &EngineIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListEnginesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Engine, string, error) {
 		resp := &discoveryenginepb.ListEnginesResponse{}
 		if pageToken != "" {
@@ -587,6 +687,9 @@ func (c *engineGRPCClient) CancelOperation(ctx context.Context, req *longrunning
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -601,6 +704,9 @@ func (c *engineGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -619,9 +725,12 @@ func (c *engineGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -687,6 +796,13 @@ func (c *engineRESTClient) CreateEngine(ctx context.Context, req *discoveryengin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/CreateEngine")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/collections/*}/engines")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -715,8 +831,12 @@ func (c *engineRESTClient) CreateEngine(ctx context.Context, req *discoveryengin
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.CreateEngineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEngineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -740,6 +860,13 @@ func (c *engineRESTClient) DeleteEngine(ctx context.Context, req *discoveryengin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/DeleteEngine")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/collections/*/engines/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -768,8 +895,12 @@ func (c *engineRESTClient) DeleteEngine(ctx context.Context, req *discoveryengin
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteEngineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEngineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -807,6 +938,10 @@ func (c *engineRESTClient) UpdateEngine(ctx context.Context, req *discoveryengin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/UpdateEngine")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{engine.name=projects/*/locations/*/collections/*/engines/*}")
+	}
 	opts = append((*c.CallOptions).UpdateEngine[0:len((*c.CallOptions).UpdateEngine):len((*c.CallOptions).UpdateEngine)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.Engine{}
@@ -857,6 +992,13 @@ func (c *engineRESTClient) GetEngine(ctx context.Context, req *discoveryenginepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.EngineService/GetEngine")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/collections/*/engines/*}")
+	}
 	opts = append((*c.CallOptions).GetEngine[0:len((*c.CallOptions).GetEngine):len((*c.CallOptions).GetEngine)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.Engine{}
@@ -892,7 +1034,7 @@ func (c *engineRESTClient) GetEngine(ctx context.Context, req *discoveryenginepb
 // with the project.
 func (c *engineRESTClient) ListEngines(ctx context.Context, req *discoveryenginepb.ListEnginesRequest, opts ...gax.CallOption) *EngineIterator {
 	it := &EngineIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListEnginesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Engine, string, error) {
 		resp := &discoveryenginepb.ListEnginesResponse{}
@@ -995,6 +1137,10 @@ func (c *engineRESTClient) CancelOperation(ctx context.Context, req *longrunning
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1030,6 +1176,10 @@ func (c *engineRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1064,7 +1214,7 @@ func (c *engineRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *engineRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1149,7 +1299,7 @@ func (c *engineRESTClient) ListOperations(ctx context.Context, req *longrunningp
 // The name must be that of a previously created CreateEngineOperation, possibly from a different process.
 func (c *engineGRPCClient) CreateEngineOperation(name string) *CreateEngineOperation {
 	return &CreateEngineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.CreateEngineOperation"),
 	}
 }
 
@@ -1158,7 +1308,7 @@ func (c *engineGRPCClient) CreateEngineOperation(name string) *CreateEngineOpera
 func (c *engineRESTClient) CreateEngineOperation(name string) *CreateEngineOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEngineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.CreateEngineOperation"),
 		pollPath: override,
 	}
 }
@@ -1167,7 +1317,7 @@ func (c *engineRESTClient) CreateEngineOperation(name string) *CreateEngineOpera
 // The name must be that of a previously created DeleteEngineOperation, possibly from a different process.
 func (c *engineGRPCClient) DeleteEngineOperation(name string) *DeleteEngineOperation {
 	return &DeleteEngineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteEngineOperation"),
 	}
 }
 
@@ -1176,7 +1326,7 @@ func (c *engineGRPCClient) DeleteEngineOperation(name string) *DeleteEngineOpera
 func (c *engineRESTClient) DeleteEngineOperation(name string) *DeleteEngineOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEngineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteEngineOperation"),
 		pollPath: override,
 	}
 }

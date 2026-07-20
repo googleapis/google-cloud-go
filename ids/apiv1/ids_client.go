@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -167,7 +169,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -250,6 +252,16 @@ type gRPCClient struct {
 // The IDS Service
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "ids",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/ids/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "ids.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -271,6 +283,23 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "ids",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ids/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "ids.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListEndpoints = append(client.CallOptions.ListEndpoints, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEndpoint = append(client.CallOptions.GetEndpoint, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateEndpoint = append(client.CallOptions.CreateEndpoint, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEndpoint = append(client.CallOptions.DeleteEndpoint, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -307,7 +336,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -340,6 +369,16 @@ type restClient struct {
 // The IDS Service
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "ids",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/ids/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "ids.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -353,6 +392,24 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "ids",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ids/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "ids.googleapis.com",
+			}),
+		)
+
+		callOpts.ListEndpoints = append(callOpts.ListEndpoints, gax.WithClientMetrics(metrics))
+		callOpts.GetEndpoint = append(callOpts.GetEndpoint, gax.WithClientMetrics(metrics))
+		callOpts.CreateEndpoint = append(callOpts.CreateEndpoint, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEndpoint = append(callOpts.DeleteEndpoint, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -390,7 +447,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -409,9 +466,15 @@ func (c *gRPCClient) ListEndpoints(ctx context.Context, req *idspb.ListEndpoints
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ids.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ids.v1.IDS/ListEndpoints")
+	}
 	opts = append((*c.CallOptions).ListEndpoints[0:len((*c.CallOptions).ListEndpoints):len((*c.CallOptions).ListEndpoints)], opts...)
 	it := &EndpointIterator{}
-	req = proto.Clone(req).(*idspb.ListEndpointsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*idspb.Endpoint, string, error) {
 		resp := &idspb.ListEndpointsResponse{}
 		if pageToken != "" {
@@ -455,6 +518,12 @@ func (c *gRPCClient) GetEndpoint(ctx context.Context, req *idspb.GetEndpointRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ids.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ids.v1.IDS/GetEndpoint")
+	}
 	opts = append((*c.CallOptions).GetEndpoint[0:len((*c.CallOptions).GetEndpoint):len((*c.CallOptions).GetEndpoint)], opts...)
 	var resp *idspb.Endpoint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -473,6 +542,12 @@ func (c *gRPCClient) CreateEndpoint(ctx context.Context, req *idspb.CreateEndpoi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ids.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ids.v1.IDS/CreateEndpoint")
+	}
 	opts = append((*c.CallOptions).CreateEndpoint[0:len((*c.CallOptions).CreateEndpoint):len((*c.CallOptions).CreateEndpoint)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -483,8 +558,12 @@ func (c *gRPCClient) CreateEndpoint(ctx context.Context, req *idspb.CreateEndpoi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ids.CreateEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -493,6 +572,12 @@ func (c *gRPCClient) DeleteEndpoint(ctx context.Context, req *idspb.DeleteEndpoi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ids.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ids.v1.IDS/DeleteEndpoint")
+	}
 	opts = append((*c.CallOptions).DeleteEndpoint[0:len((*c.CallOptions).DeleteEndpoint):len((*c.CallOptions).DeleteEndpoint)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -503,15 +588,19 @@ func (c *gRPCClient) DeleteEndpoint(ctx context.Context, req *idspb.DeleteEndpoi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ids.DeleteEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
 // ListEndpoints lists Endpoints in a given project and location.
 func (c *restClient) ListEndpoints(ctx context.Context, req *idspb.ListEndpointsRequest, opts ...gax.CallOption) *EndpointIterator {
 	it := &EndpointIterator{}
-	req = proto.Clone(req).(*idspb.ListEndpointsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*idspb.Endpoint, string, error) {
 		resp := &idspb.ListEndpointsResponse{}
@@ -611,6 +700,13 @@ func (c *restClient) GetEndpoint(ctx context.Context, req *idspb.GetEndpointRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ids.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ids.v1.IDS/GetEndpoint")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/endpoints/*}")
+	}
 	opts = append((*c.CallOptions).GetEndpoint[0:len((*c.CallOptions).GetEndpoint):len((*c.CallOptions).GetEndpoint)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &idspb.Endpoint{}
@@ -672,6 +768,13 @@ func (c *restClient) CreateEndpoint(ctx context.Context, req *idspb.CreateEndpoi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ids.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ids.v1.IDS/CreateEndpoint")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/endpoints")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -700,8 +803,12 @@ func (c *restClient) CreateEndpoint(ctx context.Context, req *idspb.CreateEndpoi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ids.CreateEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -728,6 +835,13 @@ func (c *restClient) DeleteEndpoint(ctx context.Context, req *idspb.DeleteEndpoi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ids.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ids.v1.IDS/DeleteEndpoint")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/endpoints/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -756,8 +870,12 @@ func (c *restClient) DeleteEndpoint(ctx context.Context, req *idspb.DeleteEndpoi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ids.DeleteEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -766,7 +884,7 @@ func (c *restClient) DeleteEndpoint(ctx context.Context, req *idspb.DeleteEndpoi
 // The name must be that of a previously created CreateEndpointOperation, possibly from a different process.
 func (c *gRPCClient) CreateEndpointOperation(name string) *CreateEndpointOperation {
 	return &CreateEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ids.CreateEndpointOperation"),
 	}
 }
 
@@ -775,7 +893,7 @@ func (c *gRPCClient) CreateEndpointOperation(name string) *CreateEndpointOperati
 func (c *restClient) CreateEndpointOperation(name string) *CreateEndpointOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ids.CreateEndpointOperation"),
 		pollPath: override,
 	}
 }
@@ -784,7 +902,7 @@ func (c *restClient) CreateEndpointOperation(name string) *CreateEndpointOperati
 // The name must be that of a previously created DeleteEndpointOperation, possibly from a different process.
 func (c *gRPCClient) DeleteEndpointOperation(name string) *DeleteEndpointOperation {
 	return &DeleteEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ids.DeleteEndpointOperation"),
 	}
 }
 
@@ -793,7 +911,7 @@ func (c *gRPCClient) DeleteEndpointOperation(name string) *DeleteEndpointOperati
 func (c *restClient) DeleteEndpointOperation(name string) *DeleteEndpointOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ids.DeleteEndpointOperation"),
 		pollPath: override,
 	}
 }

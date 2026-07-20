@@ -32,6 +32,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	metastorepb "cloud.google.com/go/metastore/apiv1beta/metastorepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -490,7 +492,7 @@ type DataprocMetastoreClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DataprocMetastoreClient) Close() error {
 	return c.internalClient.Close()
@@ -793,6 +795,16 @@ type dataprocMetastoreGRPCClient struct {
 // /projects/{project_number}/locations/{location_id}/services/{service_id}.
 func NewDataprocMetastoreClient(ctx context.Context, opts ...option.ClientOption) (*DataprocMetastoreClient, error) {
 	clientOpts := defaultDataprocMetastoreGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "metastore",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/metastore/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "metastore.googleapis.com",
+		}))
+	}
 	if newDataprocMetastoreClientHook != nil {
 		hookOpts, err := newDataprocMetastoreClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -817,6 +829,47 @@ func NewDataprocMetastoreClient(ctx context.Context, opts ...option.ClientOption
 		locationsClient:         locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "metastore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/metastore/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "metastore.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateService = append(client.CallOptions.CreateService, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateService = append(client.CallOptions.UpdateService, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteService = append(client.CallOptions.DeleteService, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMetadataImports = append(client.CallOptions.ListMetadataImports, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetMetadataImport = append(client.CallOptions.GetMetadataImport, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateMetadataImport = append(client.CallOptions.CreateMetadataImport, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateMetadataImport = append(client.CallOptions.UpdateMetadataImport, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportMetadata = append(client.CallOptions.ExportMetadata, gax.WithClientMetrics(metrics))
+		client.CallOptions.RestoreService = append(client.CallOptions.RestoreService, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateBackup = append(client.CallOptions.CreateBackup, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveIamPolicy = append(client.CallOptions.RemoveIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryMetadata = append(client.CallOptions.QueryMetadata, gax.WithClientMetrics(metrics))
+		client.CallOptions.MoveTableToDatabase = append(client.CallOptions.MoveTableToDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.AlterMetadataResourceLocation = append(client.CallOptions.AlterMetadataResourceLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -853,7 +906,7 @@ func (c *dataprocMetastoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dataprocMetastoreGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -905,6 +958,16 @@ type dataprocMetastoreRESTClient struct {
 // /projects/{project_number}/locations/{location_id}/services/{service_id}.
 func NewDataprocMetastoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*DataprocMetastoreClient, error) {
 	clientOpts := append(defaultDataprocMetastoreRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "metastore",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/metastore/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "metastore.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -918,6 +981,48 @@ func NewDataprocMetastoreRESTClient(ctx context.Context, opts ...option.ClientOp
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "metastore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/metastore/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "metastore.googleapis.com",
+			}),
+		)
+
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientMetrics(metrics))
+		callOpts.GetService = append(callOpts.GetService, gax.WithClientMetrics(metrics))
+		callOpts.CreateService = append(callOpts.CreateService, gax.WithClientMetrics(metrics))
+		callOpts.UpdateService = append(callOpts.UpdateService, gax.WithClientMetrics(metrics))
+		callOpts.DeleteService = append(callOpts.DeleteService, gax.WithClientMetrics(metrics))
+		callOpts.ListMetadataImports = append(callOpts.ListMetadataImports, gax.WithClientMetrics(metrics))
+		callOpts.GetMetadataImport = append(callOpts.GetMetadataImport, gax.WithClientMetrics(metrics))
+		callOpts.CreateMetadataImport = append(callOpts.CreateMetadataImport, gax.WithClientMetrics(metrics))
+		callOpts.UpdateMetadataImport = append(callOpts.UpdateMetadataImport, gax.WithClientMetrics(metrics))
+		callOpts.ExportMetadata = append(callOpts.ExportMetadata, gax.WithClientMetrics(metrics))
+		callOpts.RestoreService = append(callOpts.RestoreService, gax.WithClientMetrics(metrics))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientMetrics(metrics))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientMetrics(metrics))
+		callOpts.CreateBackup = append(callOpts.CreateBackup, gax.WithClientMetrics(metrics))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientMetrics(metrics))
+		callOpts.RemoveIamPolicy = append(callOpts.RemoveIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.QueryMetadata = append(callOpts.QueryMetadata, gax.WithClientMetrics(metrics))
+		callOpts.MoveTableToDatabase = append(callOpts.MoveTableToDatabase, gax.WithClientMetrics(metrics))
+		callOpts.AlterMetadataResourceLocation = append(callOpts.AlterMetadataResourceLocation, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -955,7 +1060,7 @@ func (c *dataprocMetastoreRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dataprocMetastoreRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -974,9 +1079,15 @@ func (c *dataprocMetastoreGRPCClient) ListServices(ctx context.Context, req *met
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/ListServices")
+	}
 	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*metastorepb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.Service, string, error) {
 		resp := &metastorepb.ListServicesResponse{}
 		if pageToken != "" {
@@ -1020,6 +1131,12 @@ func (c *dataprocMetastoreGRPCClient) GetService(ctx context.Context, req *metas
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/GetService")
+	}
 	opts = append((*c.CallOptions).GetService[0:len((*c.CallOptions).GetService):len((*c.CallOptions).GetService)], opts...)
 	var resp *metastorepb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1038,6 +1155,12 @@ func (c *dataprocMetastoreGRPCClient) CreateService(ctx context.Context, req *me
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/CreateService")
+	}
 	opts = append((*c.CallOptions).CreateService[0:len((*c.CallOptions).CreateService):len((*c.CallOptions).CreateService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1048,8 +1171,12 @@ func (c *dataprocMetastoreGRPCClient) CreateService(ctx context.Context, req *me
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.CreateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1058,6 +1185,9 @@ func (c *dataprocMetastoreGRPCClient) UpdateService(ctx context.Context, req *me
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/UpdateService")
+	}
 	opts = append((*c.CallOptions).UpdateService[0:len((*c.CallOptions).UpdateService):len((*c.CallOptions).UpdateService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1068,8 +1198,12 @@ func (c *dataprocMetastoreGRPCClient) UpdateService(ctx context.Context, req *me
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.UpdateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1078,6 +1212,12 @@ func (c *dataprocMetastoreGRPCClient) DeleteService(ctx context.Context, req *me
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/DeleteService")
+	}
 	opts = append((*c.CallOptions).DeleteService[0:len((*c.CallOptions).DeleteService):len((*c.CallOptions).DeleteService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1088,8 +1228,12 @@ func (c *dataprocMetastoreGRPCClient) DeleteService(ctx context.Context, req *me
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.DeleteServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1098,9 +1242,15 @@ func (c *dataprocMetastoreGRPCClient) ListMetadataImports(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/ListMetadataImports")
+	}
 	opts = append((*c.CallOptions).ListMetadataImports[0:len((*c.CallOptions).ListMetadataImports):len((*c.CallOptions).ListMetadataImports)], opts...)
 	it := &MetadataImportIterator{}
-	req = proto.Clone(req).(*metastorepb.ListMetadataImportsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.MetadataImport, string, error) {
 		resp := &metastorepb.ListMetadataImportsResponse{}
 		if pageToken != "" {
@@ -1144,6 +1294,12 @@ func (c *dataprocMetastoreGRPCClient) GetMetadataImport(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/GetMetadataImport")
+	}
 	opts = append((*c.CallOptions).GetMetadataImport[0:len((*c.CallOptions).GetMetadataImport):len((*c.CallOptions).GetMetadataImport)], opts...)
 	var resp *metastorepb.MetadataImport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1162,6 +1318,12 @@ func (c *dataprocMetastoreGRPCClient) CreateMetadataImport(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/CreateMetadataImport")
+	}
 	opts = append((*c.CallOptions).CreateMetadataImport[0:len((*c.CallOptions).CreateMetadataImport):len((*c.CallOptions).CreateMetadataImport)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1172,8 +1334,12 @@ func (c *dataprocMetastoreGRPCClient) CreateMetadataImport(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.CreateMetadataImportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMetadataImportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1182,6 +1348,9 @@ func (c *dataprocMetastoreGRPCClient) UpdateMetadataImport(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/UpdateMetadataImport")
+	}
 	opts = append((*c.CallOptions).UpdateMetadataImport[0:len((*c.CallOptions).UpdateMetadataImport):len((*c.CallOptions).UpdateMetadataImport)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1192,8 +1361,12 @@ func (c *dataprocMetastoreGRPCClient) UpdateMetadataImport(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.UpdateMetadataImportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateMetadataImportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1202,6 +1375,12 @@ func (c *dataprocMetastoreGRPCClient) ExportMetadata(ctx context.Context, req *m
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/ExportMetadata")
+	}
 	opts = append((*c.CallOptions).ExportMetadata[0:len((*c.CallOptions).ExportMetadata):len((*c.CallOptions).ExportMetadata)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1212,8 +1391,12 @@ func (c *dataprocMetastoreGRPCClient) ExportMetadata(ctx context.Context, req *m
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.ExportMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1222,6 +1405,12 @@ func (c *dataprocMetastoreGRPCClient) RestoreService(ctx context.Context, req *m
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/RestoreService")
+	}
 	opts = append((*c.CallOptions).RestoreService[0:len((*c.CallOptions).RestoreService):len((*c.CallOptions).RestoreService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1232,8 +1421,12 @@ func (c *dataprocMetastoreGRPCClient) RestoreService(ctx context.Context, req *m
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.RestoreServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1242,9 +1435,15 @@ func (c *dataprocMetastoreGRPCClient) ListBackups(ctx context.Context, req *meta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/ListBackups")
+	}
 	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*metastorepb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.Backup, string, error) {
 		resp := &metastorepb.ListBackupsResponse{}
 		if pageToken != "" {
@@ -1288,6 +1487,12 @@ func (c *dataprocMetastoreGRPCClient) GetBackup(ctx context.Context, req *metast
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/GetBackup")
+	}
 	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
 	var resp *metastorepb.Backup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1306,6 +1511,12 @@ func (c *dataprocMetastoreGRPCClient) CreateBackup(ctx context.Context, req *met
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/CreateBackup")
+	}
 	opts = append((*c.CallOptions).CreateBackup[0:len((*c.CallOptions).CreateBackup):len((*c.CallOptions).CreateBackup)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1316,8 +1527,12 @@ func (c *dataprocMetastoreGRPCClient) CreateBackup(ctx context.Context, req *met
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1326,6 +1541,12 @@ func (c *dataprocMetastoreGRPCClient) DeleteBackup(ctx context.Context, req *met
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/DeleteBackup")
+	}
 	opts = append((*c.CallOptions).DeleteBackup[0:len((*c.CallOptions).DeleteBackup):len((*c.CallOptions).DeleteBackup)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1336,8 +1557,12 @@ func (c *dataprocMetastoreGRPCClient) DeleteBackup(ctx context.Context, req *met
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1346,6 +1571,12 @@ func (c *dataprocMetastoreGRPCClient) RemoveIamPolicy(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/RemoveIamPolicy")
+	}
 	opts = append((*c.CallOptions).RemoveIamPolicy[0:len((*c.CallOptions).RemoveIamPolicy):len((*c.CallOptions).RemoveIamPolicy)], opts...)
 	var resp *metastorepb.RemoveIamPolicyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1364,6 +1595,12 @@ func (c *dataprocMetastoreGRPCClient) QueryMetadata(ctx context.Context, req *me
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/QueryMetadata")
+	}
 	opts = append((*c.CallOptions).QueryMetadata[0:len((*c.CallOptions).QueryMetadata):len((*c.CallOptions).QueryMetadata)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1374,8 +1611,12 @@ func (c *dataprocMetastoreGRPCClient) QueryMetadata(ctx context.Context, req *me
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.QueryMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &QueryMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1384,6 +1625,12 @@ func (c *dataprocMetastoreGRPCClient) MoveTableToDatabase(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/MoveTableToDatabase")
+	}
 	opts = append((*c.CallOptions).MoveTableToDatabase[0:len((*c.CallOptions).MoveTableToDatabase):len((*c.CallOptions).MoveTableToDatabase)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1394,8 +1641,12 @@ func (c *dataprocMetastoreGRPCClient) MoveTableToDatabase(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.MoveTableToDatabaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveTableToDatabaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1404,6 +1655,12 @@ func (c *dataprocMetastoreGRPCClient) AlterMetadataResourceLocation(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/AlterMetadataResourceLocation")
+	}
 	opts = append((*c.CallOptions).AlterMetadataResourceLocation[0:len((*c.CallOptions).AlterMetadataResourceLocation):len((*c.CallOptions).AlterMetadataResourceLocation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1414,8 +1671,12 @@ func (c *dataprocMetastoreGRPCClient) AlterMetadataResourceLocation(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.AlterMetadataResourceLocationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AlterMetadataResourceLocationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1424,6 +1685,9 @@ func (c *dataprocMetastoreGRPCClient) GetLocation(ctx context.Context, req *loca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1442,9 +1706,12 @@ func (c *dataprocMetastoreGRPCClient) ListLocations(ctx context.Context, req *lo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1488,6 +1755,12 @@ func (c *dataprocMetastoreGRPCClient) GetIamPolicy(ctx context.Context, req *iam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1506,6 +1779,12 @@ func (c *dataprocMetastoreGRPCClient) SetIamPolicy(ctx context.Context, req *iam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1524,6 +1803,12 @@ func (c *dataprocMetastoreGRPCClient) TestIamPermissions(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1542,6 +1827,9 @@ func (c *dataprocMetastoreGRPCClient) CancelOperation(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1556,6 +1844,9 @@ func (c *dataprocMetastoreGRPCClient) DeleteOperation(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1570,6 +1861,9 @@ func (c *dataprocMetastoreGRPCClient) GetOperation(ctx context.Context, req *lon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1588,9 +1882,12 @@ func (c *dataprocMetastoreGRPCClient) ListOperations(ctx context.Context, req *l
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1632,7 +1929,7 @@ func (c *dataprocMetastoreGRPCClient) ListOperations(ctx context.Context, req *l
 // ListServices lists services in a project and location.
 func (c *dataprocMetastoreRESTClient) ListServices(ctx context.Context, req *metastorepb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*metastorepb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.Service, string, error) {
 		resp := &metastorepb.ListServicesResponse{}
@@ -1732,6 +2029,13 @@ func (c *dataprocMetastoreRESTClient) GetService(ctx context.Context, req *metas
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/GetService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/services/*}")
+	}
 	opts = append((*c.CallOptions).GetService[0:len((*c.CallOptions).GetService):len((*c.CallOptions).GetService)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &metastorepb.Service{}
@@ -1793,6 +2097,13 @@ func (c *dataprocMetastoreRESTClient) CreateService(ctx context.Context, req *me
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/CreateService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/services")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1821,8 +2132,12 @@ func (c *dataprocMetastoreRESTClient) CreateService(ctx context.Context, req *me
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.CreateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1863,6 +2178,10 @@ func (c *dataprocMetastoreRESTClient) UpdateService(ctx context.Context, req *me
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/UpdateService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{service.name=projects/*/locations/*/services/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1891,8 +2210,12 @@ func (c *dataprocMetastoreRESTClient) UpdateService(ctx context.Context, req *me
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.UpdateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1919,6 +2242,13 @@ func (c *dataprocMetastoreRESTClient) DeleteService(ctx context.Context, req *me
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/DeleteService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/services/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1947,8 +2277,12 @@ func (c *dataprocMetastoreRESTClient) DeleteService(ctx context.Context, req *me
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.DeleteServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1956,7 +2290,7 @@ func (c *dataprocMetastoreRESTClient) DeleteService(ctx context.Context, req *me
 // ListMetadataImports lists imports in a service.
 func (c *dataprocMetastoreRESTClient) ListMetadataImports(ctx context.Context, req *metastorepb.ListMetadataImportsRequest, opts ...gax.CallOption) *MetadataImportIterator {
 	it := &MetadataImportIterator{}
-	req = proto.Clone(req).(*metastorepb.ListMetadataImportsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.MetadataImport, string, error) {
 		resp := &metastorepb.ListMetadataImportsResponse{}
@@ -2056,6 +2390,13 @@ func (c *dataprocMetastoreRESTClient) GetMetadataImport(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/GetMetadataImport")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/services/*/metadataImports/*}")
+	}
 	opts = append((*c.CallOptions).GetMetadataImport[0:len((*c.CallOptions).GetMetadataImport):len((*c.CallOptions).GetMetadataImport)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &metastorepb.MetadataImport{}
@@ -2117,6 +2458,13 @@ func (c *dataprocMetastoreRESTClient) CreateMetadataImport(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/CreateMetadataImport")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/services/*}/metadataImports")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2145,8 +2493,12 @@ func (c *dataprocMetastoreRESTClient) CreateMetadataImport(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.CreateMetadataImportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMetadataImportOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2188,6 +2540,10 @@ func (c *dataprocMetastoreRESTClient) UpdateMetadataImport(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/UpdateMetadataImport")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{metadata_import.name=projects/*/locations/*/services/*/metadataImports/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2216,8 +2572,12 @@ func (c *dataprocMetastoreRESTClient) UpdateMetadataImport(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.UpdateMetadataImportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateMetadataImportOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2247,6 +2607,13 @@ func (c *dataprocMetastoreRESTClient) ExportMetadata(ctx context.Context, req *m
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/ExportMetadata")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{service=projects/*/locations/*/services/*}:exportMetadata")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2275,8 +2642,12 @@ func (c *dataprocMetastoreRESTClient) ExportMetadata(ctx context.Context, req *m
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.ExportMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2306,6 +2677,13 @@ func (c *dataprocMetastoreRESTClient) RestoreService(ctx context.Context, req *m
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/RestoreService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{service=projects/*/locations/*/services/*}:restore")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2334,8 +2712,12 @@ func (c *dataprocMetastoreRESTClient) RestoreService(ctx context.Context, req *m
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.RestoreServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2343,7 +2725,7 @@ func (c *dataprocMetastoreRESTClient) RestoreService(ctx context.Context, req *m
 // ListBackups lists backups in a service.
 func (c *dataprocMetastoreRESTClient) ListBackups(ctx context.Context, req *metastorepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*metastorepb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.Backup, string, error) {
 		resp := &metastorepb.ListBackupsResponse{}
@@ -2443,6 +2825,13 @@ func (c *dataprocMetastoreRESTClient) GetBackup(ctx context.Context, req *metast
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/GetBackup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/services/*/backups/*}")
+	}
 	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &metastorepb.Backup{}
@@ -2504,6 +2893,13 @@ func (c *dataprocMetastoreRESTClient) CreateBackup(ctx context.Context, req *met
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/CreateBackup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/services/*}/backups")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2532,8 +2928,12 @@ func (c *dataprocMetastoreRESTClient) CreateBackup(ctx context.Context, req *met
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2560,6 +2960,13 @@ func (c *dataprocMetastoreRESTClient) DeleteBackup(ctx context.Context, req *met
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/DeleteBackup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/services/*/backups/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2588,8 +2995,12 @@ func (c *dataprocMetastoreRESTClient) DeleteBackup(ctx context.Context, req *met
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2619,6 +3030,13 @@ func (c *dataprocMetastoreRESTClient) RemoveIamPolicy(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/RemoveIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{resource=projects/*/locations/*/services/*/**}:removeIamPolicy")
+	}
 	opts = append((*c.CallOptions).RemoveIamPolicy[0:len((*c.CallOptions).RemoveIamPolicy):len((*c.CallOptions).RemoveIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &metastorepb.RemoveIamPolicyResponse{}
@@ -2675,6 +3093,13 @@ func (c *dataprocMetastoreRESTClient) QueryMetadata(ctx context.Context, req *me
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/QueryMetadata")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{service=projects/*/locations/*/services/*}:queryMetadata")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2703,8 +3128,12 @@ func (c *dataprocMetastoreRESTClient) QueryMetadata(ctx context.Context, req *me
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.QueryMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &QueryMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2734,6 +3163,13 @@ func (c *dataprocMetastoreRESTClient) MoveTableToDatabase(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/MoveTableToDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{service=projects/*/locations/*/services/*}:moveTableToDatabase")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2762,8 +3198,12 @@ func (c *dataprocMetastoreRESTClient) MoveTableToDatabase(ctx context.Context, r
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.MoveTableToDatabaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveTableToDatabaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2796,6 +3236,13 @@ func (c *dataprocMetastoreRESTClient) AlterMetadataResourceLocation(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//metastore.googleapis.com/%v", req.GetService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.metastore.v1beta.DataprocMetastore/AlterMetadataResourceLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{service=projects/*/locations/*/services/*}:alterLocation")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2824,8 +3271,12 @@ func (c *dataprocMetastoreRESTClient) AlterMetadataResourceLocation(ctx context.
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.AlterMetadataResourceLocationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AlterMetadataResourceLocationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2849,6 +3300,10 @@ func (c *dataprocMetastoreRESTClient) GetLocation(ctx context.Context, req *loca
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -2883,7 +3338,7 @@ func (c *dataprocMetastoreRESTClient) GetLocation(ctx context.Context, req *loca
 // ListLocations lists information about the supported locations for this service.
 func (c *dataprocMetastoreRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2984,6 +3439,13 @@ func (c *dataprocMetastoreRESTClient) GetIamPolicy(ctx context.Context, req *iam
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{resource=projects/*/locations/*/services/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -3044,6 +3506,13 @@ func (c *dataprocMetastoreRESTClient) SetIamPolicy(ctx context.Context, req *iam
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{resource=projects/*/locations/*/services/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -3106,6 +3575,13 @@ func (c *dataprocMetastoreRESTClient) TestIamPermissions(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{resource=projects/*/locations/*/services/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -3162,6 +3638,10 @@ func (c *dataprocMetastoreRESTClient) CancelOperation(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3197,6 +3677,10 @@ func (c *dataprocMetastoreRESTClient) DeleteOperation(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3232,6 +3716,10 @@ func (c *dataprocMetastoreRESTClient) GetOperation(ctx context.Context, req *lon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -3266,7 +3754,7 @@ func (c *dataprocMetastoreRESTClient) GetOperation(ctx context.Context, req *lon
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *dataprocMetastoreRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -3351,7 +3839,7 @@ func (c *dataprocMetastoreRESTClient) ListOperations(ctx context.Context, req *l
 // The name must be that of a previously created AlterMetadataResourceLocationOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) AlterMetadataResourceLocationOperation(name string) *AlterMetadataResourceLocationOperation {
 	return &AlterMetadataResourceLocationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.AlterMetadataResourceLocationOperation"),
 	}
 }
 
@@ -3360,7 +3848,7 @@ func (c *dataprocMetastoreGRPCClient) AlterMetadataResourceLocationOperation(nam
 func (c *dataprocMetastoreRESTClient) AlterMetadataResourceLocationOperation(name string) *AlterMetadataResourceLocationOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &AlterMetadataResourceLocationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.AlterMetadataResourceLocationOperation"),
 		pollPath: override,
 	}
 }
@@ -3369,7 +3857,7 @@ func (c *dataprocMetastoreRESTClient) AlterMetadataResourceLocationOperation(nam
 // The name must be that of a previously created CreateBackupOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.CreateBackupOperation"),
 	}
 }
 
@@ -3378,7 +3866,7 @@ func (c *dataprocMetastoreGRPCClient) CreateBackupOperation(name string) *Create
 func (c *dataprocMetastoreRESTClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.CreateBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -3387,7 +3875,7 @@ func (c *dataprocMetastoreRESTClient) CreateBackupOperation(name string) *Create
 // The name must be that of a previously created CreateMetadataImportOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) CreateMetadataImportOperation(name string) *CreateMetadataImportOperation {
 	return &CreateMetadataImportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.CreateMetadataImportOperation"),
 	}
 }
 
@@ -3396,7 +3884,7 @@ func (c *dataprocMetastoreGRPCClient) CreateMetadataImportOperation(name string)
 func (c *dataprocMetastoreRESTClient) CreateMetadataImportOperation(name string) *CreateMetadataImportOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateMetadataImportOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.CreateMetadataImportOperation"),
 		pollPath: override,
 	}
 }
@@ -3405,7 +3893,7 @@ func (c *dataprocMetastoreRESTClient) CreateMetadataImportOperation(name string)
 // The name must be that of a previously created CreateServiceOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) CreateServiceOperation(name string) *CreateServiceOperation {
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.CreateServiceOperation"),
 	}
 }
 
@@ -3414,7 +3902,7 @@ func (c *dataprocMetastoreGRPCClient) CreateServiceOperation(name string) *Creat
 func (c *dataprocMetastoreRESTClient) CreateServiceOperation(name string) *CreateServiceOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.CreateServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -3423,7 +3911,7 @@ func (c *dataprocMetastoreRESTClient) CreateServiceOperation(name string) *Creat
 // The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.DeleteBackupOperation"),
 	}
 }
 
@@ -3432,7 +3920,7 @@ func (c *dataprocMetastoreGRPCClient) DeleteBackupOperation(name string) *Delete
 func (c *dataprocMetastoreRESTClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.DeleteBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -3441,7 +3929,7 @@ func (c *dataprocMetastoreRESTClient) DeleteBackupOperation(name string) *Delete
 // The name must be that of a previously created DeleteServiceOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.DeleteServiceOperation"),
 	}
 }
 
@@ -3450,7 +3938,7 @@ func (c *dataprocMetastoreGRPCClient) DeleteServiceOperation(name string) *Delet
 func (c *dataprocMetastoreRESTClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.DeleteServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -3459,7 +3947,7 @@ func (c *dataprocMetastoreRESTClient) DeleteServiceOperation(name string) *Delet
 // The name must be that of a previously created ExportMetadataOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) ExportMetadataOperation(name string) *ExportMetadataOperation {
 	return &ExportMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.ExportMetadataOperation"),
 	}
 }
 
@@ -3468,7 +3956,7 @@ func (c *dataprocMetastoreGRPCClient) ExportMetadataOperation(name string) *Expo
 func (c *dataprocMetastoreRESTClient) ExportMetadataOperation(name string) *ExportMetadataOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ExportMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.ExportMetadataOperation"),
 		pollPath: override,
 	}
 }
@@ -3477,7 +3965,7 @@ func (c *dataprocMetastoreRESTClient) ExportMetadataOperation(name string) *Expo
 // The name must be that of a previously created MoveTableToDatabaseOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) MoveTableToDatabaseOperation(name string) *MoveTableToDatabaseOperation {
 	return &MoveTableToDatabaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.MoveTableToDatabaseOperation"),
 	}
 }
 
@@ -3486,7 +3974,7 @@ func (c *dataprocMetastoreGRPCClient) MoveTableToDatabaseOperation(name string) 
 func (c *dataprocMetastoreRESTClient) MoveTableToDatabaseOperation(name string) *MoveTableToDatabaseOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &MoveTableToDatabaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.MoveTableToDatabaseOperation"),
 		pollPath: override,
 	}
 }
@@ -3495,7 +3983,7 @@ func (c *dataprocMetastoreRESTClient) MoveTableToDatabaseOperation(name string) 
 // The name must be that of a previously created QueryMetadataOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) QueryMetadataOperation(name string) *QueryMetadataOperation {
 	return &QueryMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.QueryMetadataOperation"),
 	}
 }
 
@@ -3504,7 +3992,7 @@ func (c *dataprocMetastoreGRPCClient) QueryMetadataOperation(name string) *Query
 func (c *dataprocMetastoreRESTClient) QueryMetadataOperation(name string) *QueryMetadataOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &QueryMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.QueryMetadataOperation"),
 		pollPath: override,
 	}
 }
@@ -3513,7 +4001,7 @@ func (c *dataprocMetastoreRESTClient) QueryMetadataOperation(name string) *Query
 // The name must be that of a previously created RestoreServiceOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) RestoreServiceOperation(name string) *RestoreServiceOperation {
 	return &RestoreServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.RestoreServiceOperation"),
 	}
 }
 
@@ -3522,7 +4010,7 @@ func (c *dataprocMetastoreGRPCClient) RestoreServiceOperation(name string) *Rest
 func (c *dataprocMetastoreRESTClient) RestoreServiceOperation(name string) *RestoreServiceOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &RestoreServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.RestoreServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -3531,7 +4019,7 @@ func (c *dataprocMetastoreRESTClient) RestoreServiceOperation(name string) *Rest
 // The name must be that of a previously created UpdateMetadataImportOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) UpdateMetadataImportOperation(name string) *UpdateMetadataImportOperation {
 	return &UpdateMetadataImportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.UpdateMetadataImportOperation"),
 	}
 }
 
@@ -3540,7 +4028,7 @@ func (c *dataprocMetastoreGRPCClient) UpdateMetadataImportOperation(name string)
 func (c *dataprocMetastoreRESTClient) UpdateMetadataImportOperation(name string) *UpdateMetadataImportOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpdateMetadataImportOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.UpdateMetadataImportOperation"),
 		pollPath: override,
 	}
 }
@@ -3549,7 +4037,7 @@ func (c *dataprocMetastoreRESTClient) UpdateMetadataImportOperation(name string)
 // The name must be that of a previously created UpdateServiceOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) UpdateServiceOperation(name string) *UpdateServiceOperation {
 	return &UpdateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.UpdateServiceOperation"),
 	}
 }
 
@@ -3558,7 +4046,7 @@ func (c *dataprocMetastoreGRPCClient) UpdateServiceOperation(name string) *Updat
 func (c *dataprocMetastoreRESTClient) UpdateServiceOperation(name string) *UpdateServiceOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpdateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.UpdateServiceOperation"),
 		pollPath: override,
 	}
 }

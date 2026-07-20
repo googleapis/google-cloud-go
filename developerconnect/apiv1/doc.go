@@ -17,9 +17,7 @@
 // Package developerconnect is an auto-generated package for the
 // Developer Connect API.
 //
-// Connect third-party source code management to Google
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
+// # Connect third-party source code management to Google
 //
 // # General documentation
 //

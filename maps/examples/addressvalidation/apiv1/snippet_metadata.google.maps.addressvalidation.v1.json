@@ -1,0 +1,107 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.maps.addressvalidation.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/maps/addressvalidation/apiv1",
+    "version": "1.37.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.addressvalidation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.addressvalidation.v1.Client.ProvideValidationFeedback",
+        "method": {
+          "fullName": "google.maps.addressvalidation.v1.AddressValidation.ProvideValidationFeedback",
+          "service": {
+            "fullName": "google.maps.addressvalidation.v1.AddressValidation",
+            "shortName": "AddressValidation"
+          },
+          "shortName": "ProvideValidationFeedback"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "addressvalidationpb.ProvideValidationFeedbackRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*addressvalidationpb.ProvideValidationFeedbackResponse",
+        "shortName": "ProvideValidationFeedback"
+      },
+      "description": "ProvideValidationFeedback feedback about the outcome of the sequence of validation attempts. This\nshould be the last call made after a sequence of validation calls for the\nsame address, and should be called once the transaction is concluded. This\nshould only be sent once for the sequence of `ValidateAddress` requests\nneeded to validate an address fully.",
+      "file": "Client/ProvideValidationFeedback/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "addressvalidation_v1_generated_AddressValidation_ProvideValidationFeedback_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "addressvalidation ProvideValidationFeedback Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.addressvalidation.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.addressvalidation.v1.Client.ValidateAddress",
+        "method": {
+          "fullName": "google.maps.addressvalidation.v1.AddressValidation.ValidateAddress",
+          "service": {
+            "fullName": "google.maps.addressvalidation.v1.AddressValidation",
+            "shortName": "AddressValidation"
+          },
+          "shortName": "ValidateAddress"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "addressvalidationpb.ValidateAddressRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*addressvalidationpb.ValidateAddressResponse",
+        "shortName": "ValidateAddress"
+      },
+      "description": "ValidateAddress validates an address.",
+      "file": "Client/ValidateAddress/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "addressvalidation_v1_generated_AddressValidation_ValidateAddress_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "addressvalidation ValidateAddress Sample"
+    }
+  ]
+}

@@ -1,5 +1,25 @@
 # Changes
 
+## [1.53.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.53.0) (2026-06-04)
+
+### Features
+
+* update API sources and regenerate (#14701) ([a9b7921](https://github.com/googleapis/google-cloud-go/commit/a9b7921551e9c1535496731da53e880e9e364efa))
+
+## [1.52.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.52.0) (2026-05-14)
+
+### Features
+
+* update API sources and regenerate (#14581) ([df96b2e](https://github.com/googleapis/google-cloud-go/commit/df96b2ecb3930d6fb2e6e542e11521ee8e9d5935))
+
+## [1.51.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.51.0) (2026-05-07)
+
+## [1.50.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.50.0) (2026-04-30)
+
+## [1.49.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.49.0) (2026-04-13)
+
+## [1.48.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.48.0) (2026-04-09)
+
 ## [1.47.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.47.0) (2026-04-02)
 
 ## [1.46.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.46.0) (2026-01-29)

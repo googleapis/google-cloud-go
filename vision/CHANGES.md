@@ -1,5 +1,20 @@
 # Changes
 
+## [2.15.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.14.0...vision/v2.15.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [2.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/vision%2Fv2.14.0) (2026-05-07)
+
+## [2.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/vision%2Fv2.13.0) (2026-04-30)
+
+## [2.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/vision%2Fv2.12.0) (2026-04-13)
+
+## [2.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/vision%2Fv2.11.0) (2026-04-09)
+
 ## [2.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/vision%2Fv2.10.0) (2026-04-02)
 
 ## [2.9.6](https://github.com/googleapis/google-cloud-go/compare/vision/v2.9.5...vision/v2.9.6) (2025-10-07)

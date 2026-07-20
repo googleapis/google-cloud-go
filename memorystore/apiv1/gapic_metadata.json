@@ -7,7 +7,7 @@
   "services": {
     "Memorystore": {
       "clients": {
-        "rest": {
+        "grpc": {
           "libraryClient": "Client",
           "rpcs": {
             "BackupInstance": {
@@ -43,6 +43,11 @@
             "ExportBackup": {
               "methods": [
                 "ExportBackup"
+              ]
+            },
+            "FinishMigration": {
+              "methods": [
+                "FinishMigration"
               ]
             },
             "GetBackup": {
@@ -108,6 +113,131 @@
             "RescheduleMaintenance": {
               "methods": [
                 "RescheduleMaintenance"
+              ]
+            },
+            "StartMigration": {
+              "methods": [
+                "StartMigration"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BackupInstance": {
+              "methods": [
+                "BackupInstance"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExportBackup": {
+              "methods": [
+                "ExportBackup"
+              ]
+            },
+            "FinishMigration": {
+              "methods": [
+                "FinishMigration"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupCollection": {
+              "methods": [
+                "GetBackupCollection"
+              ]
+            },
+            "GetCertificateAuthority": {
+              "methods": [
+                "GetCertificateAuthority"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSharedRegionalCertificateAuthority": {
+              "methods": [
+                "GetSharedRegionalCertificateAuthority"
+              ]
+            },
+            "ListBackupCollections": {
+              "methods": [
+                "ListBackupCollections"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RescheduleMaintenance": {
+              "methods": [
+                "RescheduleMaintenance"
+              ]
+            },
+            "StartMigration": {
+              "methods": [
+                "StartMigration"
               ]
             },
             "UpdateInstance": {

@@ -1,5 +1,20 @@
 # Changes
 
+## [0.36.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.35.0...analytics/v0.36.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
+## [0.35.0](https://github.com/googleapis/google-cloud-go/releases/tag/analytics%2Fv0.35.0) (2026-05-07)
+
+## [0.34.0](https://github.com/googleapis/google-cloud-go/releases/tag/analytics%2Fv0.34.0) (2026-04-30)
+
+## [0.33.0](https://github.com/googleapis/google-cloud-go/releases/tag/analytics%2Fv0.33.0) (2026-04-13)
+
+## [0.32.0](https://github.com/googleapis/google-cloud-go/releases/tag/analytics%2Fv0.32.0) (2026-04-09)
+
 ## [0.31.0](https://github.com/googleapis/google-cloud-go/releases/tag/analytics%2Fv0.31.0) (2026-04-02)
 
 ## [0.30.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.30.0...analytics/v0.30.1) (2025-10-07)

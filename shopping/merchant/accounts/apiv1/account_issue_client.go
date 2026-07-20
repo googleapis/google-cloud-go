@@ -27,6 +27,7 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -115,7 +116,7 @@ type AccountIssueClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *AccountIssueClient) Close() error {
 	return c.internalClient.Close()
@@ -173,6 +174,16 @@ type accountIssueGRPCClient struct {
 // Service to support AccountIssueService API.
 func NewAccountIssueClient(ctx context.Context, opts ...option.ClientOption) (*AccountIssueClient, error) {
 	clientOpts := defaultAccountIssueGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newAccountIssueClientHook != nil {
 		hookOpts, err := newAccountIssueClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -194,6 +205,20 @@ func NewAccountIssueClient(ctx context.Context, opts ...option.ClientOption) (*A
 		logger:             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAccountIssues = append(client.CallOptions.ListAccountIssues, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -219,7 +244,7 @@ func (c *accountIssueGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *accountIssueGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -247,6 +272,16 @@ type accountIssueRESTClient struct {
 // Service to support AccountIssueService API.
 func NewAccountIssueRESTClient(ctx context.Context, opts ...option.ClientOption) (*AccountIssueClient, error) {
 	clientOpts := append(defaultAccountIssueRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -260,6 +295,21 @@ func NewAccountIssueRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAccountIssues = append(callOpts.ListAccountIssues, gax.WithClientMetrics(metrics))
+	}
 
 	return &AccountIssueClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -287,7 +337,7 @@ func (c *accountIssueRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *accountIssueRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -306,9 +356,15 @@ func (c *accountIssueGRPCClient) ListAccountIssues(ctx context.Context, req *acc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.AccountIssueService/ListAccountIssues")
+	}
 	opts = append((*c.CallOptions).ListAccountIssues[0:len((*c.CallOptions).ListAccountIssues):len((*c.CallOptions).ListAccountIssues)], opts...)
 	it := &AccountIssueIterator{}
-	req = proto.Clone(req).(*accountspb.ListAccountIssuesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.AccountIssue, string, error) {
 		resp := &accountspb.ListAccountIssuesResponse{}
 		if pageToken != "" {
@@ -357,7 +413,7 @@ func (c *accountIssueGRPCClient) ListAccountIssues(ctx context.Context, req *acc
 // accounts.issues.list for each sub-account individually.
 func (c *accountIssueRESTClient) ListAccountIssues(ctx context.Context, req *accountspb.ListAccountIssuesRequest, opts ...gax.CallOption) *AccountIssueIterator {
 	it := &AccountIssueIterator{}
-	req = proto.Clone(req).(*accountspb.ListAccountIssuesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.AccountIssue, string, error) {
 		resp := &accountspb.ListAccountIssuesResponse{}

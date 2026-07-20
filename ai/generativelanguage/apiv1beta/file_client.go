@@ -28,6 +28,7 @@ import (
 	generativelanguagepb "cloud.google.com/go/ai/generativelanguage/apiv1beta/generativelanguagepb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -126,7 +127,7 @@ type FileClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *FileClient) Close() error {
 	return c.internalClient.Close()
@@ -137,6 +138,16 @@ func (c *FileClient) Close() error {
 // use by Google-written clients.
 func (c *FileClient) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// SetGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+//
+// SetGoogleClientInfo is not concurrency-safe and should only be invoked
+// sequentially before concurrent operations begin.
+func (c *FileClient) SetGoogleClientInfo(keyval ...string) {
+	c.setGoogleClientInfo(keyval...)
 }
 
 // Connection returns a connection to the API service.
@@ -219,6 +230,16 @@ type fileGRPCClient struct {
 // An API for uploading and managing files.
 func NewFileClient(ctx context.Context, opts ...option.ClientOption) (*FileClient, error) {
 	clientOpts := defaultFileGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "generativelanguage",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "generativelanguage.googleapis.com",
+		}))
+	}
 	if newFileClientHook != nil {
 		hookOpts, err := newFileClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -241,6 +262,28 @@ func NewFileClient(ctx context.Context, opts ...option.ClientOption) (*FileClien
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateFile = append(client.CallOptions.CreateFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListFiles = append(client.CallOptions.ListFiles, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFile = append(client.CallOptions.GetFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFile = append(client.CallOptions.DeleteFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.DownloadFile = append(client.CallOptions.DownloadFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -266,7 +309,7 @@ func (c *fileGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *fileGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -294,6 +337,16 @@ type fileRESTClient struct {
 // An API for uploading and managing files.
 func NewFileRESTClient(ctx context.Context, opts ...option.ClientOption) (*FileClient, error) {
 	clientOpts := append(defaultFileRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "generativelanguage",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "generativelanguage.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -307,6 +360,29 @@ func NewFileRESTClient(ctx context.Context, opts ...option.ClientOption) (*FileC
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateFile = append(callOpts.CreateFile, gax.WithClientMetrics(metrics))
+		callOpts.ListFiles = append(callOpts.ListFiles, gax.WithClientMetrics(metrics))
+		callOpts.GetFile = append(callOpts.GetFile, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFile = append(callOpts.DeleteFile, gax.WithClientMetrics(metrics))
+		callOpts.DownloadFile = append(callOpts.DownloadFile, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	return &FileClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -334,7 +410,7 @@ func (c *fileRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *fileRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -350,6 +426,9 @@ func (c *fileRESTClient) Connection() *grpc.ClientConn {
 }
 func (c *fileGRPCClient) CreateFile(ctx context.Context, req *generativelanguagepb.CreateFileRequest, opts ...gax.CallOption) (*generativelanguagepb.CreateFileResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/CreateFile")
+	}
 	opts = append((*c.CallOptions).CreateFile[0:len((*c.CallOptions).CreateFile):len((*c.CallOptions).CreateFile)], opts...)
 	var resp *generativelanguagepb.CreateFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -365,9 +444,12 @@ func (c *fileGRPCClient) CreateFile(ctx context.Context, req *generativelanguage
 
 func (c *fileGRPCClient) ListFiles(ctx context.Context, req *generativelanguagepb.ListFilesRequest, opts ...gax.CallOption) *FileIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/ListFiles")
+	}
 	opts = append((*c.CallOptions).ListFiles[0:len((*c.CallOptions).ListFiles):len((*c.CallOptions).ListFiles)], opts...)
 	it := &FileIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListFilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.File, string, error) {
 		resp := &generativelanguagepb.ListFilesResponse{}
 		if pageToken != "" {
@@ -411,6 +493,12 @@ func (c *fileGRPCClient) GetFile(ctx context.Context, req *generativelanguagepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/GetFile")
+	}
 	opts = append((*c.CallOptions).GetFile[0:len((*c.CallOptions).GetFile):len((*c.CallOptions).GetFile)], opts...)
 	var resp *generativelanguagepb.File
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -429,6 +517,12 @@ func (c *fileGRPCClient) DeleteFile(ctx context.Context, req *generativelanguage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/DeleteFile")
+	}
 	opts = append((*c.CallOptions).DeleteFile[0:len((*c.CallOptions).DeleteFile):len((*c.CallOptions).DeleteFile)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -443,6 +537,12 @@ func (c *fileGRPCClient) DownloadFile(ctx context.Context, req *generativelangua
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/DownloadFile")
+	}
 	opts = append((*c.CallOptions).DownloadFile[0:len((*c.CallOptions).DownloadFile):len((*c.CallOptions).DownloadFile)], opts...)
 	var resp *generativelanguagepb.DownloadFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -461,6 +561,9 @@ func (c *fileGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -475,6 +578,9 @@ func (c *fileGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -489,6 +595,9 @@ func (c *fileGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -507,9 +616,12 @@ func (c *fileGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -570,6 +682,10 @@ func (c *fileRESTClient) CreateFile(ctx context.Context, req *generativelanguage
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/CreateFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/files")
+	}
 	opts = append((*c.CallOptions).CreateFile[0:len((*c.CallOptions).CreateFile):len((*c.CallOptions).CreateFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.CreateFileResponse{}
@@ -604,7 +720,7 @@ func (c *fileRESTClient) CreateFile(ctx context.Context, req *generativelanguage
 // ListFiles lists the metadata for Files owned by the requesting project.
 func (c *fileRESTClient) ListFiles(ctx context.Context, req *generativelanguagepb.ListFilesRequest, opts ...gax.CallOption) *FileIterator {
 	it := &FileIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListFilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.File, string, error) {
 		resp := &generativelanguagepb.ListFilesResponse{}
@@ -698,6 +814,13 @@ func (c *fileRESTClient) GetFile(ctx context.Context, req *generativelanguagepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/GetFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=files/*}")
+	}
 	opts = append((*c.CallOptions).GetFile[0:len((*c.CallOptions).GetFile):len((*c.CallOptions).GetFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.File{}
@@ -748,6 +871,13 @@ func (c *fileRESTClient) DeleteFile(ctx context.Context, req *generativelanguage
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/DeleteFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=files/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -783,6 +913,13 @@ func (c *fileRESTClient) DownloadFile(ctx context.Context, req *generativelangua
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.FileService/DownloadFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=files/*}:download")
+	}
 	opts = append((*c.CallOptions).DownloadFile[0:len((*c.CallOptions).DownloadFile):len((*c.CallOptions).DownloadFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.DownloadFileResponse{}
@@ -833,6 +970,10 @@ func (c *fileRESTClient) CancelOperation(ctx context.Context, req *longrunningpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=batches/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -868,6 +1009,10 @@ func (c *fileRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=batches/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -903,6 +1048,10 @@ func (c *fileRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=tunedModels/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -937,7 +1086,7 @@ func (c *fileRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *fileRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

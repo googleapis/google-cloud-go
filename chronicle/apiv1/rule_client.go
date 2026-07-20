@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -51,6 +53,7 @@ type RuleCallOptions struct {
 	ListRules            []gax.CallOption
 	UpdateRule           []gax.CallOption
 	DeleteRule           []gax.CallOption
+	VerifyRuleText       []gax.CallOption
 	ListRuleRevisions    []gax.CallOption
 	CreateRetrohunt      []gax.CallOption
 	GetRetrohunt         []gax.CallOption
@@ -113,6 +116,18 @@ func defaultRuleCallOptions() *RuleCallOptions {
 		},
 		DeleteRule: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		VerifyRuleText: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		ListRuleRevisions: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -220,6 +235,17 @@ func defaultRuleRESTCallOptions() *RuleCallOptions {
 		DeleteRule: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		VerifyRuleText: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ListRuleRevisions: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -298,6 +324,7 @@ type internalRuleClient interface {
 	ListRules(context.Context, *chroniclepb.ListRulesRequest, ...gax.CallOption) *RuleIterator
 	UpdateRule(context.Context, *chroniclepb.UpdateRuleRequest, ...gax.CallOption) (*chroniclepb.Rule, error)
 	DeleteRule(context.Context, *chroniclepb.DeleteRuleRequest, ...gax.CallOption) error
+	VerifyRuleText(context.Context, *chroniclepb.VerifyRuleTextRequest, ...gax.CallOption) (*chroniclepb.VerifyRuleTextResponse, error)
 	ListRuleRevisions(context.Context, *chroniclepb.ListRuleRevisionsRequest, ...gax.CallOption) *RuleIterator
 	CreateRetrohunt(context.Context, *chroniclepb.CreateRetrohuntRequest, ...gax.CallOption) (*CreateRetrohuntOperation, error)
 	CreateRetrohuntOperation(name string) *CreateRetrohuntOperation
@@ -331,7 +358,7 @@ type RuleClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RuleClient) Close() error {
 	return c.internalClient.Close()
@@ -375,6 +402,11 @@ func (c *RuleClient) UpdateRule(ctx context.Context, req *chroniclepb.UpdateRule
 // DeleteRule deletes a Rule.
 func (c *RuleClient) DeleteRule(ctx context.Context, req *chroniclepb.DeleteRuleRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteRule(ctx, req, opts...)
+}
+
+// VerifyRuleText verifies the given rule text.
+func (c *RuleClient) VerifyRuleText(ctx context.Context, req *chroniclepb.VerifyRuleTextRequest, opts ...gax.CallOption) (*chroniclepb.VerifyRuleTextResponse, error) {
+	return c.internalClient.VerifyRuleText(ctx, req, opts...)
 }
 
 // ListRuleRevisions lists all revisions of the rule.
@@ -473,6 +505,16 @@ type ruleGRPCClient struct {
 // RuleService provides interface for user-created rules.
 func NewRuleClient(ctx context.Context, opts ...option.ClientOption) (*RuleClient, error) {
 	clientOpts := defaultRuleGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "chronicle",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/chronicle/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "chronicle.googleapis.com",
+		}))
+	}
 	if newRuleClientHook != nil {
 		hookOpts, err := newRuleClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -495,6 +537,36 @@ func NewRuleClient(ctx context.Context, opts ...option.ClientOption) (*RuleClien
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateRule = append(client.CallOptions.CreateRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRule = append(client.CallOptions.GetRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRules = append(client.CallOptions.ListRules, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRule = append(client.CallOptions.UpdateRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRule = append(client.CallOptions.DeleteRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.VerifyRuleText = append(client.CallOptions.VerifyRuleText, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRuleRevisions = append(client.CallOptions.ListRuleRevisions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRetrohunt = append(client.CallOptions.CreateRetrohunt, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRetrohunt = append(client.CallOptions.GetRetrohunt, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRetrohunts = append(client.CallOptions.ListRetrohunts, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRuleDeployment = append(client.CallOptions.GetRuleDeployment, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRuleDeployments = append(client.CallOptions.ListRuleDeployments, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRuleDeployment = append(client.CallOptions.UpdateRuleDeployment, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -531,7 +603,7 @@ func (c *ruleGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ruleGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -564,6 +636,16 @@ type ruleRESTClient struct {
 // RuleService provides interface for user-created rules.
 func NewRuleRESTClient(ctx context.Context, opts ...option.ClientOption) (*RuleClient, error) {
 	clientOpts := append(defaultRuleRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "chronicle",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/chronicle/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "chronicle.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -577,6 +659,37 @@ func NewRuleRESTClient(ctx context.Context, opts ...option.ClientOption) (*RuleC
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateRule = append(callOpts.CreateRule, gax.WithClientMetrics(metrics))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientMetrics(metrics))
+		callOpts.ListRules = append(callOpts.ListRules, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRule = append(callOpts.UpdateRule, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRule = append(callOpts.DeleteRule, gax.WithClientMetrics(metrics))
+		callOpts.VerifyRuleText = append(callOpts.VerifyRuleText, gax.WithClientMetrics(metrics))
+		callOpts.ListRuleRevisions = append(callOpts.ListRuleRevisions, gax.WithClientMetrics(metrics))
+		callOpts.CreateRetrohunt = append(callOpts.CreateRetrohunt, gax.WithClientMetrics(metrics))
+		callOpts.GetRetrohunt = append(callOpts.GetRetrohunt, gax.WithClientMetrics(metrics))
+		callOpts.ListRetrohunts = append(callOpts.ListRetrohunts, gax.WithClientMetrics(metrics))
+		callOpts.GetRuleDeployment = append(callOpts.GetRuleDeployment, gax.WithClientMetrics(metrics))
+		callOpts.ListRuleDeployments = append(callOpts.ListRuleDeployments, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRuleDeployment = append(callOpts.UpdateRuleDeployment, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -614,7 +727,7 @@ func (c *ruleRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ruleRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -633,6 +746,12 @@ func (c *ruleGRPCClient) CreateRule(ctx context.Context, req *chroniclepb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/CreateRule")
+	}
 	opts = append((*c.CallOptions).CreateRule[0:len((*c.CallOptions).CreateRule):len((*c.CallOptions).CreateRule)], opts...)
 	var resp *chroniclepb.Rule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -651,6 +770,12 @@ func (c *ruleGRPCClient) GetRule(ctx context.Context, req *chroniclepb.GetRuleRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/GetRule")
+	}
 	opts = append((*c.CallOptions).GetRule[0:len((*c.CallOptions).GetRule):len((*c.CallOptions).GetRule)], opts...)
 	var resp *chroniclepb.Rule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -669,9 +794,15 @@ func (c *ruleGRPCClient) ListRules(ctx context.Context, req *chroniclepb.ListRul
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/ListRules")
+	}
 	opts = append((*c.CallOptions).ListRules[0:len((*c.CallOptions).ListRules):len((*c.CallOptions).ListRules)], opts...)
 	it := &RuleIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.Rule, string, error) {
 		resp := &chroniclepb.ListRulesResponse{}
 		if pageToken != "" {
@@ -715,6 +846,9 @@ func (c *ruleGRPCClient) UpdateRule(ctx context.Context, req *chroniclepb.Update
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/UpdateRule")
+	}
 	opts = append((*c.CallOptions).UpdateRule[0:len((*c.CallOptions).UpdateRule):len((*c.CallOptions).UpdateRule)], opts...)
 	var resp *chroniclepb.Rule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -733,6 +867,12 @@ func (c *ruleGRPCClient) DeleteRule(ctx context.Context, req *chroniclepb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/DeleteRule")
+	}
 	opts = append((*c.CallOptions).DeleteRule[0:len((*c.CallOptions).DeleteRule):len((*c.CallOptions).DeleteRule)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -742,14 +882,44 @@ func (c *ruleGRPCClient) DeleteRule(ctx context.Context, req *chroniclepb.Delete
 	return err
 }
 
+func (c *ruleGRPCClient) VerifyRuleText(ctx context.Context, req *chroniclepb.VerifyRuleTextRequest, opts ...gax.CallOption) (*chroniclepb.VerifyRuleTextResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetInstance()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/VerifyRuleText")
+	}
+	opts = append((*c.CallOptions).VerifyRuleText[0:len((*c.CallOptions).VerifyRuleText):len((*c.CallOptions).VerifyRuleText)], opts...)
+	var resp *chroniclepb.VerifyRuleTextResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.ruleClient.VerifyRuleText, req, settings.GRPC, c.logger, "VerifyRuleText")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *ruleGRPCClient) ListRuleRevisions(ctx context.Context, req *chroniclepb.ListRuleRevisionsRequest, opts ...gax.CallOption) *RuleIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/ListRuleRevisions")
+	}
 	opts = append((*c.CallOptions).ListRuleRevisions[0:len((*c.CallOptions).ListRuleRevisions):len((*c.CallOptions).ListRuleRevisions)], opts...)
 	it := &RuleIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRuleRevisionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.Rule, string, error) {
 		resp := &chroniclepb.ListRuleRevisionsResponse{}
 		if pageToken != "" {
@@ -793,6 +963,12 @@ func (c *ruleGRPCClient) CreateRetrohunt(ctx context.Context, req *chroniclepb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/CreateRetrohunt")
+	}
 	opts = append((*c.CallOptions).CreateRetrohunt[0:len((*c.CallOptions).CreateRetrohunt):len((*c.CallOptions).CreateRetrohunt)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -803,8 +979,12 @@ func (c *ruleGRPCClient) CreateRetrohunt(ctx context.Context, req *chroniclepb.C
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*chronicle.CreateRetrohuntOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRetrohuntOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -813,6 +993,12 @@ func (c *ruleGRPCClient) GetRetrohunt(ctx context.Context, req *chroniclepb.GetR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/GetRetrohunt")
+	}
 	opts = append((*c.CallOptions).GetRetrohunt[0:len((*c.CallOptions).GetRetrohunt):len((*c.CallOptions).GetRetrohunt)], opts...)
 	var resp *chroniclepb.Retrohunt
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -831,9 +1017,15 @@ func (c *ruleGRPCClient) ListRetrohunts(ctx context.Context, req *chroniclepb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/ListRetrohunts")
+	}
 	opts = append((*c.CallOptions).ListRetrohunts[0:len((*c.CallOptions).ListRetrohunts):len((*c.CallOptions).ListRetrohunts)], opts...)
 	it := &RetrohuntIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRetrohuntsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.Retrohunt, string, error) {
 		resp := &chroniclepb.ListRetrohuntsResponse{}
 		if pageToken != "" {
@@ -877,6 +1069,12 @@ func (c *ruleGRPCClient) GetRuleDeployment(ctx context.Context, req *chroniclepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/GetRuleDeployment")
+	}
 	opts = append((*c.CallOptions).GetRuleDeployment[0:len((*c.CallOptions).GetRuleDeployment):len((*c.CallOptions).GetRuleDeployment)], opts...)
 	var resp *chroniclepb.RuleDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -895,9 +1093,15 @@ func (c *ruleGRPCClient) ListRuleDeployments(ctx context.Context, req *chronicle
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/ListRuleDeployments")
+	}
 	opts = append((*c.CallOptions).ListRuleDeployments[0:len((*c.CallOptions).ListRuleDeployments):len((*c.CallOptions).ListRuleDeployments)], opts...)
 	it := &RuleDeploymentIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRuleDeploymentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.RuleDeployment, string, error) {
 		resp := &chroniclepb.ListRuleDeploymentsResponse{}
 		if pageToken != "" {
@@ -941,6 +1145,9 @@ func (c *ruleGRPCClient) UpdateRuleDeployment(ctx context.Context, req *chronicl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/UpdateRuleDeployment")
+	}
 	opts = append((*c.CallOptions).UpdateRuleDeployment[0:len((*c.CallOptions).UpdateRuleDeployment):len((*c.CallOptions).UpdateRuleDeployment)], opts...)
 	var resp *chroniclepb.RuleDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -959,6 +1166,9 @@ func (c *ruleGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -973,6 +1183,9 @@ func (c *ruleGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -987,6 +1200,9 @@ func (c *ruleGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1005,9 +1221,12 @@ func (c *ruleGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1072,6 +1291,13 @@ func (c *ruleRESTClient) CreateRule(ctx context.Context, req *chroniclepb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/CreateRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/rules")
+	}
 	opts = append((*c.CallOptions).CreateRule[0:len((*c.CallOptions).CreateRule):len((*c.CallOptions).CreateRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chroniclepb.Rule{}
@@ -1125,6 +1351,13 @@ func (c *ruleRESTClient) GetRule(ctx context.Context, req *chroniclepb.GetRuleRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/GetRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/rules/*}")
+	}
 	opts = append((*c.CallOptions).GetRule[0:len((*c.CallOptions).GetRule):len((*c.CallOptions).GetRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chroniclepb.Rule{}
@@ -1159,7 +1392,7 @@ func (c *ruleRESTClient) GetRule(ctx context.Context, req *chroniclepb.GetRuleRe
 // ListRules lists Rules.
 func (c *ruleRESTClient) ListRules(ctx context.Context, req *chroniclepb.ListRulesRequest, opts ...gax.CallOption) *RuleIterator {
 	it := &RuleIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.Rule, string, error) {
 		resp := &chroniclepb.ListRulesResponse{}
@@ -1273,6 +1506,10 @@ func (c *ruleRESTClient) UpdateRule(ctx context.Context, req *chroniclepb.Update
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/UpdateRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{rule.name=projects/*/locations/*/instances/*/rules/*}")
+	}
 	opts = append((*c.CallOptions).UpdateRule[0:len((*c.CallOptions).UpdateRule):len((*c.CallOptions).UpdateRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chroniclepb.Rule{}
@@ -1326,6 +1563,13 @@ func (c *ruleRESTClient) DeleteRule(ctx context.Context, req *chroniclepb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/DeleteRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/rules/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1342,10 +1586,73 @@ func (c *ruleRESTClient) DeleteRule(ctx context.Context, req *chroniclepb.Delete
 	}, opts...)
 }
 
+// VerifyRuleText verifies the given rule text.
+func (c *ruleRESTClient) VerifyRuleText(ctx context.Context, req *chroniclepb.VerifyRuleTextRequest, opts ...gax.CallOption) (*chroniclepb.VerifyRuleTextResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:verifyRuleText", req.GetInstance())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetInstance()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/VerifyRuleText")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{instance=projects/*/locations/*/instances/*}:verifyRuleText")
+	}
+	opts = append((*c.CallOptions).VerifyRuleText[0:len((*c.CallOptions).VerifyRuleText):len((*c.CallOptions).VerifyRuleText)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chroniclepb.VerifyRuleTextResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "VerifyRuleText")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // ListRuleRevisions lists all revisions of the rule.
 func (c *ruleRESTClient) ListRuleRevisions(ctx context.Context, req *chroniclepb.ListRuleRevisionsRequest, opts ...gax.CallOption) *RuleIterator {
 	it := &RuleIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRuleRevisionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.Rule, string, error) {
 		resp := &chroniclepb.ListRuleRevisionsResponse{}
@@ -1449,6 +1756,13 @@ func (c *ruleRESTClient) CreateRetrohunt(ctx context.Context, req *chroniclepb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/CreateRetrohunt")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*/rules/*}/retrohunts")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1477,8 +1791,12 @@ func (c *ruleRESTClient) CreateRetrohunt(ctx context.Context, req *chroniclepb.C
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*chronicle.CreateRetrohuntOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRetrohuntOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1502,6 +1820,13 @@ func (c *ruleRESTClient) GetRetrohunt(ctx context.Context, req *chroniclepb.GetR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/GetRetrohunt")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/rules/*/retrohunts/*}")
+	}
 	opts = append((*c.CallOptions).GetRetrohunt[0:len((*c.CallOptions).GetRetrohunt):len((*c.CallOptions).GetRetrohunt)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chroniclepb.Retrohunt{}
@@ -1536,7 +1861,7 @@ func (c *ruleRESTClient) GetRetrohunt(ctx context.Context, req *chroniclepb.GetR
 // ListRetrohunts list Retrohunts.
 func (c *ruleRESTClient) ListRetrohunts(ctx context.Context, req *chroniclepb.ListRetrohuntsRequest, opts ...gax.CallOption) *RetrohuntIterator {
 	it := &RetrohuntIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRetrohuntsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.Retrohunt, string, error) {
 		resp := &chroniclepb.ListRetrohuntsResponse{}
@@ -1633,6 +1958,13 @@ func (c *ruleRESTClient) GetRuleDeployment(ctx context.Context, req *chroniclepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/GetRuleDeployment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/rules/*/deployment}")
+	}
 	opts = append((*c.CallOptions).GetRuleDeployment[0:len((*c.CallOptions).GetRuleDeployment):len((*c.CallOptions).GetRuleDeployment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chroniclepb.RuleDeployment{}
@@ -1667,7 +1999,7 @@ func (c *ruleRESTClient) GetRuleDeployment(ctx context.Context, req *chroniclepb
 // ListRuleDeployments lists RuleDeployments across all Rules.
 func (c *ruleRESTClient) ListRuleDeployments(ctx context.Context, req *chroniclepb.ListRuleDeploymentsRequest, opts ...gax.CallOption) *RuleDeploymentIterator {
 	it := &RuleDeploymentIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRuleDeploymentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.RuleDeployment, string, error) {
 		resp := &chroniclepb.ListRuleDeploymentsResponse{}
@@ -1781,6 +2113,10 @@ func (c *ruleRESTClient) UpdateRuleDeployment(ctx context.Context, req *chronicl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/UpdateRuleDeployment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{rule_deployment.name=projects/*/locations/*/instances/*/rules/*/deployment}")
+	}
 	opts = append((*c.CallOptions).UpdateRuleDeployment[0:len((*c.CallOptions).UpdateRuleDeployment):len((*c.CallOptions).UpdateRuleDeployment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &chroniclepb.RuleDeployment{}
@@ -1837,6 +2173,10 @@ func (c *ruleRESTClient) CancelOperation(ctx context.Context, req *longrunningpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1872,6 +2212,10 @@ func (c *ruleRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1907,6 +2251,10 @@ func (c *ruleRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1941,7 +2289,7 @@ func (c *ruleRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *ruleRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -2026,7 +2374,7 @@ func (c *ruleRESTClient) ListOperations(ctx context.Context, req *longrunningpb.
 // The name must be that of a previously created CreateRetrohuntOperation, possibly from a different process.
 func (c *ruleGRPCClient) CreateRetrohuntOperation(name string) *CreateRetrohuntOperation {
 	return &CreateRetrohuntOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*chronicle.CreateRetrohuntOperation"),
 	}
 }
 
@@ -2035,7 +2383,7 @@ func (c *ruleGRPCClient) CreateRetrohuntOperation(name string) *CreateRetrohuntO
 func (c *ruleRESTClient) CreateRetrohuntOperation(name string) *CreateRetrohuntOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateRetrohuntOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*chronicle.CreateRetrohuntOperation"),
 		pollPath: override,
 	}
 }

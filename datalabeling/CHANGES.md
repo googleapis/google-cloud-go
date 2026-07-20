@@ -1,5 +1,20 @@
 # Changes
 
+## [0.15.0](https://github.com/googleapis/google-cloud-go/compare/datalabeling/v0.14.0...datalabeling/v0.15.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [0.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/datalabeling%2Fv0.14.0) (2026-05-07)
+
+## [0.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/datalabeling%2Fv0.13.0) (2026-04-30)
+
+## [0.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/datalabeling%2Fv0.12.0) (2026-04-13)
+
+## [0.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/datalabeling%2Fv0.11.0) (2026-04-09)
+
 ## [0.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/datalabeling%2Fv0.10.0) (2026-04-02)
 
 ## [0.9.7](https://github.com/googleapis/google-cloud-go/compare/datalabeling/v0.9.6...datalabeling/v0.9.7) (2025-09-16)

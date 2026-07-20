@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -49,6 +50,7 @@ type RegionSnapshotsCallOptions struct {
 	SetIamPolicy       []gax.CallOption
 	SetLabels          []gax.CallOption
 	TestIamPermissions []gax.CallOption
+	UpdateKmsKey       []gax.CallOption
 }
 
 func defaultRegionSnapshotsRESTCallOptions() *RegionSnapshotsCallOptions {
@@ -104,6 +106,9 @@ func defaultRegionSnapshotsRESTCallOptions() *RegionSnapshotsCallOptions {
 		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		UpdateKmsKey: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -120,6 +125,7 @@ type internalRegionSnapshotsClient interface {
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyRegionSnapshotRequest, ...gax.CallOption) (*computepb.Policy, error)
 	SetLabels(context.Context, *computepb.SetLabelsRegionSnapshotRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRegionSnapshotRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
+	UpdateKmsKey(context.Context, *computepb.UpdateKmsKeyRegionSnapshotRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // RegionSnapshotsClient is a client for interacting with Google Compute Engine API.
@@ -136,7 +142,7 @@ type RegionSnapshotsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionSnapshotsClient) Close() error {
 	return c.internalClient.Close()
@@ -210,6 +216,12 @@ func (c *RegionSnapshotsClient) TestIamPermissions(ctx context.Context, req *com
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// UpdateKmsKey rotates the customer-managed
+// encryption key to the latest version for the specified snapshot.
+func (c *RegionSnapshotsClient) UpdateKmsKey(ctx context.Context, req *computepb.UpdateKmsKeyRegionSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.UpdateKmsKey(ctx, req, opts...)
+}
+
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type regionSnapshotsRESTClient struct {
 	// The http endpoint to connect to.
@@ -235,6 +247,16 @@ type regionSnapshotsRESTClient struct {
 // The RegionSnapshots API.
 func NewRegionSnapshotsRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionSnapshotsClient, error) {
 	clientOpts := append(defaultRegionSnapshotsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -248,6 +270,29 @@ func NewRegionSnapshotsRESTClient(ctx context.Context, opts ...option.ClientOpti
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.UpdateKmsKey = append(callOpts.UpdateKmsKey, gax.WithClientMetrics(metrics))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -285,7 +330,7 @@ func (c *regionSnapshotsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionSnapshotsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -331,6 +376,13 @@ func (c *regionSnapshotsRESTClient) Delete(ctx context.Context, req *computepb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/snapshots/%v", req.GetProject(), req.GetRegion(), req.GetSnapshot()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionSnapshots/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/snapshots/{snapshot}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -384,6 +436,13 @@ func (c *regionSnapshotsRESTClient) Get(ctx context.Context, req *computepb.GetR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/snapshots/%v", req.GetProject(), req.GetRegion(), req.GetSnapshot()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionSnapshots/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/snapshots/{snapshot}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Snapshot{}
@@ -437,6 +496,13 @@ func (c *regionSnapshotsRESTClient) GetIamPolicy(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/snapshots/%v", req.GetProject(), req.GetRegion(), req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionSnapshots/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/snapshots/{resource}/getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
@@ -497,6 +563,13 @@ func (c *regionSnapshotsRESTClient) Insert(ctx context.Context, req *computepb.I
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v", req.GetProject(), req.GetRegion()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionSnapshots/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/snapshots")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -540,7 +613,7 @@ func (c *regionSnapshotsRESTClient) Insert(ctx context.Context, req *computepb.I
 // the specified region.
 func (c *regionSnapshotsRESTClient) List(ctx context.Context, req *computepb.ListRegionSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	it := &SnapshotIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionSnapshotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Snapshot, string, error) {
 		resp := &computepb.SnapshotList{}
@@ -645,6 +718,13 @@ func (c *regionSnapshotsRESTClient) SetIamPolicy(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/snapshots/%v", req.GetProject(), req.GetRegion(), req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionSnapshots/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/snapshots/{resource}/setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
@@ -706,6 +786,13 @@ func (c *regionSnapshotsRESTClient) SetLabels(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/snapshots/%v", req.GetProject(), req.GetRegion(), req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionSnapshots/SetLabels")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/snapshots/{resource}/setLabels")
+	}
 	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -766,6 +853,13 @@ func (c *regionSnapshotsRESTClient) TestIamPermissions(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/snapshots/%v", req.GetProject(), req.GetRegion(), req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionSnapshots/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/snapshots/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
@@ -795,4 +889,79 @@ func (c *regionSnapshotsRESTClient) TestIamPermissions(ctx context.Context, req 
 		return nil, e
 	}
 	return resp, nil
+}
+
+// UpdateKmsKey rotates the customer-managed
+// encryption key to the latest version for the specified snapshot.
+func (c *regionSnapshotsRESTClient) UpdateKmsKey(ctx context.Context, req *computepb.UpdateKmsKeyRegionSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetRegionSnapshotUpdateKmsKeyRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/snapshots/%v/updateKmsKey", req.GetProject(), req.GetRegion(), req.GetSnapshot())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "snapshot", url.QueryEscape(req.GetSnapshot()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/snapshots/%v", req.GetProject(), req.GetRegion(), req.GetSnapshot()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionSnapshots/UpdateKmsKey")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/snapshots/{snapshot}/updateKmsKey")
+	}
+	opts = append((*c.CallOptions).UpdateKmsKey[0:len((*c.CallOptions).UpdateKmsKey):len((*c.CallOptions).UpdateKmsKey)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateKmsKey")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
 }

@@ -1,5 +1,11 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/servicecontrol%2Fv1.18.0) (2026-04-30)
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/servicecontrol%2Fv1.17.0) (2026-04-13)
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/servicecontrol%2Fv1.16.0) (2026-04-09)
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/servicecontrol%2Fv1.15.0) (2026-04-02)
 
 ## [1.14.6](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.14.5...servicecontrol/v1.14.6) (2025-10-15)

@@ -24,8 +24,11 @@ import (
 	"net/http"
 
 	"github.com/googleapis/gax-go/v2/internallog"
+	"github.com/googleapis/gax-go/v2/internallog/grpclog"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
@@ -51,6 +54,8 @@ func getVersionClient() string {
 func DefaultAuthScopes() []string {
 	return []string{
 		"https://www.googleapis.com/auth/cloud-platform",
+		"https://www.googleapis.com/auth/memorystore.read-only",
+		"https://www.googleapis.com/auth/memorystore.read-write",
 	}
 }
 
@@ -88,4 +93,15 @@ func executeStreamingHTTPRequest(ctx context.Context, client *http.Client, req *
 		return nil, err
 	}
 	return resp, nil
+}
+
+func executeRPC[I proto.Message, O proto.Message](ctx context.Context, fn func(context.Context, I, ...grpc.CallOption) (O, error), req I, opts []grpc.CallOption, logger *slog.Logger, rpc string) (O, error) {
+	var zero O
+	logger.DebugContext(ctx, "api request", "serviceName", serviceName, "rpcName", rpc, "request", grpclog.ProtoMessageRequest(ctx, req))
+	resp, err := fn(ctx, req, opts...)
+	if err != nil {
+		return zero, err
+	}
+	logger.DebugContext(ctx, "api response", "serviceName", serviceName, "rpcName", rpc, "response", grpclog.ProtoMessageResponse(resp))
+	return resp, err
 }

@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -111,7 +112,7 @@ type MachineTypesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *MachineTypesClient) Close() error {
 	return c.internalClient.Close()
@@ -173,6 +174,16 @@ type machineTypesRESTClient struct {
 // The MachineTypes API.
 func NewMachineTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*MachineTypesClient, error) {
 	clientOpts := append(defaultMachineTypesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -186,6 +197,23 @@ func NewMachineTypesRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+	}
 
 	return &MachineTypesClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -213,7 +241,7 @@ func (c *machineTypesRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *machineTypesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -234,7 +262,7 @@ func (c *machineTypesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *machineTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListMachineTypesRequest, opts ...gax.CallOption) *MachineTypesScopedListPairIterator {
 	it := &MachineTypesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListMachineTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]MachineTypesScopedListPair, string, error) {
 		resp := &computepb.MachineTypeAggregatedList{}
@@ -344,6 +372,13 @@ func (c *machineTypesRESTClient) Get(ctx context.Context, req *computepb.GetMach
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v/machineTypes/%v", req.GetProject(), req.GetZone(), req.GetMachineType()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.MachineTypes/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/machineTypes/{machine_type}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.MachineType{}
@@ -379,7 +414,7 @@ func (c *machineTypesRESTClient) Get(ctx context.Context, req *computepb.GetMach
 // project.
 func (c *machineTypesRESTClient) List(ctx context.Context, req *computepb.ListMachineTypesRequest, opts ...gax.CallOption) *MachineTypeIterator {
 	it := &MachineTypeIterator{}
-	req = proto.Clone(req).(*computepb.ListMachineTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.MachineType, string, error) {
 		resp := &computepb.MachineTypeList{}

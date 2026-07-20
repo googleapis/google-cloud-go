@@ -29,6 +29,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -181,7 +182,7 @@ type NodeGroupsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *NodeGroupsClient) Close() error {
 	return c.internalClient.Close()
@@ -313,6 +314,16 @@ type nodeGroupsRESTClient struct {
 // The NodeGroups API.
 func NewNodeGroupsRESTClient(ctx context.Context, opts ...option.ClientOption) (*NodeGroupsClient, error) {
 	clientOpts := append(defaultNodeGroupsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -326,6 +337,35 @@ func NewNodeGroupsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddNodes = append(callOpts.AddNodes, gax.WithClientMetrics(metrics))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.DeleteNodes = append(callOpts.DeleteNodes, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.ListNodes = append(callOpts.ListNodes, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.PerformMaintenance = append(callOpts.PerformMaintenance, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetNodeTemplate = append(callOpts.SetNodeTemplate, gax.WithClientMetrics(metrics))
+		callOpts.SimulateMaintenanceEvent = append(callOpts.SimulateMaintenanceEvent, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -363,7 +403,7 @@ func (c *nodeGroupsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *nodeGroupsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -409,6 +449,13 @@ func (c *nodeGroupsRESTClient) AddNodes(ctx context.Context, req *computepb.AddN
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetNodeGroup()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.NodeGroups/AddNodes")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/nodeGroups/{node_group}/addNodes")
+	}
 	opts = append((*c.CallOptions).AddNodes[0:len((*c.CallOptions).AddNodes):len((*c.CallOptions).AddNodes)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -455,7 +502,7 @@ func (c *nodeGroupsRESTClient) AddNodes(ctx context.Context, req *computepb.AddN
 // returnPartialSuccess parameter to true.
 func (c *nodeGroupsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeGroupsRequest, opts ...gax.CallOption) *NodeGroupsScopedListPairIterator {
 	it := &NodeGroupsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListNodeGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]NodeGroupsScopedListPair, string, error) {
 		resp := &computepb.NodeGroupAggregatedList{}
@@ -572,6 +619,13 @@ func (c *nodeGroupsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetNodeGroup()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.NodeGroups/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/nodeGroups/{node_group}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -639,6 +693,13 @@ func (c *nodeGroupsRESTClient) DeleteNodes(ctx context.Context, req *computepb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetNodeGroup()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.NodeGroups/DeleteNodes")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/nodeGroups/{node_group}/deleteNodes")
+	}
 	opts = append((*c.CallOptions).DeleteNodes[0:len((*c.CallOptions).DeleteNodes):len((*c.CallOptions).DeleteNodes)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -695,6 +756,13 @@ func (c *nodeGroupsRESTClient) Get(ctx context.Context, req *computepb.GetNodeGr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetNodeGroup()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.NodeGroups/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/nodeGroups/{node_group}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.NodeGroup{}
@@ -748,6 +816,13 @@ func (c *nodeGroupsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.NodeGroups/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/nodeGroups/{resource}/getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
@@ -809,6 +884,13 @@ func (c *nodeGroupsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/zones/%v", req.GetProject(), req.GetZone()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.NodeGroups/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/nodeGroups")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -852,7 +934,7 @@ func (c *nodeGroupsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 // Note: use nodeGroups.listNodes for more details about each group.
 func (c *nodeGroupsRESTClient) List(ctx context.Context, req *computepb.ListNodeGroupsRequest, opts ...gax.CallOption) *NodeGroupIterator {
 	it := &NodeGroupIterator{}
-	req = proto.Clone(req).(*computepb.ListNodeGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NodeGroup, string, error) {
 		resp := &computepb.NodeGroupList{}
@@ -938,7 +1020,7 @@ func (c *nodeGroupsRESTClient) List(ctx context.Context, req *computepb.ListNode
 // ListNodes lists nodes in the node group.
 func (c *nodeGroupsRESTClient) ListNodes(ctx context.Context, req *computepb.ListNodesNodeGroupsRequest, opts ...gax.CallOption) *NodeGroupNodeIterator {
 	it := &NodeGroupNodeIterator{}
-	req = proto.Clone(req).(*computepb.ListNodesNodeGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NodeGroupNode, string, error) {
 		resp := &computepb.NodeGroupsListNodes{}
@@ -1049,6 +1131,13 @@ func (c *nodeGroupsRESTClient) Patch(ctx context.Context, req *computepb.PatchNo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetNodeGroup()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.NodeGroups/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/nodeGroups/{node_group}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1116,6 +1205,13 @@ func (c *nodeGroupsRESTClient) PerformMaintenance(ctx context.Context, req *comp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetNodeGroup()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.NodeGroups/PerformMaintenance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/nodeGroups/{node_group}/performMaintenance")
+	}
 	opts = append((*c.CallOptions).PerformMaintenance[0:len((*c.CallOptions).PerformMaintenance):len((*c.CallOptions).PerformMaintenance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1177,6 +1273,13 @@ func (c *nodeGroupsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.NodeGroups/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/nodeGroups/{resource}/setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
@@ -1236,6 +1339,13 @@ func (c *nodeGroupsRESTClient) SetNodeTemplate(ctx context.Context, req *compute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetNodeGroup()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.NodeGroups/SetNodeTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/nodeGroups/{node_group}/setNodeTemplate")
+	}
 	opts = append((*c.CallOptions).SetNodeTemplate[0:len((*c.CallOptions).SetNodeTemplate):len((*c.CallOptions).SetNodeTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1303,6 +1413,13 @@ func (c *nodeGroupsRESTClient) SimulateMaintenanceEvent(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetNodeGroup()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.NodeGroups/SimulateMaintenanceEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/nodeGroups/{node_group}/simulateMaintenanceEvent")
+	}
 	opts = append((*c.CallOptions).SimulateMaintenanceEvent[0:len((*c.CallOptions).SimulateMaintenanceEvent):len((*c.CallOptions).SimulateMaintenanceEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1363,6 +1480,13 @@ func (c *nodeGroupsRESTClient) TestIamPermissions(ctx context.Context, req *comp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.NodeGroups/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/nodeGroups/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}

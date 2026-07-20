@@ -82,7 +82,7 @@ type RegionZonesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionZonesClient) Close() error {
 	return c.internalClient.Close()
@@ -131,6 +131,16 @@ type regionZonesRESTClient struct {
 // The RegionZones API.
 func NewRegionZonesRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionZonesClient, error) {
 	clientOpts := append(defaultRegionZonesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -144,6 +154,21 @@ func NewRegionZonesRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+	}
 
 	return &RegionZonesClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -171,7 +196,7 @@ func (c *regionZonesRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionZonesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -190,7 +215,7 @@ func (c *regionZonesRESTClient) Connection() *grpc.ClientConn {
 // the specified project.
 func (c *regionZonesRESTClient) List(ctx context.Context, req *computepb.ListRegionZonesRequest, opts ...gax.CallOption) *ZoneIterator {
 	it := &ZoneIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionZonesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Zone, string, error) {
 		resp := &computepb.ZoneList{}

@@ -29,6 +29,7 @@ import (
 	generativelanguagepb "cloud.google.com/go/ai/generativelanguage/apiv1beta/generativelanguagepb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -237,7 +238,7 @@ type PermissionClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *PermissionClient) Close() error {
 	return c.internalClient.Close()
@@ -248,6 +249,16 @@ func (c *PermissionClient) Close() error {
 // use by Google-written clients.
 func (c *PermissionClient) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// SetGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+//
+// SetGoogleClientInfo is not concurrency-safe and should only be invoked
+// sequentially before concurrent operations begin.
+func (c *PermissionClient) SetGoogleClientInfo(keyval ...string) {
+	c.setGoogleClientInfo(keyval...)
 }
 
 // Connection returns a connection to the API service.
@@ -337,6 +348,16 @@ type permissionGRPCClient struct {
 // Provides methods for managing permissions to PaLM API resources.
 func NewPermissionClient(ctx context.Context, opts ...option.ClientOption) (*PermissionClient, error) {
 	clientOpts := defaultPermissionGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "generativelanguage",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "generativelanguage.googleapis.com",
+		}))
+	}
 	if newPermissionClientHook != nil {
 		hookOpts, err := newPermissionClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -359,6 +380,29 @@ func NewPermissionClient(ctx context.Context, opts ...option.ClientOption) (*Per
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePermission = append(client.CallOptions.CreatePermission, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPermission = append(client.CallOptions.GetPermission, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPermissions = append(client.CallOptions.ListPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePermission = append(client.CallOptions.UpdatePermission, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePermission = append(client.CallOptions.DeletePermission, gax.WithClientMetrics(metrics))
+		client.CallOptions.TransferOwnership = append(client.CallOptions.TransferOwnership, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -384,7 +428,7 @@ func (c *permissionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *permissionGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -412,6 +456,16 @@ type permissionRESTClient struct {
 // Provides methods for managing permissions to PaLM API resources.
 func NewPermissionRESTClient(ctx context.Context, opts ...option.ClientOption) (*PermissionClient, error) {
 	clientOpts := append(defaultPermissionRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "generativelanguage",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "generativelanguage.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -425,6 +479,30 @@ func NewPermissionRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePermission = append(callOpts.CreatePermission, gax.WithClientMetrics(metrics))
+		callOpts.GetPermission = append(callOpts.GetPermission, gax.WithClientMetrics(metrics))
+		callOpts.ListPermissions = append(callOpts.ListPermissions, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePermission = append(callOpts.UpdatePermission, gax.WithClientMetrics(metrics))
+		callOpts.DeletePermission = append(callOpts.DeletePermission, gax.WithClientMetrics(metrics))
+		callOpts.TransferOwnership = append(callOpts.TransferOwnership, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	return &PermissionClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -452,7 +530,7 @@ func (c *permissionRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *permissionRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -471,6 +549,12 @@ func (c *permissionGRPCClient) CreatePermission(ctx context.Context, req *genera
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.PermissionService/CreatePermission")
+	}
 	opts = append((*c.CallOptions).CreatePermission[0:len((*c.CallOptions).CreatePermission):len((*c.CallOptions).CreatePermission)], opts...)
 	var resp *generativelanguagepb.Permission
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -489,6 +573,12 @@ func (c *permissionGRPCClient) GetPermission(ctx context.Context, req *generativ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.PermissionService/GetPermission")
+	}
 	opts = append((*c.CallOptions).GetPermission[0:len((*c.CallOptions).GetPermission):len((*c.CallOptions).GetPermission)], opts...)
 	var resp *generativelanguagepb.Permission
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -507,9 +597,15 @@ func (c *permissionGRPCClient) ListPermissions(ctx context.Context, req *generat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.PermissionService/ListPermissions")
+	}
 	opts = append((*c.CallOptions).ListPermissions[0:len((*c.CallOptions).ListPermissions):len((*c.CallOptions).ListPermissions)], opts...)
 	it := &PermissionIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListPermissionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.Permission, string, error) {
 		resp := &generativelanguagepb.ListPermissionsResponse{}
 		if pageToken != "" {
@@ -553,6 +649,9 @@ func (c *permissionGRPCClient) UpdatePermission(ctx context.Context, req *genera
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.PermissionService/UpdatePermission")
+	}
 	opts = append((*c.CallOptions).UpdatePermission[0:len((*c.CallOptions).UpdatePermission):len((*c.CallOptions).UpdatePermission)], opts...)
 	var resp *generativelanguagepb.Permission
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -571,6 +670,12 @@ func (c *permissionGRPCClient) DeletePermission(ctx context.Context, req *genera
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.PermissionService/DeletePermission")
+	}
 	opts = append((*c.CallOptions).DeletePermission[0:len((*c.CallOptions).DeletePermission):len((*c.CallOptions).DeletePermission)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -585,6 +690,12 @@ func (c *permissionGRPCClient) TransferOwnership(ctx context.Context, req *gener
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.PermissionService/TransferOwnership")
+	}
 	opts = append((*c.CallOptions).TransferOwnership[0:len((*c.CallOptions).TransferOwnership):len((*c.CallOptions).TransferOwnership)], opts...)
 	var resp *generativelanguagepb.TransferOwnershipResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -603,6 +714,9 @@ func (c *permissionGRPCClient) CancelOperation(ctx context.Context, req *longrun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -617,6 +731,9 @@ func (c *permissionGRPCClient) DeleteOperation(ctx context.Context, req *longrun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -631,6 +748,9 @@ func (c *permissionGRPCClient) GetOperation(ctx context.Context, req *longrunnin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -649,9 +769,12 @@ func (c *permissionGRPCClient) ListOperations(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -716,6 +839,13 @@ func (c *permissionRESTClient) CreatePermission(ctx context.Context, req *genera
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.PermissionService/CreatePermission")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=tunedModels/*}/permissions")
+	}
 	opts = append((*c.CallOptions).CreatePermission[0:len((*c.CallOptions).CreatePermission):len((*c.CallOptions).CreatePermission)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.Permission{}
@@ -766,6 +896,13 @@ func (c *permissionRESTClient) GetPermission(ctx context.Context, req *generativ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.PermissionService/GetPermission")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=tunedModels/*/permissions/*}")
+	}
 	opts = append((*c.CallOptions).GetPermission[0:len((*c.CallOptions).GetPermission):len((*c.CallOptions).GetPermission)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.Permission{}
@@ -800,7 +937,7 @@ func (c *permissionRESTClient) GetPermission(ctx context.Context, req *generativ
 // ListPermissions lists permissions for the specific resource.
 func (c *permissionRESTClient) ListPermissions(ctx context.Context, req *generativelanguagepb.ListPermissionsRequest, opts ...gax.CallOption) *PermissionIterator {
 	it := &PermissionIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListPermissionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.Permission, string, error) {
 		resp := &generativelanguagepb.ListPermissionsResponse{}
@@ -908,6 +1045,10 @@ func (c *permissionRESTClient) UpdatePermission(ctx context.Context, req *genera
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.PermissionService/UpdatePermission")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{permission.name=tunedModels/*/permissions/*}")
+	}
 	opts = append((*c.CallOptions).UpdatePermission[0:len((*c.CallOptions).UpdatePermission):len((*c.CallOptions).UpdatePermission)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.Permission{}
@@ -958,6 +1099,13 @@ func (c *permissionRESTClient) DeletePermission(ctx context.Context, req *genera
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.PermissionService/DeletePermission")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=tunedModels/*/permissions/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1001,6 +1149,13 @@ func (c *permissionRESTClient) TransferOwnership(ctx context.Context, req *gener
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.PermissionService/TransferOwnership")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=tunedModels/*}:transferOwnership")
+	}
 	opts = append((*c.CallOptions).TransferOwnership[0:len((*c.CallOptions).TransferOwnership):len((*c.CallOptions).TransferOwnership)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.TransferOwnershipResponse{}
@@ -1051,6 +1206,10 @@ func (c *permissionRESTClient) CancelOperation(ctx context.Context, req *longrun
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=batches/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1086,6 +1245,10 @@ func (c *permissionRESTClient) DeleteOperation(ctx context.Context, req *longrun
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=batches/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1121,6 +1284,10 @@ func (c *permissionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=tunedModels/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1155,7 +1322,7 @@ func (c *permissionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *permissionRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

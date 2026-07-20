@@ -1,0 +1,1893 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.vectorsearch.v1beta",
+        "version": "v1beta"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/vectorsearch/apiv1beta",
+    "version": "1.2.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient",
+          "shortName": "DataObjectSearchClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient.AggregateDataObjects",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchService.AggregateDataObjects",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchService",
+            "shortName": "DataObjectSearchService"
+          },
+          "shortName": "AggregateDataObjects"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.AggregateDataObjectsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*vectorsearchpb.AggregateDataObjectsResponse",
+        "shortName": "AggregateDataObjects"
+      },
+      "description": "AggregateDataObjects aggregates data objects.",
+      "file": "DataObjectSearchClient/AggregateDataObjects/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectSearchService_AggregateDataObjects_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch AggregateDataObjects Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient",
+          "shortName": "DataObjectSearchClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient.BatchSearchDataObjects",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchService.BatchSearchDataObjects",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchService",
+            "shortName": "DataObjectSearchService"
+          },
+          "shortName": "BatchSearchDataObjects"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.BatchSearchDataObjectsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*vectorsearchpb.BatchSearchDataObjectsResponse",
+        "shortName": "BatchSearchDataObjects"
+      },
+      "description": "BatchSearchDataObjects batch searches data objects.",
+      "file": "DataObjectSearchClient/BatchSearchDataObjects/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectSearchService_BatchSearchDataObjects_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch BatchSearchDataObjects Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient",
+          "shortName": "DataObjectSearchClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataObjectSearchClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectSearchService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient",
+          "shortName": "DataObjectSearchClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataObjectSearchClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectSearchService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient",
+          "shortName": "DataObjectSearchClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "DataObjectSearchClient/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectSearchService_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient",
+          "shortName": "DataObjectSearchClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataObjectSearchClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectSearchService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient",
+          "shortName": "DataObjectSearchClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "DataObjectSearchClient/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectSearchService_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient",
+          "shortName": "DataObjectSearchClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DataObjectSearchClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectSearchService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient",
+          "shortName": "DataObjectSearchClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient.QueryDataObjects",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchService.QueryDataObjects",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchService",
+            "shortName": "DataObjectSearchService"
+          },
+          "shortName": "QueryDataObjects"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.QueryDataObjectsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DataObjectIterator",
+        "shortName": "QueryDataObjects"
+      },
+      "description": "QueryDataObjects queries data objects.",
+      "file": "DataObjectSearchClient/QueryDataObjects/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectSearchService_QueryDataObjects_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch QueryDataObjects Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient",
+          "shortName": "DataObjectSearchClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchClient.SearchDataObjects",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchService.SearchDataObjects",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.DataObjectSearchService",
+            "shortName": "DataObjectSearchService"
+          },
+          "shortName": "SearchDataObjects"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.SearchDataObjectsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SearchResultIterator",
+        "shortName": "SearchDataObjects"
+      },
+      "description": "SearchDataObjects searches data objects.",
+      "file": "DataObjectSearchClient/SearchDataObjects/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectSearchService_SearchDataObjects_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch SearchDataObjects Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient",
+          "shortName": "DataObjectClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient.BatchCreateDataObjects",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectService.BatchCreateDataObjects",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.DataObjectService",
+            "shortName": "DataObjectService"
+          },
+          "shortName": "BatchCreateDataObjects"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.BatchCreateDataObjectsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*vectorsearchpb.BatchCreateDataObjectsResponse",
+        "shortName": "BatchCreateDataObjects"
+      },
+      "description": "BatchCreateDataObjects creates a batch of dataObjects.",
+      "file": "DataObjectClient/BatchCreateDataObjects/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectService_BatchCreateDataObjects_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch BatchCreateDataObjects Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient",
+          "shortName": "DataObjectClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient.BatchDeleteDataObjects",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectService.BatchDeleteDataObjects",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.DataObjectService",
+            "shortName": "DataObjectService"
+          },
+          "shortName": "BatchDeleteDataObjects"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.BatchDeleteDataObjectsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "BatchDeleteDataObjects"
+      },
+      "description": "BatchDeleteDataObjects deletes dataObjects in a batch.",
+      "file": "DataObjectClient/BatchDeleteDataObjects/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectService_BatchDeleteDataObjects_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch BatchDeleteDataObjects Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient",
+          "shortName": "DataObjectClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient.BatchUpdateDataObjects",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectService.BatchUpdateDataObjects",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.DataObjectService",
+            "shortName": "DataObjectService"
+          },
+          "shortName": "BatchUpdateDataObjects"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.BatchUpdateDataObjectsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*vectorsearchpb.BatchUpdateDataObjectsResponse",
+        "shortName": "BatchUpdateDataObjects"
+      },
+      "description": "BatchUpdateDataObjects updates dataObjects in a batch.",
+      "file": "DataObjectClient/BatchUpdateDataObjects/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectService_BatchUpdateDataObjects_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch BatchUpdateDataObjects Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient",
+          "shortName": "DataObjectClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataObjectClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient",
+          "shortName": "DataObjectClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient.CreateDataObject",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectService.CreateDataObject",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.DataObjectService",
+            "shortName": "DataObjectService"
+          },
+          "shortName": "CreateDataObject"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.CreateDataObjectRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*vectorsearchpb.DataObject",
+        "shortName": "CreateDataObject"
+      },
+      "description": "CreateDataObject creates a dataObject.",
+      "file": "DataObjectClient/CreateDataObject/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectService_CreateDataObject_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch CreateDataObject Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient",
+          "shortName": "DataObjectClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient.DeleteDataObject",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectService.DeleteDataObject",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.DataObjectService",
+            "shortName": "DataObjectService"
+          },
+          "shortName": "DeleteDataObject"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.DeleteDataObjectRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteDataObject"
+      },
+      "description": "DeleteDataObject deletes a dataObject.",
+      "file": "DataObjectClient/DeleteDataObject/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectService_DeleteDataObject_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch DeleteDataObject Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient",
+          "shortName": "DataObjectClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataObjectClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient",
+          "shortName": "DataObjectClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient.GetDataObject",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectService.GetDataObject",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.DataObjectService",
+            "shortName": "DataObjectService"
+          },
+          "shortName": "GetDataObject"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.GetDataObjectRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*vectorsearchpb.DataObject",
+        "shortName": "GetDataObject"
+      },
+      "description": "GetDataObject gets a data object.",
+      "file": "DataObjectClient/GetDataObject/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectService_GetDataObject_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch GetDataObject Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient",
+          "shortName": "DataObjectClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "DataObjectClient/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectService_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient",
+          "shortName": "DataObjectClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataObjectClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient",
+          "shortName": "DataObjectClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "DataObjectClient/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectService_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient",
+          "shortName": "DataObjectClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DataObjectClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient",
+          "shortName": "DataObjectClient"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.DataObjectClient.UpdateDataObject",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.DataObjectService.UpdateDataObject",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.DataObjectService",
+            "shortName": "DataObjectService"
+          },
+          "shortName": "UpdateDataObject"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.UpdateDataObjectRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*vectorsearchpb.DataObject",
+        "shortName": "UpdateDataObject"
+      },
+      "description": "UpdateDataObject updates a dataObject.",
+      "file": "DataObjectClient/UpdateDataObject/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_DataObjectService_UpdateDataObject_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch UpdateDataObject Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.CreateCollection",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService.CreateCollection",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService",
+            "shortName": "VectorSearchService"
+          },
+          "shortName": "CreateCollection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.CreateCollectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateCollectionOperation",
+        "shortName": "CreateCollection"
+      },
+      "description": "CreateCollection creates a new Collection in a given project and location.",
+      "file": "Client/CreateCollection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_CreateCollection_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch CreateCollection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.CreateIndex",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService.CreateIndex",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService",
+            "shortName": "VectorSearchService"
+          },
+          "shortName": "CreateIndex"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.CreateIndexRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateIndexOperation",
+        "shortName": "CreateIndex"
+      },
+      "description": "CreateIndex creates a new Index in a given project and location.",
+      "file": "Client/CreateIndex/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_CreateIndex_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch CreateIndex Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.DeleteCollection",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService.DeleteCollection",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService",
+            "shortName": "VectorSearchService"
+          },
+          "shortName": "DeleteCollection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.DeleteCollectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteCollectionOperation",
+        "shortName": "DeleteCollection"
+      },
+      "description": "DeleteCollection deletes a single Collection.",
+      "file": "Client/DeleteCollection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_DeleteCollection_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch DeleteCollection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.DeleteIndex",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService.DeleteIndex",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService",
+            "shortName": "VectorSearchService"
+          },
+          "shortName": "DeleteIndex"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.DeleteIndexRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteIndexOperation",
+        "shortName": "DeleteIndex"
+      },
+      "description": "DeleteIndex deletes a single Index.",
+      "file": "Client/DeleteIndex/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_DeleteIndex_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch DeleteIndex Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.ExportDataObjects",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService.ExportDataObjects",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService",
+            "shortName": "VectorSearchService"
+          },
+          "shortName": "ExportDataObjects"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.ExportDataObjectsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ExportDataObjectsOperation",
+        "shortName": "ExportDataObjects"
+      },
+      "description": "ExportDataObjects initiates a Long-Running Operation to export DataObjects from a Collection.",
+      "file": "Client/ExportDataObjects/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_ExportDataObjects_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch ExportDataObjects Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.GetCollection",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService.GetCollection",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService",
+            "shortName": "VectorSearchService"
+          },
+          "shortName": "GetCollection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.GetCollectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*vectorsearchpb.Collection",
+        "shortName": "GetCollection"
+      },
+      "description": "GetCollection gets details of a single Collection.",
+      "file": "Client/GetCollection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_GetCollection_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch GetCollection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.GetIndex",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService.GetIndex",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService",
+            "shortName": "VectorSearchService"
+          },
+          "shortName": "GetIndex"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.GetIndexRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*vectorsearchpb.Index",
+        "shortName": "GetIndex"
+      },
+      "description": "GetIndex gets details of a single Index.",
+      "file": "Client/GetIndex/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_GetIndex_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch GetIndex Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.ImportDataObjects",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService.ImportDataObjects",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService",
+            "shortName": "VectorSearchService"
+          },
+          "shortName": "ImportDataObjects"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.ImportDataObjectsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ImportDataObjectsOperation",
+        "shortName": "ImportDataObjects"
+      },
+      "description": "ImportDataObjects initiates a Long-Running Operation to import DataObjects into a Collection.",
+      "file": "Client/ImportDataObjects/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_ImportDataObjects_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch ImportDataObjects Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.ListCollections",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService.ListCollections",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService",
+            "shortName": "VectorSearchService"
+          },
+          "shortName": "ListCollections"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.ListCollectionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CollectionIterator",
+        "shortName": "ListCollections"
+      },
+      "description": "ListCollections lists Collections in a given project and location.",
+      "file": "Client/ListCollections/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_ListCollections_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch ListCollections Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.ListIndexes",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService.ListIndexes",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService",
+            "shortName": "VectorSearchService"
+          },
+          "shortName": "ListIndexes"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.ListIndexesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "IndexIterator",
+        "shortName": "ListIndexes"
+      },
+      "description": "ListIndexes lists Indexes in a given project and location.",
+      "file": "Client/ListIndexes/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_ListIndexes_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch ListIndexes Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.UpdateCollection",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService.UpdateCollection",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService",
+            "shortName": "VectorSearchService"
+          },
+          "shortName": "UpdateCollection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.UpdateCollectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateCollectionOperation",
+        "shortName": "UpdateCollection"
+      },
+      "description": "UpdateCollection updates the parameters of a single Collection.",
+      "file": "Client/UpdateCollection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_UpdateCollection_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch UpdateCollection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vectorsearch.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.vectorsearch.v1beta.Client.UpdateIndex",
+        "method": {
+          "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService.UpdateIndex",
+          "service": {
+            "fullName": "google.cloud.vectorsearch.v1beta.VectorSearchService",
+            "shortName": "VectorSearchService"
+          },
+          "shortName": "UpdateIndex"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "vectorsearchpb.UpdateIndexRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateIndexOperation",
+        "shortName": "UpdateIndex"
+      },
+      "description": "UpdateIndex updates the parameters of a single Index.",
+      "file": "Client/UpdateIndex/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vectorsearch_v1beta_generated_VectorSearchService_UpdateIndex_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vectorsearch UpdateIndex Sample"
+    }
+  ]
+}

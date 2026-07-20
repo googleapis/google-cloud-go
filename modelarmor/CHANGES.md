@@ -1,5 +1,28 @@
 # Changes
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v1.1.0...modelarmor/v1.2.0) (2026-07-13)
+
+
+### Features
+
+* Update API sources and regenerate ([#20109](https://github.com/googleapis/google-cloud-go/issues/20109)) ([4314d30](https://github.com/googleapis/google-cloud-go/commit/4314d305008d9a4b2d9f464d07519f8081b2277d))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/releases/tag/modelarmor%2Fv1.1.0) (2026-06-11)
+
+### Features
+
+* update API sources and regenerate (#19950) ([c7607be](https://github.com/googleapis/google-cloud-go/commit/c7607be52757b803df345670b5d0621c2bb9ba30))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/modelarmor%2Fv1.0.0) (2026-05-08)
+
+## [0.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/modelarmor%2Fv0.11.0) (2026-05-07)
+
+## [0.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/modelarmor%2Fv0.10.0) (2026-04-30)
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/modelarmor%2Fv0.9.0) (2026-04-13)
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/modelarmor%2Fv0.8.0) (2026-04-09)
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/modelarmor%2Fv0.7.0) (2026-04-02)
 
 ## [0.6.1](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v0.6.0...modelarmor/v0.6.1) (2025-09-18)

@@ -31,6 +31,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	policysimulatorpb "cloud.google.com/go/policysimulator/apiv1/policysimulatorpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -201,7 +203,7 @@ type OrgPolicyViolationsPreviewClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *OrgPolicyViolationsPreviewClient) Close() error {
 	return c.internalClient.Close()
@@ -315,6 +317,16 @@ type orgPolicyViolationsPreviewGRPCClient struct {
 // determine these resources violate the newly set OrgPolicy.
 func NewOrgPolicyViolationsPreviewClient(ctx context.Context, opts ...option.ClientOption) (*OrgPolicyViolationsPreviewClient, error) {
 	clientOpts := defaultOrgPolicyViolationsPreviewGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "policysimulator",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/policysimulator/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "policysimulator.googleapis.com",
+		}))
+	}
 	if newOrgPolicyViolationsPreviewClientHook != nil {
 		hookOpts, err := newOrgPolicyViolationsPreviewClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -337,6 +349,25 @@ func NewOrgPolicyViolationsPreviewClient(ctx context.Context, opts ...option.Cli
 		operationsClient:                 longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "policysimulator",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/policysimulator/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "policysimulator.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListOrgPolicyViolationsPreviews = append(client.CallOptions.ListOrgPolicyViolationsPreviews, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOrgPolicyViolationsPreview = append(client.CallOptions.GetOrgPolicyViolationsPreview, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateOrgPolicyViolationsPreview = append(client.CallOptions.CreateOrgPolicyViolationsPreview, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOrgPolicyViolations = append(client.CallOptions.ListOrgPolicyViolations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -373,7 +404,7 @@ func (c *orgPolicyViolationsPreviewGRPCClient) setGoogleClientInfo(keyval ...str
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *orgPolicyViolationsPreviewGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -416,6 +447,16 @@ type orgPolicyViolationsPreviewRESTClient struct {
 // determine these resources violate the newly set OrgPolicy.
 func NewOrgPolicyViolationsPreviewRESTClient(ctx context.Context, opts ...option.ClientOption) (*OrgPolicyViolationsPreviewClient, error) {
 	clientOpts := append(defaultOrgPolicyViolationsPreviewRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "policysimulator",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/policysimulator/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "policysimulator.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -429,6 +470,26 @@ func NewOrgPolicyViolationsPreviewRESTClient(ctx context.Context, opts ...option
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "policysimulator",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/policysimulator/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "policysimulator.googleapis.com",
+			}),
+		)
+
+		callOpts.ListOrgPolicyViolationsPreviews = append(callOpts.ListOrgPolicyViolationsPreviews, gax.WithClientMetrics(metrics))
+		callOpts.GetOrgPolicyViolationsPreview = append(callOpts.GetOrgPolicyViolationsPreview, gax.WithClientMetrics(metrics))
+		callOpts.CreateOrgPolicyViolationsPreview = append(callOpts.CreateOrgPolicyViolationsPreview, gax.WithClientMetrics(metrics))
+		callOpts.ListOrgPolicyViolations = append(callOpts.ListOrgPolicyViolations, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -466,7 +527,7 @@ func (c *orgPolicyViolationsPreviewRESTClient) setGoogleClientInfo(keyval ...str
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *orgPolicyViolationsPreviewRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -485,9 +546,15 @@ func (c *orgPolicyViolationsPreviewGRPCClient) ListOrgPolicyViolationsPreviews(c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//policysimulator.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService/ListOrgPolicyViolationsPreviews")
+	}
 	opts = append((*c.CallOptions).ListOrgPolicyViolationsPreviews[0:len((*c.CallOptions).ListOrgPolicyViolationsPreviews):len((*c.CallOptions).ListOrgPolicyViolationsPreviews)], opts...)
 	it := &OrgPolicyViolationsPreviewIterator{}
-	req = proto.Clone(req).(*policysimulatorpb.ListOrgPolicyViolationsPreviewsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*policysimulatorpb.OrgPolicyViolationsPreview, string, error) {
 		resp := &policysimulatorpb.ListOrgPolicyViolationsPreviewsResponse{}
 		if pageToken != "" {
@@ -531,6 +598,12 @@ func (c *orgPolicyViolationsPreviewGRPCClient) GetOrgPolicyViolationsPreview(ctx
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//policysimulator.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService/GetOrgPolicyViolationsPreview")
+	}
 	opts = append((*c.CallOptions).GetOrgPolicyViolationsPreview[0:len((*c.CallOptions).GetOrgPolicyViolationsPreview):len((*c.CallOptions).GetOrgPolicyViolationsPreview)], opts...)
 	var resp *policysimulatorpb.OrgPolicyViolationsPreview
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -549,6 +622,12 @@ func (c *orgPolicyViolationsPreviewGRPCClient) CreateOrgPolicyViolationsPreview(
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//policysimulator.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService/CreateOrgPolicyViolationsPreview")
+	}
 	opts = append((*c.CallOptions).CreateOrgPolicyViolationsPreview[0:len((*c.CallOptions).CreateOrgPolicyViolationsPreview):len((*c.CallOptions).CreateOrgPolicyViolationsPreview)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -559,8 +638,12 @@ func (c *orgPolicyViolationsPreviewGRPCClient) CreateOrgPolicyViolationsPreview(
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*policysimulator.CreateOrgPolicyViolationsPreviewOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateOrgPolicyViolationsPreviewOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -569,9 +652,15 @@ func (c *orgPolicyViolationsPreviewGRPCClient) ListOrgPolicyViolations(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//policysimulator.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService/ListOrgPolicyViolations")
+	}
 	opts = append((*c.CallOptions).ListOrgPolicyViolations[0:len((*c.CallOptions).ListOrgPolicyViolations):len((*c.CallOptions).ListOrgPolicyViolations)], opts...)
 	it := &OrgPolicyViolationIterator{}
-	req = proto.Clone(req).(*policysimulatorpb.ListOrgPolicyViolationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*policysimulatorpb.OrgPolicyViolation, string, error) {
 		resp := &policysimulatorpb.ListOrgPolicyViolationsResponse{}
 		if pageToken != "" {
@@ -615,6 +704,9 @@ func (c *orgPolicyViolationsPreviewGRPCClient) GetOperation(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -633,9 +725,12 @@ func (c *orgPolicyViolationsPreviewGRPCClient) ListOperations(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -681,7 +776,7 @@ func (c *orgPolicyViolationsPreviewGRPCClient) ListOperations(ctx context.Contex
 // is available for at least 7 days.
 func (c *orgPolicyViolationsPreviewRESTClient) ListOrgPolicyViolationsPreviews(ctx context.Context, req *policysimulatorpb.ListOrgPolicyViolationsPreviewsRequest, opts ...gax.CallOption) *OrgPolicyViolationsPreviewIterator {
 	it := &OrgPolicyViolationsPreviewIterator{}
-	req = proto.Clone(req).(*policysimulatorpb.ListOrgPolicyViolationsPreviewsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*policysimulatorpb.OrgPolicyViolationsPreview, string, error) {
 		resp := &policysimulatorpb.ListOrgPolicyViolationsPreviewsResponse{}
@@ -779,6 +874,13 @@ func (c *orgPolicyViolationsPreviewRESTClient) GetOrgPolicyViolationsPreview(ctx
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//policysimulator.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService/GetOrgPolicyViolationsPreview")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/orgPolicyViolationsPreviews/*}")
+	}
 	opts = append((*c.CallOptions).GetOrgPolicyViolationsPreview[0:len((*c.CallOptions).GetOrgPolicyViolationsPreview):len((*c.CallOptions).GetOrgPolicyViolationsPreview)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &policysimulatorpb.OrgPolicyViolationsPreview{}
@@ -844,6 +946,13 @@ func (c *orgPolicyViolationsPreviewRESTClient) CreateOrgPolicyViolationsPreview(
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//policysimulator.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService/CreateOrgPolicyViolationsPreview")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=organizations/*/locations/*}/orgPolicyViolationsPreviews")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -872,8 +981,12 @@ func (c *orgPolicyViolationsPreviewRESTClient) CreateOrgPolicyViolationsPreview(
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*policysimulator.CreateOrgPolicyViolationsPreviewOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateOrgPolicyViolationsPreviewOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -883,7 +996,7 @@ func (c *orgPolicyViolationsPreviewRESTClient) CreateOrgPolicyViolationsPreview(
 // OrgPolicyViolationsPreview.
 func (c *orgPolicyViolationsPreviewRESTClient) ListOrgPolicyViolations(ctx context.Context, req *policysimulatorpb.ListOrgPolicyViolationsRequest, opts ...gax.CallOption) *OrgPolicyViolationIterator {
 	it := &OrgPolicyViolationIterator{}
-	req = proto.Clone(req).(*policysimulatorpb.ListOrgPolicyViolationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*policysimulatorpb.OrgPolicyViolation, string, error) {
 		resp := &policysimulatorpb.ListOrgPolicyViolationsResponse{}
@@ -977,6 +1090,10 @@ func (c *orgPolicyViolationsPreviewRESTClient) GetOperation(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=operations/**}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1011,7 +1128,7 @@ func (c *orgPolicyViolationsPreviewRESTClient) GetOperation(ctx context.Context,
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *orgPolicyViolationsPreviewRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1096,7 +1213,7 @@ func (c *orgPolicyViolationsPreviewRESTClient) ListOperations(ctx context.Contex
 // The name must be that of a previously created CreateOrgPolicyViolationsPreviewOperation, possibly from a different process.
 func (c *orgPolicyViolationsPreviewGRPCClient) CreateOrgPolicyViolationsPreviewOperation(name string) *CreateOrgPolicyViolationsPreviewOperation {
 	return &CreateOrgPolicyViolationsPreviewOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*policysimulator.CreateOrgPolicyViolationsPreviewOperation"),
 	}
 }
 
@@ -1105,7 +1222,7 @@ func (c *orgPolicyViolationsPreviewGRPCClient) CreateOrgPolicyViolationsPreviewO
 func (c *orgPolicyViolationsPreviewRESTClient) CreateOrgPolicyViolationsPreviewOperation(name string) *CreateOrgPolicyViolationsPreviewOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateOrgPolicyViolationsPreviewOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*policysimulator.CreateOrgPolicyViolationsPreviewOperation"),
 		pollPath: override,
 	}
 }

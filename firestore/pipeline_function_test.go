@@ -19,6 +19,7 @@ import (
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/testutil"
+	"google.golang.org/genproto/googleapis/type/latlng"
 )
 
 func TestTruncFunctions(t *testing.T) {
@@ -187,14 +188,13 @@ func TestLogicalFunctions(t *testing.T) {
 		},
 		{
 			desc: "IfNull",
-			expr: IfNull(FieldOf("a"), 1, 2),
+			expr: IfNull(FieldOf("a"), 1),
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "if_null",
 					Args: []*pb.Value{
 						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "a"}},
 						{ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
-						{ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
 					},
 				},
 			}},
@@ -205,6 +205,33 @@ func TestLogicalFunctions(t *testing.T) {
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "if_null",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "a"}},
+						{ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+					},
+				},
+			}},
+		},
+		{
+			desc: "Coalesce",
+			expr: Coalesce(FieldOf("a"), 1, 2),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "coalesce",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "a"}},
+						{ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+						{ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
+					},
+				},
+			}},
+		},
+		{
+			desc: "baseExpression Coalesce",
+			expr: FieldOf("a").Coalesce(1),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "coalesce",
 					Args: []*pb.Value{
 						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "a"}},
 						{ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
@@ -708,6 +735,30 @@ func TestKeyFunctions(t *testing.T) {
 				},
 			}},
 		},
+		{
+			desc: "Parent",
+			expr: GetParent("field"),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "parent",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_StringValue{StringValue: "field"}},
+					},
+				},
+			}},
+		},
+		{
+			desc: "baseExpression GetParent",
+			expr: FieldOf("field").GetParent(),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "parent",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
+					},
+				},
+			}},
+		},
 	}
 
 	for _, tc := range testcases {
@@ -968,8 +1019,8 @@ func TestArrayFunctions(t *testing.T) {
 			}},
 		},
 		{
-			desc: "ArraySlice",
-			expr: ArraySlice("field", 1),
+			desc: "ArraySliceToEnd",
+			expr: ArraySliceToEnd("field", 1),
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "array_slice",
@@ -982,7 +1033,7 @@ func TestArrayFunctions(t *testing.T) {
 		},
 		{
 			desc: "ArraySliceWithLength",
-			expr: ArraySliceLength("field", 1, 2),
+			expr: ArraySlice("field", 1, 2),
 			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
 				FunctionValue: &pb.Function{
 					Name: "array_slice",
@@ -994,51 +1045,140 @@ func TestArrayFunctions(t *testing.T) {
 				},
 			}},
 		},
-		// TODO: Uncomment this after fixing the proto representation of this function.
-		// {
-		// 	desc: "ArrayFilter",
-		// 	expr: ArrayFilter("field", "item", FieldOf("item").GreaterThan(5)),
-		// 	want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-		// 		FunctionValue: &pb.Function{
-		// 			Name: "array_filter",
-		// 			Args: []*pb.Value{
-		// 				{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
-		// 				{ValueType: &pb.Value_StringValue{StringValue: "item"}},
-		// 				{ValueType: &pb.Value_FunctionValue{
-		// 					FunctionValue: &pb.Function{
-		// 						Name: "greater_than",
-		// 						Args: []*pb.Value{
-		// 							{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
-		// 							{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
-		// 						},
-		// 					},
-		// 				}},
-		// 			},
-		// 		},
-		// 	}},
-		// },
-		// {
-		// 	desc: "baseExpression ArrayFilter",
-		// 	expr: FieldOf("field").ArrayFilter("item", FieldOf("item").GreaterThan(5)),
-		// 	want: &pb.Value{ValueType: &pb.Value_FunctionValue{
-		// 		FunctionValue: &pb.Function{
-		// 			Name: "array_filter",
-		// 			Args: []*pb.Value{
-		// 				{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
-		// 				{ValueType: &pb.Value_StringValue{StringValue: "item"}},
-		// 				{ValueType: &pb.Value_FunctionValue{
-		// 					FunctionValue: &pb.Function{
-		// 						Name: "greater_than",
-		// 						Args: []*pb.Value{
-		// 							{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
-		// 							{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
-		// 						},
-		// 					},
-		// 				}},
-		// 			},
-		// 		},
-		// 	}},
-		// },
+		{
+			desc: "ArrayFilter",
+			expr: ArrayFilter("field", "item", FieldOf("item").GreaterThan(5)),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "array_filter",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
+						{ValueType: &pb.Value_StringValue{StringValue: "item"}},
+						{ValueType: &pb.Value_FunctionValue{
+							FunctionValue: &pb.Function{
+								Name: "greater_than",
+								Args: []*pb.Value{
+									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
+									{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
+								},
+							},
+						}},
+					},
+				},
+			}},
+		},
+		{
+			desc: "baseExpression ArrayFilter",
+			expr: FieldOf("field").ArrayFilter("item", FieldOf("item").GreaterThan(5)),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "array_filter",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
+						{ValueType: &pb.Value_StringValue{StringValue: "item"}},
+						{ValueType: &pb.Value_FunctionValue{
+							FunctionValue: &pb.Function{
+								Name: "greater_than",
+								Args: []*pb.Value{
+									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
+									{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
+								},
+							},
+						}},
+					},
+				},
+			}},
+		},
+		{
+			desc: "ArrayTransform",
+			expr: ArrayTransform("field", "item", FieldOf("item").Add(1)),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "array_transform",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
+						{ValueType: &pb.Value_StringValue{StringValue: "item"}},
+						{ValueType: &pb.Value_FunctionValue{
+							FunctionValue: &pb.Function{
+								Name: "add",
+								Args: []*pb.Value{
+									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
+									{ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+								},
+							},
+						}},
+					},
+				},
+			}},
+		},
+		{
+			desc: "baseExpression ArrayTransform",
+			expr: FieldOf("field").ArrayTransform("item", FieldOf("item").Multiply(2)),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "array_transform",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
+						{ValueType: &pb.Value_StringValue{StringValue: "item"}},
+						{ValueType: &pb.Value_FunctionValue{
+							FunctionValue: &pb.Function{
+								Name: "multiply",
+								Args: []*pb.Value{
+									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
+									{ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
+								},
+							},
+						}},
+					},
+				},
+			}},
+		},
+		{
+			desc: "ArrayTransformWithIndex",
+			expr: ArrayTransformWithIndex("field", "item", "idx", FieldOf("item").Add(FieldOf("idx"))),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "array_transform",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
+						{ValueType: &pb.Value_StringValue{StringValue: "item"}},
+						{ValueType: &pb.Value_StringValue{StringValue: "idx"}},
+						{ValueType: &pb.Value_FunctionValue{
+							FunctionValue: &pb.Function{
+								Name: "add",
+								Args: []*pb.Value{
+									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
+									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "idx"}},
+								},
+							},
+						}},
+					},
+				},
+			}},
+		},
+		{
+			desc: "baseExpression ArrayTransformWithIndex",
+			expr: FieldOf("field").ArrayTransformWithIndex("item", "idx", FieldOf("item").Add(FieldOf("idx"))),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "array_transform",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "field"}},
+						{ValueType: &pb.Value_StringValue{StringValue: "item"}},
+						{ValueType: &pb.Value_StringValue{StringValue: "idx"}},
+						{ValueType: &pb.Value_FunctionValue{
+							FunctionValue: &pb.Function{
+								Name: "add",
+								Args: []*pb.Value{
+									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "item"}},
+									{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "idx"}},
+								},
+							},
+						}},
+					},
+				},
+			}},
+		},
 		{
 			desc: "ArrayIndexOf",
 			expr: ArrayIndexOf("field", "search"),
@@ -1116,5 +1256,78 @@ func TestGetFieldVariations(t *testing.T) {
 	expr6 := GetField(Variable("doc"), "title")
 	if expr6 == nil {
 		t.Fatal("expected expr6 not to be nil")
+	}
+}
+
+func TestSearchFunctions(t *testing.T) {
+	// 1. DocumentMatches
+	// 2. GeoDistance
+	// 3. Score
+	// 4. GeoDistance method
+	// 8. Matches method
+	testcases := []struct {
+		desc string
+		expr Expression
+		want *pb.Value
+	}{
+		{
+			desc: "DocumentMatches",
+			expr: DocumentMatches("waffles"),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "document_matches",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_StringValue{StringValue: "waffles"}},
+					},
+				},
+			}},
+		},
+		{
+			desc: "GeoDistance",
+			expr: GeoDistance("location", &latlng.LatLng{Latitude: 37.0, Longitude: -122.0}),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "geo_distance",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "location"}},
+						{ValueType: &pb.Value_GeoPointValue{GeoPointValue: &latlng.LatLng{Latitude: 37.0, Longitude: -122.0}}},
+					},
+				},
+			}},
+		},
+		{
+			desc: "Score",
+			expr: Score(),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "score",
+				},
+			}},
+		},
+		{
+			desc: "GeoDistance method",
+			expr: FieldOf("location").GeoDistance(&latlng.LatLng{Latitude: 37.0, Longitude: -122.0}),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "geo_distance",
+					Args: []*pb.Value{
+						{ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "location"}},
+						{ValueType: &pb.Value_GeoPointValue{GeoPointValue: &latlng.LatLng{Latitude: 37.0, Longitude: -122.0}}},
+					},
+				},
+			}},
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.desc, func(t *testing.T) {
+			got, err := tc.expr.toProto()
+			if err != nil {
+				t.Fatalf("toProto() failed: %v", err)
+			}
+			if diff := testutil.Diff(got, tc.want); diff != "" {
+				t.Errorf("toProto() returned diff (-got +want): %s", diff)
+			}
+		})
 	}
 }

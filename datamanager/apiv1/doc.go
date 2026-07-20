@@ -20,8 +20,6 @@
 // A unified ingestion API for data partners, agencies and advertisers to
 // connect first-party data across Google advertising products.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference
@@ -59,11 +57,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &datamanagerpb.IngestAudienceMembersRequest{
+//	req := &datamanagerpb.IngestAdEventsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/datamanager/apiv1/datamanagerpb#IngestAudienceMembersRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/datamanager/apiv1/datamanagerpb#IngestAdEventsRequest.
 //	}
-//	resp, err := c.IngestAudienceMembers(ctx, req)
+//	resp, err := c.IngestAdEvents(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -60,6 +60,7 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -140,6 +141,11 @@ func TestMain(m *testing.M) {
 // Return a cleanup function.
 func initIntegrationTest() func() error {
 	flag.Parse() // needed for testing.Short()
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		if key := os.Getenv("GCLOUD_TESTS_GOLANG_KEY"); key != "" {
+			os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", key)
+		}
+	}
 	switch {
 	case testing.Short() && *record:
 		log.Fatal("cannot combine -short and -record")
@@ -413,8 +419,8 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 		reader.Add(&res[0].buf, 0, int64(len(content)), callback)
 		// Read from end. We will read the last 10 bytes.
 		reader.Add(&res[1].buf, -10, 0, callback1)
-		// Read from Front. This will read the starting 10 bytes.
-		reader.Add(&res[2].buf, 0, 10, callback2)
+		// Read from Front. This will read the whole object.
+		reader.Add(&res[2].buf, 0, 0, callback2)
 		reader.Wait()
 		for _, k := range res {
 			if k.offset < 0 {
@@ -656,7 +662,7 @@ func TestIntegration_MRDScaleUpConnections(t *testing.T) {
 				log.Printf("failed to delete test object: %v", err)
 			}
 		})
-		maxConnections := 3
+		maxConnections := 2
 		// Initializing targetPendingBytes to 1 to make sure manager
 		// definitely scales up with any load.
 		reader, err := obj.NewMultiRangeDownloader(ctx, WithMaxConnections(maxConnections), WithTargetPendingBytes(1))
@@ -681,9 +687,9 @@ func TestIntegration_MRDScaleUpConnections(t *testing.T) {
 		results := make([]*rangeRes, addCount)
 
 		var wg sync.WaitGroup
-		wg.Add(len(results))
 
 		for i := 0; i < addCount; i++ {
+			wg.Add(1)
 			// Randomize offset/limit slightly to ensure varied request patterns.
 			offset := int64(0)
 			limit := int64(rangeSize)
@@ -697,6 +703,13 @@ func TestIntegration_MRDScaleUpConnections(t *testing.T) {
 				r.gotLimit = l
 				wg.Done()
 			})
+
+			// Wait for each batch of maxConnections to finish before adding more.
+			// This gives the event loop natural breaks to process stream creation
+			// and deterministic scale-up behavior without being flooded.
+			if (i+1)%maxConnections == 0 {
+				wg.Wait()
+			}
 		}
 
 		// Wait for all goroutines to finish adding their ranges.
@@ -924,6 +937,67 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 	})
 }
 
+func TestIntegration_MRDNoNewStreamsAfterPermanentError(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 5<<20)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "mrdnonretry"
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		defer func() {
+			// Try delete again if test fails to delete the object and ignore the error.
+			_ = obj.Delete(ctx)
+		}()
+		reader, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		manager := reader.impl.(*multiRangeDownloaderManager)
+		res := make([]multiRangeDownloaderOutput, 2)
+		callback := func(x, y int64, err error) {
+			res[0].offset = x
+			res[0].limit = y
+			res[0].err = err
+		}
+		callback1 := func(x, y int64, err error) {
+			res[1].offset = x
+			res[1].limit = y
+			res[1].err = err
+		}
+		// Read All At Once.
+		reader.Add(&res[0].buf, 0, 0, callback)
+		// Manually delete the object so MRD receives permanent error.
+		err = obj.Delete(ctx)
+		if err != nil {
+			t.Fatalf("Could not delete object during MRD download: %v", err)
+		}
+		// More permanent errors.
+		reader.Add(&res[1].buf, int64(2*len(content)), 0, callback1)
+		reader.Wait()
+		for i, k := range res {
+			// if we get nil error for any callback other than first, that should be an error.
+			if i == 0 && k.err == nil && !bytes.Equal(content, k.buf.Bytes()) {
+				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
+					k.offset, k.limit, len(k.buf.Bytes()), len(content))
+			}
+			if k.err == nil && i != 0 {
+				t.Errorf("read range %v to %v want err: nil, got: %v", k.offset, k.limit, k.err)
+			}
+		}
+		// Simulate wait so we can check if new streams have been created
+		time.Sleep(5 * time.Second)
+		if manager.streamIDCounter > 1 {
+			t.Fatalf("Manager has tried to create more streams after a permanent error. manager.streamIDCounter: %v", manager.streamIDCounter)
+		}
+		if err = reader.Close(); err == nil {
+			t.Fatalf("Expected error while closing reader, got nil")
+		}
+	})
+}
+
 func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
 	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
@@ -978,6 +1052,7 @@ func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
 				t.Errorf("read range %v to %v want err: nil, got: %v", k.offset, k.limit, k.err)
 			}
 		}
+		time.Sleep(10 * time.Second)
 		if err = reader.Close(); err == nil {
 			t.Fatalf("Expected error while closing reader, got nil")
 		}
@@ -1071,6 +1146,71 @@ func TestIntegration_DoNotDetectDirectConnectivityWhenDisabled(t *testing.T) {
 	})
 }
 
+// Test handles the case when Direct Connectivity is enforced but disabled
+// client-side. The GCS server must return an error because the request is not
+// routed via DirectPath.
+func TestIntegration_DirectConnectivityEnforcedError(t *testing.T) {
+	ctx := skipHTTP("grpc only test")
+	multiTransportTest(skipExtraReadAPIs(ctx, "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, _ *Client) {
+		// Detect if we are running in GCE and get the region.
+		detectedAttrs, err := resource.New(ctx, resource.WithDetectors(gcp.NewDetector()))
+		if err != nil {
+			t.Fatalf("resource.New: %v", err)
+		}
+		attrs := detectedAttrs.Set()
+		if v, exists := attrs.Value("cloud.platform"); !exists || v.AsString() != "gcp_compute_engine" {
+			t.Skip("only testable in a GCE instance")
+		}
+		regionVal, exists := attrs.Value("cloud.region")
+		if !exists {
+			t.Skip("could not detect GCE region")
+		}
+		region := regionVal.AsString()
+		t.Logf("Detected GCE region: %q", region)
+
+		// Create a temporary client to set up the bucket in the same region.
+		client := testConfigGRPC(ctx, t)
+		defer client.Close()
+		bucketName := prefix + uidSpace.New()
+		bucket := client.Bucket(bucketName)
+		if err := bucket.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: region}); err != nil {
+			t.Fatalf("failed to create bucket in region %q: %v", region, err)
+		}
+		t.Cleanup(func() {
+			bucket.Delete(ctx)
+		})
+
+		// Disable DirectPath client-side using environment variable.
+		t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+
+		// Create a client with Direct Connectivity Enforced.
+		enforcedClient, err := NewGRPCClient(ctx,
+			experimental.WithDirectConnectivityEnforced(),
+		)
+		if err != nil {
+			t.Fatalf("failed to create enforced client: %v", err)
+		}
+		defer enforcedClient.Close()
+
+		// Try writing an object and ensure it fails.
+		obj := enforcedClient.Bucket(bucketName).Object("test-object")
+		w := obj.NewWriter(ctx)
+		_, err = w.Write([]byte("hello world"))
+		if closeErr := w.Close(); err == nil {
+			err = closeErr
+		}
+		if err == nil {
+			t.Fatal("expected error when direct connectivity is enforced but disabled client-side, got nil")
+		}
+
+		// Verify that the error is FailedPrecondition (400 / FailedPrecondition).
+		t.Logf("Got expected error: %v", err)
+		if gotCode := status.Code(err); gotCode != codes.FailedPrecondition {
+			t.Errorf("got error code %v, want FailedPrecondition", gotCode)
+		}
+	})
+}
+
 // TestIntegration_MetricsEnablement does not use multiTransportTest because it
 // only has to run once, and creating the manual reader multiple times can
 // cause it to be registered multiple times to packages that enable by default.
@@ -1123,6 +1263,139 @@ func TestIntegration_MetricsEnablement(t *testing.T) {
 
 	if err := mr.Shutdown(ctx); err != nil {
 		t.Fatalf("manual reader shutdown: %v", err)
+	}
+}
+
+func TestIntegration_OtelMetricsEnablement(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	ctx := context.Background()
+	prefix := grpcTestPrefix
+
+	for _, transportType := range []string{"http", "grpc"} {
+		t.Run(transportType, func(t *testing.T) {
+			res, err := resource.New(ctx,
+				resource.WithAttributes(
+					attribute.String("gcp.client.service", "storage"),
+					attribute.String("gcp.client.repo", "googleapis/google-cloud-go"),
+				),
+			)
+			if err != nil {
+				t.Fatalf("resource.New: %v", err)
+			}
+			mr := metric.NewManualReader()
+			provider := metric.NewMeterProvider(
+				metric.WithReader(mr),
+				metric.WithResource(res),
+			)
+			defer provider.Shutdown(ctx)
+
+			var client *Client
+			opts := []option.ClientOption{
+				experimental.WithOtelMetrics(),
+				experimental.WithMeterProvider(provider),
+			}
+
+			if transportType == "grpc" {
+				client = testConfigGRPC(ctx, t, opts...)
+			} else {
+				client = testConfig(ctx, t, opts...)
+			}
+			defer client.Close()
+
+			bucketName := prefix + uidSpace.New()
+			b := client.Bucket(bucketName)
+
+			if err := b.Create(ctx, testutil.ProjID(), nil); err != nil {
+				t.Fatalf("BucketHandle.Create(%q): %v", bucketName, err)
+			}
+			defer b.Delete(ctx)
+
+			it := b.Objects(ctx, nil)
+			_, err = it.Next()
+			if err != iterator.Done {
+				t.Errorf("Objects.Next: expected iterator.Done got %v", err)
+			}
+
+			rm := metricdata.ResourceMetrics{}
+			if err := mr.Collect(ctx, &rm); err != nil {
+				t.Fatalf("ManualReader.Collect: %v", err)
+			}
+
+			// Validate resource attributes.
+			resAttrs := make(map[string]string)
+			for _, attr := range rm.Resource.Attributes() {
+				resAttrs[string(attr.Key)] = attr.Value.Emit()
+			}
+			if resAttrs["gcp.client.service"] != "storage" {
+				t.Errorf("expected gcp.client.service = storage, got %q", resAttrs["gcp.client.service"])
+			}
+			if resAttrs["gcp.client.repo"] != "googleapis/google-cloud-go" {
+				t.Errorf("expected gcp.client.repo = googleapis/google-cloud-go, got %q", resAttrs["gcp.client.repo"])
+			}
+
+			// Group metrics by name.
+			metricsMap := make(map[string]metricdata.Metrics)
+			for _, sm := range rm.ScopeMetrics {
+				for _, m := range sm.Metrics {
+					metricsMap[m.Name] = m
+				}
+			}
+
+			// Check transport-level duration metric.
+			expectedMetricName := "rpc.client.call.duration"
+			if transportType == "http" {
+				expectedMetricName = "http.client.request.duration"
+			}
+			if m, ok := metricsMap[expectedMetricName]; !ok {
+				t.Errorf("expected transport metric %q not found", expectedMetricName)
+			} else {
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok {
+					t.Fatalf("expected Histogram data, got %T", m.Data)
+				}
+				if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for %q, got 0", expectedMetricName)
+				} else {
+					dp := hist.DataPoints[0]
+					attrs := make(map[string]string)
+					for _, kv := range dp.Attributes.ToSlice() {
+						attrs[string(kv.Key)] = kv.Value.Emit()
+					}
+					if attrs["server.address"] == "" {
+						t.Errorf("expected non-empty server.address")
+					}
+				}
+			}
+
+			// Check SDK-level duration metric.
+			if m, ok := metricsMap["gcp.client.request.duration"]; !ok {
+				t.Errorf("expected metric gcp.client.request.duration not found")
+			} else {
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok {
+					t.Fatalf("expected Histogram data, got %T", m.Data)
+				}
+				if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for gcp.client.request.duration, got 0")
+				}
+			}
+
+			// Check client operations metric.
+			if m, ok := metricsMap["gcp.storage.client.operations"]; !ok {
+				t.Errorf("expected metric gcp.storage.client.operations not found")
+			} else {
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok {
+					t.Fatalf("expected Sum data, got %T", m.Data)
+				}
+				if len(sum.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for gcp.storage.client.operations, got 0")
+				}
+			}
+		})
 	}
 }
 
@@ -2292,6 +2565,150 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 	})
 }
 
+func TestIntegration_AppendWriterCRC32CValidation(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Test for appendable writes"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+		testCases := []struct {
+			name               string
+			content            []byte
+			finalizeOnClose    bool
+			sendCRC32C         bool
+			incorrectSendCRC   bool
+			setAppendFinalCRC  bool
+			incorrectAppendCRC bool
+			wantErr            bool
+		}{
+			{
+				name:              "append with correct final CRC. Finalize",
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
+				setAppendFinalCRC: true,
+				finalizeOnClose:   true,
+			},
+			{
+				name:               "append with incorrect AppendFinalCRC32C. Finalize",
+				content:            bytes.Repeat([]byte("a"), 1*MiB),
+				setAppendFinalCRC:  true,
+				incorrectAppendCRC: true,
+				finalizeOnClose:    true,
+				wantErr:            true,
+			},
+			{
+				name:               "append with incorrect AppendFinalCRC32C. Don't finalize",
+				content:            bytes.Repeat([]byte("a"), 1*MiB),
+				setAppendFinalCRC:  true,
+				incorrectAppendCRC: true,
+				finalizeOnClose:    false,
+			},
+			{
+				name:              "append with both SendCRC32C and AppendFinalCRC32C correct. Finalize",
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:        true,
+				setAppendFinalCRC: true,
+				finalizeOnClose:   true,
+			},
+			{
+				name:               "append with correct SendCRC32C but incorrect AppendFinalCRC32C. Finalize",
+				content:            bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:         true,
+				setAppendFinalCRC:  true,
+				incorrectAppendCRC: true,
+				wantErr:            true,
+				finalizeOnClose:    true,
+			},
+			{
+				name:              "append with incorrect SendCRC32C but correct AppendFinalCRC32C. Finalize",
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:        true,
+				incorrectSendCRC:  true,
+				setAppendFinalCRC: true,
+				wantErr:           false,
+				finalizeOnClose:   true,
+			},
+			{
+				name:            "append with correct SendCRC32C but no AppendFinalCRC32C. Finalize",
+				content:         bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:      true,
+				finalizeOnClose: true,
+			},
+			{
+				name:             "append with incorrect SendCRC32C but no AppendFinalCRC32C. Finalize",
+				content:          bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:       true,
+				incorrectSendCRC: true,
+				finalizeOnClose:  true,
+				wantErr:          true,
+			},
+			{
+				name:             "append with incorrect SendCRC32C but no AppendFinalCRC32C. Don't finalize",
+				content:          bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:       true,
+				incorrectSendCRC: true,
+				finalizeOnClose:  false,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				correctCRC32C := crc32.Checksum(tc.content, crc32cTable)
+				obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
+				t.Cleanup(func() {
+					h.mustDeleteObject(obj)
+				})
+
+				w := obj.NewWriter(ctx)
+				w.Append = true
+				w.FinalizeOnClose = tc.finalizeOnClose
+				if tc.sendCRC32C {
+					w.SendCRC32C = true
+					if tc.incorrectSendCRC {
+						w.CRC32C = correctCRC32C + 1
+					} else {
+						w.CRC32C = correctCRC32C
+					}
+				}
+
+				if _, err := w.Write(tc.content); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+				// Provide CRC after write, before close.
+				if tc.setAppendFinalCRC {
+					w.SendAppendFinalCRC32C = true
+					if tc.incorrectAppendCRC {
+						w.AppendFinalCRC32C = correctCRC32C + 1
+					} else {
+						w.AppendFinalCRC32C = correctCRC32C
+					}
+				}
+				err := w.Close()
+
+				if tc.wantErr {
+					if !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
+					}
+					return
+				}
+				if err != nil {
+					t.Fatalf("Writer.Close: %v", err)
+				}
+
+				// Verify content.
+				r, err := obj.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("NewReader failed: %v", err)
+				}
+				defer r.Close()
+				gotContent, err := io.ReadAll(r)
+				if err != nil {
+					t.Fatalf("ReadAll failed: %v", err)
+				}
+				if !bytes.Equal(gotContent, tc.content) {
+					t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
+				}
+			})
+		}
+	})
+}
+
 func TestIntegration_ConditionalDownload(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
@@ -2876,6 +3293,106 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 			t.Errorf("mismatching ComponentCount: got %v, want %v", attrs.ComponentCount, int64(len(objects)))
 		}
 		checkCompose(compDst, nil, customContexts.Custom)
+	})
+}
+
+func TestIntegration_ObjectCompose_DeleteSourceObjects(t *testing.T) {
+	multiTransportTest(skipZonalBucket(context.Background(), "ZB does not support compose"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		b := client.Bucket(bucket)
+
+		testCases := []struct {
+			desc                string
+			deleteSourceObjects bool
+			wantSourcesDeleted  bool
+		}{
+			{
+				desc:                "delete source objects after compose",
+				deleteSourceObjects: true,
+				wantSourcesDeleted:  true,
+			},
+			{
+				desc:                "do not delete source objects after compose",
+				deleteSourceObjects: false,
+				wantSourcesDeleted:  false,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.desc, func(t *testing.T) {
+				src1 := b.Object("delSrc1" + uidSpaceObjects.New())
+				c1 := randomContents()
+				if err := writeObject(ctx, src1, "text/plain", c1); err != nil {
+					t.Fatalf("Write for %v failed with %v", src1, err)
+				}
+				defer func() {
+					cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
+					defer cancel()
+					src1.Delete(cleanupCtx)
+				}()
+
+				src2 := b.Object("delSrc2" + uidSpaceObjects.New())
+				c2 := randomContents()
+				if err := writeObject(ctx, src2, "text/plain", c2); err != nil {
+					t.Fatalf("Write for %v failed with %v", src2, err)
+				}
+				defer func() {
+					cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
+					defer cancel()
+					src2.Delete(cleanupCtx)
+				}()
+
+				compDst := b.Object("composedDel" + uidSpaceObjects.New())
+				c := compDst.ComposerFrom(src1, src2)
+				c.DeleteSourceObjects = tc.deleteSourceObjects
+				attrs, err := c.Run(ctx)
+				if err != nil {
+					t.Fatalf("ComposeFrom error: %v", err)
+				}
+				defer compDst.Delete(ctx)
+
+				if attrs.ComponentCount != 2 {
+					t.Errorf("ComponentCount = %v, want 2", attrs.ComponentCount)
+				}
+
+				// Verify source objects existence
+				_, err1 := src1.Attrs(ctx)
+				if tc.wantSourcesDeleted {
+					if !errors.Is(err1, ErrObjectNotExist) {
+						t.Errorf("src1 still exists, expected it to be deleted. Err: %v", err1)
+					}
+				} else {
+					if err1 != nil {
+						t.Errorf("Error: src1.Attrs(): %v", err1)
+					}
+				}
+
+				_, err2 := src2.Attrs(ctx)
+				if tc.wantSourcesDeleted {
+					if !errors.Is(err2, ErrObjectNotExist) {
+						t.Errorf("src2 still exists, expected it to be deleted. Err: %v", err2)
+					}
+				} else {
+					if err2 != nil {
+						t.Errorf("Error: src2.Attrs(): %v", err2)
+					}
+				}
+
+				// Verify contents of destination object.
+				r, err := compDst.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("new reader on composed target: %v", err)
+				}
+				defer r.Close()
+				slurp, err := io.ReadAll(r)
+				if err != nil {
+					t.Fatalf("reading composed target: %v", err)
+				}
+				wantContents := append(c1, c2...)
+				if !bytes.Equal(slurp, wantContents) {
+					t.Errorf("Composed object contents mismatch:\ngot  %q\nwant %q", slurp, wantContents)
+				}
+			})
+		}
 	})
 }
 
@@ -3984,6 +4501,9 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 			takeoverFlushOffset  int64
 			opts                 *AppendableWriterOpts
 			checkProgressOffsets []int64
+			sendFinalAppendCRC   bool
+			incorrectAppendCRC   bool
+			wantErr              bool
 		}{
 			{
 				name:           "first message takeover w/large flush",
@@ -4060,6 +4580,53 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					FinalizeOnClose: true,
 				},
 			},
+			{
+				name:           "takeover and finalize with incorrect initial CRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+					SendCRC32C:      true,
+					CRC32C:          1234,
+				},
+				wantErr: true,
+			},
+			{
+				name:           "takeover and finalize with incorrect FinalAppendCRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+				},
+				sendFinalAppendCRC: true,
+				incorrectAppendCRC: true,
+				wantErr:            true,
+			},
+			{
+				name:           "takeover and finalize with correct FinalAppendCRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+				},
+				sendFinalAppendCRC: true,
+				wantErr:            false,
+			},
+			{
+				name:           "takeover and finalize with incorrect inital CRC but correct FinalAppendCRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+					CRC32C:          1234,
+				},
+				sendFinalAppendCRC: true,
+				wantErr:            false,
+			},
 		}
 		for _, tc := range testCases {
 			t.Run(tc.name, func(t *testing.T) {
@@ -4127,7 +4694,28 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				}
 
 				// Write remainder of the content and close.
-				h.mustWrite(w2, tc.content[remainingOffset:])
+				if _, err := w2.Write(tc.content[remainingOffset:]); err != nil && !tc.wantErr {
+					t.Fatalf("w2.Write: %v", err)
+				}
+				actualCRC := crc32.Checksum(tc.content, crc32cTable)
+				if tc.sendFinalAppendCRC {
+					w2.SendAppendFinalCRC32C = true
+					if tc.incorrectAppendCRC {
+						w2.AppendFinalCRC32C = actualCRC + 1
+					} else {
+						w2.AppendFinalCRC32C = actualCRC
+					}
+				}
+				err = w2.Close()
+				if tc.wantErr {
+					if err == nil || !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						t.Fatalf("expected an InvalidArgument error for incorrect CRC, but got %v", err)
+					}
+					return
+				}
+				if err != nil {
+					t.Fatalf("w2.Close: %v", err)
+				}
 
 				// Download content again and validate.
 				// Disabled due to b/395944605; unskip after this is resolved.
@@ -8963,4 +9551,195 @@ func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 			})
 		}
 	})
+}
+
+func TestIntegration_FetchBucketMetadata(t *testing.T) {
+	ctx := context.Background()
+
+	tests := []struct {
+		name             string
+		bucketAttrs      *BucketAttrs
+		expectedLocation string
+	}{
+		{
+			name:             "Multi-Region",
+			bucketAttrs:      &BucketAttrs{Location: "US"},
+			expectedLocation: "global",
+		},
+		{
+			name:             "Dual-Region",
+			bucketAttrs:      &BucketAttrs{Location: "NAM4"},
+			expectedLocation: "global",
+		},
+		{
+			name:             "Regional",
+			bucketAttrs:      &BucketAttrs{Location: "US-West1"},
+			expectedLocation: "us-west1",
+		},
+		{
+			name: "Zonal",
+			bucketAttrs: &BucketAttrs{
+				Location: testZonalLocation,
+				CustomPlacementConfig: &CustomPlacementConfig{
+					DataLocations: []string{testZonalZone},
+				},
+				StorageClass: "RAPID",
+				HierarchicalNamespace: &HierarchicalNamespace{
+					Enabled: true,
+				},
+				UniformBucketLevelAccess: UniformBucketLevelAccess{
+					Enabled: true,
+				},
+			},
+			expectedLocation: testZonalLocation,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := skipExtraReadAPIs(ctx, "bucket operations")
+			multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, _ string, client *Client) {
+				bucketName := fmt.Sprintf("test-nonreg-metadata-%d", time.Now().UnixNano())
+				err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), tc.bucketAttrs)
+				if err != nil {
+					t.Skipf("skipping: failed to create bucket in %s: %v", tc.bucketAttrs.Location, err)
+				}
+				t.Cleanup(func() {
+					client.Bucket(bucketName).Delete(ctx)
+				})
+
+				resource, location, err := client.tc.fetchBucketMetadata(ctx, bucketName)
+				if err != nil {
+					t.Fatalf("fetchBucketMetadata failed: %v", err)
+				}
+
+				if location != tc.expectedLocation {
+					t.Errorf("got location %q, want %q for %s bucket", location, tc.expectedLocation, tc.name)
+				}
+
+				if !strings.HasPrefix(resource, "projects/") || !strings.HasSuffix(resource, "/buckets/"+bucketName) {
+					t.Errorf("unexpected resource format: %q", resource)
+				}
+			})
+		})
+	}
+}
+
+func TestIntegration_ClientTracing(t *testing.T) {
+	ctx := context.Background()
+
+	tests := []struct {
+		name      string
+		newClient func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error)
+	}{
+		{
+			name: "gRPC",
+			newClient: func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+				return testConfigGRPC(ctx, t, opts...), nil
+			},
+		},
+		{
+			name: "HTTP",
+			newClient: func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+				return testConfig(ctx, t, opts...), nil
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+			// 1. Create bucket using a separate admin client.
+			adminClient, err := tc.newClient(t, ctx)
+			if err != nil {
+				t.Fatalf("failed to create admin client: %v", err)
+			}
+			adminClient.bucketMetadataCache = nil
+			bucketName := fmt.Sprintf("test-trace-int-%s-%d", strings.ToLower(tc.name), time.Now().UnixNano())
+			if err := adminClient.Bucket(bucketName).Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "us-east1"}); err != nil {
+				adminClient.Close()
+				t.Fatalf("failed to create bucket: %v", err)
+			}
+			t.Cleanup(func() {
+				adminClient.Bucket(bucketName).Delete(ctx)
+				adminClient.Close()
+			})
+
+			// 2. Create the test client which will have an empty cache.
+			client, err := tc.newClient(t, ctx)
+			if err != nil {
+				t.Fatalf("failed to create test client: %v", err)
+			}
+			defer client.Close()
+
+			doneChan := make(chan struct{}, 1)
+			client.bucketMetadataCache.fetchDone = doneChan
+
+			// Get the number of spans before our test operations.
+			initialSpanCount := len(te.Spans())
+
+			// 1. First operation: Cache Miss. Should get placeholder attributes.
+			_, err = client.Bucket(bucketName).Attrs(ctx)
+			if err != nil {
+				t.Fatalf("Bucket.Attrs failed: %v", err)
+			}
+
+			spans := te.Spans()
+			var attrsSpan tracetest.SpanStub
+			found := false
+			for _, s := range spans[initialSpanCount:] {
+				if s.Name == "cloud.google.com/go/storage.Bucket.Attrs" {
+					attrsSpan = s
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Fatalf("Bucket.Attrs span not found")
+			}
+
+			// First call should have placeholder.
+			verifySpanAttributes(t, attrsSpan, "projects/_/buckets/"+bucketName, "global")
+
+			// Wait for background fetch to complete and populate cache.
+			select {
+			case <-doneChan:
+			case <-time.After(fetchBackgroundTimeout):
+				t.Fatalf("timeout waiting for fetchBackground completion")
+			}
+			entry, cacheFound := client.bucketMetadataCache.get(bucketName)
+			if !cacheFound || entry.location != "us-east1" {
+				t.Fatalf("expected entry to be populated in cache with us-east1, got %+v (found: %t)", entry, cacheFound)
+			}
+
+			// 2. Second operation: Cache Hit. Should get resolved attributes.
+			spanCountAfterFirstOp := len(te.Spans())
+			bAttrs, err := client.Bucket(bucketName).Attrs(ctx)
+			if err != nil {
+				t.Fatalf("Bucket.Attrs failed: %v", err)
+			}
+
+			spans = te.Spans()
+			found = false
+			for _, s := range spans[spanCountAfterFirstOp:] {
+				if s.Name == "cloud.google.com/go/storage.Bucket.Attrs" {
+					attrsSpan = s
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Fatalf("second Bucket.Attrs span not found")
+			}
+
+			// Second call should have resolved attributes.
+			verifySpanAttributes(t, attrsSpan, fmt.Sprintf("projects/%d/buckets/%s", bAttrs.ProjectNumber, bucketName), "us-east1")
+		})
+	}
 }

@@ -30,6 +30,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -392,7 +394,7 @@ type DataMigrationClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DataMigrationClient) Close() error {
 	return c.internalClient.Close()
@@ -872,6 +874,16 @@ type dataMigrationGRPCClient struct {
 // Database Migration service
 func NewDataMigrationClient(ctx context.Context, opts ...option.ClientOption) (*DataMigrationClient, error) {
 	clientOpts := defaultDataMigrationGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datamigration",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/clouddms/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "datamigration.googleapis.com",
+		}))
+	}
 	if newDataMigrationClientHook != nil {
 		hookOpts, err := newDataMigrationClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -896,6 +908,69 @@ func NewDataMigrationClient(ctx context.Context, opts ...option.ClientOption) (*
 		locationsClient:     locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datamigration",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/clouddms/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamigration.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListMigrationJobs = append(client.CallOptions.ListMigrationJobs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetMigrationJob = append(client.CallOptions.GetMigrationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateMigrationJob = append(client.CallOptions.CreateMigrationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateMigrationJob = append(client.CallOptions.UpdateMigrationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteMigrationJob = append(client.CallOptions.DeleteMigrationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartMigrationJob = append(client.CallOptions.StartMigrationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.StopMigrationJob = append(client.CallOptions.StopMigrationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResumeMigrationJob = append(client.CallOptions.ResumeMigrationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.PromoteMigrationJob = append(client.CallOptions.PromoteMigrationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.VerifyMigrationJob = append(client.CallOptions.VerifyMigrationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.RestartMigrationJob = append(client.CallOptions.RestartMigrationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateSshScript = append(client.CallOptions.GenerateSshScript, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateTcpProxyScript = append(client.CallOptions.GenerateTcpProxyScript, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListConnectionProfiles = append(client.CallOptions.ListConnectionProfiles, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetConnectionProfile = append(client.CallOptions.GetConnectionProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateConnectionProfile = append(client.CallOptions.CreateConnectionProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateConnectionProfile = append(client.CallOptions.UpdateConnectionProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteConnectionProfile = append(client.CallOptions.DeleteConnectionProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreatePrivateConnection = append(client.CallOptions.CreatePrivateConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPrivateConnection = append(client.CallOptions.GetPrivateConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPrivateConnections = append(client.CallOptions.ListPrivateConnections, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePrivateConnection = append(client.CallOptions.DeletePrivateConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetConversionWorkspace = append(client.CallOptions.GetConversionWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListConversionWorkspaces = append(client.CallOptions.ListConversionWorkspaces, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateConversionWorkspace = append(client.CallOptions.CreateConversionWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateConversionWorkspace = append(client.CallOptions.UpdateConversionWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteConversionWorkspace = append(client.CallOptions.DeleteConversionWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateMappingRule = append(client.CallOptions.CreateMappingRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteMappingRule = append(client.CallOptions.DeleteMappingRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMappingRules = append(client.CallOptions.ListMappingRules, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetMappingRule = append(client.CallOptions.GetMappingRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.SeedConversionWorkspace = append(client.CallOptions.SeedConversionWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportMappingRules = append(client.CallOptions.ImportMappingRules, gax.WithClientMetrics(metrics))
+		client.CallOptions.ConvertConversionWorkspace = append(client.CallOptions.ConvertConversionWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.CommitConversionWorkspace = append(client.CallOptions.CommitConversionWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.RollbackConversionWorkspace = append(client.CallOptions.RollbackConversionWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.ApplyConversionWorkspace = append(client.CallOptions.ApplyConversionWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.DescribeDatabaseEntities = append(client.CallOptions.DescribeDatabaseEntities, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchBackgroundJobs = append(client.CallOptions.SearchBackgroundJobs, gax.WithClientMetrics(metrics))
+		client.CallOptions.DescribeConversionWorkspaceRevisions = append(client.CallOptions.DescribeConversionWorkspaceRevisions, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchStaticIps = append(client.CallOptions.FetchStaticIps, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -932,7 +1007,7 @@ func (c *dataMigrationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dataMigrationGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -943,9 +1018,15 @@ func (c *dataMigrationGRPCClient) ListMigrationJobs(ctx context.Context, req *cl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/ListMigrationJobs")
+	}
 	opts = append((*c.CallOptions).ListMigrationJobs[0:len((*c.CallOptions).ListMigrationJobs):len((*c.CallOptions).ListMigrationJobs)], opts...)
 	it := &MigrationJobIterator{}
-	req = proto.Clone(req).(*clouddmspb.ListMigrationJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.MigrationJob, string, error) {
 		resp := &clouddmspb.ListMigrationJobsResponse{}
 		if pageToken != "" {
@@ -989,6 +1070,12 @@ func (c *dataMigrationGRPCClient) GetMigrationJob(ctx context.Context, req *clou
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/GetMigrationJob")
+	}
 	opts = append((*c.CallOptions).GetMigrationJob[0:len((*c.CallOptions).GetMigrationJob):len((*c.CallOptions).GetMigrationJob)], opts...)
 	var resp *clouddmspb.MigrationJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1007,6 +1094,12 @@ func (c *dataMigrationGRPCClient) CreateMigrationJob(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/CreateMigrationJob")
+	}
 	opts = append((*c.CallOptions).CreateMigrationJob[0:len((*c.CallOptions).CreateMigrationJob):len((*c.CallOptions).CreateMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1017,8 +1110,12 @@ func (c *dataMigrationGRPCClient) CreateMigrationJob(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.CreateMigrationJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1027,6 +1124,9 @@ func (c *dataMigrationGRPCClient) UpdateMigrationJob(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/UpdateMigrationJob")
+	}
 	opts = append((*c.CallOptions).UpdateMigrationJob[0:len((*c.CallOptions).UpdateMigrationJob):len((*c.CallOptions).UpdateMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1037,8 +1137,12 @@ func (c *dataMigrationGRPCClient) UpdateMigrationJob(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.UpdateMigrationJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1047,6 +1151,12 @@ func (c *dataMigrationGRPCClient) DeleteMigrationJob(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/DeleteMigrationJob")
+	}
 	opts = append((*c.CallOptions).DeleteMigrationJob[0:len((*c.CallOptions).DeleteMigrationJob):len((*c.CallOptions).DeleteMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1057,8 +1167,12 @@ func (c *dataMigrationGRPCClient) DeleteMigrationJob(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.DeleteMigrationJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1067,6 +1181,12 @@ func (c *dataMigrationGRPCClient) StartMigrationJob(ctx context.Context, req *cl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/StartMigrationJob")
+	}
 	opts = append((*c.CallOptions).StartMigrationJob[0:len((*c.CallOptions).StartMigrationJob):len((*c.CallOptions).StartMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1077,8 +1197,12 @@ func (c *dataMigrationGRPCClient) StartMigrationJob(ctx context.Context, req *cl
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.StartMigrationJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1087,6 +1211,12 @@ func (c *dataMigrationGRPCClient) StopMigrationJob(ctx context.Context, req *clo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/StopMigrationJob")
+	}
 	opts = append((*c.CallOptions).StopMigrationJob[0:len((*c.CallOptions).StopMigrationJob):len((*c.CallOptions).StopMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1097,8 +1227,12 @@ func (c *dataMigrationGRPCClient) StopMigrationJob(ctx context.Context, req *clo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.StopMigrationJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1107,6 +1241,12 @@ func (c *dataMigrationGRPCClient) ResumeMigrationJob(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/ResumeMigrationJob")
+	}
 	opts = append((*c.CallOptions).ResumeMigrationJob[0:len((*c.CallOptions).ResumeMigrationJob):len((*c.CallOptions).ResumeMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1117,8 +1257,12 @@ func (c *dataMigrationGRPCClient) ResumeMigrationJob(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.ResumeMigrationJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResumeMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1127,6 +1271,12 @@ func (c *dataMigrationGRPCClient) PromoteMigrationJob(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/PromoteMigrationJob")
+	}
 	opts = append((*c.CallOptions).PromoteMigrationJob[0:len((*c.CallOptions).PromoteMigrationJob):len((*c.CallOptions).PromoteMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1137,8 +1287,12 @@ func (c *dataMigrationGRPCClient) PromoteMigrationJob(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.PromoteMigrationJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PromoteMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1147,6 +1301,12 @@ func (c *dataMigrationGRPCClient) VerifyMigrationJob(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/VerifyMigrationJob")
+	}
 	opts = append((*c.CallOptions).VerifyMigrationJob[0:len((*c.CallOptions).VerifyMigrationJob):len((*c.CallOptions).VerifyMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1157,8 +1317,12 @@ func (c *dataMigrationGRPCClient) VerifyMigrationJob(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.VerifyMigrationJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &VerifyMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1167,6 +1331,12 @@ func (c *dataMigrationGRPCClient) RestartMigrationJob(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/RestartMigrationJob")
+	}
 	opts = append((*c.CallOptions).RestartMigrationJob[0:len((*c.CallOptions).RestartMigrationJob):len((*c.CallOptions).RestartMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1177,8 +1347,12 @@ func (c *dataMigrationGRPCClient) RestartMigrationJob(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.RestartMigrationJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestartMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1187,6 +1361,12 @@ func (c *dataMigrationGRPCClient) GenerateSshScript(ctx context.Context, req *cl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetMigrationJob()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/GenerateSshScript")
+	}
 	opts = append((*c.CallOptions).GenerateSshScript[0:len((*c.CallOptions).GenerateSshScript):len((*c.CallOptions).GenerateSshScript)], opts...)
 	var resp *clouddmspb.SshScript
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1205,6 +1385,12 @@ func (c *dataMigrationGRPCClient) GenerateTcpProxyScript(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetMigrationJob()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/GenerateTcpProxyScript")
+	}
 	opts = append((*c.CallOptions).GenerateTcpProxyScript[0:len((*c.CallOptions).GenerateTcpProxyScript):len((*c.CallOptions).GenerateTcpProxyScript)], opts...)
 	var resp *clouddmspb.TcpProxyScript
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1223,9 +1409,15 @@ func (c *dataMigrationGRPCClient) ListConnectionProfiles(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/ListConnectionProfiles")
+	}
 	opts = append((*c.CallOptions).ListConnectionProfiles[0:len((*c.CallOptions).ListConnectionProfiles):len((*c.CallOptions).ListConnectionProfiles)], opts...)
 	it := &ConnectionProfileIterator{}
-	req = proto.Clone(req).(*clouddmspb.ListConnectionProfilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.ConnectionProfile, string, error) {
 		resp := &clouddmspb.ListConnectionProfilesResponse{}
 		if pageToken != "" {
@@ -1269,6 +1461,12 @@ func (c *dataMigrationGRPCClient) GetConnectionProfile(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/GetConnectionProfile")
+	}
 	opts = append((*c.CallOptions).GetConnectionProfile[0:len((*c.CallOptions).GetConnectionProfile):len((*c.CallOptions).GetConnectionProfile)], opts...)
 	var resp *clouddmspb.ConnectionProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1287,6 +1485,12 @@ func (c *dataMigrationGRPCClient) CreateConnectionProfile(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/CreateConnectionProfile")
+	}
 	opts = append((*c.CallOptions).CreateConnectionProfile[0:len((*c.CallOptions).CreateConnectionProfile):len((*c.CallOptions).CreateConnectionProfile)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1297,8 +1501,12 @@ func (c *dataMigrationGRPCClient) CreateConnectionProfile(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.CreateConnectionProfileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1307,6 +1515,9 @@ func (c *dataMigrationGRPCClient) UpdateConnectionProfile(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/UpdateConnectionProfile")
+	}
 	opts = append((*c.CallOptions).UpdateConnectionProfile[0:len((*c.CallOptions).UpdateConnectionProfile):len((*c.CallOptions).UpdateConnectionProfile)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1317,8 +1528,12 @@ func (c *dataMigrationGRPCClient) UpdateConnectionProfile(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.UpdateConnectionProfileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1327,6 +1542,12 @@ func (c *dataMigrationGRPCClient) DeleteConnectionProfile(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/DeleteConnectionProfile")
+	}
 	opts = append((*c.CallOptions).DeleteConnectionProfile[0:len((*c.CallOptions).DeleteConnectionProfile):len((*c.CallOptions).DeleteConnectionProfile)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1337,8 +1558,12 @@ func (c *dataMigrationGRPCClient) DeleteConnectionProfile(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.DeleteConnectionProfileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1347,6 +1572,12 @@ func (c *dataMigrationGRPCClient) CreatePrivateConnection(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/CreatePrivateConnection")
+	}
 	opts = append((*c.CallOptions).CreatePrivateConnection[0:len((*c.CallOptions).CreatePrivateConnection):len((*c.CallOptions).CreatePrivateConnection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1357,8 +1588,12 @@ func (c *dataMigrationGRPCClient) CreatePrivateConnection(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.CreatePrivateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1367,6 +1602,12 @@ func (c *dataMigrationGRPCClient) GetPrivateConnection(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/GetPrivateConnection")
+	}
 	opts = append((*c.CallOptions).GetPrivateConnection[0:len((*c.CallOptions).GetPrivateConnection):len((*c.CallOptions).GetPrivateConnection)], opts...)
 	var resp *clouddmspb.PrivateConnection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1385,9 +1626,15 @@ func (c *dataMigrationGRPCClient) ListPrivateConnections(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/ListPrivateConnections")
+	}
 	opts = append((*c.CallOptions).ListPrivateConnections[0:len((*c.CallOptions).ListPrivateConnections):len((*c.CallOptions).ListPrivateConnections)], opts...)
 	it := &PrivateConnectionIterator{}
-	req = proto.Clone(req).(*clouddmspb.ListPrivateConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.PrivateConnection, string, error) {
 		resp := &clouddmspb.ListPrivateConnectionsResponse{}
 		if pageToken != "" {
@@ -1431,6 +1678,12 @@ func (c *dataMigrationGRPCClient) DeletePrivateConnection(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/DeletePrivateConnection")
+	}
 	opts = append((*c.CallOptions).DeletePrivateConnection[0:len((*c.CallOptions).DeletePrivateConnection):len((*c.CallOptions).DeletePrivateConnection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1441,8 +1694,12 @@ func (c *dataMigrationGRPCClient) DeletePrivateConnection(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.DeletePrivateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1451,6 +1708,12 @@ func (c *dataMigrationGRPCClient) GetConversionWorkspace(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/GetConversionWorkspace")
+	}
 	opts = append((*c.CallOptions).GetConversionWorkspace[0:len((*c.CallOptions).GetConversionWorkspace):len((*c.CallOptions).GetConversionWorkspace)], opts...)
 	var resp *clouddmspb.ConversionWorkspace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1469,9 +1732,15 @@ func (c *dataMigrationGRPCClient) ListConversionWorkspaces(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/ListConversionWorkspaces")
+	}
 	opts = append((*c.CallOptions).ListConversionWorkspaces[0:len((*c.CallOptions).ListConversionWorkspaces):len((*c.CallOptions).ListConversionWorkspaces)], opts...)
 	it := &ConversionWorkspaceIterator{}
-	req = proto.Clone(req).(*clouddmspb.ListConversionWorkspacesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.ConversionWorkspace, string, error) {
 		resp := &clouddmspb.ListConversionWorkspacesResponse{}
 		if pageToken != "" {
@@ -1515,6 +1784,12 @@ func (c *dataMigrationGRPCClient) CreateConversionWorkspace(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/CreateConversionWorkspace")
+	}
 	opts = append((*c.CallOptions).CreateConversionWorkspace[0:len((*c.CallOptions).CreateConversionWorkspace):len((*c.CallOptions).CreateConversionWorkspace)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1525,8 +1800,12 @@ func (c *dataMigrationGRPCClient) CreateConversionWorkspace(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.CreateConversionWorkspaceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1535,6 +1814,9 @@ func (c *dataMigrationGRPCClient) UpdateConversionWorkspace(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/UpdateConversionWorkspace")
+	}
 	opts = append((*c.CallOptions).UpdateConversionWorkspace[0:len((*c.CallOptions).UpdateConversionWorkspace):len((*c.CallOptions).UpdateConversionWorkspace)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1545,8 +1827,12 @@ func (c *dataMigrationGRPCClient) UpdateConversionWorkspace(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.UpdateConversionWorkspaceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1555,6 +1841,12 @@ func (c *dataMigrationGRPCClient) DeleteConversionWorkspace(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/DeleteConversionWorkspace")
+	}
 	opts = append((*c.CallOptions).DeleteConversionWorkspace[0:len((*c.CallOptions).DeleteConversionWorkspace):len((*c.CallOptions).DeleteConversionWorkspace)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1565,8 +1857,12 @@ func (c *dataMigrationGRPCClient) DeleteConversionWorkspace(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.DeleteConversionWorkspaceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1575,6 +1871,12 @@ func (c *dataMigrationGRPCClient) CreateMappingRule(ctx context.Context, req *cl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/CreateMappingRule")
+	}
 	opts = append((*c.CallOptions).CreateMappingRule[0:len((*c.CallOptions).CreateMappingRule):len((*c.CallOptions).CreateMappingRule)], opts...)
 	var resp *clouddmspb.MappingRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1593,6 +1895,12 @@ func (c *dataMigrationGRPCClient) DeleteMappingRule(ctx context.Context, req *cl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/DeleteMappingRule")
+	}
 	opts = append((*c.CallOptions).DeleteMappingRule[0:len((*c.CallOptions).DeleteMappingRule):len((*c.CallOptions).DeleteMappingRule)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1607,9 +1915,15 @@ func (c *dataMigrationGRPCClient) ListMappingRules(ctx context.Context, req *clo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/ListMappingRules")
+	}
 	opts = append((*c.CallOptions).ListMappingRules[0:len((*c.CallOptions).ListMappingRules):len((*c.CallOptions).ListMappingRules)], opts...)
 	it := &MappingRuleIterator{}
-	req = proto.Clone(req).(*clouddmspb.ListMappingRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.MappingRule, string, error) {
 		resp := &clouddmspb.ListMappingRulesResponse{}
 		if pageToken != "" {
@@ -1653,6 +1967,12 @@ func (c *dataMigrationGRPCClient) GetMappingRule(ctx context.Context, req *cloud
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/GetMappingRule")
+	}
 	opts = append((*c.CallOptions).GetMappingRule[0:len((*c.CallOptions).GetMappingRule):len((*c.CallOptions).GetMappingRule)], opts...)
 	var resp *clouddmspb.MappingRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1671,6 +1991,12 @@ func (c *dataMigrationGRPCClient) SeedConversionWorkspace(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/SeedConversionWorkspace")
+	}
 	opts = append((*c.CallOptions).SeedConversionWorkspace[0:len((*c.CallOptions).SeedConversionWorkspace):len((*c.CallOptions).SeedConversionWorkspace)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1681,8 +2007,12 @@ func (c *dataMigrationGRPCClient) SeedConversionWorkspace(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.SeedConversionWorkspaceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SeedConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1691,6 +2021,12 @@ func (c *dataMigrationGRPCClient) ImportMappingRules(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/ImportMappingRules")
+	}
 	opts = append((*c.CallOptions).ImportMappingRules[0:len((*c.CallOptions).ImportMappingRules):len((*c.CallOptions).ImportMappingRules)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1701,8 +2037,12 @@ func (c *dataMigrationGRPCClient) ImportMappingRules(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.ImportMappingRulesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportMappingRulesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1711,6 +2051,12 @@ func (c *dataMigrationGRPCClient) ConvertConversionWorkspace(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/ConvertConversionWorkspace")
+	}
 	opts = append((*c.CallOptions).ConvertConversionWorkspace[0:len((*c.CallOptions).ConvertConversionWorkspace):len((*c.CallOptions).ConvertConversionWorkspace)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1721,8 +2067,12 @@ func (c *dataMigrationGRPCClient) ConvertConversionWorkspace(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.ConvertConversionWorkspaceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ConvertConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1731,6 +2081,12 @@ func (c *dataMigrationGRPCClient) CommitConversionWorkspace(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/CommitConversionWorkspace")
+	}
 	opts = append((*c.CallOptions).CommitConversionWorkspace[0:len((*c.CallOptions).CommitConversionWorkspace):len((*c.CallOptions).CommitConversionWorkspace)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1741,8 +2097,12 @@ func (c *dataMigrationGRPCClient) CommitConversionWorkspace(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.CommitConversionWorkspaceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CommitConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1751,6 +2111,12 @@ func (c *dataMigrationGRPCClient) RollbackConversionWorkspace(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/RollbackConversionWorkspace")
+	}
 	opts = append((*c.CallOptions).RollbackConversionWorkspace[0:len((*c.CallOptions).RollbackConversionWorkspace):len((*c.CallOptions).RollbackConversionWorkspace)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1761,8 +2127,12 @@ func (c *dataMigrationGRPCClient) RollbackConversionWorkspace(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.RollbackConversionWorkspaceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RollbackConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1771,6 +2141,12 @@ func (c *dataMigrationGRPCClient) ApplyConversionWorkspace(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/ApplyConversionWorkspace")
+	}
 	opts = append((*c.CallOptions).ApplyConversionWorkspace[0:len((*c.CallOptions).ApplyConversionWorkspace):len((*c.CallOptions).ApplyConversionWorkspace)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1781,8 +2157,12 @@ func (c *dataMigrationGRPCClient) ApplyConversionWorkspace(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.ApplyConversionWorkspaceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ApplyConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1791,9 +2171,15 @@ func (c *dataMigrationGRPCClient) DescribeDatabaseEntities(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetConversionWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/DescribeDatabaseEntities")
+	}
 	opts = append((*c.CallOptions).DescribeDatabaseEntities[0:len((*c.CallOptions).DescribeDatabaseEntities):len((*c.CallOptions).DescribeDatabaseEntities)], opts...)
 	it := &DatabaseEntityIterator{}
-	req = proto.Clone(req).(*clouddmspb.DescribeDatabaseEntitiesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.DatabaseEntity, string, error) {
 		resp := &clouddmspb.DescribeDatabaseEntitiesResponse{}
 		if pageToken != "" {
@@ -1837,6 +2223,12 @@ func (c *dataMigrationGRPCClient) SearchBackgroundJobs(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetConversionWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/SearchBackgroundJobs")
+	}
 	opts = append((*c.CallOptions).SearchBackgroundJobs[0:len((*c.CallOptions).SearchBackgroundJobs):len((*c.CallOptions).SearchBackgroundJobs)], opts...)
 	var resp *clouddmspb.SearchBackgroundJobsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1855,6 +2247,12 @@ func (c *dataMigrationGRPCClient) DescribeConversionWorkspaceRevisions(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetConversionWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/DescribeConversionWorkspaceRevisions")
+	}
 	opts = append((*c.CallOptions).DescribeConversionWorkspaceRevisions[0:len((*c.CallOptions).DescribeConversionWorkspaceRevisions):len((*c.CallOptions).DescribeConversionWorkspaceRevisions)], opts...)
 	var resp *clouddmspb.DescribeConversionWorkspaceRevisionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1873,9 +2271,15 @@ func (c *dataMigrationGRPCClient) FetchStaticIps(ctx context.Context, req *cloud
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamigration.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.clouddms.v1.DataMigrationService/FetchStaticIps")
+	}
 	opts = append((*c.CallOptions).FetchStaticIps[0:len((*c.CallOptions).FetchStaticIps):len((*c.CallOptions).FetchStaticIps)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*clouddmspb.FetchStaticIpsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &clouddmspb.FetchStaticIpsResponse{}
 		if pageToken != "" {
@@ -1919,6 +2323,9 @@ func (c *dataMigrationGRPCClient) GetLocation(ctx context.Context, req *location
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1937,9 +2344,12 @@ func (c *dataMigrationGRPCClient) ListLocations(ctx context.Context, req *locati
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1983,6 +2393,12 @@ func (c *dataMigrationGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2001,6 +2417,12 @@ func (c *dataMigrationGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2019,6 +2441,12 @@ func (c *dataMigrationGRPCClient) TestIamPermissions(ctx context.Context, req *i
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2037,6 +2465,9 @@ func (c *dataMigrationGRPCClient) CancelOperation(ctx context.Context, req *long
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2051,6 +2482,9 @@ func (c *dataMigrationGRPCClient) DeleteOperation(ctx context.Context, req *long
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2065,6 +2499,9 @@ func (c *dataMigrationGRPCClient) GetOperation(ctx context.Context, req *longrun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2083,9 +2520,12 @@ func (c *dataMigrationGRPCClient) ListOperations(ctx context.Context, req *longr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2128,7 +2568,7 @@ func (c *dataMigrationGRPCClient) ListOperations(ctx context.Context, req *longr
 // The name must be that of a previously created ApplyConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) ApplyConversionWorkspaceOperation(name string) *ApplyConversionWorkspaceOperation {
 	return &ApplyConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.ApplyConversionWorkspaceOperation"),
 	}
 }
 
@@ -2136,7 +2576,7 @@ func (c *dataMigrationGRPCClient) ApplyConversionWorkspaceOperation(name string)
 // The name must be that of a previously created CommitConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) CommitConversionWorkspaceOperation(name string) *CommitConversionWorkspaceOperation {
 	return &CommitConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.CommitConversionWorkspaceOperation"),
 	}
 }
 
@@ -2144,7 +2584,7 @@ func (c *dataMigrationGRPCClient) CommitConversionWorkspaceOperation(name string
 // The name must be that of a previously created ConvertConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) ConvertConversionWorkspaceOperation(name string) *ConvertConversionWorkspaceOperation {
 	return &ConvertConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.ConvertConversionWorkspaceOperation"),
 	}
 }
 
@@ -2152,7 +2592,7 @@ func (c *dataMigrationGRPCClient) ConvertConversionWorkspaceOperation(name strin
 // The name must be that of a previously created CreateConnectionProfileOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) CreateConnectionProfileOperation(name string) *CreateConnectionProfileOperation {
 	return &CreateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.CreateConnectionProfileOperation"),
 	}
 }
 
@@ -2160,7 +2600,7 @@ func (c *dataMigrationGRPCClient) CreateConnectionProfileOperation(name string) 
 // The name must be that of a previously created CreateConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) CreateConversionWorkspaceOperation(name string) *CreateConversionWorkspaceOperation {
 	return &CreateConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.CreateConversionWorkspaceOperation"),
 	}
 }
 
@@ -2168,7 +2608,7 @@ func (c *dataMigrationGRPCClient) CreateConversionWorkspaceOperation(name string
 // The name must be that of a previously created CreateMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) CreateMigrationJobOperation(name string) *CreateMigrationJobOperation {
 	return &CreateMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.CreateMigrationJobOperation"),
 	}
 }
 
@@ -2176,7 +2616,7 @@ func (c *dataMigrationGRPCClient) CreateMigrationJobOperation(name string) *Crea
 // The name must be that of a previously created CreatePrivateConnectionOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation {
 	return &CreatePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.CreatePrivateConnectionOperation"),
 	}
 }
 
@@ -2184,7 +2624,7 @@ func (c *dataMigrationGRPCClient) CreatePrivateConnectionOperation(name string) 
 // The name must be that of a previously created DeleteConnectionProfileOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) DeleteConnectionProfileOperation(name string) *DeleteConnectionProfileOperation {
 	return &DeleteConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.DeleteConnectionProfileOperation"),
 	}
 }
 
@@ -2192,7 +2632,7 @@ func (c *dataMigrationGRPCClient) DeleteConnectionProfileOperation(name string) 
 // The name must be that of a previously created DeleteConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) DeleteConversionWorkspaceOperation(name string) *DeleteConversionWorkspaceOperation {
 	return &DeleteConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.DeleteConversionWorkspaceOperation"),
 	}
 }
 
@@ -2200,7 +2640,7 @@ func (c *dataMigrationGRPCClient) DeleteConversionWorkspaceOperation(name string
 // The name must be that of a previously created DeleteMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) DeleteMigrationJobOperation(name string) *DeleteMigrationJobOperation {
 	return &DeleteMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.DeleteMigrationJobOperation"),
 	}
 }
 
@@ -2208,7 +2648,7 @@ func (c *dataMigrationGRPCClient) DeleteMigrationJobOperation(name string) *Dele
 // The name must be that of a previously created DeletePrivateConnectionOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation {
 	return &DeletePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.DeletePrivateConnectionOperation"),
 	}
 }
 
@@ -2216,7 +2656,7 @@ func (c *dataMigrationGRPCClient) DeletePrivateConnectionOperation(name string) 
 // The name must be that of a previously created ImportMappingRulesOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) ImportMappingRulesOperation(name string) *ImportMappingRulesOperation {
 	return &ImportMappingRulesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.ImportMappingRulesOperation"),
 	}
 }
 
@@ -2224,7 +2664,7 @@ func (c *dataMigrationGRPCClient) ImportMappingRulesOperation(name string) *Impo
 // The name must be that of a previously created PromoteMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) PromoteMigrationJobOperation(name string) *PromoteMigrationJobOperation {
 	return &PromoteMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.PromoteMigrationJobOperation"),
 	}
 }
 
@@ -2232,7 +2672,7 @@ func (c *dataMigrationGRPCClient) PromoteMigrationJobOperation(name string) *Pro
 // The name must be that of a previously created RestartMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) RestartMigrationJobOperation(name string) *RestartMigrationJobOperation {
 	return &RestartMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.RestartMigrationJobOperation"),
 	}
 }
 
@@ -2240,7 +2680,7 @@ func (c *dataMigrationGRPCClient) RestartMigrationJobOperation(name string) *Res
 // The name must be that of a previously created ResumeMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) ResumeMigrationJobOperation(name string) *ResumeMigrationJobOperation {
 	return &ResumeMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.ResumeMigrationJobOperation"),
 	}
 }
 
@@ -2248,7 +2688,7 @@ func (c *dataMigrationGRPCClient) ResumeMigrationJobOperation(name string) *Resu
 // The name must be that of a previously created RollbackConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) RollbackConversionWorkspaceOperation(name string) *RollbackConversionWorkspaceOperation {
 	return &RollbackConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.RollbackConversionWorkspaceOperation"),
 	}
 }
 
@@ -2256,7 +2696,7 @@ func (c *dataMigrationGRPCClient) RollbackConversionWorkspaceOperation(name stri
 // The name must be that of a previously created SeedConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) SeedConversionWorkspaceOperation(name string) *SeedConversionWorkspaceOperation {
 	return &SeedConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.SeedConversionWorkspaceOperation"),
 	}
 }
 
@@ -2264,7 +2704,7 @@ func (c *dataMigrationGRPCClient) SeedConversionWorkspaceOperation(name string) 
 // The name must be that of a previously created StartMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) StartMigrationJobOperation(name string) *StartMigrationJobOperation {
 	return &StartMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.StartMigrationJobOperation"),
 	}
 }
 
@@ -2272,7 +2712,7 @@ func (c *dataMigrationGRPCClient) StartMigrationJobOperation(name string) *Start
 // The name must be that of a previously created StopMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) StopMigrationJobOperation(name string) *StopMigrationJobOperation {
 	return &StopMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.StopMigrationJobOperation"),
 	}
 }
 
@@ -2280,7 +2720,7 @@ func (c *dataMigrationGRPCClient) StopMigrationJobOperation(name string) *StopMi
 // The name must be that of a previously created UpdateConnectionProfileOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) UpdateConnectionProfileOperation(name string) *UpdateConnectionProfileOperation {
 	return &UpdateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.UpdateConnectionProfileOperation"),
 	}
 }
 
@@ -2288,7 +2728,7 @@ func (c *dataMigrationGRPCClient) UpdateConnectionProfileOperation(name string) 
 // The name must be that of a previously created UpdateConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) UpdateConversionWorkspaceOperation(name string) *UpdateConversionWorkspaceOperation {
 	return &UpdateConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.UpdateConversionWorkspaceOperation"),
 	}
 }
 
@@ -2296,7 +2736,7 @@ func (c *dataMigrationGRPCClient) UpdateConversionWorkspaceOperation(name string
 // The name must be that of a previously created UpdateMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) UpdateMigrationJobOperation(name string) *UpdateMigrationJobOperation {
 	return &UpdateMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.UpdateMigrationJobOperation"),
 	}
 }
 
@@ -2304,6 +2744,6 @@ func (c *dataMigrationGRPCClient) UpdateMigrationJobOperation(name string) *Upda
 // The name must be that of a previously created VerifyMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) VerifyMigrationJobOperation(name string) *VerifyMigrationJobOperation {
 	return &VerifyMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.VerifyMigrationJobOperation"),
 	}
 }

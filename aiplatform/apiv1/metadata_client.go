@@ -29,6 +29,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -566,6 +567,16 @@ type metadataGRPCClient struct {
 // Service for reading and writing metadata entries.
 func NewMetadataClient(ctx context.Context, opts ...option.ClientOption) (*MetadataClient, error) {
 	clientOpts := defaultMetadataGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "aiplatform",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/aiplatform/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "aiplatform.googleapis.com",
+		}))
+	}
 	if newMetadataClientHook != nil {
 		hookOpts, err := newMetadataClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -590,6 +601,61 @@ func NewMetadataClient(ctx context.Context, opts ...option.ClientOption) (*Metad
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "aiplatform",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/aiplatform/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "aiplatform.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateMetadataStore = append(client.CallOptions.CreateMetadataStore, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetMetadataStore = append(client.CallOptions.GetMetadataStore, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMetadataStores = append(client.CallOptions.ListMetadataStores, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteMetadataStore = append(client.CallOptions.DeleteMetadataStore, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateArtifact = append(client.CallOptions.CreateArtifact, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetArtifact = append(client.CallOptions.GetArtifact, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListArtifacts = append(client.CallOptions.ListArtifacts, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateArtifact = append(client.CallOptions.UpdateArtifact, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteArtifact = append(client.CallOptions.DeleteArtifact, gax.WithClientMetrics(metrics))
+		client.CallOptions.PurgeArtifacts = append(client.CallOptions.PurgeArtifacts, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateContext = append(client.CallOptions.CreateContext, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetContext = append(client.CallOptions.GetContext, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListContexts = append(client.CallOptions.ListContexts, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateContext = append(client.CallOptions.UpdateContext, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteContext = append(client.CallOptions.DeleteContext, gax.WithClientMetrics(metrics))
+		client.CallOptions.PurgeContexts = append(client.CallOptions.PurgeContexts, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddContextArtifactsAndExecutions = append(client.CallOptions.AddContextArtifactsAndExecutions, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddContextChildren = append(client.CallOptions.AddContextChildren, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveContextChildren = append(client.CallOptions.RemoveContextChildren, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryContextLineageSubgraph = append(client.CallOptions.QueryContextLineageSubgraph, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateExecution = append(client.CallOptions.CreateExecution, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetExecution = append(client.CallOptions.GetExecution, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListExecutions = append(client.CallOptions.ListExecutions, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateExecution = append(client.CallOptions.UpdateExecution, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteExecution = append(client.CallOptions.DeleteExecution, gax.WithClientMetrics(metrics))
+		client.CallOptions.PurgeExecutions = append(client.CallOptions.PurgeExecutions, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddExecutionEvents = append(client.CallOptions.AddExecutionEvents, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryExecutionInputsAndOutputs = append(client.CallOptions.QueryExecutionInputsAndOutputs, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateMetadataSchema = append(client.CallOptions.CreateMetadataSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetMetadataSchema = append(client.CallOptions.GetMetadataSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMetadataSchemas = append(client.CallOptions.ListMetadataSchemas, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryArtifactLineageSubgraph = append(client.CallOptions.QueryArtifactLineageSubgraph, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -637,6 +703,12 @@ func (c *metadataGRPCClient) CreateMetadataStore(ctx context.Context, req *aipla
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/CreateMetadataStore")
+	}
 	opts = append((*c.CallOptions).CreateMetadataStore[0:len((*c.CallOptions).CreateMetadataStore):len((*c.CallOptions).CreateMetadataStore)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -657,6 +729,12 @@ func (c *metadataGRPCClient) GetMetadataStore(ctx context.Context, req *aiplatfo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/GetMetadataStore")
+	}
 	opts = append((*c.CallOptions).GetMetadataStore[0:len((*c.CallOptions).GetMetadataStore):len((*c.CallOptions).GetMetadataStore)], opts...)
 	var resp *aiplatformpb.MetadataStore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -675,6 +753,12 @@ func (c *metadataGRPCClient) ListMetadataStores(ctx context.Context, req *aiplat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/ListMetadataStores")
+	}
 	opts = append((*c.CallOptions).ListMetadataStores[0:len((*c.CallOptions).ListMetadataStores):len((*c.CallOptions).ListMetadataStores)], opts...)
 	it := &MetadataStoreIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListMetadataStoresRequest)
@@ -721,6 +805,12 @@ func (c *metadataGRPCClient) DeleteMetadataStore(ctx context.Context, req *aipla
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/DeleteMetadataStore")
+	}
 	opts = append((*c.CallOptions).DeleteMetadataStore[0:len((*c.CallOptions).DeleteMetadataStore):len((*c.CallOptions).DeleteMetadataStore)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -741,6 +831,12 @@ func (c *metadataGRPCClient) CreateArtifact(ctx context.Context, req *aiplatform
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/CreateArtifact")
+	}
 	opts = append((*c.CallOptions).CreateArtifact[0:len((*c.CallOptions).CreateArtifact):len((*c.CallOptions).CreateArtifact)], opts...)
 	var resp *aiplatformpb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -759,6 +855,12 @@ func (c *metadataGRPCClient) GetArtifact(ctx context.Context, req *aiplatformpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/GetArtifact")
+	}
 	opts = append((*c.CallOptions).GetArtifact[0:len((*c.CallOptions).GetArtifact):len((*c.CallOptions).GetArtifact)], opts...)
 	var resp *aiplatformpb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -777,6 +879,12 @@ func (c *metadataGRPCClient) ListArtifacts(ctx context.Context, req *aiplatformp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/ListArtifacts")
+	}
 	opts = append((*c.CallOptions).ListArtifacts[0:len((*c.CallOptions).ListArtifacts):len((*c.CallOptions).ListArtifacts)], opts...)
 	it := &ArtifactIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListArtifactsRequest)
@@ -823,6 +931,9 @@ func (c *metadataGRPCClient) UpdateArtifact(ctx context.Context, req *aiplatform
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/UpdateArtifact")
+	}
 	opts = append((*c.CallOptions).UpdateArtifact[0:len((*c.CallOptions).UpdateArtifact):len((*c.CallOptions).UpdateArtifact)], opts...)
 	var resp *aiplatformpb.Artifact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -841,6 +952,12 @@ func (c *metadataGRPCClient) DeleteArtifact(ctx context.Context, req *aiplatform
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/DeleteArtifact")
+	}
 	opts = append((*c.CallOptions).DeleteArtifact[0:len((*c.CallOptions).DeleteArtifact):len((*c.CallOptions).DeleteArtifact)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -861,6 +978,12 @@ func (c *metadataGRPCClient) PurgeArtifacts(ctx context.Context, req *aiplatform
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/PurgeArtifacts")
+	}
 	opts = append((*c.CallOptions).PurgeArtifacts[0:len((*c.CallOptions).PurgeArtifacts):len((*c.CallOptions).PurgeArtifacts)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -881,6 +1004,12 @@ func (c *metadataGRPCClient) CreateContext(ctx context.Context, req *aiplatformp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/CreateContext")
+	}
 	opts = append((*c.CallOptions).CreateContext[0:len((*c.CallOptions).CreateContext):len((*c.CallOptions).CreateContext)], opts...)
 	var resp *aiplatformpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -899,6 +1028,12 @@ func (c *metadataGRPCClient) GetContext(ctx context.Context, req *aiplatformpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/GetContext")
+	}
 	opts = append((*c.CallOptions).GetContext[0:len((*c.CallOptions).GetContext):len((*c.CallOptions).GetContext)], opts...)
 	var resp *aiplatformpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -917,6 +1052,12 @@ func (c *metadataGRPCClient) ListContexts(ctx context.Context, req *aiplatformpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/ListContexts")
+	}
 	opts = append((*c.CallOptions).ListContexts[0:len((*c.CallOptions).ListContexts):len((*c.CallOptions).ListContexts)], opts...)
 	it := &ContextIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListContextsRequest)
@@ -963,6 +1104,9 @@ func (c *metadataGRPCClient) UpdateContext(ctx context.Context, req *aiplatformp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/UpdateContext")
+	}
 	opts = append((*c.CallOptions).UpdateContext[0:len((*c.CallOptions).UpdateContext):len((*c.CallOptions).UpdateContext)], opts...)
 	var resp *aiplatformpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -981,6 +1125,12 @@ func (c *metadataGRPCClient) DeleteContext(ctx context.Context, req *aiplatformp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/DeleteContext")
+	}
 	opts = append((*c.CallOptions).DeleteContext[0:len((*c.CallOptions).DeleteContext):len((*c.CallOptions).DeleteContext)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1001,6 +1151,12 @@ func (c *metadataGRPCClient) PurgeContexts(ctx context.Context, req *aiplatformp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/PurgeContexts")
+	}
 	opts = append((*c.CallOptions).PurgeContexts[0:len((*c.CallOptions).PurgeContexts):len((*c.CallOptions).PurgeContexts)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1021,6 +1177,12 @@ func (c *metadataGRPCClient) AddContextArtifactsAndExecutions(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetContext()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/AddContextArtifactsAndExecutions")
+	}
 	opts = append((*c.CallOptions).AddContextArtifactsAndExecutions[0:len((*c.CallOptions).AddContextArtifactsAndExecutions):len((*c.CallOptions).AddContextArtifactsAndExecutions)], opts...)
 	var resp *aiplatformpb.AddContextArtifactsAndExecutionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1039,6 +1201,12 @@ func (c *metadataGRPCClient) AddContextChildren(ctx context.Context, req *aiplat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetContext()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/AddContextChildren")
+	}
 	opts = append((*c.CallOptions).AddContextChildren[0:len((*c.CallOptions).AddContextChildren):len((*c.CallOptions).AddContextChildren)], opts...)
 	var resp *aiplatformpb.AddContextChildrenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1057,6 +1225,12 @@ func (c *metadataGRPCClient) RemoveContextChildren(ctx context.Context, req *aip
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetContext()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/RemoveContextChildren")
+	}
 	opts = append((*c.CallOptions).RemoveContextChildren[0:len((*c.CallOptions).RemoveContextChildren):len((*c.CallOptions).RemoveContextChildren)], opts...)
 	var resp *aiplatformpb.RemoveContextChildrenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1075,6 +1249,12 @@ func (c *metadataGRPCClient) QueryContextLineageSubgraph(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetContext()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/QueryContextLineageSubgraph")
+	}
 	opts = append((*c.CallOptions).QueryContextLineageSubgraph[0:len((*c.CallOptions).QueryContextLineageSubgraph):len((*c.CallOptions).QueryContextLineageSubgraph)], opts...)
 	var resp *aiplatformpb.LineageSubgraph
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1093,6 +1273,12 @@ func (c *metadataGRPCClient) CreateExecution(ctx context.Context, req *aiplatfor
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/CreateExecution")
+	}
 	opts = append((*c.CallOptions).CreateExecution[0:len((*c.CallOptions).CreateExecution):len((*c.CallOptions).CreateExecution)], opts...)
 	var resp *aiplatformpb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1111,6 +1297,12 @@ func (c *metadataGRPCClient) GetExecution(ctx context.Context, req *aiplatformpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/GetExecution")
+	}
 	opts = append((*c.CallOptions).GetExecution[0:len((*c.CallOptions).GetExecution):len((*c.CallOptions).GetExecution)], opts...)
 	var resp *aiplatformpb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1129,6 +1321,12 @@ func (c *metadataGRPCClient) ListExecutions(ctx context.Context, req *aiplatform
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/ListExecutions")
+	}
 	opts = append((*c.CallOptions).ListExecutions[0:len((*c.CallOptions).ListExecutions):len((*c.CallOptions).ListExecutions)], opts...)
 	it := &ExecutionIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListExecutionsRequest)
@@ -1175,6 +1373,9 @@ func (c *metadataGRPCClient) UpdateExecution(ctx context.Context, req *aiplatfor
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/UpdateExecution")
+	}
 	opts = append((*c.CallOptions).UpdateExecution[0:len((*c.CallOptions).UpdateExecution):len((*c.CallOptions).UpdateExecution)], opts...)
 	var resp *aiplatformpb.Execution
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1193,6 +1394,12 @@ func (c *metadataGRPCClient) DeleteExecution(ctx context.Context, req *aiplatfor
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/DeleteExecution")
+	}
 	opts = append((*c.CallOptions).DeleteExecution[0:len((*c.CallOptions).DeleteExecution):len((*c.CallOptions).DeleteExecution)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1213,6 +1420,12 @@ func (c *metadataGRPCClient) PurgeExecutions(ctx context.Context, req *aiplatfor
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/PurgeExecutions")
+	}
 	opts = append((*c.CallOptions).PurgeExecutions[0:len((*c.CallOptions).PurgeExecutions):len((*c.CallOptions).PurgeExecutions)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1233,6 +1446,12 @@ func (c *metadataGRPCClient) AddExecutionEvents(ctx context.Context, req *aiplat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetExecution()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/AddExecutionEvents")
+	}
 	opts = append((*c.CallOptions).AddExecutionEvents[0:len((*c.CallOptions).AddExecutionEvents):len((*c.CallOptions).AddExecutionEvents)], opts...)
 	var resp *aiplatformpb.AddExecutionEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1251,6 +1470,12 @@ func (c *metadataGRPCClient) QueryExecutionInputsAndOutputs(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetExecution()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/QueryExecutionInputsAndOutputs")
+	}
 	opts = append((*c.CallOptions).QueryExecutionInputsAndOutputs[0:len((*c.CallOptions).QueryExecutionInputsAndOutputs):len((*c.CallOptions).QueryExecutionInputsAndOutputs)], opts...)
 	var resp *aiplatformpb.LineageSubgraph
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1269,6 +1494,12 @@ func (c *metadataGRPCClient) CreateMetadataSchema(ctx context.Context, req *aipl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/CreateMetadataSchema")
+	}
 	opts = append((*c.CallOptions).CreateMetadataSchema[0:len((*c.CallOptions).CreateMetadataSchema):len((*c.CallOptions).CreateMetadataSchema)], opts...)
 	var resp *aiplatformpb.MetadataSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1287,6 +1518,12 @@ func (c *metadataGRPCClient) GetMetadataSchema(ctx context.Context, req *aiplatf
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/GetMetadataSchema")
+	}
 	opts = append((*c.CallOptions).GetMetadataSchema[0:len((*c.CallOptions).GetMetadataSchema):len((*c.CallOptions).GetMetadataSchema)], opts...)
 	var resp *aiplatformpb.MetadataSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1305,6 +1542,12 @@ func (c *metadataGRPCClient) ListMetadataSchemas(ctx context.Context, req *aipla
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/ListMetadataSchemas")
+	}
 	opts = append((*c.CallOptions).ListMetadataSchemas[0:len((*c.CallOptions).ListMetadataSchemas):len((*c.CallOptions).ListMetadataSchemas)], opts...)
 	it := &MetadataSchemaIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListMetadataSchemasRequest)
@@ -1351,6 +1594,12 @@ func (c *metadataGRPCClient) QueryArtifactLineageSubgraph(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetArtifact()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.MetadataService/QueryArtifactLineageSubgraph")
+	}
 	opts = append((*c.CallOptions).QueryArtifactLineageSubgraph[0:len((*c.CallOptions).QueryArtifactLineageSubgraph):len((*c.CallOptions).QueryArtifactLineageSubgraph)], opts...)
 	var resp *aiplatformpb.LineageSubgraph
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1369,6 +1618,9 @@ func (c *metadataGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1387,6 +1639,9 @@ func (c *metadataGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -1433,6 +1688,12 @@ func (c *metadataGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1451,6 +1712,12 @@ func (c *metadataGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1469,6 +1736,12 @@ func (c *metadataGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1487,6 +1760,9 @@ func (c *metadataGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1501,6 +1777,9 @@ func (c *metadataGRPCClient) DeleteOperation(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1515,6 +1794,9 @@ func (c *metadataGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1533,6 +1815,9 @@ func (c *metadataGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1579,6 +1864,9 @@ func (c *metadataGRPCClient) WaitOperation(ctx context.Context, req *longrunning
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/WaitOperation")
+	}
 	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

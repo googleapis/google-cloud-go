@@ -5,10 +5,10 @@ go 1.25.0
 require (
 	cloud.google.com/go v0.123.0
 	github.com/google/go-cmp v0.7.0
-	github.com/googleapis/gax-go/v2 v2.21.0
+	github.com/googleapis/gax-go/v2 v2.23.0
 	google.golang.org/genproto v0.0.0-20260319201613-d00831a3d3e7
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260401024825-9d38bb4040a9
-	google.golang.org/grpc v1.80.0
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260630182238-925bb5da69e7
+	google.golang.org/grpc v1.82.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -16,7 +16,7 @@ require (
 require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
-	golang.org/x/sys v0.42.0 // indirect
-	google.golang.org/api v0.272.0 // indirect
+	golang.org/x/sys v0.46.0 // indirect
+	google.golang.org/api v0.287.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )

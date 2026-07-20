@@ -454,6 +454,41 @@ func TestShouldRetry(t *testing.T) {
 			inputErr:    &net.OpError{Err: net.ErrClosed},
 			shouldRetry: true,
 		},
+		{
+			desc:        "nil error",
+			inputErr:    nil,
+			shouldRetry: false,
+		},
+		{
+			desc:        "http2: client connection lost",
+			inputErr:    &url.Error{Op: "blah", URL: "blah", Err: errors.New("http2: client connection lost")},
+			shouldRetry: true,
+		},
+		{
+			desc:        "wrapped http2: client connection lost",
+			inputErr:    fmt.Errorf("wrapped error: %w", &url.Error{Op: "blah", URL: "blah", Err: errors.New("http2: client connection lost")}),
+			shouldRetry: true,
+		},
+		{
+			desc:        "server closed idle connection",
+			inputErr:    &url.Error{Op: "blah", URL: "blah", Err: errors.New("http: server closed idle connection")},
+			shouldRetry: true,
+		},
+		{
+			desc:        "wrapped server closed idle connection",
+			inputErr:    fmt.Errorf("wrapped error: %w", &url.Error{Op: "blah", URL: "blah", Err: errors.New("http: server closed idle connection")}),
+			shouldRetry: true,
+		},
+		{
+			desc:        "net.OpError with server closed idle connection",
+			inputErr:    &net.OpError{Op: "read", Net: "tcp", Err: errors.New("server closed idle connection")},
+			shouldRetry: true,
+		},
+		{
+			desc:        "wrapped net.OpError with server closed idle connection",
+			inputErr:    fmt.Errorf("wrapped error: %w", &net.OpError{Op: "read", Net: "tcp", Err: errors.New("server closed idle connection")}),
+			shouldRetry: true,
+		},
 	} {
 		t.Run(test.desc, func(s *testing.T) {
 			got := ShouldRetry(test.inputErr)
@@ -684,5 +719,80 @@ func TestInvokeWithRetryContextWithoutRunOptions(t *testing.T) {
 
 	if capturedContext.Object != "" {
 		t.Errorf("expected empty Object, got %q", capturedContext.Object)
+	}
+}
+
+func TestIsError(t *testing.T) {
+	tests := []struct {
+		name          string
+		err           error
+		httpErrorCode int
+		grpcErrorCode codes.Code
+		want          bool
+	}{
+		{
+			name:          "matching HTTP error",
+			err:           &googleapi.Error{Code: 404},
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          true,
+		},
+		{
+			name:          "matching gRPC error",
+			err:           status.Error(codes.NotFound, "not found"),
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          true,
+		},
+		{
+			name:          "wrapped matching HTTP error",
+			err:           fmt.Errorf("wrapped: %w", &googleapi.Error{Code: 404}),
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          true,
+		},
+		{
+			name:          "wrapped matching gRPC error",
+			err:           fmt.Errorf("wrapped: %w", status.Error(codes.NotFound, "not found")),
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          true,
+		},
+		{
+			name:          "non-matching HTTP error",
+			err:           &googleapi.Error{Code: 403},
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          false,
+		},
+		{
+			name:          "non-matching gRPC error",
+			err:           status.Error(codes.PermissionDenied, "permission denied"),
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          false,
+		},
+		{
+			name:          "nil error",
+			err:           nil,
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          false,
+		},
+		{
+			name:          "unrelated error",
+			err:           errors.New("some other error"),
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isError(tt.err, tt.httpErrorCode, tt.grpcErrorCode); got != tt.want {
+				t.Errorf("isError() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

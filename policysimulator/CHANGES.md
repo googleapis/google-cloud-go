@@ -1,5 +1,22 @@
 # Changes
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v1.0.0...policysimulator/v1.1.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/policysimulator%2Fv1.0.0) (2026-05-08)
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/policysimulator%2Fv0.9.0) (2026-05-07)
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/policysimulator%2Fv0.8.0) (2026-04-30)
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/policysimulator%2Fv0.7.0) (2026-04-13)
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/policysimulator%2Fv0.6.0) (2026-04-09)
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/policysimulator%2Fv0.5.0) (2026-04-02)
 
 ## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.4.0...policysimulator/v0.4.1) (2025-09-18)

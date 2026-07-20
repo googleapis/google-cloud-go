@@ -31,6 +31,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	shellpb "cloud.google.com/go/shell/apiv1/shellpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -166,7 +168,7 @@ type CloudShellClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CloudShellClient) Close() error {
 	return c.internalClient.Close()
@@ -285,6 +287,16 @@ type cloudShellGRPCClient struct {
 // client.
 func NewCloudShellClient(ctx context.Context, opts ...option.ClientOption) (*CloudShellClient, error) {
 	clientOpts := defaultCloudShellGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudshell",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shell/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudshell.googleapis.com",
+		}))
+	}
 	if newCloudShellClientHook != nil {
 		hookOpts, err := newCloudShellClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -306,6 +318,24 @@ func NewCloudShellClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 		logger:           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudshell",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shell/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudshell.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetEnvironment = append(client.CallOptions.GetEnvironment, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartEnvironment = append(client.CallOptions.StartEnvironment, gax.WithClientMetrics(metrics))
+		client.CallOptions.AuthorizeEnvironment = append(client.CallOptions.AuthorizeEnvironment, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddPublicKey = append(client.CallOptions.AddPublicKey, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemovePublicKey = append(client.CallOptions.RemovePublicKey, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -342,7 +372,7 @@ func (c *cloudShellGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudShellGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -381,6 +411,16 @@ type cloudShellRESTClient struct {
 // client.
 func NewCloudShellRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudShellClient, error) {
 	clientOpts := append(defaultCloudShellRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudshell",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shell/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudshell.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -394,6 +434,25 @@ func NewCloudShellRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudshell",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shell/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudshell.googleapis.com",
+			}),
+		)
+
+		callOpts.GetEnvironment = append(callOpts.GetEnvironment, gax.WithClientMetrics(metrics))
+		callOpts.StartEnvironment = append(callOpts.StartEnvironment, gax.WithClientMetrics(metrics))
+		callOpts.AuthorizeEnvironment = append(callOpts.AuthorizeEnvironment, gax.WithClientMetrics(metrics))
+		callOpts.AddPublicKey = append(callOpts.AddPublicKey, gax.WithClientMetrics(metrics))
+		callOpts.RemovePublicKey = append(callOpts.RemovePublicKey, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -431,7 +490,7 @@ func (c *cloudShellRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudShellRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -450,6 +509,12 @@ func (c *cloudShellGRPCClient) GetEnvironment(ctx context.Context, req *shellpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudshell.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.shell.v1.CloudShellService/GetEnvironment")
+	}
 	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
 	var resp *shellpb.Environment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -468,6 +533,9 @@ func (c *cloudShellGRPCClient) StartEnvironment(ctx context.Context, req *shellp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.shell.v1.CloudShellService/StartEnvironment")
+	}
 	opts = append((*c.CallOptions).StartEnvironment[0:len((*c.CallOptions).StartEnvironment):len((*c.CallOptions).StartEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -478,8 +546,12 @@ func (c *cloudShellGRPCClient) StartEnvironment(ctx context.Context, req *shellp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.StartEnvironmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -488,6 +560,9 @@ func (c *cloudShellGRPCClient) AuthorizeEnvironment(ctx context.Context, req *sh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.shell.v1.CloudShellService/AuthorizeEnvironment")
+	}
 	opts = append((*c.CallOptions).AuthorizeEnvironment[0:len((*c.CallOptions).AuthorizeEnvironment):len((*c.CallOptions).AuthorizeEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -498,8 +573,12 @@ func (c *cloudShellGRPCClient) AuthorizeEnvironment(ctx context.Context, req *sh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.AuthorizeEnvironmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AuthorizeEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -508,6 +587,9 @@ func (c *cloudShellGRPCClient) AddPublicKey(ctx context.Context, req *shellpb.Ad
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.shell.v1.CloudShellService/AddPublicKey")
+	}
 	opts = append((*c.CallOptions).AddPublicKey[0:len((*c.CallOptions).AddPublicKey):len((*c.CallOptions).AddPublicKey)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -518,8 +600,12 @@ func (c *cloudShellGRPCClient) AddPublicKey(ctx context.Context, req *shellpb.Ad
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.AddPublicKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddPublicKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -528,6 +614,9 @@ func (c *cloudShellGRPCClient) RemovePublicKey(ctx context.Context, req *shellpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.shell.v1.CloudShellService/RemovePublicKey")
+	}
 	opts = append((*c.CallOptions).RemovePublicKey[0:len((*c.CallOptions).RemovePublicKey):len((*c.CallOptions).RemovePublicKey)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -538,8 +627,12 @@ func (c *cloudShellGRPCClient) RemovePublicKey(ctx context.Context, req *shellpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.RemovePublicKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemovePublicKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -562,6 +655,13 @@ func (c *cloudShellRESTClient) GetEnvironment(ctx context.Context, req *shellpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudshell.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.shell.v1.CloudShellService/GetEnvironment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/environments/*}")
+	}
 	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &shellpb.Environment{}
@@ -623,6 +723,10 @@ func (c *cloudShellRESTClient) StartEnvironment(ctx context.Context, req *shellp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.shell.v1.CloudShellService/StartEnvironment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/environments/*}:start")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -651,8 +755,12 @@ func (c *cloudShellRESTClient) StartEnvironment(ctx context.Context, req *shellp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.StartEnvironmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartEnvironmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -685,6 +793,10 @@ func (c *cloudShellRESTClient) AuthorizeEnvironment(ctx context.Context, req *sh
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.shell.v1.CloudShellService/AuthorizeEnvironment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/environments/*}:authorize")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -713,8 +825,12 @@ func (c *cloudShellRESTClient) AuthorizeEnvironment(ctx context.Context, req *sh
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.AuthorizeEnvironmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AuthorizeEnvironmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -746,6 +862,10 @@ func (c *cloudShellRESTClient) AddPublicKey(ctx context.Context, req *shellpb.Ad
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.shell.v1.CloudShellService/AddPublicKey")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{environment=users/*/environments/*}:addPublicKey")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -774,8 +894,12 @@ func (c *cloudShellRESTClient) AddPublicKey(ctx context.Context, req *shellpb.Ad
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.AddPublicKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddPublicKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -808,6 +932,10 @@ func (c *cloudShellRESTClient) RemovePublicKey(ctx context.Context, req *shellpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.shell.v1.CloudShellService/RemovePublicKey")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{environment=users/*/environments/*}:removePublicKey")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -836,8 +964,12 @@ func (c *cloudShellRESTClient) RemovePublicKey(ctx context.Context, req *shellpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.RemovePublicKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemovePublicKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -846,7 +978,7 @@ func (c *cloudShellRESTClient) RemovePublicKey(ctx context.Context, req *shellpb
 // The name must be that of a previously created AddPublicKeyOperation, possibly from a different process.
 func (c *cloudShellGRPCClient) AddPublicKeyOperation(name string) *AddPublicKeyOperation {
 	return &AddPublicKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.AddPublicKeyOperation"),
 	}
 }
 
@@ -855,7 +987,7 @@ func (c *cloudShellGRPCClient) AddPublicKeyOperation(name string) *AddPublicKeyO
 func (c *cloudShellRESTClient) AddPublicKeyOperation(name string) *AddPublicKeyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &AddPublicKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.AddPublicKeyOperation"),
 		pollPath: override,
 	}
 }
@@ -864,7 +996,7 @@ func (c *cloudShellRESTClient) AddPublicKeyOperation(name string) *AddPublicKeyO
 // The name must be that of a previously created AuthorizeEnvironmentOperation, possibly from a different process.
 func (c *cloudShellGRPCClient) AuthorizeEnvironmentOperation(name string) *AuthorizeEnvironmentOperation {
 	return &AuthorizeEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.AuthorizeEnvironmentOperation"),
 	}
 }
 
@@ -873,7 +1005,7 @@ func (c *cloudShellGRPCClient) AuthorizeEnvironmentOperation(name string) *Autho
 func (c *cloudShellRESTClient) AuthorizeEnvironmentOperation(name string) *AuthorizeEnvironmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &AuthorizeEnvironmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.AuthorizeEnvironmentOperation"),
 		pollPath: override,
 	}
 }
@@ -882,7 +1014,7 @@ func (c *cloudShellRESTClient) AuthorizeEnvironmentOperation(name string) *Autho
 // The name must be that of a previously created RemovePublicKeyOperation, possibly from a different process.
 func (c *cloudShellGRPCClient) RemovePublicKeyOperation(name string) *RemovePublicKeyOperation {
 	return &RemovePublicKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.RemovePublicKeyOperation"),
 	}
 }
 
@@ -891,7 +1023,7 @@ func (c *cloudShellGRPCClient) RemovePublicKeyOperation(name string) *RemovePubl
 func (c *cloudShellRESTClient) RemovePublicKeyOperation(name string) *RemovePublicKeyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RemovePublicKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.RemovePublicKeyOperation"),
 		pollPath: override,
 	}
 }
@@ -900,7 +1032,7 @@ func (c *cloudShellRESTClient) RemovePublicKeyOperation(name string) *RemovePubl
 // The name must be that of a previously created StartEnvironmentOperation, possibly from a different process.
 func (c *cloudShellGRPCClient) StartEnvironmentOperation(name string) *StartEnvironmentOperation {
 	return &StartEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.StartEnvironmentOperation"),
 	}
 }
 
@@ -909,7 +1041,7 @@ func (c *cloudShellGRPCClient) StartEnvironmentOperation(name string) *StartEnvi
 func (c *cloudShellRESTClient) StartEnvironmentOperation(name string) *StartEnvironmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StartEnvironmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.StartEnvironmentOperation"),
 		pollPath: override,
 	}
 }

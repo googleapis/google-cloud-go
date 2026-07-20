@@ -338,6 +338,56 @@ func ExampleStorageControlClient_GetIamPolicy() {
 	_ = resp
 }
 
+func ExampleStorageControlClient_GetIntelligenceFinding() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.GetIntelligenceFindingRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#GetIntelligenceFindingRequest.
+	}
+	resp, err := c.GetIntelligenceFinding(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleStorageControlClient_GetIntelligenceFindingRevision() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.GetIntelligenceFindingRevisionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#GetIntelligenceFindingRevisionRequest.
+	}
+	resp, err := c.GetIntelligenceFindingRevision(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleStorageControlClient_GetManagedFolder() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -512,6 +562,80 @@ func ExampleStorageControlClient_ListFolders() {
 	}
 }
 
+func ExampleStorageControlClient_ListIntelligenceFindingRevisions() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.ListIntelligenceFindingRevisionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#ListIntelligenceFindingRevisionsRequest.
+	}
+	it := c.ListIntelligenceFindingRevisions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*controlpb.ListIntelligenceFindingRevisionsResponse)
+	}
+}
+
+func ExampleStorageControlClient_ListIntelligenceFindings() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.ListIntelligenceFindingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#ListIntelligenceFindingsRequest.
+	}
+	it := c.ListIntelligenceFindings(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*controlpb.ListIntelligenceFindingsResponse)
+	}
+}
+
 func ExampleStorageControlClient_ListManagedFolders() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -652,6 +776,43 @@ func ExampleStorageControlClient_SetIamPolicy() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleStorageControlClient_SummarizeIntelligenceFindings() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.SummarizeIntelligenceFindingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#SummarizeIntelligenceFindingsRequest.
+	}
+	it := c.SummarizeIntelligenceFindings(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*controlpb.SummarizeIntelligenceFindingsResponse)
+	}
 }
 
 func ExampleStorageControlClient_TestIamPermissions() {

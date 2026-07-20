@@ -31,6 +31,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	livestreampb "cloud.google.com/go/video/livestream/apiv1/livestreampb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -639,7 +641,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -1012,6 +1014,16 @@ type gRPCClient struct {
 // Protocol (RTMP) and Secure Reliable Transport (SRT).
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "livestream",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/video/livestream/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "livestream.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -1035,6 +1047,59 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "livestream",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/video/livestream/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "livestream.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateChannel = append(client.CallOptions.CreateChannel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListChannels = append(client.CallOptions.ListChannels, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetChannel = append(client.CallOptions.GetChannel, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteChannel = append(client.CallOptions.DeleteChannel, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateChannel = append(client.CallOptions.UpdateChannel, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartChannel = append(client.CallOptions.StartChannel, gax.WithClientMetrics(metrics))
+		client.CallOptions.StopChannel = append(client.CallOptions.StopChannel, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartDistribution = append(client.CallOptions.StartDistribution, gax.WithClientMetrics(metrics))
+		client.CallOptions.StopDistribution = append(client.CallOptions.StopDistribution, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateInput = append(client.CallOptions.CreateInput, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListInputs = append(client.CallOptions.ListInputs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInput = append(client.CallOptions.GetInput, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteInput = append(client.CallOptions.DeleteInput, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateInput = append(client.CallOptions.UpdateInput, gax.WithClientMetrics(metrics))
+		client.CallOptions.PreviewInput = append(client.CallOptions.PreviewInput, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateEvent = append(client.CallOptions.CreateEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEvents = append(client.CallOptions.ListEvents, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEvent = append(client.CallOptions.GetEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEvent = append(client.CallOptions.DeleteEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListClips = append(client.CallOptions.ListClips, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetClip = append(client.CallOptions.GetClip, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateClip = append(client.CallOptions.CreateClip, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteClip = append(client.CallOptions.DeleteClip, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDvrSession = append(client.CallOptions.CreateDvrSession, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDvrSessions = append(client.CallOptions.ListDvrSessions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDvrSession = append(client.CallOptions.GetDvrSession, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDvrSession = append(client.CallOptions.DeleteDvrSession, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDvrSession = append(client.CallOptions.UpdateDvrSession, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAsset = append(client.CallOptions.CreateAsset, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAsset = append(client.CallOptions.DeleteAsset, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAsset = append(client.CallOptions.GetAsset, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAssets = append(client.CallOptions.ListAssets, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPool = append(client.CallOptions.GetPool, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePool = append(client.CallOptions.UpdatePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -1071,7 +1136,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -1108,6 +1173,16 @@ type restClient struct {
 // Protocol (RTMP) and Secure Reliable Transport (SRT).
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "livestream",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/video/livestream/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "livestream.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1121,6 +1196,60 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "livestream",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/video/livestream/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "livestream.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateChannel = append(callOpts.CreateChannel, gax.WithClientMetrics(metrics))
+		callOpts.ListChannels = append(callOpts.ListChannels, gax.WithClientMetrics(metrics))
+		callOpts.GetChannel = append(callOpts.GetChannel, gax.WithClientMetrics(metrics))
+		callOpts.DeleteChannel = append(callOpts.DeleteChannel, gax.WithClientMetrics(metrics))
+		callOpts.UpdateChannel = append(callOpts.UpdateChannel, gax.WithClientMetrics(metrics))
+		callOpts.StartChannel = append(callOpts.StartChannel, gax.WithClientMetrics(metrics))
+		callOpts.StopChannel = append(callOpts.StopChannel, gax.WithClientMetrics(metrics))
+		callOpts.StartDistribution = append(callOpts.StartDistribution, gax.WithClientMetrics(metrics))
+		callOpts.StopDistribution = append(callOpts.StopDistribution, gax.WithClientMetrics(metrics))
+		callOpts.CreateInput = append(callOpts.CreateInput, gax.WithClientMetrics(metrics))
+		callOpts.ListInputs = append(callOpts.ListInputs, gax.WithClientMetrics(metrics))
+		callOpts.GetInput = append(callOpts.GetInput, gax.WithClientMetrics(metrics))
+		callOpts.DeleteInput = append(callOpts.DeleteInput, gax.WithClientMetrics(metrics))
+		callOpts.UpdateInput = append(callOpts.UpdateInput, gax.WithClientMetrics(metrics))
+		callOpts.PreviewInput = append(callOpts.PreviewInput, gax.WithClientMetrics(metrics))
+		callOpts.CreateEvent = append(callOpts.CreateEvent, gax.WithClientMetrics(metrics))
+		callOpts.ListEvents = append(callOpts.ListEvents, gax.WithClientMetrics(metrics))
+		callOpts.GetEvent = append(callOpts.GetEvent, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEvent = append(callOpts.DeleteEvent, gax.WithClientMetrics(metrics))
+		callOpts.ListClips = append(callOpts.ListClips, gax.WithClientMetrics(metrics))
+		callOpts.GetClip = append(callOpts.GetClip, gax.WithClientMetrics(metrics))
+		callOpts.CreateClip = append(callOpts.CreateClip, gax.WithClientMetrics(metrics))
+		callOpts.DeleteClip = append(callOpts.DeleteClip, gax.WithClientMetrics(metrics))
+		callOpts.CreateDvrSession = append(callOpts.CreateDvrSession, gax.WithClientMetrics(metrics))
+		callOpts.ListDvrSessions = append(callOpts.ListDvrSessions, gax.WithClientMetrics(metrics))
+		callOpts.GetDvrSession = append(callOpts.GetDvrSession, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDvrSession = append(callOpts.DeleteDvrSession, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDvrSession = append(callOpts.UpdateDvrSession, gax.WithClientMetrics(metrics))
+		callOpts.CreateAsset = append(callOpts.CreateAsset, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAsset = append(callOpts.DeleteAsset, gax.WithClientMetrics(metrics))
+		callOpts.GetAsset = append(callOpts.GetAsset, gax.WithClientMetrics(metrics))
+		callOpts.ListAssets = append(callOpts.ListAssets, gax.WithClientMetrics(metrics))
+		callOpts.GetPool = append(callOpts.GetPool, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePool = append(callOpts.UpdatePool, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1158,7 +1287,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -1177,6 +1306,12 @@ func (c *gRPCClient) CreateChannel(ctx context.Context, req *livestreampb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateChannel")
+	}
 	opts = append((*c.CallOptions).CreateChannel[0:len((*c.CallOptions).CreateChannel):len((*c.CallOptions).CreateChannel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1187,8 +1322,12 @@ func (c *gRPCClient) CreateChannel(ctx context.Context, req *livestreampb.Create
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1197,9 +1336,15 @@ func (c *gRPCClient) ListChannels(ctx context.Context, req *livestreampb.ListCha
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/ListChannels")
+	}
 	opts = append((*c.CallOptions).ListChannels[0:len((*c.CallOptions).ListChannels):len((*c.CallOptions).ListChannels)], opts...)
 	it := &ChannelIterator{}
-	req = proto.Clone(req).(*livestreampb.ListChannelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Channel, string, error) {
 		resp := &livestreampb.ListChannelsResponse{}
 		if pageToken != "" {
@@ -1243,6 +1388,12 @@ func (c *gRPCClient) GetChannel(ctx context.Context, req *livestreampb.GetChanne
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetChannel")
+	}
 	opts = append((*c.CallOptions).GetChannel[0:len((*c.CallOptions).GetChannel):len((*c.CallOptions).GetChannel)], opts...)
 	var resp *livestreampb.Channel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1261,6 +1412,12 @@ func (c *gRPCClient) DeleteChannel(ctx context.Context, req *livestreampb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteChannel")
+	}
 	opts = append((*c.CallOptions).DeleteChannel[0:len((*c.CallOptions).DeleteChannel):len((*c.CallOptions).DeleteChannel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1271,8 +1428,12 @@ func (c *gRPCClient) DeleteChannel(ctx context.Context, req *livestreampb.Delete
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1281,6 +1442,9 @@ func (c *gRPCClient) UpdateChannel(ctx context.Context, req *livestreampb.Update
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/UpdateChannel")
+	}
 	opts = append((*c.CallOptions).UpdateChannel[0:len((*c.CallOptions).UpdateChannel):len((*c.CallOptions).UpdateChannel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1291,8 +1455,12 @@ func (c *gRPCClient) UpdateChannel(ctx context.Context, req *livestreampb.Update
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdateChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1301,6 +1469,12 @@ func (c *gRPCClient) StartChannel(ctx context.Context, req *livestreampb.StartCh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StartChannel")
+	}
 	opts = append((*c.CallOptions).StartChannel[0:len((*c.CallOptions).StartChannel):len((*c.CallOptions).StartChannel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1311,8 +1485,12 @@ func (c *gRPCClient) StartChannel(ctx context.Context, req *livestreampb.StartCh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StartChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1321,6 +1499,12 @@ func (c *gRPCClient) StopChannel(ctx context.Context, req *livestreampb.StopChan
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StopChannel")
+	}
 	opts = append((*c.CallOptions).StopChannel[0:len((*c.CallOptions).StopChannel):len((*c.CallOptions).StopChannel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1331,8 +1515,12 @@ func (c *gRPCClient) StopChannel(ctx context.Context, req *livestreampb.StopChan
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StopChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1341,6 +1529,12 @@ func (c *gRPCClient) StartDistribution(ctx context.Context, req *livestreampb.St
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StartDistribution")
+	}
 	opts = append((*c.CallOptions).StartDistribution[0:len((*c.CallOptions).StartDistribution):len((*c.CallOptions).StartDistribution)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1351,8 +1545,12 @@ func (c *gRPCClient) StartDistribution(ctx context.Context, req *livestreampb.St
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StartDistributionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartDistributionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1361,6 +1559,12 @@ func (c *gRPCClient) StopDistribution(ctx context.Context, req *livestreampb.Sto
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StopDistribution")
+	}
 	opts = append((*c.CallOptions).StopDistribution[0:len((*c.CallOptions).StopDistribution):len((*c.CallOptions).StopDistribution)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1371,8 +1575,12 @@ func (c *gRPCClient) StopDistribution(ctx context.Context, req *livestreampb.Sto
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StopDistributionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopDistributionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1381,6 +1589,12 @@ func (c *gRPCClient) CreateInput(ctx context.Context, req *livestreampb.CreateIn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateInput")
+	}
 	opts = append((*c.CallOptions).CreateInput[0:len((*c.CallOptions).CreateInput):len((*c.CallOptions).CreateInput)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1391,8 +1605,12 @@ func (c *gRPCClient) CreateInput(ctx context.Context, req *livestreampb.CreateIn
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1401,9 +1619,15 @@ func (c *gRPCClient) ListInputs(ctx context.Context, req *livestreampb.ListInput
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/ListInputs")
+	}
 	opts = append((*c.CallOptions).ListInputs[0:len((*c.CallOptions).ListInputs):len((*c.CallOptions).ListInputs)], opts...)
 	it := &InputIterator{}
-	req = proto.Clone(req).(*livestreampb.ListInputsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Input, string, error) {
 		resp := &livestreampb.ListInputsResponse{}
 		if pageToken != "" {
@@ -1447,6 +1671,12 @@ func (c *gRPCClient) GetInput(ctx context.Context, req *livestreampb.GetInputReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetInput")
+	}
 	opts = append((*c.CallOptions).GetInput[0:len((*c.CallOptions).GetInput):len((*c.CallOptions).GetInput)], opts...)
 	var resp *livestreampb.Input
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1465,6 +1695,12 @@ func (c *gRPCClient) DeleteInput(ctx context.Context, req *livestreampb.DeleteIn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteInput")
+	}
 	opts = append((*c.CallOptions).DeleteInput[0:len((*c.CallOptions).DeleteInput):len((*c.CallOptions).DeleteInput)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1475,8 +1711,12 @@ func (c *gRPCClient) DeleteInput(ctx context.Context, req *livestreampb.DeleteIn
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1485,6 +1725,9 @@ func (c *gRPCClient) UpdateInput(ctx context.Context, req *livestreampb.UpdateIn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/UpdateInput")
+	}
 	opts = append((*c.CallOptions).UpdateInput[0:len((*c.CallOptions).UpdateInput):len((*c.CallOptions).UpdateInput)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1495,8 +1738,12 @@ func (c *gRPCClient) UpdateInput(ctx context.Context, req *livestreampb.UpdateIn
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdateInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1505,6 +1752,12 @@ func (c *gRPCClient) PreviewInput(ctx context.Context, req *livestreampb.Preview
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/PreviewInput")
+	}
 	opts = append((*c.CallOptions).PreviewInput[0:len((*c.CallOptions).PreviewInput):len((*c.CallOptions).PreviewInput)], opts...)
 	var resp *livestreampb.PreviewInputResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1523,6 +1776,12 @@ func (c *gRPCClient) CreateEvent(ctx context.Context, req *livestreampb.CreateEv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateEvent")
+	}
 	opts = append((*c.CallOptions).CreateEvent[0:len((*c.CallOptions).CreateEvent):len((*c.CallOptions).CreateEvent)], opts...)
 	var resp *livestreampb.Event
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1541,9 +1800,15 @@ func (c *gRPCClient) ListEvents(ctx context.Context, req *livestreampb.ListEvent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/ListEvents")
+	}
 	opts = append((*c.CallOptions).ListEvents[0:len((*c.CallOptions).ListEvents):len((*c.CallOptions).ListEvents)], opts...)
 	it := &EventIterator{}
-	req = proto.Clone(req).(*livestreampb.ListEventsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Event, string, error) {
 		resp := &livestreampb.ListEventsResponse{}
 		if pageToken != "" {
@@ -1587,6 +1852,12 @@ func (c *gRPCClient) GetEvent(ctx context.Context, req *livestreampb.GetEventReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetEvent")
+	}
 	opts = append((*c.CallOptions).GetEvent[0:len((*c.CallOptions).GetEvent):len((*c.CallOptions).GetEvent)], opts...)
 	var resp *livestreampb.Event
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1605,6 +1876,12 @@ func (c *gRPCClient) DeleteEvent(ctx context.Context, req *livestreampb.DeleteEv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteEvent")
+	}
 	opts = append((*c.CallOptions).DeleteEvent[0:len((*c.CallOptions).DeleteEvent):len((*c.CallOptions).DeleteEvent)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1619,9 +1896,15 @@ func (c *gRPCClient) ListClips(ctx context.Context, req *livestreampb.ListClipsR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/ListClips")
+	}
 	opts = append((*c.CallOptions).ListClips[0:len((*c.CallOptions).ListClips):len((*c.CallOptions).ListClips)], opts...)
 	it := &ClipIterator{}
-	req = proto.Clone(req).(*livestreampb.ListClipsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Clip, string, error) {
 		resp := &livestreampb.ListClipsResponse{}
 		if pageToken != "" {
@@ -1665,6 +1948,12 @@ func (c *gRPCClient) GetClip(ctx context.Context, req *livestreampb.GetClipReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetClip")
+	}
 	opts = append((*c.CallOptions).GetClip[0:len((*c.CallOptions).GetClip):len((*c.CallOptions).GetClip)], opts...)
 	var resp *livestreampb.Clip
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1683,6 +1972,12 @@ func (c *gRPCClient) CreateClip(ctx context.Context, req *livestreampb.CreateCli
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateClip")
+	}
 	opts = append((*c.CallOptions).CreateClip[0:len((*c.CallOptions).CreateClip):len((*c.CallOptions).CreateClip)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1693,8 +1988,12 @@ func (c *gRPCClient) CreateClip(ctx context.Context, req *livestreampb.CreateCli
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateClipOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClipOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1703,6 +2002,12 @@ func (c *gRPCClient) DeleteClip(ctx context.Context, req *livestreampb.DeleteCli
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteClip")
+	}
 	opts = append((*c.CallOptions).DeleteClip[0:len((*c.CallOptions).DeleteClip):len((*c.CallOptions).DeleteClip)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1713,8 +2018,12 @@ func (c *gRPCClient) DeleteClip(ctx context.Context, req *livestreampb.DeleteCli
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteClipOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClipOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1723,6 +2032,12 @@ func (c *gRPCClient) CreateDvrSession(ctx context.Context, req *livestreampb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateDvrSession")
+	}
 	opts = append((*c.CallOptions).CreateDvrSession[0:len((*c.CallOptions).CreateDvrSession):len((*c.CallOptions).CreateDvrSession)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1733,8 +2048,12 @@ func (c *gRPCClient) CreateDvrSession(ctx context.Context, req *livestreampb.Cre
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateDvrSessionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDvrSessionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1743,9 +2062,15 @@ func (c *gRPCClient) ListDvrSessions(ctx context.Context, req *livestreampb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/ListDvrSessions")
+	}
 	opts = append((*c.CallOptions).ListDvrSessions[0:len((*c.CallOptions).ListDvrSessions):len((*c.CallOptions).ListDvrSessions)], opts...)
 	it := &DvrSessionIterator{}
-	req = proto.Clone(req).(*livestreampb.ListDvrSessionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.DvrSession, string, error) {
 		resp := &livestreampb.ListDvrSessionsResponse{}
 		if pageToken != "" {
@@ -1789,6 +2114,12 @@ func (c *gRPCClient) GetDvrSession(ctx context.Context, req *livestreampb.GetDvr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetDvrSession")
+	}
 	opts = append((*c.CallOptions).GetDvrSession[0:len((*c.CallOptions).GetDvrSession):len((*c.CallOptions).GetDvrSession)], opts...)
 	var resp *livestreampb.DvrSession
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1807,6 +2138,12 @@ func (c *gRPCClient) DeleteDvrSession(ctx context.Context, req *livestreampb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteDvrSession")
+	}
 	opts = append((*c.CallOptions).DeleteDvrSession[0:len((*c.CallOptions).DeleteDvrSession):len((*c.CallOptions).DeleteDvrSession)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1817,8 +2154,12 @@ func (c *gRPCClient) DeleteDvrSession(ctx context.Context, req *livestreampb.Del
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteDvrSessionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDvrSessionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1827,6 +2168,9 @@ func (c *gRPCClient) UpdateDvrSession(ctx context.Context, req *livestreampb.Upd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/UpdateDvrSession")
+	}
 	opts = append((*c.CallOptions).UpdateDvrSession[0:len((*c.CallOptions).UpdateDvrSession):len((*c.CallOptions).UpdateDvrSession)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1837,8 +2181,12 @@ func (c *gRPCClient) UpdateDvrSession(ctx context.Context, req *livestreampb.Upd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdateDvrSessionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDvrSessionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1847,6 +2195,12 @@ func (c *gRPCClient) CreateAsset(ctx context.Context, req *livestreampb.CreateAs
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateAsset")
+	}
 	opts = append((*c.CallOptions).CreateAsset[0:len((*c.CallOptions).CreateAsset):len((*c.CallOptions).CreateAsset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1857,8 +2211,12 @@ func (c *gRPCClient) CreateAsset(ctx context.Context, req *livestreampb.CreateAs
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1867,6 +2225,12 @@ func (c *gRPCClient) DeleteAsset(ctx context.Context, req *livestreampb.DeleteAs
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteAsset")
+	}
 	opts = append((*c.CallOptions).DeleteAsset[0:len((*c.CallOptions).DeleteAsset):len((*c.CallOptions).DeleteAsset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1877,8 +2241,12 @@ func (c *gRPCClient) DeleteAsset(ctx context.Context, req *livestreampb.DeleteAs
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1887,6 +2255,12 @@ func (c *gRPCClient) GetAsset(ctx context.Context, req *livestreampb.GetAssetReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetAsset")
+	}
 	opts = append((*c.CallOptions).GetAsset[0:len((*c.CallOptions).GetAsset):len((*c.CallOptions).GetAsset)], opts...)
 	var resp *livestreampb.Asset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1905,9 +2279,15 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *livestreampb.ListAsset
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/ListAssets")
+	}
 	opts = append((*c.CallOptions).ListAssets[0:len((*c.CallOptions).ListAssets):len((*c.CallOptions).ListAssets)], opts...)
 	it := &AssetIterator{}
-	req = proto.Clone(req).(*livestreampb.ListAssetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Asset, string, error) {
 		resp := &livestreampb.ListAssetsResponse{}
 		if pageToken != "" {
@@ -1951,6 +2331,12 @@ func (c *gRPCClient) GetPool(ctx context.Context, req *livestreampb.GetPoolReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetPool")
+	}
 	opts = append((*c.CallOptions).GetPool[0:len((*c.CallOptions).GetPool):len((*c.CallOptions).GetPool)], opts...)
 	var resp *livestreampb.Pool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1969,6 +2355,9 @@ func (c *gRPCClient) UpdatePool(ctx context.Context, req *livestreampb.UpdatePoo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/UpdatePool")
+	}
 	opts = append((*c.CallOptions).UpdatePool[0:len((*c.CallOptions).UpdatePool):len((*c.CallOptions).UpdatePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1979,8 +2368,12 @@ func (c *gRPCClient) UpdatePool(ctx context.Context, req *livestreampb.UpdatePoo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdatePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1989,6 +2382,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2007,9 +2403,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2053,6 +2452,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2067,6 +2469,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2081,6 +2486,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2099,9 +2507,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2171,6 +2582,13 @@ func (c *restClient) CreateChannel(ctx context.Context, req *livestreampb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateChannel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/channels")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2199,8 +2617,12 @@ func (c *restClient) CreateChannel(ctx context.Context, req *livestreampb.Create
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2208,7 +2630,7 @@ func (c *restClient) CreateChannel(ctx context.Context, req *livestreampb.Create
 // ListChannels returns a list of all channels in the specified region.
 func (c *restClient) ListChannels(ctx context.Context, req *livestreampb.ListChannelsRequest, opts ...gax.CallOption) *ChannelIterator {
 	it := &ChannelIterator{}
-	req = proto.Clone(req).(*livestreampb.ListChannelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Channel, string, error) {
 		resp := &livestreampb.ListChannelsResponse{}
@@ -2308,6 +2730,13 @@ func (c *restClient) GetChannel(ctx context.Context, req *livestreampb.GetChanne
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetChannel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}")
+	}
 	opts = append((*c.CallOptions).GetChannel[0:len((*c.CallOptions).GetChannel):len((*c.CallOptions).GetChannel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &livestreampb.Channel{}
@@ -2364,6 +2793,13 @@ func (c *restClient) DeleteChannel(ctx context.Context, req *livestreampb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteChannel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2392,8 +2828,12 @@ func (c *restClient) DeleteChannel(ctx context.Context, req *livestreampb.Delete
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2434,6 +2874,10 @@ func (c *restClient) UpdateChannel(ctx context.Context, req *livestreampb.Update
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/UpdateChannel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{channel.name=projects/*/locations/*/channels/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2462,8 +2906,12 @@ func (c *restClient) UpdateChannel(ctx context.Context, req *livestreampb.Update
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdateChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2494,6 +2942,13 @@ func (c *restClient) StartChannel(ctx context.Context, req *livestreampb.StartCh
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StartChannel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}:start")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2522,8 +2977,12 @@ func (c *restClient) StartChannel(ctx context.Context, req *livestreampb.StartCh
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StartChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2554,6 +3013,13 @@ func (c *restClient) StopChannel(ctx context.Context, req *livestreampb.StopChan
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StopChannel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}:stop")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2582,8 +3048,12 @@ func (c *restClient) StopChannel(ctx context.Context, req *livestreampb.StopChan
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StopChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2614,6 +3084,13 @@ func (c *restClient) StartDistribution(ctx context.Context, req *livestreampb.St
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StartDistribution")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}:startdistribution")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2642,8 +3119,12 @@ func (c *restClient) StartDistribution(ctx context.Context, req *livestreampb.St
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StartDistributionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartDistributionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2673,6 +3154,13 @@ func (c *restClient) StopDistribution(ctx context.Context, req *livestreampb.Sto
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StopDistribution")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}:stopdistribution")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2701,8 +3189,12 @@ func (c *restClient) StopDistribution(ctx context.Context, req *livestreampb.Sto
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StopDistributionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopDistributionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2737,6 +3229,13 @@ func (c *restClient) CreateInput(ctx context.Context, req *livestreampb.CreateIn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateInput")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/inputs")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2765,8 +3264,12 @@ func (c *restClient) CreateInput(ctx context.Context, req *livestreampb.CreateIn
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2774,7 +3277,7 @@ func (c *restClient) CreateInput(ctx context.Context, req *livestreampb.CreateIn
 // ListInputs returns a list of all inputs in the specified region.
 func (c *restClient) ListInputs(ctx context.Context, req *livestreampb.ListInputsRequest, opts ...gax.CallOption) *InputIterator {
 	it := &InputIterator{}
-	req = proto.Clone(req).(*livestreampb.ListInputsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Input, string, error) {
 		resp := &livestreampb.ListInputsResponse{}
@@ -2874,6 +3377,13 @@ func (c *restClient) GetInput(ctx context.Context, req *livestreampb.GetInputReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetInput")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/inputs/*}")
+	}
 	opts = append((*c.CallOptions).GetInput[0:len((*c.CallOptions).GetInput):len((*c.CallOptions).GetInput)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &livestreampb.Input{}
@@ -2927,6 +3437,13 @@ func (c *restClient) DeleteInput(ctx context.Context, req *livestreampb.DeleteIn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteInput")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/inputs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2955,8 +3472,12 @@ func (c *restClient) DeleteInput(ctx context.Context, req *livestreampb.DeleteIn
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2997,6 +3518,10 @@ func (c *restClient) UpdateInput(ctx context.Context, req *livestreampb.UpdateIn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/UpdateInput")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{input.name=projects/*/locations/*/inputs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3025,8 +3550,12 @@ func (c *restClient) UpdateInput(ctx context.Context, req *livestreampb.UpdateIn
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdateInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3056,6 +3585,13 @@ func (c *restClient) PreviewInput(ctx context.Context, req *livestreampb.Preview
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/PreviewInput")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/inputs/*}:preview")
+	}
 	opts = append((*c.CallOptions).PreviewInput[0:len((*c.CallOptions).PreviewInput):len((*c.CallOptions).PreviewInput)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &livestreampb.PreviewInputResponse{}
@@ -3117,6 +3653,13 @@ func (c *restClient) CreateEvent(ctx context.Context, req *livestreampb.CreateEv
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/channels/*}/events")
+	}
 	opts = append((*c.CallOptions).CreateEvent[0:len((*c.CallOptions).CreateEvent):len((*c.CallOptions).CreateEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &livestreampb.Event{}
@@ -3151,7 +3694,7 @@ func (c *restClient) CreateEvent(ctx context.Context, req *livestreampb.CreateEv
 // ListEvents returns a list of all events in the specified channel.
 func (c *restClient) ListEvents(ctx context.Context, req *livestreampb.ListEventsRequest, opts ...gax.CallOption) *EventIterator {
 	it := &EventIterator{}
-	req = proto.Clone(req).(*livestreampb.ListEventsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Event, string, error) {
 		resp := &livestreampb.ListEventsResponse{}
@@ -3251,6 +3794,13 @@ func (c *restClient) GetEvent(ctx context.Context, req *livestreampb.GetEventReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*/events/*}")
+	}
 	opts = append((*c.CallOptions).GetEvent[0:len((*c.CallOptions).GetEvent):len((*c.CallOptions).GetEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &livestreampb.Event{}
@@ -3304,6 +3854,13 @@ func (c *restClient) DeleteEvent(ctx context.Context, req *livestreampb.DeleteEv
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*/events/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3323,7 +3880,7 @@ func (c *restClient) DeleteEvent(ctx context.Context, req *livestreampb.DeleteEv
 // ListClips returns a list of all clips in the specified channel.
 func (c *restClient) ListClips(ctx context.Context, req *livestreampb.ListClipsRequest, opts ...gax.CallOption) *ClipIterator {
 	it := &ClipIterator{}
-	req = proto.Clone(req).(*livestreampb.ListClipsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Clip, string, error) {
 		resp := &livestreampb.ListClipsResponse{}
@@ -3423,6 +3980,13 @@ func (c *restClient) GetClip(ctx context.Context, req *livestreampb.GetClipReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetClip")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*/clips/*}")
+	}
 	opts = append((*c.CallOptions).GetClip[0:len((*c.CallOptions).GetClip):len((*c.CallOptions).GetClip)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &livestreampb.Clip{}
@@ -3484,6 +4048,13 @@ func (c *restClient) CreateClip(ctx context.Context, req *livestreampb.CreateCli
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateClip")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/channels/*}/clips")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3512,8 +4083,12 @@ func (c *restClient) CreateClip(ctx context.Context, req *livestreampb.CreateCli
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateClipOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClipOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3541,6 +4116,13 @@ func (c *restClient) DeleteClip(ctx context.Context, req *livestreampb.DeleteCli
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteClip")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*/clips/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3569,8 +4151,12 @@ func (c *restClient) DeleteClip(ctx context.Context, req *livestreampb.DeleteCli
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteClipOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClipOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3605,6 +4191,13 @@ func (c *restClient) CreateDvrSession(ctx context.Context, req *livestreampb.Cre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateDvrSession")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/channels/*}/dvrSessions")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3633,8 +4226,12 @@ func (c *restClient) CreateDvrSession(ctx context.Context, req *livestreampb.Cre
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateDvrSessionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDvrSessionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3642,7 +4239,7 @@ func (c *restClient) CreateDvrSession(ctx context.Context, req *livestreampb.Cre
 // ListDvrSessions returns a list of all DVR sessions in the specified channel.
 func (c *restClient) ListDvrSessions(ctx context.Context, req *livestreampb.ListDvrSessionsRequest, opts ...gax.CallOption) *DvrSessionIterator {
 	it := &DvrSessionIterator{}
-	req = proto.Clone(req).(*livestreampb.ListDvrSessionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.DvrSession, string, error) {
 		resp := &livestreampb.ListDvrSessionsResponse{}
@@ -3742,6 +4339,13 @@ func (c *restClient) GetDvrSession(ctx context.Context, req *livestreampb.GetDvr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetDvrSession")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*/dvrSessions/*}")
+	}
 	opts = append((*c.CallOptions).GetDvrSession[0:len((*c.CallOptions).GetDvrSession):len((*c.CallOptions).GetDvrSession)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &livestreampb.DvrSession{}
@@ -3795,6 +4399,13 @@ func (c *restClient) DeleteDvrSession(ctx context.Context, req *livestreampb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteDvrSession")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*/dvrSessions/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3823,8 +4434,12 @@ func (c *restClient) DeleteDvrSession(ctx context.Context, req *livestreampb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteDvrSessionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDvrSessionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3865,6 +4480,10 @@ func (c *restClient) UpdateDvrSession(ctx context.Context, req *livestreampb.Upd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/UpdateDvrSession")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{dvr_session.name=projects/*/locations/*/channels/*/dvrSessions/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3893,8 +4512,12 @@ func (c *restClient) UpdateDvrSession(ctx context.Context, req *livestreampb.Upd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdateDvrSessionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDvrSessionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3930,6 +4553,13 @@ func (c *restClient) CreateAsset(ctx context.Context, req *livestreampb.CreateAs
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateAsset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/assets")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3958,8 +4588,12 @@ func (c *restClient) CreateAsset(ctx context.Context, req *livestreampb.CreateAs
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3986,6 +4620,13 @@ func (c *restClient) DeleteAsset(ctx context.Context, req *livestreampb.DeleteAs
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteAsset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/assets/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4014,8 +4655,12 @@ func (c *restClient) DeleteAsset(ctx context.Context, req *livestreampb.DeleteAs
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4039,6 +4684,13 @@ func (c *restClient) GetAsset(ctx context.Context, req *livestreampb.GetAssetReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetAsset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/assets/*}")
+	}
 	opts = append((*c.CallOptions).GetAsset[0:len((*c.CallOptions).GetAsset):len((*c.CallOptions).GetAsset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &livestreampb.Asset{}
@@ -4073,7 +4725,7 @@ func (c *restClient) GetAsset(ctx context.Context, req *livestreampb.GetAssetReq
 // ListAssets returns a list of all assets in the specified region.
 func (c *restClient) ListAssets(ctx context.Context, req *livestreampb.ListAssetsRequest, opts ...gax.CallOption) *AssetIterator {
 	it := &AssetIterator{}
-	req = proto.Clone(req).(*livestreampb.ListAssetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Asset, string, error) {
 		resp := &livestreampb.ListAssetsResponse{}
@@ -4173,6 +4825,13 @@ func (c *restClient) GetPool(ctx context.Context, req *livestreampb.GetPoolReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetPool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/pools/*}")
+	}
 	opts = append((*c.CallOptions).GetPool[0:len((*c.CallOptions).GetPool):len((*c.CallOptions).GetPool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &livestreampb.Pool{}
@@ -4240,6 +4899,10 @@ func (c *restClient) UpdatePool(ctx context.Context, req *livestreampb.UpdatePoo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/UpdatePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{pool.name=projects/*/locations/*/pools/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4268,8 +4931,12 @@ func (c *restClient) UpdatePool(ctx context.Context, req *livestreampb.UpdatePoo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdatePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4293,6 +4960,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -4327,7 +4998,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -4430,6 +5101,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4465,6 +5140,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4500,6 +5179,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -4534,7 +5217,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -4619,7 +5302,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateAssetOperation, possibly from a different process.
 func (c *gRPCClient) CreateAssetOperation(name string) *CreateAssetOperation {
 	return &CreateAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateAssetOperation"),
 	}
 }
 
@@ -4628,7 +5311,7 @@ func (c *gRPCClient) CreateAssetOperation(name string) *CreateAssetOperation {
 func (c *restClient) CreateAssetOperation(name string) *CreateAssetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateAssetOperation"),
 		pollPath: override,
 	}
 }
@@ -4637,7 +5320,7 @@ func (c *restClient) CreateAssetOperation(name string) *CreateAssetOperation {
 // The name must be that of a previously created CreateChannelOperation, possibly from a different process.
 func (c *gRPCClient) CreateChannelOperation(name string) *CreateChannelOperation {
 	return &CreateChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateChannelOperation"),
 	}
 }
 
@@ -4646,7 +5329,7 @@ func (c *gRPCClient) CreateChannelOperation(name string) *CreateChannelOperation
 func (c *restClient) CreateChannelOperation(name string) *CreateChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -4655,7 +5338,7 @@ func (c *restClient) CreateChannelOperation(name string) *CreateChannelOperation
 // The name must be that of a previously created CreateClipOperation, possibly from a different process.
 func (c *gRPCClient) CreateClipOperation(name string) *CreateClipOperation {
 	return &CreateClipOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateClipOperation"),
 	}
 }
 
@@ -4664,7 +5347,7 @@ func (c *gRPCClient) CreateClipOperation(name string) *CreateClipOperation {
 func (c *restClient) CreateClipOperation(name string) *CreateClipOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateClipOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateClipOperation"),
 		pollPath: override,
 	}
 }
@@ -4673,7 +5356,7 @@ func (c *restClient) CreateClipOperation(name string) *CreateClipOperation {
 // The name must be that of a previously created CreateDvrSessionOperation, possibly from a different process.
 func (c *gRPCClient) CreateDvrSessionOperation(name string) *CreateDvrSessionOperation {
 	return &CreateDvrSessionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateDvrSessionOperation"),
 	}
 }
 
@@ -4682,7 +5365,7 @@ func (c *gRPCClient) CreateDvrSessionOperation(name string) *CreateDvrSessionOpe
 func (c *restClient) CreateDvrSessionOperation(name string) *CreateDvrSessionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDvrSessionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateDvrSessionOperation"),
 		pollPath: override,
 	}
 }
@@ -4691,7 +5374,7 @@ func (c *restClient) CreateDvrSessionOperation(name string) *CreateDvrSessionOpe
 // The name must be that of a previously created CreateInputOperation, possibly from a different process.
 func (c *gRPCClient) CreateInputOperation(name string) *CreateInputOperation {
 	return &CreateInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateInputOperation"),
 	}
 }
 
@@ -4700,7 +5383,7 @@ func (c *gRPCClient) CreateInputOperation(name string) *CreateInputOperation {
 func (c *restClient) CreateInputOperation(name string) *CreateInputOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateInputOperation"),
 		pollPath: override,
 	}
 }
@@ -4709,7 +5392,7 @@ func (c *restClient) CreateInputOperation(name string) *CreateInputOperation {
 // The name must be that of a previously created DeleteAssetOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAssetOperation(name string) *DeleteAssetOperation {
 	return &DeleteAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteAssetOperation"),
 	}
 }
 
@@ -4718,7 +5401,7 @@ func (c *gRPCClient) DeleteAssetOperation(name string) *DeleteAssetOperation {
 func (c *restClient) DeleteAssetOperation(name string) *DeleteAssetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteAssetOperation"),
 		pollPath: override,
 	}
 }
@@ -4727,7 +5410,7 @@ func (c *restClient) DeleteAssetOperation(name string) *DeleteAssetOperation {
 // The name must be that of a previously created DeleteChannelOperation, possibly from a different process.
 func (c *gRPCClient) DeleteChannelOperation(name string) *DeleteChannelOperation {
 	return &DeleteChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteChannelOperation"),
 	}
 }
 
@@ -4736,7 +5419,7 @@ func (c *gRPCClient) DeleteChannelOperation(name string) *DeleteChannelOperation
 func (c *restClient) DeleteChannelOperation(name string) *DeleteChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -4745,7 +5428,7 @@ func (c *restClient) DeleteChannelOperation(name string) *DeleteChannelOperation
 // The name must be that of a previously created DeleteClipOperation, possibly from a different process.
 func (c *gRPCClient) DeleteClipOperation(name string) *DeleteClipOperation {
 	return &DeleteClipOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteClipOperation"),
 	}
 }
 
@@ -4754,7 +5437,7 @@ func (c *gRPCClient) DeleteClipOperation(name string) *DeleteClipOperation {
 func (c *restClient) DeleteClipOperation(name string) *DeleteClipOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteClipOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteClipOperation"),
 		pollPath: override,
 	}
 }
@@ -4763,7 +5446,7 @@ func (c *restClient) DeleteClipOperation(name string) *DeleteClipOperation {
 // The name must be that of a previously created DeleteDvrSessionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteDvrSessionOperation(name string) *DeleteDvrSessionOperation {
 	return &DeleteDvrSessionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteDvrSessionOperation"),
 	}
 }
 
@@ -4772,7 +5455,7 @@ func (c *gRPCClient) DeleteDvrSessionOperation(name string) *DeleteDvrSessionOpe
 func (c *restClient) DeleteDvrSessionOperation(name string) *DeleteDvrSessionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDvrSessionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteDvrSessionOperation"),
 		pollPath: override,
 	}
 }
@@ -4781,7 +5464,7 @@ func (c *restClient) DeleteDvrSessionOperation(name string) *DeleteDvrSessionOpe
 // The name must be that of a previously created DeleteInputOperation, possibly from a different process.
 func (c *gRPCClient) DeleteInputOperation(name string) *DeleteInputOperation {
 	return &DeleteInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteInputOperation"),
 	}
 }
 
@@ -4790,7 +5473,7 @@ func (c *gRPCClient) DeleteInputOperation(name string) *DeleteInputOperation {
 func (c *restClient) DeleteInputOperation(name string) *DeleteInputOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteInputOperation"),
 		pollPath: override,
 	}
 }
@@ -4799,7 +5482,7 @@ func (c *restClient) DeleteInputOperation(name string) *DeleteInputOperation {
 // The name must be that of a previously created StartChannelOperation, possibly from a different process.
 func (c *gRPCClient) StartChannelOperation(name string) *StartChannelOperation {
 	return &StartChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StartChannelOperation"),
 	}
 }
 
@@ -4808,7 +5491,7 @@ func (c *gRPCClient) StartChannelOperation(name string) *StartChannelOperation {
 func (c *restClient) StartChannelOperation(name string) *StartChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StartChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StartChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -4817,7 +5500,7 @@ func (c *restClient) StartChannelOperation(name string) *StartChannelOperation {
 // The name must be that of a previously created StartDistributionOperation, possibly from a different process.
 func (c *gRPCClient) StartDistributionOperation(name string) *StartDistributionOperation {
 	return &StartDistributionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StartDistributionOperation"),
 	}
 }
 
@@ -4826,7 +5509,7 @@ func (c *gRPCClient) StartDistributionOperation(name string) *StartDistributionO
 func (c *restClient) StartDistributionOperation(name string) *StartDistributionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StartDistributionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StartDistributionOperation"),
 		pollPath: override,
 	}
 }
@@ -4835,7 +5518,7 @@ func (c *restClient) StartDistributionOperation(name string) *StartDistributionO
 // The name must be that of a previously created StopChannelOperation, possibly from a different process.
 func (c *gRPCClient) StopChannelOperation(name string) *StopChannelOperation {
 	return &StopChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StopChannelOperation"),
 	}
 }
 
@@ -4844,7 +5527,7 @@ func (c *gRPCClient) StopChannelOperation(name string) *StopChannelOperation {
 func (c *restClient) StopChannelOperation(name string) *StopChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StopChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StopChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -4853,7 +5536,7 @@ func (c *restClient) StopChannelOperation(name string) *StopChannelOperation {
 // The name must be that of a previously created StopDistributionOperation, possibly from a different process.
 func (c *gRPCClient) StopDistributionOperation(name string) *StopDistributionOperation {
 	return &StopDistributionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StopDistributionOperation"),
 	}
 }
 
@@ -4862,7 +5545,7 @@ func (c *gRPCClient) StopDistributionOperation(name string) *StopDistributionOpe
 func (c *restClient) StopDistributionOperation(name string) *StopDistributionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StopDistributionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StopDistributionOperation"),
 		pollPath: override,
 	}
 }
@@ -4871,7 +5554,7 @@ func (c *restClient) StopDistributionOperation(name string) *StopDistributionOpe
 // The name must be that of a previously created UpdateChannelOperation, possibly from a different process.
 func (c *gRPCClient) UpdateChannelOperation(name string) *UpdateChannelOperation {
 	return &UpdateChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdateChannelOperation"),
 	}
 }
 
@@ -4880,7 +5563,7 @@ func (c *gRPCClient) UpdateChannelOperation(name string) *UpdateChannelOperation
 func (c *restClient) UpdateChannelOperation(name string) *UpdateChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdateChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -4889,7 +5572,7 @@ func (c *restClient) UpdateChannelOperation(name string) *UpdateChannelOperation
 // The name must be that of a previously created UpdateDvrSessionOperation, possibly from a different process.
 func (c *gRPCClient) UpdateDvrSessionOperation(name string) *UpdateDvrSessionOperation {
 	return &UpdateDvrSessionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdateDvrSessionOperation"),
 	}
 }
 
@@ -4898,7 +5581,7 @@ func (c *gRPCClient) UpdateDvrSessionOperation(name string) *UpdateDvrSessionOpe
 func (c *restClient) UpdateDvrSessionOperation(name string) *UpdateDvrSessionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDvrSessionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdateDvrSessionOperation"),
 		pollPath: override,
 	}
 }
@@ -4907,7 +5590,7 @@ func (c *restClient) UpdateDvrSessionOperation(name string) *UpdateDvrSessionOpe
 // The name must be that of a previously created UpdateInputOperation, possibly from a different process.
 func (c *gRPCClient) UpdateInputOperation(name string) *UpdateInputOperation {
 	return &UpdateInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdateInputOperation"),
 	}
 }
 
@@ -4916,7 +5599,7 @@ func (c *gRPCClient) UpdateInputOperation(name string) *UpdateInputOperation {
 func (c *restClient) UpdateInputOperation(name string) *UpdateInputOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdateInputOperation"),
 		pollPath: override,
 	}
 }
@@ -4925,7 +5608,7 @@ func (c *restClient) UpdateInputOperation(name string) *UpdateInputOperation {
 // The name must be that of a previously created UpdatePoolOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePoolOperation(name string) *UpdatePoolOperation {
 	return &UpdatePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdatePoolOperation"),
 	}
 }
 
@@ -4934,7 +5617,7 @@ func (c *gRPCClient) UpdatePoolOperation(name string) *UpdatePoolOperation {
 func (c *restClient) UpdatePoolOperation(name string) *UpdatePoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdatePoolOperation"),
 		pollPath: override,
 	}
 }

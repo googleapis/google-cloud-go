@@ -32,6 +32,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	networksecuritypb "cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -267,7 +269,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -511,6 +513,16 @@ type gRPCClient struct {
 // information.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "networksecurity",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/networksecurity/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "networksecurity.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -535,6 +547,43 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAuthorizationPolicies = append(client.CallOptions.ListAuthorizationPolicies, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAuthorizationPolicy = append(client.CallOptions.GetAuthorizationPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAuthorizationPolicy = append(client.CallOptions.CreateAuthorizationPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAuthorizationPolicy = append(client.CallOptions.UpdateAuthorizationPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAuthorizationPolicy = append(client.CallOptions.DeleteAuthorizationPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListServerTlsPolicies = append(client.CallOptions.ListServerTlsPolicies, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetServerTlsPolicy = append(client.CallOptions.GetServerTlsPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateServerTlsPolicy = append(client.CallOptions.CreateServerTlsPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateServerTlsPolicy = append(client.CallOptions.UpdateServerTlsPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteServerTlsPolicy = append(client.CallOptions.DeleteServerTlsPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListClientTlsPolicies = append(client.CallOptions.ListClientTlsPolicies, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetClientTlsPolicy = append(client.CallOptions.GetClientTlsPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateClientTlsPolicy = append(client.CallOptions.CreateClientTlsPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateClientTlsPolicy = append(client.CallOptions.UpdateClientTlsPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteClientTlsPolicy = append(client.CallOptions.DeleteClientTlsPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -571,7 +620,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -606,6 +655,16 @@ type restClient struct {
 // information.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "networksecurity",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/networksecurity/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "networksecurity.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -619,6 +678,44 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAuthorizationPolicies = append(callOpts.ListAuthorizationPolicies, gax.WithClientMetrics(metrics))
+		callOpts.GetAuthorizationPolicy = append(callOpts.GetAuthorizationPolicy, gax.WithClientMetrics(metrics))
+		callOpts.CreateAuthorizationPolicy = append(callOpts.CreateAuthorizationPolicy, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAuthorizationPolicy = append(callOpts.UpdateAuthorizationPolicy, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAuthorizationPolicy = append(callOpts.DeleteAuthorizationPolicy, gax.WithClientMetrics(metrics))
+		callOpts.ListServerTlsPolicies = append(callOpts.ListServerTlsPolicies, gax.WithClientMetrics(metrics))
+		callOpts.GetServerTlsPolicy = append(callOpts.GetServerTlsPolicy, gax.WithClientMetrics(metrics))
+		callOpts.CreateServerTlsPolicy = append(callOpts.CreateServerTlsPolicy, gax.WithClientMetrics(metrics))
+		callOpts.UpdateServerTlsPolicy = append(callOpts.UpdateServerTlsPolicy, gax.WithClientMetrics(metrics))
+		callOpts.DeleteServerTlsPolicy = append(callOpts.DeleteServerTlsPolicy, gax.WithClientMetrics(metrics))
+		callOpts.ListClientTlsPolicies = append(callOpts.ListClientTlsPolicies, gax.WithClientMetrics(metrics))
+		callOpts.GetClientTlsPolicy = append(callOpts.GetClientTlsPolicy, gax.WithClientMetrics(metrics))
+		callOpts.CreateClientTlsPolicy = append(callOpts.CreateClientTlsPolicy, gax.WithClientMetrics(metrics))
+		callOpts.UpdateClientTlsPolicy = append(callOpts.UpdateClientTlsPolicy, gax.WithClientMetrics(metrics))
+		callOpts.DeleteClientTlsPolicy = append(callOpts.DeleteClientTlsPolicy, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -656,7 +753,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -675,9 +772,15 @@ func (c *gRPCClient) ListAuthorizationPolicies(ctx context.Context, req *network
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/ListAuthorizationPolicies")
+	}
 	opts = append((*c.CallOptions).ListAuthorizationPolicies[0:len((*c.CallOptions).ListAuthorizationPolicies):len((*c.CallOptions).ListAuthorizationPolicies)], opts...)
 	it := &AuthorizationPolicyIterator{}
-	req = proto.Clone(req).(*networksecuritypb.ListAuthorizationPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networksecuritypb.AuthorizationPolicy, string, error) {
 		resp := &networksecuritypb.ListAuthorizationPoliciesResponse{}
 		if pageToken != "" {
@@ -721,6 +824,12 @@ func (c *gRPCClient) GetAuthorizationPolicy(ctx context.Context, req *networksec
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/GetAuthorizationPolicy")
+	}
 	opts = append((*c.CallOptions).GetAuthorizationPolicy[0:len((*c.CallOptions).GetAuthorizationPolicy):len((*c.CallOptions).GetAuthorizationPolicy)], opts...)
 	var resp *networksecuritypb.AuthorizationPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -739,6 +848,12 @@ func (c *gRPCClient) CreateAuthorizationPolicy(ctx context.Context, req *network
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/CreateAuthorizationPolicy")
+	}
 	opts = append((*c.CallOptions).CreateAuthorizationPolicy[0:len((*c.CallOptions).CreateAuthorizationPolicy):len((*c.CallOptions).CreateAuthorizationPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -749,8 +864,12 @@ func (c *gRPCClient) CreateAuthorizationPolicy(ctx context.Context, req *network
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateAuthorizationPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAuthorizationPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -759,6 +878,9 @@ func (c *gRPCClient) UpdateAuthorizationPolicy(ctx context.Context, req *network
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/UpdateAuthorizationPolicy")
+	}
 	opts = append((*c.CallOptions).UpdateAuthorizationPolicy[0:len((*c.CallOptions).UpdateAuthorizationPolicy):len((*c.CallOptions).UpdateAuthorizationPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -769,8 +891,12 @@ func (c *gRPCClient) UpdateAuthorizationPolicy(ctx context.Context, req *network
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateAuthorizationPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAuthorizationPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -779,6 +905,12 @@ func (c *gRPCClient) DeleteAuthorizationPolicy(ctx context.Context, req *network
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/DeleteAuthorizationPolicy")
+	}
 	opts = append((*c.CallOptions).DeleteAuthorizationPolicy[0:len((*c.CallOptions).DeleteAuthorizationPolicy):len((*c.CallOptions).DeleteAuthorizationPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -789,8 +921,12 @@ func (c *gRPCClient) DeleteAuthorizationPolicy(ctx context.Context, req *network
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteAuthorizationPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAuthorizationPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -799,9 +935,15 @@ func (c *gRPCClient) ListServerTlsPolicies(ctx context.Context, req *networksecu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/ListServerTlsPolicies")
+	}
 	opts = append((*c.CallOptions).ListServerTlsPolicies[0:len((*c.CallOptions).ListServerTlsPolicies):len((*c.CallOptions).ListServerTlsPolicies)], opts...)
 	it := &ServerTlsPolicyIterator{}
-	req = proto.Clone(req).(*networksecuritypb.ListServerTlsPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networksecuritypb.ServerTlsPolicy, string, error) {
 		resp := &networksecuritypb.ListServerTlsPoliciesResponse{}
 		if pageToken != "" {
@@ -845,6 +987,12 @@ func (c *gRPCClient) GetServerTlsPolicy(ctx context.Context, req *networksecurit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/GetServerTlsPolicy")
+	}
 	opts = append((*c.CallOptions).GetServerTlsPolicy[0:len((*c.CallOptions).GetServerTlsPolicy):len((*c.CallOptions).GetServerTlsPolicy)], opts...)
 	var resp *networksecuritypb.ServerTlsPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -863,6 +1011,12 @@ func (c *gRPCClient) CreateServerTlsPolicy(ctx context.Context, req *networksecu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/CreateServerTlsPolicy")
+	}
 	opts = append((*c.CallOptions).CreateServerTlsPolicy[0:len((*c.CallOptions).CreateServerTlsPolicy):len((*c.CallOptions).CreateServerTlsPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -873,8 +1027,12 @@ func (c *gRPCClient) CreateServerTlsPolicy(ctx context.Context, req *networksecu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateServerTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServerTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -883,6 +1041,9 @@ func (c *gRPCClient) UpdateServerTlsPolicy(ctx context.Context, req *networksecu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/UpdateServerTlsPolicy")
+	}
 	opts = append((*c.CallOptions).UpdateServerTlsPolicy[0:len((*c.CallOptions).UpdateServerTlsPolicy):len((*c.CallOptions).UpdateServerTlsPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -893,8 +1054,12 @@ func (c *gRPCClient) UpdateServerTlsPolicy(ctx context.Context, req *networksecu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateServerTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateServerTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -903,6 +1068,12 @@ func (c *gRPCClient) DeleteServerTlsPolicy(ctx context.Context, req *networksecu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/DeleteServerTlsPolicy")
+	}
 	opts = append((*c.CallOptions).DeleteServerTlsPolicy[0:len((*c.CallOptions).DeleteServerTlsPolicy):len((*c.CallOptions).DeleteServerTlsPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -913,8 +1084,12 @@ func (c *gRPCClient) DeleteServerTlsPolicy(ctx context.Context, req *networksecu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteServerTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServerTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -923,9 +1098,15 @@ func (c *gRPCClient) ListClientTlsPolicies(ctx context.Context, req *networksecu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/ListClientTlsPolicies")
+	}
 	opts = append((*c.CallOptions).ListClientTlsPolicies[0:len((*c.CallOptions).ListClientTlsPolicies):len((*c.CallOptions).ListClientTlsPolicies)], opts...)
 	it := &ClientTlsPolicyIterator{}
-	req = proto.Clone(req).(*networksecuritypb.ListClientTlsPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networksecuritypb.ClientTlsPolicy, string, error) {
 		resp := &networksecuritypb.ListClientTlsPoliciesResponse{}
 		if pageToken != "" {
@@ -969,6 +1150,12 @@ func (c *gRPCClient) GetClientTlsPolicy(ctx context.Context, req *networksecurit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/GetClientTlsPolicy")
+	}
 	opts = append((*c.CallOptions).GetClientTlsPolicy[0:len((*c.CallOptions).GetClientTlsPolicy):len((*c.CallOptions).GetClientTlsPolicy)], opts...)
 	var resp *networksecuritypb.ClientTlsPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -987,6 +1174,12 @@ func (c *gRPCClient) CreateClientTlsPolicy(ctx context.Context, req *networksecu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/CreateClientTlsPolicy")
+	}
 	opts = append((*c.CallOptions).CreateClientTlsPolicy[0:len((*c.CallOptions).CreateClientTlsPolicy):len((*c.CallOptions).CreateClientTlsPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -997,8 +1190,12 @@ func (c *gRPCClient) CreateClientTlsPolicy(ctx context.Context, req *networksecu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateClientTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClientTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1007,6 +1204,9 @@ func (c *gRPCClient) UpdateClientTlsPolicy(ctx context.Context, req *networksecu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/UpdateClientTlsPolicy")
+	}
 	opts = append((*c.CallOptions).UpdateClientTlsPolicy[0:len((*c.CallOptions).UpdateClientTlsPolicy):len((*c.CallOptions).UpdateClientTlsPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1017,8 +1217,12 @@ func (c *gRPCClient) UpdateClientTlsPolicy(ctx context.Context, req *networksecu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateClientTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClientTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1027,6 +1231,12 @@ func (c *gRPCClient) DeleteClientTlsPolicy(ctx context.Context, req *networksecu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/DeleteClientTlsPolicy")
+	}
 	opts = append((*c.CallOptions).DeleteClientTlsPolicy[0:len((*c.CallOptions).DeleteClientTlsPolicy):len((*c.CallOptions).DeleteClientTlsPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1037,8 +1247,12 @@ func (c *gRPCClient) DeleteClientTlsPolicy(ctx context.Context, req *networksecu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteClientTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClientTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1047,6 +1261,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1065,9 +1282,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1111,6 +1331,12 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1129,6 +1355,12 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1147,6 +1379,12 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1165,6 +1403,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1179,6 +1420,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1193,6 +1437,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1211,9 +1458,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1255,7 +1505,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListAuthorizationPolicies lists AuthorizationPolicies in a given project and location.
 func (c *restClient) ListAuthorizationPolicies(ctx context.Context, req *networksecuritypb.ListAuthorizationPoliciesRequest, opts ...gax.CallOption) *AuthorizationPolicyIterator {
 	it := &AuthorizationPolicyIterator{}
-	req = proto.Clone(req).(*networksecuritypb.ListAuthorizationPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networksecuritypb.AuthorizationPolicy, string, error) {
 		resp := &networksecuritypb.ListAuthorizationPoliciesResponse{}
@@ -1349,6 +1599,13 @@ func (c *restClient) GetAuthorizationPolicy(ctx context.Context, req *networksec
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/GetAuthorizationPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/authorizationPolicies/*}")
+	}
 	opts = append((*c.CallOptions).GetAuthorizationPolicy[0:len((*c.CallOptions).GetAuthorizationPolicy):len((*c.CallOptions).GetAuthorizationPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &networksecuritypb.AuthorizationPolicy{}
@@ -1407,6 +1664,13 @@ func (c *restClient) CreateAuthorizationPolicy(ctx context.Context, req *network
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/CreateAuthorizationPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/authorizationPolicies")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1435,8 +1699,12 @@ func (c *restClient) CreateAuthorizationPolicy(ctx context.Context, req *network
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateAuthorizationPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAuthorizationPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1474,6 +1742,10 @@ func (c *restClient) UpdateAuthorizationPolicy(ctx context.Context, req *network
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/UpdateAuthorizationPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{authorization_policy.name=projects/*/locations/*/authorizationPolicies/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1502,8 +1774,12 @@ func (c *restClient) UpdateAuthorizationPolicy(ctx context.Context, req *network
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateAuthorizationPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAuthorizationPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1527,6 +1803,13 @@ func (c *restClient) DeleteAuthorizationPolicy(ctx context.Context, req *network
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/DeleteAuthorizationPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/authorizationPolicies/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1555,8 +1838,12 @@ func (c *restClient) DeleteAuthorizationPolicy(ctx context.Context, req *network
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteAuthorizationPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAuthorizationPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1564,7 +1851,7 @@ func (c *restClient) DeleteAuthorizationPolicy(ctx context.Context, req *network
 // ListServerTlsPolicies lists ServerTlsPolicies in a given project and location.
 func (c *restClient) ListServerTlsPolicies(ctx context.Context, req *networksecuritypb.ListServerTlsPoliciesRequest, opts ...gax.CallOption) *ServerTlsPolicyIterator {
 	it := &ServerTlsPolicyIterator{}
-	req = proto.Clone(req).(*networksecuritypb.ListServerTlsPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networksecuritypb.ServerTlsPolicy, string, error) {
 		resp := &networksecuritypb.ListServerTlsPoliciesResponse{}
@@ -1658,6 +1945,13 @@ func (c *restClient) GetServerTlsPolicy(ctx context.Context, req *networksecurit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/GetServerTlsPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/serverTlsPolicies/*}")
+	}
 	opts = append((*c.CallOptions).GetServerTlsPolicy[0:len((*c.CallOptions).GetServerTlsPolicy):len((*c.CallOptions).GetServerTlsPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &networksecuritypb.ServerTlsPolicy{}
@@ -1716,6 +2010,13 @@ func (c *restClient) CreateServerTlsPolicy(ctx context.Context, req *networksecu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/CreateServerTlsPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/serverTlsPolicies")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1744,8 +2045,12 @@ func (c *restClient) CreateServerTlsPolicy(ctx context.Context, req *networksecu
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateServerTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServerTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1783,6 +2088,10 @@ func (c *restClient) UpdateServerTlsPolicy(ctx context.Context, req *networksecu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/UpdateServerTlsPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{server_tls_policy.name=projects/*/locations/*/serverTlsPolicies/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1811,8 +2120,12 @@ func (c *restClient) UpdateServerTlsPolicy(ctx context.Context, req *networksecu
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateServerTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateServerTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1836,6 +2149,13 @@ func (c *restClient) DeleteServerTlsPolicy(ctx context.Context, req *networksecu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/DeleteServerTlsPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/serverTlsPolicies/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1864,8 +2184,12 @@ func (c *restClient) DeleteServerTlsPolicy(ctx context.Context, req *networksecu
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteServerTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServerTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1873,7 +2197,7 @@ func (c *restClient) DeleteServerTlsPolicy(ctx context.Context, req *networksecu
 // ListClientTlsPolicies lists ClientTlsPolicies in a given project and location.
 func (c *restClient) ListClientTlsPolicies(ctx context.Context, req *networksecuritypb.ListClientTlsPoliciesRequest, opts ...gax.CallOption) *ClientTlsPolicyIterator {
 	it := &ClientTlsPolicyIterator{}
-	req = proto.Clone(req).(*networksecuritypb.ListClientTlsPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networksecuritypb.ClientTlsPolicy, string, error) {
 		resp := &networksecuritypb.ListClientTlsPoliciesResponse{}
@@ -1967,6 +2291,13 @@ func (c *restClient) GetClientTlsPolicy(ctx context.Context, req *networksecurit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/GetClientTlsPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/clientTlsPolicies/*}")
+	}
 	opts = append((*c.CallOptions).GetClientTlsPolicy[0:len((*c.CallOptions).GetClientTlsPolicy):len((*c.CallOptions).GetClientTlsPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &networksecuritypb.ClientTlsPolicy{}
@@ -2025,6 +2356,13 @@ func (c *restClient) CreateClientTlsPolicy(ctx context.Context, req *networksecu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/CreateClientTlsPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/clientTlsPolicies")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2053,8 +2391,12 @@ func (c *restClient) CreateClientTlsPolicy(ctx context.Context, req *networksecu
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateClientTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClientTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2092,6 +2434,10 @@ func (c *restClient) UpdateClientTlsPolicy(ctx context.Context, req *networksecu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/UpdateClientTlsPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{client_tls_policy.name=projects/*/locations/*/clientTlsPolicies/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2120,8 +2466,12 @@ func (c *restClient) UpdateClientTlsPolicy(ctx context.Context, req *networksecu
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateClientTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClientTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2145,6 +2495,13 @@ func (c *restClient) DeleteClientTlsPolicy(ctx context.Context, req *networksecu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1beta1.NetworkSecurity/DeleteClientTlsPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/clientTlsPolicies/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2173,8 +2530,12 @@ func (c *restClient) DeleteClientTlsPolicy(ctx context.Context, req *networksecu
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteClientTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClientTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2198,6 +2559,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -2232,7 +2597,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2333,6 +2698,13 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/locations/*/authorizationPolicies/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -2393,6 +2765,13 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/locations/*/authorizationPolicies/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -2455,6 +2834,13 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/locations/*/authorizationPolicies/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -2511,6 +2897,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2546,6 +2936,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2581,6 +2975,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -2615,7 +3013,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -2700,7 +3098,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateAuthorizationPolicyOperation, possibly from a different process.
 func (c *gRPCClient) CreateAuthorizationPolicyOperation(name string) *CreateAuthorizationPolicyOperation {
 	return &CreateAuthorizationPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateAuthorizationPolicyOperation"),
 	}
 }
 
@@ -2709,7 +3107,7 @@ func (c *gRPCClient) CreateAuthorizationPolicyOperation(name string) *CreateAuth
 func (c *restClient) CreateAuthorizationPolicyOperation(name string) *CreateAuthorizationPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &CreateAuthorizationPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateAuthorizationPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -2718,7 +3116,7 @@ func (c *restClient) CreateAuthorizationPolicyOperation(name string) *CreateAuth
 // The name must be that of a previously created CreateClientTlsPolicyOperation, possibly from a different process.
 func (c *gRPCClient) CreateClientTlsPolicyOperation(name string) *CreateClientTlsPolicyOperation {
 	return &CreateClientTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateClientTlsPolicyOperation"),
 	}
 }
 
@@ -2727,7 +3125,7 @@ func (c *gRPCClient) CreateClientTlsPolicyOperation(name string) *CreateClientTl
 func (c *restClient) CreateClientTlsPolicyOperation(name string) *CreateClientTlsPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &CreateClientTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateClientTlsPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -2736,7 +3134,7 @@ func (c *restClient) CreateClientTlsPolicyOperation(name string) *CreateClientTl
 // The name must be that of a previously created CreateServerTlsPolicyOperation, possibly from a different process.
 func (c *gRPCClient) CreateServerTlsPolicyOperation(name string) *CreateServerTlsPolicyOperation {
 	return &CreateServerTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateServerTlsPolicyOperation"),
 	}
 }
 
@@ -2745,7 +3143,7 @@ func (c *gRPCClient) CreateServerTlsPolicyOperation(name string) *CreateServerTl
 func (c *restClient) CreateServerTlsPolicyOperation(name string) *CreateServerTlsPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &CreateServerTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateServerTlsPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -2754,7 +3152,7 @@ func (c *restClient) CreateServerTlsPolicyOperation(name string) *CreateServerTl
 // The name must be that of a previously created DeleteAuthorizationPolicyOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAuthorizationPolicyOperation(name string) *DeleteAuthorizationPolicyOperation {
 	return &DeleteAuthorizationPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteAuthorizationPolicyOperation"),
 	}
 }
 
@@ -2763,7 +3161,7 @@ func (c *gRPCClient) DeleteAuthorizationPolicyOperation(name string) *DeleteAuth
 func (c *restClient) DeleteAuthorizationPolicyOperation(name string) *DeleteAuthorizationPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &DeleteAuthorizationPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteAuthorizationPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -2772,7 +3170,7 @@ func (c *restClient) DeleteAuthorizationPolicyOperation(name string) *DeleteAuth
 // The name must be that of a previously created DeleteClientTlsPolicyOperation, possibly from a different process.
 func (c *gRPCClient) DeleteClientTlsPolicyOperation(name string) *DeleteClientTlsPolicyOperation {
 	return &DeleteClientTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteClientTlsPolicyOperation"),
 	}
 }
 
@@ -2781,7 +3179,7 @@ func (c *gRPCClient) DeleteClientTlsPolicyOperation(name string) *DeleteClientTl
 func (c *restClient) DeleteClientTlsPolicyOperation(name string) *DeleteClientTlsPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &DeleteClientTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteClientTlsPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -2790,7 +3188,7 @@ func (c *restClient) DeleteClientTlsPolicyOperation(name string) *DeleteClientTl
 // The name must be that of a previously created DeleteServerTlsPolicyOperation, possibly from a different process.
 func (c *gRPCClient) DeleteServerTlsPolicyOperation(name string) *DeleteServerTlsPolicyOperation {
 	return &DeleteServerTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteServerTlsPolicyOperation"),
 	}
 }
 
@@ -2799,7 +3197,7 @@ func (c *gRPCClient) DeleteServerTlsPolicyOperation(name string) *DeleteServerTl
 func (c *restClient) DeleteServerTlsPolicyOperation(name string) *DeleteServerTlsPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &DeleteServerTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteServerTlsPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -2808,7 +3206,7 @@ func (c *restClient) DeleteServerTlsPolicyOperation(name string) *DeleteServerTl
 // The name must be that of a previously created UpdateAuthorizationPolicyOperation, possibly from a different process.
 func (c *gRPCClient) UpdateAuthorizationPolicyOperation(name string) *UpdateAuthorizationPolicyOperation {
 	return &UpdateAuthorizationPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateAuthorizationPolicyOperation"),
 	}
 }
 
@@ -2817,7 +3215,7 @@ func (c *gRPCClient) UpdateAuthorizationPolicyOperation(name string) *UpdateAuth
 func (c *restClient) UpdateAuthorizationPolicyOperation(name string) *UpdateAuthorizationPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &UpdateAuthorizationPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateAuthorizationPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -2826,7 +3224,7 @@ func (c *restClient) UpdateAuthorizationPolicyOperation(name string) *UpdateAuth
 // The name must be that of a previously created UpdateClientTlsPolicyOperation, possibly from a different process.
 func (c *gRPCClient) UpdateClientTlsPolicyOperation(name string) *UpdateClientTlsPolicyOperation {
 	return &UpdateClientTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateClientTlsPolicyOperation"),
 	}
 }
 
@@ -2835,7 +3233,7 @@ func (c *gRPCClient) UpdateClientTlsPolicyOperation(name string) *UpdateClientTl
 func (c *restClient) UpdateClientTlsPolicyOperation(name string) *UpdateClientTlsPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &UpdateClientTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateClientTlsPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -2844,7 +3242,7 @@ func (c *restClient) UpdateClientTlsPolicyOperation(name string) *UpdateClientTl
 // The name must be that of a previously created UpdateServerTlsPolicyOperation, possibly from a different process.
 func (c *gRPCClient) UpdateServerTlsPolicyOperation(name string) *UpdateServerTlsPolicyOperation {
 	return &UpdateServerTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateServerTlsPolicyOperation"),
 	}
 }
 
@@ -2853,7 +3251,7 @@ func (c *gRPCClient) UpdateServerTlsPolicyOperation(name string) *UpdateServerTl
 func (c *restClient) UpdateServerTlsPolicyOperation(name string) *UpdateServerTlsPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &UpdateServerTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateServerTlsPolicyOperation"),
 		pollPath: override,
 	}
 }

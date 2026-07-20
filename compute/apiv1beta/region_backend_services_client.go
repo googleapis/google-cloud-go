@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -165,7 +166,7 @@ type RegionBackendServicesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionBackendServicesClient) Close() error {
 	return c.internalClient.Close()
@@ -221,8 +222,10 @@ func (c *RegionBackendServicesClient) List(ctx context.Context, req *computepb.L
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// ListUsable retrieves a list of all usable backend services in the specified project in
-// the given region.
+// ListUsable retrieves a list of all usable backend services for Application Load
+// Balancers and Proxy Network Load Balancers in the specified project in the
+// given region. Backend services for external and internal passthrough
+// Network Load Balancers are not included in the response.
 func (c *RegionBackendServicesClient) ListUsable(ctx context.Context, req *computepb.ListUsableRegionBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	return c.internalClient.ListUsable(ctx, req, opts...)
 }
@@ -287,6 +290,16 @@ type regionBackendServicesRESTClient struct {
 // The RegionBackendServices API.
 func NewRegionBackendServicesRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionBackendServicesClient, error) {
 	clientOpts := append(defaultRegionBackendServicesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -300,6 +313,32 @@ func NewRegionBackendServicesRESTClient(ctx context.Context, opts ...option.Clie
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetHealth = append(callOpts.GetHealth, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.ListUsable = append(callOpts.ListUsable, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetSecurityPolicy = append(callOpts.SetSecurityPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.Update = append(callOpts.Update, gax.WithClientMetrics(metrics))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -337,7 +376,7 @@ func (c *regionBackendServicesRESTClient) setGoogleClientInfo(keyval ...string) 
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionBackendServicesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -376,6 +415,13 @@ func (c *regionBackendServicesRESTClient) Delete(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/backendServices/%v", req.GetProject(), req.GetRegion(), req.GetBackendService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionBackendServices/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/backendServices/{backend_service}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -429,6 +475,13 @@ func (c *regionBackendServicesRESTClient) Get(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/backendServices/%v", req.GetProject(), req.GetRegion(), req.GetBackendService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionBackendServices/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/backendServices/{backend_service}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.BackendService{}
@@ -482,6 +535,13 @@ func (c *regionBackendServicesRESTClient) GetHealth(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/backendServices/%v", req.GetProject(), req.GetRegion(), req.GetBackendService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionBackendServices/GetHealth")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/backendServices/{backend_service}/getHealth")
+	}
 	opts = append((*c.CallOptions).GetHealth[0:len((*c.CallOptions).GetHealth):len((*c.CallOptions).GetHealth)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.BackendServiceGroupHealth{}
@@ -535,6 +595,13 @@ func (c *regionBackendServicesRESTClient) GetIamPolicy(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/backendServices/%v", req.GetProject(), req.GetRegion(), req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionBackendServices/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/backendServices/{resource}/getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
@@ -596,6 +663,13 @@ func (c *regionBackendServicesRESTClient) Insert(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v", req.GetProject(), req.GetRegion()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionBackendServices/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/backendServices")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -639,7 +713,7 @@ func (c *regionBackendServicesRESTClient) Insert(ctx context.Context, req *compu
 // specified project in the given region.
 func (c *regionBackendServicesRESTClient) List(ctx context.Context, req *computepb.ListRegionBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	it := &BackendServiceIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionBackendServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.BackendService, string, error) {
 		resp := &computepb.BackendServiceList{}
@@ -722,11 +796,13 @@ func (c *regionBackendServicesRESTClient) List(ctx context.Context, req *compute
 	return it
 }
 
-// ListUsable retrieves a list of all usable backend services in the specified project in
-// the given region.
+// ListUsable retrieves a list of all usable backend services for Application Load
+// Balancers and Proxy Network Load Balancers in the specified project in the
+// given region. Backend services for external and internal passthrough
+// Network Load Balancers are not included in the response.
 func (c *regionBackendServicesRESTClient) ListUsable(ctx context.Context, req *computepb.ListUsableRegionBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	it := &BackendServiceIterator{}
-	req = proto.Clone(req).(*computepb.ListUsableRegionBackendServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.BackendService, string, error) {
 		resp := &computepb.BackendServiceListUsable{}
@@ -841,6 +917,13 @@ func (c *regionBackendServicesRESTClient) Patch(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/backendServices/%v", req.GetProject(), req.GetRegion(), req.GetBackendService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionBackendServices/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/backendServices/{backend_service}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -902,6 +985,13 @@ func (c *regionBackendServicesRESTClient) SetIamPolicy(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/backendServices/%v", req.GetProject(), req.GetRegion(), req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionBackendServices/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/backendServices/{resource}/setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
@@ -963,6 +1053,13 @@ func (c *regionBackendServicesRESTClient) SetSecurityPolicy(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/backendServices/%v", req.GetProject(), req.GetRegion(), req.GetBackendService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionBackendServices/SetSecurityPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/backendServices/{backend_service}/setSecurityPolicy")
+	}
 	opts = append((*c.CallOptions).SetSecurityPolicy[0:len((*c.CallOptions).SetSecurityPolicy):len((*c.CallOptions).SetSecurityPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1023,6 +1120,13 @@ func (c *regionBackendServicesRESTClient) TestIamPermissions(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/backendServices/%v", req.GetProject(), req.GetRegion(), req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionBackendServices/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/backendServices/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
@@ -1085,6 +1189,13 @@ func (c *regionBackendServicesRESTClient) Update(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v/backendServices/%v", req.GetProject(), req.GetRegion(), req.GetBackendService()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionBackendServices/Update")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/backendServices/{backend_service}")
+	}
 	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

@@ -1,0 +1,1071 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.memorystore.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/memorystore/apiv1",
+    "version": "1.1.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.BackupInstance",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.BackupInstance",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "BackupInstance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.BackupInstanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BackupInstanceOperation",
+        "shortName": "BackupInstance"
+      },
+      "description": "BackupInstance backup Instance.\nIf this is the first time a backup is being created, a backup collection\nwill be created at the backend, and this backup belongs to this collection.\nBoth collection and backup will have a resource name. Backup will be\nexecuted for each shard. A replica (primary if nonHA) will be selected to\nperform the execution. Backup call will be rejected if there is an ongoing\nbackup or update operation. Be aware that during preview, if the instance's\ninternal software version is too old, critical update will be performed\nbefore actual backup. Once the internal software version is updated to the\nminimum version required by the backup feature, subsequent backups will not\nrequire critical update. After preview, there will be no critical update\nneeded for backup.",
+      "file": "Client/BackupInstance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_BackupInstance_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore BackupInstance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.CreateInstance",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.CreateInstance",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "CreateInstance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.CreateInstanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateInstanceOperation",
+        "shortName": "CreateInstance"
+      },
+      "description": "CreateInstance creates a new Instance in a given project and location.",
+      "file": "Client/CreateInstance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_CreateInstance_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore CreateInstance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.DeleteBackup",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.DeleteBackup",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "DeleteBackup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.DeleteBackupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteBackupOperation",
+        "shortName": "DeleteBackup"
+      },
+      "description": "DeleteBackup deletes a specific backup.",
+      "file": "Client/DeleteBackup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_DeleteBackup_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore DeleteBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.DeleteInstance",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.DeleteInstance",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "DeleteInstance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.DeleteInstanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteInstanceOperation",
+        "shortName": "DeleteInstance"
+      },
+      "description": "DeleteInstance deletes a single Instance.",
+      "file": "Client/DeleteInstance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_DeleteInstance_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore DeleteInstance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.ExportBackup",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.ExportBackup",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "ExportBackup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.ExportBackupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ExportBackupOperation",
+        "shortName": "ExportBackup"
+      },
+      "description": "ExportBackup exports a specific backup to a customer target Cloud Storage URI.",
+      "file": "Client/ExportBackup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_ExportBackup_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore ExportBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.FinishMigration",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.FinishMigration",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "FinishMigration"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.FinishMigrationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "FinishMigrationOperation",
+        "shortName": "FinishMigration"
+      },
+      "description": "FinishMigration finalizes the migration process.\n\nAfter the successful completion of this operation, the target instance\nwill: \n1. Stop replicating from the source instance.\n2. Allow both reads and writes.",
+      "file": "Client/FinishMigration/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_FinishMigration_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore FinishMigration Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.GetBackup",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.GetBackup",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "GetBackup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.GetBackupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*memorystorepb.Backup",
+        "shortName": "GetBackup"
+      },
+      "description": "GetBackup gets the details of a specific backup.",
+      "file": "Client/GetBackup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_GetBackup_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore GetBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.GetBackupCollection",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.GetBackupCollection",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "GetBackupCollection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.GetBackupCollectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*memorystorepb.BackupCollection",
+        "shortName": "GetBackupCollection"
+      },
+      "description": "GetBackupCollection get a backup collection.",
+      "file": "Client/GetBackupCollection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_GetBackupCollection_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore GetBackupCollection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.GetCertificateAuthority",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.GetCertificateAuthority",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "GetCertificateAuthority"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.GetCertificateAuthorityRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*memorystorepb.CertificateAuthority",
+        "shortName": "GetCertificateAuthority"
+      },
+      "description": "GetCertificateAuthority gets details about the certificate authority for an Instance.",
+      "file": "Client/GetCertificateAuthority/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_GetCertificateAuthority_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore GetCertificateAuthority Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.GetInstance",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.GetInstance",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "GetInstance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.GetInstanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*memorystorepb.Instance",
+        "shortName": "GetInstance"
+      },
+      "description": "GetInstance gets details of a single Instance.",
+      "file": "Client/GetInstance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_GetInstance_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore GetInstance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.GetSharedRegionalCertificateAuthority",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.GetSharedRegionalCertificateAuthority",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "GetSharedRegionalCertificateAuthority"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.GetSharedRegionalCertificateAuthorityRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*memorystorepb.SharedRegionalCertificateAuthority",
+        "shortName": "GetSharedRegionalCertificateAuthority"
+      },
+      "description": "GetSharedRegionalCertificateAuthority gets the details of shared regional certificate authority information for\nMemorystore instance.",
+      "file": "Client/GetSharedRegionalCertificateAuthority/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_GetSharedRegionalCertificateAuthority_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore GetSharedRegionalCertificateAuthority Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.ListBackupCollections",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.ListBackupCollections",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "ListBackupCollections"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.ListBackupCollectionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BackupCollectionIterator",
+        "shortName": "ListBackupCollections"
+      },
+      "description": "ListBackupCollections lists all backup collections owned by a consumer project in either the\nspecified location (region) or all locations.\n\nIf `location_id` is specified as `-` (wildcard), then all regions\navailable to the project are queried, and the results are aggregated.",
+      "file": "Client/ListBackupCollections/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_ListBackupCollections_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore ListBackupCollections Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.ListBackups",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.ListBackups",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "ListBackups"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.ListBackupsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BackupIterator",
+        "shortName": "ListBackups"
+      },
+      "description": "ListBackups lists all backups owned by a backup collection.",
+      "file": "Client/ListBackups/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_ListBackups_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore ListBackups Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.ListInstances",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.ListInstances",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "ListInstances"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.ListInstancesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "InstanceIterator",
+        "shortName": "ListInstances"
+      },
+      "description": "ListInstances lists Instances in a given project and location.",
+      "file": "Client/ListInstances/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_ListInstances_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore ListInstances Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.RescheduleMaintenance",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.RescheduleMaintenance",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "RescheduleMaintenance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.RescheduleMaintenanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RescheduleMaintenanceOperation",
+        "shortName": "RescheduleMaintenance"
+      },
+      "description": "RescheduleMaintenance reschedules upcoming maintenance event.",
+      "file": "Client/RescheduleMaintenance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_RescheduleMaintenance_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore RescheduleMaintenance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.StartMigration",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.StartMigration",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "StartMigration"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.StartMigrationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "StartMigrationOperation",
+        "shortName": "StartMigration"
+      },
+      "description": "StartMigration initiates the migration of a source instance to the target Memorystore\ninstance.\n\nAfter the successful completion of this operation, the target instance\nwill: \n1. Set up replication with the source instance and replicate any writes to\nthe source instance.\n2. Only allow reads.",
+      "file": "Client/StartMigration/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_StartMigration_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore StartMigration Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1.Client.UpdateInstance",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1.Memorystore.UpdateInstance",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "UpdateInstance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.UpdateInstanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateInstanceOperation",
+        "shortName": "UpdateInstance"
+      },
+      "description": "UpdateInstance updates the parameters of a single Instance.",
+      "file": "Client/UpdateInstance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1_generated_Memorystore_UpdateInstance_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore UpdateInstance Sample"
+    }
+  ]
+}

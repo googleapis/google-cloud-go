@@ -25,6 +25,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestRunTransaction(t *testing.T) {
@@ -140,8 +141,6 @@ func TestRunTransaction(t *testing.T) {
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
 	srv.addRPC(commitReq, status.Errorf(codes.Aborted, ""))
-	rollbackReq := &pb.RollbackRequest{Database: db, Transaction: tid}
-	srv.addRPC(rollbackReq, &emptypb.Empty{})
 	tid2 := []byte{2} // Use a new transaction ID for the response to the retry BeginTransaction
 	beginReqRetry := &pb.BeginTransactionRequest{
 		Database: db,
@@ -265,7 +264,6 @@ func TestTransactionErrors(t *testing.T) {
 			},
 		})
 		srv.addRPC(commitReq, unknownErr)
-		srv.addRPC(rollbackReq, &emptypb.Empty{})
 
 		err := c.RunTransaction(ctx, get)
 		if status.Code(err) != codes.Unknown {
@@ -416,7 +414,6 @@ func TestTransactionErrors(t *testing.T) {
 		// Attempt 1 (Fails)
 		srv.addRPC(beginReq, beginRes)                          // 1. BeginTransaction (tid1)
 		srv.addRPC(commitReq, status.Errorf(codes.Aborted, "")) // 2. Commit (tid1) fails (Aborted)
-		srv.addRPC(rollbackReq, &emptypb.Empty{})               // 3. Rollback (tid1)
 
 		// Attempt 2 (Fails)
 		beginReqRetry := &pb.BeginTransactionRequest{
@@ -432,10 +429,6 @@ func TestTransactionErrors(t *testing.T) {
 
 		commitReq2 := &pb.CommitRequest{Database: db, Transaction: tid2} // New commit request with tid2
 		srv.addRPC(commitReq2, status.Errorf(codes.Aborted, ""))         // 5. Commit (tid2) fails (Aborted)
-
-		// Final Rollback on Aborted error when MaxAttempts is reached
-		rollbackReq2 := &pb.RollbackRequest{Database: db, Transaction: tid2}
-		srv.addRPC(rollbackReq2, &emptypb.Empty{}) // 6. Rollback (tid2)
 
 		err := c.RunTransaction(ctx, func(context.Context, *Transaction) error { return nil },
 			MaxAttempts(2))
@@ -476,6 +469,41 @@ func TestTransactionErrors(t *testing.T) {
 		}
 		if !srv.isEmpty() {
 			t.Errorf("Expected %+v requests but not received. srv.reqItems: %+v", len(srv.reqItems), srv.reqItems)
+		}
+	})
+
+	t.Run("Cancel context during f", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+
+		ctx, cancel := context.WithCancel(context.Background())
+		err := c.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+			cancel() // Cancel context inside f
+			return ctx.Err()
+		})
+		if err != context.Canceled {
+			t.Errorf("got %v, want Canceled", err)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected all RPCs to be met, but got remaining: %+v", srv.reqItems)
+		}
+	})
+
+	t.Run("Commit fails, no rollback", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(commitReq, unknownErr)
+		// No rollbackReq expected here
+
+		err := c.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+			return nil
+		})
+		if status.Code(err) != codes.Unknown {
+			t.Errorf("got %v, want Unknown", err)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected all RPCs to be met, but got remaining: %+v", srv.reqItems)
 		}
 	})
 }
@@ -552,9 +580,6 @@ func TestRunTransaction_Retries(t *testing.T) {
 		},
 		status.Errorf(codes.Aborted, "something failed! please retry me!"),
 	)
-
-	rollbackReq := &pb.RollbackRequest{Database: db, Transaction: tid}
-	srv.addRPC(rollbackReq, &emptypb.Empty{})
 
 	// Attempt 2: Begin (Retry)
 	srv.addRPC(
@@ -650,7 +675,6 @@ func TestTransaction_WithReadOptions(t *testing.T) {
 
 	const db = "projects/projectID/databases/(default)"
 	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
-	ts := &timestamppb.Timestamp{Nanos: int32(tm.UnixNano())}
 	tid := []byte{1}
 
 	beginReq := &pb.BeginTransactionRequest{Database: db}
@@ -658,28 +682,171 @@ func TestTransaction_WithReadOptions(t *testing.T) {
 
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
-
 	srv.addRPC(
-		&pb.CommitRequest{
+		&pb.RollbackRequest{
 			Database:    db,
 			Transaction: tid,
 		},
-		&pb.CommitResponse{CommitTime: ts},
+		&emptypb.Empty{},
 	)
 
-	srv.addRPC(
-		&pb.CommitRequest{
-			Database:    db,
-			Transaction: tid,
-		},
-		&pb.CommitResponse{CommitTime: ts},
-	)
-
-	if err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
 		docref := c.Collection("C").Doc("a")
 		tx.WithReadOptions(ReadTime(tm)).Get(docref)
 		return nil
-	}); err != nil {
+	})
+	if err != errInvalidReadTime {
+		t.Fatalf("got err %v, want %v", err, errInvalidReadTime)
+	}
+}
+
+func TestRunTransaction_VectorQuery(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const db = "projects/projectID/databases/(default)"
+	tid := []byte{1}
+
+	beginReq := &pb.BeginTransactionRequest{Database: db}
+	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
+	commitReq := &pb.CommitRequest{Database: db, Transaction: tid}
+
+	srv.addRPC(beginReq, beginRes)
+
+	distanceThreshold := 20.0
+	srv.addRPC(
+		&pb.RunQueryRequest{
+			Parent: db + "/documents",
+			QueryType: &pb.RunQueryRequest_StructuredQuery{
+				StructuredQuery: &pb.StructuredQuery{
+					From: []*pb.StructuredQuery_CollectionSelector{{CollectionId: "C"}},
+					FindNearest: &pb.StructuredQuery_FindNearest{
+						VectorField: &pb.StructuredQuery_FieldReference{FieldPath: "vectorField"},
+						QueryVector: &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{
+							Fields: map[string]*pb.Value{
+								"__type__": {ValueType: &pb.Value_StringValue{StringValue: "__vector__"}},
+								"value": {ValueType: &pb.Value_ArrayValue{ArrayValue: &pb.ArrayValue{
+									Values: []*pb.Value{
+										{ValueType: &pb.Value_DoubleValue{DoubleValue: 1.0}},
+										{ValueType: &pb.Value_DoubleValue{DoubleValue: 2.0}},
+										{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.0}},
+									},
+								}}},
+							},
+						}}},
+						DistanceMeasure:     pb.StructuredQuery_FindNearest_EUCLIDEAN,
+						Limit:               &wrapperspb.Int32Value{Value: 10},
+						DistanceResultField: "distance",
+						DistanceThreshold:   &wrapperspb.DoubleValue{Value: distanceThreshold},
+					},
+				},
+			},
+			ConsistencySelector: &pb.RunQueryRequest_Transaction{Transaction: tid},
+		},
+		[]interface{}{},
+	)
+	srv.addRPC(commitReq, &pb.CommitResponse{CommitTime: aTimestamp})
+
+	err := c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+		vq := c.Collection("C").FindNearest("vectorField", []float64{1.0, 2.0, 3.0}, 10, DistanceMeasureEuclidean, &FindNearestOptions{
+			DistanceResultField: "distance",
+			DistanceThreshold:   &distanceThreshold,
+		})
+		it := tx.Documents(vq)
+		defer it.Stop()
+		_, err := it.Next()
+		if err != iterator.Done {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTransaction_TransactionReadTime_Success(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const db = "projects/projectID/databases/(default)"
+	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+	ts := timestamppb.New(tm)
+	tid := []byte{1}
+
+	beginReq := &pb.BeginTransactionRequest{
+		Database: db,
+		Options: &pb.TransactionOptions{
+			Mode: &pb.TransactionOptions_ReadOnly_{
+				ReadOnly: &pb.TransactionOptions_ReadOnly{
+					ConsistencySelector: &pb.TransactionOptions_ReadOnly_ReadTime{
+						ReadTime: ts,
+					},
+				},
+			},
+		},
+	}
+	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
+
+	srv.reset()
+	srv.addRPC(beginReq, beginRes)
+	srv.addRPC(
+		&pb.CommitRequest{
+			Database:    db,
+			Transaction: tid,
+		},
+		&pb.CommitResponse{CommitTime: ts},
+	)
+
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		return nil
+	}, ReadOnly, TransactionReadTime(tm))
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTransaction_WithReadOptions_Empty_AfterTransactionReadTime(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const db = "projects/projectID/databases/(default)"
+	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+	ts := timestamppb.New(tm)
+	tid := []byte{1}
+
+	beginReq := &pb.BeginTransactionRequest{
+		Database: db,
+		Options: &pb.TransactionOptions{
+			Mode: &pb.TransactionOptions_ReadOnly_{
+				ReadOnly: &pb.TransactionOptions_ReadOnly{
+					ConsistencySelector: &pb.TransactionOptions_ReadOnly_ReadTime{
+						ReadTime: ts,
+					},
+				},
+			},
+		},
+	}
+	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
+
+	srv.reset()
+	srv.addRPC(beginReq, beginRes)
+	srv.addRPC(
+		&pb.CommitRequest{
+			Database:    db,
+			Transaction: tid,
+		},
+		&pb.CommitResponse{CommitTime: ts},
+	)
+
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		tx.WithReadOptions()
+		return nil
+	}, ReadOnly, TransactionReadTime(tm))
+	if err != nil {
 		t.Fatal(err)
 	}
 }

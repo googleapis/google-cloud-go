@@ -1,0 +1,1669 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.apphub.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/apphub/apiv1",
+    "version": "1.1.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.CreateApplication",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.CreateApplication",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "CreateApplication"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.CreateApplicationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateApplicationOperation",
+        "shortName": "CreateApplication"
+      },
+      "description": "CreateApplication creates an Application in a host project and location.",
+      "file": "Client/CreateApplication/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_CreateApplication_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub CreateApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.CreateService",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.CreateService",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "CreateService"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.CreateServiceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateServiceOperation",
+        "shortName": "CreateService"
+      },
+      "description": "CreateService creates a Service in an Application.",
+      "file": "Client/CreateService/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_CreateService_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub CreateService Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.CreateServiceProjectAttachment",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.CreateServiceProjectAttachment",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "CreateServiceProjectAttachment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.CreateServiceProjectAttachmentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateServiceProjectAttachmentOperation",
+        "shortName": "CreateServiceProjectAttachment"
+      },
+      "description": "CreateServiceProjectAttachment attaches a service project to the host project.",
+      "file": "Client/CreateServiceProjectAttachment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_CreateServiceProjectAttachment_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub CreateServiceProjectAttachment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.CreateWorkload",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.CreateWorkload",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "CreateWorkload"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.CreateWorkloadRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateWorkloadOperation",
+        "shortName": "CreateWorkload"
+      },
+      "description": "CreateWorkload creates a Workload in an Application.",
+      "file": "Client/CreateWorkload/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_CreateWorkload_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub CreateWorkload Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.DeleteApplication",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.DeleteApplication",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "DeleteApplication"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.DeleteApplicationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteApplicationOperation",
+        "shortName": "DeleteApplication"
+      },
+      "description": "DeleteApplication deletes an Application in a host project and location.",
+      "file": "Client/DeleteApplication/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_DeleteApplication_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub DeleteApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.DeleteService",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.DeleteService",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "DeleteService"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.DeleteServiceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteServiceOperation",
+        "shortName": "DeleteService"
+      },
+      "description": "DeleteService deletes a Service from an Application.",
+      "file": "Client/DeleteService/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_DeleteService_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub DeleteService Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.DeleteServiceProjectAttachment",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.DeleteServiceProjectAttachment",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "DeleteServiceProjectAttachment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.DeleteServiceProjectAttachmentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteServiceProjectAttachmentOperation",
+        "shortName": "DeleteServiceProjectAttachment"
+      },
+      "description": "DeleteServiceProjectAttachment deletes a service project attachment.",
+      "file": "Client/DeleteServiceProjectAttachment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_DeleteServiceProjectAttachment_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub DeleteServiceProjectAttachment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.DeleteWorkload",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.DeleteWorkload",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "DeleteWorkload"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.DeleteWorkloadRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteWorkloadOperation",
+        "shortName": "DeleteWorkload"
+      },
+      "description": "DeleteWorkload deletes a Workload from an Application.",
+      "file": "Client/DeleteWorkload/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_DeleteWorkload_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub DeleteWorkload Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.DetachServiceProjectAttachment",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.DetachServiceProjectAttachment",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "DetachServiceProjectAttachment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.DetachServiceProjectAttachmentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apphubpb.DetachServiceProjectAttachmentResponse",
+        "shortName": "DetachServiceProjectAttachment"
+      },
+      "description": "DetachServiceProjectAttachment detaches a service project from a host project.\nYou can call this API from any service project without needing access to\nthe host project that it is attached to.",
+      "file": "Client/DetachServiceProjectAttachment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_DetachServiceProjectAttachment_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub DetachServiceProjectAttachment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.GetApplication",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.GetApplication",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "GetApplication"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.GetApplicationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apphubpb.Application",
+        "shortName": "GetApplication"
+      },
+      "description": "GetApplication gets an Application in a host project and location.",
+      "file": "Client/GetApplication/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_GetApplication_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub GetApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.GetDiscoveredService",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.GetDiscoveredService",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "GetDiscoveredService"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.GetDiscoveredServiceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apphubpb.DiscoveredService",
+        "shortName": "GetDiscoveredService"
+      },
+      "description": "GetDiscoveredService gets a Discovered Service in a host project and location.",
+      "file": "Client/GetDiscoveredService/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_GetDiscoveredService_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub GetDiscoveredService Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.GetDiscoveredWorkload",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.GetDiscoveredWorkload",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "GetDiscoveredWorkload"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.GetDiscoveredWorkloadRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apphubpb.DiscoveredWorkload",
+        "shortName": "GetDiscoveredWorkload"
+      },
+      "description": "GetDiscoveredWorkload gets a Discovered Workload in a host project and location.",
+      "file": "Client/GetDiscoveredWorkload/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_GetDiscoveredWorkload_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub GetDiscoveredWorkload Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.GetService",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.GetService",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "GetService"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.GetServiceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apphubpb.Service",
+        "shortName": "GetService"
+      },
+      "description": "GetService gets a Service in an Application.",
+      "file": "Client/GetService/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_GetService_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub GetService Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.GetServiceProjectAttachment",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.GetServiceProjectAttachment",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "GetServiceProjectAttachment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.GetServiceProjectAttachmentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apphubpb.ServiceProjectAttachment",
+        "shortName": "GetServiceProjectAttachment"
+      },
+      "description": "GetServiceProjectAttachment gets a service project attachment.",
+      "file": "Client/GetServiceProjectAttachment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_GetServiceProjectAttachment_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub GetServiceProjectAttachment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.GetWorkload",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.GetWorkload",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "GetWorkload"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.GetWorkloadRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apphubpb.Workload",
+        "shortName": "GetWorkload"
+      },
+      "description": "GetWorkload gets a Workload in an Application.",
+      "file": "Client/GetWorkload/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_GetWorkload_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub GetWorkload Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.ListApplications",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.ListApplications",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "ListApplications"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.ListApplicationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ApplicationIterator",
+        "shortName": "ListApplications"
+      },
+      "description": "ListApplications lists Applications in a host project and location.",
+      "file": "Client/ListApplications/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_ListApplications_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub ListApplications Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.ListDiscoveredServices",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.ListDiscoveredServices",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "ListDiscoveredServices"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.ListDiscoveredServicesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DiscoveredServiceIterator",
+        "shortName": "ListDiscoveredServices"
+      },
+      "description": "ListDiscoveredServices lists Discovered Services that can be added to an Application in a host\nproject and location.",
+      "file": "Client/ListDiscoveredServices/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_ListDiscoveredServices_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub ListDiscoveredServices Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.ListDiscoveredWorkloads",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.ListDiscoveredWorkloads",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "ListDiscoveredWorkloads"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.ListDiscoveredWorkloadsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DiscoveredWorkloadIterator",
+        "shortName": "ListDiscoveredWorkloads"
+      },
+      "description": "ListDiscoveredWorkloads lists Discovered Workloads that can be added to an Application in a host\nproject and location.",
+      "file": "Client/ListDiscoveredWorkloads/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_ListDiscoveredWorkloads_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub ListDiscoveredWorkloads Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.ListServiceProjectAttachments",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.ListServiceProjectAttachments",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "ListServiceProjectAttachments"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.ListServiceProjectAttachmentsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ServiceProjectAttachmentIterator",
+        "shortName": "ListServiceProjectAttachments"
+      },
+      "description": "ListServiceProjectAttachments lists service projects attached to the host project.",
+      "file": "Client/ListServiceProjectAttachments/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_ListServiceProjectAttachments_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub ListServiceProjectAttachments Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.ListServices",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.ListServices",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "ListServices"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.ListServicesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ServiceIterator",
+        "shortName": "ListServices"
+      },
+      "description": "ListServices lists Services in an Application.",
+      "file": "Client/ListServices/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_ListServices_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub ListServices Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.ListWorkloads",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.ListWorkloads",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "ListWorkloads"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.ListWorkloadsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "WorkloadIterator",
+        "shortName": "ListWorkloads"
+      },
+      "description": "ListWorkloads lists Workloads in an Application.",
+      "file": "Client/ListWorkloads/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_ListWorkloads_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub ListWorkloads Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.LookupDiscoveredService",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.LookupDiscoveredService",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "LookupDiscoveredService"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.LookupDiscoveredServiceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apphubpb.LookupDiscoveredServiceResponse",
+        "shortName": "LookupDiscoveredService"
+      },
+      "description": "LookupDiscoveredService lists a Discovered Service in a host project and location, with a\ngiven resource URI.",
+      "file": "Client/LookupDiscoveredService/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_LookupDiscoveredService_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub LookupDiscoveredService Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.LookupDiscoveredWorkload",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.LookupDiscoveredWorkload",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "LookupDiscoveredWorkload"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.LookupDiscoveredWorkloadRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apphubpb.LookupDiscoveredWorkloadResponse",
+        "shortName": "LookupDiscoveredWorkload"
+      },
+      "description": "LookupDiscoveredWorkload lists a Discovered Workload in a host project and location, with a\ngiven resource URI.",
+      "file": "Client/LookupDiscoveredWorkload/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_LookupDiscoveredWorkload_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub LookupDiscoveredWorkload Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.LookupServiceProjectAttachment",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.LookupServiceProjectAttachment",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "LookupServiceProjectAttachment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.LookupServiceProjectAttachmentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apphubpb.LookupServiceProjectAttachmentResponse",
+        "shortName": "LookupServiceProjectAttachment"
+      },
+      "description": "LookupServiceProjectAttachment lists a service project attachment for a given service project. You can\ncall this API from any project to find if it is attached to a host project.",
+      "file": "Client/LookupServiceProjectAttachment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_LookupServiceProjectAttachment_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub LookupServiceProjectAttachment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_TestIamPermissions_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.UpdateApplication",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.UpdateApplication",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "UpdateApplication"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.UpdateApplicationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateApplicationOperation",
+        "shortName": "UpdateApplication"
+      },
+      "description": "UpdateApplication updates an Application in a host project and location.",
+      "file": "Client/UpdateApplication/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_UpdateApplication_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub UpdateApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.UpdateService",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.UpdateService",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "UpdateService"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.UpdateServiceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateServiceOperation",
+        "shortName": "UpdateService"
+      },
+      "description": "UpdateService updates a Service in an Application.",
+      "file": "Client/UpdateService/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_UpdateService_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub UpdateService Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.UpdateWorkload",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.UpdateWorkload",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "UpdateWorkload"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.UpdateWorkloadRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateWorkloadOperation",
+        "shortName": "UpdateWorkload"
+      },
+      "description": "UpdateWorkload updates a Workload in an Application.",
+      "file": "Client/UpdateWorkload/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_UpdateWorkload_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub UpdateWorkload Sample"
+    }
+  ]
+}

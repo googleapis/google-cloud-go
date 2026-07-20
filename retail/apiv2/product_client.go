@@ -31,6 +31,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -462,7 +464,7 @@ type ProductClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ProductClient) Close() error {
 	return c.internalClient.Close()
@@ -808,6 +810,16 @@ type productGRPCClient struct {
 // of the customer’s website.
 func NewProductClient(ctx context.Context, opts ...option.ClientOption) (*ProductClient, error) {
 	clientOpts := defaultProductGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "retail",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/retail/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "retail.googleapis.com",
+		}))
+	}
 	if newProductClientHook != nil {
 		hookOpts, err := newProductClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -830,6 +842,33 @@ func NewProductClient(ctx context.Context, opts ...option.ClientOption) (*Produc
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateProduct = append(client.CallOptions.CreateProduct, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetProduct = append(client.CallOptions.GetProduct, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListProducts = append(client.CallOptions.ListProducts, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateProduct = append(client.CallOptions.UpdateProduct, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteProduct = append(client.CallOptions.DeleteProduct, gax.WithClientMetrics(metrics))
+		client.CallOptions.PurgeProducts = append(client.CallOptions.PurgeProducts, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportProducts = append(client.CallOptions.ImportProducts, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetInventory = append(client.CallOptions.SetInventory, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddFulfillmentPlaces = append(client.CallOptions.AddFulfillmentPlaces, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveFulfillmentPlaces = append(client.CallOptions.RemoveFulfillmentPlaces, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddLocalInventories = append(client.CallOptions.AddLocalInventories, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveLocalInventories = append(client.CallOptions.RemoveLocalInventories, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -866,7 +905,7 @@ func (c *productGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *productGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -900,6 +939,16 @@ type productRESTClient struct {
 // of the customer’s website.
 func NewProductRESTClient(ctx context.Context, opts ...option.ClientOption) (*ProductClient, error) {
 	clientOpts := append(defaultProductRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "retail",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/retail/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "retail.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -913,6 +962,34 @@ func NewProductRESTClient(ctx context.Context, opts ...option.ClientOption) (*Pr
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateProduct = append(callOpts.CreateProduct, gax.WithClientMetrics(metrics))
+		callOpts.GetProduct = append(callOpts.GetProduct, gax.WithClientMetrics(metrics))
+		callOpts.ListProducts = append(callOpts.ListProducts, gax.WithClientMetrics(metrics))
+		callOpts.UpdateProduct = append(callOpts.UpdateProduct, gax.WithClientMetrics(metrics))
+		callOpts.DeleteProduct = append(callOpts.DeleteProduct, gax.WithClientMetrics(metrics))
+		callOpts.PurgeProducts = append(callOpts.PurgeProducts, gax.WithClientMetrics(metrics))
+		callOpts.ImportProducts = append(callOpts.ImportProducts, gax.WithClientMetrics(metrics))
+		callOpts.SetInventory = append(callOpts.SetInventory, gax.WithClientMetrics(metrics))
+		callOpts.AddFulfillmentPlaces = append(callOpts.AddFulfillmentPlaces, gax.WithClientMetrics(metrics))
+		callOpts.RemoveFulfillmentPlaces = append(callOpts.RemoveFulfillmentPlaces, gax.WithClientMetrics(metrics))
+		callOpts.AddLocalInventories = append(callOpts.AddLocalInventories, gax.WithClientMetrics(metrics))
+		callOpts.RemoveLocalInventories = append(callOpts.RemoveLocalInventories, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -950,7 +1027,7 @@ func (c *productRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *productRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -969,6 +1046,12 @@ func (c *productGRPCClient) CreateProduct(ctx context.Context, req *retailpb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/CreateProduct")
+	}
 	opts = append((*c.CallOptions).CreateProduct[0:len((*c.CallOptions).CreateProduct):len((*c.CallOptions).CreateProduct)], opts...)
 	var resp *retailpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -987,6 +1070,12 @@ func (c *productGRPCClient) GetProduct(ctx context.Context, req *retailpb.GetPro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/GetProduct")
+	}
 	opts = append((*c.CallOptions).GetProduct[0:len((*c.CallOptions).GetProduct):len((*c.CallOptions).GetProduct)], opts...)
 	var resp *retailpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1005,9 +1094,15 @@ func (c *productGRPCClient) ListProducts(ctx context.Context, req *retailpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/ListProducts")
+	}
 	opts = append((*c.CallOptions).ListProducts[0:len((*c.CallOptions).ListProducts):len((*c.CallOptions).ListProducts)], opts...)
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*retailpb.ListProductsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*retailpb.Product, string, error) {
 		resp := &retailpb.ListProductsResponse{}
 		if pageToken != "" {
@@ -1051,6 +1146,9 @@ func (c *productGRPCClient) UpdateProduct(ctx context.Context, req *retailpb.Upd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/UpdateProduct")
+	}
 	opts = append((*c.CallOptions).UpdateProduct[0:len((*c.CallOptions).UpdateProduct):len((*c.CallOptions).UpdateProduct)], opts...)
 	var resp *retailpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1069,6 +1167,12 @@ func (c *productGRPCClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/DeleteProduct")
+	}
 	opts = append((*c.CallOptions).DeleteProduct[0:len((*c.CallOptions).DeleteProduct):len((*c.CallOptions).DeleteProduct)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1083,6 +1187,12 @@ func (c *productGRPCClient) PurgeProducts(ctx context.Context, req *retailpb.Pur
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/PurgeProducts")
+	}
 	opts = append((*c.CallOptions).PurgeProducts[0:len((*c.CallOptions).PurgeProducts):len((*c.CallOptions).PurgeProducts)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1093,8 +1203,12 @@ func (c *productGRPCClient) PurgeProducts(ctx context.Context, req *retailpb.Pur
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.PurgeProductsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PurgeProductsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1103,6 +1217,12 @@ func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.Im
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/ImportProducts")
+	}
 	opts = append((*c.CallOptions).ImportProducts[0:len((*c.CallOptions).ImportProducts):len((*c.CallOptions).ImportProducts)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1113,8 +1233,12 @@ func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.Im
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.ImportProductsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportProductsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1123,6 +1247,9 @@ func (c *productGRPCClient) SetInventory(ctx context.Context, req *retailpb.SetI
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/SetInventory")
+	}
 	opts = append((*c.CallOptions).SetInventory[0:len((*c.CallOptions).SetInventory):len((*c.CallOptions).SetInventory)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1133,8 +1260,12 @@ func (c *productGRPCClient) SetInventory(ctx context.Context, req *retailpb.SetI
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.SetInventoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SetInventoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1143,6 +1274,12 @@ func (c *productGRPCClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/AddFulfillmentPlaces")
+	}
 	opts = append((*c.CallOptions).AddFulfillmentPlaces[0:len((*c.CallOptions).AddFulfillmentPlaces):len((*c.CallOptions).AddFulfillmentPlaces)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1153,8 +1290,12 @@ func (c *productGRPCClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.AddFulfillmentPlacesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddFulfillmentPlacesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1163,6 +1304,12 @@ func (c *productGRPCClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/RemoveFulfillmentPlaces")
+	}
 	opts = append((*c.CallOptions).RemoveFulfillmentPlaces[0:len((*c.CallOptions).RemoveFulfillmentPlaces):len((*c.CallOptions).RemoveFulfillmentPlaces)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1173,8 +1320,12 @@ func (c *productGRPCClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.RemoveFulfillmentPlacesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveFulfillmentPlacesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1183,6 +1334,12 @@ func (c *productGRPCClient) AddLocalInventories(ctx context.Context, req *retail
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/AddLocalInventories")
+	}
 	opts = append((*c.CallOptions).AddLocalInventories[0:len((*c.CallOptions).AddLocalInventories):len((*c.CallOptions).AddLocalInventories)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1193,8 +1350,12 @@ func (c *productGRPCClient) AddLocalInventories(ctx context.Context, req *retail
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.AddLocalInventoriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddLocalInventoriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1203,6 +1364,12 @@ func (c *productGRPCClient) RemoveLocalInventories(ctx context.Context, req *ret
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/RemoveLocalInventories")
+	}
 	opts = append((*c.CallOptions).RemoveLocalInventories[0:len((*c.CallOptions).RemoveLocalInventories):len((*c.CallOptions).RemoveLocalInventories)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1213,8 +1380,12 @@ func (c *productGRPCClient) RemoveLocalInventories(ctx context.Context, req *ret
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.RemoveLocalInventoriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveLocalInventoriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1223,6 +1394,9 @@ func (c *productGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1241,9 +1415,12 @@ func (c *productGRPCClient) ListOperations(ctx context.Context, req *longrunning
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1309,6 +1486,13 @@ func (c *productRESTClient) CreateProduct(ctx context.Context, req *retailpb.Cre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/CreateProduct")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*/catalogs/*/branches/*}/products")
+	}
 	opts = append((*c.CallOptions).CreateProduct[0:len((*c.CallOptions).CreateProduct):len((*c.CallOptions).CreateProduct)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.Product{}
@@ -1359,6 +1543,13 @@ func (c *productRESTClient) GetProduct(ctx context.Context, req *retailpb.GetPro
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/GetProduct")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/catalogs/*/branches/*/products/**}")
+	}
 	opts = append((*c.CallOptions).GetProduct[0:len((*c.CallOptions).GetProduct):len((*c.CallOptions).GetProduct)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.Product{}
@@ -1393,7 +1584,7 @@ func (c *productRESTClient) GetProduct(ctx context.Context, req *retailpb.GetPro
 // ListProducts gets a list of Products.
 func (c *productRESTClient) ListProducts(ctx context.Context, req *retailpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*retailpb.ListProductsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*retailpb.Product, string, error) {
 		resp := &retailpb.ListProductsResponse{}
@@ -1514,6 +1705,10 @@ func (c *productRESTClient) UpdateProduct(ctx context.Context, req *retailpb.Upd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/UpdateProduct")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{product.name=projects/*/locations/*/catalogs/*/branches/*/products/**}")
+	}
 	opts = append((*c.CallOptions).UpdateProduct[0:len((*c.CallOptions).UpdateProduct):len((*c.CallOptions).UpdateProduct)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.Product{}
@@ -1564,6 +1759,13 @@ func (c *productRESTClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/DeleteProduct")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/catalogs/*/branches/*/products/**}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1621,6 +1823,13 @@ func (c *productRESTClient) PurgeProducts(ctx context.Context, req *retailpb.Pur
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/PurgeProducts")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*/catalogs/*/branches/*}/products:purge")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1649,8 +1858,12 @@ func (c *productRESTClient) PurgeProducts(ctx context.Context, req *retailpb.Pur
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.PurgeProductsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PurgeProductsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1686,6 +1899,13 @@ func (c *productRESTClient) ImportProducts(ctx context.Context, req *retailpb.Im
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/ImportProducts")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*/catalogs/*/branches/*}/products:import")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1714,8 +1934,12 @@ func (c *productRESTClient) ImportProducts(ctx context.Context, req *retailpb.Im
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.ImportProductsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportProductsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1793,6 +2017,10 @@ func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetI
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/SetInventory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{inventory.name=projects/*/locations/*/catalogs/*/branches/*/products/**}:setInventory")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1821,8 +2049,12 @@ func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetI
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.SetInventoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SetInventoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1881,6 +2113,13 @@ func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/AddFulfillmentPlaces")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{product=projects/*/locations/*/catalogs/*/branches/*/products/**}:addFulfillmentPlaces")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1909,8 +2148,12 @@ func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.AddFulfillmentPlacesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddFulfillmentPlacesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1969,6 +2212,13 @@ func (c *productRESTClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/RemoveFulfillmentPlaces")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{product=projects/*/locations/*/catalogs/*/branches/*/products/**}:removeFulfillmentPlaces")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1997,8 +2247,12 @@ func (c *productRESTClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.RemoveFulfillmentPlacesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveFulfillmentPlacesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2055,6 +2309,13 @@ func (c *productRESTClient) AddLocalInventories(ctx context.Context, req *retail
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/AddLocalInventories")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{product=projects/*/locations/*/catalogs/*/branches/*/products/**}:addLocalInventories")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2083,8 +2344,12 @@ func (c *productRESTClient) AddLocalInventories(ctx context.Context, req *retail
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.AddLocalInventoriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddLocalInventoriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2139,6 +2404,13 @@ func (c *productRESTClient) RemoveLocalInventories(ctx context.Context, req *ret
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.ProductService/RemoveLocalInventories")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{product=projects/*/locations/*/catalogs/*/branches/*/products/**}:removeLocalInventories")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2167,8 +2439,12 @@ func (c *productRESTClient) RemoveLocalInventories(ctx context.Context, req *ret
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.RemoveLocalInventoriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveLocalInventoriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2192,6 +2468,10 @@ func (c *productRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -2226,7 +2506,7 @@ func (c *productRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *productRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -2311,7 +2591,7 @@ func (c *productRESTClient) ListOperations(ctx context.Context, req *longrunning
 // The name must be that of a previously created AddFulfillmentPlacesOperation, possibly from a different process.
 func (c *productGRPCClient) AddFulfillmentPlacesOperation(name string) *AddFulfillmentPlacesOperation {
 	return &AddFulfillmentPlacesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.AddFulfillmentPlacesOperation"),
 	}
 }
 
@@ -2320,7 +2600,7 @@ func (c *productGRPCClient) AddFulfillmentPlacesOperation(name string) *AddFulfi
 func (c *productRESTClient) AddFulfillmentPlacesOperation(name string) *AddFulfillmentPlacesOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &AddFulfillmentPlacesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.AddFulfillmentPlacesOperation"),
 		pollPath: override,
 	}
 }
@@ -2329,7 +2609,7 @@ func (c *productRESTClient) AddFulfillmentPlacesOperation(name string) *AddFulfi
 // The name must be that of a previously created AddLocalInventoriesOperation, possibly from a different process.
 func (c *productGRPCClient) AddLocalInventoriesOperation(name string) *AddLocalInventoriesOperation {
 	return &AddLocalInventoriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.AddLocalInventoriesOperation"),
 	}
 }
 
@@ -2338,7 +2618,7 @@ func (c *productGRPCClient) AddLocalInventoriesOperation(name string) *AddLocalI
 func (c *productRESTClient) AddLocalInventoriesOperation(name string) *AddLocalInventoriesOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &AddLocalInventoriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.AddLocalInventoriesOperation"),
 		pollPath: override,
 	}
 }
@@ -2347,7 +2627,7 @@ func (c *productRESTClient) AddLocalInventoriesOperation(name string) *AddLocalI
 // The name must be that of a previously created ImportProductsOperation, possibly from a different process.
 func (c *productGRPCClient) ImportProductsOperation(name string) *ImportProductsOperation {
 	return &ImportProductsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.ImportProductsOperation"),
 	}
 }
 
@@ -2356,7 +2636,7 @@ func (c *productGRPCClient) ImportProductsOperation(name string) *ImportProducts
 func (c *productRESTClient) ImportProductsOperation(name string) *ImportProductsOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &ImportProductsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.ImportProductsOperation"),
 		pollPath: override,
 	}
 }
@@ -2365,7 +2645,7 @@ func (c *productRESTClient) ImportProductsOperation(name string) *ImportProducts
 // The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
 func (c *productGRPCClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
 	return &PurgeProductsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.PurgeProductsOperation"),
 	}
 }
 
@@ -2374,7 +2654,7 @@ func (c *productGRPCClient) PurgeProductsOperation(name string) *PurgeProductsOp
 func (c *productRESTClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &PurgeProductsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.PurgeProductsOperation"),
 		pollPath: override,
 	}
 }
@@ -2383,7 +2663,7 @@ func (c *productRESTClient) PurgeProductsOperation(name string) *PurgeProductsOp
 // The name must be that of a previously created RemoveFulfillmentPlacesOperation, possibly from a different process.
 func (c *productGRPCClient) RemoveFulfillmentPlacesOperation(name string) *RemoveFulfillmentPlacesOperation {
 	return &RemoveFulfillmentPlacesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.RemoveFulfillmentPlacesOperation"),
 	}
 }
 
@@ -2392,7 +2672,7 @@ func (c *productGRPCClient) RemoveFulfillmentPlacesOperation(name string) *Remov
 func (c *productRESTClient) RemoveFulfillmentPlacesOperation(name string) *RemoveFulfillmentPlacesOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &RemoveFulfillmentPlacesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.RemoveFulfillmentPlacesOperation"),
 		pollPath: override,
 	}
 }
@@ -2401,7 +2681,7 @@ func (c *productRESTClient) RemoveFulfillmentPlacesOperation(name string) *Remov
 // The name must be that of a previously created RemoveLocalInventoriesOperation, possibly from a different process.
 func (c *productGRPCClient) RemoveLocalInventoriesOperation(name string) *RemoveLocalInventoriesOperation {
 	return &RemoveLocalInventoriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.RemoveLocalInventoriesOperation"),
 	}
 }
 
@@ -2410,7 +2690,7 @@ func (c *productGRPCClient) RemoveLocalInventoriesOperation(name string) *Remove
 func (c *productRESTClient) RemoveLocalInventoriesOperation(name string) *RemoveLocalInventoriesOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &RemoveLocalInventoriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.RemoveLocalInventoriesOperation"),
 		pollPath: override,
 	}
 }
@@ -2419,7 +2699,7 @@ func (c *productRESTClient) RemoveLocalInventoriesOperation(name string) *Remove
 // The name must be that of a previously created SetInventoryOperation, possibly from a different process.
 func (c *productGRPCClient) SetInventoryOperation(name string) *SetInventoryOperation {
 	return &SetInventoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.SetInventoryOperation"),
 	}
 }
 
@@ -2428,7 +2708,7 @@ func (c *productGRPCClient) SetInventoryOperation(name string) *SetInventoryOper
 func (c *productRESTClient) SetInventoryOperation(name string) *SetInventoryOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &SetInventoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.SetInventoryOperation"),
 		pollPath: override,
 	}
 }

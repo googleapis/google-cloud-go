@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -291,7 +293,7 @@ type ModelClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ModelClient) Close() error {
 	return c.internalClient.Close()
@@ -302,6 +304,16 @@ func (c *ModelClient) Close() error {
 // use by Google-written clients.
 func (c *ModelClient) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// SetGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+//
+// SetGoogleClientInfo is not concurrency-safe and should only be invoked
+// sequentially before concurrent operations begin.
+func (c *ModelClient) SetGoogleClientInfo(keyval ...string) {
+	c.setGoogleClientInfo(keyval...)
 }
 
 // Connection returns a connection to the API service.
@@ -417,6 +429,16 @@ type modelGRPCClient struct {
 // Provides methods for getting metadata information about Generative Models.
 func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelClient, error) {
 	clientOpts := defaultModelGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "generativelanguage",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "generativelanguage.googleapis.com",
+		}))
+	}
 	if newModelClientHook != nil {
 		hookOpts, err := newModelClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -439,6 +461,30 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTunedModel = append(client.CallOptions.GetTunedModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTunedModels = append(client.CallOptions.ListTunedModels, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTunedModel = append(client.CallOptions.CreateTunedModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTunedModel = append(client.CallOptions.UpdateTunedModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTunedModel = append(client.CallOptions.DeleteTunedModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -475,7 +521,7 @@ func (c *modelGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *modelGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -508,6 +554,16 @@ type modelRESTClient struct {
 // Provides methods for getting metadata information about Generative Models.
 func NewModelRESTClient(ctx context.Context, opts ...option.ClientOption) (*ModelClient, error) {
 	clientOpts := append(defaultModelRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "generativelanguage",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "generativelanguage.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -521,6 +577,31 @@ func NewModelRESTClient(ctx context.Context, opts ...option.ClientOption) (*Mode
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientMetrics(metrics))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientMetrics(metrics))
+		callOpts.GetTunedModel = append(callOpts.GetTunedModel, gax.WithClientMetrics(metrics))
+		callOpts.ListTunedModels = append(callOpts.ListTunedModels, gax.WithClientMetrics(metrics))
+		callOpts.CreateTunedModel = append(callOpts.CreateTunedModel, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTunedModel = append(callOpts.UpdateTunedModel, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTunedModel = append(callOpts.DeleteTunedModel, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -558,7 +639,7 @@ func (c *modelRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *modelRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -577,6 +658,12 @@ func (c *modelGRPCClient) GetModel(ctx context.Context, req *generativelanguagep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.ModelService/GetModel")
+	}
 	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
 	var resp *generativelanguagepb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -592,9 +679,12 @@ func (c *modelGRPCClient) GetModel(ctx context.Context, req *generativelanguagep
 
 func (c *modelGRPCClient) ListModels(ctx context.Context, req *generativelanguagepb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.ModelService/ListModels")
+	}
 	opts = append((*c.CallOptions).ListModels[0:len((*c.CallOptions).ListModels):len((*c.CallOptions).ListModels)], opts...)
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.Model, string, error) {
 		resp := &generativelanguagepb.ListModelsResponse{}
 		if pageToken != "" {
@@ -638,6 +728,12 @@ func (c *modelGRPCClient) GetTunedModel(ctx context.Context, req *generativelang
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.ModelService/GetTunedModel")
+	}
 	opts = append((*c.CallOptions).GetTunedModel[0:len((*c.CallOptions).GetTunedModel):len((*c.CallOptions).GetTunedModel)], opts...)
 	var resp *generativelanguagepb.TunedModel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -653,9 +749,12 @@ func (c *modelGRPCClient) GetTunedModel(ctx context.Context, req *generativelang
 
 func (c *modelGRPCClient) ListTunedModels(ctx context.Context, req *generativelanguagepb.ListTunedModelsRequest, opts ...gax.CallOption) *TunedModelIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.ModelService/ListTunedModels")
+	}
 	opts = append((*c.CallOptions).ListTunedModels[0:len((*c.CallOptions).ListTunedModels):len((*c.CallOptions).ListTunedModels)], opts...)
 	it := &TunedModelIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListTunedModelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.TunedModel, string, error) {
 		resp := &generativelanguagepb.ListTunedModelsResponse{}
 		if pageToken != "" {
@@ -696,6 +795,9 @@ func (c *modelGRPCClient) ListTunedModels(ctx context.Context, req *generativela
 
 func (c *modelGRPCClient) CreateTunedModel(ctx context.Context, req *generativelanguagepb.CreateTunedModelRequest, opts ...gax.CallOption) (*CreateTunedModelOperation, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.ModelService/CreateTunedModel")
+	}
 	opts = append((*c.CallOptions).CreateTunedModel[0:len((*c.CallOptions).CreateTunedModel):len((*c.CallOptions).CreateTunedModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -706,8 +808,12 @@ func (c *modelGRPCClient) CreateTunedModel(ctx context.Context, req *generativel
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*generativelanguage.CreateTunedModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTunedModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -716,6 +822,9 @@ func (c *modelGRPCClient) UpdateTunedModel(ctx context.Context, req *generativel
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.ModelService/UpdateTunedModel")
+	}
 	opts = append((*c.CallOptions).UpdateTunedModel[0:len((*c.CallOptions).UpdateTunedModel):len((*c.CallOptions).UpdateTunedModel)], opts...)
 	var resp *generativelanguagepb.TunedModel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -734,6 +843,12 @@ func (c *modelGRPCClient) DeleteTunedModel(ctx context.Context, req *generativel
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.ModelService/DeleteTunedModel")
+	}
 	opts = append((*c.CallOptions).DeleteTunedModel[0:len((*c.CallOptions).DeleteTunedModel):len((*c.CallOptions).DeleteTunedModel)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -748,6 +863,9 @@ func (c *modelGRPCClient) CancelOperation(ctx context.Context, req *longrunningp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -762,6 +880,9 @@ func (c *modelGRPCClient) DeleteOperation(ctx context.Context, req *longrunningp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -776,6 +897,9 @@ func (c *modelGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -794,9 +918,12 @@ func (c *modelGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -859,6 +986,13 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *generativelanguagep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.ModelService/GetModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=models/*}")
+	}
 	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.Model{}
@@ -894,7 +1028,7 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *generativelanguagep
 // available through the Gemini API.
 func (c *modelRESTClient) ListModels(ctx context.Context, req *generativelanguagepb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.Model, string, error) {
 		resp := &generativelanguagepb.ListModelsResponse{}
@@ -988,6 +1122,13 @@ func (c *modelRESTClient) GetTunedModel(ctx context.Context, req *generativelang
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.ModelService/GetTunedModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=tunedModels/*}")
+	}
 	opts = append((*c.CallOptions).GetTunedModel[0:len((*c.CallOptions).GetTunedModel):len((*c.CallOptions).GetTunedModel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.TunedModel{}
@@ -1022,7 +1163,7 @@ func (c *modelRESTClient) GetTunedModel(ctx context.Context, req *generativelang
 // ListTunedModels lists created tuned models.
 func (c *modelRESTClient) ListTunedModels(ctx context.Context, req *generativelanguagepb.ListTunedModelsRequest, opts ...gax.CallOption) *TunedModelIterator {
 	it := &TunedModelIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListTunedModelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.TunedModel, string, error) {
 		resp := &generativelanguagepb.ListTunedModelsResponse{}
@@ -1132,6 +1273,10 @@ func (c *modelRESTClient) CreateTunedModel(ctx context.Context, req *generativel
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.ModelService/CreateTunedModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/tunedModels")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1160,8 +1305,12 @@ func (c *modelRESTClient) CreateTunedModel(ctx context.Context, req *generativel
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*generativelanguage.CreateTunedModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTunedModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1199,6 +1348,10 @@ func (c *modelRESTClient) UpdateTunedModel(ctx context.Context, req *generativel
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.ModelService/UpdateTunedModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{tuned_model.name=tunedModels/*}")
+	}
 	opts = append((*c.CallOptions).UpdateTunedModel[0:len((*c.CallOptions).UpdateTunedModel):len((*c.CallOptions).UpdateTunedModel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.TunedModel{}
@@ -1249,6 +1402,13 @@ func (c *modelRESTClient) DeleteTunedModel(ctx context.Context, req *generativel
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta.ModelService/DeleteTunedModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=tunedModels/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1284,6 +1444,10 @@ func (c *modelRESTClient) CancelOperation(ctx context.Context, req *longrunningp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=batches/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1319,6 +1483,10 @@ func (c *modelRESTClient) DeleteOperation(ctx context.Context, req *longrunningp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=batches/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1354,6 +1522,10 @@ func (c *modelRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=tunedModels/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1388,7 +1560,7 @@ func (c *modelRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *modelRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1473,7 +1645,7 @@ func (c *modelRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 // The name must be that of a previously created CreateTunedModelOperation, possibly from a different process.
 func (c *modelGRPCClient) CreateTunedModelOperation(name string) *CreateTunedModelOperation {
 	return &CreateTunedModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*generativelanguage.CreateTunedModelOperation"),
 	}
 }
 
@@ -1482,7 +1654,7 @@ func (c *modelGRPCClient) CreateTunedModelOperation(name string) *CreateTunedMod
 func (c *modelRESTClient) CreateTunedModelOperation(name string) *CreateTunedModelOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateTunedModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*generativelanguage.CreateTunedModelOperation"),
 		pollPath: override,
 	}
 }

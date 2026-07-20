@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -228,7 +230,7 @@ type PrincipalAccessBoundaryPoliciesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *PrincipalAccessBoundaryPoliciesClient) Close() error {
 	return c.internalClient.Close()
@@ -337,6 +339,16 @@ type principalAccessBoundaryPoliciesGRPCClient struct {
 // policies.
 func NewPrincipalAccessBoundaryPoliciesClient(ctx context.Context, opts ...option.ClientOption) (*PrincipalAccessBoundaryPoliciesClient, error) {
 	clientOpts := defaultPrincipalAccessBoundaryPoliciesGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "iam",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/iam/apiv3",
+			"gcp.client.language": "go",
+			"url.domain":          "iam.googleapis.com",
+		}))
+	}
 	if newPrincipalAccessBoundaryPoliciesClientHook != nil {
 		hookOpts, err := newPrincipalAccessBoundaryPoliciesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -359,6 +371,26 @@ func NewPrincipalAccessBoundaryPoliciesClient(ctx context.Context, opts ...optio
 		operationsClient:                      longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePrincipalAccessBoundaryPolicy = append(client.CallOptions.CreatePrincipalAccessBoundaryPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPrincipalAccessBoundaryPolicy = append(client.CallOptions.GetPrincipalAccessBoundaryPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePrincipalAccessBoundaryPolicy = append(client.CallOptions.UpdatePrincipalAccessBoundaryPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePrincipalAccessBoundaryPolicy = append(client.CallOptions.DeletePrincipalAccessBoundaryPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPrincipalAccessBoundaryPolicies = append(client.CallOptions.ListPrincipalAccessBoundaryPolicies, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchPrincipalAccessBoundaryPolicyBindings = append(client.CallOptions.SearchPrincipalAccessBoundaryPolicyBindings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -395,7 +427,7 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) setGoogleClientInfo(keyval .
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *principalAccessBoundaryPoliciesGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -429,6 +461,16 @@ type principalAccessBoundaryPoliciesRESTClient struct {
 // policies.
 func NewPrincipalAccessBoundaryPoliciesRESTClient(ctx context.Context, opts ...option.ClientOption) (*PrincipalAccessBoundaryPoliciesClient, error) {
 	clientOpts := append(defaultPrincipalAccessBoundaryPoliciesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "iam",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/iam/apiv3",
+			"gcp.client.language": "go",
+			"url.domain":          "iam.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -442,6 +484,27 @@ func NewPrincipalAccessBoundaryPoliciesRESTClient(ctx context.Context, opts ...o
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePrincipalAccessBoundaryPolicy = append(callOpts.CreatePrincipalAccessBoundaryPolicy, gax.WithClientMetrics(metrics))
+		callOpts.GetPrincipalAccessBoundaryPolicy = append(callOpts.GetPrincipalAccessBoundaryPolicy, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePrincipalAccessBoundaryPolicy = append(callOpts.UpdatePrincipalAccessBoundaryPolicy, gax.WithClientMetrics(metrics))
+		callOpts.DeletePrincipalAccessBoundaryPolicy = append(callOpts.DeletePrincipalAccessBoundaryPolicy, gax.WithClientMetrics(metrics))
+		callOpts.ListPrincipalAccessBoundaryPolicies = append(callOpts.ListPrincipalAccessBoundaryPolicies, gax.WithClientMetrics(metrics))
+		callOpts.SearchPrincipalAccessBoundaryPolicyBindings = append(callOpts.SearchPrincipalAccessBoundaryPolicyBindings, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -479,7 +542,7 @@ func (c *principalAccessBoundaryPoliciesRESTClient) setGoogleClientInfo(keyval .
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *principalAccessBoundaryPoliciesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -498,6 +561,12 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) CreatePrincipalAccessBoundar
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/CreatePrincipalAccessBoundaryPolicy")
+	}
 	opts = append((*c.CallOptions).CreatePrincipalAccessBoundaryPolicy[0:len((*c.CallOptions).CreatePrincipalAccessBoundaryPolicy):len((*c.CallOptions).CreatePrincipalAccessBoundaryPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -508,8 +577,12 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) CreatePrincipalAccessBoundar
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.CreatePrincipalAccessBoundaryPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePrincipalAccessBoundaryPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -518,6 +591,12 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) GetPrincipalAccessBoundaryPo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/GetPrincipalAccessBoundaryPolicy")
+	}
 	opts = append((*c.CallOptions).GetPrincipalAccessBoundaryPolicy[0:len((*c.CallOptions).GetPrincipalAccessBoundaryPolicy):len((*c.CallOptions).GetPrincipalAccessBoundaryPolicy)], opts...)
 	var resp *iampb.PrincipalAccessBoundaryPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -536,6 +615,9 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) UpdatePrincipalAccessBoundar
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/UpdatePrincipalAccessBoundaryPolicy")
+	}
 	opts = append((*c.CallOptions).UpdatePrincipalAccessBoundaryPolicy[0:len((*c.CallOptions).UpdatePrincipalAccessBoundaryPolicy):len((*c.CallOptions).UpdatePrincipalAccessBoundaryPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -546,8 +628,12 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) UpdatePrincipalAccessBoundar
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.UpdatePrincipalAccessBoundaryPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePrincipalAccessBoundaryPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -556,6 +642,12 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) DeletePrincipalAccessBoundar
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/DeletePrincipalAccessBoundaryPolicy")
+	}
 	opts = append((*c.CallOptions).DeletePrincipalAccessBoundaryPolicy[0:len((*c.CallOptions).DeletePrincipalAccessBoundaryPolicy):len((*c.CallOptions).DeletePrincipalAccessBoundaryPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -566,8 +658,12 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) DeletePrincipalAccessBoundar
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.DeletePrincipalAccessBoundaryPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePrincipalAccessBoundaryPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -576,9 +672,15 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) ListPrincipalAccessBoundaryP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/ListPrincipalAccessBoundaryPolicies")
+	}
 	opts = append((*c.CallOptions).ListPrincipalAccessBoundaryPolicies[0:len((*c.CallOptions).ListPrincipalAccessBoundaryPolicies):len((*c.CallOptions).ListPrincipalAccessBoundaryPolicies)], opts...)
 	it := &PrincipalAccessBoundaryPolicyIterator{}
-	req = proto.Clone(req).(*iampb.ListPrincipalAccessBoundaryPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PrincipalAccessBoundaryPolicy, string, error) {
 		resp := &iampb.ListPrincipalAccessBoundaryPoliciesResponse{}
 		if pageToken != "" {
@@ -622,9 +724,15 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) SearchPrincipalAccessBoundar
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/SearchPrincipalAccessBoundaryPolicyBindings")
+	}
 	opts = append((*c.CallOptions).SearchPrincipalAccessBoundaryPolicyBindings[0:len((*c.CallOptions).SearchPrincipalAccessBoundaryPolicyBindings):len((*c.CallOptions).SearchPrincipalAccessBoundaryPolicyBindings)], opts...)
 	it := &PolicyBindingIterator{}
-	req = proto.Clone(req).(*iampb.SearchPrincipalAccessBoundaryPolicyBindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PolicyBinding, string, error) {
 		resp := &iampb.SearchPrincipalAccessBoundaryPolicyBindingsResponse{}
 		if pageToken != "" {
@@ -668,6 +776,9 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) GetOperation(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -712,6 +823,13 @@ func (c *principalAccessBoundaryPoliciesRESTClient) CreatePrincipalAccessBoundar
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/CreatePrincipalAccessBoundaryPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=organizations/*/locations/*}/principalAccessBoundaryPolicies")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -740,8 +858,12 @@ func (c *principalAccessBoundaryPoliciesRESTClient) CreatePrincipalAccessBoundar
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.CreatePrincipalAccessBoundaryPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePrincipalAccessBoundaryPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -765,6 +887,13 @@ func (c *principalAccessBoundaryPoliciesRESTClient) GetPrincipalAccessBoundaryPo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/GetPrincipalAccessBoundaryPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=organizations/*/locations/*/principalAccessBoundaryPolicies/*}")
+	}
 	opts = append((*c.CallOptions).GetPrincipalAccessBoundaryPolicy[0:len((*c.CallOptions).GetPrincipalAccessBoundaryPolicy):len((*c.CallOptions).GetPrincipalAccessBoundaryPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.PrincipalAccessBoundaryPolicy{}
@@ -832,6 +961,10 @@ func (c *principalAccessBoundaryPoliciesRESTClient) UpdatePrincipalAccessBoundar
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/UpdatePrincipalAccessBoundaryPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{principal_access_boundary_policy.name=organizations/*/locations/*/principalAccessBoundaryPolicies/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -860,8 +993,12 @@ func (c *principalAccessBoundaryPoliciesRESTClient) UpdatePrincipalAccessBoundar
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.UpdatePrincipalAccessBoundaryPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePrincipalAccessBoundaryPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -894,6 +1031,13 @@ func (c *principalAccessBoundaryPoliciesRESTClient) DeletePrincipalAccessBoundar
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PrincipalAccessBoundaryPolicies/DeletePrincipalAccessBoundaryPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=organizations/*/locations/*/principalAccessBoundaryPolicies/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -922,8 +1066,12 @@ func (c *principalAccessBoundaryPoliciesRESTClient) DeletePrincipalAccessBoundar
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.DeletePrincipalAccessBoundaryPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePrincipalAccessBoundaryPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -931,7 +1079,7 @@ func (c *principalAccessBoundaryPoliciesRESTClient) DeletePrincipalAccessBoundar
 // ListPrincipalAccessBoundaryPolicies lists principal access boundary policies.
 func (c *principalAccessBoundaryPoliciesRESTClient) ListPrincipalAccessBoundaryPolicies(ctx context.Context, req *iampb.ListPrincipalAccessBoundaryPoliciesRequest, opts ...gax.CallOption) *PrincipalAccessBoundaryPolicyIterator {
 	it := &PrincipalAccessBoundaryPolicyIterator{}
-	req = proto.Clone(req).(*iampb.ListPrincipalAccessBoundaryPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PrincipalAccessBoundaryPolicy, string, error) {
 		resp := &iampb.ListPrincipalAccessBoundaryPoliciesResponse{}
@@ -1010,7 +1158,7 @@ func (c *principalAccessBoundaryPoliciesRESTClient) ListPrincipalAccessBoundaryP
 // searchPolicyBindings permission on that policy.
 func (c *principalAccessBoundaryPoliciesRESTClient) SearchPrincipalAccessBoundaryPolicyBindings(ctx context.Context, req *iampb.SearchPrincipalAccessBoundaryPolicyBindingsRequest, opts ...gax.CallOption) *PolicyBindingIterator {
 	it := &PolicyBindingIterator{}
-	req = proto.Clone(req).(*iampb.SearchPrincipalAccessBoundaryPolicyBindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PolicyBinding, string, error) {
 		resp := &iampb.SearchPrincipalAccessBoundaryPolicyBindingsResponse{}
@@ -1104,6 +1252,10 @@ func (c *principalAccessBoundaryPoliciesRESTClient) GetOperation(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1139,7 +1291,7 @@ func (c *principalAccessBoundaryPoliciesRESTClient) GetOperation(ctx context.Con
 // The name must be that of a previously created CreatePrincipalAccessBoundaryPolicyOperation, possibly from a different process.
 func (c *principalAccessBoundaryPoliciesGRPCClient) CreatePrincipalAccessBoundaryPolicyOperation(name string) *CreatePrincipalAccessBoundaryPolicyOperation {
 	return &CreatePrincipalAccessBoundaryPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.CreatePrincipalAccessBoundaryPolicyOperation"),
 	}
 }
 
@@ -1148,7 +1300,7 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) CreatePrincipalAccessBoundar
 func (c *principalAccessBoundaryPoliciesRESTClient) CreatePrincipalAccessBoundaryPolicyOperation(name string) *CreatePrincipalAccessBoundaryPolicyOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &CreatePrincipalAccessBoundaryPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.CreatePrincipalAccessBoundaryPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -1157,7 +1309,7 @@ func (c *principalAccessBoundaryPoliciesRESTClient) CreatePrincipalAccessBoundar
 // The name must be that of a previously created DeletePrincipalAccessBoundaryPolicyOperation, possibly from a different process.
 func (c *principalAccessBoundaryPoliciesGRPCClient) DeletePrincipalAccessBoundaryPolicyOperation(name string) *DeletePrincipalAccessBoundaryPolicyOperation {
 	return &DeletePrincipalAccessBoundaryPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.DeletePrincipalAccessBoundaryPolicyOperation"),
 	}
 }
 
@@ -1166,7 +1318,7 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) DeletePrincipalAccessBoundar
 func (c *principalAccessBoundaryPoliciesRESTClient) DeletePrincipalAccessBoundaryPolicyOperation(name string) *DeletePrincipalAccessBoundaryPolicyOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &DeletePrincipalAccessBoundaryPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.DeletePrincipalAccessBoundaryPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -1175,7 +1327,7 @@ func (c *principalAccessBoundaryPoliciesRESTClient) DeletePrincipalAccessBoundar
 // The name must be that of a previously created UpdatePrincipalAccessBoundaryPolicyOperation, possibly from a different process.
 func (c *principalAccessBoundaryPoliciesGRPCClient) UpdatePrincipalAccessBoundaryPolicyOperation(name string) *UpdatePrincipalAccessBoundaryPolicyOperation {
 	return &UpdatePrincipalAccessBoundaryPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.UpdatePrincipalAccessBoundaryPolicyOperation"),
 	}
 }
 
@@ -1184,7 +1336,7 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) UpdatePrincipalAccessBoundar
 func (c *principalAccessBoundaryPoliciesRESTClient) UpdatePrincipalAccessBoundaryPolicyOperation(name string) *UpdatePrincipalAccessBoundaryPolicyOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &UpdatePrincipalAccessBoundaryPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.UpdatePrincipalAccessBoundaryPolicyOperation"),
 		pollPath: override,
 	}
 }

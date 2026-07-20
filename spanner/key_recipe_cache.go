@@ -33,20 +33,25 @@ import (
 
 const (
 	defaultSchemaRecipeCacheSize  = 1000
-	defaultPreparedQueryCacheSize = 1000
-	defaultPreparedReadCacheSize  = 1000
+	defaultPreparedQueryCacheSize = 50_000
+	defaultPreparedReadCacheSize  = 50_000
 )
 
 type keyRecipeCache struct {
-	mu sync.Mutex
+	preparedMu sync.RWMutex
+	queryMu    sync.RWMutex
 
 	nextOperationUID atomic.Uint64
-	schemaGeneration []byte
+	schemaSnapshot   atomic.Pointer[keyRecipeSchemaSnapshot]
 
-	schemaRecipes   *lruCache[string, *keyRecipe]
-	queryRecipes    *lruCache[uint64, *keyRecipe]
-	preparedReads   *lruCache[uint64, *preparedRead]
-	preparedQueries *lruCache[uint64, *preparedQuery]
+	preparedReads   *boundedCache[uint64, *preparedRead]
+	preparedQueries *boundedCache[uint64, *preparedQuery]
+	queryRecipes    *boundedCache[uint64, *keyRecipe]
+}
+
+type keyRecipeSchemaSnapshot struct {
+	schemaGeneration []byte
+	schemaRecipes    map[string]*keyRecipe
 }
 
 type preparedRead struct {
@@ -70,13 +75,19 @@ type preparedQuery struct {
 }
 
 func newKeyRecipeCache() *keyRecipeCache {
+	return newKeyRecipeCacheWithSizes(defaultPreparedReadCacheSize, defaultPreparedQueryCacheSize)
+}
+
+func newKeyRecipeCacheWithSizes(preparedReadCacheSize, preparedQueryCacheSize int) *keyRecipeCache {
 	cache := &keyRecipeCache{
-		schemaRecipes:   newLRUCache[string, *keyRecipe](defaultSchemaRecipeCacheSize),
-		queryRecipes:    newLRUCache[uint64, *keyRecipe](defaultPreparedQueryCacheSize),
-		preparedReads:   newLRUCache[uint64, *preparedRead](defaultPreparedReadCacheSize),
-		preparedQueries: newLRUCache[uint64, *preparedQuery](defaultPreparedQueryCacheSize),
+		preparedReads:   newBoundedCache[uint64, *preparedRead](preparedReadCacheSize),
+		preparedQueries: newBoundedCache[uint64, *preparedQuery](preparedQueryCacheSize),
+		queryRecipes:    newBoundedCache[uint64, *keyRecipe](preparedQueryCacheSize),
 	}
 	cache.nextOperationUID.Store(1)
+	cache.schemaSnapshot.Store(&keyRecipeSchemaSnapshot{
+		schemaRecipes: make(map[string]*keyRecipe, defaultSchemaRecipeCacheSize),
+	})
 	return cache
 }
 
@@ -127,19 +138,25 @@ func (c *keyRecipeCache) addRecipes(recipeList *sppb.RecipeList) {
 	if recipeList == nil {
 		return
 	}
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	cmp := bytes.Compare(recipeList.GetSchemaGeneration(), c.schemaGeneration)
+	current := c.loadSchemaSnapshot()
+	cmp := bytes.Compare(recipeList.GetSchemaGeneration(), current.schemaGeneration)
 	if cmp < 0 {
 		return
 	}
+
+	next := &keyRecipeSchemaSnapshot{
+		schemaGeneration: append([]byte(nil), current.schemaGeneration...),
+		schemaRecipes:    copyRecipeMap(current.schemaRecipes),
+	}
 	if cmp > 0 {
-		c.schemaGeneration = append([]byte(nil), recipeList.GetSchemaGeneration()...)
-		c.schemaRecipes.Clear()
-		c.queryRecipes.Clear()
+		next.schemaGeneration = append([]byte(nil), recipeList.GetSchemaGeneration()...)
+		next.schemaRecipes = make(map[string]*keyRecipe, defaultSchemaRecipeCacheSize)
 	}
 
+	c.queryMu.Lock()
+	if cmp > 0 {
+		c.queryRecipes.Clear()
+	}
 	for _, recipeProto := range recipeList.GetRecipe() {
 		recipe, err := newKeyRecipe(recipeProto)
 		if err != nil {
@@ -147,13 +164,15 @@ func (c *keyRecipeCache) addRecipes(recipeList *sppb.RecipeList) {
 		}
 		switch recipeProto.GetTarget().(type) {
 		case *sppb.KeyRecipe_TableName:
-			c.schemaRecipes.Put(recipeProto.GetTableName(), recipe)
+			next.schemaRecipes[recipeProto.GetTableName()] = recipe
 		case *sppb.KeyRecipe_IndexName:
-			c.schemaRecipes.Put(recipeProto.GetIndexName(), recipe)
+			next.schemaRecipes[recipeProto.GetIndexName()] = recipe
 		case *sppb.KeyRecipe_OperationUid:
 			c.queryRecipes.Put(recipeProto.GetOperationUid(), recipe)
 		}
 	}
+	c.queryMu.Unlock()
+	c.schemaSnapshot.Store(next)
 }
 
 func (c *keyRecipeCache) computeReadKeys(req *sppb.ReadRequest) {
@@ -161,19 +180,14 @@ func (c *keyRecipeCache) computeReadKeys(req *sppb.ReadRequest) {
 		return
 	}
 	reqFP := fingerprintReadRequest(req)
+	schemaSnapshot := c.loadSchemaSnapshot()
 
-	c.mu.Lock()
 	hint := ensureReadRoutingHint(req)
-	if len(c.schemaGeneration) > 0 {
-		hint.SchemaGeneration = append([]byte(nil), c.schemaGeneration...)
+	if len(schemaSnapshot.schemaGeneration) > 0 {
+		hint.SchemaGeneration = append([]byte(nil), schemaSnapshot.schemaGeneration...)
 	}
-	prepared, ok := c.preparedReads.Get(reqFP)
+	prepared, ok := c.getOrPrepareRead(reqFP, req)
 	if !ok {
-		prepared = &preparedRead{table: req.GetTable(), columns: append([]string(nil), req.GetColumns()...)}
-		prepared.operationUID = c.nextOperationUID.Add(1) - 1
-		c.preparedReads.Put(reqFP, prepared)
-	} else if !prepared.matches(req) {
-		c.mu.Unlock()
 		return
 	}
 	hint.OperationUid = prepared.operationUID
@@ -181,8 +195,7 @@ func (c *keyRecipeCache) computeReadKeys(req *sppb.ReadRequest) {
 	if req.GetIndex() != "" {
 		recipeKey = req.GetIndex()
 	}
-	recipe, _ := c.schemaRecipes.Get(recipeKey)
-	c.mu.Unlock()
+	recipe := schemaSnapshot.schemaRecipes[recipeKey]
 
 	if recipe == nil {
 		return
@@ -199,26 +212,22 @@ func (c *keyRecipeCache) computeQueryKeys(req *sppb.ExecuteSqlRequest) {
 		return
 	}
 	reqFP := fingerprintExecuteSQLRequest(req)
+	schemaSnapshot := c.loadSchemaSnapshot()
 
-	c.mu.Lock()
 	hint := ensureExecuteSQLRoutingHint(req)
-	if len(c.schemaGeneration) > 0 {
-		hint.SchemaGeneration = append([]byte(nil), c.schemaGeneration...)
+	if len(schemaSnapshot.schemaGeneration) > 0 {
+		hint.SchemaGeneration = append([]byte(nil), schemaSnapshot.schemaGeneration...)
 	}
-	prepared, ok := c.preparedQueries.Get(reqFP)
+	prepared, ok := c.getOrPrepareQuery(reqFP, req)
 	if !ok {
-		prepared = newPreparedQuery(req)
-		prepared.operationUID = c.nextOperationUID.Add(1) - 1
-		c.preparedQueries.Put(reqFP, prepared)
-	} else if !prepared.matches(req) {
-		c.mu.Unlock()
 		return
 	}
 	hint.OperationUid = prepared.operationUID
-	recipe, _ := c.queryRecipes.Get(prepared.operationUID)
-	c.mu.Unlock()
+	c.queryMu.RLock()
+	recipe, ok := c.queryRecipes.Get(prepared.operationUID)
+	c.queryMu.RUnlock()
 
-	if recipe == nil {
+	if !ok || recipe == nil {
 		return
 	}
 	target := recipe.queryParamsToTargetRange(req.GetParams())
@@ -236,9 +245,7 @@ func (c *keyRecipeCache) mutationToTargetRange(mutation *sppb.Mutation) *targetR
 	if tableName == "" {
 		return nil
 	}
-	c.mu.Lock()
-	recipe, _ := c.schemaRecipes.Get(tableName)
-	c.mu.Unlock()
+	recipe := c.loadSchemaSnapshot().schemaRecipes[tableName]
 	if recipe == nil {
 		return nil
 	}
@@ -249,11 +256,10 @@ func (c *keyRecipeCache) applySchemaGeneration(hint *sppb.RoutingHint) {
 	if hint == nil {
 		return
 	}
-	c.mu.Lock()
-	if len(c.schemaGeneration) > 0 {
-		hint.SchemaGeneration = append([]byte(nil), c.schemaGeneration...)
+	schemaGeneration := c.loadSchemaSnapshot().schemaGeneration
+	if len(schemaGeneration) > 0 {
+		hint.SchemaGeneration = append([]byte(nil), schemaGeneration...)
 	}
-	c.mu.Unlock()
 }
 
 func (c *keyRecipeCache) applyTargetRange(hint *sppb.RoutingHint, target *targetRange) {
@@ -268,13 +274,74 @@ func (c *keyRecipeCache) applyTargetRange(hint *sppb.RoutingHint, target *target
 }
 
 func (c *keyRecipeCache) clear() {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.schemaGeneration = nil
-	c.schemaRecipes.Clear()
-	c.queryRecipes.Clear()
+	c.schemaSnapshot.Store(&keyRecipeSchemaSnapshot{
+		schemaRecipes: make(map[string]*keyRecipe, defaultSchemaRecipeCacheSize),
+	})
+	c.preparedMu.Lock()
+	defer c.preparedMu.Unlock()
 	c.preparedReads.Clear()
 	c.preparedQueries.Clear()
+	c.queryMu.Lock()
+	defer c.queryMu.Unlock()
+	c.queryRecipes.Clear()
+}
+
+func (c *keyRecipeCache) loadSchemaSnapshot() *keyRecipeSchemaSnapshot {
+	snapshot := c.schemaSnapshot.Load()
+	if snapshot == nil {
+		return &keyRecipeSchemaSnapshot{
+			schemaRecipes: make(map[string]*keyRecipe, defaultSchemaRecipeCacheSize),
+		}
+	}
+	return snapshot
+}
+
+func (c *keyRecipeCache) getOrPrepareRead(reqFP uint64, req *sppb.ReadRequest) (*preparedRead, bool) {
+	c.preparedMu.RLock()
+	prepared, ok := c.preparedReads.Get(reqFP)
+	c.preparedMu.RUnlock()
+	if ok {
+		return prepared, prepared.matches(req)
+	}
+
+	c.preparedMu.Lock()
+	defer c.preparedMu.Unlock()
+	prepared, ok = c.preparedReads.Get(reqFP)
+	if ok {
+		return prepared, prepared.matches(req)
+	}
+	prepared = &preparedRead{table: req.GetTable(), columns: append([]string(nil), req.GetColumns()...)}
+	prepared.operationUID = c.nextOperationUID.Add(1) - 1
+	c.preparedReads.Put(reqFP, prepared)
+	return prepared, true
+}
+
+func (c *keyRecipeCache) getOrPrepareQuery(reqFP uint64, req *sppb.ExecuteSqlRequest) (*preparedQuery, bool) {
+	c.preparedMu.RLock()
+	prepared, ok := c.preparedQueries.Get(reqFP)
+	c.preparedMu.RUnlock()
+	if ok {
+		return prepared, prepared.matches(req)
+	}
+
+	c.preparedMu.Lock()
+	defer c.preparedMu.Unlock()
+	prepared, ok = c.preparedQueries.Get(reqFP)
+	if ok {
+		return prepared, prepared.matches(req)
+	}
+	prepared = newPreparedQuery(req)
+	prepared.operationUID = c.nextOperationUID.Add(1) - 1
+	c.preparedQueries.Put(reqFP, prepared)
+	return prepared, true
+}
+
+func copyRecipeMap(src map[string]*keyRecipe) map[string]*keyRecipe {
+	dst := make(map[string]*keyRecipe, len(src))
+	for key, recipe := range src {
+		dst[key] = recipe
+	}
+	return dst
 }
 
 func (p *preparedRead) matches(req *sppb.ReadRequest) bool {
@@ -423,61 +490,59 @@ func valueKindCase(value *structpb.Value) int32 {
 	}
 }
 
-// lruCache is a non-thread-safe fixed-size LRU map.
-// Callers must provide external synchronization for all operations.
-type lruCache[K comparable, V any] struct {
+// boundedCache is a non-thread-safe fixed-size map with insertion-order
+// eviction. Cache hits do not mutate the structure.
+type boundedCache[K comparable, V any] struct {
 	maxSize int
 	items   map[K]*list.Element
 	order   *list.List
 }
 
-type lruCacheEntry[K comparable, V any] struct {
+type boundedCacheEntry[K comparable, V any] struct {
 	key   K
 	value V
 }
 
-func newLRUCache[K comparable, V any](maxSize int) *lruCache[K, V] {
+func newBoundedCache[K comparable, V any](maxSize int) *boundedCache[K, V] {
 	if maxSize < 1 {
 		maxSize = 1
 	}
-	return &lruCache[K, V]{
+	return &boundedCache[K, V]{
 		maxSize: maxSize,
 		items:   make(map[K]*list.Element, maxSize),
 		order:   list.New(),
 	}
 }
 
-func (c *lruCache[K, V]) Get(key K) (V, bool) {
+func (c *boundedCache[K, V]) Get(key K) (V, bool) {
 	elem, ok := c.items[key]
 	if !ok {
 		var zero V
 		return zero, false
 	}
-	c.order.MoveToFront(elem)
-	return elem.Value.(*lruCacheEntry[K, V]).value, true
+	return elem.Value.(*boundedCacheEntry[K, V]).value, true
 }
 
-func (c *lruCache[K, V]) Put(key K, value V) {
+func (c *boundedCache[K, V]) Put(key K, value V) {
 	if elem, ok := c.items[key]; ok {
-		entry := elem.Value.(*lruCacheEntry[K, V])
+		entry := elem.Value.(*boundedCacheEntry[K, V])
 		entry.value = value
-		c.order.MoveToFront(elem)
 		return
 	}
-	elem := c.order.PushFront(&lruCacheEntry[K, V]{key: key, value: value})
+	elem := c.order.PushBack(&boundedCacheEntry[K, V]{key: key, value: value})
 	c.items[key] = elem
 
 	for len(c.items) > c.maxSize {
-		last := c.order.Back()
-		if last == nil {
+		first := c.order.Front()
+		if first == nil {
 			return
 		}
-		c.order.Remove(last)
-		delete(c.items, last.Value.(*lruCacheEntry[K, V]).key)
+		c.order.Remove(first)
+		delete(c.items, first.Value.(*boundedCacheEntry[K, V]).key)
 	}
 }
 
-func (c *lruCache[K, V]) Clear() {
+func (c *boundedCache[K, V]) Clear() {
 	clear(c.items)
 	c.order.Init()
 }

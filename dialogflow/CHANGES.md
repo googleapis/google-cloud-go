@@ -1,5 +1,28 @@
 # Changes
 
+## [1.84.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.83.0...dialogflow/v1.84.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+* Update API sources and regenerate ([#20109](https://github.com/googleapis/google-cloud-go/issues/20109)) ([4314d30](https://github.com/googleapis/google-cloud-go/commit/4314d305008d9a4b2d9f464d07519f8081b2277d))
+
+## [1.83.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.82.0...dialogflow/v1.83.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
+## [1.82.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.82.0) (2026-05-07)
+
+## [1.81.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.81.0) (2026-04-30)
+
+## [1.80.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.80.0) (2026-04-13)
+
+## [1.79.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.79.0) (2026-04-09)
+
 ## [1.78.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.78.0) (2026-04-02)
 
 ## [1.77.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.77.0) (2026-03-26)

@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -41,23 +42,27 @@ var newNetworksClientHook clientHook
 
 // NetworksCallOptions contains the retry settings for each method of NetworksClient.
 type NetworksCallOptions struct {
-	AddPeering            []gax.CallOption
-	Delete                []gax.CallOption
-	Get                   []gax.CallOption
-	GetEffectiveFirewalls []gax.CallOption
-	Insert                []gax.CallOption
-	List                  []gax.CallOption
-	ListPeeringRoutes     []gax.CallOption
-	Patch                 []gax.CallOption
-	RemovePeering         []gax.CallOption
-	RequestRemovePeering  []gax.CallOption
-	SwitchToCustomMode    []gax.CallOption
-	UpdatePeering         []gax.CallOption
+	AddPeering                 []gax.CallOption
+	CancelRequestRemovePeering []gax.CallOption
+	Delete                     []gax.CallOption
+	Get                        []gax.CallOption
+	GetEffectiveFirewalls      []gax.CallOption
+	Insert                     []gax.CallOption
+	List                       []gax.CallOption
+	ListPeeringRoutes          []gax.CallOption
+	Patch                      []gax.CallOption
+	RemovePeering              []gax.CallOption
+	RequestRemovePeering       []gax.CallOption
+	SwitchToCustomMode         []gax.CallOption
+	UpdatePeering              []gax.CallOption
 }
 
 func defaultNetworksRESTCallOptions() *NetworksCallOptions {
 	return &NetworksCallOptions{
 		AddPeering: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CancelRequestRemovePeering: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		Delete: []gax.CallOption{
@@ -138,6 +143,7 @@ type internalNetworksClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AddPeering(context.Context, *computepb.AddPeeringNetworkRequest, ...gax.CallOption) (*Operation, error)
+	CancelRequestRemovePeering(context.Context, *computepb.CancelRequestRemovePeeringNetworkRequest, ...gax.CallOption) (*Operation, error)
 	Delete(context.Context, *computepb.DeleteNetworkRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetNetworkRequest, ...gax.CallOption) (*computepb.Network, error)
 	GetEffectiveFirewalls(context.Context, *computepb.GetEffectiveFirewallsNetworkRequest, ...gax.CallOption) (*computepb.NetworksGetEffectiveFirewallsResponse, error)
@@ -165,7 +171,7 @@ type NetworksClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *NetworksClient) Close() error {
 	return c.internalClient.Close()
@@ -189,6 +195,13 @@ func (c *NetworksClient) Connection() *grpc.ClientConn {
 // AddPeering adds a peering to the specified network.
 func (c *NetworksClient) AddPeering(ctx context.Context, req *computepb.AddPeeringNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddPeering(ctx, req, opts...)
+}
+
+// CancelRequestRemovePeering cancel requests to remove a peering from the specified network. Applicable
+// only for PeeringConnection with update_strategy=CONSENSUS.  Cancels a
+// request to remove a peering from the specified network.
+func (c *NetworksClient) CancelRequestRemovePeering(ctx context.Context, req *computepb.CancelRequestRemovePeeringNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.CancelRequestRemovePeering(ctx, req, opts...)
 }
 
 // Delete deletes the specified network.
@@ -276,6 +289,16 @@ type networksRESTClient struct {
 // The Networks API.
 func NewNetworksRESTClient(ctx context.Context, opts ...option.ClientOption) (*NetworksClient, error) {
 	clientOpts := append(defaultNetworksRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -289,6 +312,33 @@ func NewNetworksRESTClient(ctx context.Context, opts ...option.ClientOption) (*N
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddPeering = append(callOpts.AddPeering, gax.WithClientMetrics(metrics))
+		callOpts.CancelRequestRemovePeering = append(callOpts.CancelRequestRemovePeering, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetEffectiveFirewalls = append(callOpts.GetEffectiveFirewalls, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.ListPeeringRoutes = append(callOpts.ListPeeringRoutes, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.RemovePeering = append(callOpts.RemovePeering, gax.WithClientMetrics(metrics))
+		callOpts.RequestRemovePeering = append(callOpts.RequestRemovePeering, gax.WithClientMetrics(metrics))
+		callOpts.SwitchToCustomMode = append(callOpts.SwitchToCustomMode, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePeering = append(callOpts.UpdatePeering, gax.WithClientMetrics(metrics))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -326,7 +376,7 @@ func (c *networksRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *networksRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -372,6 +422,13 @@ func (c *networksRESTClient) AddPeering(ctx context.Context, req *computepb.AddP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Networks/AddPeering")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/networks/{network}/addPeering")
+	}
 	opts = append((*c.CallOptions).AddPeering[0:len((*c.CallOptions).AddPeering):len((*c.CallOptions).AddPeering)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -387,6 +444,81 @@ func (c *networksRESTClient) AddPeering(ctx context.Context, req *computepb.AddP
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddPeering")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
+// CancelRequestRemovePeering cancel requests to remove a peering from the specified network. Applicable
+// only for PeeringConnection with update_strategy=CONSENSUS.  Cancels a
+// request to remove a peering from the specified network.
+func (c *networksRESTClient) CancelRequestRemovePeering(ctx context.Context, req *computepb.CancelRequestRemovePeeringNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetNetworksCancelRequestRemovePeeringRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/cancelRequestRemovePeering", req.GetProject(), req.GetNetwork())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "network", url.QueryEscape(req.GetNetwork()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Networks/CancelRequestRemovePeering")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/networks/{network}/cancelRequestRemovePeering")
+	}
+	opts = append((*c.CallOptions).CancelRequestRemovePeering[0:len((*c.CallOptions).CancelRequestRemovePeering):len((*c.CallOptions).CancelRequestRemovePeering)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelRequestRemovePeering")
 		if err != nil {
 			return err
 		}
@@ -431,6 +563,13 @@ func (c *networksRESTClient) Delete(ctx context.Context, req *computepb.DeleteNe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Networks/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/networks/{network}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -483,6 +622,13 @@ func (c *networksRESTClient) Get(ctx context.Context, req *computepb.GetNetworkR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Networks/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/networks/{network}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Network{}
@@ -528,6 +674,13 @@ func (c *networksRESTClient) GetEffectiveFirewalls(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Networks/GetEffectiveFirewalls")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/networks/{network}/getEffectiveFirewalls")
+	}
 	opts = append((*c.CallOptions).GetEffectiveFirewalls[0:len((*c.CallOptions).GetEffectiveFirewalls):len((*c.CallOptions).GetEffectiveFirewalls)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.NetworksGetEffectiveFirewallsResponse{}
@@ -588,6 +741,13 @@ func (c *networksRESTClient) Insert(ctx context.Context, req *computepb.InsertNe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v", req.GetProject()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Networks/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/networks")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -629,7 +789,7 @@ func (c *networksRESTClient) Insert(ctx context.Context, req *computepb.InsertNe
 // List retrieves the list of networks available to the specified project.
 func (c *networksRESTClient) List(ctx context.Context, req *computepb.ListNetworksRequest, opts ...gax.CallOption) *NetworkIterator {
 	it := &NetworkIterator{}
-	req = proto.Clone(req).(*computepb.ListNetworksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Network, string, error) {
 		resp := &computepb.NetworkList{}
@@ -715,7 +875,7 @@ func (c *networksRESTClient) List(ctx context.Context, req *computepb.ListNetwor
 // ListPeeringRoutes lists the peering routes exchanged over peering connection.
 func (c *networksRESTClient) ListPeeringRoutes(ctx context.Context, req *computepb.ListPeeringRoutesNetworksRequest, opts ...gax.CallOption) *ExchangedPeeringRouteIterator {
 	it := &ExchangedPeeringRouteIterator{}
-	req = proto.Clone(req).(*computepb.ListPeeringRoutesNetworksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.ExchangedPeeringRoute, string, error) {
 		resp := &computepb.ExchangedPeeringRoutesList{}
@@ -836,6 +996,13 @@ func (c *networksRESTClient) Patch(ctx context.Context, req *computepb.PatchNetw
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Networks/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/networks/{network}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -902,6 +1069,13 @@ func (c *networksRESTClient) RemovePeering(ctx context.Context, req *computepb.R
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Networks/RemovePeering")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/networks/{network}/removePeering")
+	}
 	opts = append((*c.CallOptions).RemovePeering[0:len((*c.CallOptions).RemovePeering):len((*c.CallOptions).RemovePeering)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -969,6 +1143,13 @@ func (c *networksRESTClient) RequestRemovePeering(ctx context.Context, req *comp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Networks/RequestRemovePeering")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/networks/{network}/requestRemovePeering")
+	}
 	opts = append((*c.CallOptions).RequestRemovePeering[0:len((*c.CallOptions).RequestRemovePeering):len((*c.CallOptions).RequestRemovePeering)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1028,6 +1209,13 @@ func (c *networksRESTClient) SwitchToCustomMode(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Networks/SwitchToCustomMode")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/networks/{network}/switchToCustomMode")
+	}
 	opts = append((*c.CallOptions).SwitchToCustomMode[0:len((*c.CallOptions).SwitchToCustomMode):len((*c.CallOptions).SwitchToCustomMode)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1096,6 +1284,13 @@ func (c *networksRESTClient) UpdatePeering(ctx context.Context, req *computepb.U
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Networks/UpdatePeering")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/networks/{network}/updatePeering")
+	}
 	opts = append((*c.CallOptions).UpdatePeering[0:len((*c.CallOptions).UpdatePeering):len((*c.CallOptions).UpdatePeering)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

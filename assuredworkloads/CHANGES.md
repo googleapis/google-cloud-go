@@ -1,6 +1,21 @@
 # Changes
 
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.18.0...assuredworkloads/v1.19.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/assuredworkloads%2Fv1.18.0) (2026-05-07)
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/assuredworkloads%2Fv1.17.0) (2026-04-30)
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/assuredworkloads%2Fv1.16.0) (2026-04-13)
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/assuredworkloads%2Fv1.15.0) (2026-04-09)
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/assuredworkloads%2Fv1.14.0) (2026-04-02)
 
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/assuredworkloads%2Fv1.13.0) (2025-10-10)

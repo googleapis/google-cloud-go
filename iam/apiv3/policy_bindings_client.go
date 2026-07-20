@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -228,7 +230,7 @@ type PolicyBindingsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *PolicyBindingsClient) Close() error {
 	return c.internalClient.Close()
@@ -344,6 +346,16 @@ type policyBindingsGRPCClient struct {
 // bindings.
 func NewPolicyBindingsClient(ctx context.Context, opts ...option.ClientOption) (*PolicyBindingsClient, error) {
 	clientOpts := defaultPolicyBindingsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "iam",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/iam/apiv3",
+			"gcp.client.language": "go",
+			"url.domain":          "iam.googleapis.com",
+		}))
+	}
 	if newPolicyBindingsClientHook != nil {
 		hookOpts, err := newPolicyBindingsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -366,6 +378,26 @@ func NewPolicyBindingsClient(ctx context.Context, opts ...option.ClientOption) (
 		operationsClient:     longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePolicyBinding = append(client.CallOptions.CreatePolicyBinding, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPolicyBinding = append(client.CallOptions.GetPolicyBinding, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePolicyBinding = append(client.CallOptions.UpdatePolicyBinding, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePolicyBinding = append(client.CallOptions.DeletePolicyBinding, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPolicyBindings = append(client.CallOptions.ListPolicyBindings, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchTargetPolicyBindings = append(client.CallOptions.SearchTargetPolicyBindings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -402,7 +434,7 @@ func (c *policyBindingsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *policyBindingsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -436,6 +468,16 @@ type policyBindingsRESTClient struct {
 // bindings.
 func NewPolicyBindingsRESTClient(ctx context.Context, opts ...option.ClientOption) (*PolicyBindingsClient, error) {
 	clientOpts := append(defaultPolicyBindingsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "iam",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/iam/apiv3",
+			"gcp.client.language": "go",
+			"url.domain":          "iam.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -449,6 +491,27 @@ func NewPolicyBindingsRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePolicyBinding = append(callOpts.CreatePolicyBinding, gax.WithClientMetrics(metrics))
+		callOpts.GetPolicyBinding = append(callOpts.GetPolicyBinding, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePolicyBinding = append(callOpts.UpdatePolicyBinding, gax.WithClientMetrics(metrics))
+		callOpts.DeletePolicyBinding = append(callOpts.DeletePolicyBinding, gax.WithClientMetrics(metrics))
+		callOpts.ListPolicyBindings = append(callOpts.ListPolicyBindings, gax.WithClientMetrics(metrics))
+		callOpts.SearchTargetPolicyBindings = append(callOpts.SearchTargetPolicyBindings, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -486,7 +549,7 @@ func (c *policyBindingsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *policyBindingsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -505,6 +568,12 @@ func (c *policyBindingsGRPCClient) CreatePolicyBinding(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/CreatePolicyBinding")
+	}
 	opts = append((*c.CallOptions).CreatePolicyBinding[0:len((*c.CallOptions).CreatePolicyBinding):len((*c.CallOptions).CreatePolicyBinding)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -515,8 +584,12 @@ func (c *policyBindingsGRPCClient) CreatePolicyBinding(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.CreatePolicyBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePolicyBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -525,6 +598,12 @@ func (c *policyBindingsGRPCClient) GetPolicyBinding(ctx context.Context, req *ia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/GetPolicyBinding")
+	}
 	opts = append((*c.CallOptions).GetPolicyBinding[0:len((*c.CallOptions).GetPolicyBinding):len((*c.CallOptions).GetPolicyBinding)], opts...)
 	var resp *iampb.PolicyBinding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -543,6 +622,9 @@ func (c *policyBindingsGRPCClient) UpdatePolicyBinding(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/UpdatePolicyBinding")
+	}
 	opts = append((*c.CallOptions).UpdatePolicyBinding[0:len((*c.CallOptions).UpdatePolicyBinding):len((*c.CallOptions).UpdatePolicyBinding)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -553,8 +635,12 @@ func (c *policyBindingsGRPCClient) UpdatePolicyBinding(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.UpdatePolicyBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePolicyBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -563,6 +649,12 @@ func (c *policyBindingsGRPCClient) DeletePolicyBinding(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/DeletePolicyBinding")
+	}
 	opts = append((*c.CallOptions).DeletePolicyBinding[0:len((*c.CallOptions).DeletePolicyBinding):len((*c.CallOptions).DeletePolicyBinding)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -573,8 +665,12 @@ func (c *policyBindingsGRPCClient) DeletePolicyBinding(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.DeletePolicyBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePolicyBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -583,9 +679,15 @@ func (c *policyBindingsGRPCClient) ListPolicyBindings(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/ListPolicyBindings")
+	}
 	opts = append((*c.CallOptions).ListPolicyBindings[0:len((*c.CallOptions).ListPolicyBindings):len((*c.CallOptions).ListPolicyBindings)], opts...)
 	it := &PolicyBindingIterator{}
-	req = proto.Clone(req).(*iampb.ListPolicyBindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PolicyBinding, string, error) {
 		resp := &iampb.ListPolicyBindingsResponse{}
 		if pageToken != "" {
@@ -629,9 +731,15 @@ func (c *policyBindingsGRPCClient) SearchTargetPolicyBindings(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/SearchTargetPolicyBindings")
+	}
 	opts = append((*c.CallOptions).SearchTargetPolicyBindings[0:len((*c.CallOptions).SearchTargetPolicyBindings):len((*c.CallOptions).SearchTargetPolicyBindings)], opts...)
 	it := &PolicyBindingIterator{}
-	req = proto.Clone(req).(*iampb.SearchTargetPolicyBindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PolicyBinding, string, error) {
 		resp := &iampb.SearchTargetPolicyBindingsResponse{}
 		if pageToken != "" {
@@ -675,6 +783,9 @@ func (c *policyBindingsGRPCClient) GetOperation(ctx context.Context, req *longru
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -720,6 +831,13 @@ func (c *policyBindingsRESTClient) CreatePolicyBinding(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/CreatePolicyBinding")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*}/policyBindings")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -748,8 +866,12 @@ func (c *policyBindingsRESTClient) CreatePolicyBinding(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.CreatePolicyBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePolicyBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -773,6 +895,13 @@ func (c *policyBindingsRESTClient) GetPolicyBinding(ctx context.Context, req *ia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/GetPolicyBinding")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/policyBindings/*}")
+	}
 	opts = append((*c.CallOptions).GetPolicyBinding[0:len((*c.CallOptions).GetPolicyBinding):len((*c.CallOptions).GetPolicyBinding)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.PolicyBinding{}
@@ -844,6 +973,10 @@ func (c *policyBindingsRESTClient) UpdatePolicyBinding(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/UpdatePolicyBinding")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{policy_binding.name=projects/*/locations/*/policyBindings/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -872,8 +1005,12 @@ func (c *policyBindingsRESTClient) UpdatePolicyBinding(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.UpdatePolicyBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePolicyBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -905,6 +1042,13 @@ func (c *policyBindingsRESTClient) DeletePolicyBinding(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/DeletePolicyBinding")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/policyBindings/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -933,8 +1077,12 @@ func (c *policyBindingsRESTClient) DeletePolicyBinding(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.DeletePolicyBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePolicyBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -942,7 +1090,7 @@ func (c *policyBindingsRESTClient) DeletePolicyBinding(ctx context.Context, req 
 // ListPolicyBindings lists policy bindings.
 func (c *policyBindingsRESTClient) ListPolicyBindings(ctx context.Context, req *iampb.ListPolicyBindingsRequest, opts ...gax.CallOption) *PolicyBindingIterator {
 	it := &PolicyBindingIterator{}
-	req = proto.Clone(req).(*iampb.ListPolicyBindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PolicyBinding, string, error) {
 		resp := &iampb.ListPolicyBindingsResponse{}
@@ -1024,7 +1172,7 @@ func (c *policyBindingsRESTClient) ListPolicyBindings(ctx context.Context, req *
 // directly to target.
 func (c *policyBindingsRESTClient) SearchTargetPolicyBindings(ctx context.Context, req *iampb.SearchTargetPolicyBindingsRequest, opts ...gax.CallOption) *PolicyBindingIterator {
 	it := &PolicyBindingIterator{}
-	req = proto.Clone(req).(*iampb.SearchTargetPolicyBindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PolicyBinding, string, error) {
 		resp := &iampb.SearchTargetPolicyBindingsResponse{}
@@ -1119,6 +1267,10 @@ func (c *policyBindingsRESTClient) GetOperation(ctx context.Context, req *longru
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1154,7 +1306,7 @@ func (c *policyBindingsRESTClient) GetOperation(ctx context.Context, req *longru
 // The name must be that of a previously created CreatePolicyBindingOperation, possibly from a different process.
 func (c *policyBindingsGRPCClient) CreatePolicyBindingOperation(name string) *CreatePolicyBindingOperation {
 	return &CreatePolicyBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.CreatePolicyBindingOperation"),
 	}
 }
 
@@ -1163,7 +1315,7 @@ func (c *policyBindingsGRPCClient) CreatePolicyBindingOperation(name string) *Cr
 func (c *policyBindingsRESTClient) CreatePolicyBindingOperation(name string) *CreatePolicyBindingOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &CreatePolicyBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.CreatePolicyBindingOperation"),
 		pollPath: override,
 	}
 }
@@ -1172,7 +1324,7 @@ func (c *policyBindingsRESTClient) CreatePolicyBindingOperation(name string) *Cr
 // The name must be that of a previously created DeletePolicyBindingOperation, possibly from a different process.
 func (c *policyBindingsGRPCClient) DeletePolicyBindingOperation(name string) *DeletePolicyBindingOperation {
 	return &DeletePolicyBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.DeletePolicyBindingOperation"),
 	}
 }
 
@@ -1181,7 +1333,7 @@ func (c *policyBindingsGRPCClient) DeletePolicyBindingOperation(name string) *De
 func (c *policyBindingsRESTClient) DeletePolicyBindingOperation(name string) *DeletePolicyBindingOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &DeletePolicyBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.DeletePolicyBindingOperation"),
 		pollPath: override,
 	}
 }
@@ -1190,7 +1342,7 @@ func (c *policyBindingsRESTClient) DeletePolicyBindingOperation(name string) *De
 // The name must be that of a previously created UpdatePolicyBindingOperation, possibly from a different process.
 func (c *policyBindingsGRPCClient) UpdatePolicyBindingOperation(name string) *UpdatePolicyBindingOperation {
 	return &UpdatePolicyBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.UpdatePolicyBindingOperation"),
 	}
 }
 
@@ -1199,7 +1351,7 @@ func (c *policyBindingsGRPCClient) UpdatePolicyBindingOperation(name string) *Up
 func (c *policyBindingsRESTClient) UpdatePolicyBindingOperation(name string) *UpdatePolicyBindingOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &UpdatePolicyBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.UpdatePolicyBindingOperation"),
 		pollPath: override,
 	}
 }

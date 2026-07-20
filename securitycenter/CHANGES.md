@@ -1,5 +1,24 @@
 # Changes
 
+## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.44.0...securitycenter/v1.45.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.44.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.44.0) (2026-05-07)
+
+### Features
+
+* update API sources and regenerate (#14537) ([07fe29b](https://github.com/googleapis/google-cloud-go/commit/07fe29ba4c5069d27d4149d8fa5f8814eb8789d7))
+
+## [1.43.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.43.0) (2026-04-30)
+
+## [1.42.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.42.0) (2026-04-13)
+
+## [1.41.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.41.0) (2026-04-09)
+
 ## [1.40.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.40.0) (2026-04-02)
 
 ## [1.39.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.39.0) (2026-03-23)

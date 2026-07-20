@@ -26,6 +26,7 @@ import (
 
 	privatecatalogpb "cloud.google.com/go/privatecatalog/apiv1beta1/privatecatalogpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -120,7 +121,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -204,6 +205,16 @@ type gRPCClient struct {
 // google.cloud.privatecatalogproducer.v1beta.Version.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudprivatecatalog",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/privatecatalog/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudprivatecatalog.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -225,6 +236,22 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudprivatecatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/privatecatalog/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudprivatecatalog.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SearchCatalogs = append(client.CallOptions.SearchCatalogs, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchProducts = append(client.CallOptions.SearchProducts, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchVersions = append(client.CallOptions.SearchVersions, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -250,7 +277,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -298,6 +325,16 @@ type restClient struct {
 // google.cloud.privatecatalogproducer.v1beta.Version.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudprivatecatalog",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/privatecatalog/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudprivatecatalog.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -311,6 +348,23 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudprivatecatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/privatecatalog/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudprivatecatalog.googleapis.com",
+			}),
+		)
+
+		callOpts.SearchCatalogs = append(callOpts.SearchCatalogs, gax.WithClientMetrics(metrics))
+		callOpts.SearchProducts = append(callOpts.SearchProducts, gax.WithClientMetrics(metrics))
+		callOpts.SearchVersions = append(callOpts.SearchVersions, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -338,7 +392,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -357,9 +411,12 @@ func (c *gRPCClient) SearchCatalogs(ctx context.Context, req *privatecatalogpb.S
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privatecatalog.v1beta1.PrivateCatalog/SearchCatalogs")
+	}
 	opts = append((*c.CallOptions).SearchCatalogs[0:len((*c.CallOptions).SearchCatalogs):len((*c.CallOptions).SearchCatalogs)], opts...)
 	it := &CatalogIterator{}
-	req = proto.Clone(req).(*privatecatalogpb.SearchCatalogsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Catalog, string, error) {
 		resp := &privatecatalogpb.SearchCatalogsResponse{}
 		if pageToken != "" {
@@ -403,9 +460,12 @@ func (c *gRPCClient) SearchProducts(ctx context.Context, req *privatecatalogpb.S
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privatecatalog.v1beta1.PrivateCatalog/SearchProducts")
+	}
 	opts = append((*c.CallOptions).SearchProducts[0:len((*c.CallOptions).SearchProducts):len((*c.CallOptions).SearchProducts)], opts...)
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*privatecatalogpb.SearchProductsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Product, string, error) {
 		resp := &privatecatalogpb.SearchProductsResponse{}
 		if pageToken != "" {
@@ -449,9 +509,12 @@ func (c *gRPCClient) SearchVersions(ctx context.Context, req *privatecatalogpb.S
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privatecatalog.v1beta1.PrivateCatalog/SearchVersions")
+	}
 	opts = append((*c.CallOptions).SearchVersions[0:len((*c.CallOptions).SearchVersions):len((*c.CallOptions).SearchVersions)], opts...)
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*privatecatalogpb.SearchVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Version, string, error) {
 		resp := &privatecatalogpb.SearchVersionsResponse{}
 		if pageToken != "" {
@@ -494,7 +557,7 @@ func (c *gRPCClient) SearchVersions(ctx context.Context, req *privatecatalogpb.S
 // scope of the consumer cloud resource hierarchy context.
 func (c *restClient) SearchCatalogs(ctx context.Context, req *privatecatalogpb.SearchCatalogsRequest, opts ...gax.CallOption) *CatalogIterator {
 	it := &CatalogIterator{}
-	req = proto.Clone(req).(*privatecatalogpb.SearchCatalogsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Catalog, string, error) {
 		resp := &privatecatalogpb.SearchCatalogsResponse{}
@@ -576,7 +639,7 @@ func (c *restClient) SearchCatalogs(ctx context.Context, req *privatecatalogpb.S
 // scope of the consumer cloud resource hierarchy context.
 func (c *restClient) SearchProducts(ctx context.Context, req *privatecatalogpb.SearchProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*privatecatalogpb.SearchProductsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Product, string, error) {
 		resp := &privatecatalogpb.SearchProductsResponse{}
@@ -658,7 +721,7 @@ func (c *restClient) SearchProducts(ctx context.Context, req *privatecatalogpb.S
 // scope of the consumer cloud resource hierarchy context.
 func (c *restClient) SearchVersions(ctx context.Context, req *privatecatalogpb.SearchVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*privatecatalogpb.SearchVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Version, string, error) {
 		resp := &privatecatalogpb.SearchVersionsResponse{}

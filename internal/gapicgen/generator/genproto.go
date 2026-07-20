@@ -168,7 +168,7 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 	// if the last regenerated hash is earlier than the top commit, the git diff-tree
 	// command fails. This is is a bit of a rough edge. Using my local clone of
 	// googleapis rectified the issue.
-	pkgFiles, err := g.getUpdatedPackages(string(lastHash))
+	pkgFiles, err := g.getUpdatedPackages(strings.TrimSpace(string(lastHash)))
 	if err != nil {
 		return err
 	}
@@ -252,7 +252,8 @@ func goPkg(fileName string) (string, error) {
 func (g *GenprotoGenerator) protoc(fileNames []string) error {
 	args := []string{
 		"--experimental_allow_proto3_optional",
-		fmt.Sprintf("--go_out=plugins=grpc:%s/generated", g.genprotoDir),
+		fmt.Sprintf("--go_out=%s/generated", g.genprotoDir),
+		fmt.Sprintf("--go-grpc_out=%s/generated", g.genprotoDir),
 		"-I", g.googleapisDir,
 		"-I", g.protoSrcDir,
 	}
@@ -301,11 +302,16 @@ func (g *GenprotoGenerator) getAllPackages() (map[string][]string, error) {
 			if !info.Mode().IsRegular() || !strings.HasSuffix(path, ".proto") {
 				return nil
 			}
+			if strings.Contains(path, "/preview/") {
+				return nil
+			}
 
 			switch rel, err := filepath.Rel(root, path); {
 			case err != nil:
 				return err
 			case seenFiles[rel]:
+				return nil
+			case strings.HasPrefix(rel, "preview"):
 				return nil
 			default:
 				seenFiles[rel] = true

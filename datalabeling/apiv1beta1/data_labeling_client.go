@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -772,7 +774,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -1049,6 +1051,16 @@ type gRPCClient struct {
 // Service for the AI Platform Data Labeling API.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datalabeling",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datalabeling/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "datalabeling.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -1070,6 +1082,53 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datalabeling",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datalabeling/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datalabeling.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataset = append(client.CallOptions.CreateDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportData = append(client.CallOptions.ImportData, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportData = append(client.CallOptions.ExportData, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDataItem = append(client.CallOptions.GetDataItem, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDataItems = append(client.CallOptions.ListDataItems, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAnnotatedDataset = append(client.CallOptions.GetAnnotatedDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAnnotatedDatasets = append(client.CallOptions.ListAnnotatedDatasets, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAnnotatedDataset = append(client.CallOptions.DeleteAnnotatedDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.LabelImage = append(client.CallOptions.LabelImage, gax.WithClientMetrics(metrics))
+		client.CallOptions.LabelVideo = append(client.CallOptions.LabelVideo, gax.WithClientMetrics(metrics))
+		client.CallOptions.LabelText = append(client.CallOptions.LabelText, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetExample = append(client.CallOptions.GetExample, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListExamples = append(client.CallOptions.ListExamples, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAnnotationSpecSet = append(client.CallOptions.CreateAnnotationSpecSet, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAnnotationSpecSet = append(client.CallOptions.GetAnnotationSpecSet, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAnnotationSpecSets = append(client.CallOptions.ListAnnotationSpecSets, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAnnotationSpecSet = append(client.CallOptions.DeleteAnnotationSpecSet, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateInstruction = append(client.CallOptions.CreateInstruction, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInstruction = append(client.CallOptions.GetInstruction, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListInstructions = append(client.CallOptions.ListInstructions, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteInstruction = append(client.CallOptions.DeleteInstruction, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEvaluation = append(client.CallOptions.GetEvaluation, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchEvaluations = append(client.CallOptions.SearchEvaluations, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchExampleComparisons = append(client.CallOptions.SearchExampleComparisons, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateEvaluationJob = append(client.CallOptions.CreateEvaluationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateEvaluationJob = append(client.CallOptions.UpdateEvaluationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEvaluationJob = append(client.CallOptions.GetEvaluationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.PauseEvaluationJob = append(client.CallOptions.PauseEvaluationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResumeEvaluationJob = append(client.CallOptions.ResumeEvaluationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEvaluationJob = append(client.CallOptions.DeleteEvaluationJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEvaluationJobs = append(client.CallOptions.ListEvaluationJobs, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -1106,7 +1165,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -1139,6 +1198,16 @@ type restClient struct {
 // Service for the AI Platform Data Labeling API.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datalabeling",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datalabeling/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "datalabeling.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1152,6 +1221,54 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datalabeling",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datalabeling/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datalabeling.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataset = append(callOpts.CreateDataset, gax.WithClientMetrics(metrics))
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientMetrics(metrics))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientMetrics(metrics))
+		callOpts.ImportData = append(callOpts.ImportData, gax.WithClientMetrics(metrics))
+		callOpts.ExportData = append(callOpts.ExportData, gax.WithClientMetrics(metrics))
+		callOpts.GetDataItem = append(callOpts.GetDataItem, gax.WithClientMetrics(metrics))
+		callOpts.ListDataItems = append(callOpts.ListDataItems, gax.WithClientMetrics(metrics))
+		callOpts.GetAnnotatedDataset = append(callOpts.GetAnnotatedDataset, gax.WithClientMetrics(metrics))
+		callOpts.ListAnnotatedDatasets = append(callOpts.ListAnnotatedDatasets, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAnnotatedDataset = append(callOpts.DeleteAnnotatedDataset, gax.WithClientMetrics(metrics))
+		callOpts.LabelImage = append(callOpts.LabelImage, gax.WithClientMetrics(metrics))
+		callOpts.LabelVideo = append(callOpts.LabelVideo, gax.WithClientMetrics(metrics))
+		callOpts.LabelText = append(callOpts.LabelText, gax.WithClientMetrics(metrics))
+		callOpts.GetExample = append(callOpts.GetExample, gax.WithClientMetrics(metrics))
+		callOpts.ListExamples = append(callOpts.ListExamples, gax.WithClientMetrics(metrics))
+		callOpts.CreateAnnotationSpecSet = append(callOpts.CreateAnnotationSpecSet, gax.WithClientMetrics(metrics))
+		callOpts.GetAnnotationSpecSet = append(callOpts.GetAnnotationSpecSet, gax.WithClientMetrics(metrics))
+		callOpts.ListAnnotationSpecSets = append(callOpts.ListAnnotationSpecSets, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAnnotationSpecSet = append(callOpts.DeleteAnnotationSpecSet, gax.WithClientMetrics(metrics))
+		callOpts.CreateInstruction = append(callOpts.CreateInstruction, gax.WithClientMetrics(metrics))
+		callOpts.GetInstruction = append(callOpts.GetInstruction, gax.WithClientMetrics(metrics))
+		callOpts.ListInstructions = append(callOpts.ListInstructions, gax.WithClientMetrics(metrics))
+		callOpts.DeleteInstruction = append(callOpts.DeleteInstruction, gax.WithClientMetrics(metrics))
+		callOpts.GetEvaluation = append(callOpts.GetEvaluation, gax.WithClientMetrics(metrics))
+		callOpts.SearchEvaluations = append(callOpts.SearchEvaluations, gax.WithClientMetrics(metrics))
+		callOpts.SearchExampleComparisons = append(callOpts.SearchExampleComparisons, gax.WithClientMetrics(metrics))
+		callOpts.CreateEvaluationJob = append(callOpts.CreateEvaluationJob, gax.WithClientMetrics(metrics))
+		callOpts.UpdateEvaluationJob = append(callOpts.UpdateEvaluationJob, gax.WithClientMetrics(metrics))
+		callOpts.GetEvaluationJob = append(callOpts.GetEvaluationJob, gax.WithClientMetrics(metrics))
+		callOpts.PauseEvaluationJob = append(callOpts.PauseEvaluationJob, gax.WithClientMetrics(metrics))
+		callOpts.ResumeEvaluationJob = append(callOpts.ResumeEvaluationJob, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEvaluationJob = append(callOpts.DeleteEvaluationJob, gax.WithClientMetrics(metrics))
+		callOpts.ListEvaluationJobs = append(callOpts.ListEvaluationJobs, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1189,7 +1306,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -1208,6 +1325,12 @@ func (c *gRPCClient) CreateDataset(ctx context.Context, req *datalabelingpb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/CreateDataset")
+	}
 	opts = append((*c.CallOptions).CreateDataset[0:len((*c.CallOptions).CreateDataset):len((*c.CallOptions).CreateDataset)], opts...)
 	var resp *datalabelingpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1226,6 +1349,12 @@ func (c *gRPCClient) GetDataset(ctx context.Context, req *datalabelingpb.GetData
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetDataset")
+	}
 	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	var resp *datalabelingpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1244,9 +1373,15 @@ func (c *gRPCClient) ListDatasets(ctx context.Context, req *datalabelingpb.ListD
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/ListDatasets")
+	}
 	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &DatasetIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Dataset, string, error) {
 		resp := &datalabelingpb.ListDatasetsResponse{}
 		if pageToken != "" {
@@ -1290,6 +1425,12 @@ func (c *gRPCClient) DeleteDataset(ctx context.Context, req *datalabelingpb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/DeleteDataset")
+	}
 	opts = append((*c.CallOptions).DeleteDataset[0:len((*c.CallOptions).DeleteDataset):len((*c.CallOptions).DeleteDataset)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1304,6 +1445,12 @@ func (c *gRPCClient) ImportData(ctx context.Context, req *datalabelingpb.ImportD
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/ImportData")
+	}
 	opts = append((*c.CallOptions).ImportData[0:len((*c.CallOptions).ImportData):len((*c.CallOptions).ImportData)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1314,8 +1461,12 @@ func (c *gRPCClient) ImportData(ctx context.Context, req *datalabelingpb.ImportD
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datalabeling.ImportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1324,6 +1475,12 @@ func (c *gRPCClient) ExportData(ctx context.Context, req *datalabelingpb.ExportD
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/ExportData")
+	}
 	opts = append((*c.CallOptions).ExportData[0:len((*c.CallOptions).ExportData):len((*c.CallOptions).ExportData)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1334,8 +1491,12 @@ func (c *gRPCClient) ExportData(ctx context.Context, req *datalabelingpb.ExportD
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datalabeling.ExportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1344,6 +1505,12 @@ func (c *gRPCClient) GetDataItem(ctx context.Context, req *datalabelingpb.GetDat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetDataItem")
+	}
 	opts = append((*c.CallOptions).GetDataItem[0:len((*c.CallOptions).GetDataItem):len((*c.CallOptions).GetDataItem)], opts...)
 	var resp *datalabelingpb.DataItem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1362,9 +1529,15 @@ func (c *gRPCClient) ListDataItems(ctx context.Context, req *datalabelingpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/ListDataItems")
+	}
 	opts = append((*c.CallOptions).ListDataItems[0:len((*c.CallOptions).ListDataItems):len((*c.CallOptions).ListDataItems)], opts...)
 	it := &DataItemIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListDataItemsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.DataItem, string, error) {
 		resp := &datalabelingpb.ListDataItemsResponse{}
 		if pageToken != "" {
@@ -1408,6 +1581,12 @@ func (c *gRPCClient) GetAnnotatedDataset(ctx context.Context, req *datalabelingp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetAnnotatedDataset")
+	}
 	opts = append((*c.CallOptions).GetAnnotatedDataset[0:len((*c.CallOptions).GetAnnotatedDataset):len((*c.CallOptions).GetAnnotatedDataset)], opts...)
 	var resp *datalabelingpb.AnnotatedDataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1426,9 +1605,15 @@ func (c *gRPCClient) ListAnnotatedDatasets(ctx context.Context, req *datalabelin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/ListAnnotatedDatasets")
+	}
 	opts = append((*c.CallOptions).ListAnnotatedDatasets[0:len((*c.CallOptions).ListAnnotatedDatasets):len((*c.CallOptions).ListAnnotatedDatasets)], opts...)
 	it := &AnnotatedDatasetIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListAnnotatedDatasetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.AnnotatedDataset, string, error) {
 		resp := &datalabelingpb.ListAnnotatedDatasetsResponse{}
 		if pageToken != "" {
@@ -1472,6 +1657,12 @@ func (c *gRPCClient) DeleteAnnotatedDataset(ctx context.Context, req *datalabeli
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/DeleteAnnotatedDataset")
+	}
 	opts = append((*c.CallOptions).DeleteAnnotatedDataset[0:len((*c.CallOptions).DeleteAnnotatedDataset):len((*c.CallOptions).DeleteAnnotatedDataset)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1486,6 +1677,12 @@ func (c *gRPCClient) LabelImage(ctx context.Context, req *datalabelingpb.LabelIm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/LabelImage")
+	}
 	opts = append((*c.CallOptions).LabelImage[0:len((*c.CallOptions).LabelImage):len((*c.CallOptions).LabelImage)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1496,8 +1693,12 @@ func (c *gRPCClient) LabelImage(ctx context.Context, req *datalabelingpb.LabelIm
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datalabeling.LabelImageOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &LabelImageOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1506,6 +1707,12 @@ func (c *gRPCClient) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/LabelVideo")
+	}
 	opts = append((*c.CallOptions).LabelVideo[0:len((*c.CallOptions).LabelVideo):len((*c.CallOptions).LabelVideo)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1516,8 +1723,12 @@ func (c *gRPCClient) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datalabeling.LabelVideoOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &LabelVideoOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1526,6 +1737,12 @@ func (c *gRPCClient) LabelText(ctx context.Context, req *datalabelingpb.LabelTex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/LabelText")
+	}
 	opts = append((*c.CallOptions).LabelText[0:len((*c.CallOptions).LabelText):len((*c.CallOptions).LabelText)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1536,8 +1753,12 @@ func (c *gRPCClient) LabelText(ctx context.Context, req *datalabelingpb.LabelTex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datalabeling.LabelTextOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &LabelTextOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1546,6 +1767,12 @@ func (c *gRPCClient) GetExample(ctx context.Context, req *datalabelingpb.GetExam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetExample")
+	}
 	opts = append((*c.CallOptions).GetExample[0:len((*c.CallOptions).GetExample):len((*c.CallOptions).GetExample)], opts...)
 	var resp *datalabelingpb.Example
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1564,9 +1791,15 @@ func (c *gRPCClient) ListExamples(ctx context.Context, req *datalabelingpb.ListE
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/ListExamples")
+	}
 	opts = append((*c.CallOptions).ListExamples[0:len((*c.CallOptions).ListExamples):len((*c.CallOptions).ListExamples)], opts...)
 	it := &ExampleIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListExamplesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Example, string, error) {
 		resp := &datalabelingpb.ListExamplesResponse{}
 		if pageToken != "" {
@@ -1610,6 +1843,12 @@ func (c *gRPCClient) CreateAnnotationSpecSet(ctx context.Context, req *datalabel
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/CreateAnnotationSpecSet")
+	}
 	opts = append((*c.CallOptions).CreateAnnotationSpecSet[0:len((*c.CallOptions).CreateAnnotationSpecSet):len((*c.CallOptions).CreateAnnotationSpecSet)], opts...)
 	var resp *datalabelingpb.AnnotationSpecSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1628,6 +1867,12 @@ func (c *gRPCClient) GetAnnotationSpecSet(ctx context.Context, req *datalabeling
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetAnnotationSpecSet")
+	}
 	opts = append((*c.CallOptions).GetAnnotationSpecSet[0:len((*c.CallOptions).GetAnnotationSpecSet):len((*c.CallOptions).GetAnnotationSpecSet)], opts...)
 	var resp *datalabelingpb.AnnotationSpecSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1646,9 +1891,15 @@ func (c *gRPCClient) ListAnnotationSpecSets(ctx context.Context, req *datalabeli
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/ListAnnotationSpecSets")
+	}
 	opts = append((*c.CallOptions).ListAnnotationSpecSets[0:len((*c.CallOptions).ListAnnotationSpecSets):len((*c.CallOptions).ListAnnotationSpecSets)], opts...)
 	it := &AnnotationSpecSetIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListAnnotationSpecSetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.AnnotationSpecSet, string, error) {
 		resp := &datalabelingpb.ListAnnotationSpecSetsResponse{}
 		if pageToken != "" {
@@ -1692,6 +1943,12 @@ func (c *gRPCClient) DeleteAnnotationSpecSet(ctx context.Context, req *datalabel
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/DeleteAnnotationSpecSet")
+	}
 	opts = append((*c.CallOptions).DeleteAnnotationSpecSet[0:len((*c.CallOptions).DeleteAnnotationSpecSet):len((*c.CallOptions).DeleteAnnotationSpecSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1706,6 +1963,12 @@ func (c *gRPCClient) CreateInstruction(ctx context.Context, req *datalabelingpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/CreateInstruction")
+	}
 	opts = append((*c.CallOptions).CreateInstruction[0:len((*c.CallOptions).CreateInstruction):len((*c.CallOptions).CreateInstruction)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1716,8 +1979,12 @@ func (c *gRPCClient) CreateInstruction(ctx context.Context, req *datalabelingpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datalabeling.CreateInstructionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstructionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1726,6 +1993,12 @@ func (c *gRPCClient) GetInstruction(ctx context.Context, req *datalabelingpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetInstruction")
+	}
 	opts = append((*c.CallOptions).GetInstruction[0:len((*c.CallOptions).GetInstruction):len((*c.CallOptions).GetInstruction)], opts...)
 	var resp *datalabelingpb.Instruction
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1744,9 +2017,15 @@ func (c *gRPCClient) ListInstructions(ctx context.Context, req *datalabelingpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/ListInstructions")
+	}
 	opts = append((*c.CallOptions).ListInstructions[0:len((*c.CallOptions).ListInstructions):len((*c.CallOptions).ListInstructions)], opts...)
 	it := &InstructionIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListInstructionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Instruction, string, error) {
 		resp := &datalabelingpb.ListInstructionsResponse{}
 		if pageToken != "" {
@@ -1790,6 +2069,12 @@ func (c *gRPCClient) DeleteInstruction(ctx context.Context, req *datalabelingpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/DeleteInstruction")
+	}
 	opts = append((*c.CallOptions).DeleteInstruction[0:len((*c.CallOptions).DeleteInstruction):len((*c.CallOptions).DeleteInstruction)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1804,6 +2089,12 @@ func (c *gRPCClient) GetEvaluation(ctx context.Context, req *datalabelingpb.GetE
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetEvaluation")
+	}
 	opts = append((*c.CallOptions).GetEvaluation[0:len((*c.CallOptions).GetEvaluation):len((*c.CallOptions).GetEvaluation)], opts...)
 	var resp *datalabelingpb.Evaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1822,9 +2113,15 @@ func (c *gRPCClient) SearchEvaluations(ctx context.Context, req *datalabelingpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/SearchEvaluations")
+	}
 	opts = append((*c.CallOptions).SearchEvaluations[0:len((*c.CallOptions).SearchEvaluations):len((*c.CallOptions).SearchEvaluations)], opts...)
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*datalabelingpb.SearchEvaluationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Evaluation, string, error) {
 		resp := &datalabelingpb.SearchEvaluationsResponse{}
 		if pageToken != "" {
@@ -1868,9 +2165,15 @@ func (c *gRPCClient) SearchExampleComparisons(ctx context.Context, req *datalabe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/SearchExampleComparisons")
+	}
 	opts = append((*c.CallOptions).SearchExampleComparisons[0:len((*c.CallOptions).SearchExampleComparisons):len((*c.CallOptions).SearchExampleComparisons)], opts...)
 	it := &SearchExampleComparisonsResponse_ExampleComparisonIterator{}
-	req = proto.Clone(req).(*datalabelingpb.SearchExampleComparisonsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.SearchExampleComparisonsResponse_ExampleComparison, string, error) {
 		resp := &datalabelingpb.SearchExampleComparisonsResponse{}
 		if pageToken != "" {
@@ -1914,6 +2217,12 @@ func (c *gRPCClient) CreateEvaluationJob(ctx context.Context, req *datalabelingp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/CreateEvaluationJob")
+	}
 	opts = append((*c.CallOptions).CreateEvaluationJob[0:len((*c.CallOptions).CreateEvaluationJob):len((*c.CallOptions).CreateEvaluationJob)], opts...)
 	var resp *datalabelingpb.EvaluationJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1932,6 +2241,9 @@ func (c *gRPCClient) UpdateEvaluationJob(ctx context.Context, req *datalabelingp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/UpdateEvaluationJob")
+	}
 	opts = append((*c.CallOptions).UpdateEvaluationJob[0:len((*c.CallOptions).UpdateEvaluationJob):len((*c.CallOptions).UpdateEvaluationJob)], opts...)
 	var resp *datalabelingpb.EvaluationJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1950,6 +2262,12 @@ func (c *gRPCClient) GetEvaluationJob(ctx context.Context, req *datalabelingpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetEvaluationJob")
+	}
 	opts = append((*c.CallOptions).GetEvaluationJob[0:len((*c.CallOptions).GetEvaluationJob):len((*c.CallOptions).GetEvaluationJob)], opts...)
 	var resp *datalabelingpb.EvaluationJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1968,6 +2286,12 @@ func (c *gRPCClient) PauseEvaluationJob(ctx context.Context, req *datalabelingpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/PauseEvaluationJob")
+	}
 	opts = append((*c.CallOptions).PauseEvaluationJob[0:len((*c.CallOptions).PauseEvaluationJob):len((*c.CallOptions).PauseEvaluationJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1982,6 +2306,12 @@ func (c *gRPCClient) ResumeEvaluationJob(ctx context.Context, req *datalabelingp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/ResumeEvaluationJob")
+	}
 	opts = append((*c.CallOptions).ResumeEvaluationJob[0:len((*c.CallOptions).ResumeEvaluationJob):len((*c.CallOptions).ResumeEvaluationJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1996,6 +2326,12 @@ func (c *gRPCClient) DeleteEvaluationJob(ctx context.Context, req *datalabelingp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/DeleteEvaluationJob")
+	}
 	opts = append((*c.CallOptions).DeleteEvaluationJob[0:len((*c.CallOptions).DeleteEvaluationJob):len((*c.CallOptions).DeleteEvaluationJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2010,9 +2346,15 @@ func (c *gRPCClient) ListEvaluationJobs(ctx context.Context, req *datalabelingpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/ListEvaluationJobs")
+	}
 	opts = append((*c.CallOptions).ListEvaluationJobs[0:len((*c.CallOptions).ListEvaluationJobs):len((*c.CallOptions).ListEvaluationJobs)], opts...)
 	it := &EvaluationJobIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListEvaluationJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.EvaluationJob, string, error) {
 		resp := &datalabelingpb.ListEvaluationJobsResponse{}
 		if pageToken != "" {
@@ -2076,6 +2418,13 @@ func (c *restClient) CreateDataset(ctx context.Context, req *datalabelingpb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/CreateDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*}/datasets")
+	}
 	opts = append((*c.CallOptions).CreateDataset[0:len((*c.CallOptions).CreateDataset):len((*c.CallOptions).CreateDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datalabelingpb.Dataset{}
@@ -2126,6 +2475,13 @@ func (c *restClient) GetDataset(ctx context.Context, req *datalabelingpb.GetData
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/datasets/*}")
+	}
 	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datalabelingpb.Dataset{}
@@ -2160,7 +2516,7 @@ func (c *restClient) GetDataset(ctx context.Context, req *datalabelingpb.GetData
 // ListDatasets lists datasets under a project. Pagination is supported.
 func (c *restClient) ListDatasets(ctx context.Context, req *datalabelingpb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
 	it := &DatasetIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Dataset, string, error) {
 		resp := &datalabelingpb.ListDatasetsResponse{}
@@ -2257,6 +2613,13 @@ func (c *restClient) DeleteDataset(ctx context.Context, req *datalabelingpb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/DeleteDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/datasets/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2302,6 +2665,13 @@ func (c *restClient) ImportData(ctx context.Context, req *datalabelingpb.ImportD
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/ImportData")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/datasets/*}:importData")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2330,8 +2700,12 @@ func (c *restClient) ImportData(ctx context.Context, req *datalabelingpb.ImportD
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datalabeling.ImportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2361,6 +2735,13 @@ func (c *restClient) ExportData(ctx context.Context, req *datalabelingpb.ExportD
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/ExportData")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/datasets/*}:exportData")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2389,8 +2770,12 @@ func (c *restClient) ExportData(ctx context.Context, req *datalabelingpb.ExportD
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datalabeling.ExportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2415,6 +2800,13 @@ func (c *restClient) GetDataItem(ctx context.Context, req *datalabelingpb.GetDat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetDataItem")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/datasets/*/dataItems/*}")
+	}
 	opts = append((*c.CallOptions).GetDataItem[0:len((*c.CallOptions).GetDataItem):len((*c.CallOptions).GetDataItem)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datalabelingpb.DataItem{}
@@ -2450,7 +2842,7 @@ func (c *restClient) GetDataItem(ctx context.Context, req *datalabelingpb.GetDat
 // are imported into dataset. Pagination is supported.
 func (c *restClient) ListDataItems(ctx context.Context, req *datalabelingpb.ListDataItemsRequest, opts ...gax.CallOption) *DataItemIterator {
 	it := &DataItemIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListDataItemsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.DataItem, string, error) {
 		resp := &datalabelingpb.ListDataItemsResponse{}
@@ -2547,6 +2939,13 @@ func (c *restClient) GetAnnotatedDataset(ctx context.Context, req *datalabelingp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetAnnotatedDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/datasets/*/annotatedDatasets/*}")
+	}
 	opts = append((*c.CallOptions).GetAnnotatedDataset[0:len((*c.CallOptions).GetAnnotatedDataset):len((*c.CallOptions).GetAnnotatedDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datalabelingpb.AnnotatedDataset{}
@@ -2581,7 +2980,7 @@ func (c *restClient) GetAnnotatedDataset(ctx context.Context, req *datalabelingp
 // ListAnnotatedDatasets lists annotated datasets for a dataset. Pagination is supported.
 func (c *restClient) ListAnnotatedDatasets(ctx context.Context, req *datalabelingpb.ListAnnotatedDatasetsRequest, opts ...gax.CallOption) *AnnotatedDatasetIterator {
 	it := &AnnotatedDatasetIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListAnnotatedDatasetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.AnnotatedDataset, string, error) {
 		resp := &datalabelingpb.ListAnnotatedDatasetsResponse{}
@@ -2678,6 +3077,13 @@ func (c *restClient) DeleteAnnotatedDataset(ctx context.Context, req *datalabeli
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/DeleteAnnotatedDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/datasets/*/annotatedDatasets/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2720,6 +3126,13 @@ func (c *restClient) LabelImage(ctx context.Context, req *datalabelingpb.LabelIm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/LabelImage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/datasets/*}/image:label")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2748,8 +3161,12 @@ func (c *restClient) LabelImage(ctx context.Context, req *datalabelingpb.LabelIm
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datalabeling.LabelImageOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &LabelImageOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2780,6 +3197,13 @@ func (c *restClient) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/LabelVideo")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/datasets/*}/video:label")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2808,8 +3232,12 @@ func (c *restClient) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVi
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datalabeling.LabelVideoOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &LabelVideoOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2840,6 +3268,13 @@ func (c *restClient) LabelText(ctx context.Context, req *datalabelingpb.LabelTex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/LabelText")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/datasets/*}/text:label")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2868,8 +3303,12 @@ func (c *restClient) LabelText(ctx context.Context, req *datalabelingpb.LabelTex
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datalabeling.LabelTextOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &LabelTextOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2896,6 +3335,13 @@ func (c *restClient) GetExample(ctx context.Context, req *datalabelingpb.GetExam
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetExample")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/datasets/*/annotatedDatasets/*/examples/*}")
+	}
 	opts = append((*c.CallOptions).GetExample[0:len((*c.CallOptions).GetExample):len((*c.CallOptions).GetExample)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datalabelingpb.Example{}
@@ -2930,7 +3376,7 @@ func (c *restClient) GetExample(ctx context.Context, req *datalabelingpb.GetExam
 // ListExamples lists examples in an annotated dataset. Pagination is supported.
 func (c *restClient) ListExamples(ctx context.Context, req *datalabelingpb.ListExamplesRequest, opts ...gax.CallOption) *ExampleIterator {
 	it := &ExampleIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListExamplesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Example, string, error) {
 		resp := &datalabelingpb.ListExamplesResponse{}
@@ -3033,6 +3479,13 @@ func (c *restClient) CreateAnnotationSpecSet(ctx context.Context, req *datalabel
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/CreateAnnotationSpecSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*}/annotationSpecSets")
+	}
 	opts = append((*c.CallOptions).CreateAnnotationSpecSet[0:len((*c.CallOptions).CreateAnnotationSpecSet):len((*c.CallOptions).CreateAnnotationSpecSet)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datalabelingpb.AnnotationSpecSet{}
@@ -3083,6 +3536,13 @@ func (c *restClient) GetAnnotationSpecSet(ctx context.Context, req *datalabeling
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetAnnotationSpecSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/annotationSpecSets/*}")
+	}
 	opts = append((*c.CallOptions).GetAnnotationSpecSet[0:len((*c.CallOptions).GetAnnotationSpecSet):len((*c.CallOptions).GetAnnotationSpecSet)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datalabelingpb.AnnotationSpecSet{}
@@ -3117,7 +3577,7 @@ func (c *restClient) GetAnnotationSpecSet(ctx context.Context, req *datalabeling
 // ListAnnotationSpecSets lists annotation spec sets for a project. Pagination is supported.
 func (c *restClient) ListAnnotationSpecSets(ctx context.Context, req *datalabelingpb.ListAnnotationSpecSetsRequest, opts ...gax.CallOption) *AnnotationSpecSetIterator {
 	it := &AnnotationSpecSetIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListAnnotationSpecSetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.AnnotationSpecSet, string, error) {
 		resp := &datalabelingpb.ListAnnotationSpecSetsResponse{}
@@ -3214,6 +3674,13 @@ func (c *restClient) DeleteAnnotationSpecSet(ctx context.Context, req *datalabel
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/DeleteAnnotationSpecSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/annotationSpecSets/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3255,6 +3722,13 @@ func (c *restClient) CreateInstruction(ctx context.Context, req *datalabelingpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/CreateInstruction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*}/instructions")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3283,8 +3757,12 @@ func (c *restClient) CreateInstruction(ctx context.Context, req *datalabelingpb.
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datalabeling.CreateInstructionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstructionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3308,6 +3786,13 @@ func (c *restClient) GetInstruction(ctx context.Context, req *datalabelingpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetInstruction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/instructions/*}")
+	}
 	opts = append((*c.CallOptions).GetInstruction[0:len((*c.CallOptions).GetInstruction):len((*c.CallOptions).GetInstruction)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datalabelingpb.Instruction{}
@@ -3342,7 +3827,7 @@ func (c *restClient) GetInstruction(ctx context.Context, req *datalabelingpb.Get
 // ListInstructions lists instructions for a project. Pagination is supported.
 func (c *restClient) ListInstructions(ctx context.Context, req *datalabelingpb.ListInstructionsRequest, opts ...gax.CallOption) *InstructionIterator {
 	it := &InstructionIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListInstructionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Instruction, string, error) {
 		resp := &datalabelingpb.ListInstructionsResponse{}
@@ -3439,6 +3924,13 @@ func (c *restClient) DeleteInstruction(ctx context.Context, req *datalabelingpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/DeleteInstruction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/instructions/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3475,6 +3967,13 @@ func (c *restClient) GetEvaluation(ctx context.Context, req *datalabelingpb.GetE
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetEvaluation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/datasets/*/evaluations/*}")
+	}
 	opts = append((*c.CallOptions).GetEvaluation[0:len((*c.CallOptions).GetEvaluation):len((*c.CallOptions).GetEvaluation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datalabelingpb.Evaluation{}
@@ -3509,7 +4008,7 @@ func (c *restClient) GetEvaluation(ctx context.Context, req *datalabelingpb.GetE
 // SearchEvaluations searches evaluations within a project.
 func (c *restClient) SearchEvaluations(ctx context.Context, req *datalabelingpb.SearchEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*datalabelingpb.SearchEvaluationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Evaluation, string, error) {
 		resp := &datalabelingpb.SearchEvaluationsResponse{}
@@ -3592,7 +4091,7 @@ func (c *restClient) SearchEvaluations(ctx context.Context, req *datalabelingpb.
 // a single input. Search by providing an evaluation ID.
 func (c *restClient) SearchExampleComparisons(ctx context.Context, req *datalabelingpb.SearchExampleComparisonsRequest, opts ...gax.CallOption) *SearchExampleComparisonsResponse_ExampleComparisonIterator {
 	it := &SearchExampleComparisonsResponse_ExampleComparisonIterator{}
-	req = proto.Clone(req).(*datalabelingpb.SearchExampleComparisonsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.SearchExampleComparisonsResponse_ExampleComparison, string, error) {
@@ -3692,6 +4191,13 @@ func (c *restClient) CreateEvaluationJob(ctx context.Context, req *datalabelingp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/CreateEvaluationJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*}/evaluationJobs")
+	}
 	opts = append((*c.CallOptions).CreateEvaluationJob[0:len((*c.CallOptions).CreateEvaluationJob):len((*c.CallOptions).CreateEvaluationJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datalabelingpb.EvaluationJob{}
@@ -3761,6 +4267,10 @@ func (c *restClient) UpdateEvaluationJob(ctx context.Context, req *datalabelingp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/UpdateEvaluationJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{evaluation_job.name=projects/*/evaluationJobs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateEvaluationJob[0:len((*c.CallOptions).UpdateEvaluationJob):len((*c.CallOptions).UpdateEvaluationJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datalabelingpb.EvaluationJob{}
@@ -3811,6 +4321,13 @@ func (c *restClient) GetEvaluationJob(ctx context.Context, req *datalabelingpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/GetEvaluationJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/evaluationJobs/*}")
+	}
 	opts = append((*c.CallOptions).GetEvaluationJob[0:len((*c.CallOptions).GetEvaluationJob):len((*c.CallOptions).GetEvaluationJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datalabelingpb.EvaluationJob{}
@@ -3868,6 +4385,13 @@ func (c *restClient) PauseEvaluationJob(ctx context.Context, req *datalabelingpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/PauseEvaluationJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/evaluationJobs/*}:pause")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3910,6 +4434,13 @@ func (c *restClient) ResumeEvaluationJob(ctx context.Context, req *datalabelingp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/ResumeEvaluationJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/evaluationJobs/*}:resume")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3945,6 +4476,13 @@ func (c *restClient) DeleteEvaluationJob(ctx context.Context, req *datalabelingp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalabeling.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datalabeling.v1beta1.DataLabelingService/DeleteEvaluationJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/evaluationJobs/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3965,7 +4503,7 @@ func (c *restClient) DeleteEvaluationJob(ctx context.Context, req *datalabelingp
 // Pagination is supported.
 func (c *restClient) ListEvaluationJobs(ctx context.Context, req *datalabelingpb.ListEvaluationJobsRequest, opts ...gax.CallOption) *EvaluationJobIterator {
 	it := &EvaluationJobIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListEvaluationJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.EvaluationJob, string, error) {
 		resp := &datalabelingpb.ListEvaluationJobsResponse{}
@@ -4047,7 +4585,7 @@ func (c *restClient) ListEvaluationJobs(ctx context.Context, req *datalabelingpb
 // The name must be that of a previously created CreateInstructionOperation, possibly from a different process.
 func (c *gRPCClient) CreateInstructionOperation(name string) *CreateInstructionOperation {
 	return &CreateInstructionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datalabeling.CreateInstructionOperation"),
 	}
 }
 
@@ -4056,7 +4594,7 @@ func (c *gRPCClient) CreateInstructionOperation(name string) *CreateInstructionO
 func (c *restClient) CreateInstructionOperation(name string) *CreateInstructionOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &CreateInstructionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datalabeling.CreateInstructionOperation"),
 		pollPath: override,
 	}
 }
@@ -4065,7 +4603,7 @@ func (c *restClient) CreateInstructionOperation(name string) *CreateInstructionO
 // The name must be that of a previously created ExportDataOperation, possibly from a different process.
 func (c *gRPCClient) ExportDataOperation(name string) *ExportDataOperation {
 	return &ExportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datalabeling.ExportDataOperation"),
 	}
 }
 
@@ -4074,7 +4612,7 @@ func (c *gRPCClient) ExportDataOperation(name string) *ExportDataOperation {
 func (c *restClient) ExportDataOperation(name string) *ExportDataOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &ExportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datalabeling.ExportDataOperation"),
 		pollPath: override,
 	}
 }
@@ -4083,7 +4621,7 @@ func (c *restClient) ExportDataOperation(name string) *ExportDataOperation {
 // The name must be that of a previously created ImportDataOperation, possibly from a different process.
 func (c *gRPCClient) ImportDataOperation(name string) *ImportDataOperation {
 	return &ImportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datalabeling.ImportDataOperation"),
 	}
 }
 
@@ -4092,7 +4630,7 @@ func (c *gRPCClient) ImportDataOperation(name string) *ImportDataOperation {
 func (c *restClient) ImportDataOperation(name string) *ImportDataOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &ImportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datalabeling.ImportDataOperation"),
 		pollPath: override,
 	}
 }
@@ -4101,7 +4639,7 @@ func (c *restClient) ImportDataOperation(name string) *ImportDataOperation {
 // The name must be that of a previously created LabelImageOperation, possibly from a different process.
 func (c *gRPCClient) LabelImageOperation(name string) *LabelImageOperation {
 	return &LabelImageOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datalabeling.LabelImageOperation"),
 	}
 }
 
@@ -4110,7 +4648,7 @@ func (c *gRPCClient) LabelImageOperation(name string) *LabelImageOperation {
 func (c *restClient) LabelImageOperation(name string) *LabelImageOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &LabelImageOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datalabeling.LabelImageOperation"),
 		pollPath: override,
 	}
 }
@@ -4119,7 +4657,7 @@ func (c *restClient) LabelImageOperation(name string) *LabelImageOperation {
 // The name must be that of a previously created LabelTextOperation, possibly from a different process.
 func (c *gRPCClient) LabelTextOperation(name string) *LabelTextOperation {
 	return &LabelTextOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datalabeling.LabelTextOperation"),
 	}
 }
 
@@ -4128,7 +4666,7 @@ func (c *gRPCClient) LabelTextOperation(name string) *LabelTextOperation {
 func (c *restClient) LabelTextOperation(name string) *LabelTextOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &LabelTextOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datalabeling.LabelTextOperation"),
 		pollPath: override,
 	}
 }
@@ -4137,7 +4675,7 @@ func (c *restClient) LabelTextOperation(name string) *LabelTextOperation {
 // The name must be that of a previously created LabelVideoOperation, possibly from a different process.
 func (c *gRPCClient) LabelVideoOperation(name string) *LabelVideoOperation {
 	return &LabelVideoOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datalabeling.LabelVideoOperation"),
 	}
 }
 
@@ -4146,7 +4684,7 @@ func (c *gRPCClient) LabelVideoOperation(name string) *LabelVideoOperation {
 func (c *restClient) LabelVideoOperation(name string) *LabelVideoOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &LabelVideoOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datalabeling.LabelVideoOperation"),
 		pollPath: override,
 	}
 }

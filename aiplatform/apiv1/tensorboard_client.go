@@ -29,6 +29,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -534,6 +535,16 @@ type tensorboardGRPCClient struct {
 // TensorboardService
 func NewTensorboardClient(ctx context.Context, opts ...option.ClientOption) (*TensorboardClient, error) {
 	clientOpts := defaultTensorboardGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "aiplatform",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/aiplatform/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "aiplatform.googleapis.com",
+		}))
+	}
 	if newTensorboardClientHook != nil {
 		hookOpts, err := newTensorboardClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -558,6 +569,59 @@ func NewTensorboardClient(ctx context.Context, opts ...option.ClientOption) (*Te
 		locationsClient:   locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "aiplatform",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/aiplatform/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "aiplatform.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTensorboard = append(client.CallOptions.CreateTensorboard, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTensorboard = append(client.CallOptions.GetTensorboard, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTensorboard = append(client.CallOptions.UpdateTensorboard, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTensorboards = append(client.CallOptions.ListTensorboards, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTensorboard = append(client.CallOptions.DeleteTensorboard, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReadTensorboardUsage = append(client.CallOptions.ReadTensorboardUsage, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReadTensorboardSize = append(client.CallOptions.ReadTensorboardSize, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTensorboardExperiment = append(client.CallOptions.CreateTensorboardExperiment, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTensorboardExperiment = append(client.CallOptions.GetTensorboardExperiment, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTensorboardExperiment = append(client.CallOptions.UpdateTensorboardExperiment, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTensorboardExperiments = append(client.CallOptions.ListTensorboardExperiments, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTensorboardExperiment = append(client.CallOptions.DeleteTensorboardExperiment, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTensorboardRun = append(client.CallOptions.CreateTensorboardRun, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCreateTensorboardRuns = append(client.CallOptions.BatchCreateTensorboardRuns, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTensorboardRun = append(client.CallOptions.GetTensorboardRun, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTensorboardRun = append(client.CallOptions.UpdateTensorboardRun, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTensorboardRuns = append(client.CallOptions.ListTensorboardRuns, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTensorboardRun = append(client.CallOptions.DeleteTensorboardRun, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCreateTensorboardTimeSeries = append(client.CallOptions.BatchCreateTensorboardTimeSeries, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTensorboardTimeSeries = append(client.CallOptions.CreateTensorboardTimeSeries, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTensorboardTimeSeries = append(client.CallOptions.GetTensorboardTimeSeries, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTensorboardTimeSeries = append(client.CallOptions.UpdateTensorboardTimeSeries, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTensorboardTimeSeries = append(client.CallOptions.ListTensorboardTimeSeries, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTensorboardTimeSeries = append(client.CallOptions.DeleteTensorboardTimeSeries, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchReadTensorboardTimeSeriesData = append(client.CallOptions.BatchReadTensorboardTimeSeriesData, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReadTensorboardTimeSeriesData = append(client.CallOptions.ReadTensorboardTimeSeriesData, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReadTensorboardBlobData = append(client.CallOptions.ReadTensorboardBlobData, gax.WithClientMetrics(metrics))
+		client.CallOptions.WriteTensorboardExperimentData = append(client.CallOptions.WriteTensorboardExperimentData, gax.WithClientMetrics(metrics))
+		client.CallOptions.WriteTensorboardRunData = append(client.CallOptions.WriteTensorboardRunData, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportTensorboardTimeSeriesData = append(client.CallOptions.ExportTensorboardTimeSeriesData, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -605,6 +669,12 @@ func (c *tensorboardGRPCClient) CreateTensorboard(ctx context.Context, req *aipl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/CreateTensorboard")
+	}
 	opts = append((*c.CallOptions).CreateTensorboard[0:len((*c.CallOptions).CreateTensorboard):len((*c.CallOptions).CreateTensorboard)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -625,6 +695,12 @@ func (c *tensorboardGRPCClient) GetTensorboard(ctx context.Context, req *aiplatf
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/GetTensorboard")
+	}
 	opts = append((*c.CallOptions).GetTensorboard[0:len((*c.CallOptions).GetTensorboard):len((*c.CallOptions).GetTensorboard)], opts...)
 	var resp *aiplatformpb.Tensorboard
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -643,6 +719,9 @@ func (c *tensorboardGRPCClient) UpdateTensorboard(ctx context.Context, req *aipl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/UpdateTensorboard")
+	}
 	opts = append((*c.CallOptions).UpdateTensorboard[0:len((*c.CallOptions).UpdateTensorboard):len((*c.CallOptions).UpdateTensorboard)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -663,6 +742,12 @@ func (c *tensorboardGRPCClient) ListTensorboards(ctx context.Context, req *aipla
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/ListTensorboards")
+	}
 	opts = append((*c.CallOptions).ListTensorboards[0:len((*c.CallOptions).ListTensorboards):len((*c.CallOptions).ListTensorboards)], opts...)
 	it := &TensorboardIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListTensorboardsRequest)
@@ -709,6 +794,12 @@ func (c *tensorboardGRPCClient) DeleteTensorboard(ctx context.Context, req *aipl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/DeleteTensorboard")
+	}
 	opts = append((*c.CallOptions).DeleteTensorboard[0:len((*c.CallOptions).DeleteTensorboard):len((*c.CallOptions).DeleteTensorboard)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -729,6 +820,12 @@ func (c *tensorboardGRPCClient) ReadTensorboardUsage(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetTensorboard()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/ReadTensorboardUsage")
+	}
 	opts = append((*c.CallOptions).ReadTensorboardUsage[0:len((*c.CallOptions).ReadTensorboardUsage):len((*c.CallOptions).ReadTensorboardUsage)], opts...)
 	var resp *aiplatformpb.ReadTensorboardUsageResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -747,6 +844,12 @@ func (c *tensorboardGRPCClient) ReadTensorboardSize(ctx context.Context, req *ai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetTensorboard()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/ReadTensorboardSize")
+	}
 	opts = append((*c.CallOptions).ReadTensorboardSize[0:len((*c.CallOptions).ReadTensorboardSize):len((*c.CallOptions).ReadTensorboardSize)], opts...)
 	var resp *aiplatformpb.ReadTensorboardSizeResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -765,6 +868,12 @@ func (c *tensorboardGRPCClient) CreateTensorboardExperiment(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/CreateTensorboardExperiment")
+	}
 	opts = append((*c.CallOptions).CreateTensorboardExperiment[0:len((*c.CallOptions).CreateTensorboardExperiment):len((*c.CallOptions).CreateTensorboardExperiment)], opts...)
 	var resp *aiplatformpb.TensorboardExperiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -783,6 +892,12 @@ func (c *tensorboardGRPCClient) GetTensorboardExperiment(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/GetTensorboardExperiment")
+	}
 	opts = append((*c.CallOptions).GetTensorboardExperiment[0:len((*c.CallOptions).GetTensorboardExperiment):len((*c.CallOptions).GetTensorboardExperiment)], opts...)
 	var resp *aiplatformpb.TensorboardExperiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -801,6 +916,9 @@ func (c *tensorboardGRPCClient) UpdateTensorboardExperiment(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/UpdateTensorboardExperiment")
+	}
 	opts = append((*c.CallOptions).UpdateTensorboardExperiment[0:len((*c.CallOptions).UpdateTensorboardExperiment):len((*c.CallOptions).UpdateTensorboardExperiment)], opts...)
 	var resp *aiplatformpb.TensorboardExperiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -819,6 +937,12 @@ func (c *tensorboardGRPCClient) ListTensorboardExperiments(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/ListTensorboardExperiments")
+	}
 	opts = append((*c.CallOptions).ListTensorboardExperiments[0:len((*c.CallOptions).ListTensorboardExperiments):len((*c.CallOptions).ListTensorboardExperiments)], opts...)
 	it := &TensorboardExperimentIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListTensorboardExperimentsRequest)
@@ -865,6 +989,12 @@ func (c *tensorboardGRPCClient) DeleteTensorboardExperiment(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/DeleteTensorboardExperiment")
+	}
 	opts = append((*c.CallOptions).DeleteTensorboardExperiment[0:len((*c.CallOptions).DeleteTensorboardExperiment):len((*c.CallOptions).DeleteTensorboardExperiment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -885,6 +1015,12 @@ func (c *tensorboardGRPCClient) CreateTensorboardRun(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/CreateTensorboardRun")
+	}
 	opts = append((*c.CallOptions).CreateTensorboardRun[0:len((*c.CallOptions).CreateTensorboardRun):len((*c.CallOptions).CreateTensorboardRun)], opts...)
 	var resp *aiplatformpb.TensorboardRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -903,6 +1039,12 @@ func (c *tensorboardGRPCClient) BatchCreateTensorboardRuns(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/BatchCreateTensorboardRuns")
+	}
 	opts = append((*c.CallOptions).BatchCreateTensorboardRuns[0:len((*c.CallOptions).BatchCreateTensorboardRuns):len((*c.CallOptions).BatchCreateTensorboardRuns)], opts...)
 	var resp *aiplatformpb.BatchCreateTensorboardRunsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -921,6 +1063,12 @@ func (c *tensorboardGRPCClient) GetTensorboardRun(ctx context.Context, req *aipl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/GetTensorboardRun")
+	}
 	opts = append((*c.CallOptions).GetTensorboardRun[0:len((*c.CallOptions).GetTensorboardRun):len((*c.CallOptions).GetTensorboardRun)], opts...)
 	var resp *aiplatformpb.TensorboardRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -939,6 +1087,9 @@ func (c *tensorboardGRPCClient) UpdateTensorboardRun(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/UpdateTensorboardRun")
+	}
 	opts = append((*c.CallOptions).UpdateTensorboardRun[0:len((*c.CallOptions).UpdateTensorboardRun):len((*c.CallOptions).UpdateTensorboardRun)], opts...)
 	var resp *aiplatformpb.TensorboardRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -957,6 +1108,12 @@ func (c *tensorboardGRPCClient) ListTensorboardRuns(ctx context.Context, req *ai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/ListTensorboardRuns")
+	}
 	opts = append((*c.CallOptions).ListTensorboardRuns[0:len((*c.CallOptions).ListTensorboardRuns):len((*c.CallOptions).ListTensorboardRuns)], opts...)
 	it := &TensorboardRunIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListTensorboardRunsRequest)
@@ -1003,6 +1160,12 @@ func (c *tensorboardGRPCClient) DeleteTensorboardRun(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/DeleteTensorboardRun")
+	}
 	opts = append((*c.CallOptions).DeleteTensorboardRun[0:len((*c.CallOptions).DeleteTensorboardRun):len((*c.CallOptions).DeleteTensorboardRun)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1023,6 +1186,12 @@ func (c *tensorboardGRPCClient) BatchCreateTensorboardTimeSeries(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/BatchCreateTensorboardTimeSeries")
+	}
 	opts = append((*c.CallOptions).BatchCreateTensorboardTimeSeries[0:len((*c.CallOptions).BatchCreateTensorboardTimeSeries):len((*c.CallOptions).BatchCreateTensorboardTimeSeries)], opts...)
 	var resp *aiplatformpb.BatchCreateTensorboardTimeSeriesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1041,6 +1210,12 @@ func (c *tensorboardGRPCClient) CreateTensorboardTimeSeries(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/CreateTensorboardTimeSeries")
+	}
 	opts = append((*c.CallOptions).CreateTensorboardTimeSeries[0:len((*c.CallOptions).CreateTensorboardTimeSeries):len((*c.CallOptions).CreateTensorboardTimeSeries)], opts...)
 	var resp *aiplatformpb.TensorboardTimeSeries
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1059,6 +1234,12 @@ func (c *tensorboardGRPCClient) GetTensorboardTimeSeries(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/GetTensorboardTimeSeries")
+	}
 	opts = append((*c.CallOptions).GetTensorboardTimeSeries[0:len((*c.CallOptions).GetTensorboardTimeSeries):len((*c.CallOptions).GetTensorboardTimeSeries)], opts...)
 	var resp *aiplatformpb.TensorboardTimeSeries
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1077,6 +1258,9 @@ func (c *tensorboardGRPCClient) UpdateTensorboardTimeSeries(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/UpdateTensorboardTimeSeries")
+	}
 	opts = append((*c.CallOptions).UpdateTensorboardTimeSeries[0:len((*c.CallOptions).UpdateTensorboardTimeSeries):len((*c.CallOptions).UpdateTensorboardTimeSeries)], opts...)
 	var resp *aiplatformpb.TensorboardTimeSeries
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1095,6 +1279,12 @@ func (c *tensorboardGRPCClient) ListTensorboardTimeSeries(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/ListTensorboardTimeSeries")
+	}
 	opts = append((*c.CallOptions).ListTensorboardTimeSeries[0:len((*c.CallOptions).ListTensorboardTimeSeries):len((*c.CallOptions).ListTensorboardTimeSeries)], opts...)
 	it := &TensorboardTimeSeriesIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListTensorboardTimeSeriesRequest)
@@ -1141,6 +1331,12 @@ func (c *tensorboardGRPCClient) DeleteTensorboardTimeSeries(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/DeleteTensorboardTimeSeries")
+	}
 	opts = append((*c.CallOptions).DeleteTensorboardTimeSeries[0:len((*c.CallOptions).DeleteTensorboardTimeSeries):len((*c.CallOptions).DeleteTensorboardTimeSeries)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1161,6 +1357,12 @@ func (c *tensorboardGRPCClient) BatchReadTensorboardTimeSeriesData(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetTensorboard()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/BatchReadTensorboardTimeSeriesData")
+	}
 	opts = append((*c.CallOptions).BatchReadTensorboardTimeSeriesData[0:len((*c.CallOptions).BatchReadTensorboardTimeSeriesData):len((*c.CallOptions).BatchReadTensorboardTimeSeriesData)], opts...)
 	var resp *aiplatformpb.BatchReadTensorboardTimeSeriesDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1179,6 +1381,12 @@ func (c *tensorboardGRPCClient) ReadTensorboardTimeSeriesData(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetTensorboardTimeSeries()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/ReadTensorboardTimeSeriesData")
+	}
 	opts = append((*c.CallOptions).ReadTensorboardTimeSeriesData[0:len((*c.CallOptions).ReadTensorboardTimeSeriesData):len((*c.CallOptions).ReadTensorboardTimeSeriesData)], opts...)
 	var resp *aiplatformpb.ReadTensorboardTimeSeriesDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1197,6 +1405,12 @@ func (c *tensorboardGRPCClient) ReadTensorboardBlobData(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetTimeSeries()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/ReadTensorboardBlobData")
+	}
 	opts = append((*c.CallOptions).ReadTensorboardBlobData[0:len((*c.CallOptions).ReadTensorboardBlobData):len((*c.CallOptions).ReadTensorboardBlobData)], opts...)
 	var resp aiplatformpb.TensorboardService_ReadTensorboardBlobDataClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1217,6 +1431,12 @@ func (c *tensorboardGRPCClient) WriteTensorboardExperimentData(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetTensorboardExperiment()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/WriteTensorboardExperimentData")
+	}
 	opts = append((*c.CallOptions).WriteTensorboardExperimentData[0:len((*c.CallOptions).WriteTensorboardExperimentData):len((*c.CallOptions).WriteTensorboardExperimentData)], opts...)
 	var resp *aiplatformpb.WriteTensorboardExperimentDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1235,6 +1455,12 @@ func (c *tensorboardGRPCClient) WriteTensorboardRunData(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetTensorboardRun()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/WriteTensorboardRunData")
+	}
 	opts = append((*c.CallOptions).WriteTensorboardRunData[0:len((*c.CallOptions).WriteTensorboardRunData):len((*c.CallOptions).WriteTensorboardRunData)], opts...)
 	var resp *aiplatformpb.WriteTensorboardRunDataResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1253,6 +1479,12 @@ func (c *tensorboardGRPCClient) ExportTensorboardTimeSeriesData(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetTensorboardTimeSeries()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.TensorboardService/ExportTensorboardTimeSeriesData")
+	}
 	opts = append((*c.CallOptions).ExportTensorboardTimeSeriesData[0:len((*c.CallOptions).ExportTensorboardTimeSeriesData):len((*c.CallOptions).ExportTensorboardTimeSeriesData)], opts...)
 	it := &TimeSeriesDataPointIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ExportTensorboardTimeSeriesDataRequest)
@@ -1299,6 +1531,9 @@ func (c *tensorboardGRPCClient) GetLocation(ctx context.Context, req *locationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1317,6 +1552,9 @@ func (c *tensorboardGRPCClient) ListLocations(ctx context.Context, req *location
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -1363,6 +1601,12 @@ func (c *tensorboardGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1381,6 +1625,12 @@ func (c *tensorboardGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1399,6 +1649,12 @@ func (c *tensorboardGRPCClient) TestIamPermissions(ctx context.Context, req *iam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1417,6 +1673,9 @@ func (c *tensorboardGRPCClient) CancelOperation(ctx context.Context, req *longru
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1431,6 +1690,9 @@ func (c *tensorboardGRPCClient) DeleteOperation(ctx context.Context, req *longru
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1445,6 +1707,9 @@ func (c *tensorboardGRPCClient) GetOperation(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1463,6 +1728,9 @@ func (c *tensorboardGRPCClient) ListOperations(ctx context.Context, req *longrun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1509,6 +1777,9 @@ func (c *tensorboardGRPCClient) WaitOperation(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/WaitOperation")
+	}
 	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

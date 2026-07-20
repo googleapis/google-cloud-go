@@ -1,0 +1,981 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.datastream.v1alpha1",
+        "version": "v1alpha1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/datastream/apiv1alpha1",
+    "version": "1.21.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.CreateConnectionProfile",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.CreateConnectionProfile",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "CreateConnectionProfile"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.CreateConnectionProfileRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateConnectionProfileOperation",
+        "shortName": "CreateConnectionProfile"
+      },
+      "description": "CreateConnectionProfile use this method to create a connection profile in a project and location.",
+      "file": "Client/CreateConnectionProfile/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_CreateConnectionProfile_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream CreateConnectionProfile Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.CreatePrivateConnection",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.CreatePrivateConnection",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "CreatePrivateConnection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.CreatePrivateConnectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreatePrivateConnectionOperation",
+        "shortName": "CreatePrivateConnection"
+      },
+      "description": "CreatePrivateConnection use this method to create a private connectivity configuration.",
+      "file": "Client/CreatePrivateConnection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_CreatePrivateConnection_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream CreatePrivateConnection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.CreateRoute",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.CreateRoute",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "CreateRoute"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.CreateRouteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateRouteOperation",
+        "shortName": "CreateRoute"
+      },
+      "description": "CreateRoute use this method to create a route for a private connectivity in a project\nand location.",
+      "file": "Client/CreateRoute/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_CreateRoute_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream CreateRoute Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.CreateStream",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.CreateStream",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "CreateStream"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.CreateStreamRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateStreamOperation",
+        "shortName": "CreateStream"
+      },
+      "description": "CreateStream use this method to create a stream.",
+      "file": "Client/CreateStream/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_CreateStream_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream CreateStream Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.DeleteConnectionProfile",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.DeleteConnectionProfile",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "DeleteConnectionProfile"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.DeleteConnectionProfileRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteConnectionProfileOperation",
+        "shortName": "DeleteConnectionProfile"
+      },
+      "description": "DeleteConnectionProfile use this method to delete a connection profile..",
+      "file": "Client/DeleteConnectionProfile/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_DeleteConnectionProfile_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream DeleteConnectionProfile Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.DeletePrivateConnection",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.DeletePrivateConnection",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "DeletePrivateConnection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.DeletePrivateConnectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeletePrivateConnectionOperation",
+        "shortName": "DeletePrivateConnection"
+      },
+      "description": "DeletePrivateConnection use this method to delete a private connectivity configuration.",
+      "file": "Client/DeletePrivateConnection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_DeletePrivateConnection_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream DeletePrivateConnection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.DeleteRoute",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.DeleteRoute",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "DeleteRoute"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.DeleteRouteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteRouteOperation",
+        "shortName": "DeleteRoute"
+      },
+      "description": "DeleteRoute use this method to delete a route.",
+      "file": "Client/DeleteRoute/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_DeleteRoute_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream DeleteRoute Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.DeleteStream",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.DeleteStream",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "DeleteStream"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.DeleteStreamRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteStreamOperation",
+        "shortName": "DeleteStream"
+      },
+      "description": "DeleteStream use this method to delete a stream.",
+      "file": "Client/DeleteStream/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_DeleteStream_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream DeleteStream Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.DiscoverConnectionProfile",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.DiscoverConnectionProfile",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "DiscoverConnectionProfile"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.DiscoverConnectionProfileRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datastreampb.DiscoverConnectionProfileResponse",
+        "shortName": "DiscoverConnectionProfile"
+      },
+      "description": "DiscoverConnectionProfile use this method to discover a connection profile.\nThe discover API call exposes the data objects and metadata belonging to\nthe profile. Typically, a request returns children data objects under a\nparent data object that's optionally supplied in the request.",
+      "file": "Client/DiscoverConnectionProfile/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_DiscoverConnectionProfile_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream DiscoverConnectionProfile Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.FetchErrors",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.FetchErrors",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "FetchErrors"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.FetchErrorsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "FetchErrorsOperation",
+        "shortName": "FetchErrors"
+      },
+      "description": "FetchErrors use this method to fetch any errors associated with a stream.",
+      "file": "Client/FetchErrors/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_FetchErrors_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream FetchErrors Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.FetchStaticIps",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.FetchStaticIps",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "FetchStaticIps"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.FetchStaticIpsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "StringIterator",
+        "shortName": "FetchStaticIps"
+      },
+      "description": "FetchStaticIps the FetchStaticIps API call exposes the static ips used by Datastream.\nTypically, a request returns children data objects under\na parent data object that's optionally supplied in the request.",
+      "file": "Client/FetchStaticIps/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_FetchStaticIps_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream FetchStaticIps Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.GetConnectionProfile",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.GetConnectionProfile",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "GetConnectionProfile"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.GetConnectionProfileRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datastreampb.ConnectionProfile",
+        "shortName": "GetConnectionProfile"
+      },
+      "description": "GetConnectionProfile use this method to get details about a connection profile.",
+      "file": "Client/GetConnectionProfile/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_GetConnectionProfile_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream GetConnectionProfile Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.GetPrivateConnection",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.GetPrivateConnection",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "GetPrivateConnection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.GetPrivateConnectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datastreampb.PrivateConnection",
+        "shortName": "GetPrivateConnection"
+      },
+      "description": "GetPrivateConnection use this method to get details about a private connectivity configuration.",
+      "file": "Client/GetPrivateConnection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_GetPrivateConnection_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream GetPrivateConnection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.GetRoute",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.GetRoute",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "GetRoute"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.GetRouteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datastreampb.Route",
+        "shortName": "GetRoute"
+      },
+      "description": "GetRoute use this method to get details about a route.",
+      "file": "Client/GetRoute/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_GetRoute_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream GetRoute Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.GetStream",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.GetStream",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "GetStream"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.GetStreamRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datastreampb.Stream",
+        "shortName": "GetStream"
+      },
+      "description": "GetStream use this method to get details about a stream.",
+      "file": "Client/GetStream/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_GetStream_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream GetStream Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.ListConnectionProfiles",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.ListConnectionProfiles",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "ListConnectionProfiles"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.ListConnectionProfilesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ConnectionProfileIterator",
+        "shortName": "ListConnectionProfiles"
+      },
+      "description": "ListConnectionProfiles use this method to list connection profiles created in a project and\nlocation.",
+      "file": "Client/ListConnectionProfiles/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_ListConnectionProfiles_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream ListConnectionProfiles Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.ListPrivateConnections",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.ListPrivateConnections",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "ListPrivateConnections"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.ListPrivateConnectionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "PrivateConnectionIterator",
+        "shortName": "ListPrivateConnections"
+      },
+      "description": "ListPrivateConnections use this method to list private connectivity configurations in a project\nand location.",
+      "file": "Client/ListPrivateConnections/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_ListPrivateConnections_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream ListPrivateConnections Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.ListRoutes",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.ListRoutes",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "ListRoutes"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.ListRoutesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RouteIterator",
+        "shortName": "ListRoutes"
+      },
+      "description": "ListRoutes use this method to list routes created for a private connectivity in a\nproject and location.",
+      "file": "Client/ListRoutes/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_ListRoutes_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream ListRoutes Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.ListStreams",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.ListStreams",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "ListStreams"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.ListStreamsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "StreamIterator",
+        "shortName": "ListStreams"
+      },
+      "description": "ListStreams use this method to list streams in a project and location.",
+      "file": "Client/ListStreams/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_ListStreams_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream ListStreams Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.UpdateConnectionProfile",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.UpdateConnectionProfile",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "UpdateConnectionProfile"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.UpdateConnectionProfileRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateConnectionProfileOperation",
+        "shortName": "UpdateConnectionProfile"
+      },
+      "description": "UpdateConnectionProfile use this method to update the parameters of a connection profile.",
+      "file": "Client/UpdateConnectionProfile/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_UpdateConnectionProfile_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream UpdateConnectionProfile Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.datastream.v1alpha1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.datastream.v1alpha1.Client.UpdateStream",
+        "method": {
+          "fullName": "google.cloud.datastream.v1alpha1.Datastream.UpdateStream",
+          "service": {
+            "fullName": "google.cloud.datastream.v1alpha1.Datastream",
+            "shortName": "Datastream"
+          },
+          "shortName": "UpdateStream"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datastreampb.UpdateStreamRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateStreamOperation",
+        "shortName": "UpdateStream"
+      },
+      "description": "UpdateStream use this method to update the configuration of a stream.",
+      "file": "Client/UpdateStream/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datastream_v1alpha1_generated_Datastream_UpdateStream_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datastream UpdateStream Sample"
+    }
+  ]
+}

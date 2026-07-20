@@ -18,18 +18,13 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"time"
 
 	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
 	"cloud.google.com/go/datastore/internal"
-	cloudinternal "cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
-	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
 )
 
 // datastoreClient is a wrapper for the pb.DatastoreClient that includes gRPC
@@ -150,22 +145,5 @@ func (dc *datastoreClient) ReserveIds(ctx context.Context, in *pb.ReserveIdsRequ
 
 func (dc *datastoreClient) invoke(ctx context.Context, f func(ctx context.Context) error) error {
 	ctx = metadata.NewOutgoingContext(ctx, dc.md)
-	return cloudinternal.Retry(ctx, gax.Backoff{Initial: 100 * time.Millisecond}, func() (stop bool, err error) {
-		err = f(ctx)
-		return !shouldRetry(err), err
-	})
-}
-
-func shouldRetry(err error) bool {
-	if err == nil {
-		return false
-	}
-	s, ok := status.FromError(err)
-	if !ok {
-		return false
-	}
-	// Only retry on UNAVAILABLE as per https://aip.dev/194. Other errors from
-	// https://cloud.google.com/datastore/docs/concepts/errors may be retried
-	// by the user if desired, but are not retried by the clientg.
-	return s.Code() == codes.Unavailable
+	return f(ctx)
 }

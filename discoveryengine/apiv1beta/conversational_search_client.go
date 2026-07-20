@@ -19,6 +19,7 @@ package discoveryengine
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"math"
@@ -29,6 +30,7 @@ import (
 	discoveryenginepb "cloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -36,6 +38,7 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -51,6 +54,7 @@ type ConversationalSearchCallOptions struct {
 	GetConversation      []gax.CallOption
 	ListConversations    []gax.CallOption
 	AnswerQuery          []gax.CallOption
+	StreamAnswerQuery    []gax.CallOption
 	GetAnswer            []gax.CallOption
 	CreateSession        []gax.CallOption
 	DeleteSession        []gax.CallOption
@@ -153,6 +157,17 @@ func defaultConversationalSearchCallOptions() *ConversationalSearchCallOptions {
 		},
 		AnswerQuery: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		StreamAnswerQuery: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -353,6 +368,17 @@ func defaultConversationalSearchRESTCallOptions() *ConversationalSearchCallOptio
 					http.StatusServiceUnavailable)
 			}),
 		},
+		StreamAnswerQuery: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetAnswer: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -467,6 +493,7 @@ type internalConversationalSearchClient interface {
 	GetConversation(context.Context, *discoveryenginepb.GetConversationRequest, ...gax.CallOption) (*discoveryenginepb.Conversation, error)
 	ListConversations(context.Context, *discoveryenginepb.ListConversationsRequest, ...gax.CallOption) *ConversationIterator
 	AnswerQuery(context.Context, *discoveryenginepb.AnswerQueryRequest, ...gax.CallOption) (*discoveryenginepb.AnswerQueryResponse, error)
+	StreamAnswerQuery(context.Context, *discoveryenginepb.AnswerQueryRequest, ...gax.CallOption) (discoveryenginepb.ConversationalSearchService_StreamAnswerQueryClient, error)
 	GetAnswer(context.Context, *discoveryenginepb.GetAnswerRequest, ...gax.CallOption) (*discoveryenginepb.Answer, error)
 	CreateSession(context.Context, *discoveryenginepb.CreateSessionRequest, ...gax.CallOption) (*discoveryenginepb.Session, error)
 	DeleteSession(context.Context, *discoveryenginepb.DeleteSessionRequest, ...gax.CallOption) error
@@ -492,7 +519,7 @@ type ConversationalSearchClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ConversationalSearchClient) Close() error {
 	return c.internalClient.Close()
@@ -558,6 +585,17 @@ func (c *ConversationalSearchClient) ListConversations(ctx context.Context, req 
 // AnswerQuery answer query method.
 func (c *ConversationalSearchClient) AnswerQuery(ctx context.Context, req *discoveryenginepb.AnswerQueryRequest, opts ...gax.CallOption) (*discoveryenginepb.AnswerQueryResponse, error) {
 	return c.internalClient.AnswerQuery(ctx, req, opts...)
+}
+
+// StreamAnswerQuery answer query method (streaming).
+//
+// It takes one
+// AnswerQueryRequest
+// and returns multiple
+// AnswerQueryResponse
+// messages in a stream.
+func (c *ConversationalSearchClient) StreamAnswerQuery(ctx context.Context, req *discoveryenginepb.AnswerQueryRequest, opts ...gax.CallOption) (discoveryenginepb.ConversationalSearchService_StreamAnswerQueryClient, error) {
+	return c.internalClient.StreamAnswerQuery(ctx, req, opts...)
 }
 
 // GetAnswer gets a Answer.
@@ -643,6 +681,16 @@ type conversationalSearchGRPCClient struct {
 // Service for conversational search.
 func NewConversationalSearchClient(ctx context.Context, opts ...option.ClientOption) (*ConversationalSearchClient, error) {
 	clientOpts := defaultConversationalSearchGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "discoveryengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/discoveryengine/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "discoveryengine.googleapis.com",
+		}))
+	}
 	if newConversationalSearchClientHook != nil {
 		hookOpts, err := newConversationalSearchClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -665,6 +713,36 @@ func NewConversationalSearchClient(ctx context.Context, opts ...option.ClientOpt
 		operationsClient:           longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ConverseConversation = append(client.CallOptions.ConverseConversation, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateConversation = append(client.CallOptions.CreateConversation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteConversation = append(client.CallOptions.DeleteConversation, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateConversation = append(client.CallOptions.UpdateConversation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetConversation = append(client.CallOptions.GetConversation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListConversations = append(client.CallOptions.ListConversations, gax.WithClientMetrics(metrics))
+		client.CallOptions.AnswerQuery = append(client.CallOptions.AnswerQuery, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamAnswerQuery = append(client.CallOptions.StreamAnswerQuery, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAnswer = append(client.CallOptions.GetAnswer, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSession = append(client.CallOptions.CreateSession, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSession = append(client.CallOptions.DeleteSession, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSession = append(client.CallOptions.UpdateSession, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSession = append(client.CallOptions.GetSession, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSessions = append(client.CallOptions.ListSessions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -690,7 +768,7 @@ func (c *conversationalSearchGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *conversationalSearchGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -718,6 +796,16 @@ type conversationalSearchRESTClient struct {
 // Service for conversational search.
 func NewConversationalSearchRESTClient(ctx context.Context, opts ...option.ClientOption) (*ConversationalSearchClient, error) {
 	clientOpts := append(defaultConversationalSearchRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "discoveryengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/discoveryengine/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "discoveryengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -731,6 +819,37 @@ func NewConversationalSearchRESTClient(ctx context.Context, opts ...option.Clien
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ConverseConversation = append(callOpts.ConverseConversation, gax.WithClientMetrics(metrics))
+		callOpts.CreateConversation = append(callOpts.CreateConversation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteConversation = append(callOpts.DeleteConversation, gax.WithClientMetrics(metrics))
+		callOpts.UpdateConversation = append(callOpts.UpdateConversation, gax.WithClientMetrics(metrics))
+		callOpts.GetConversation = append(callOpts.GetConversation, gax.WithClientMetrics(metrics))
+		callOpts.ListConversations = append(callOpts.ListConversations, gax.WithClientMetrics(metrics))
+		callOpts.AnswerQuery = append(callOpts.AnswerQuery, gax.WithClientMetrics(metrics))
+		callOpts.StreamAnswerQuery = append(callOpts.StreamAnswerQuery, gax.WithClientMetrics(metrics))
+		callOpts.GetAnswer = append(callOpts.GetAnswer, gax.WithClientMetrics(metrics))
+		callOpts.CreateSession = append(callOpts.CreateSession, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSession = append(callOpts.DeleteSession, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSession = append(callOpts.UpdateSession, gax.WithClientMetrics(metrics))
+		callOpts.GetSession = append(callOpts.GetSession, gax.WithClientMetrics(metrics))
+		callOpts.ListSessions = append(callOpts.ListSessions, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	return &ConversationalSearchClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -758,7 +877,7 @@ func (c *conversationalSearchRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *conversationalSearchRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -777,6 +896,12 @@ func (c *conversationalSearchGRPCClient) ConverseConversation(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/ConverseConversation")
+	}
 	opts = append((*c.CallOptions).ConverseConversation[0:len((*c.CallOptions).ConverseConversation):len((*c.CallOptions).ConverseConversation)], opts...)
 	var resp *discoveryenginepb.ConverseConversationResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -795,6 +920,12 @@ func (c *conversationalSearchGRPCClient) CreateConversation(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/CreateConversation")
+	}
 	opts = append((*c.CallOptions).CreateConversation[0:len((*c.CallOptions).CreateConversation):len((*c.CallOptions).CreateConversation)], opts...)
 	var resp *discoveryenginepb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -813,6 +944,12 @@ func (c *conversationalSearchGRPCClient) DeleteConversation(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/DeleteConversation")
+	}
 	opts = append((*c.CallOptions).DeleteConversation[0:len((*c.CallOptions).DeleteConversation):len((*c.CallOptions).DeleteConversation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -827,6 +964,9 @@ func (c *conversationalSearchGRPCClient) UpdateConversation(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/UpdateConversation")
+	}
 	opts = append((*c.CallOptions).UpdateConversation[0:len((*c.CallOptions).UpdateConversation):len((*c.CallOptions).UpdateConversation)], opts...)
 	var resp *discoveryenginepb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -845,6 +985,12 @@ func (c *conversationalSearchGRPCClient) GetConversation(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/GetConversation")
+	}
 	opts = append((*c.CallOptions).GetConversation[0:len((*c.CallOptions).GetConversation):len((*c.CallOptions).GetConversation)], opts...)
 	var resp *discoveryenginepb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -863,9 +1009,15 @@ func (c *conversationalSearchGRPCClient) ListConversations(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/ListConversations")
+	}
 	opts = append((*c.CallOptions).ListConversations[0:len((*c.CallOptions).ListConversations):len((*c.CallOptions).ListConversations)], opts...)
 	it := &ConversationIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListConversationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Conversation, string, error) {
 		resp := &discoveryenginepb.ListConversationsResponse{}
 		if pageToken != "" {
@@ -909,6 +1061,12 @@ func (c *conversationalSearchGRPCClient) AnswerQuery(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetServingConfig()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/AnswerQuery")
+	}
 	opts = append((*c.CallOptions).AnswerQuery[0:len((*c.CallOptions).AnswerQuery):len((*c.CallOptions).AnswerQuery)], opts...)
 	var resp *discoveryenginepb.AnswerQueryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -922,11 +1080,43 @@ func (c *conversationalSearchGRPCClient) AnswerQuery(ctx context.Context, req *d
 	return resp, nil
 }
 
+func (c *conversationalSearchGRPCClient) StreamAnswerQuery(ctx context.Context, req *discoveryenginepb.AnswerQueryRequest, opts ...gax.CallOption) (discoveryenginepb.ConversationalSearchService_StreamAnswerQueryClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "serving_config", url.QueryEscape(req.GetServingConfig()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetServingConfig()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/StreamAnswerQuery")
+	}
+	opts = append((*c.CallOptions).StreamAnswerQuery[0:len((*c.CallOptions).StreamAnswerQuery):len((*c.CallOptions).StreamAnswerQuery)], opts...)
+	var resp discoveryenginepb.ConversationalSearchService_StreamAnswerQueryClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamAnswerQuery")
+		resp, err = c.conversationalSearchClient.StreamAnswerQuery(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamAnswerQuery")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *conversationalSearchGRPCClient) GetAnswer(ctx context.Context, req *discoveryenginepb.GetAnswerRequest, opts ...gax.CallOption) (*discoveryenginepb.Answer, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/GetAnswer")
+	}
 	opts = append((*c.CallOptions).GetAnswer[0:len((*c.CallOptions).GetAnswer):len((*c.CallOptions).GetAnswer)], opts...)
 	var resp *discoveryenginepb.Answer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -945,6 +1135,12 @@ func (c *conversationalSearchGRPCClient) CreateSession(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/CreateSession")
+	}
 	opts = append((*c.CallOptions).CreateSession[0:len((*c.CallOptions).CreateSession):len((*c.CallOptions).CreateSession)], opts...)
 	var resp *discoveryenginepb.Session
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -963,6 +1159,12 @@ func (c *conversationalSearchGRPCClient) DeleteSession(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/DeleteSession")
+	}
 	opts = append((*c.CallOptions).DeleteSession[0:len((*c.CallOptions).DeleteSession):len((*c.CallOptions).DeleteSession)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -977,6 +1179,9 @@ func (c *conversationalSearchGRPCClient) UpdateSession(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/UpdateSession")
+	}
 	opts = append((*c.CallOptions).UpdateSession[0:len((*c.CallOptions).UpdateSession):len((*c.CallOptions).UpdateSession)], opts...)
 	var resp *discoveryenginepb.Session
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -995,6 +1200,12 @@ func (c *conversationalSearchGRPCClient) GetSession(ctx context.Context, req *di
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/GetSession")
+	}
 	opts = append((*c.CallOptions).GetSession[0:len((*c.CallOptions).GetSession):len((*c.CallOptions).GetSession)], opts...)
 	var resp *discoveryenginepb.Session
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1013,9 +1224,15 @@ func (c *conversationalSearchGRPCClient) ListSessions(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/ListSessions")
+	}
 	opts = append((*c.CallOptions).ListSessions[0:len((*c.CallOptions).ListSessions):len((*c.CallOptions).ListSessions)], opts...)
 	it := &SessionIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListSessionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Session, string, error) {
 		resp := &discoveryenginepb.ListSessionsResponse{}
 		if pageToken != "" {
@@ -1059,6 +1276,9 @@ func (c *conversationalSearchGRPCClient) CancelOperation(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1073,6 +1293,9 @@ func (c *conversationalSearchGRPCClient) GetOperation(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1091,9 +1314,12 @@ func (c *conversationalSearchGRPCClient) ListOperations(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1157,6 +1383,13 @@ func (c *conversationalSearchRESTClient) ConverseConversation(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/ConverseConversation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/dataStores/*/conversations/*}:converse")
+	}
 	opts = append((*c.CallOptions).ConverseConversation[0:len((*c.CallOptions).ConverseConversation):len((*c.CallOptions).ConverseConversation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.ConverseConversationResponse{}
@@ -1217,6 +1450,13 @@ func (c *conversationalSearchRESTClient) CreateConversation(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/CreateConversation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/dataStores/*}/conversations")
+	}
 	opts = append((*c.CallOptions).CreateConversation[0:len((*c.CallOptions).CreateConversation):len((*c.CallOptions).CreateConversation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.Conversation{}
@@ -1270,6 +1510,13 @@ func (c *conversationalSearchRESTClient) DeleteConversation(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/DeleteConversation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/dataStores/*/conversations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1324,6 +1571,10 @@ func (c *conversationalSearchRESTClient) UpdateConversation(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/UpdateConversation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{conversation.name=projects/*/locations/*/dataStores/*/conversations/*}")
+	}
 	opts = append((*c.CallOptions).UpdateConversation[0:len((*c.CallOptions).UpdateConversation):len((*c.CallOptions).UpdateConversation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.Conversation{}
@@ -1374,6 +1625,13 @@ func (c *conversationalSearchRESTClient) GetConversation(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/GetConversation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/dataStores/*/conversations/*}")
+	}
 	opts = append((*c.CallOptions).GetConversation[0:len((*c.CallOptions).GetConversation):len((*c.CallOptions).GetConversation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.Conversation{}
@@ -1409,7 +1667,7 @@ func (c *conversationalSearchRESTClient) GetConversation(ctx context.Context, re
 // DataStore.
 func (c *conversationalSearchRESTClient) ListConversations(ctx context.Context, req *discoveryenginepb.ListConversationsRequest, opts ...gax.CallOption) *ConversationIterator {
 	it := &ConversationIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListConversationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Conversation, string, error) {
 		resp := &discoveryenginepb.ListConversationsResponse{}
@@ -1515,6 +1773,13 @@ func (c *conversationalSearchRESTClient) AnswerQuery(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetServingConfig()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/AnswerQuery")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{serving_config=projects/*/locations/*/dataStores/*/servingConfigs/*}:answer")
+	}
 	opts = append((*c.CallOptions).AnswerQuery[0:len((*c.CallOptions).AnswerQuery):len((*c.CallOptions).AnswerQuery)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.AnswerQueryResponse{}
@@ -1546,6 +1811,121 @@ func (c *conversationalSearchRESTClient) AnswerQuery(ctx context.Context, req *d
 	return resp, nil
 }
 
+// StreamAnswerQuery answer query method (streaming).
+//
+// It takes one
+// AnswerQueryRequest
+// and returns multiple
+// AnswerQueryResponse
+// messages in a stream.
+func (c *conversationalSearchRESTClient) StreamAnswerQuery(ctx context.Context, req *discoveryenginepb.AnswerQueryRequest, opts ...gax.CallOption) (discoveryenginepb.ConversationalSearchService_StreamAnswerQueryClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:streamAnswer", req.GetServingConfig())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "serving_config", url.QueryEscape(req.GetServingConfig()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetServingConfig()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/StreamAnswerQuery")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{serving_config=projects/*/locations/*/dataStores/*/servingConfigs/*}:streamAnswer")
+	}
+	var streamClient *streamAnswerQueryRESTStreamClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StreamAnswerQuery")
+		if err != nil {
+			return err
+		}
+
+		streamClient = &streamAnswerQueryRESTStreamClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&discoveryenginepb.AnswerQueryResponse{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// streamAnswerQueryRESTStreamClient is the stream client used to consume the server stream created by
+// the REST implementation of StreamAnswerQuery.
+type streamAnswerQueryRESTStreamClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *streamAnswerQueryRESTStreamClient) Recv() (*discoveryenginepb.AnswerQueryResponse, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*discoveryenginepb.AnswerQueryResponse)
+	return res, nil
+}
+
+func (c *streamAnswerQueryRESTStreamClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *streamAnswerQueryRESTStreamClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *streamAnswerQueryRESTStreamClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *streamAnswerQueryRESTStreamClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *streamAnswerQueryRESTStreamClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *streamAnswerQueryRESTStreamClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented, use Recv")
+}
+
 // GetAnswer gets a Answer.
 func (c *conversationalSearchRESTClient) GetAnswer(ctx context.Context, req *discoveryenginepb.GetAnswerRequest, opts ...gax.CallOption) (*discoveryenginepb.Answer, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1565,6 +1945,13 @@ func (c *conversationalSearchRESTClient) GetAnswer(ctx context.Context, req *dis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/GetAnswer")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/dataStores/*/sessions/*/answers/*}")
+	}
 	opts = append((*c.CallOptions).GetAnswer[0:len((*c.CallOptions).GetAnswer):len((*c.CallOptions).GetAnswer)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.Answer{}
@@ -1616,6 +2003,9 @@ func (c *conversationalSearchRESTClient) CreateSession(ctx context.Context, req 
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetSessionId() != "" {
+		params.Add("sessionId", fmt.Sprintf("%v", req.GetSessionId()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1625,6 +2015,13 @@ func (c *conversationalSearchRESTClient) CreateSession(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/CreateSession")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/dataStores/*}/sessions")
+	}
 	opts = append((*c.CallOptions).CreateSession[0:len((*c.CallOptions).CreateSession):len((*c.CallOptions).CreateSession)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.Session{}
@@ -1678,6 +2075,13 @@ func (c *conversationalSearchRESTClient) DeleteSession(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/DeleteSession")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/dataStores/*/sessions/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1731,6 +2135,10 @@ func (c *conversationalSearchRESTClient) UpdateSession(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/UpdateSession")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{session.name=projects/*/locations/*/dataStores/*/sessions/*}")
+	}
 	opts = append((*c.CallOptions).UpdateSession[0:len((*c.CallOptions).UpdateSession):len((*c.CallOptions).UpdateSession)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.Session{}
@@ -1784,6 +2192,13 @@ func (c *conversationalSearchRESTClient) GetSession(ctx context.Context, req *di
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ConversationalSearchService/GetSession")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/dataStores/*/sessions/*}")
+	}
 	opts = append((*c.CallOptions).GetSession[0:len((*c.CallOptions).GetSession):len((*c.CallOptions).GetSession)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.Session{}
@@ -1819,7 +2234,7 @@ func (c *conversationalSearchRESTClient) GetSession(ctx context.Context, req *di
 // DataStore.
 func (c *conversationalSearchRESTClient) ListSessions(ctx context.Context, req *discoveryenginepb.ListSessionsRequest, opts ...gax.CallOption) *SessionIterator {
 	it := &SessionIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListSessionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Session, string, error) {
 		resp := &discoveryenginepb.ListSessionsResponse{}
@@ -1925,6 +2340,10 @@ func (c *conversationalSearchRESTClient) CancelOperation(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/collections/*/dataStores/*/branches/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1960,6 +2379,10 @@ func (c *conversationalSearchRESTClient) GetOperation(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/collections/*/dataConnector/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1994,7 +2417,7 @@ func (c *conversationalSearchRESTClient) GetOperation(ctx context.Context, req *
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *conversationalSearchRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

@@ -31,6 +31,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	rapidmigrationassessmentpb "cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -268,7 +270,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -447,6 +449,16 @@ type gRPCClient struct {
 // Service describing handlers for resources.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "rapidmigrationassessment",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/rapidmigrationassessment/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "rapidmigrationassessment.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -470,6 +482,35 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "rapidmigrationassessment",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/rapidmigrationassessment/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "rapidmigrationassessment.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCollector = append(client.CallOptions.CreateCollector, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAnnotation = append(client.CallOptions.CreateAnnotation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAnnotation = append(client.CallOptions.GetAnnotation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCollectors = append(client.CallOptions.ListCollectors, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCollector = append(client.CallOptions.GetCollector, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCollector = append(client.CallOptions.UpdateCollector, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCollector = append(client.CallOptions.DeleteCollector, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResumeCollector = append(client.CallOptions.ResumeCollector, gax.WithClientMetrics(metrics))
+		client.CallOptions.RegisterCollector = append(client.CallOptions.RegisterCollector, gax.WithClientMetrics(metrics))
+		client.CallOptions.PauseCollector = append(client.CallOptions.PauseCollector, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -506,7 +547,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -539,6 +580,16 @@ type restClient struct {
 // Service describing handlers for resources.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "rapidmigrationassessment",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/rapidmigrationassessment/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "rapidmigrationassessment.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -552,6 +603,36 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "rapidmigrationassessment",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/rapidmigrationassessment/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "rapidmigrationassessment.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCollector = append(callOpts.CreateCollector, gax.WithClientMetrics(metrics))
+		callOpts.CreateAnnotation = append(callOpts.CreateAnnotation, gax.WithClientMetrics(metrics))
+		callOpts.GetAnnotation = append(callOpts.GetAnnotation, gax.WithClientMetrics(metrics))
+		callOpts.ListCollectors = append(callOpts.ListCollectors, gax.WithClientMetrics(metrics))
+		callOpts.GetCollector = append(callOpts.GetCollector, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCollector = append(callOpts.UpdateCollector, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCollector = append(callOpts.DeleteCollector, gax.WithClientMetrics(metrics))
+		callOpts.ResumeCollector = append(callOpts.ResumeCollector, gax.WithClientMetrics(metrics))
+		callOpts.RegisterCollector = append(callOpts.RegisterCollector, gax.WithClientMetrics(metrics))
+		callOpts.PauseCollector = append(callOpts.PauseCollector, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -589,7 +670,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -608,6 +689,12 @@ func (c *gRPCClient) CreateCollector(ctx context.Context, req *rapidmigrationass
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/CreateCollector")
+	}
 	opts = append((*c.CallOptions).CreateCollector[0:len((*c.CallOptions).CreateCollector):len((*c.CallOptions).CreateCollector)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -618,8 +705,12 @@ func (c *gRPCClient) CreateCollector(ctx context.Context, req *rapidmigrationass
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.CreateCollectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCollectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -628,6 +719,12 @@ func (c *gRPCClient) CreateAnnotation(ctx context.Context, req *rapidmigrationas
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/CreateAnnotation")
+	}
 	opts = append((*c.CallOptions).CreateAnnotation[0:len((*c.CallOptions).CreateAnnotation):len((*c.CallOptions).CreateAnnotation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -638,8 +735,12 @@ func (c *gRPCClient) CreateAnnotation(ctx context.Context, req *rapidmigrationas
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.CreateAnnotationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAnnotationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -648,6 +749,12 @@ func (c *gRPCClient) GetAnnotation(ctx context.Context, req *rapidmigrationasses
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/GetAnnotation")
+	}
 	opts = append((*c.CallOptions).GetAnnotation[0:len((*c.CallOptions).GetAnnotation):len((*c.CallOptions).GetAnnotation)], opts...)
 	var resp *rapidmigrationassessmentpb.Annotation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -666,9 +773,15 @@ func (c *gRPCClient) ListCollectors(ctx context.Context, req *rapidmigrationasse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/ListCollectors")
+	}
 	opts = append((*c.CallOptions).ListCollectors[0:len((*c.CallOptions).ListCollectors):len((*c.CallOptions).ListCollectors)], opts...)
 	it := &CollectorIterator{}
-	req = proto.Clone(req).(*rapidmigrationassessmentpb.ListCollectorsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*rapidmigrationassessmentpb.Collector, string, error) {
 		resp := &rapidmigrationassessmentpb.ListCollectorsResponse{}
 		if pageToken != "" {
@@ -712,6 +825,12 @@ func (c *gRPCClient) GetCollector(ctx context.Context, req *rapidmigrationassess
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/GetCollector")
+	}
 	opts = append((*c.CallOptions).GetCollector[0:len((*c.CallOptions).GetCollector):len((*c.CallOptions).GetCollector)], opts...)
 	var resp *rapidmigrationassessmentpb.Collector
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -730,6 +849,9 @@ func (c *gRPCClient) UpdateCollector(ctx context.Context, req *rapidmigrationass
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/UpdateCollector")
+	}
 	opts = append((*c.CallOptions).UpdateCollector[0:len((*c.CallOptions).UpdateCollector):len((*c.CallOptions).UpdateCollector)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -740,8 +862,12 @@ func (c *gRPCClient) UpdateCollector(ctx context.Context, req *rapidmigrationass
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.UpdateCollectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCollectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -750,6 +876,12 @@ func (c *gRPCClient) DeleteCollector(ctx context.Context, req *rapidmigrationass
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/DeleteCollector")
+	}
 	opts = append((*c.CallOptions).DeleteCollector[0:len((*c.CallOptions).DeleteCollector):len((*c.CallOptions).DeleteCollector)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -760,8 +892,12 @@ func (c *gRPCClient) DeleteCollector(ctx context.Context, req *rapidmigrationass
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.DeleteCollectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCollectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -770,6 +906,12 @@ func (c *gRPCClient) ResumeCollector(ctx context.Context, req *rapidmigrationass
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/ResumeCollector")
+	}
 	opts = append((*c.CallOptions).ResumeCollector[0:len((*c.CallOptions).ResumeCollector):len((*c.CallOptions).ResumeCollector)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -780,8 +922,12 @@ func (c *gRPCClient) ResumeCollector(ctx context.Context, req *rapidmigrationass
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.ResumeCollectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResumeCollectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -790,6 +936,12 @@ func (c *gRPCClient) RegisterCollector(ctx context.Context, req *rapidmigrationa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/RegisterCollector")
+	}
 	opts = append((*c.CallOptions).RegisterCollector[0:len((*c.CallOptions).RegisterCollector):len((*c.CallOptions).RegisterCollector)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -800,8 +952,12 @@ func (c *gRPCClient) RegisterCollector(ctx context.Context, req *rapidmigrationa
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.RegisterCollectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RegisterCollectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -810,6 +966,12 @@ func (c *gRPCClient) PauseCollector(ctx context.Context, req *rapidmigrationasse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/PauseCollector")
+	}
 	opts = append((*c.CallOptions).PauseCollector[0:len((*c.CallOptions).PauseCollector):len((*c.CallOptions).PauseCollector)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -820,8 +982,12 @@ func (c *gRPCClient) PauseCollector(ctx context.Context, req *rapidmigrationasse
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.PauseCollectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PauseCollectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -830,6 +996,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -848,9 +1017,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -894,6 +1066,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -908,6 +1083,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -922,6 +1100,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -940,9 +1121,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1012,6 +1196,13 @@ func (c *restClient) CreateCollector(ctx context.Context, req *rapidmigrationass
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/CreateCollector")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/collectors")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1040,8 +1231,12 @@ func (c *restClient) CreateCollector(ctx context.Context, req *rapidmigrationass
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.CreateCollectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCollectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1075,6 +1270,13 @@ func (c *restClient) CreateAnnotation(ctx context.Context, req *rapidmigrationas
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/CreateAnnotation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/annotations")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1103,8 +1305,12 @@ func (c *restClient) CreateAnnotation(ctx context.Context, req *rapidmigrationas
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.CreateAnnotationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAnnotationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1128,6 +1334,13 @@ func (c *restClient) GetAnnotation(ctx context.Context, req *rapidmigrationasses
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/GetAnnotation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/annotations/*}")
+	}
 	opts = append((*c.CallOptions).GetAnnotation[0:len((*c.CallOptions).GetAnnotation):len((*c.CallOptions).GetAnnotation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &rapidmigrationassessmentpb.Annotation{}
@@ -1162,7 +1375,7 @@ func (c *restClient) GetAnnotation(ctx context.Context, req *rapidmigrationasses
 // ListCollectors lists Collectors in a given project and location.
 func (c *restClient) ListCollectors(ctx context.Context, req *rapidmigrationassessmentpb.ListCollectorsRequest, opts ...gax.CallOption) *CollectorIterator {
 	it := &CollectorIterator{}
-	req = proto.Clone(req).(*rapidmigrationassessmentpb.ListCollectorsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*rapidmigrationassessmentpb.Collector, string, error) {
 		resp := &rapidmigrationassessmentpb.ListCollectorsResponse{}
@@ -1262,6 +1475,13 @@ func (c *restClient) GetCollector(ctx context.Context, req *rapidmigrationassess
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/GetCollector")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/collectors/*}")
+	}
 	opts = append((*c.CallOptions).GetCollector[0:len((*c.CallOptions).GetCollector):len((*c.CallOptions).GetCollector)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &rapidmigrationassessmentpb.Collector{}
@@ -1329,6 +1549,10 @@ func (c *restClient) UpdateCollector(ctx context.Context, req *rapidmigrationass
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/UpdateCollector")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{collector.name=projects/*/locations/*/collectors/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1357,8 +1581,12 @@ func (c *restClient) UpdateCollector(ctx context.Context, req *rapidmigrationass
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.UpdateCollectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCollectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1386,6 +1614,13 @@ func (c *restClient) DeleteCollector(ctx context.Context, req *rapidmigrationass
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/DeleteCollector")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/collectors/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1414,8 +1649,12 @@ func (c *restClient) DeleteCollector(ctx context.Context, req *rapidmigrationass
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.DeleteCollectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCollectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1445,6 +1684,13 @@ func (c *restClient) ResumeCollector(ctx context.Context, req *rapidmigrationass
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/ResumeCollector")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/collectors/*}:resume")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1473,8 +1719,12 @@ func (c *restClient) ResumeCollector(ctx context.Context, req *rapidmigrationass
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.ResumeCollectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResumeCollectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1504,6 +1754,13 @@ func (c *restClient) RegisterCollector(ctx context.Context, req *rapidmigrationa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/RegisterCollector")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/collectors/*}:register")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1532,8 +1789,12 @@ func (c *restClient) RegisterCollector(ctx context.Context, req *rapidmigrationa
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.RegisterCollectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RegisterCollectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1563,6 +1824,13 @@ func (c *restClient) PauseCollector(ctx context.Context, req *rapidmigrationasse
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//rapidmigrationassessment.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.rapidmigrationassessment.v1.RapidMigrationAssessment/PauseCollector")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/collectors/*}:pause")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1591,8 +1859,12 @@ func (c *restClient) PauseCollector(ctx context.Context, req *rapidmigrationasse
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.PauseCollectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PauseCollectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1616,6 +1888,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -1650,7 +1926,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1753,6 +2029,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1788,6 +2068,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1823,6 +2107,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1857,7 +2145,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1942,7 +2230,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateAnnotationOperation, possibly from a different process.
 func (c *gRPCClient) CreateAnnotationOperation(name string) *CreateAnnotationOperation {
 	return &CreateAnnotationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.CreateAnnotationOperation"),
 	}
 }
 
@@ -1951,7 +2239,7 @@ func (c *gRPCClient) CreateAnnotationOperation(name string) *CreateAnnotationOpe
 func (c *restClient) CreateAnnotationOperation(name string) *CreateAnnotationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAnnotationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.CreateAnnotationOperation"),
 		pollPath: override,
 	}
 }
@@ -1960,7 +2248,7 @@ func (c *restClient) CreateAnnotationOperation(name string) *CreateAnnotationOpe
 // The name must be that of a previously created CreateCollectorOperation, possibly from a different process.
 func (c *gRPCClient) CreateCollectorOperation(name string) *CreateCollectorOperation {
 	return &CreateCollectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.CreateCollectorOperation"),
 	}
 }
 
@@ -1969,7 +2257,7 @@ func (c *gRPCClient) CreateCollectorOperation(name string) *CreateCollectorOpera
 func (c *restClient) CreateCollectorOperation(name string) *CreateCollectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCollectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.CreateCollectorOperation"),
 		pollPath: override,
 	}
 }
@@ -1978,7 +2266,7 @@ func (c *restClient) CreateCollectorOperation(name string) *CreateCollectorOpera
 // The name must be that of a previously created DeleteCollectorOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCollectorOperation(name string) *DeleteCollectorOperation {
 	return &DeleteCollectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.DeleteCollectorOperation"),
 	}
 }
 
@@ -1987,7 +2275,7 @@ func (c *gRPCClient) DeleteCollectorOperation(name string) *DeleteCollectorOpera
 func (c *restClient) DeleteCollectorOperation(name string) *DeleteCollectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCollectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.DeleteCollectorOperation"),
 		pollPath: override,
 	}
 }
@@ -1996,7 +2284,7 @@ func (c *restClient) DeleteCollectorOperation(name string) *DeleteCollectorOpera
 // The name must be that of a previously created PauseCollectorOperation, possibly from a different process.
 func (c *gRPCClient) PauseCollectorOperation(name string) *PauseCollectorOperation {
 	return &PauseCollectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.PauseCollectorOperation"),
 	}
 }
 
@@ -2005,7 +2293,7 @@ func (c *gRPCClient) PauseCollectorOperation(name string) *PauseCollectorOperati
 func (c *restClient) PauseCollectorOperation(name string) *PauseCollectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &PauseCollectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.PauseCollectorOperation"),
 		pollPath: override,
 	}
 }
@@ -2014,7 +2302,7 @@ func (c *restClient) PauseCollectorOperation(name string) *PauseCollectorOperati
 // The name must be that of a previously created RegisterCollectorOperation, possibly from a different process.
 func (c *gRPCClient) RegisterCollectorOperation(name string) *RegisterCollectorOperation {
 	return &RegisterCollectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.RegisterCollectorOperation"),
 	}
 }
 
@@ -2023,7 +2311,7 @@ func (c *gRPCClient) RegisterCollectorOperation(name string) *RegisterCollectorO
 func (c *restClient) RegisterCollectorOperation(name string) *RegisterCollectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RegisterCollectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.RegisterCollectorOperation"),
 		pollPath: override,
 	}
 }
@@ -2032,7 +2320,7 @@ func (c *restClient) RegisterCollectorOperation(name string) *RegisterCollectorO
 // The name must be that of a previously created ResumeCollectorOperation, possibly from a different process.
 func (c *gRPCClient) ResumeCollectorOperation(name string) *ResumeCollectorOperation {
 	return &ResumeCollectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.ResumeCollectorOperation"),
 	}
 }
 
@@ -2041,7 +2329,7 @@ func (c *gRPCClient) ResumeCollectorOperation(name string) *ResumeCollectorOpera
 func (c *restClient) ResumeCollectorOperation(name string) *ResumeCollectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ResumeCollectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.ResumeCollectorOperation"),
 		pollPath: override,
 	}
 }
@@ -2050,7 +2338,7 @@ func (c *restClient) ResumeCollectorOperation(name string) *ResumeCollectorOpera
 // The name must be that of a previously created UpdateCollectorOperation, possibly from a different process.
 func (c *gRPCClient) UpdateCollectorOperation(name string) *UpdateCollectorOperation {
 	return &UpdateCollectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.UpdateCollectorOperation"),
 	}
 }
 
@@ -2059,7 +2347,7 @@ func (c *gRPCClient) UpdateCollectorOperation(name string) *UpdateCollectorOpera
 func (c *restClient) UpdateCollectorOperation(name string) *UpdateCollectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCollectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.UpdateCollectorOperation"),
 		pollPath: override,
 	}
 }

@@ -19,10 +19,12 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"reflect"
 	"strconv"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"cloud.google.com/go/internal/trace"
@@ -34,6 +36,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+const directAccessEnvVar = "CBT_ENABLE_DIRECTPATH"
+
 // Client is a client for reading and writing data to tables in an instance.
 //
 // A Client is safe to use concurrently, except for its Close method.
@@ -42,13 +46,12 @@ type Client struct {
 	client                  btpb.BigtableClient
 	project, instance       string
 	appProfile              string
-	metricsTracerFactory    *builtinMetricsTracerFactory
+	metricsTracerFactory    *metrics.Factory
 	disableRetryInfo        bool
 	retryOption             gax.CallOption
 	executeQueryRetryOption gax.CallOption
 	featureFlagsMD          metadata.MD // Pre-computed feature flags metadata to be sent with each request.
-	dynamicScaleMonitor     *btransport.DynamicScaleMonitor
-	connsRecycler           *btransport.ConnectionRecycler
+	mPool                   btransport.ManagedChannelPool
 }
 
 // ClientConfig has configurations for the client.
@@ -57,9 +60,11 @@ type ClientConfig struct {
 	// If unspecified, the default app profile for the instance will be used.
 	AppProfile string
 
-	// If not set or set to nil, client side metrics will be collected and exported
+	// MetricsProvider controls the built-in client-side metrics.
 	//
-	// To disable client side metrics, set 'MetricsProvider' to 'NoopMetricsProvider'
+	// Leave unset (nil) or set to DefaultMetricsProvider{} to enable the
+	// built-in Cloud Monitoring exporter (default behavior). Set to
+	// NoopMetricsProvider{} to disable metrics entirely.
 	//
 	// TODO: support user provided meter provider
 	MetricsProvider MetricsProvider
@@ -71,17 +76,26 @@ type ClientConfig struct {
 	// DisableConnectionRecycler disables the automatic preemptive refresh of connection.
 	// Preemptive connection is default to true
 	DisableConnectionRecycler bool
+
+	// DisableDirectAccess disables direct access by default.
+	DisableDirectAccess bool
 }
 
-// MetricsProvider is a wrapper for built in metrics meter provider
-type MetricsProvider interface {
-	isMetricsProvider()
-}
+// MetricsProvider is a wrapper for the built-in metrics meter provider.
+// Type alias to the internal metrics package's interface — callers keep
+// using bigtable.MetricsProvider while the implementation lives in
+// bigtable/internal/metrics so both classic and session data planes can
+// share it without an import cycle.
+type MetricsProvider = metrics.MetricsProvider
 
-// NoopMetricsProvider can be used to disable built in metrics
-type NoopMetricsProvider struct{}
+// DefaultMetricsProvider enables the built-in Cloud Monitoring metrics
+// exporter (the same behavior as leaving ClientConfig.MetricsProvider
+// nil). Type alias to the internal metrics package's implementation.
+type DefaultMetricsProvider = metrics.DefaultMetricsProvider
 
-func (NoopMetricsProvider) isMetricsProvider() {}
+// NoopMetricsProvider disables the built-in metrics. Type alias to the
+// internal metrics package's implementation.
+type NoopMetricsProvider = metrics.NoopMetricsProvider
 
 // NewClient creates a new Client for a given project and instance.
 // The default ClientConfig will be used.
@@ -99,7 +113,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	}
 
 	// Create a OpenTelemetry metrics configuration
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
+	metricsTracerFactory, err := metrics.NewFactory(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -109,33 +123,36 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		return nil, err
 	}
 	// for otel metrics
-	if metricsTracerFactory.enabled {
-		if len(metricsTracerFactory.clientOpts) > 0 {
-			o = append(o, metricsTracerFactory.clientOpts...)
+	if metricsTracerFactory.Enabled {
+		if len(metricsTracerFactory.ClientOpts) > 0 {
+			o = append(o, metricsTracerFactory.ClientOpts...)
 		}
 	}
 
 	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
 	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
-	o = append(o, option.WithGRPCDialOption(grpc.WithStatsHandler(sharedLatencyStatsHandler)))
-	// Default to a small connection pool that can be overridden.
+	o = append(o, option.WithGRPCDialOption(grpc.WithStatsHandler(metrics.SharedStatsHandler)))
+	// Default to a connection pool that can be overridden. Raised from 4 to
+	// defaultBigtableConnPoolSize to compensate for dynamic channel pool
+	// scaling being disabled by default
+	// (see https://github.com/googleapis/google-cloud-go/issues/14582).
 	o = append(o,
-		option.WithGRPCConnectionPool(4),
+		option.WithGRPCConnectionPool(defaultBigtableConnPoolSize),
 		// Set the max size to correspond to server-side limits.
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
 	)
 
-	var directPathOptions = []option.ClientOption{
+	var directAccessOptions = []option.ClientOption{
 		internaloption.EnableDirectPath(true),
 		internaloption.EnableDirectPathXds(),
+		internaloption.AllowHardBoundTokens("ALTS"),
 	}
 
 	// Allow non-default service account in DirectPath.
 	o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
 	o = append(o, opts...)
-
-	// TODO(b/372244283): Remove after b/358175516 has been fixed
-	o = append(o, internaloption.EnableAsyncRefreshDryRun(metricsTracerFactory.newAsyncRefreshErrHandler()))
+	o = append(o, internaloption.EnableNewAuthLibrary())
+	o = append(o, internaloption.EnableJwtWithScope())
 
 	disableRetryInfo := false
 
@@ -154,106 +171,53 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// as CFE/GFE will call RLS with gslb target type
 	// only TD calls the RLS with grpc target type
 	// and we evaluate the directAccess option after that.
-	directAccessMD := createFeatureFlagsMD(metricsTracerFactory.enabled, disableRetryInfo, true)
 
-	var connPool gtransport.ConnPool
-	var connPoolErr error
-	var dsm *btransport.DynamicScaleMonitor
-	var connRecycler *btransport.ConnectionRecycler
+	allowDirectAccess := isDirectAccessEnabled(config)
+	directAccessMD := createFeatureFlagsMD(metricsTracerFactory.Enabled, disableRetryInfo, allowDirectAccess)
 
+	var mPool btransport.ManagedChannelPool
 	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()
-	var connPoolSize int
-	if enableBigtableConnPool {
-		uResolver, err := internaloption.NewUnsafeResolver(o...)
-		if err != nil {
-			// just fallback
-			connPoolSize = defaultBigtableConnPoolSize
+	grpcConnOptType := reflect.TypeOf(option.WithGRPCConn(nil))
+	for _, opt := range opts {
+		if reflect.TypeOf(opt) == grpcConnOptType {
+			enableBigtableConnPool = false
+			break
 		}
-
-		connPoolSize = uResolver.ResolvedGRPCConnPoolSize()
-		// Fallback to 10 if it resolves to 0
-		if connPoolSize == 0 {
-			connPoolSize = defaultBigtableConnPoolSize
+	}
+	if !enableBigtableConnPool {
+		// Use the regular ConnPool
+		// For regular ConnPool the Direct Access is off by default so we need to check the env var again.
+		if enabled, _ := strconv.ParseBool(os.Getenv(directAccessEnvVar)); enabled {
+			o = append(o, directAccessOptions...)
 		}
-
-		fullInstanceName := fmt.Sprintf("projects/%s/instances/%s", project, instance)
-
-		directAccessDialerOptions := make([]option.ClientOption, len(o))
-		copy(directAccessDialerOptions, o)
-		directAccessDialerOptions = append(directAccessDialerOptions, directPathOptions...)
-		// enable hard bound tokens by default
-		directAccessDialerOptions = append(directAccessDialerOptions, internaloption.AllowHardBoundTokens("ALTS"))
-
-		directAccessDialer := func() (*btransport.BigtableConn, error) {
-			grpcConn, err := gtransport.Dial(ctx, directAccessDialerOptions...)
-			if err != nil {
-				return nil, err
-			}
-			return btransport.NewBigtableConn(grpcConn), nil
-		}
-
-		btPool, err := btransport.NewBigtableChannelPool(ctx,
-			connPoolSize,
-			btopt.BigtableLoadBalancingStrategy(),
-			func() (*btransport.BigtableConn, error) {
-				grpcConn, err := gtransport.Dial(ctx, o...)
-				if err != nil {
-					return nil, err
-				}
-				return btransport.NewBigtableConn(grpcConn), nil
-			},
-			clientCreationTimestamp,
-			// options
-			btransport.WithInstanceName(fullInstanceName),
-			btransport.WithAppProfile(config.AppProfile),
-			btransport.WithFeatureFlagsMetadata(directAccessMD),
-			btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
-			btransport.WithMeterProvider(metricsTracerFactory.otelMeterProvider),
-			btransport.WithDirectAccessFeatureFlagsMetadata(directAccessMD),
-			btransport.WithDirectAccessDialer(directAccessDialer),
-		)
-
-		if err != nil {
-			connPoolErr = err
-		} else {
-			connPool = btPool
-
-			// Validate dynamic config early if enabled
-			if !config.DisableDynamicChannelPool {
-				if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), defaultBigtableConnPoolSize); err != nil {
-					return nil, fmt.Errorf("invalid DynamicChannelPoolConfig: %w", err)
-				}
-
-				dsm = btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), btPool)
-				dsm.Start(ctx) // Start the monitor's background goroutine
-			}
-			// connection recyler.
-			if !config.DisableConnectionRecycler {
-				connRecycler = btransport.NewConnectionRecycler(btopt.DefaultConnectionRecycleConfig(), btPool)
-				connRecycler.Start(ctx) // Start the monitor's background goroutine
-			}
-
-		}
-
-	} else {
-		enableDirectAccess, _ := strconv.ParseBool(os.Getenv("CBT_ENABLE_DIRECTPATH"))
-		if enableDirectAccess {
-			o = append(o, directPathOptions...)
-			if disableBoundToken, _ := strconv.ParseBool(os.Getenv("CBT_DISABLE_DIRECTPATH_BOUND_TOKEN")); !disableBoundToken {
-				o = append(o, internaloption.AllowHardBoundTokens("ALTS"))
-			}
-		}
-		// use to regular ConnPool
-		connPool, connPoolErr = gtransport.DialPool(ctx, o...)
 	}
 
-	if connPoolErr != nil {
-		return nil, connPoolErr
+	poolConfig := btransport.ChannelPoolConfig{
+		AppProfile:                config.AppProfile,
+		DisableDynamicChannelPool: config.DisableDynamicChannelPool,
+		DisableConnectionRecycler: config.DisableConnectionRecycler,
+		DisableDirectAccess:       config.DisableDirectAccess,
+	}
+
+	mPool, err = btransport.CreateAndStartManagedChannelPool(
+		ctx,
+		project,
+		instance,
+		poolConfig,
+		metricsTracerFactory.OtelMeterProvider,
+		o,
+		directAccessOptions,
+		directAccessMD,
+		clientCreationTimestamp,
+		enableBigtableConnPool,
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	return &Client{
-		connPool:                connPool,
-		client:                  btpb.NewBigtableClient(connPool),
+		connPool:                mPool.Pool,
+		client:                  btpb.NewBigtableClient(mPool.Pool),
 		project:                 project,
 		instance:                instance,
 		appProfile:              config.AppProfile,
@@ -262,23 +226,16 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		retryOption:             retryOption,
 		executeQueryRetryOption: executeQueryRetryOption,
 		featureFlagsMD:          directAccessMD,
-		dynamicScaleMonitor:     dsm,
-		connsRecycler:           connRecycler,
+		mPool:                   mPool,
 	}, nil
 }
 
 // Close closes the Client.
 func (c *Client) Close() error {
-	if c.dynamicScaleMonitor != nil {
-		c.dynamicScaleMonitor.Stop()
-	}
 	if c.metricsTracerFactory != nil {
-		c.metricsTracerFactory.shutdown()
+		c.metricsTracerFactory.Shutdown()
 	}
-	if c.connsRecycler != nil {
-		c.connsRecycler.Stop()
-	}
-	return c.connPool.Close()
+	return c.mPool.Close()
 }
 
 func (c *Client) fullInstanceName() string {
@@ -365,20 +322,21 @@ func (c *Client) PingAndWarm(ctx context.Context) (err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/PingAndWarm")
 	defer func() { trace.EndSpan(ctx, err) }()
 	mt := c.newBuiltinMetricsTracer(ctx, "", false)
-	defer mt.recordOperationCompletion()
+	defer mt.RecordOperationCompletion()
+	ctx = metrics.NewContext(ctx, mt)
 
-	err = c.pingerWithMetadata(ctx, mt)
-	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.currOp.setStatus(statusCode.String())
+	err = c.pingerWithMetadata(ctx)
+	statusCode, statusErr := metrics.ConvertToGrpcStatusErr(err)
+	mt.SetCurrOpStatus(statusCode)
 	return statusErr
 }
 
-func (c *Client) pingerWithMetadata(ctx context.Context, mt *builtinMetricsTracer) (err error) {
+func (c *Client) pingerWithMetadata(ctx context.Context) (err error) {
 	req := &btpb.PingAndWarmRequest{
 		Name:         c.fullInstanceName(),
 		AppProfileId: c.appProfile,
 	}
-	err = gaxInvokeWithRecorder(ctx, mt, "PingAndWarm", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+	err = gaxInvokeWithRecorder(ctx, "PingAndWarm", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		var err error
 		_, err = c.client.PingAndWarm(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
 		return err
@@ -388,7 +346,14 @@ func (c *Client) pingerWithMetadata(ctx context.Context, mt *builtinMetricsTrace
 
 }
 
-func (c *Client) newBuiltinMetricsTracer(ctx context.Context, table string, isStreaming bool) *builtinMetricsTracer {
-	mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx, table, isStreaming)
-	return &mt
+func (c *Client) newBuiltinMetricsTracer(ctx context.Context, table string, isStreaming bool) *metrics.Tracer {
+	return c.metricsTracerFactory.CreateTracer(ctx, table, isStreaming)
+}
+
+func isDirectAccessEnabled(config ClientConfig) bool {
+	if os.Getenv(directAccessEnvVar) == "" {
+		return !config.DisableDirectAccess
+	}
+	res, _ := strconv.ParseBool(os.Getenv(directAccessEnvVar))
+	return res
 }

@@ -29,6 +29,18 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *DeploymentGroupIterator) All() iter.Seq2[*configpb.DeploymentGroup, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeploymentGroupRevisionIterator) All() iter.Seq2[*configpb.DeploymentGroupRevision, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *DeploymentIterator) All() iter.Seq2[*configpb.Deployment, error] {
 	return iterator.RangeAdapter(it.Next)
 }

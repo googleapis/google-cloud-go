@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -270,7 +272,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -388,6 +390,16 @@ type gRPCClient struct {
 // Service to manage AssuredWorkloads.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "assuredworkloads",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/assuredworkloads/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "assuredworkloads.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -410,6 +422,28 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "assuredworkloads",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/assuredworkloads/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "assuredworkloads.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateWorkload = append(client.CallOptions.CreateWorkload, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateWorkload = append(client.CallOptions.UpdateWorkload, gax.WithClientMetrics(metrics))
+		client.CallOptions.RestrictAllowedResources = append(client.CallOptions.RestrictAllowedResources, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteWorkload = append(client.CallOptions.DeleteWorkload, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetWorkload = append(client.CallOptions.GetWorkload, gax.WithClientMetrics(metrics))
+		client.CallOptions.AnalyzeWorkloadMove = append(client.CallOptions.AnalyzeWorkloadMove, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListWorkloads = append(client.CallOptions.ListWorkloads, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -446,7 +480,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -479,6 +513,16 @@ type restClient struct {
 // Service to manage AssuredWorkloads.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "assuredworkloads",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/assuredworkloads/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "assuredworkloads.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -492,6 +536,29 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "assuredworkloads",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/assuredworkloads/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "assuredworkloads.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateWorkload = append(callOpts.CreateWorkload, gax.WithClientMetrics(metrics))
+		callOpts.UpdateWorkload = append(callOpts.UpdateWorkload, gax.WithClientMetrics(metrics))
+		callOpts.RestrictAllowedResources = append(callOpts.RestrictAllowedResources, gax.WithClientMetrics(metrics))
+		callOpts.DeleteWorkload = append(callOpts.DeleteWorkload, gax.WithClientMetrics(metrics))
+		callOpts.GetWorkload = append(callOpts.GetWorkload, gax.WithClientMetrics(metrics))
+		callOpts.AnalyzeWorkloadMove = append(callOpts.AnalyzeWorkloadMove, gax.WithClientMetrics(metrics))
+		callOpts.ListWorkloads = append(callOpts.ListWorkloads, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -529,7 +596,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -548,6 +615,12 @@ func (c *gRPCClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//assuredworkloads.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService/CreateWorkload")
+	}
 	opts = append((*c.CallOptions).CreateWorkload[0:len((*c.CallOptions).CreateWorkload):len((*c.CallOptions).CreateWorkload)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -558,13 +631,20 @@ func (c *gRPCClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*assuredworkloads.CreateWorkloadOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkloadOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
 func (c *gRPCClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb.UpdateWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService/UpdateWorkload")
+	}
 	opts = append((*c.CallOptions).UpdateWorkload[0:len((*c.CallOptions).UpdateWorkload):len((*c.CallOptions).UpdateWorkload)], opts...)
 	var resp *assuredworkloadspb.Workload
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -583,6 +663,9 @@ func (c *gRPCClient) RestrictAllowedResources(ctx context.Context, req *assuredw
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService/RestrictAllowedResources")
+	}
 	opts = append((*c.CallOptions).RestrictAllowedResources[0:len((*c.CallOptions).RestrictAllowedResources):len((*c.CallOptions).RestrictAllowedResources)], opts...)
 	var resp *assuredworkloadspb.RestrictAllowedResourcesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -601,6 +684,12 @@ func (c *gRPCClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//assuredworkloads.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService/DeleteWorkload")
+	}
 	opts = append((*c.CallOptions).DeleteWorkload[0:len((*c.CallOptions).DeleteWorkload):len((*c.CallOptions).DeleteWorkload)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -612,6 +701,9 @@ func (c *gRPCClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb
 
 func (c *gRPCClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.GetWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService/GetWorkload")
+	}
 	opts = append((*c.CallOptions).GetWorkload[0:len((*c.CallOptions).GetWorkload):len((*c.CallOptions).GetWorkload)], opts...)
 	var resp *assuredworkloadspb.Workload
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -627,6 +719,9 @@ func (c *gRPCClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.Ge
 
 func (c *gRPCClient) AnalyzeWorkloadMove(ctx context.Context, req *assuredworkloadspb.AnalyzeWorkloadMoveRequest, opts ...gax.CallOption) (*assuredworkloadspb.AnalyzeWorkloadMoveResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService/AnalyzeWorkloadMove")
+	}
 	opts = append((*c.CallOptions).AnalyzeWorkloadMove[0:len((*c.CallOptions).AnalyzeWorkloadMove):len((*c.CallOptions).AnalyzeWorkloadMove)], opts...)
 	var resp *assuredworkloadspb.AnalyzeWorkloadMoveResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -642,9 +737,12 @@ func (c *gRPCClient) AnalyzeWorkloadMove(ctx context.Context, req *assuredworklo
 
 func (c *gRPCClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.ListWorkloadsRequest, opts ...gax.CallOption) *WorkloadIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService/ListWorkloads")
+	}
 	opts = append((*c.CallOptions).ListWorkloads[0:len((*c.CallOptions).ListWorkloads):len((*c.CallOptions).ListWorkloads)], opts...)
 	it := &WorkloadIterator{}
-	req = proto.Clone(req).(*assuredworkloadspb.ListWorkloadsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assuredworkloadspb.Workload, string, error) {
 		resp := &assuredworkloadspb.ListWorkloadsResponse{}
 		if pageToken != "" {
@@ -688,6 +786,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -706,9 +807,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -776,6 +880,13 @@ func (c *restClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//assuredworkloads.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService/CreateWorkload")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=organizations/*/locations/*}/workloads")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -804,8 +915,12 @@ func (c *restClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*assuredworkloads.CreateWorkloadOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkloadOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -946,6 +1061,9 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService/UpdateWorkload")
+	}
 	opts = append((*c.CallOptions).UpdateWorkload[0:len((*c.CallOptions).UpdateWorkload):len((*c.CallOptions).UpdateWorkload)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &assuredworkloadspb.Workload{}
@@ -1007,6 +1125,10 @@ func (c *restClient) RestrictAllowedResources(ctx context.Context, req *assuredw
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService/RestrictAllowedResources")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=organizations/*/locations/*/workloads/*}:restrictAllowedResources")
+	}
 	opts = append((*c.CallOptions).RestrictAllowedResources[0:len((*c.CallOptions).RestrictAllowedResources):len((*c.CallOptions).RestrictAllowedResources)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &assuredworkloadspb.RestrictAllowedResourcesResponse{}
@@ -1065,6 +1187,13 @@ func (c *restClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//assuredworkloads.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService/DeleteWorkload")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=organizations/*/locations/*/workloads/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1098,6 +1227,9 @@ func (c *restClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.Ge
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService/GetWorkload")
+	}
 	opts = append((*c.CallOptions).GetWorkload[0:len((*c.CallOptions).GetWorkload):len((*c.CallOptions).GetWorkload)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &assuredworkloadspb.Workload{}
@@ -1153,6 +1285,9 @@ func (c *restClient) AnalyzeWorkloadMove(ctx context.Context, req *assuredworklo
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService/AnalyzeWorkloadMove")
+	}
 	opts = append((*c.CallOptions).AnalyzeWorkloadMove[0:len((*c.CallOptions).AnalyzeWorkloadMove):len((*c.CallOptions).AnalyzeWorkloadMove)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &assuredworkloadspb.AnalyzeWorkloadMoveResponse{}
@@ -1187,7 +1322,7 @@ func (c *restClient) AnalyzeWorkloadMove(ctx context.Context, req *assuredworklo
 // ListWorkloads lists Assured Workloads under a CRM Node.
 func (c *restClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.ListWorkloadsRequest, opts ...gax.CallOption) *WorkloadIterator {
 	it := &WorkloadIterator{}
-	req = proto.Clone(req).(*assuredworkloadspb.ListWorkloadsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assuredworkloadspb.Workload, string, error) {
 		resp := &assuredworkloadspb.ListWorkloadsResponse{}
@@ -1285,6 +1420,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=organizations/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1319,7 +1458,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1404,7 +1543,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateWorkloadOperation, possibly from a different process.
 func (c *gRPCClient) CreateWorkloadOperation(name string) *CreateWorkloadOperation {
 	return &CreateWorkloadOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*assuredworkloads.CreateWorkloadOperation"),
 	}
 }
 
@@ -1413,7 +1552,7 @@ func (c *gRPCClient) CreateWorkloadOperation(name string) *CreateWorkloadOperati
 func (c *restClient) CreateWorkloadOperation(name string) *CreateWorkloadOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &CreateWorkloadOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*assuredworkloads.CreateWorkloadOperation"),
 		pollPath: override,
 	}
 }

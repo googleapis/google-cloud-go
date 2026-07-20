@@ -684,3 +684,26 @@ func (m Sessions) update(ctx context.Context, name string, config *types.UpdateA
 
 	return response, nil
 }
+
+// Create creates a session for the given name, user ID, and config, and returns the session
+// operation.
+func (m Sessions) Create(ctx context.Context, name string, userId string, config *types.CreateAgentEngineSessionConfig) (*types.AgentEngineSessionOperation, error) {
+	return m.create(ctx, name, userId, config)
+}
+
+// List lists the sessions for the given name and config, and returns the response.
+func (m Sessions) List(ctx context.Context, name string, config *types.ListAgentEngineSessionsConfig) (*types.ListReasoningEnginesSessionsResponse, error) {
+	return m.list(ctx, name, config)
+}
+
+// GetSessionOperation returns the session operation for the given operation name and config, and
+// returns the session operation representing the get session process.
+func (m Sessions) GetSessionOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineSessionOperation, error) {
+	return m.getSessionOperation(ctx, operationName, config)
+}
+
+// Update updates the session with the specified name and returns the session operation representing
+// the update session process.
+func (m Sessions) Update(ctx context.Context, name string, config *types.UpdateAgentEngineSessionConfig) (*types.AgentEngineSessionOperation, error) {
+	return m.update(ctx, name, config)
+}

@@ -33,6 +33,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -388,7 +390,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -633,6 +635,16 @@ type gRPCClient struct {
 // determine the status of the build.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudbuild",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/cloudbuild/apiv1/v2",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudbuild.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -654,6 +666,38 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudbuild",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudbuild/apiv1/v2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudbuild.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateBuild = append(client.CallOptions.CreateBuild, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetBuild = append(client.CallOptions.GetBuild, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListBuilds = append(client.CallOptions.ListBuilds, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelBuild = append(client.CallOptions.CancelBuild, gax.WithClientMetrics(metrics))
+		client.CallOptions.RetryBuild = append(client.CallOptions.RetryBuild, gax.WithClientMetrics(metrics))
+		client.CallOptions.ApproveBuild = append(client.CallOptions.ApproveBuild, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateBuildTrigger = append(client.CallOptions.CreateBuildTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetBuildTrigger = append(client.CallOptions.GetBuildTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListBuildTriggers = append(client.CallOptions.ListBuildTriggers, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteBuildTrigger = append(client.CallOptions.DeleteBuildTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateBuildTrigger = append(client.CallOptions.UpdateBuildTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.RunBuildTrigger = append(client.CallOptions.RunBuildTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReceiveTriggerWebhook = append(client.CallOptions.ReceiveTriggerWebhook, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateWorkerPool = append(client.CallOptions.CreateWorkerPool, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetWorkerPool = append(client.CallOptions.GetWorkerPool, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteWorkerPool = append(client.CallOptions.DeleteWorkerPool, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateWorkerPool = append(client.CallOptions.UpdateWorkerPool, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListWorkerPools = append(client.CallOptions.ListWorkerPools, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDefaultServiceAccount = append(client.CallOptions.GetDefaultServiceAccount, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -690,7 +734,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -730,6 +774,16 @@ type restClient struct {
 // determine the status of the build.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudbuild",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/cloudbuild/apiv1/v2",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudbuild.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -743,6 +797,39 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudbuild",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudbuild/apiv1/v2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudbuild.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateBuild = append(callOpts.CreateBuild, gax.WithClientMetrics(metrics))
+		callOpts.GetBuild = append(callOpts.GetBuild, gax.WithClientMetrics(metrics))
+		callOpts.ListBuilds = append(callOpts.ListBuilds, gax.WithClientMetrics(metrics))
+		callOpts.CancelBuild = append(callOpts.CancelBuild, gax.WithClientMetrics(metrics))
+		callOpts.RetryBuild = append(callOpts.RetryBuild, gax.WithClientMetrics(metrics))
+		callOpts.ApproveBuild = append(callOpts.ApproveBuild, gax.WithClientMetrics(metrics))
+		callOpts.CreateBuildTrigger = append(callOpts.CreateBuildTrigger, gax.WithClientMetrics(metrics))
+		callOpts.GetBuildTrigger = append(callOpts.GetBuildTrigger, gax.WithClientMetrics(metrics))
+		callOpts.ListBuildTriggers = append(callOpts.ListBuildTriggers, gax.WithClientMetrics(metrics))
+		callOpts.DeleteBuildTrigger = append(callOpts.DeleteBuildTrigger, gax.WithClientMetrics(metrics))
+		callOpts.UpdateBuildTrigger = append(callOpts.UpdateBuildTrigger, gax.WithClientMetrics(metrics))
+		callOpts.RunBuildTrigger = append(callOpts.RunBuildTrigger, gax.WithClientMetrics(metrics))
+		callOpts.ReceiveTriggerWebhook = append(callOpts.ReceiveTriggerWebhook, gax.WithClientMetrics(metrics))
+		callOpts.CreateWorkerPool = append(callOpts.CreateWorkerPool, gax.WithClientMetrics(metrics))
+		callOpts.GetWorkerPool = append(callOpts.GetWorkerPool, gax.WithClientMetrics(metrics))
+		callOpts.DeleteWorkerPool = append(callOpts.DeleteWorkerPool, gax.WithClientMetrics(metrics))
+		callOpts.UpdateWorkerPool = append(callOpts.UpdateWorkerPool, gax.WithClientMetrics(metrics))
+		callOpts.ListWorkerPools = append(callOpts.ListWorkerPools, gax.WithClientMetrics(metrics))
+		callOpts.GetDefaultServiceAccount = append(callOpts.GetDefaultServiceAccount, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -780,7 +867,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -808,6 +895,12 @@ func (c *gRPCClient) CreateBuild(ctx context.Context, req *cloudbuildpb.CreateBu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/CreateBuild")
+	}
 	opts = append((*c.CallOptions).CreateBuild[0:len((*c.CallOptions).CreateBuild):len((*c.CallOptions).CreateBuild)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -818,8 +911,12 @@ func (c *gRPCClient) CreateBuild(ctx context.Context, req *cloudbuildpb.CreateBu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.CreateBuildOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBuildOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -837,6 +934,12 @@ func (c *gRPCClient) GetBuild(ctx context.Context, req *cloudbuildpb.GetBuildReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/GetBuild")
+	}
 	opts = append((*c.CallOptions).GetBuild[0:len((*c.CallOptions).GetBuild):len((*c.CallOptions).GetBuild)], opts...)
 	var resp *cloudbuildpb.Build
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -864,9 +967,15 @@ func (c *gRPCClient) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuild
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/ListBuilds")
+	}
 	opts = append((*c.CallOptions).ListBuilds[0:len((*c.CallOptions).ListBuilds):len((*c.CallOptions).ListBuilds)], opts...)
 	it := &BuildIterator{}
-	req = proto.Clone(req).(*cloudbuildpb.ListBuildsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.Build, string, error) {
 		resp := &cloudbuildpb.ListBuildsResponse{}
 		if pageToken != "" {
@@ -919,6 +1028,12 @@ func (c *gRPCClient) CancelBuild(ctx context.Context, req *cloudbuildpb.CancelBu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/CancelBuild")
+	}
 	opts = append((*c.CallOptions).CancelBuild[0:len((*c.CallOptions).CancelBuild):len((*c.CallOptions).CancelBuild)], opts...)
 	var resp *cloudbuildpb.Build
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -946,6 +1061,12 @@ func (c *gRPCClient) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuil
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/RetryBuild")
+	}
 	opts = append((*c.CallOptions).RetryBuild[0:len((*c.CallOptions).RetryBuild):len((*c.CallOptions).RetryBuild)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -956,8 +1077,12 @@ func (c *gRPCClient) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuil
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.RetryBuildOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RetryBuildOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -975,6 +1100,9 @@ func (c *gRPCClient) ApproveBuild(ctx context.Context, req *cloudbuildpb.Approve
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/ApproveBuild")
+	}
 	opts = append((*c.CallOptions).ApproveBuild[0:len((*c.CallOptions).ApproveBuild):len((*c.CallOptions).ApproveBuild)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -985,8 +1113,12 @@ func (c *gRPCClient) ApproveBuild(ctx context.Context, req *cloudbuildpb.Approve
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.ApproveBuildOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ApproveBuildOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1004,6 +1136,12 @@ func (c *gRPCClient) CreateBuildTrigger(ctx context.Context, req *cloudbuildpb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/CreateBuildTrigger")
+	}
 	opts = append((*c.CallOptions).CreateBuildTrigger[0:len((*c.CallOptions).CreateBuildTrigger):len((*c.CallOptions).CreateBuildTrigger)], opts...)
 	var resp *cloudbuildpb.BuildTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1031,6 +1169,12 @@ func (c *gRPCClient) GetBuildTrigger(ctx context.Context, req *cloudbuildpb.GetB
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/GetBuildTrigger")
+	}
 	opts = append((*c.CallOptions).GetBuildTrigger[0:len((*c.CallOptions).GetBuildTrigger):len((*c.CallOptions).GetBuildTrigger)], opts...)
 	var resp *cloudbuildpb.BuildTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1058,9 +1202,15 @@ func (c *gRPCClient) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/ListBuildTriggers")
+	}
 	opts = append((*c.CallOptions).ListBuildTriggers[0:len((*c.CallOptions).ListBuildTriggers):len((*c.CallOptions).ListBuildTriggers)], opts...)
 	it := &BuildTriggerIterator{}
-	req = proto.Clone(req).(*cloudbuildpb.ListBuildTriggersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.BuildTrigger, string, error) {
 		resp := &cloudbuildpb.ListBuildTriggersResponse{}
 		if pageToken != "" {
@@ -1113,6 +1263,12 @@ func (c *gRPCClient) DeleteBuildTrigger(ctx context.Context, req *cloudbuildpb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/DeleteBuildTrigger")
+	}
 	opts = append((*c.CallOptions).DeleteBuildTrigger[0:len((*c.CallOptions).DeleteBuildTrigger):len((*c.CallOptions).DeleteBuildTrigger)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1136,6 +1292,9 @@ func (c *gRPCClient) UpdateBuildTrigger(ctx context.Context, req *cloudbuildpb.U
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/UpdateBuildTrigger")
+	}
 	opts = append((*c.CallOptions).UpdateBuildTrigger[0:len((*c.CallOptions).UpdateBuildTrigger):len((*c.CallOptions).UpdateBuildTrigger)], opts...)
 	var resp *cloudbuildpb.BuildTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1163,6 +1322,12 @@ func (c *gRPCClient) RunBuildTrigger(ctx context.Context, req *cloudbuildpb.RunB
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/RunBuildTrigger")
+	}
 	opts = append((*c.CallOptions).RunBuildTrigger[0:len((*c.CallOptions).RunBuildTrigger):len((*c.CallOptions).RunBuildTrigger)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1173,8 +1338,12 @@ func (c *gRPCClient) RunBuildTrigger(ctx context.Context, req *cloudbuildpb.RunB
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.RunBuildTriggerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunBuildTriggerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1183,6 +1352,9 @@ func (c *gRPCClient) ReceiveTriggerWebhook(ctx context.Context, req *cloudbuildp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/ReceiveTriggerWebhook")
+	}
 	opts = append((*c.CallOptions).ReceiveTriggerWebhook[0:len((*c.CallOptions).ReceiveTriggerWebhook):len((*c.CallOptions).ReceiveTriggerWebhook)], opts...)
 	var resp *cloudbuildpb.ReceiveTriggerWebhookResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1210,6 +1382,12 @@ func (c *gRPCClient) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/CreateWorkerPool")
+	}
 	opts = append((*c.CallOptions).CreateWorkerPool[0:len((*c.CallOptions).CreateWorkerPool):len((*c.CallOptions).CreateWorkerPool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1220,8 +1398,12 @@ func (c *gRPCClient) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.Cre
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.CreateWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1239,6 +1421,12 @@ func (c *gRPCClient) GetWorkerPool(ctx context.Context, req *cloudbuildpb.GetWor
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/GetWorkerPool")
+	}
 	opts = append((*c.CallOptions).GetWorkerPool[0:len((*c.CallOptions).GetWorkerPool):len((*c.CallOptions).GetWorkerPool)], opts...)
 	var resp *cloudbuildpb.WorkerPool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1266,6 +1454,12 @@ func (c *gRPCClient) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/DeleteWorkerPool")
+	}
 	opts = append((*c.CallOptions).DeleteWorkerPool[0:len((*c.CallOptions).DeleteWorkerPool):len((*c.CallOptions).DeleteWorkerPool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1276,8 +1470,12 @@ func (c *gRPCClient) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.Del
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.DeleteWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1295,6 +1493,9 @@ func (c *gRPCClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.Upd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/UpdateWorkerPool")
+	}
 	opts = append((*c.CallOptions).UpdateWorkerPool[0:len((*c.CallOptions).UpdateWorkerPool):len((*c.CallOptions).UpdateWorkerPool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1305,8 +1506,12 @@ func (c *gRPCClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.Upd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.UpdateWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1324,9 +1529,15 @@ func (c *gRPCClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/ListWorkerPools")
+	}
 	opts = append((*c.CallOptions).ListWorkerPools[0:len((*c.CallOptions).ListWorkerPools):len((*c.CallOptions).ListWorkerPools)], opts...)
 	it := &WorkerPoolIterator{}
-	req = proto.Clone(req).(*cloudbuildpb.ListWorkerPoolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.WorkerPool, string, error) {
 		resp := &cloudbuildpb.ListWorkerPoolsResponse{}
 		if pageToken != "" {
@@ -1379,6 +1590,12 @@ func (c *gRPCClient) GetDefaultServiceAccount(ctx context.Context, req *cloudbui
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/GetDefaultServiceAccount")
+	}
 	opts = append((*c.CallOptions).GetDefaultServiceAccount[0:len((*c.CallOptions).GetDefaultServiceAccount):len((*c.CallOptions).GetDefaultServiceAccount)], opts...)
 	var resp *cloudbuildpb.DefaultServiceAccount
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1434,6 +1651,13 @@ func (c *restClient) CreateBuild(ctx context.Context, req *cloudbuildpb.CreateBu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/CreateBuild")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/builds")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1462,8 +1686,12 @@ func (c *restClient) CreateBuild(ctx context.Context, req *cloudbuildpb.CreateBu
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.CreateBuildOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBuildOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1502,6 +1730,13 @@ func (c *restClient) GetBuild(ctx context.Context, req *cloudbuildpb.GetBuildReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/GetBuild")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/builds/{id}")
+	}
 	opts = append((*c.CallOptions).GetBuild[0:len((*c.CallOptions).GetBuild):len((*c.CallOptions).GetBuild)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.Build{}
@@ -1539,7 +1774,7 @@ func (c *restClient) GetBuild(ctx context.Context, req *cloudbuildpb.GetBuildReq
 // successfully or unsuccessfully.
 func (c *restClient) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuildsRequest, opts ...gax.CallOption) *BuildIterator {
 	it := &BuildIterator{}
-	req = proto.Clone(req).(*cloudbuildpb.ListBuildsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.Build, string, error) {
 		resp := &cloudbuildpb.ListBuildsResponse{}
@@ -1654,6 +1889,13 @@ func (c *restClient) CancelBuild(ctx context.Context, req *cloudbuildpb.CancelBu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/CancelBuild")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/builds/{id}:cancel")
+	}
 	opts = append((*c.CallOptions).CancelBuild[0:len((*c.CallOptions).CancelBuild):len((*c.CallOptions).CancelBuild)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.Build{}
@@ -1747,6 +1989,13 @@ func (c *restClient) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuil
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/RetryBuild")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/builds/{id}:retry")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1775,8 +2024,12 @@ func (c *restClient) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuil
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.RetryBuildOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RetryBuildOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1820,6 +2073,10 @@ func (c *restClient) ApproveBuild(ctx context.Context, req *cloudbuildpb.Approve
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/ApproveBuild")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/builds/*}:approve")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1848,8 +2105,12 @@ func (c *restClient) ApproveBuild(ctx context.Context, req *cloudbuildpb.Approve
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.ApproveBuildOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ApproveBuildOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1892,6 +2153,13 @@ func (c *restClient) CreateBuildTrigger(ctx context.Context, req *cloudbuildpb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/CreateBuildTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/triggers")
+	}
 	opts = append((*c.CallOptions).CreateBuildTrigger[0:len((*c.CallOptions).CreateBuildTrigger):len((*c.CallOptions).CreateBuildTrigger)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.BuildTrigger{}
@@ -1954,6 +2222,13 @@ func (c *restClient) GetBuildTrigger(ctx context.Context, req *cloudbuildpb.GetB
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/GetBuildTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/triggers/{trigger_id}")
+	}
 	opts = append((*c.CallOptions).GetBuildTrigger[0:len((*c.CallOptions).GetBuildTrigger):len((*c.CallOptions).GetBuildTrigger)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.BuildTrigger{}
@@ -1988,7 +2263,7 @@ func (c *restClient) GetBuildTrigger(ctx context.Context, req *cloudbuildpb.GetB
 // ListBuildTriggers lists existing BuildTriggers.
 func (c *restClient) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.ListBuildTriggersRequest, opts ...gax.CallOption) *BuildTriggerIterator {
 	it := &BuildTriggerIterator{}
-	req = proto.Clone(req).(*cloudbuildpb.ListBuildTriggersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.BuildTrigger, string, error) {
 		resp := &cloudbuildpb.ListBuildTriggersResponse{}
@@ -2097,6 +2372,13 @@ func (c *restClient) DeleteBuildTrigger(ctx context.Context, req *cloudbuildpb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/DeleteBuildTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/triggers/{trigger_id}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2155,6 +2437,10 @@ func (c *restClient) UpdateBuildTrigger(ctx context.Context, req *cloudbuildpb.U
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/UpdateBuildTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/triggers/{trigger_id}")
+	}
 	opts = append((*c.CallOptions).UpdateBuildTrigger[0:len((*c.CallOptions).UpdateBuildTrigger):len((*c.CallOptions).UpdateBuildTrigger)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.BuildTrigger{}
@@ -2230,6 +2516,13 @@ func (c *restClient) RunBuildTrigger(ctx context.Context, req *cloudbuildpb.RunB
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/RunBuildTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/triggers/{trigger_id}:run")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2258,8 +2551,12 @@ func (c *restClient) RunBuildTrigger(ctx context.Context, req *cloudbuildpb.RunB
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.RunBuildTriggerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunBuildTriggerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2297,6 +2594,10 @@ func (c *restClient) ReceiveTriggerWebhook(ctx context.Context, req *cloudbuildp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/ReceiveTriggerWebhook")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/triggers/{trigger}:webhook")
+	}
 	opts = append((*c.CallOptions).ReceiveTriggerWebhook[0:len((*c.CallOptions).ReceiveTriggerWebhook):len((*c.CallOptions).ReceiveTriggerWebhook)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.ReceiveTriggerWebhookResponse{}
@@ -2367,6 +2668,13 @@ func (c *restClient) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.Cre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/CreateWorkerPool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/workerPools")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2395,8 +2703,12 @@ func (c *restClient) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.Cre
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.CreateWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2429,6 +2741,13 @@ func (c *restClient) GetWorkerPool(ctx context.Context, req *cloudbuildpb.GetWor
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/GetWorkerPool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/workerPools/*}")
+	}
 	opts = append((*c.CallOptions).GetWorkerPool[0:len((*c.CallOptions).GetWorkerPool):len((*c.CallOptions).GetWorkerPool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.WorkerPool{}
@@ -2497,6 +2816,13 @@ func (c *restClient) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/DeleteWorkerPool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/workerPools/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2525,8 +2851,12 @@ func (c *restClient) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.DeleteWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2576,6 +2906,10 @@ func (c *restClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.Upd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/UpdateWorkerPool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{worker_pool.name=projects/*/locations/*/workerPools/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2604,8 +2938,12 @@ func (c *restClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.Upd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.UpdateWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2613,7 +2951,7 @@ func (c *restClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.Upd
 // ListWorkerPools lists WorkerPools.
 func (c *restClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.ListWorkerPoolsRequest, opts ...gax.CallOption) *WorkerPoolIterator {
 	it := &WorkerPoolIterator{}
-	req = proto.Clone(req).(*cloudbuildpb.ListWorkerPoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.WorkerPool, string, error) {
 		resp := &cloudbuildpb.ListWorkerPoolsResponse{}
@@ -2716,6 +3054,13 @@ func (c *restClient) GetDefaultServiceAccount(ctx context.Context, req *cloudbui
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbuild.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudbuild.v1.CloudBuild/GetDefaultServiceAccount")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/defaultServiceAccount}")
+	}
 	opts = append((*c.CallOptions).GetDefaultServiceAccount[0:len((*c.CallOptions).GetDefaultServiceAccount):len((*c.CallOptions).GetDefaultServiceAccount)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.DefaultServiceAccount{}
@@ -2751,7 +3096,7 @@ func (c *restClient) GetDefaultServiceAccount(ctx context.Context, req *cloudbui
 // The name must be that of a previously created ApproveBuildOperation, possibly from a different process.
 func (c *gRPCClient) ApproveBuildOperation(name string) *ApproveBuildOperation {
 	return &ApproveBuildOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.ApproveBuildOperation"),
 	}
 }
 
@@ -2760,7 +3105,7 @@ func (c *gRPCClient) ApproveBuildOperation(name string) *ApproveBuildOperation {
 func (c *restClient) ApproveBuildOperation(name string) *ApproveBuildOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ApproveBuildOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.ApproveBuildOperation"),
 		pollPath: override,
 	}
 }
@@ -2769,7 +3114,7 @@ func (c *restClient) ApproveBuildOperation(name string) *ApproveBuildOperation {
 // The name must be that of a previously created CreateBuildOperation, possibly from a different process.
 func (c *gRPCClient) CreateBuildOperation(name string) *CreateBuildOperation {
 	return &CreateBuildOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.CreateBuildOperation"),
 	}
 }
 
@@ -2778,7 +3123,7 @@ func (c *gRPCClient) CreateBuildOperation(name string) *CreateBuildOperation {
 func (c *restClient) CreateBuildOperation(name string) *CreateBuildOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBuildOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.CreateBuildOperation"),
 		pollPath: override,
 	}
 }
@@ -2787,7 +3132,7 @@ func (c *restClient) CreateBuildOperation(name string) *CreateBuildOperation {
 // The name must be that of a previously created CreateWorkerPoolOperation, possibly from a different process.
 func (c *gRPCClient) CreateWorkerPoolOperation(name string) *CreateWorkerPoolOperation {
 	return &CreateWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.CreateWorkerPoolOperation"),
 	}
 }
 
@@ -2796,7 +3141,7 @@ func (c *gRPCClient) CreateWorkerPoolOperation(name string) *CreateWorkerPoolOpe
 func (c *restClient) CreateWorkerPoolOperation(name string) *CreateWorkerPoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.CreateWorkerPoolOperation"),
 		pollPath: override,
 	}
 }
@@ -2805,7 +3150,7 @@ func (c *restClient) CreateWorkerPoolOperation(name string) *CreateWorkerPoolOpe
 // The name must be that of a previously created DeleteWorkerPoolOperation, possibly from a different process.
 func (c *gRPCClient) DeleteWorkerPoolOperation(name string) *DeleteWorkerPoolOperation {
 	return &DeleteWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.DeleteWorkerPoolOperation"),
 	}
 }
 
@@ -2814,7 +3159,7 @@ func (c *gRPCClient) DeleteWorkerPoolOperation(name string) *DeleteWorkerPoolOpe
 func (c *restClient) DeleteWorkerPoolOperation(name string) *DeleteWorkerPoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.DeleteWorkerPoolOperation"),
 		pollPath: override,
 	}
 }
@@ -2823,7 +3168,7 @@ func (c *restClient) DeleteWorkerPoolOperation(name string) *DeleteWorkerPoolOpe
 // The name must be that of a previously created RetryBuildOperation, possibly from a different process.
 func (c *gRPCClient) RetryBuildOperation(name string) *RetryBuildOperation {
 	return &RetryBuildOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.RetryBuildOperation"),
 	}
 }
 
@@ -2832,7 +3177,7 @@ func (c *gRPCClient) RetryBuildOperation(name string) *RetryBuildOperation {
 func (c *restClient) RetryBuildOperation(name string) *RetryBuildOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RetryBuildOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.RetryBuildOperation"),
 		pollPath: override,
 	}
 }
@@ -2841,7 +3186,7 @@ func (c *restClient) RetryBuildOperation(name string) *RetryBuildOperation {
 // The name must be that of a previously created RunBuildTriggerOperation, possibly from a different process.
 func (c *gRPCClient) RunBuildTriggerOperation(name string) *RunBuildTriggerOperation {
 	return &RunBuildTriggerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.RunBuildTriggerOperation"),
 	}
 }
 
@@ -2850,7 +3195,7 @@ func (c *gRPCClient) RunBuildTriggerOperation(name string) *RunBuildTriggerOpera
 func (c *restClient) RunBuildTriggerOperation(name string) *RunBuildTriggerOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RunBuildTriggerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.RunBuildTriggerOperation"),
 		pollPath: override,
 	}
 }
@@ -2859,7 +3204,7 @@ func (c *restClient) RunBuildTriggerOperation(name string) *RunBuildTriggerOpera
 // The name must be that of a previously created UpdateWorkerPoolOperation, possibly from a different process.
 func (c *gRPCClient) UpdateWorkerPoolOperation(name string) *UpdateWorkerPoolOperation {
 	return &UpdateWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.UpdateWorkerPoolOperation"),
 	}
 }
 
@@ -2868,7 +3213,7 @@ func (c *gRPCClient) UpdateWorkerPoolOperation(name string) *UpdateWorkerPoolOpe
 func (c *restClient) UpdateWorkerPoolOperation(name string) *UpdateWorkerPoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.UpdateWorkerPoolOperation"),
 		pollPath: override,
 	}
 }

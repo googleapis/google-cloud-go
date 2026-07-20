@@ -1,5 +1,26 @@
 # Changes
 
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.32.0...datacatalog/v1.33.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.32.0](https://github.com/googleapis/google-cloud-go/releases/tag/datacatalog%2Fv1.32.0) (2026-05-14)
+
+### Features
+
+* update API sources and regenerate (#14581) ([df96b2e](https://github.com/googleapis/google-cloud-go/commit/df96b2ecb3930d6fb2e6e542e11521ee8e9d5935))
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/releases/tag/datacatalog%2Fv1.31.0) (2026-05-07)
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/releases/tag/datacatalog%2Fv1.30.0) (2026-04-30)
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/datacatalog%2Fv1.29.0) (2026-04-13)
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/datacatalog%2Fv1.28.0) (2026-04-09)
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/datacatalog%2Fv1.27.0) (2026-04-02)
 
 ## [1.26.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.26.0...datacatalog/v1.26.1) (2025-09-16)

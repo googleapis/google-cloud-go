@@ -21,14 +21,18 @@ import (
 	"fmt"
 	"hash/crc32"
 	"math/rand"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
+	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -492,6 +496,450 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 			}
 			if headerValue != tc.want {
 				t.Errorf("got metadata %q, want %q", headerValue, tc.want)
+			}
+		})
+	}
+}
+
+func TestPrepareDirectPathMetadata_FeatureTracking(t *testing.T) {
+	tests := []struct {
+		desc            string
+		configFeatures  uint32
+		contextFeatures []trackedFeature
+		wantFeatures    uint32
+	}{
+		{
+			desc:         "no features",
+			wantFeatures: 0,
+		},
+		{
+			desc:           "config features only",
+			configFeatures: uint32(1 << featurePCU),
+			wantFeatures:   uint32(1 << featurePCU),
+		},
+		{
+			desc:            "merged features",
+			configFeatures:  uint32(1 << featurePCU),
+			contextFeatures: []trackedFeature{featureMultistreamInMRD},
+			wantFeatures:    uint32(1<<featurePCU) | uint32(1<<featureMultistreamInMRD),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			c := &grpcStorageClient{
+				config:                  &storageConfig{},
+				configFeatureAttributes: tc.configFeatures,
+			}
+
+			ctx := context.Background()
+			if len(tc.contextFeatures) > 0 {
+				ctx = addFeatureAttributes(ctx, tc.contextFeatures...)
+			}
+
+			newCtx, err := c.prepareDirectPathMetadata(ctx, directPathEndpointPrefix)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			md, ok := metadata.FromOutgoingContext(newCtx)
+			if !ok {
+				t.Fatal("metadata not found in context")
+			}
+
+			got := md.Get(featureTrackerHeaderName)
+			if tc.wantFeatures == 0 {
+				if len(got) > 0 {
+					t.Errorf("got features %q, want none", got[0])
+				}
+				return
+			}
+
+			if len(got) == 0 {
+				t.Fatalf("features header missing, want %d", tc.wantFeatures)
+			}
+
+			decoded, err := decodeUint32(got[0])
+			if err != nil {
+				t.Fatalf("failed to decode features: %v", err)
+			}
+
+			if decoded != tc.wantFeatures {
+				t.Errorf("got features %d, want %d", decoded, tc.wantFeatures)
+			}
+		})
+	}
+}
+
+// TestListObjects_UserProject verifies that ListObjects correctly applies the
+// withUserProject storageOption to the outgoing context metadata (x-goog-user-project)
+// via setUserProjectMetadata, without initiating actual RPC calls.
+func TestListObjects_UserProject(t *testing.T) {
+	ctx := context.Background()
+	c := &grpcStorageClient{
+		settings: &settings{},
+	}
+	it := c.ListObjects(ctx, "bucket", nil, withUserProject("project-id"))
+
+	md, ok := metadata.FromOutgoingContext(it.ctx)
+	if !ok {
+		t.Fatalf("Expected outgoing metadata in context")
+	}
+
+	if got := md.Get("x-goog-user-project"); len(got) == 0 || got[0] != "project-id" {
+		t.Errorf("Expected x-goog-user-project to be project-id, got %v", got)
+	}
+}
+
+func TestNewGRPCStorageClient_NoGlobalTimeout(t *testing.T) {
+	ctx := context.Background()
+	client, err := newGRPCStorageClient(ctx,
+		withClientOptions(
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		),
+	)
+	if err != nil {
+		t.Fatalf("newGRPCStorageClient: %v", err)
+	}
+	defer client.Close()
+
+	// Verify that default/global settings do NOT contain any timeout override,
+	// preventing indefinite hangs on metadata operations.
+	for _, opt := range client.settings.gax {
+		if strings.Contains(fmt.Sprintf("%T", opt), "timeoutOpt") {
+			t.Errorf("expected default/global settings to not contain a timeout option, but found: %T (%v)", opt, opt)
+		}
+	}
+
+	// Helper to verify that a list of CallOptions has a timeout of 0s
+	verifyTimeoutIsZero := func(method string, opts []gax.CallOption) {
+		var cs gax.CallSettings
+		// Apply a dummy non-zero timeout first
+		gax.WithTimeout(1 * time.Hour).Resolve(&cs)
+
+		// Apply all options of interest
+		for _, opt := range opts {
+			opt.Resolve(&cs)
+		}
+
+		val := reflect.ValueOf(cs)
+		field := val.FieldByName("timeout")
+		if !field.IsValid() {
+			t.Errorf("method %q: gax.CallSettings structure changed, field 'timeout' not found", method)
+			return
+		}
+
+		timeout := time.Duration(field.Int())
+		if timeout == 1*time.Hour {
+			t.Errorf("method %q: expected explicit WithTimeout(0) to keep streams unbounded, but none was found", method)
+		} else if timeout != 0 {
+			t.Errorf("method %q: expected timeout of 0s, got %v", method, timeout)
+		}
+	}
+
+	// Verify that all generated streaming CallOptions explicitly contain WithTimeout(0)
+	// to keep payload streams (Reads/Writes) completely timeout-free.
+	opts := client.raw.CallOptions
+	verifyTimeoutIsZero("ReadObject", opts.ReadObject)
+	verifyTimeoutIsZero("WriteObject", opts.WriteObject)
+	verifyTimeoutIsZero("BidiReadObject", opts.BidiReadObject)
+	verifyTimeoutIsZero("BidiWriteObject", opts.BidiWriteObject)
+	verifyTimeoutIsZero("CancelResumableWrite", opts.CancelResumableWrite)
+}
+
+func TestVerifyChecksums(t *testing.T) {
+	helloWorldCRC := crc32.Checksum([]byte("hello world"), crc32cTable)
+
+	tests := []struct {
+		desc        string
+		msg         *storagepb.BidiReadObjectResponse
+		databufs    mem.BufferSlice
+		dataOffsets map[int64]bufferSliceOffsets
+		initialErrs map[int64]error
+		wantErrs    map[int64]string // readID -> substring of error message, or empty if no error expected
+	}{
+		{
+			desc: "nil msg returns early and does not initialize crcErrs",
+			msg:  nil,
+			databufs: mem.BufferSlice{
+				mem.SliceBuffer([]byte("hello world")),
+			},
+			wantErrs: nil, // stays nil
+		},
+		{
+			desc: "empty databufs with checksum return error",
+			msg: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ChecksummedData: &storagepb.ChecksummedData{
+							Crc32C: &helloWorldCRC,
+						},
+						ReadRange: &storagepb.ReadRange{ReadId: 1},
+					},
+				},
+			},
+			databufs: mem.BufferSlice{},
+			wantErrs: map[int64]string{
+				1: "storage: bad CRC on chunk read: got",
+			},
+		},
+		{
+			desc: "missing checksummed data is skipped",
+			msg: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ReadRange: &storagepb.ReadRange{ReadId: 1},
+					},
+				},
+			},
+			databufs: mem.BufferSlice{
+				mem.SliceBuffer([]byte("hello world")),
+			},
+			dataOffsets: map[int64]bufferSliceOffsets{
+				1: {startBuf: 0, endBuf: 0, startOff: 0, endOff: 11},
+			},
+			wantErrs: map[int64]string{}, // initialized but empty
+		},
+		{
+			desc: "missing Crc32C pointer is skipped",
+			msg: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ChecksummedData: &storagepb.ChecksummedData{},
+						ReadRange:       &storagepb.ReadRange{ReadId: 1},
+					},
+				},
+			},
+			databufs: mem.BufferSlice{
+				mem.SliceBuffer([]byte("hello world")),
+			},
+			dataOffsets: map[int64]bufferSliceOffsets{
+				1: {startBuf: 0, endBuf: 0, startOff: 0, endOff: 11},
+			},
+			wantErrs: map[int64]string{},
+		},
+		{
+			desc: "single buffer correct checksum",
+			msg: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ChecksummedData: &storagepb.ChecksummedData{
+							Crc32C: &helloWorldCRC,
+						},
+						ReadRange: &storagepb.ReadRange{ReadId: 1},
+					},
+				},
+			},
+			databufs: mem.BufferSlice{
+				mem.SliceBuffer([]byte("hello world")),
+			},
+			dataOffsets: map[int64]bufferSliceOffsets{
+				1: {startBuf: 0, endBuf: 0, startOff: 0, endOff: 11},
+			},
+			wantErrs: map[int64]string{},
+		},
+		{
+			desc: "single buffer incorrect checksum",
+			msg: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ChecksummedData: &storagepb.ChecksummedData{
+							Crc32C: proto.Uint32(12345),
+						},
+						ReadRange: &storagepb.ReadRange{ReadId: 1},
+					},
+				},
+			},
+			databufs: mem.BufferSlice{
+				mem.SliceBuffer([]byte("hello world")),
+			},
+			dataOffsets: map[int64]bufferSliceOffsets{
+				1: {startBuf: 0, endBuf: 0, startOff: 0, endOff: 11},
+			},
+			wantErrs: map[int64]string{
+				1: "storage: bad CRC on chunk read: got",
+			},
+		},
+		{
+			desc: "multiple buffers correct checksum",
+			msg: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ChecksummedData: &storagepb.ChecksummedData{
+							Crc32C: &helloWorldCRC,
+						},
+						ReadRange: &storagepb.ReadRange{ReadId: 1},
+					},
+				},
+			},
+			databufs: mem.BufferSlice{
+				mem.SliceBuffer([]byte("prefix hello")),
+				mem.SliceBuffer([]byte(" world diff message")),
+				mem.SliceBuffer([]byte("suffix")),
+			},
+			dataOffsets: map[int64]bufferSliceOffsets{
+				1: {startBuf: 0, endBuf: 1, startOff: 7, endOff: 6},
+			},
+			wantErrs: map[int64]string{},
+		},
+		{
+			desc: "multiple buffers incorrect checksum",
+			msg: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ChecksummedData: &storagepb.ChecksummedData{
+							Crc32C: proto.Uint32(12345),
+						},
+						ReadRange: &storagepb.ReadRange{ReadId: 1},
+					},
+				},
+			},
+			databufs: mem.BufferSlice{
+				mem.SliceBuffer([]byte("prefix_hello")),
+				mem.SliceBuffer([]byte("_world_")),
+				mem.SliceBuffer([]byte("suffix")),
+			},
+			dataOffsets: map[int64]bufferSliceOffsets{
+				1: {startBuf: 0, endBuf: 1, startOff: 7, endOff: 6},
+			},
+			wantErrs: map[int64]string{
+				1: "storage: bad CRC on chunk read: got",
+			},
+		},
+		{
+			desc: "startOff >= endOff empty segment",
+			msg: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ChecksummedData: &storagepb.ChecksummedData{
+							Crc32C: proto.Uint32(0),
+						},
+						ReadRange: &storagepb.ReadRange{ReadId: 1},
+					},
+				},
+			},
+			databufs: mem.BufferSlice{
+				mem.SliceBuffer([]byte("hello world")),
+			},
+			dataOffsets: map[int64]bufferSliceOffsets{
+				1: {startBuf: 0, endBuf: 0, startOff: 5, endOff: 5},
+			},
+			wantErrs: map[int64]string{},
+		},
+		{
+			desc: "multiple ranges mix of results",
+			msg: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ChecksummedData: &storagepb.ChecksummedData{
+							Crc32C: &helloWorldCRC,
+						},
+						ReadRange: &storagepb.ReadRange{ReadId: 10},
+					},
+					{
+						ChecksummedData: &storagepb.ChecksummedData{
+							Crc32C: proto.Uint32(9999),
+						},
+						ReadRange: &storagepb.ReadRange{ReadId: 20},
+					},
+					{
+						ReadRange: &storagepb.ReadRange{ReadId: 30},
+					},
+				},
+			},
+			databufs: mem.BufferSlice{
+				mem.SliceBuffer([]byte("hello world")),
+			},
+			dataOffsets: map[int64]bufferSliceOffsets{
+				10: {startBuf: 0, endBuf: 0, startOff: 0, endOff: 11},
+				20: {startBuf: 0, endBuf: 0, startOff: 0, endOff: 11},
+				30: {startBuf: 0, endBuf: 0, startOff: 0, endOff: 11},
+			},
+			wantErrs: map[int64]string{
+				20: "storage: bad CRC on chunk read: got",
+			},
+		},
+		{
+			desc: "pre-existing errors are preserved",
+			msg: &storagepb.BidiReadObjectResponse{
+				ObjectDataRanges: []*storagepb.ObjectRangeData{
+					{
+						ChecksummedData: &storagepb.ChecksummedData{
+							Crc32C: &helloWorldCRC,
+						},
+						ReadRange: &storagepb.ReadRange{ReadId: 10},
+					},
+				},
+			},
+			databufs: mem.BufferSlice{
+				mem.SliceBuffer([]byte("hello world")),
+			},
+			dataOffsets: map[int64]bufferSliceOffsets{
+				10: {startBuf: 0, endBuf: 0, startOff: 0, endOff: 11},
+			},
+			initialErrs: map[int64]error{
+				99: fmt.Errorf("some other error"),
+			},
+			wantErrs: map[int64]string{
+				99: "some other error",
+				10: "",
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			decoder := &readResponseDecoder{
+				msg:         tc.msg,
+				databufs:    tc.databufs,
+				dataOffsets: tc.dataOffsets,
+				crcErrs:     tc.initialErrs,
+			}
+
+			decoder.verifyChecksums()
+
+			if tc.wantErrs == nil {
+				if decoder.crcErrs != nil {
+					t.Errorf("expected crcErrs to be nil, got: %v", decoder.crcErrs)
+				}
+				return
+			}
+
+			// Count expected errors (we don't expect errors for empty strings in wantErrs, i.e. 10 is correct)
+			var expectedCount int
+			for _, wantSubstr := range tc.wantErrs {
+				if wantSubstr != "" {
+					expectedCount++
+				}
+			}
+
+			var gotCount int
+			for _, err := range decoder.crcErrs {
+				if err != nil {
+					gotCount++
+				}
+			}
+
+			if gotCount != expectedCount {
+				t.Errorf("mismatched error count: got %v, want %v", decoder.crcErrs, tc.wantErrs)
+			}
+
+			for readID, wantSubstr := range tc.wantErrs {
+				err, ok := decoder.crcErrs[readID]
+				if wantSubstr == "" {
+					if ok && err != nil {
+						t.Errorf("unexpected error for read ID %d: %v", readID, err)
+					}
+					continue
+				}
+				if !ok {
+					t.Errorf("expected error for read ID %d, but none was found", readID)
+					continue
+				}
+				if !strings.Contains(err.Error(), wantSubstr) {
+					t.Errorf("read ID %d error message: got %q, want it to contain %q", readID, err.Error(), wantSubstr)
+				}
 			}
 		})
 	}

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -114,6 +114,14 @@ type PublishSettings struct {
 	// The polling interval to watch for topic partition count updates.
 	// Currently internal only and overridden in tests.
 	configPollPeriod time.Duration
+
+	// Backend specifies the messaging backend to use. Default is PubSubLite.
+	// Set to ManagedKafka to publish to Google Managed Kafka.
+	Backend MessagingBackend
+
+	// KafkaConfig holds configuration for connecting to Google Managed Kafka.
+	// Required when Backend is ManagedKafka.
+	KafkaConfig *KafkaPublishConfig
 }
 
 // DefaultPublishSettings holds the default values for PublishSettings.
@@ -262,6 +270,14 @@ type ReceiveSettings struct {
 	// Optional custom function that is called when a new partition assignment has
 	// been delivered to the client.
 	ReassignmentHandler ReassignmentHandlerFunc
+
+	// Backend specifies the messaging backend to use. Default is PubSubLite.
+	// Set to ManagedKafka to receive from Google Managed Kafka.
+	Backend MessagingBackend
+
+	// KafkaConfig holds configuration for connecting to Google Managed Kafka.
+	// Required when Backend is ManagedKafka.
+	KafkaConfig *KafkaSubscribeConfig
 }
 
 // DefaultReceiveSettings holds the default values for ReceiveSettings.

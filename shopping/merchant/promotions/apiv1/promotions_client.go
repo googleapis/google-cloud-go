@@ -28,6 +28,7 @@ import (
 
 	promotionspb "cloud.google.com/go/shopping/merchant/promotions/apiv1/promotionspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -166,7 +167,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -236,6 +237,16 @@ type gRPCClient struct {
 // Service to manage promotions for products.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/promotions/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -257,6 +268,22 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/promotions/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.InsertPromotion = append(client.CallOptions.InsertPromotion, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPromotion = append(client.CallOptions.GetPromotion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPromotions = append(client.CallOptions.ListPromotions, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -282,7 +309,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -310,6 +337,16 @@ type restClient struct {
 // Service to manage promotions for products.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/promotions/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -323,6 +360,23 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/promotions/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.InsertPromotion = append(callOpts.InsertPromotion, gax.WithClientMetrics(metrics))
+		callOpts.GetPromotion = append(callOpts.GetPromotion, gax.WithClientMetrics(metrics))
+		callOpts.ListPromotions = append(callOpts.ListPromotions, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -350,7 +404,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -369,6 +423,9 @@ func (c *gRPCClient) InsertPromotion(ctx context.Context, req *promotionspb.Inse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.promotions.v1.PromotionsService/InsertPromotion")
+	}
 	opts = append((*c.CallOptions).InsertPromotion[0:len((*c.CallOptions).InsertPromotion):len((*c.CallOptions).InsertPromotion)], opts...)
 	var resp *promotionspb.Promotion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -387,6 +444,12 @@ func (c *gRPCClient) GetPromotion(ctx context.Context, req *promotionspb.GetProm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.promotions.v1.PromotionsService/GetPromotion")
+	}
 	opts = append((*c.CallOptions).GetPromotion[0:len((*c.CallOptions).GetPromotion):len((*c.CallOptions).GetPromotion)], opts...)
 	var resp *promotionspb.Promotion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -405,9 +468,12 @@ func (c *gRPCClient) ListPromotions(ctx context.Context, req *promotionspb.ListP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.promotions.v1.PromotionsService/ListPromotions")
+	}
 	opts = append((*c.CallOptions).ListPromotions[0:len((*c.CallOptions).ListPromotions):len((*c.CallOptions).ListPromotions)], opts...)
 	it := &PromotionIterator{}
-	req = proto.Clone(req).(*promotionspb.ListPromotionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*promotionspb.Promotion, string, error) {
 		resp := &promotionspb.ListPromotionsResponse{}
 		if pageToken != "" {
@@ -472,6 +538,10 @@ func (c *restClient) InsertPromotion(ctx context.Context, req *promotionspb.Inse
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.promotions.v1.PromotionsService/InsertPromotion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/promotions/v1/{parent=accounts/*}/promotions:insert")
+	}
 	opts = append((*c.CallOptions).InsertPromotion[0:len((*c.CallOptions).InsertPromotion):len((*c.CallOptions).InsertPromotion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &promotionspb.Promotion{}
@@ -525,6 +595,13 @@ func (c *restClient) GetPromotion(ctx context.Context, req *promotionspb.GetProm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.promotions.v1.PromotionsService/GetPromotion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/promotions/v1/{name=accounts/*/promotions/*}")
+	}
 	opts = append((*c.CallOptions).GetPromotion[0:len((*c.CallOptions).GetPromotion):len((*c.CallOptions).GetPromotion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &promotionspb.Promotion{}
@@ -564,7 +641,7 @@ func (c *restClient) GetPromotion(ctx context.Context, req *promotionspb.GetProm
 // the updated processed promotion can be retrieved.
 func (c *restClient) ListPromotions(ctx context.Context, req *promotionspb.ListPromotionsRequest, opts ...gax.CallOption) *PromotionIterator {
 	it := &PromotionIterator{}
-	req = proto.Clone(req).(*promotionspb.ListPromotionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*promotionspb.Promotion, string, error) {
 		resp := &promotionspb.ListPromotionsResponse{}

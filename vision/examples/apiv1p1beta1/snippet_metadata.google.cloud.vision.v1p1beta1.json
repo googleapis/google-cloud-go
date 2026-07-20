@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.vision.v1p1beta1",
+        "version": "v1p1beta1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/vision/v2/apiv1p1beta1",
+    "version": "2.15.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.vision.v1p1beta1.ImageAnnotatorClient",
+          "shortName": "ImageAnnotatorClient"
+        },
+        "fullName": "google.cloud.vision.v1p1beta1.ImageAnnotatorClient.BatchAnnotateImages",
+        "method": {
+          "fullName": "google.cloud.vision.v1p1beta1.ImageAnnotator.BatchAnnotateImages",
+          "service": {
+            "fullName": "google.cloud.vision.v1p1beta1.ImageAnnotator",
+            "shortName": "ImageAnnotator"
+          },
+          "shortName": "BatchAnnotateImages"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "visionpb.BatchAnnotateImagesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*visionpb.BatchAnnotateImagesResponse",
+        "shortName": "BatchAnnotateImages"
+      },
+      "description": "BatchAnnotateImages run image detection and annotation for a batch of images.",
+      "file": "ImageAnnotatorClient/BatchAnnotateImages/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "vision_v1p1beta1_generated_ImageAnnotator_BatchAnnotateImages_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "vision BatchAnnotateImages Sample"
+    }
+  ]
+}

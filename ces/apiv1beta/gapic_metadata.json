@@ -654,6 +654,21 @@
                 "DeleteScheduledEvaluationRun"
               ]
             },
+            "ExportEvaluationResults": {
+              "methods": [
+                "ExportEvaluationResults"
+              ]
+            },
+            "ExportEvaluationRuns": {
+              "methods": [
+                "ExportEvaluationRuns"
+              ]
+            },
+            "ExportEvaluations": {
+              "methods": [
+                "ExportEvaluations"
+              ]
+            },
             "GenerateEvaluation": {
               "methods": [
                 "GenerateEvaluation"
@@ -747,6 +762,11 @@
             "RunEvaluation": {
               "methods": [
                 "RunEvaluation"
+              ]
+            },
+            "RunEvaluationResultMetrics": {
+              "methods": [
+                "RunEvaluationResultMetrics"
               ]
             },
             "TestPersonaVoice": {
@@ -844,6 +864,21 @@
                 "DeleteScheduledEvaluationRun"
               ]
             },
+            "ExportEvaluationResults": {
+              "methods": [
+                "ExportEvaluationResults"
+              ]
+            },
+            "ExportEvaluationRuns": {
+              "methods": [
+                "ExportEvaluationRuns"
+              ]
+            },
+            "ExportEvaluations": {
+              "methods": [
+                "ExportEvaluations"
+              ]
+            },
             "GenerateEvaluation": {
               "methods": [
                 "GenerateEvaluation"
@@ -937,6 +972,11 @@
             "RunEvaluation": {
               "methods": [
                 "RunEvaluation"
+              ]
+            },
+            "RunEvaluationResultMetrics": {
+              "methods": [
+                "RunEvaluationResultMetrics"
               ]
             },
             "TestPersonaVoice": {

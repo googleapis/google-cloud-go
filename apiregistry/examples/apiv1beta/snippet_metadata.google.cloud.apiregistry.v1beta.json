@@ -1,0 +1,291 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.apiregistry.v1beta",
+        "version": "v1beta"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/apiregistry/apiv1beta",
+    "version": "1.0.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistryClient",
+          "shortName": "CloudApiRegistryClient"
+        },
+        "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistryClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "CloudApiRegistryClient/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudapiregistry_v1beta_generated_CloudApiRegistry_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudapiregistry GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistryClient",
+          "shortName": "CloudApiRegistryClient"
+        },
+        "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistryClient.GetMcpServer",
+        "method": {
+          "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistry.GetMcpServer",
+          "service": {
+            "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistry",
+            "shortName": "CloudApiRegistry"
+          },
+          "shortName": "GetMcpServer"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apiregistrypb.GetMcpServerRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apiregistrypb.McpServer",
+        "shortName": "GetMcpServer"
+      },
+      "description": "GetMcpServer gets a single McpServer.",
+      "file": "CloudApiRegistryClient/GetMcpServer/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudapiregistry_v1beta_generated_CloudApiRegistry_GetMcpServer_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudapiregistry GetMcpServer Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistryClient",
+          "shortName": "CloudApiRegistryClient"
+        },
+        "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistryClient.GetMcpTool",
+        "method": {
+          "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistry.GetMcpTool",
+          "service": {
+            "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistry",
+            "shortName": "CloudApiRegistry"
+          },
+          "shortName": "GetMcpTool"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apiregistrypb.GetMcpToolRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apiregistrypb.McpTool",
+        "shortName": "GetMcpTool"
+      },
+      "description": "GetMcpTool gets a single McpTool.",
+      "file": "CloudApiRegistryClient/GetMcpTool/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudapiregistry_v1beta_generated_CloudApiRegistry_GetMcpTool_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudapiregistry GetMcpTool Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistryClient",
+          "shortName": "CloudApiRegistryClient"
+        },
+        "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistryClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "CloudApiRegistryClient/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudapiregistry_v1beta_generated_CloudApiRegistry_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudapiregistry ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistryClient",
+          "shortName": "CloudApiRegistryClient"
+        },
+        "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistryClient.ListMcpServers",
+        "method": {
+          "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistry.ListMcpServers",
+          "service": {
+            "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistry",
+            "shortName": "CloudApiRegistry"
+          },
+          "shortName": "ListMcpServers"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apiregistrypb.ListMcpServersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "McpServerIterator",
+        "shortName": "ListMcpServers"
+      },
+      "description": "ListMcpServers lists McpServers in a given Project.",
+      "file": "CloudApiRegistryClient/ListMcpServers/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudapiregistry_v1beta_generated_CloudApiRegistry_ListMcpServers_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudapiregistry ListMcpServers Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistryClient",
+          "shortName": "CloudApiRegistryClient"
+        },
+        "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistryClient.ListMcpTools",
+        "method": {
+          "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistry.ListMcpTools",
+          "service": {
+            "fullName": "google.cloud.apiregistry.v1beta.CloudApiRegistry",
+            "shortName": "CloudApiRegistry"
+          },
+          "shortName": "ListMcpTools"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apiregistrypb.ListMcpToolsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "McpToolIterator",
+        "shortName": "ListMcpTools"
+      },
+      "description": "ListMcpTools lists McpTools in a given McpServer.",
+      "file": "CloudApiRegistryClient/ListMcpTools/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudapiregistry_v1beta_generated_CloudApiRegistry_ListMcpTools_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudapiregistry ListMcpTools Sample"
+    }
+  ]
+}

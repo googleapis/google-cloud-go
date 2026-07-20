@@ -29,6 +29,7 @@ import (
 	apihubpb "cloud.google.com/go/apihub/apiv1/apihubpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -138,7 +139,7 @@ type RuntimeProjectAttachmentClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RuntimeProjectAttachmentClient) Close() error {
 	return c.internalClient.Close()
@@ -238,6 +239,16 @@ type runtimeProjectAttachmentRESTClient struct {
 // This service is used for managing the runtime project attachments.
 func NewRuntimeProjectAttachmentRESTClient(ctx context.Context, opts ...option.ClientOption) (*RuntimeProjectAttachmentClient, error) {
 	clientOpts := append(defaultRuntimeProjectAttachmentRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "apihub",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/apihub/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "apihub.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -251,6 +262,31 @@ func NewRuntimeProjectAttachmentRESTClient(ctx context.Context, opts ...option.C
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateRuntimeProjectAttachment = append(callOpts.CreateRuntimeProjectAttachment, gax.WithClientMetrics(metrics))
+		callOpts.GetRuntimeProjectAttachment = append(callOpts.GetRuntimeProjectAttachment, gax.WithClientMetrics(metrics))
+		callOpts.ListRuntimeProjectAttachments = append(callOpts.ListRuntimeProjectAttachments, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRuntimeProjectAttachment = append(callOpts.DeleteRuntimeProjectAttachment, gax.WithClientMetrics(metrics))
+		callOpts.LookupRuntimeProjectAttachment = append(callOpts.LookupRuntimeProjectAttachment, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	return &RuntimeProjectAttachmentClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -278,7 +314,7 @@ func (c *runtimeProjectAttachmentRESTClient) setGoogleClientInfo(keyval ...strin
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *runtimeProjectAttachmentRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -320,6 +356,13 @@ func (c *runtimeProjectAttachmentRESTClient) CreateRuntimeProjectAttachment(ctx 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.RuntimeProjectAttachmentService/CreateRuntimeProjectAttachment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/runtimeProjectAttachments")
+	}
 	opts = append((*c.CallOptions).CreateRuntimeProjectAttachment[0:len((*c.CallOptions).CreateRuntimeProjectAttachment):len((*c.CallOptions).CreateRuntimeProjectAttachment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.RuntimeProjectAttachment{}
@@ -370,6 +413,13 @@ func (c *runtimeProjectAttachmentRESTClient) GetRuntimeProjectAttachment(ctx con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.RuntimeProjectAttachmentService/GetRuntimeProjectAttachment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/runtimeProjectAttachments/*}")
+	}
 	opts = append((*c.CallOptions).GetRuntimeProjectAttachment[0:len((*c.CallOptions).GetRuntimeProjectAttachment):len((*c.CallOptions).GetRuntimeProjectAttachment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.RuntimeProjectAttachment{}
@@ -404,7 +454,7 @@ func (c *runtimeProjectAttachmentRESTClient) GetRuntimeProjectAttachment(ctx con
 // ListRuntimeProjectAttachments list runtime projects attached to the host project.
 func (c *runtimeProjectAttachmentRESTClient) ListRuntimeProjectAttachments(ctx context.Context, req *apihubpb.ListRuntimeProjectAttachmentsRequest, opts ...gax.CallOption) *RuntimeProjectAttachmentIterator {
 	it := &RuntimeProjectAttachmentIterator{}
-	req = proto.Clone(req).(*apihubpb.ListRuntimeProjectAttachmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.RuntimeProjectAttachment, string, error) {
 		resp := &apihubpb.ListRuntimeProjectAttachmentsResponse{}
@@ -505,6 +555,13 @@ func (c *runtimeProjectAttachmentRESTClient) DeleteRuntimeProjectAttachment(ctx 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.RuntimeProjectAttachmentService/DeleteRuntimeProjectAttachment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/runtimeProjectAttachments/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -541,6 +598,13 @@ func (c *runtimeProjectAttachmentRESTClient) LookupRuntimeProjectAttachment(ctx 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.RuntimeProjectAttachmentService/LookupRuntimeProjectAttachment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}:lookupRuntimeProjectAttachment")
+	}
 	opts = append((*c.CallOptions).LookupRuntimeProjectAttachment[0:len((*c.CallOptions).LookupRuntimeProjectAttachment):len((*c.CallOptions).LookupRuntimeProjectAttachment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.LookupRuntimeProjectAttachmentResponse{}
@@ -591,6 +655,10 @@ func (c *runtimeProjectAttachmentRESTClient) GetLocation(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -625,7 +693,7 @@ func (c *runtimeProjectAttachmentRESTClient) GetLocation(ctx context.Context, re
 // ListLocations lists information about the supported locations for this service.
 func (c *runtimeProjectAttachmentRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -728,6 +796,10 @@ func (c *runtimeProjectAttachmentRESTClient) CancelOperation(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -763,6 +835,10 @@ func (c *runtimeProjectAttachmentRESTClient) DeleteOperation(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -798,6 +874,10 @@ func (c *runtimeProjectAttachmentRESTClient) GetOperation(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -832,7 +912,7 @@ func (c *runtimeProjectAttachmentRESTClient) GetOperation(ctx context.Context, r
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *runtimeProjectAttachmentRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

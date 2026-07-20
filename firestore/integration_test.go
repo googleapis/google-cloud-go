@@ -16,6 +16,7 @@ package firestore
 
 import (
 	"context"
+	"crypto/rand"
 	"errors"
 	"flag"
 	"fmt"
@@ -27,12 +28,9 @@ import (
 	"runtime"
 	"sort"
 	"strings"
-	"sync"
 	"testing"
 	"time"
 
-	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
-	"cloud.google.com/go/firestore/apiv1/admin/adminpb"
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
@@ -54,89 +52,110 @@ const (
 	editionEnterprise                         // 1
 )
 
+func (s firestoreEdition) String() string {
+	switch s {
+	case editionStandard:
+		return "Standard"
+	case editionEnterprise:
+		return "Enterprise"
+	default:
+		return fmt.Sprintf("UnknownEdition(%d)", s)
+	}
+}
+
 const (
 	envProjID              = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envPrivateKey          = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
-	envDatabases           = "GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES"
 	envEnterpriseDatabases = "GCLOUD_TESTS_GOLANG_FIRESTORE_ENTERPRISE_DATABASES"
 	envEmulator            = "FIRESTORE_EMULATOR_HOST"
 	indexBuilding          = "index is currently building"
 	databaseIDKey          = "databaseID"
 	firestoreEditionKey    = "edition"
+	indexedCollection      = "indexed_collection"
 )
 
 func TestMain(m *testing.M) {
+	flag.Parse()
 	testParams = make(map[string]interface{})
-	for databaseID, edition := range parseDatabases() {
-		testParams[databaseIDKey] = databaseID
-		testParams[firestoreEditionKey] = edition
-		initIntegrationTest()
-		status := m.Run()
-		if status != 0 {
-			os.Exit(status)
-		}
-		cleanupIntegrationTest()
-	}
 
-	os.Exit(0)
-}
-
-func parseDatabases() map[string]firestoreEdition {
-	databases := map[string]firestoreEdition{
-		DefaultDatabaseID: editionStandard,
-	}
-
-	databasesStr, ok := os.LookupEnv(envDatabases)
-	if ok {
-		for _, databaseID := range strings.Split(databasesStr, ",") {
-			databases[databaseID] = editionStandard
-		}
-	}
-
-	databasesStr, ok = os.LookupEnv(envEnterpriseDatabases)
-	if ok {
-		for _, databaseID := range strings.Split(databasesStr, ",") {
-			databases[databaseID] = editionEnterprise
-		}
-	}
-	return databases
-}
-
-var (
-	iClient          *Client
-	iAdminClient     *apiv1.FirestoreAdminClient
-	iColl            *CollectionRef
-	collectionIDs    = uid.NewSpace("go-integration-test", nil)
-	wantDBPath       string
-	testParams       map[string]interface{}
-	seededFirstIndex bool
-	useEmulator      bool
-)
-
-func initIntegrationTest() {
-	databaseID := testParams[databaseIDKey].(string)
-	log.Printf("Setting up tests to run on databaseID: %q\n", databaseID)
-	flag.Parse() // needed for testing.Short()
-	if testing.Short() {
-		return
-	}
 	if addr := os.Getenv(envEmulator); addr != "" {
 		useEmulator = true
 	}
-	ctx := context.Background()
+
 	testProjectID := os.Getenv(envProjID)
-	if testProjectID == "" {
+	var defaultColl *CollectionRef
+	if testProjectID != "" {
+		// 1. Initialize Default Client
+		c, err := createClient(testProjectID, DefaultDatabaseID)
+		if err != nil {
+			log.Fatalf("failed to create default client: %v", err)
+		}
+		defaultClient = c
+
+		// 2. Initialize Enterprise Clients
+		if dbStr := os.Getenv(envEnterpriseDatabases); dbStr != "" {
+			for _, dbID := range strings.Split(dbStr, ",") {
+				dbID = strings.TrimSpace(dbID)
+				if dbID == "" {
+					continue
+				}
+				c, err := createClient(testProjectID, dbID)
+				if err != nil {
+					log.Fatalf("failed to create enterprise client for %s: %v", dbID, err)
+				}
+				enterpriseClients[dbID] = c
+			}
+		}
+
+		// Setup initial globals for Default Client
+		defaultColl = defaultClient.Collection(collectionIDs.New())
+		updateGlobals(defaultClient, defaultColl, editionStandard)
+	} else {
 		log.Println("Integration tests skipped. See CONTRIBUTING.md for details")
-		return
 	}
+
+	status := m.Run()
+
+	if defaultClient != nil {
+		// Clean up Default DB collection and close clients
+		if defaultColl != nil {
+			deleteCollection(context.Background(), defaultColl)
+		}
+		defaultClient.Close()
+		for _, c := range enterpriseClients {
+			c.Close()
+		}
+	}
+
+	os.Exit(status)
+}
+
+func skipIfEdition(t *testing.T, featureName string, edition firestoreEdition) {
+	if getCurrentEdition() == edition {
+		t.Skip("Skipping. Feature \"" + featureName + "\" not supported in " + edition.String() + " Edition.")
+	}
+}
+
+var (
+	defaultClient     *Client
+	enterpriseClients = make(map[string]*Client)
+
+	iClient       *Client
+	iColl         *CollectionRef
+	collectionIDs = uid.NewSpace("go-integration-test", nil)
+	wantDBPath    string
+	testParams    map[string]interface{}
+	useEmulator   bool
+)
+
+func createClient(projectID, databaseID string) (*Client, error) {
+	ctx := context.Background()
 	ts := testutil.TokenSourceEnv(ctx, envPrivateKey,
 		"https://www.googleapis.com/auth/cloud-platform",
 		"https://www.googleapis.com/auth/datastore")
 	if ts == nil {
-		log.Fatal("The project key must be set. See CONTRIBUTING.md for details")
+		return nil, fmt.Errorf("token source nil: the project key must be set; see CONTRIBUTING.md for details")
 	}
-	projectPath := "projects/" + testProjectID
-	wantDBPath = projectPath + "/databases/" + databaseID
 
 	ti := &testutil.HeadersEnforcer{
 		Checkers: []*testutil.HeaderChecker{
@@ -157,158 +176,43 @@ func initIntegrationTest() {
 		},
 	}
 	copts := append(ti.CallOptions(), option.WithTokenSource(ts))
-	c, err := NewClientWithDatabase(ctx, testProjectID, databaseID, copts...)
+	c, err := NewClientWithDatabase(ctx, projectID, databaseID, copts...)
 	if err != nil {
-		log.Fatalf("NewClient: %v", err)
+		return nil, err
 	}
-	iClient = c
-	iColl = c.Collection(collectionIDs.New())
+	return c, nil
+}
 
-	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
-	defer cancel()
-	adminC, err := apiv1.NewFirestoreAdminClient(adminCtx, option.WithTokenSource(ts))
-	if err != nil {
-		log.Fatalf("NewFirestoreAdminClient: %v", err)
-	}
-	iAdminClient = adminC
-
+func updateGlobals(client *Client, coll *CollectionRef, edition firestoreEdition) {
+	iClient = client
+	iColl = coll
 	refDoc := iColl.NewDoc()
 	integrationTestMap["ref"] = refDoc
 	wantIntegrationTestMap["ref"] = refDoc
 	integrationTestStruct.Ref = refDoc
-}
 
-type vectorIndex struct {
-	dimension int32
-	fieldPath string
-}
+	testProjectID := os.Getenv(envProjID)
+	wantDBPath = "projects/" + testProjectID + "/databases/" + client.databaseID
 
-func createVectorIndexes(ctx context.Context, t *testing.T, dbPath string, vectorModeIndexes []vectorIndex) []string {
-	collRef := integrationColl(t)
-	indexNames := make([]string, len(vectorModeIndexes))
-	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, collRef.ID)
-
-	var wg sync.WaitGroup
-
-	// create vectore mode indexes
-	for i, vectorModeIndex := range vectorModeIndexes {
-		wg.Add(1)
-		req := &adminpb.CreateIndexRequest{
-			Parent: indexParent,
-			Index: &adminpb.Index{
-				QueryScope: adminpb.Index_COLLECTION,
-				Fields: []*adminpb.Index_IndexField{
-					{
-						FieldPath: vectorModeIndex.fieldPath,
-						ValueMode: &adminpb.Index_IndexField_VectorConfig_{
-							VectorConfig: &adminpb.Index_IndexField_VectorConfig{
-								Dimension: vectorModeIndex.dimension,
-								Type: &adminpb.Index_IndexField_VectorConfig_Flat{
-									Flat: &adminpb.Index_IndexField_VectorConfig_FlatIndex{},
-								},
-							},
-						},
-					},
-				},
-			},
-		}
-		op, createErr := iAdminClient.CreateIndex(ctx, req)
-		if createErr != nil {
-			log.Fatalf("CreateIndex vectorindexes: %v", createErr)
-		}
-		if i == 0 && !seededFirstIndex {
-			seededFirstIndex = true
-			handleCreateIndexResp(ctx, indexNames, &wg, i, op)
-		} else {
-			go handleCreateIndexResp(ctx, indexNames, &wg, i, op)
-		}
-	}
-
-	wg.Wait()
-	return indexNames
-}
-
-// createIndexes creates composite indexes on provided Firestore database
-// Indexes are required to run queries with composite filters on multiple fields.
-// Without indexes, FailedPrecondition rpc error is seen with
-// desc 'The query requires multiple indexes'.
-func createIndexes(ctx context.Context, dbPath string, orderModeindexFields [][]string) []string {
-	indexNames := make([]string, len(orderModeindexFields))
-	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
-
-	var wg sync.WaitGroup
-
-	// Create order mode indexes
-	for i, fields := range orderModeindexFields {
-		wg.Add(1)
-		var adminPbIndexFields []*adminpb.Index_IndexField
-		for _, field := range fields {
-			adminPbIndexFields = append(adminPbIndexFields, &adminpb.Index_IndexField{
-				FieldPath: field,
-				ValueMode: &adminpb.Index_IndexField_Order_{
-					Order: adminpb.Index_IndexField_ASCENDING,
-				},
-			})
-		}
-		req := &adminpb.CreateIndexRequest{
-			Parent: indexParent,
-			Index: &adminpb.Index{
-				QueryScope: adminpb.Index_COLLECTION,
-				Fields:     adminPbIndexFields,
-			},
-		}
-		op, createErr := iAdminClient.CreateIndex(ctx, req)
-		if createErr != nil {
-			log.Fatalf("CreateIndex: %v", createErr)
-		}
-		if i == 0 && !seededFirstIndex {
-			seededFirstIndex = true
-			// Seed first index to prevent FirestoreMetadataWrite.BootstrapDatabase Concurrent access error
-			handleCreateIndexResp(ctx, indexNames, &wg, i, op)
-		} else {
-			go handleCreateIndexResp(ctx, indexNames, &wg, i, op)
-		}
-	}
-
-	wg.Wait()
-	return indexNames
-}
-
-// handleCreateIndexResp handles create index response and puts the created index name at index i in the indexNames array
-func handleCreateIndexResp(ctx context.Context, indexNames []string, wg *sync.WaitGroup, i int, op *apiv1.CreateIndexOperation) {
-	defer wg.Done()
-	createdIndex, waitErr := op.Wait(ctx)
-	if waitErr != nil {
-		log.Fatalf("CreateIndexes failed. Wait: %v", waitErr)
-	}
-	indexNames[i] = createdIndex.Name
-}
-
-// deleteIndexes deletes composite indexes created in createIndexes function
-func deleteIndexes(ctx context.Context, indexNames []string) {
-	for _, indexName := range indexNames {
-		testutil.RetryWithoutTest(5, 5*time.Second, func(r *testutil.R) {
-			err := iAdminClient.DeleteIndex(ctx, &adminpb.DeleteIndexRequest{
-				Name: indexName,
-			})
-			if err != nil {
-				r.Errorf("Failed to delete index \"%s\": %+v\n", indexName, err)
-			}
-		})
-	}
+	testParams[databaseIDKey] = client.databaseID
+	testParams[firestoreEditionKey] = edition
 }
 
 // deleteCollection recursively deletes the documents in the specified collection
 func deleteCollection(ctx context.Context, coll *CollectionRef) error {
 	bulkwriter := iClient.BulkWriter(ctx)
+	defer func() {
+		bulkwriter.End()
+		bulkwriter.Flush()
+	}()
 
 	// Get  documents
-	iter := coll.Documents(ctx)
+	iter := coll.DocumentRefs(ctx)
 
 	// Iterate through the documents, adding
 	// a delete operation for each one to the BulkWriter.
 	for {
-		doc, err := iter.Next()
+		docRef, err := iter.Next()
 		if err == iterator.Done {
 			break
 		}
@@ -316,16 +220,12 @@ func deleteCollection(ctx context.Context, coll *CollectionRef) error {
 			log.Printf("Failed to get next document: %+v\n", err)
 			return err
 		}
-
-		err = deleteDocument(ctx, doc.Ref, bulkwriter)
+		err = deleteDocument(ctx, docRef, bulkwriter)
 		if err != nil {
 			log.Printf("Failed to delete document: %+v\n", err)
 			return err
 		}
 	}
-
-	bulkwriter.End()
-	bulkwriter.Flush()
 
 	return nil
 }
@@ -386,10 +286,6 @@ func cleanupIntegrationTest() {
 		ctx := context.Background()
 		deleteCollection(ctx, iColl)
 		iClient.Close()
-	}
-
-	if iAdminClient != nil {
-		iAdminClient.Close()
 	}
 }
 
@@ -488,9 +384,13 @@ var (
 	}
 )
 
-func TestIntegration_Create(t *testing.T) {
+func testIntegrationCreate(t *testing.T) {
 	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
+	emptyDoc := integrationColl(t).NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc, emptyDoc})
+	})
 	start := time.Now()
 	h := testHelper{t}
 	wr := h.mustCreate(doc, integrationTestMap)
@@ -499,17 +399,17 @@ func TestIntegration_Create(t *testing.T) {
 	_, err := doc.Create(ctx, integrationTestMap)
 	codeEq(t, "Create on a present doc", codes.AlreadyExists, err)
 	// OK to create an empty document.
-	emptyDoc := integrationColl(t).NewDoc()
 	_, err = emptyDoc.Create(ctx, map[string]interface{}{})
 	codeEq(t, "Create empty doc", codes.OK, err)
+}
+
+func testIntegrationGet(t *testing.T) {
+	ctx := context.Background()
+	doc := integrationColl(t).NewDoc()
+	emptyDoc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc, emptyDoc})
 	})
-}
-
-func TestIntegration_Get(t *testing.T) {
-	ctx := context.Background()
-	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
 	h.mustCreate(doc, integrationTestMap)
 	ds := h.mustGet(doc)
@@ -528,7 +428,6 @@ func TestIntegration_Get(t *testing.T) {
 		t.Errorf("got\n%v\nwant\n%v", pretty.Value(got), pretty.Value(want))
 	}
 
-	emptyDoc := integrationColl(t).NewDoc()
 	empty := map[string]interface{}{}
 	h.mustCreate(emptyDoc, empty)
 	ds = h.mustGet(emptyDoc)
@@ -547,19 +446,18 @@ func TestIntegration_Get(t *testing.T) {
 	if ds.ReadTime.IsZero() {
 		t.Error("got zero read time")
 	}
-
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{doc, emptyDoc})
-	})
 }
 
-func TestIntegration_GetAll(t *testing.T) {
+func testIntegrationGetAll(t *testing.T) {
 	type getAll struct{ N int }
 
 	h := testHelper{t}
 	coll := integrationColl(t)
 	ctx := context.Background()
 	var docRefs []*DocumentRef
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 	for i := 0; i < 5; i++ {
 		doc := coll.NewDoc()
 		docRefs = append(docRefs, doc)
@@ -595,16 +493,14 @@ func TestIntegration_GetAll(t *testing.T) {
 			t.Errorf("%d: got zero read time", i)
 		}
 	}
-	t.Cleanup(func() {
-		deleteDocuments(docRefs)
-	})
 }
 
 type runWithOptionsTestcase struct {
-	desc               string
-	wantExplainMetrics *ExplainMetrics
-	wantSnapshots      bool
-	opts               []RunOption
+	desc                string
+	wantExplainMetrics  *ExplainMetrics
+	wantSnapshots       bool
+	supportedInEditions []firestoreEdition
+	opts                []RunOption
 }
 
 func getRunWithOptionsTestcases(t *testing.T) ([]runWithOptionsTestcase, []*DocumentRef) {
@@ -623,15 +519,16 @@ func getRunWithOptionsTestcases(t *testing.T) ([]runWithOptionsTestcase, []*Docu
 	wantPlanSummary := &PlanSummary{
 		IndexesUsed: []*map[string]interface{}{
 			{
-				"properties":  "(__name__ ASC)",
+				"properties":  "(N ASC, __name__ ASC)",
 				"query_scope": "Collection",
 			},
 		},
 	}
 	return []runWithOptionsTestcase{
 		{
-			desc:          "No ExplainOptions",
-			wantSnapshots: true,
+			desc:                "No ExplainOptions",
+			wantSnapshots:       true,
+			supportedInEditions: []firestoreEdition{editionEnterprise, editionStandard},
 		},
 
 		{
@@ -640,6 +537,7 @@ func getRunWithOptionsTestcases(t *testing.T) ([]runWithOptionsTestcase, []*Docu
 			wantExplainMetrics: &ExplainMetrics{
 				PlanSummary: wantPlanSummary,
 			},
+			supportedInEditions: []firestoreEdition{editionStandard},
 		},
 		{
 			desc: "ExplainOptions.Analyze is true",
@@ -655,12 +553,22 @@ func getRunWithOptionsTestcases(t *testing.T) ([]runWithOptionsTestcase, []*Docu
 				},
 				PlanSummary: wantPlanSummary,
 			},
-			wantSnapshots: true,
+			wantSnapshots:       true,
+			supportedInEditions: []firestoreEdition{editionStandard},
 		},
 	}, wantDocRefs
 }
 
-func TestIntegration_GetAll_WithRunOptions(t *testing.T) {
+func contains[T comparable](s []T, e T) bool {
+	for _, v := range s {
+		if v == e {
+			return true
+		}
+	}
+	return false
+}
+
+func testIntegrationGetAllWithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -674,8 +582,12 @@ func TestIntegration_GetAll_WithRunOptions(t *testing.T) {
 	t.Cleanup(func() { deleteDocuments(wantDocRefs) })
 
 	for _, testcase := range testcases {
+
 		t.Run(testcase.desc, func(t *testing.T) {
-			docIter := coll.WithRunOptions(testcase.opts...).Documents(ctx)
+			if !contains(testcase.supportedInEditions, getCurrentEdition()) {
+				t.Skip("Skipping. Explain options are not supported in RunQuery API for " + getCurrentEdition().String() + " edition.")
+			}
+			docIter := coll.WithRunOptions(testcase.opts...).OrderBy("N", Asc).Documents(ctx)
 			gotDocSnaps, gotErr := docIter.GetAll()
 			if gotErr != nil {
 				t.Fatalf("err: got: %+v, want: nil", gotErr)
@@ -710,7 +622,7 @@ func TestIntegration_GetAll_WithRunOptions(t *testing.T) {
 	}
 }
 
-func TestIntegration_Query_WithRunOptions(t *testing.T) {
+func testIntegrationQueryWithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -724,53 +636,63 @@ func TestIntegration_Query_WithRunOptions(t *testing.T) {
 	}
 
 	for _, testcase := range testcases {
-		gotIDs := []string{}
-		gotDocIter := coll.WithRunOptions(testcase.opts...).Documents(ctx)
-		for {
-			gotDocSnap, err := gotDocIter.Next()
-			if err == iterator.Done {
-				break
+		t.Run(testcase.desc, func(t *testing.T) {
+			if !contains(testcase.supportedInEditions, getCurrentEdition()) {
+				t.Skip("Skipping. Explain options are not supported in RunQuery API for " + getCurrentEdition().String() + " edition.")
 			}
-			if err != nil {
-				t.Fatalf("%v: Failed to get next document: %+v\n", testcase.desc, err)
+			gotIDs := []string{}
+			gotDocIter := coll.WithRunOptions(testcase.opts...).OrderBy("N", Asc).Documents(ctx)
+			for {
+				gotDocSnap, err := gotDocIter.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					t.Fatalf("%v: Failed to get next document: %+v\n", testcase.desc, err)
+				}
+				gotIDs = append(gotIDs, gotDocSnap.Ref.ID)
 			}
-			gotIDs = append(gotIDs, gotDocSnap.Ref.ID)
-		}
 
-		if (testcase.wantSnapshots && !testutil.Equal(gotIDs, snapshotRefIDs)) || (!testcase.wantSnapshots && len(gotIDs) != 0) {
-			t.Errorf("%v: snapshots ID: got: %+v, want: %+v", testcase.desc, gotIDs, snapshotRefIDs)
-		}
+			if (testcase.wantSnapshots && !testutil.Equal(gotIDs, snapshotRefIDs)) || (!testcase.wantSnapshots && len(gotIDs) != 0) {
+				t.Errorf("%v: snapshots ID: got: %+v, want: %+v", testcase.desc, gotIDs, snapshotRefIDs)
+			}
 
-		gotExp, gotExpErr := gotDocIter.ExplainMetrics()
-		if gotExpErr != nil {
-			t.Fatalf("%v: Failed to get explain metrics: %+v\n", testcase.desc, gotExpErr)
-		}
-		if err := cmpExplainMetrics(gotExp, testcase.wantExplainMetrics); err != nil {
-			t.Errorf("%v: %+v", testcase.desc, err)
-		}
+			gotExp, gotExpErr := gotDocIter.ExplainMetrics()
+			if gotExpErr != nil {
+				t.Fatalf("%v: Failed to get explain metrics: %+v\n", testcase.desc, gotExpErr)
+			}
+			if err := cmpExplainMetrics(gotExp, testcase.wantExplainMetrics); err != nil {
+				t.Errorf("%v: %+v", testcase.desc, err)
+			}
+
+		})
 
 	}
 }
-func TestIntegration_Add(t *testing.T) {
+func testIntegrationAdd(t *testing.T) {
 	start := time.Now()
 	docRef, wr, err := integrationColl(t).Add(context.Background(), integrationTestMap)
 	if err != nil {
 		t.Fatal(err)
 	}
-	end := time.Now()
-	checkTimeBetween(t, wr.UpdateTime, start, end)
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{docRef})
 	})
+	end := time.Now()
+	checkTimeBetween(t, wr.UpdateTime, start, end)
 }
 
-func TestIntegration_Set(t *testing.T) {
+func testIntegrationSet(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
 	ctx := context.Background()
 
 	// Set Should be able to create a new doc.
 	doc := coll.NewDoc()
+	doc2 := coll.NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc, doc2})
+	})
 	wr1 := h.mustSet(doc, integrationTestMap)
 	// Calling Set on the doc completely replaces the contents.
 	// The update time should increase.
@@ -847,20 +769,15 @@ func TestIntegration_Set(t *testing.T) {
 	}
 
 	// Writing an empty doc with MergeAll should create the doc.
-	doc2 := coll.NewDoc()
 	want = map[string]interface{}{}
 	h.mustSet(doc2, want, MergeAll)
 	ds = h.mustGet(doc2)
 	if got := ds.Data(); !testEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}
-
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{doc, doc2})
-	})
 }
 
-func TestIntegration_Delete(t *testing.T) {
+func testIntegrationDelete(t *testing.T) {
 	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
@@ -884,9 +801,12 @@ func TestIntegration_Delete(t *testing.T) {
 		er(doc.Delete(ctx, LastUpdateTime(wr.UpdateTime))))
 }
 
-func TestIntegration_Update(t *testing.T) {
+func testIntegrationUpdate(t *testing.T) {
 	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 	h := testHelper{t}
 
 	h.mustCreate(doc, integrationTestMap)
@@ -930,16 +850,16 @@ func TestIntegration_Update(t *testing.T) {
 	if !testEqual(got, want) {
 		t.Errorf("got\n%#v\nwant\n%#v", got, want)
 	}
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{doc})
-	})
 }
 
-func TestIntegration_Collections(t *testing.T) {
+func testIntegrationCollections(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 
 	doc := integrationColl(t).NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 	got, err := doc.Collections(ctx).GetAll()
 	if err != nil {
 		t.Fatal(err)
@@ -961,12 +881,9 @@ func TestIntegration_Collections(t *testing.T) {
 	if !testEqual(got, want) {
 		t.Errorf("got\n%#v\nwant\n%#v", got, want)
 	}
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{doc})
-	})
 }
 
-func TestIntegration_ServerTimestamp(t *testing.T) {
+func testIntegrationServerTimestamp(t *testing.T) {
 	type S struct {
 		A int
 		B time.Time
@@ -983,6 +900,9 @@ func TestIntegration_ServerTimestamp(t *testing.T) {
 	}
 	h := testHelper{t}
 	doc := integrationColl(t).NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 	// Bound times of the RPC, with some slack for clock skew.
 	start := time.Now()
 	h.mustCreate(doc, data)
@@ -1002,13 +922,13 @@ func TestIntegration_ServerTimestamp(t *testing.T) {
 	if g, w := got.E, got.C; !testEqual(g, w) {
 		t.Errorf(`E = %s, want equal to C (%s)`, g, w)
 	}
+}
+
+func testIntegrationMergeServerTimestamp(t *testing.T) {
+	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
 	})
-}
-
-func TestIntegration_MergeServerTimestamp(t *testing.T) {
-	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
 
 	// Create a doc with an ordinary field "a" and a ServerTimestamp field "b".
@@ -1029,13 +949,13 @@ func TestIntegration_MergeServerTimestamp(t *testing.T) {
 	if !t1.Before(t2) {
 		t.Errorf("got t1=%s, t2=%s; want t1 before t2", t1, t2)
 	}
+}
+
+func testIntegrationMergeNestedServerTimestamp(t *testing.T) {
+	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
 	})
-}
-
-func TestIntegration_MergeNestedServerTimestamp(t *testing.T) {
-	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
 
 	// Create a doc with an ordinary field "a" a ServerTimestamp field "b",
@@ -1068,9 +988,6 @@ func TestIntegration_MergeNestedServerTimestamp(t *testing.T) {
 	if !t1.Before(t2) {
 		t.Errorf("got t1=%s, t2=%s; want t1 before t2", t1, t2)
 	}
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{doc})
-	})
 }
 
 type omitZeroStruct struct {
@@ -1093,7 +1010,7 @@ func (z isZeroerStruct) IsZero() bool {
 	return z.X == 0
 }
 
-func TestIntegration_OmitZero(t *testing.T) {
+func testIntegrationOmitZero(t *testing.T) {
 	h := testHelper{t}
 	coll := integrationColl(t)
 	doc1 := coll.NewDoc()
@@ -1186,12 +1103,15 @@ func TestIntegration_OmitZero(t *testing.T) {
 	}
 }
 
-func TestIntegration_WriteBatch(t *testing.T) {
+func testIntegrationWriteBatch(t *testing.T) {
 	ctx := context.Background()
 	b := integrationClient(t).Batch()
 	h := testHelper{t}
 	doc1 := iColl.NewDoc()
 	doc2 := iColl.NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc1, doc2})
+	})
 	b.Create(doc1, integrationTestMap)
 	b.Set(doc2, integrationTestMap)
 	b.Update(doc1, []Update{{Path: "bool", Value: false}})
@@ -1217,24 +1137,11 @@ func TestIntegration_WriteBatch(t *testing.T) {
 	}
 	// TODO(jba): test two updates to the same document when it is supported.
 	// TODO(jba): test verify when it is supported.
-
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{doc1, doc2})
-	})
 }
 
-func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
+func testIntegrationQueryDocumentsWhereEntity(t *testing.T) {
 	ctx := context.Background()
-	coll := integrationColl(t)
-
-	indexFields := [][]string{
-		{"updatedAt", "weight", "height"},
-		{"weight", "height"},
-	}
-	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
-	defer cancel()
-	indexNames := createIndexes(adminCtx, wantDBPath, indexFields)
-	defer deleteIndexes(adminCtx, indexNames)
+	coll := integrationColl(t).NewDoc().Collection(indexedCollection)
 
 	h := testHelper{t}
 	nowTime := time.Now()
@@ -1254,6 +1161,9 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 	}
 	var wants []map[string]interface{}
 	var createdDocRefs []*DocumentRef
+	t.Cleanup(func() {
+		deleteDocuments(createdDocRefs)
+	})
 	for _, doc := range docs {
 		newDoc := coll.NewDoc()
 		createdDocRefs = append(createdDocRefs, newDoc)
@@ -1388,9 +1298,6 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 			}
 		}
 	}
-	t.Cleanup(func() {
-		deleteDocuments(createdDocRefs)
-	})
 }
 
 func reverseSlice(s []map[string]interface{}) []map[string]interface{} {
@@ -1402,12 +1309,15 @@ func reverseSlice(s []map[string]interface{}) []map[string]interface{} {
 	return reversed
 }
 
-func TestIntegration_QueryDocuments(t *testing.T) {
+func testIntegrationQueryDocuments(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	h := testHelper{t}
 	var wants []map[string]interface{}
 	var createdDocRefs []*DocumentRef
+	t.Cleanup(func() {
+		deleteDocuments(createdDocRefs)
+	})
 	for i := 0; i < 8; i++ {
 		doc := coll.NewDoc()
 		createdDocRefs = append(createdDocRefs, doc)
@@ -1482,7 +1392,9 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 		}
 	}
 	_, err := coll.Select("q").Where("x", "==", 1).OrderBy("q", Asc).Documents(ctx).GetAll()
-	codeEq(t, "Where and OrderBy on different fields without an index", codes.FailedPrecondition, err)
+	if getCurrentEdition() == editionStandard {
+		codeEq(t, "Where and OrderBy on different fields without an index", codes.FailedPrecondition, err)
+	}
 
 	// Using the collection itself as the query should return the full documents.
 	allDocs, err := coll.Documents(ctx).GetAll()
@@ -1511,13 +1423,9 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 	if got, want := len(seen), len(wants); got != want {
 		t.Errorf("got %d docs with 'q', want %d", len(seen), len(wants))
 	}
-
-	t.Cleanup(func() {
-		deleteDocuments(createdDocRefs)
-	})
 }
 
-func TestIntegration_QueryDocuments_LimitToLast_Fail(t *testing.T) {
+func testIntegrationQueryDocumentsLimitToLastFail(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	q := coll.Select("q").OrderBy("q", Asc).LimitToLast(1)
@@ -1528,21 +1436,9 @@ func TestIntegration_QueryDocuments_LimitToLast_Fail(t *testing.T) {
 }
 
 // Test unary filters.
-func TestIntegration_QueryUnary(t *testing.T) {
+func testIntegrationQueryUnary(t *testing.T) {
 	ctx := context.Background()
-	coll := integrationColl(t)
-
-	// Create required indexes
-	indexFields := [][]string{
-		{"testNull", "x", "q"},
-		{"testNaN", "x", "q"},
-	}
-	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
-	indexNames := createIndexes(adminCtx, wantDBPath, indexFields)
-	t.Cleanup(func() {
-		deleteIndexes(adminCtx, indexNames)
-		cancel()
-	})
+	coll := integrationColl(t).NewDoc().Collection(indexedCollection)
 
 	h := testHelper{t}
 	docRefs := []*DocumentRef{coll.NewDoc(), coll.NewDoc(), coll.NewDoc()}
@@ -1587,7 +1483,7 @@ func TestIntegration_QueryUnary(t *testing.T) {
 }
 
 // Test the special DocumentID field in queries.
-func TestIntegration_QueryName(t *testing.T) {
+func testIntegrationQueryName(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 
@@ -1609,6 +1505,9 @@ func TestIntegration_QueryName(t *testing.T) {
 	coll := integrationColl(t)
 	var wantIDs []string
 	var docRefs []*DocumentRef
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 	for i := 0; i < 3; i++ {
 		doc := coll.NewDoc()
 		docRefs = append(docRefs, doc)
@@ -1626,19 +1525,18 @@ func TestIntegration_QueryName(t *testing.T) {
 	// Test cursors with __name__.
 	checkIDs(q.StartAt(wantIDs[1]), wantIDs[1:])
 	checkIDs(q.EndAt(wantIDs[1]), wantIDs[:2])
-
-	t.Cleanup(func() {
-		deleteDocuments(docRefs)
-	})
 }
 
-func TestIntegration_QueryNested(t *testing.T) {
+func testIntegrationQueryNested(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 	coll1 := integrationColl(t)
 	doc1 := coll1.NewDoc()
 	coll2 := doc1.Collection(collectionIDs.New())
 	doc2 := coll2.NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc1, doc2})
+	})
 	wantData := map[string]interface{}{"x": int64(1)}
 	h.mustCreate(doc2, wantData)
 	q := coll2.Select("x")
@@ -1652,12 +1550,9 @@ func TestIntegration_QueryNested(t *testing.T) {
 	if gotData := got[0].Data(); !testEqual(gotData, wantData) {
 		t.Errorf("got\n%+v\nwant\n%+v", gotData, wantData)
 	}
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{doc1, doc2})
-	})
 }
 
-func TestIntegration_RunTransaction(t *testing.T) {
+func testIntegrationRunTransaction(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 
@@ -1670,6 +1565,9 @@ func TestIntegration_RunTransaction(t *testing.T) {
 	pat := Player{Name: "Pat", Score: 3, Star: false}
 	client := integrationClient(t)
 	patDoc := iColl.Doc("pat")
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{patDoc})
+	})
 	var anError error
 	incPat := func(_ context.Context, tx *Transaction) error {
 		doc, err := tx.Get(patDoc)
@@ -1726,13 +1624,9 @@ func TestIntegration_RunTransaction(t *testing.T) {
 	if got != want {
 		t.Errorf("got %+v, want %+v", got, want)
 	}
-
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{patDoc})
-	})
 }
 
-func TestIntegration_RunTransaction_WithRunOptions(t *testing.T) {
+func testIntegrationRunTransactionWithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -1742,9 +1636,13 @@ func TestIntegration_RunTransaction_WithRunOptions(t *testing.T) {
 	t.Cleanup(func() { deleteDocuments(wantDocRefs) })
 	numDocs := len(wantDocRefs)
 	for _, testcase := range testcases {
+
 		t.Run(testcase.desc, func(t *testing.T) {
+			if !contains(testcase.supportedInEditions, getCurrentEdition()) {
+				t.Skip("Skipping. Explain options are not supported in RunQuery API for " + getCurrentEdition().String() + " edition.")
+			}
 			err := client.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
-				docIter := tx.Documents(iColl.WithRunOptions(testcase.opts...))
+				docIter := tx.Documents(iColl.WithRunOptions(testcase.opts...).OrderBy("N", Asc))
 				docsRead := 0
 				for {
 					_, err := docIter.Next()
@@ -1783,7 +1681,7 @@ func TestIntegration_RunTransaction_WithRunOptions(t *testing.T) {
 
 }
 
-func TestIntegration_TransactionGetAll(t *testing.T) {
+func testIntegrationTransactionGetAll(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 	type Player struct {
@@ -1795,6 +1693,9 @@ func TestIntegration_TransactionGetAll(t *testing.T) {
 	client := integrationClient(t)
 	leeDoc := iColl.Doc("lee")
 	samDoc := iColl.Doc("sam")
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{leeDoc, samDoc})
+	})
 	h.mustCreate(leeDoc, lee)
 	h.mustCreate(samDoc, sam)
 
@@ -1817,17 +1718,17 @@ func TestIntegration_TransactionGetAll(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{leeDoc, samDoc})
-	})
 }
 
-func TestIntegration_WatchDocument(t *testing.T) {
+func testIntegrationWatchDocument(t *testing.T) {
+	skipIfEdition(t, "Listen queries", editionEnterprise)
 	coll := integrationColl(t)
 	ctx := context.Background()
 	h := testHelper{t}
 	doc := coll.NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 	it := doc.Snapshots(ctx)
 	defer it.Stop()
 
@@ -1868,19 +1769,18 @@ func TestIntegration_WatchDocument(t *testing.T) {
 	if got := snap.Data(); !testutil.Equal(got, want) {
 		t.Fatalf("got %v, want %v", got, want)
 	}
-
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{doc})
-	})
 }
 
-func TestIntegration_ArrayUnion_Create(t *testing.T) {
+func testIntegrationArrayUnionCreate(t *testing.T) {
 	path := "somePath"
 	data := map[string]interface{}{
 		path: ArrayUnion("a", "b"),
 	}
 
 	doc := integrationColl(t).NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 	h := testHelper{t}
 	h.mustCreate(doc, data)
 	ds := h.mustGet(doc)
@@ -1898,14 +1798,13 @@ func TestIntegration_ArrayUnion_Create(t *testing.T) {
 			t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
 		}
 	}
+}
 
+func testIntegrationArrayUnionUpdate(t *testing.T) {
+	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
 	})
-}
-
-func TestIntegration_ArrayUnion_Update(t *testing.T) {
-	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
 	path := "somePath"
 
@@ -1934,17 +1833,17 @@ func TestIntegration_ArrayUnion_Update(t *testing.T) {
 			t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
 		}
 	}
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{doc})
-	})
 }
 
-func TestIntegration_ArrayUnion_Set(t *testing.T) {
+func testIntegrationArrayUnionSet(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
 	path := "somePath"
 
 	doc := coll.NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 	newData := map[string]interface{}{
 		path: ArrayUnion("a", "b"),
 	}
@@ -1964,14 +1863,13 @@ func TestIntegration_ArrayUnion_Set(t *testing.T) {
 			t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
 		}
 	}
+}
 
+func testIntegrationArrayRemoveCreate(t *testing.T) {
+	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
 	})
-}
-
-func TestIntegration_ArrayRemove_Create(t *testing.T) {
-	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
 	path := "somePath"
 
@@ -1993,14 +1891,13 @@ func TestIntegration_ArrayRemove_Create(t *testing.T) {
 	if !testEqual(gotMap[path], want) {
 		t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
 	}
+}
 
+func testIntegrationArrayRemoveUpdate(t *testing.T) {
+	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
 	})
-}
-
-func TestIntegration_ArrayRemove_Update(t *testing.T) {
-	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
 	path := "somePath"
 
@@ -2029,18 +1926,17 @@ func TestIntegration_ArrayRemove_Update(t *testing.T) {
 			t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
 		}
 	}
-
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{doc})
-	})
 }
 
-func TestIntegration_ArrayRemove_Set(t *testing.T) {
+func testIntegrationArrayRemoveSet(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
 	path := "somePath"
 
 	doc := coll.NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 	newData := map[string]interface{}{
 		path: ArrayRemove("a", "b"),
 	}
@@ -2058,10 +1954,6 @@ func TestIntegration_ArrayRemove_Set(t *testing.T) {
 	if !testEqual(gotMap[path], want) {
 		t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
 	}
-
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{doc})
-	})
 }
 
 func makeFieldTransform(transform string, value interface{}) interface{} {
@@ -2076,10 +1968,13 @@ func makeFieldTransform(transform string, value interface{}) interface{} {
 	panic(fmt.Sprintf("Invalid transform %v", transform))
 }
 
-func TestIntegration_FieldTransforms_Create(t *testing.T) {
+func testIntegrationFieldTransformsCreate(t *testing.T) {
 	for _, transform := range []string{"inc", "max", "min"} {
 		t.Run(transform, func(t *testing.T) {
 			doc := integrationColl(t).NewDoc()
+			t.Cleanup(func() {
+				deleteDocuments([]*DocumentRef{doc})
+			})
 			h := testHelper{t}
 			path := "somePath"
 			want := 7
@@ -2100,16 +1995,12 @@ func TestIntegration_FieldTransforms_Create(t *testing.T) {
 			if gotMap[path] != want {
 				t.Fatalf("want %d, got %d", want, gotMap[path])
 			}
-
-			t.Cleanup(func() {
-				deleteDocuments([]*DocumentRef{doc})
-			})
 		})
 	}
 }
 
 // Also checks that all appropriate types are supported.
-func TestIntegration_FieldTransforms_Update(t *testing.T) {
+func testIntegrationFieldTransformsUpdate(t *testing.T) {
 	type MyInt = int // Test a custom type.
 	for _, tc := range []struct {
 		// All three should be same type.
@@ -2141,6 +2032,9 @@ func TestIntegration_FieldTransforms_Update(t *testing.T) {
 				typeStr := reflect.TypeOf(tc.val).String()
 				t.Run(typeStr, func(t *testing.T) {
 					doc := integrationColl(t).NewDoc()
+					t.Cleanup(func() {
+						deleteDocuments([]*DocumentRef{doc})
+					})
 					h := testHelper{t}
 					path := "somePath"
 
@@ -2207,17 +2101,13 @@ func TestIntegration_FieldTransforms_Update(t *testing.T) {
 						// switch statement.
 						t.Fatalf("unsupported type %T", want)
 					}
-
-					t.Cleanup(func() {
-						deleteDocuments([]*DocumentRef{doc})
-					})
 				})
 			})
 		}
 	}
 }
 
-func TestIntegration_FieldTransforms_Set(t *testing.T) {
+func testIntegrationFieldTransformsSet(t *testing.T) {
 	for _, transform := range []string{"inc", "max", "min"} {
 		t.Run(transform, func(t *testing.T) {
 			coll := integrationColl(t)
@@ -2226,6 +2116,9 @@ func TestIntegration_FieldTransforms_Set(t *testing.T) {
 			want := 9
 
 			doc := coll.NewDoc()
+			t.Cleanup(func() {
+				deleteDocuments([]*DocumentRef{doc})
+			})
 			newData := map[string]interface{}{
 				path: makeFieldTransform(transform, want),
 			}
@@ -2242,17 +2135,14 @@ func TestIntegration_FieldTransforms_Set(t *testing.T) {
 			if gotMap[path] != want {
 				t.Fatalf("want %d, got %d", want, gotMap[path])
 			}
-
-			t.Cleanup(func() {
-				deleteDocuments([]*DocumentRef{doc})
-			})
 		})
 	}
 }
 
 type imap map[string]interface{}
 
-func TestIntegration_Serialize_Deserialize_WatchQuery(t *testing.T) {
+func testIntegrationSerializeDeserializeWatchQuery(t *testing.T) {
+	skipIfEdition(t, "PartitionQuery", editionEnterprise)
 	h := testHelper{t}
 	collID := collectionIDs.New()
 	ctx := context.Background()
@@ -2301,7 +2191,8 @@ func TestIntegration_Serialize_Deserialize_WatchQuery(t *testing.T) {
 	}
 }
 
-func TestIntegration_WatchQuery(t *testing.T) {
+func testIntegrationWatchQuery(t *testing.T) {
+	skipIfEdition(t, "Listen queries", editionEnterprise)
 	ctx := context.Background()
 	coll := integrationColl(t)
 	h := testHelper{t}
@@ -2388,7 +2279,8 @@ func TestIntegration_WatchQuery(t *testing.T) {
 	})
 }
 
-func TestIntegration_WatchQueryCancel(t *testing.T) {
+func testIntegrationWatchQueryCancel(t *testing.T) {
+	skipIfEdition(t, "Listen queries", editionEnterprise)
 	ctx := context.Background()
 	coll := integrationColl(t)
 
@@ -2407,7 +2299,8 @@ func TestIntegration_WatchQueryCancel(t *testing.T) {
 	codeEq(t, "after cancel", codes.Canceled, err)
 }
 
-func TestIntegration_MissingDocs(t *testing.T) {
+func testIntegrationMissingDocs(t *testing.T) {
+	skipIfEdition(t, "show_missing", editionEnterprise)
 	ctx := context.Background()
 	h := testHelper{t}
 	client := integrationClient(t)
@@ -2443,7 +2336,7 @@ func TestIntegration_MissingDocs(t *testing.T) {
 	})
 }
 
-func TestIntegration_CollectionGroupQueries(t *testing.T) {
+func testIntegrationCollectionGroupQueries(t *testing.T) {
 	shouldBeFoundID := collectionIDs.New()
 	shouldNotBeFoundID := collectionIDs.New()
 
@@ -2453,17 +2346,17 @@ func TestIntegration_CollectionGroupQueries(t *testing.T) {
 	cr1 := client.Collection(shouldBeFoundID)
 	dr1 := cr1.Doc("should-be-found-1")
 	h.mustCreate(dr1, map[string]string{"some-key": "should-be-found"})
-	defer h.mustDelete(dr1)
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{dr1}) })
 
 	dr1.Collection(shouldBeFoundID)
 	dr2 := cr1.Doc("should-be-found-2")
 	h.mustCreate(dr2, map[string]string{"some-key": "should-be-found"})
-	defer h.mustDelete(dr2)
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{dr2}) })
 
 	cr3 := client.Collection(shouldNotBeFoundID)
 	dr3 := cr3.Doc("should-not-be-found")
 	h.mustCreate(dr3, map[string]string{"some-key": "should-NOT-be-found"})
-	defer h.mustDelete(dr3)
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{dr3}) })
 
 	cg := client.CollectionGroup(shouldBeFoundID)
 	snaps, err := cg.Documents(ctx).GetAll()
@@ -2602,19 +2495,23 @@ func TestDetectProjectID(t *testing.T) {
 	}
 
 	// Use creds with project ID.
-	if _, err := NewClient(ctx, DetectProjectID, option.WithCredentials(creds)); err != nil {
+	if c, err := NewClient(ctx, DetectProjectID, option.WithCredentials(creds)); err != nil {
 		t.Errorf("NewClient: %v", err)
+	} else {
+		c.Close()
 	}
 
 	ts := testutil.ErroringTokenSource{}
 	// Try to use creds without project ID.
+	t.Setenv("GOOGLE_CLOUD_PROJECT", "")
 	_, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(ts))
 	if err == nil || err.Error() != "unable to detect projectID, please refer to docs for DetectProjectID" {
 		t.Errorf("expected an error while using TokenSource that does not have a project ID")
 	}
 }
 
-func TestIntegration_ColGroupRefPartitions(t *testing.T) {
+func testIntegrationColGroupRefPartitions(t *testing.T) {
+	skipIfEdition(t, "PartitionQuery", editionEnterprise)
 	h := testHelper{t}
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
@@ -2663,7 +2560,8 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 
 }
 
-func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
+func testIntegrationColGroupRefPartitionsLarge(t *testing.T) {
+	skipIfEdition(t, "PartitionQuery", editionEnterprise)
 	// Create collection with enough documents to have multiple partitions.
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
@@ -2741,7 +2639,7 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	}
 }
 
-func TestIntegration_NewClientWithDatabase(t *testing.T) {
+func testIntegrationNewClientWithDatabase(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -2775,12 +2673,18 @@ func TestIntegration_NewClientWithDatabase(t *testing.T) {
 		} else if err == nil && c.databaseID != tc.dbName {
 			t.Errorf("NewClientWithDatabase: %s got %v want %v", tc.desc, c.databaseID, tc.dbName)
 		}
+		if c != nil {
+			c.Close()
+		}
 	}
 }
 
-// TestIntegration_BulkWriter_Set tests setting values and serverTimeStamp in single write.
-func TestIntegration_BulkWriter_Set(t *testing.T) {
+// testIntegrationBulkWriterSet tests setting values and serverTimeStamp in single write.
+func testIntegrationBulkWriterSet(t *testing.T) {
 	doc := iColl.NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 	c := integrationClient(t)
 	ctx := context.Background()
 	bw := c.BulkWriter(ctx)
@@ -2791,13 +2695,10 @@ func TestIntegration_BulkWriter_Set(t *testing.T) {
 	if err != nil {
 		t.Errorf("bulkwriter: error performing a set write: %v\n", err)
 	}
-
-	t.Cleanup(func() {
-		deleteDocuments([]*DocumentRef{doc})
-	})
+	bw.End()
 }
 
-func TestIntegration_BulkWriter_Create(t *testing.T) {
+func testIntegrationBulkWriterCreate(t *testing.T) {
 	c := integrationClient(t)
 	ctx := context.Background()
 
@@ -2806,6 +2707,12 @@ func TestIntegration_BulkWriter_Create(t *testing.T) {
 	}
 
 	docRef := iColl.Doc(fmt.Sprintf("bw_create_1_%d", time.Now().Unix()))
+	var docRefs []*DocumentRef
+	docRefs = append(docRefs, docRef)
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
+
 	_, err := docRef.Create(ctx, BWDoc{A: 6})
 	if err != nil {
 		t.Fatalf("Create: %v", err)
@@ -2828,6 +2735,13 @@ func TestIntegration_BulkWriter_Create(t *testing.T) {
 			wantStatusCode: codes.AlreadyExists,
 		},
 	}
+
+	// Add successfully created testcases ref to cleanup list
+	for _, tc := range testcases {
+		if tc.wantStatusCode == codes.OK {
+			docRefs = append(docRefs, tc.ref)
+		}
+	}
 	for _, testcase := range testcases {
 		bw := c.BulkWriter(ctx)
 
@@ -2845,9 +2759,12 @@ func TestIntegration_BulkWriter_Create(t *testing.T) {
 	}
 }
 
-func TestIntegration_BulkWriter(t *testing.T) {
+func testIntegrationBulkWriter(t *testing.T) {
 	doc := iColl.NewDoc()
 	docRefs := []*DocumentRef{doc}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 	c := integrationClient(t)
 	ctx := context.Background()
 	bw := c.BulkWriter(ctx)
@@ -2898,9 +2815,6 @@ func TestIntegration_BulkWriter(t *testing.T) {
 			t.Error("bulkwriter: write attempt returned nil results")
 		}
 	}
-	t.Cleanup(func() {
-		deleteDocuments(docRefs)
-	})
 }
 
 func aggResultsEquals(r *testutil.R, m1, m2 AggregationResult) bool {
@@ -2928,19 +2842,10 @@ func aggResultsEquals(r *testutil.R, m1, m2 AggregationResult) bool {
 	return true
 }
 
-func TestIntegration_AggregationQueries(t *testing.T) {
+func testIntegrationAggregationQueries(t *testing.T) {
 	ctx := context.Background()
-	coll := integrationColl(t)
+	coll := integrationColl(t).NewDoc().Collection(indexedCollection)
 	client := integrationClient(t)
-
-	indexFields := [][]string{
-		{"weight", "model"},
-		{"weight", "volume"},
-	}
-	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
-	defer cancel()
-	indexNames := createIndexes(adminCtx, wantDBPath, indexFields)
-	defer deleteIndexes(adminCtx, indexNames)
 
 	h := testHelper{t}
 	docs := []map[string]interface{}{
@@ -2954,18 +2859,18 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		{"weight": 8.2, "volume": 93, "model": "A"},
 	}
 	docRefs := []*DocumentRef{}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 	for _, doc := range docs {
 		newDoc := coll.NewDoc()
 		docRefs = append(docRefs, newDoc)
 		h.mustCreate(newDoc, doc)
 	}
-	t.Cleanup(func() {
-		deleteDocuments(docRefs)
-	})
 
 	query := coll.Where("weight", ">=", 1)
 
-	limitQuery := coll.Where("weight", ">=", 1).Limit(4)
+	limitQuery := coll.Where("weight", ">=", 1).OrderBy("weight", Asc).Limit(4)
 	limitToLastQuery := coll.Where("weight", ">=", 2.6).OrderBy("weight", Asc).LimitToLast(4)
 
 	startAtQuery := coll.Where("weight", ">=", 2.6).OrderBy("weight", Asc).StartAt(3.7)
@@ -2980,156 +2885,244 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	testcases := []struct {
 		desc             string
 		aggregationQuery *AggregationQuery
-		wantErr          bool
+		wantErr          map[firestoreEdition]bool
 		runInTransaction bool
-		wantResult       AggregationResult
+		wantResult       map[firestoreEdition]AggregationResult
 	}{
 		{
 			desc:             "Multiple aggregations",
 			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithAvg("volume", "height_avg1").WithSum("weight", "weight_sum1").WithSum("volume", "height_sum1"),
-			wantErr:          false,
-			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
-				"height_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
-				"height_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionStandard: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+					"height_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+					"height_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
+				},
+				editionEnterprise: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+					"height_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+					"height_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
+				},
 			},
 		},
 		{
 			desc:             "Aggregations in transaction",
 			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithAvg("volume", "height_avg1").WithSum("weight", "weight_sum1").WithSum("volume", "height_sum1"),
-			wantErr:          false,
 			runInTransaction: true,
-			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
-				"height_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
-				"height_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionStandard: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+					"height_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+					"height_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
+				},
+				editionEnterprise: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+					"height_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+					"height_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
+				},
 			},
 		},
 		{
 			desc:             "WithSum aggregation without alias",
 			aggregationQuery: query.NewAggregationQuery().WithSum("weight", ""),
-			wantErr:          false,
-			wantResult: map[string]interface{}{
-				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionStandard: map[string]interface{}{
+					"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+				},
+				editionEnterprise: map[string]interface{}{
+					"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+				},
 			},
 		},
 		{
 			desc:             "WithSumPath aggregation without alias",
 			aggregationQuery: query.NewAggregationQuery().WithSumPath([]string{"weight"}, ""),
-			wantErr:          false,
-			wantResult: map[string]interface{}{
-				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionStandard: map[string]interface{}{
+					"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+				},
+				editionEnterprise: map[string]interface{}{
+					"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+				},
 			},
 		},
 		{
 			desc:             "WithAvg aggregation without alias",
 			aggregationQuery: query.NewAggregationQuery().WithAvg("weight", ""),
-			wantErr:          false,
-			wantResult: map[string]interface{}{
-				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionStandard: map[string]interface{}{
+					"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+				},
+				editionEnterprise: map[string]interface{}{
+					"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+				},
 			},
 		},
 		{
 			desc:             "WithAvgPath aggregation without alias",
 			aggregationQuery: query.NewAggregationQuery().WithAvgPath([]string{"weight"}, ""),
-			wantErr:          false,
-			wantResult: map[string]interface{}{
-				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionStandard: map[string]interface{}{
+					"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+				},
+				editionEnterprise: map[string]interface{}{
+					"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+				},
 			},
 		},
 		{
 			desc:             "Aggregations with limit",
 			aggregationQuery: (&limitQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
-			wantErr:          false,
-			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(12.6)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(3.15)}},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionStandard: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(12.6)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(3.15)}},
+				},
+				editionEnterprise: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(12.6)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(3.15)}},
+				},
 			},
 		},
 		{
 			desc:             "Aggregations with StartAt",
 			aggregationQuery: (&startAtQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
-			wantErr:          false,
-			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(35.7)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.95)}},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionStandard: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(35.7)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.95)}},
+				},
+				editionEnterprise: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(35.7)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.95)}},
+				},
 			},
 		},
 		{
 			desc:             "Aggregations with StartAfter",
 			aggregationQuery: (&startAfterQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
-			wantErr:          false,
-			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(32)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.4)}},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionStandard: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(32)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.4)}},
+				},
+				editionEnterprise: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(32)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.4)}},
+				},
 			},
 		},
 		{
 			desc:             "Aggregations with EndAt",
 			aggregationQuery: (&endAtQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
-			wantErr:          false,
-			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(30.1)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.016666666666667)}},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionStandard: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(30.1)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.016666666666667)}},
+				},
+				editionEnterprise: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(30.1)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.016666666666667)}},
+				},
 			},
 		},
 		{
 			desc:             "Aggregations with EndBefore",
 			aggregationQuery: (&endBeforeQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
-			wantErr:          false,
-			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(23)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.6)}},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionStandard: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(23)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.6)}},
+				},
+				editionEnterprise: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(23)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.6)}},
+				},
 			},
 		},
 		{
 			desc:             "Aggregations with LimitToLast",
 			aggregationQuery: (&limitToLastQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
-			wantErr:          false,
-			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(27.2)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.8)}},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionStandard: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(27.2)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.8)}},
+				},
+				editionEnterprise: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(27.2)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.8)}},
+				},
 			},
 		},
 		{
 			desc:             "Aggregations on empty results",
 			aggregationQuery: emptyResultsQueryPtr.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithSum("weight", "weight_sum1"),
-			wantErr:          false,
-			wantResult: map[string]interface{}{
-				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
-				"weight_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
-				"weight_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionStandard: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+				},
+				editionEnterprise: map[string]interface{}{
+					"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+					"weight_sum1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+					"weight_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+				},
 			},
 		},
 		{
 			desc:             "Aggregation on non-numeric field",
 			aggregationQuery: query.NewAggregationQuery().WithAvg("model", "model_avg1").WithSum("model", "model_sum1"),
-			wantErr:          false,
-			wantResult: map[string]interface{}{
-				"model_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
-				"model_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionStandard: map[string]interface{}{
+					"model_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+					"model_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+				},
+				editionEnterprise: map[string]interface{}{
+					"model_sum1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+					"model_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+				},
 			},
 		},
 		{
 			desc:             "Aggregation on non existent key",
 			aggregationQuery: query.NewAggregationQuery().WithAvg("randKey", "key_avg1").WithSum("randKey", "key_sum1"),
-			wantErr:          true,
+			wantErr: map[firestoreEdition]bool{
+				editionStandard: true,
+			},
+			wantResult: map[firestoreEdition]AggregationResult{
+				editionEnterprise: map[string]interface{}{
+					"key_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+					"key_sum1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+				},
+			},
 		},
 	}
-
 	for _, tc := range testcases {
 		t.Run(tc.desc, func(t *testing.T) {
 			testutil.Retry(t, 5, 5*time.Second, func(r *testutil.R) {
+				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				defer cancel()
 				var gotResult AggregationResult
 				var err error
 				if tc.runInTransaction {
@@ -3149,30 +3142,70 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 					return
 				}
 
+				currentEdition := getCurrentEdition()
+				wantErr := false
+				if tc.wantErr != nil {
+					wantErr = tc.wantErr[currentEdition]
+				}
+				wantResult := tc.wantResult[currentEdition]
+
+				if useEmulator {
+					// Emulator behaves differently for "Aggregation on non existent key"
+					if tc.desc == "Aggregation on non existent key" {
+						wantErr = false
+						wantResult = AggregationResult{
+							"key_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+							"key_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+						}
+					}
+				}
+
 				// Compare expected and actual results
-				if err != nil && !tc.wantErr {
+				if err != nil && !wantErr {
 					r.Errorf("got: %v, want: nil", err)
 					return
 				}
-				if err == nil && tc.wantErr {
+				if err == nil && wantErr {
 					r.Errorf("got: %v, wanted error", err)
 					return
 				}
-				if !aggResultsEquals(r, gotResult, tc.wantResult) {
-					r.Errorf("got: %v, want: %v", gotResult, tc.wantResult)
+				if !aggResultsEquals(r, gotResult, wantResult) {
+					r.Errorf("got: %v, want: %v", gotResult, wantResult)
 					return
+				}
+
+				if !wantErr {
+					// Verify Data()
+					gotNative := gotResult.Data()
+					wantNative := wantResult.Data()
+					if diff := testutil.Diff(gotNative, wantNative); diff != "" {
+						r.Errorf("Data() mismatch (-got, +want):\n%s", diff)
+					}
+
+					// Verify DataTo()
+					var gotDataTo map[string]interface{}
+					if err := gotResult.DataTo(&gotDataTo); err != nil {
+						r.Errorf("DataTo() failed: %v", err)
+					}
+					if diff := testutil.Diff(gotDataTo, wantNative); diff != "" {
+						r.Errorf("DataTo() map mismatch (-got, +want):\n%s", diff)
+					}
 				}
 			})
 		})
 	}
 }
 
-func TestIntegration_AggregationQueries_WithRunOptions(t *testing.T) {
+func getCurrentEdition() firestoreEdition {
+	return testParams[firestoreEditionKey].(firestoreEdition)
+}
+
+func testIntegrationAggregationQueriesWithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
 	ctx := context.Background()
-	coll := integrationColl(t)
+	coll := integrationColl(t).NewDoc().Collection(indexedCollection)
 
 	h := testHelper{t}
 	docs := []map[string]interface{}{
@@ -3180,8 +3213,13 @@ func TestIntegration_AggregationQueries_WithRunOptions(t *testing.T) {
 		{"weight": 0.5, "height": 98, "model": "A"},
 		{"weight": 0.5, "height": 97, "model": "B"},
 	}
+	var docRefs []*DocumentRef
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 	for _, doc := range docs {
 		newDoc := coll.NewDoc()
+		docRefs = append(docRefs, newDoc)
 		h.mustCreate(newDoc, doc)
 	}
 
@@ -3200,10 +3238,11 @@ func TestIntegration_AggregationQueries_WithRunOptions(t *testing.T) {
 	}
 
 	testcases := []struct {
-		desc       string
-		wantRes    *AggregationResponse
-		wantErrMsg string
-		query      Query
+		desc                string
+		wantRes             *AggregationResponse
+		wantErrMsg          string
+		query               Query
+		supportedInEditions []firestoreEdition
 	}{
 		{
 			desc:  "no options",
@@ -3211,6 +3250,7 @@ func TestIntegration_AggregationQueries_WithRunOptions(t *testing.T) {
 			wantRes: &AggregationResponse{
 				Result: aggResult,
 			},
+			supportedInEditions: []firestoreEdition{editionEnterprise, editionStandard},
 		},
 		{
 			desc:  "ExplainOptions.Analyze is false",
@@ -3220,6 +3260,7 @@ func TestIntegration_AggregationQueries_WithRunOptions(t *testing.T) {
 					PlanSummary: wantPlanSummary,
 				},
 			},
+			supportedInEditions: []firestoreEdition{editionStandard},
 		},
 		{
 			desc:  "ExplainOptions.Analyze is true",
@@ -3238,35 +3279,41 @@ func TestIntegration_AggregationQueries_WithRunOptions(t *testing.T) {
 					PlanSummary: wantPlanSummary,
 				},
 			},
+			supportedInEditions: []firestoreEdition{editionStandard},
 		},
 	}
 
 	for _, testcase := range testcases {
-		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
-			aq := testcase.query.NewAggregationQuery().WithCount("count1").
-				WithAvg("weight", "weight_avg1").
-				WithSum("weight", "weight_sum1")
-			gotRes, gotErr := aq.GetResponse(ctx)
+		t.Run(testcase.desc, func(t *testing.T) {
+			if !contains(testcase.supportedInEditions, getCurrentEdition()) {
+				t.Skip("Skipping. Explain options are not supported in RunAggregationQuery API for " + getCurrentEdition().String() + " edition.")
+			}
+			testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
+				aq := testcase.query.NewAggregationQuery().WithCount("count1").
+					WithAvg("weight", "weight_avg1").
+					WithSum("weight", "weight_sum1")
+				gotRes, gotErr := aq.GetResponse(ctx)
 
-			gotErrMsg := ""
-			if gotErr != nil {
-				gotErrMsg = gotErr.Error()
-			}
+				gotErrMsg := ""
+				if gotErr != nil {
+					gotErrMsg = gotErr.Error()
+				}
 
-			gotFailed := gotErr != nil
-			wantFailed := len(testcase.wantErrMsg) != 0
-			if gotFailed != wantFailed || !strings.Contains(gotErrMsg, testcase.wantErrMsg) {
-				r.Errorf("%s: Mismatch in error got: %v, want: %v", testcase.desc, gotErr, testcase.wantErrMsg)
-				return
-			}
-			if !gotFailed && !aggResultsEquals(r, gotRes.Result, testcase.wantRes.Result) {
-				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testcase.desc, gotRes.Result, testcase.wantRes.Result)
-				return
-			}
+				gotFailed := gotErr != nil
+				wantFailed := len(testcase.wantErrMsg) != 0
+				if gotFailed != wantFailed || !strings.Contains(gotErrMsg, testcase.wantErrMsg) {
+					r.Errorf("%s: Mismatch in error got: %v, want: %v", testcase.desc, gotErr, testcase.wantErrMsg)
+					return
+				}
+				if !gotFailed && !aggResultsEquals(r, gotRes.Result, testcase.wantRes.Result) {
+					r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testcase.desc, gotRes.Result, testcase.wantRes.Result)
+					return
+				}
 
-			if err := cmpExplainMetrics(gotRes.ExplainMetrics, testcase.wantRes.ExplainMetrics); err != nil {
-				r.Errorf("%q: Mismatch in ExplainMetrics %+v", testcase.desc, err)
-			}
+				if err := cmpExplainMetrics(gotRes.ExplainMetrics, testcase.wantRes.ExplainMetrics); err != nil {
+					r.Errorf("%q: Mismatch in ExplainMetrics %+v", testcase.desc, err)
+				}
+			})
 		})
 	}
 }
@@ -3314,7 +3361,7 @@ func cmpExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
 	return nil
 }
 
-func TestIntegration_CountAggregationQuery(t *testing.T) {
+func testIntegrationCountAggregationQuery(t *testing.T) {
 	str := uid.NewSpace("firestore-count", &uid.Options{})
 	datum := str.New()
 
@@ -3322,7 +3369,9 @@ func TestIntegration_CountAggregationQuery(t *testing.T) {
 		iColl.NewDoc(),
 		iColl.NewDoc(),
 	}
-
+	t.Cleanup(func() {
+		deleteDocuments(docs)
+	})
 	c := integrationClient(t)
 	ctx := context.Background()
 	bw := c.BulkWriter(ctx)
@@ -3364,13 +3413,9 @@ func TestIntegration_CountAggregationQuery(t *testing.T) {
 	if cv.GetIntegerValue() != 2 {
 		t.Errorf("COUNT aggregation query mismatch;\ngot: %d, want: %d", cv.GetIntegerValue(), 2)
 	}
-
-	t.Cleanup(func() {
-		deleteDocuments(docs)
-	})
 }
 
-func TestIntegration_ClientReadTime(t *testing.T) {
+func testIntegrationClientReadTime(t *testing.T) {
 	docs := []*DocumentRef{
 		iColl.NewDoc(),
 		iColl.NewDoc(),
@@ -3414,32 +3459,20 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	wantReadTime := tm.Truncate(time.Second)
+	wantReadTime := tm.Truncate(time.Microsecond)
 	for _, d := range ds {
-		if !wantReadTime.Equal(d.ReadTime) {
+		gotTrunc := d.ReadTime.Truncate(time.Microsecond)
+		if !wantReadTime.Equal(gotTrunc) {
 			t.Errorf("wanted read time: %v; got: %v",
-				tm.UnixNano(), d.ReadTime.UnixNano())
+				wantReadTime, gotTrunc)
 		}
 	}
 }
 
-func TestIntegration_FindNearest(t *testing.T) {
-	collRef := integrationColl(t)
-	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
-	t.Cleanup(func() {
-		cancel()
-	})
+func testIntegrationFindNearest(t *testing.T) {
+	collRef := integrationColl(t).NewDoc().Collection(indexedCollection)
 	queryField := "EmbeddedField64"
 	resultField := "vector_distance"
-	indexNames := createVectorIndexes(adminCtx, t, wantDBPath, []vectorIndex{
-		{
-			fieldPath: queryField,
-			dimension: 3,
-		},
-	})
-	t.Cleanup(func() {
-		deleteIndexes(adminCtx, indexNames)
-	})
 
 	type coffeeBean struct {
 		ID              int
@@ -3488,7 +3521,6 @@ func TestIntegration_FindNearest(t *testing.T) {
 		},
 	}
 	h := testHelper{t}
-	coll := integrationColl(t)
 	ctx := context.Background()
 	var docRefs []*DocumentRef
 	t.Cleanup(func() {
@@ -3497,7 +3529,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 
 	// create documents with vector field
 	for i := 0; i < len(beans); i++ {
-		doc := coll.NewDoc()
+		doc := collRef.NewDoc()
 		docRefs = append(docRefs, doc)
 		h.mustCreate(doc, beans[i])
 	}
@@ -3562,6 +3594,580 @@ func TestIntegration_FindNearest(t *testing.T) {
 					}
 				}
 			})
+		})
+	}
+}
+
+func testIntegrationBSONTypes(t *testing.T) {
+	skipIfEdition(t, "BSON types", editionStandard)
+	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
+	ctx := context.Background()
+	coll := integrationColl(t)
+	doc := coll.NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
+
+	oid := BSONObjectID("0123456789abcdef01234567")
+
+	data := map[string]interface{}{
+		"oid":        oid,
+		"regex":      BSONRegex{Pattern: "foo", Options: "im"},
+		"timestamp":  BSONTimestamp{Seconds: 123, Increment: 456},
+		"decimal128": BSONDecimal128("123.45"),
+		"minkey":     BSONMinKey{},
+		"maxkey":     BSONMaxKey{},
+		"binary":     BSONBinary{Subtype: 0x02, Data: []byte{1, 2, 3}},
+		"bson_int":   BSONInt32(42),
+	}
+
+	_, err := doc.Create(ctx, data)
+	if err != nil {
+		t.Fatalf("failed to create doc with BSON types: %v", err)
+	}
+
+	// If write succeeded, we try to read back and verify.
+	ds, err := doc.Get(ctx)
+	if err != nil {
+		t.Fatalf("failed to get doc: %v", err)
+	}
+
+	got := ds.Data()
+	if !testEqual(got, data) {
+		t.Errorf("got vs want diff:\n%s", testDiff(got, data))
+	}
+
+	// Also test decoding into a struct.
+	type bsonStruct struct {
+		Oid        BSONObjectID   `firestore:"oid"`
+		Regex      BSONRegex      `firestore:"regex"`
+		Timestamp  BSONTimestamp  `firestore:"timestamp"`
+		Decimal128 BSONDecimal128 `firestore:"decimal128"`
+		MinKey     BSONMinKey     `firestore:"minkey"`
+		MaxKey     BSONMaxKey     `firestore:"maxkey"`
+		Binary     BSONBinary     `firestore:"binary"`
+		BsonInt    BSONInt32      `firestore:"bson_int"`
+	}
+
+	var gotStruct bsonStruct
+	if err := ds.DataTo(&gotStruct); err != nil {
+		t.Fatalf("DataTo failed: %v", err)
+	}
+
+	wantStruct := bsonStruct{
+		Oid:        oid,
+		Regex:      BSONRegex{Pattern: "foo", Options: "im"},
+		Timestamp:  BSONTimestamp{Seconds: 123, Increment: 456},
+		Decimal128: BSONDecimal128("123.45"),
+		MinKey:     BSONMinKey{},
+		MaxKey:     BSONMaxKey{},
+		Binary:     BSONBinary{Subtype: 0x02, Data: []byte{1, 2, 3}},
+		BsonInt:    BSONInt32(42),
+	}
+
+	if !testEqual(gotStruct, wantStruct) {
+		t.Errorf("got struct vs want struct diff:\n%s", testDiff(gotStruct, wantStruct))
+	}
+}
+
+func testIntegrationTransactionReadTime(t *testing.T) {
+	ctx := context.Background()
+	c := integrationClient(t)
+
+	coll := c.Collection(collectionIDs.New())
+
+	doc1 := coll.NewDoc()
+	doc2 := coll.NewDoc()
+	doc3 := coll.NewDoc()
+	docRefs := []*DocumentRef{doc1, doc2, doc3}
+
+	// 1. Record time t0
+	t0 := time.Now().Truncate(time.Microsecond)
+
+	// Wait to ensure t0 is strictly before creation.
+	time.Sleep(2 * time.Second)
+
+	// 2. Create 3 documents
+	for _, doc := range docRefs {
+		_, err := doc.Set(ctx, map[string]interface{}{"foo": "bar"})
+		if err != nil {
+			t.Fatalf("Set failed: %v", err)
+		}
+	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
+
+	// 3. Create a transaction T1 with read time t0 (using new option)
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		// 4. Assert that there are no documents retrieved
+		snaps, err := tx.GetAll(docRefs)
+		if err != nil {
+			return err
+		}
+		for _, snap := range snaps {
+			if snap.Exists() {
+				t.Errorf("Expected document to NOT exist at read time t0, but it does: %s", snap.Ref.Path)
+			}
+		}
+		return nil
+	}, ReadOnly, TransactionReadTime(t0))
+
+	if err != nil {
+		t.Fatalf("Transaction T1 failed: %v", err)
+	}
+
+	// 5. Create a second transaction T2 with current read time (default)
+	err = c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		// 6. Assert that 3 documents are retrieved
+		snaps, err := tx.GetAll(docRefs)
+		if err != nil {
+			return err
+		}
+		for _, snap := range snaps {
+			if !snap.Exists() {
+				t.Errorf("Expected document to exist, but it does not: %s", snap.Ref.Path)
+			}
+		}
+		return nil
+	}, ReadOnly)
+
+	if err != nil {
+		t.Fatalf("Transaction T2 failed: %v", err)
+	}
+}
+
+func testIntegrationTransactionWithReadOptionsError(t *testing.T) {
+	ctx := context.Background()
+	c := integrationClient(t)
+
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		tx.WithReadOptions(ReadTime(time.Now()))
+		return nil
+	}, ReadOnly)
+	if err != errInvalidReadTime {
+		t.Fatalf("got err %v, want %v", err, errInvalidReadTime)
+	}
+}
+
+func testIntegrationBSONQueries(t *testing.T) {
+	skipIfEdition(t, "BSON types", editionStandard)
+	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
+	ctx := context.Background()
+	client := integrationClient(t)
+	h := testHelper{t}
+
+	t.Run("canFilterAndOrderObjectId", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		oid1 := BSONObjectID("507f191e810c19729de860ea")
+		oid2 := BSONObjectID("507f191e810c19729de860eb")
+		oid3 := BSONObjectID("507f191e810c19729de860ec")
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": oid1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": oid2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": oid3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qOid1 := coll.Where("key", ">", oid1).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qOid1, []string{"doc3", "doc2"})
+
+		qOid2 := coll.Where("key", "in", []interface{}{oid1, oid2}).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qOid2, []string{"doc2", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderInt32", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		i1 := BSONInt32(-1)
+		i2 := BSONInt32(1)
+		i3 := BSONInt32(2)
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": i1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": i2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": i3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qInt1 := coll.Where("key", ">=", i2).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qInt1, []string{"doc3", "doc2"})
+
+		qInt2 := coll.Where("key", "not-in", []interface{}{i2}).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qInt2, []string{"doc3", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderDecimal128", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		d1 := BSONDecimal128("-1.2e3")
+		d2 := BSONDecimal128("0")
+		d3 := BSONDecimal128("1.2e-3")
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": d1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": d2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": d3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qDec1 := coll.Where("key", ">=", BSONDecimal128("-1.1")).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qDec1, []string{"doc3", "doc2"})
+
+		qDec2 := coll.Where("key", "not-in", []interface{}{BSONDecimal128("1.2e-3")}).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qDec2, []string{"doc2", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderBsonTimestamp", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		bt1 := BSONTimestamp{Seconds: 1, Increment: 1}
+		bt2 := BSONTimestamp{Seconds: 1, Increment: 2}
+		bt3 := BSONTimestamp{Seconds: 2, Increment: 1}
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": bt1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": bt2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": bt3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qBt1 := coll.Where("key", ">", bt1).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBt1, []string{"doc3", "doc2"})
+
+		qBt2 := coll.Where("key", "!=", bt1).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBt2, []string{"doc3", "doc2"})
+	})
+
+	t.Run("canFilterAndOrderBsonBinaryData", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		bb1 := BSONBinary{Subtype: 1, Data: []byte{1, 2, 3}}
+		bb2 := BSONBinary{Subtype: 1, Data: []byte{1, 2, 4}}
+		bb3 := BSONBinary{Subtype: 2, Data: []byte{1, 2, 3}}
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": bb1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": bb2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": bb3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qBb1 := coll.Where("key", ">", bb1).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBb1, []string{"doc3", "doc2"})
+
+		qBb2 := coll.Where("key", ">=", bb1).Where("key", "<", bb3).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBb2, []string{"doc2", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderRegexValues", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		br1 := BSONRegex{Pattern: "^bar", Options: "i"}
+		br2 := BSONRegex{Pattern: "^bar", Options: "x"}
+		br3 := BSONRegex{Pattern: "^baz", Options: "i"}
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": br1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": br2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": br3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qBr1 := coll.WhereEntity(OrFilter{
+			Filters: []EntityFilter{
+				PropertyFilter{Path: "key", Operator: ">", Value: BSONRegex{Pattern: "^bar", Options: "x"}},
+				PropertyFilter{Path: "key", Operator: "!=", Value: BSONRegex{Pattern: "^bar", Options: "x"}},
+			},
+		}).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBr1, []string{"doc3", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderMinKeys", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": BSONMinKey{}})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": BSONMinKey{}})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": BSONMaxKey{}})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qMin1 := coll.Where("key", "==", BSONMinKey{}).OrderBy("key", Desc)
+		// MinKeys are equal, would sort by documentId as secondary order
+		assertQueryOrder(ctx, t, qMin1, []string{"doc2", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderMaxKeys", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": BSONMinKey{}})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": BSONMaxKey{}})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": BSONMaxKey{}})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qMax1 := coll.Where("key", "==", BSONMaxKey{}).OrderBy("key", Desc)
+		// MaxKeys are equal, would sort by documentId as secondary order
+		assertQueryOrder(ctx, t, qMax1, []string{"doc3", "doc2"})
+	})
+}
+
+func testIntegrationBSONCrossTypeOrder(t *testing.T) {
+	skipIfEdition(t, "BSON types", editionStandard)
+	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
+	ctx := context.Background()
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
+	h := testHelper{t}
+
+	data := map[string]interface{}{
+		"t": nil,
+		"u": BSONMinKey{},
+		"c": true,
+		"d": math.NaN(),
+		"e": BSONInt32(1),
+		"f": 2.0,
+		"g": BSONDecimal128("2.01e-5"),
+		"h": 3,
+		"i": time.Unix(100, 123456000).UTC(),
+		"j": BSONTimestamp{Seconds: 1, Increment: 2},
+		"k": "string",
+		"l": []byte{0, 1, 3},
+		"m": BSONBinary{Subtype: 1, Data: []byte{1, 2, 3}},
+		"n": coll.Doc("doc_ref_target"),
+		"o": BSONObjectID("507f191e810c19729de860ea"),
+		"p": &latlng.LatLng{Latitude: 0, Longitude: 0},
+		"q": BSONRegex{Pattern: "^foo", Options: "i"},
+		"r": []interface{}{1, 2},
+		"s": Vector64{1.0, 2.0},
+		"a": map[string]interface{}{"a": 1},
+		"b": BSONMaxKey{},
+	}
+
+	var docRefs []*DocumentRef
+	for id, val := range data {
+		docRef := coll.Doc(id)
+		docRefs = append(docRefs, docRef)
+		h.mustCreate(docRef, map[string]interface{}{"key": val})
+	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
+
+	expectedResult := []string{
+		"b", "a", "s", "r", "q", "p", "o", "n", "m", "l", "k", "j", "i", "h", "f", "e", "g", "d", "c", "u", "t",
+	}
+
+	q := coll.OrderBy("key", Desc)
+	assertQueryOrder(ctx, t, q, expectedResult)
+}
+
+func testIntegrationBSONValidationRejection(t *testing.T) {
+	skipIfEdition(t, "BSON types", editionStandard)
+	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
+	ctx := context.Background()
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
+
+	t.Run("invalidRegexGetsRejected", func(t *testing.T) {
+		doc := coll.NewDoc()
+		// "a" is an invalid option. Valid are "i", "m", "s", "u", "x"
+		_, err := doc.Create(ctx, map[string]interface{}{
+			"key": BSONRegex{Pattern: "foo", Options: "a"},
+		})
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+		if !strings.Contains(err.Error(), "Invalid regex option") {
+			t.Errorf("unexpected error message: %v", err)
+		}
+	})
+
+	t.Run("invalidBsonObjectIdGetsRejected", func(t *testing.T) {
+		doc := coll.NewDoc()
+		// Object ID must be 24 hex characters
+		_, err := doc.Create(ctx, map[string]interface{}{
+			"key": BSONObjectID("foobar"),
+		})
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+		if !strings.Contains(err.Error(), "Object ID hex string has incorrect length") {
+			t.Errorf("unexpected error message: %v", err)
+		}
+	})
+}
+
+func assertQueryOrder(ctx context.Context, t *testing.T, q Query, wantDocIDs []string) {
+	t.Helper()
+	// Test server-side query
+	iter := q.Documents(ctx)
+	defer iter.Stop()
+	docs, err := iter.GetAll()
+	if err != nil {
+		t.Fatalf("Query.Documents failed: %v", err)
+	}
+	gotDocIDs := docIDs(docs)
+	if !testEqual(gotDocIDs, wantDocIDs) {
+		t.Errorf("Server query got %v, want %v", gotDocIDs, wantDocIDs)
+	}
+
+	// Test client-side sorting (Watch stream)
+	watchDocs, err := getFirstSnapshot(ctx, q)
+	if err != nil {
+		t.Fatalf("getFirstSnapshot failed: %v", err)
+	}
+	gotWatchDocIDs := docIDs(watchDocs)
+	if !testEqual(gotWatchDocIDs, wantDocIDs) {
+		t.Errorf("Watch snapshot got %v, want %v", gotWatchDocIDs, wantDocIDs)
+	}
+}
+
+func getFirstSnapshot(ctx context.Context, q Query) ([]*DocumentSnapshot, error) {
+	it := q.Snapshots(ctx)
+	defer it.Stop()
+	snap, err := it.Next()
+	if err != nil {
+		return nil, err
+	}
+	return snap.Documents.GetAll()
+}
+
+func docIDs(docs []*DocumentSnapshot) []string {
+	var ids []string
+	for _, doc := range docs {
+		ids = append(ids, doc.Ref.ID)
+	}
+	return ids
+}
+
+func testIntegrationVerifyGRPCLimits(t *testing.T) {
+	skipIfEdition(t, "16MB Documents", editionStandard)
+	t.Skip("Temporarily skipped. Not yet in production.")
+	ctx := context.Background()
+	c := integrationClient(t)
+
+	// Create a large 5MB random payload (non-compressible) to verify transport limits
+	size := 5 * 1024 * 1024
+	largeData := make([]byte, size)
+	rand.Read(largeData)
+
+	docRef := c.Collection("large_docs").NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{docRef})
+	})
+
+	// 1. Verify Send Limit
+	_, err := docRef.Set(ctx, map[string]interface{}{"payload": largeData})
+	if err != nil {
+		t.Fatalf("Failed to write large document (Send failed): %v", err)
+	}
+
+	// 2. Verify Receive Limit
+	snap, err := docRef.Get(ctx)
+	if err != nil {
+		t.Fatalf("Failed to read large document (Recv failed): %v", err)
+	}
+
+	if !snap.Exists() {
+		t.Fatal("Document does not exist after write")
+	}
+
+	gotData := snap.Data()["payload"].([]byte)
+	if len(gotData) != size {
+		t.Errorf("Got data size %d, want %d", len(gotData), size)
+	}
+}
+
+func TestIntegration_DefaultDB(t *testing.T) {
+	if defaultClient == nil {
+		t.Skip("Default client not initialized")
+	}
+
+	t.Run("Create", testIntegrationCreate)
+	t.Run("Get", testIntegrationGet)
+	t.Run("GetAll", testIntegrationGetAll)
+	t.Run("GetAll_WithRunOptions", testIntegrationGetAllWithRunOptions)
+	t.Run("Query_WithRunOptions", testIntegrationQueryWithRunOptions)
+	t.Run("Add", testIntegrationAdd)
+	t.Run("Set", testIntegrationSet)
+	t.Run("Delete", testIntegrationDelete)
+	t.Run("Update", testIntegrationUpdate)
+	t.Run("Collections", testIntegrationCollections)
+	t.Run("ServerTimestamp", testIntegrationServerTimestamp)
+	t.Run("MergeServerTimestamp", testIntegrationMergeServerTimestamp)
+	t.Run("MergeNestedServerTimestamp", testIntegrationMergeNestedServerTimestamp)
+	t.Run("OmitZero", testIntegrationOmitZero)
+	t.Run("WriteBatch", testIntegrationWriteBatch)
+	t.Run("QueryDocuments_WhereEntity", testIntegrationQueryDocumentsWhereEntity)
+	t.Run("QueryDocuments", testIntegrationQueryDocuments)
+	t.Run("QueryDocuments_LimitToLast_Fail", testIntegrationQueryDocumentsLimitToLastFail)
+	t.Run("QueryUnary", testIntegrationQueryUnary)
+	t.Run("QueryName", testIntegrationQueryName)
+	t.Run("QueryNested", testIntegrationQueryNested)
+	t.Run("RunTransaction", testIntegrationRunTransaction)
+	t.Run("RunTransaction_WithRunOptions", testIntegrationRunTransactionWithRunOptions)
+	t.Run("TransactionGetAll", testIntegrationTransactionGetAll)
+	t.Run("WatchDocument", testIntegrationWatchDocument)
+	t.Run("ArrayUnion_Create", testIntegrationArrayUnionCreate)
+	t.Run("ArrayUnion_Update", testIntegrationArrayUnionUpdate)
+	t.Run("ArrayUnion_Set", testIntegrationArrayUnionSet)
+	t.Run("ArrayRemove_Create", testIntegrationArrayRemoveCreate)
+	t.Run("ArrayRemove_Update", testIntegrationArrayRemoveUpdate)
+	t.Run("ArrayRemove_Set", testIntegrationArrayRemoveSet)
+	t.Run("FieldTransforms_Create", testIntegrationFieldTransformsCreate)
+	t.Run("FieldTransforms_Update", testIntegrationFieldTransformsUpdate)
+	t.Run("FieldTransforms_Set", testIntegrationFieldTransformsSet)
+	t.Run("Serialize_Deserialize_WatchQuery", testIntegrationSerializeDeserializeWatchQuery)
+	t.Run("WatchQuery", testIntegrationWatchQuery)
+	t.Run("WatchQueryCancel", testIntegrationWatchQueryCancel)
+	t.Run("MissingDocs", testIntegrationMissingDocs)
+	t.Run("CollectionGroupQueries", testIntegrationCollectionGroupQueries)
+	t.Run("ColGroupRefPartitions", testIntegrationColGroupRefPartitions)
+	t.Run("ColGroupRefPartitionsLarge", testIntegrationColGroupRefPartitionsLarge)
+	t.Run("NewClientWithDatabase", testIntegrationNewClientWithDatabase)
+	t.Run("BulkWriter_Set", testIntegrationBulkWriterSet)
+	t.Run("BulkWriter_Create", testIntegrationBulkWriterCreate)
+	t.Run("BulkWriter", testIntegrationBulkWriter)
+	t.Run("AggregationQueries", testIntegrationAggregationQueries)
+	t.Run("AggregationQueries_WithRunOptions", testIntegrationAggregationQueriesWithRunOptions)
+	t.Run("CountAggregationQuery", testIntegrationCountAggregationQuery)
+	t.Run("ClientReadTime", testIntegrationClientReadTime)
+	t.Run("FindNearest", testIntegrationFindNearest)
+	t.Run("TransactionReadTime", testIntegrationTransactionReadTime)
+	t.Run("TransactionWithReadOptionsError", testIntegrationTransactionWithReadOptionsError)
+}
+
+func TestIntegration_EnterpriseDB(t *testing.T) {
+	if len(enterpriseClients) == 0 {
+		t.Skip("Enterprise clients not initialized")
+	}
+	for dbID, client := range enterpriseClients {
+		t.Run(dbID, func(t *testing.T) {
+			oldClient := iClient
+			oldColl := iColl
+			oldEdition := getCurrentEdition()
+
+			newColl := client.Collection(collectionIDs.New())
+			updateGlobals(client, newColl, editionEnterprise)
+
+			t.Cleanup(func() {
+				deleteCollection(context.Background(), newColl)
+				updateGlobals(oldClient, oldColl, oldEdition)
+			})
+
+			t.Run("Create", testIntegrationCreate)
+			t.Run("Get", testIntegrationGet)
+			t.Run("NewClientWithDatabase", testIntegrationNewClientWithDatabase)
+			t.Run("VerifyGRPCLimits", testIntegrationVerifyGRPCLimits)
+
+			t.Run("PipelineExecute", testIntegrationPipelineExecute)
+			t.Run("PipelineStages", testIntegrationPipelineStages)
+			t.Run("PipelineFunctions", testIntegrationPipelineFunctions)
+			t.Run("Query_Pipeline", testIntegrationQueryPipeline)
+			t.Run("AggregationQuery_Pipeline", testIntegrationAggregationQueryPipeline)
+			t.Run("PipelineSubqueriesAndVariables", testIntegrationPipelineSubqueriesAndVariables)
+			t.Run("PipelineSearch", testIntegrationPipelineSearch)
+			t.Run("BSONTypes", testIntegrationBSONTypes)
+			t.Run("BSONQueries", testIntegrationBSONQueries)
+			t.Run("BSONCrossTypeOrder", testIntegrationBSONCrossTypeOrder)
+			t.Run("BSONValidationRejection", testIntegrationBSONValidationRejection)
 		})
 	}
 }

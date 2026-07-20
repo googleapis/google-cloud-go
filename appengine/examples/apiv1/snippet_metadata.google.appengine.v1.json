@@ -1,0 +1,1577 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.appengine.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/appengine/apiv1",
+    "version": "1.15.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.ApplicationsClient",
+          "shortName": "ApplicationsClient"
+        },
+        "fullName": "google.appengine.v1.ApplicationsClient.CreateApplication",
+        "method": {
+          "fullName": "google.appengine.v1.Applications.CreateApplication",
+          "service": {
+            "fullName": "google.appengine.v1.Applications",
+            "shortName": "Applications"
+          },
+          "shortName": "CreateApplication"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.CreateApplicationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateApplicationOperation",
+        "shortName": "CreateApplication"
+      },
+      "description": "CreateApplication creates an App Engine application for a Google Cloud Platform project.\nRequired fields: \n\n* `id` - The ID of the target Cloud Platform project.\n* *location* - The [region](https: //cloud.google.com/appengine/docs/locations) where you want the App Engine application located.\n\nFor more information about App Engine applications, see [Managing Projects, Applications, and Billing](https: //cloud.google.com/appengine/docs/standard/python/console/).",
+      "file": "ApplicationsClient/CreateApplication/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Applications_CreateApplication_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine CreateApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.ApplicationsClient",
+          "shortName": "ApplicationsClient"
+        },
+        "fullName": "google.appengine.v1.ApplicationsClient.GetApplication",
+        "method": {
+          "fullName": "google.appengine.v1.Applications.GetApplication",
+          "service": {
+            "fullName": "google.appengine.v1.Applications",
+            "shortName": "Applications"
+          },
+          "shortName": "GetApplication"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.GetApplicationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*appenginepb.Application",
+        "shortName": "GetApplication"
+      },
+      "description": "GetApplication gets information about an application.",
+      "file": "ApplicationsClient/GetApplication/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Applications_GetApplication_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine GetApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.ApplicationsClient",
+          "shortName": "ApplicationsClient"
+        },
+        "fullName": "google.appengine.v1.ApplicationsClient.RepairApplication",
+        "method": {
+          "fullName": "google.appengine.v1.Applications.RepairApplication",
+          "service": {
+            "fullName": "google.appengine.v1.Applications",
+            "shortName": "Applications"
+          },
+          "shortName": "RepairApplication"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.RepairApplicationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RepairApplicationOperation",
+        "shortName": "RepairApplication"
+      },
+      "description": "RepairApplication recreates the required App Engine features for the specified App Engine\napplication, for example a Cloud Storage bucket or App Engine service\naccount.\nUse this method if you receive an error message about a missing feature,\nfor example, *Error retrieving the App Engine service account*.\nIf you have deleted your App Engine service account, this will\nnot be able to recreate it. Instead, you should attempt to use the\nIAM undelete API if possible at https: //cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params=%7B\"name\"%3A\"projects%2F-%2FserviceAccounts%2Funique_id\"%2C\"resource\"%3A%7B%7D%7D .\nIf the deletion was recent, the numeric ID can be found in the Cloud\nConsole Activity Log.",
+      "file": "ApplicationsClient/RepairApplication/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Applications_RepairApplication_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine RepairApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.ApplicationsClient",
+          "shortName": "ApplicationsClient"
+        },
+        "fullName": "google.appengine.v1.ApplicationsClient.UpdateApplication",
+        "method": {
+          "fullName": "google.appengine.v1.Applications.UpdateApplication",
+          "service": {
+            "fullName": "google.appengine.v1.Applications",
+            "shortName": "Applications"
+          },
+          "shortName": "UpdateApplication"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.UpdateApplicationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateApplicationOperation",
+        "shortName": "UpdateApplication"
+      },
+      "description": "UpdateApplication updates the specified Application resource.\nYou can update the following fields: \n\n* `auth_domain` - Google authentication domain for controlling user access to the application.\n* `default_cookie_expiration` - Cookie expiration policy for the application.\n* `iap` - Identity-Aware Proxy properties for the application.",
+      "file": "ApplicationsClient/UpdateApplication/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Applications_UpdateApplication_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine UpdateApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.AuthorizedCertificatesClient",
+          "shortName": "AuthorizedCertificatesClient"
+        },
+        "fullName": "google.appengine.v1.AuthorizedCertificatesClient.CreateAuthorizedCertificate",
+        "method": {
+          "fullName": "google.appengine.v1.AuthorizedCertificates.CreateAuthorizedCertificate",
+          "service": {
+            "fullName": "google.appengine.v1.AuthorizedCertificates",
+            "shortName": "AuthorizedCertificates"
+          },
+          "shortName": "CreateAuthorizedCertificate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.CreateAuthorizedCertificateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*appenginepb.AuthorizedCertificate",
+        "shortName": "CreateAuthorizedCertificate"
+      },
+      "description": "CreateAuthorizedCertificate uploads the specified SSL certificate.",
+      "file": "AuthorizedCertificatesClient/CreateAuthorizedCertificate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_AuthorizedCertificates_CreateAuthorizedCertificate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine CreateAuthorizedCertificate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.AuthorizedCertificatesClient",
+          "shortName": "AuthorizedCertificatesClient"
+        },
+        "fullName": "google.appengine.v1.AuthorizedCertificatesClient.DeleteAuthorizedCertificate",
+        "method": {
+          "fullName": "google.appengine.v1.AuthorizedCertificates.DeleteAuthorizedCertificate",
+          "service": {
+            "fullName": "google.appengine.v1.AuthorizedCertificates",
+            "shortName": "AuthorizedCertificates"
+          },
+          "shortName": "DeleteAuthorizedCertificate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.DeleteAuthorizedCertificateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteAuthorizedCertificate"
+      },
+      "description": "DeleteAuthorizedCertificate deletes the specified SSL certificate.",
+      "file": "AuthorizedCertificatesClient/DeleteAuthorizedCertificate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_AuthorizedCertificates_DeleteAuthorizedCertificate_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine DeleteAuthorizedCertificate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.AuthorizedCertificatesClient",
+          "shortName": "AuthorizedCertificatesClient"
+        },
+        "fullName": "google.appengine.v1.AuthorizedCertificatesClient.GetAuthorizedCertificate",
+        "method": {
+          "fullName": "google.appengine.v1.AuthorizedCertificates.GetAuthorizedCertificate",
+          "service": {
+            "fullName": "google.appengine.v1.AuthorizedCertificates",
+            "shortName": "AuthorizedCertificates"
+          },
+          "shortName": "GetAuthorizedCertificate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.GetAuthorizedCertificateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*appenginepb.AuthorizedCertificate",
+        "shortName": "GetAuthorizedCertificate"
+      },
+      "description": "GetAuthorizedCertificate gets the specified SSL certificate.",
+      "file": "AuthorizedCertificatesClient/GetAuthorizedCertificate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_AuthorizedCertificates_GetAuthorizedCertificate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine GetAuthorizedCertificate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.AuthorizedCertificatesClient",
+          "shortName": "AuthorizedCertificatesClient"
+        },
+        "fullName": "google.appengine.v1.AuthorizedCertificatesClient.ListAuthorizedCertificates",
+        "method": {
+          "fullName": "google.appengine.v1.AuthorizedCertificates.ListAuthorizedCertificates",
+          "service": {
+            "fullName": "google.appengine.v1.AuthorizedCertificates",
+            "shortName": "AuthorizedCertificates"
+          },
+          "shortName": "ListAuthorizedCertificates"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.ListAuthorizedCertificatesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AuthorizedCertificateIterator",
+        "shortName": "ListAuthorizedCertificates"
+      },
+      "description": "ListAuthorizedCertificates lists all SSL certificates the user is authorized to administer.",
+      "file": "AuthorizedCertificatesClient/ListAuthorizedCertificates/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_AuthorizedCertificates_ListAuthorizedCertificates_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine ListAuthorizedCertificates Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.AuthorizedCertificatesClient",
+          "shortName": "AuthorizedCertificatesClient"
+        },
+        "fullName": "google.appengine.v1.AuthorizedCertificatesClient.UpdateAuthorizedCertificate",
+        "method": {
+          "fullName": "google.appengine.v1.AuthorizedCertificates.UpdateAuthorizedCertificate",
+          "service": {
+            "fullName": "google.appengine.v1.AuthorizedCertificates",
+            "shortName": "AuthorizedCertificates"
+          },
+          "shortName": "UpdateAuthorizedCertificate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.UpdateAuthorizedCertificateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*appenginepb.AuthorizedCertificate",
+        "shortName": "UpdateAuthorizedCertificate"
+      },
+      "description": "UpdateAuthorizedCertificate updates the specified SSL certificate. To renew a certificate and maintain\nits existing domain mappings, update `certificate_data` with a new\ncertificate. The new certificate must be applicable to the same domains as\nthe original certificate. The certificate `display_name` may also be\nupdated.",
+      "file": "AuthorizedCertificatesClient/UpdateAuthorizedCertificate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_AuthorizedCertificates_UpdateAuthorizedCertificate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine UpdateAuthorizedCertificate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.AuthorizedDomainsClient",
+          "shortName": "AuthorizedDomainsClient"
+        },
+        "fullName": "google.appengine.v1.AuthorizedDomainsClient.ListAuthorizedDomains",
+        "method": {
+          "fullName": "google.appengine.v1.AuthorizedDomains.ListAuthorizedDomains",
+          "service": {
+            "fullName": "google.appengine.v1.AuthorizedDomains",
+            "shortName": "AuthorizedDomains"
+          },
+          "shortName": "ListAuthorizedDomains"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.ListAuthorizedDomainsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AuthorizedDomainIterator",
+        "shortName": "ListAuthorizedDomains"
+      },
+      "description": "ListAuthorizedDomains lists all domains the user is authorized to administer.",
+      "file": "AuthorizedDomainsClient/ListAuthorizedDomains/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_AuthorizedDomains_ListAuthorizedDomains_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine ListAuthorizedDomains Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.DomainMappingsClient",
+          "shortName": "DomainMappingsClient"
+        },
+        "fullName": "google.appengine.v1.DomainMappingsClient.CreateDomainMapping",
+        "method": {
+          "fullName": "google.appengine.v1.DomainMappings.CreateDomainMapping",
+          "service": {
+            "fullName": "google.appengine.v1.DomainMappings",
+            "shortName": "DomainMappings"
+          },
+          "shortName": "CreateDomainMapping"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.CreateDomainMappingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateDomainMappingOperation",
+        "shortName": "CreateDomainMapping"
+      },
+      "description": "CreateDomainMapping maps a domain to an application. A user must be authorized to administer a\ndomain in order to map it to an application. For a list of available\nauthorized domains, see [`AuthorizedDomains.ListAuthorizedDomains`]().",
+      "file": "DomainMappingsClient/CreateDomainMapping/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_DomainMappings_CreateDomainMapping_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine CreateDomainMapping Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.DomainMappingsClient",
+          "shortName": "DomainMappingsClient"
+        },
+        "fullName": "google.appengine.v1.DomainMappingsClient.DeleteDomainMapping",
+        "method": {
+          "fullName": "google.appengine.v1.DomainMappings.DeleteDomainMapping",
+          "service": {
+            "fullName": "google.appengine.v1.DomainMappings",
+            "shortName": "DomainMappings"
+          },
+          "shortName": "DeleteDomainMapping"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.DeleteDomainMappingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteDomainMappingOperation",
+        "shortName": "DeleteDomainMapping"
+      },
+      "description": "DeleteDomainMapping deletes the specified domain mapping. A user must be authorized to\nadminister the associated domain in order to delete a `DomainMapping`\nresource.",
+      "file": "DomainMappingsClient/DeleteDomainMapping/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_DomainMappings_DeleteDomainMapping_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine DeleteDomainMapping Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.DomainMappingsClient",
+          "shortName": "DomainMappingsClient"
+        },
+        "fullName": "google.appengine.v1.DomainMappingsClient.GetDomainMapping",
+        "method": {
+          "fullName": "google.appengine.v1.DomainMappings.GetDomainMapping",
+          "service": {
+            "fullName": "google.appengine.v1.DomainMappings",
+            "shortName": "DomainMappings"
+          },
+          "shortName": "GetDomainMapping"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.GetDomainMappingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*appenginepb.DomainMapping",
+        "shortName": "GetDomainMapping"
+      },
+      "description": "GetDomainMapping gets the specified domain mapping.",
+      "file": "DomainMappingsClient/GetDomainMapping/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_DomainMappings_GetDomainMapping_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine GetDomainMapping Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.DomainMappingsClient",
+          "shortName": "DomainMappingsClient"
+        },
+        "fullName": "google.appengine.v1.DomainMappingsClient.ListDomainMappings",
+        "method": {
+          "fullName": "google.appengine.v1.DomainMappings.ListDomainMappings",
+          "service": {
+            "fullName": "google.appengine.v1.DomainMappings",
+            "shortName": "DomainMappings"
+          },
+          "shortName": "ListDomainMappings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.ListDomainMappingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DomainMappingIterator",
+        "shortName": "ListDomainMappings"
+      },
+      "description": "ListDomainMappings lists the domain mappings on an application.",
+      "file": "DomainMappingsClient/ListDomainMappings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_DomainMappings_ListDomainMappings_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine ListDomainMappings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.DomainMappingsClient",
+          "shortName": "DomainMappingsClient"
+        },
+        "fullName": "google.appengine.v1.DomainMappingsClient.UpdateDomainMapping",
+        "method": {
+          "fullName": "google.appengine.v1.DomainMappings.UpdateDomainMapping",
+          "service": {
+            "fullName": "google.appengine.v1.DomainMappings",
+            "shortName": "DomainMappings"
+          },
+          "shortName": "UpdateDomainMapping"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.UpdateDomainMappingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateDomainMappingOperation",
+        "shortName": "UpdateDomainMapping"
+      },
+      "description": "UpdateDomainMapping updates the specified domain mapping. To map an SSL certificate to a\ndomain mapping, update `certificate_id` to point to an `AuthorizedCertificate`\nresource. A user must be authorized to administer the associated domain\nin order to update a `DomainMapping` resource.",
+      "file": "DomainMappingsClient/UpdateDomainMapping/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_DomainMappings_UpdateDomainMapping_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine UpdateDomainMapping Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.FirewallClient",
+          "shortName": "FirewallClient"
+        },
+        "fullName": "google.appengine.v1.FirewallClient.BatchUpdateIngressRules",
+        "method": {
+          "fullName": "google.appengine.v1.Firewall.BatchUpdateIngressRules",
+          "service": {
+            "fullName": "google.appengine.v1.Firewall",
+            "shortName": "Firewall"
+          },
+          "shortName": "BatchUpdateIngressRules"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.BatchUpdateIngressRulesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*appenginepb.BatchUpdateIngressRulesResponse",
+        "shortName": "BatchUpdateIngressRules"
+      },
+      "description": "BatchUpdateIngressRules replaces the entire firewall ruleset in one bulk operation. This overrides\nand replaces the rules of an existing firewall with the new rules.\n\nIf the final rule does not match traffic with the '*' wildcard IP range,\nthen an \"allow all\" rule is explicitly added to the end of the list.",
+      "file": "FirewallClient/BatchUpdateIngressRules/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Firewall_BatchUpdateIngressRules_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine BatchUpdateIngressRules Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.FirewallClient",
+          "shortName": "FirewallClient"
+        },
+        "fullName": "google.appengine.v1.FirewallClient.CreateIngressRule",
+        "method": {
+          "fullName": "google.appengine.v1.Firewall.CreateIngressRule",
+          "service": {
+            "fullName": "google.appengine.v1.Firewall",
+            "shortName": "Firewall"
+          },
+          "shortName": "CreateIngressRule"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.CreateIngressRuleRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*appenginepb.FirewallRule",
+        "shortName": "CreateIngressRule"
+      },
+      "description": "CreateIngressRule creates a firewall rule for the application.",
+      "file": "FirewallClient/CreateIngressRule/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Firewall_CreateIngressRule_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine CreateIngressRule Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.FirewallClient",
+          "shortName": "FirewallClient"
+        },
+        "fullName": "google.appengine.v1.FirewallClient.DeleteIngressRule",
+        "method": {
+          "fullName": "google.appengine.v1.Firewall.DeleteIngressRule",
+          "service": {
+            "fullName": "google.appengine.v1.Firewall",
+            "shortName": "Firewall"
+          },
+          "shortName": "DeleteIngressRule"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.DeleteIngressRuleRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteIngressRule"
+      },
+      "description": "DeleteIngressRule deletes the specified firewall rule.",
+      "file": "FirewallClient/DeleteIngressRule/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Firewall_DeleteIngressRule_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine DeleteIngressRule Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.FirewallClient",
+          "shortName": "FirewallClient"
+        },
+        "fullName": "google.appengine.v1.FirewallClient.GetIngressRule",
+        "method": {
+          "fullName": "google.appengine.v1.Firewall.GetIngressRule",
+          "service": {
+            "fullName": "google.appengine.v1.Firewall",
+            "shortName": "Firewall"
+          },
+          "shortName": "GetIngressRule"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.GetIngressRuleRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*appenginepb.FirewallRule",
+        "shortName": "GetIngressRule"
+      },
+      "description": "GetIngressRule gets the specified firewall rule.",
+      "file": "FirewallClient/GetIngressRule/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Firewall_GetIngressRule_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine GetIngressRule Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.FirewallClient",
+          "shortName": "FirewallClient"
+        },
+        "fullName": "google.appengine.v1.FirewallClient.ListIngressRules",
+        "method": {
+          "fullName": "google.appengine.v1.Firewall.ListIngressRules",
+          "service": {
+            "fullName": "google.appengine.v1.Firewall",
+            "shortName": "Firewall"
+          },
+          "shortName": "ListIngressRules"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.ListIngressRulesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "FirewallRuleIterator",
+        "shortName": "ListIngressRules"
+      },
+      "description": "ListIngressRules lists the firewall rules of an application.",
+      "file": "FirewallClient/ListIngressRules/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Firewall_ListIngressRules_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine ListIngressRules Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.FirewallClient",
+          "shortName": "FirewallClient"
+        },
+        "fullName": "google.appengine.v1.FirewallClient.UpdateIngressRule",
+        "method": {
+          "fullName": "google.appengine.v1.Firewall.UpdateIngressRule",
+          "service": {
+            "fullName": "google.appengine.v1.Firewall",
+            "shortName": "Firewall"
+          },
+          "shortName": "UpdateIngressRule"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.UpdateIngressRuleRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*appenginepb.FirewallRule",
+        "shortName": "UpdateIngressRule"
+      },
+      "description": "UpdateIngressRule updates the specified firewall rule.",
+      "file": "FirewallClient/UpdateIngressRule/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Firewall_UpdateIngressRule_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine UpdateIngressRule Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.InstancesClient",
+          "shortName": "InstancesClient"
+        },
+        "fullName": "google.appengine.v1.InstancesClient.DebugInstance",
+        "method": {
+          "fullName": "google.appengine.v1.Instances.DebugInstance",
+          "service": {
+            "fullName": "google.appengine.v1.Instances",
+            "shortName": "Instances"
+          },
+          "shortName": "DebugInstance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.DebugInstanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DebugInstanceOperation",
+        "shortName": "DebugInstance"
+      },
+      "description": "DebugInstance enables debugging on a VM instance. This allows you to use the SSH\ncommand to connect to the virtual machine where the instance lives.\nWhile in \"debug mode\", the instance continues to serve live traffic.\nYou should delete the instance when you are done debugging and then\nallow the system to take over and determine if another instance\nshould be started.\n\nOnly applicable for instances in App Engine flexible environment.",
+      "file": "InstancesClient/DebugInstance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Instances_DebugInstance_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine DebugInstance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.InstancesClient",
+          "shortName": "InstancesClient"
+        },
+        "fullName": "google.appengine.v1.InstancesClient.DeleteInstance",
+        "method": {
+          "fullName": "google.appengine.v1.Instances.DeleteInstance",
+          "service": {
+            "fullName": "google.appengine.v1.Instances",
+            "shortName": "Instances"
+          },
+          "shortName": "DeleteInstance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.DeleteInstanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteInstanceOperation",
+        "shortName": "DeleteInstance"
+      },
+      "description": "DeleteInstance stops a running instance.\n\nThe instance might be automatically recreated based on the scaling settings\nof the version. For more information, see \"How Instances are Managed\"\n([standard environment](https: //cloud.google.com/appengine/docs/standard/python/how-instances-are-managed) |\n[flexible environment](https: //cloud.google.com/appengine/docs/flexible/python/how-instances-are-managed)).\n\nTo ensure that instances are not re-created and avoid getting billed, you\ncan stop all instances within the target version by changing the serving\nstatus of the version to `STOPPED` with the\n[`apps.services.versions.patch`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions/patch)\nmethod.",
+      "file": "InstancesClient/DeleteInstance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Instances_DeleteInstance_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine DeleteInstance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.InstancesClient",
+          "shortName": "InstancesClient"
+        },
+        "fullName": "google.appengine.v1.InstancesClient.GetInstance",
+        "method": {
+          "fullName": "google.appengine.v1.Instances.GetInstance",
+          "service": {
+            "fullName": "google.appengine.v1.Instances",
+            "shortName": "Instances"
+          },
+          "shortName": "GetInstance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.GetInstanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*appenginepb.Instance",
+        "shortName": "GetInstance"
+      },
+      "description": "GetInstance gets instance information.",
+      "file": "InstancesClient/GetInstance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Instances_GetInstance_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine GetInstance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.InstancesClient",
+          "shortName": "InstancesClient"
+        },
+        "fullName": "google.appengine.v1.InstancesClient.ListInstances",
+        "method": {
+          "fullName": "google.appengine.v1.Instances.ListInstances",
+          "service": {
+            "fullName": "google.appengine.v1.Instances",
+            "shortName": "Instances"
+          },
+          "shortName": "ListInstances"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.ListInstancesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "InstanceIterator",
+        "shortName": "ListInstances"
+      },
+      "description": "ListInstances lists the instances of a version.\n\nTip: To aggregate details about instances over time, see the\n[Stackdriver Monitoring API](https: //cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/list).",
+      "file": "InstancesClient/ListInstances/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Instances_ListInstances_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine ListInstances Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.ServicesClient",
+          "shortName": "ServicesClient"
+        },
+        "fullName": "google.appengine.v1.ServicesClient.DeleteService",
+        "method": {
+          "fullName": "google.appengine.v1.Services.DeleteService",
+          "service": {
+            "fullName": "google.appengine.v1.Services",
+            "shortName": "Services"
+          },
+          "shortName": "DeleteService"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.DeleteServiceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteServiceOperation",
+        "shortName": "DeleteService"
+      },
+      "description": "DeleteService deletes the specified service and all enclosed versions.",
+      "file": "ServicesClient/DeleteService/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Services_DeleteService_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine DeleteService Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.ServicesClient",
+          "shortName": "ServicesClient"
+        },
+        "fullName": "google.appengine.v1.ServicesClient.GetService",
+        "method": {
+          "fullName": "google.appengine.v1.Services.GetService",
+          "service": {
+            "fullName": "google.appengine.v1.Services",
+            "shortName": "Services"
+          },
+          "shortName": "GetService"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.GetServiceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*appenginepb.Service",
+        "shortName": "GetService"
+      },
+      "description": "GetService gets the current configuration of the specified service.",
+      "file": "ServicesClient/GetService/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Services_GetService_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine GetService Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.ServicesClient",
+          "shortName": "ServicesClient"
+        },
+        "fullName": "google.appengine.v1.ServicesClient.ListServices",
+        "method": {
+          "fullName": "google.appengine.v1.Services.ListServices",
+          "service": {
+            "fullName": "google.appengine.v1.Services",
+            "shortName": "Services"
+          },
+          "shortName": "ListServices"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.ListServicesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ServiceIterator",
+        "shortName": "ListServices"
+      },
+      "description": "ListServices lists all the services in the application.",
+      "file": "ServicesClient/ListServices/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Services_ListServices_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine ListServices Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.ServicesClient",
+          "shortName": "ServicesClient"
+        },
+        "fullName": "google.appengine.v1.ServicesClient.UpdateService",
+        "method": {
+          "fullName": "google.appengine.v1.Services.UpdateService",
+          "service": {
+            "fullName": "google.appengine.v1.Services",
+            "shortName": "Services"
+          },
+          "shortName": "UpdateService"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.UpdateServiceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateServiceOperation",
+        "shortName": "UpdateService"
+      },
+      "description": "UpdateService updates the configuration of the specified service.",
+      "file": "ServicesClient/UpdateService/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Services_UpdateService_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine UpdateService Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.VersionsClient",
+          "shortName": "VersionsClient"
+        },
+        "fullName": "google.appengine.v1.VersionsClient.CreateVersion",
+        "method": {
+          "fullName": "google.appengine.v1.Versions.CreateVersion",
+          "service": {
+            "fullName": "google.appengine.v1.Versions",
+            "shortName": "Versions"
+          },
+          "shortName": "CreateVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.CreateVersionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateVersionOperation",
+        "shortName": "CreateVersion"
+      },
+      "description": "CreateVersion deploys code and resource files to a new version.",
+      "file": "VersionsClient/CreateVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Versions_CreateVersion_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine CreateVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.VersionsClient",
+          "shortName": "VersionsClient"
+        },
+        "fullName": "google.appengine.v1.VersionsClient.DeleteVersion",
+        "method": {
+          "fullName": "google.appengine.v1.Versions.DeleteVersion",
+          "service": {
+            "fullName": "google.appengine.v1.Versions",
+            "shortName": "Versions"
+          },
+          "shortName": "DeleteVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.DeleteVersionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteVersionOperation",
+        "shortName": "DeleteVersion"
+      },
+      "description": "DeleteVersion deletes an existing Version resource.",
+      "file": "VersionsClient/DeleteVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Versions_DeleteVersion_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine DeleteVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.VersionsClient",
+          "shortName": "VersionsClient"
+        },
+        "fullName": "google.appengine.v1.VersionsClient.GetVersion",
+        "method": {
+          "fullName": "google.appengine.v1.Versions.GetVersion",
+          "service": {
+            "fullName": "google.appengine.v1.Versions",
+            "shortName": "Versions"
+          },
+          "shortName": "GetVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.GetVersionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*appenginepb.Version",
+        "shortName": "GetVersion"
+      },
+      "description": "GetVersion gets the specified Version resource.\nBy default, only a `BASIC_VIEW` will be returned.\nSpecify the `FULL_VIEW` parameter to get the full resource.",
+      "file": "VersionsClient/GetVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Versions_GetVersion_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine GetVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.VersionsClient",
+          "shortName": "VersionsClient"
+        },
+        "fullName": "google.appengine.v1.VersionsClient.ListVersions",
+        "method": {
+          "fullName": "google.appengine.v1.Versions.ListVersions",
+          "service": {
+            "fullName": "google.appengine.v1.Versions",
+            "shortName": "Versions"
+          },
+          "shortName": "ListVersions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.ListVersionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "VersionIterator",
+        "shortName": "ListVersions"
+      },
+      "description": "ListVersions lists the versions of a service.",
+      "file": "VersionsClient/ListVersions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Versions_ListVersions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine ListVersions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.appengine.v1.VersionsClient",
+          "shortName": "VersionsClient"
+        },
+        "fullName": "google.appengine.v1.VersionsClient.UpdateVersion",
+        "method": {
+          "fullName": "google.appengine.v1.Versions.UpdateVersion",
+          "service": {
+            "fullName": "google.appengine.v1.Versions",
+            "shortName": "Versions"
+          },
+          "shortName": "UpdateVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appenginepb.UpdateVersionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateVersionOperation",
+        "shortName": "UpdateVersion"
+      },
+      "description": "UpdateVersion updates the specified Version resource.\nYou can specify the following fields depending on the App Engine\nenvironment and type of scaling that the version resource uses: \n\n**Standard environment**\n\n* [`instance_class`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.instance_class)\n\n*automatic scaling* in the standard environment: \n\n* [`automatic_scaling.min_idle_instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n* [`automatic_scaling.max_idle_instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n* [`automaticScaling.standard_scheduler_settings.max_instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)\n* [`automaticScaling.standard_scheduler_settings.min_instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)\n* [`automaticScaling.standard_scheduler_settings.target_cpu_utilization`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)\n* [`automaticScaling.standard_scheduler_settings.target_throughput_utilization`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)\n\n*basic scaling* or *manual scaling* in the standard environment: \n\n* [`serving_status`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)\n* [`manual_scaling.instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)\n\n**Flexible environment**\n\n* [`serving_status`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)\n\n*automatic scaling* in the flexible environment: \n\n* [`automatic_scaling.min_total_instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n* [`automatic_scaling.max_total_instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n* [`automatic_scaling.cool_down_period_sec`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n* [`automatic_scaling.cpu_utilization.target_utilization`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n\n*manual scaling* in the flexible environment: \n\n* [`manual_scaling.instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)",
+      "file": "VersionsClient/UpdateVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "appengine_v1_generated_Versions_UpdateVersion_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "appengine UpdateVersion Sample"
+    }
+  ]
+}

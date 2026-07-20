@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -481,7 +483,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -721,6 +723,16 @@ type gRPCClient struct {
 // Cloud deployments.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "edgecontainer",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/edgecontainer/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "edgecontainer.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -744,6 +756,45 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "edgecontainer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/edgecontainer/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "edgecontainer.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpgradeCluster = append(client.CallOptions.UpgradeCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateAccessToken = append(client.CallOptions.GenerateAccessToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateOfflineCredential = append(client.CallOptions.GenerateOfflineCredential, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListNodePools = append(client.CallOptions.ListNodePools, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetNodePool = append(client.CallOptions.GetNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateNodePool = append(client.CallOptions.CreateNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateNodePool = append(client.CallOptions.UpdateNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteNodePool = append(client.CallOptions.DeleteNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMachines = append(client.CallOptions.ListMachines, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetMachine = append(client.CallOptions.GetMachine, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListVpnConnections = append(client.CallOptions.ListVpnConnections, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetVpnConnection = append(client.CallOptions.GetVpnConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateVpnConnection = append(client.CallOptions.CreateVpnConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteVpnConnection = append(client.CallOptions.DeleteVpnConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetServerConfig = append(client.CallOptions.GetServerConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -780,7 +831,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -814,6 +865,16 @@ type restClient struct {
 // Cloud deployments.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "edgecontainer",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/edgecontainer/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "edgecontainer.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -827,6 +888,46 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "edgecontainer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/edgecontainer/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "edgecontainer.googleapis.com",
+			}),
+		)
+
+		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientMetrics(metrics))
+		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientMetrics(metrics))
+		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientMetrics(metrics))
+		callOpts.UpgradeCluster = append(callOpts.UpgradeCluster, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientMetrics(metrics))
+		callOpts.GenerateAccessToken = append(callOpts.GenerateAccessToken, gax.WithClientMetrics(metrics))
+		callOpts.GenerateOfflineCredential = append(callOpts.GenerateOfflineCredential, gax.WithClientMetrics(metrics))
+		callOpts.ListNodePools = append(callOpts.ListNodePools, gax.WithClientMetrics(metrics))
+		callOpts.GetNodePool = append(callOpts.GetNodePool, gax.WithClientMetrics(metrics))
+		callOpts.CreateNodePool = append(callOpts.CreateNodePool, gax.WithClientMetrics(metrics))
+		callOpts.UpdateNodePool = append(callOpts.UpdateNodePool, gax.WithClientMetrics(metrics))
+		callOpts.DeleteNodePool = append(callOpts.DeleteNodePool, gax.WithClientMetrics(metrics))
+		callOpts.ListMachines = append(callOpts.ListMachines, gax.WithClientMetrics(metrics))
+		callOpts.GetMachine = append(callOpts.GetMachine, gax.WithClientMetrics(metrics))
+		callOpts.ListVpnConnections = append(callOpts.ListVpnConnections, gax.WithClientMetrics(metrics))
+		callOpts.GetVpnConnection = append(callOpts.GetVpnConnection, gax.WithClientMetrics(metrics))
+		callOpts.CreateVpnConnection = append(callOpts.CreateVpnConnection, gax.WithClientMetrics(metrics))
+		callOpts.DeleteVpnConnection = append(callOpts.DeleteVpnConnection, gax.WithClientMetrics(metrics))
+		callOpts.GetServerConfig = append(callOpts.GetServerConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -864,7 +965,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -883,9 +984,15 @@ func (c *gRPCClient) ListClusters(ctx context.Context, req *edgecontainerpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/ListClusters")
+	}
 	opts = append((*c.CallOptions).ListClusters[0:len((*c.CallOptions).ListClusters):len((*c.CallOptions).ListClusters)], opts...)
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.Cluster, string, error) {
 		resp := &edgecontainerpb.ListClustersResponse{}
 		if pageToken != "" {
@@ -929,6 +1036,12 @@ func (c *gRPCClient) GetCluster(ctx context.Context, req *edgecontainerpb.GetClu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/GetCluster")
+	}
 	opts = append((*c.CallOptions).GetCluster[0:len((*c.CallOptions).GetCluster):len((*c.CallOptions).GetCluster)], opts...)
 	var resp *edgecontainerpb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -947,6 +1060,12 @@ func (c *gRPCClient) CreateCluster(ctx context.Context, req *edgecontainerpb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/CreateCluster")
+	}
 	opts = append((*c.CallOptions).CreateCluster[0:len((*c.CallOptions).CreateCluster):len((*c.CallOptions).CreateCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -957,8 +1076,12 @@ func (c *gRPCClient) CreateCluster(ctx context.Context, req *edgecontainerpb.Cre
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -967,6 +1090,9 @@ func (c *gRPCClient) UpdateCluster(ctx context.Context, req *edgecontainerpb.Upd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/UpdateCluster")
+	}
 	opts = append((*c.CallOptions).UpdateCluster[0:len((*c.CallOptions).UpdateCluster):len((*c.CallOptions).UpdateCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -977,8 +1103,12 @@ func (c *gRPCClient) UpdateCluster(ctx context.Context, req *edgecontainerpb.Upd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -987,6 +1117,12 @@ func (c *gRPCClient) UpgradeCluster(ctx context.Context, req *edgecontainerpb.Up
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/UpgradeCluster")
+	}
 	opts = append((*c.CallOptions).UpgradeCluster[0:len((*c.CallOptions).UpgradeCluster):len((*c.CallOptions).UpgradeCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -997,8 +1133,12 @@ func (c *gRPCClient) UpgradeCluster(ctx context.Context, req *edgecontainerpb.Up
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.UpgradeClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpgradeClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1007,6 +1147,12 @@ func (c *gRPCClient) DeleteCluster(ctx context.Context, req *edgecontainerpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/DeleteCluster")
+	}
 	opts = append((*c.CallOptions).DeleteCluster[0:len((*c.CallOptions).DeleteCluster):len((*c.CallOptions).DeleteCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1017,8 +1163,12 @@ func (c *gRPCClient) DeleteCluster(ctx context.Context, req *edgecontainerpb.Del
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1027,6 +1177,12 @@ func (c *gRPCClient) GenerateAccessToken(ctx context.Context, req *edgecontainer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetCluster()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/GenerateAccessToken")
+	}
 	opts = append((*c.CallOptions).GenerateAccessToken[0:len((*c.CallOptions).GenerateAccessToken):len((*c.CallOptions).GenerateAccessToken)], opts...)
 	var resp *edgecontainerpb.GenerateAccessTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1045,6 +1201,12 @@ func (c *gRPCClient) GenerateOfflineCredential(ctx context.Context, req *edgecon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetCluster()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/GenerateOfflineCredential")
+	}
 	opts = append((*c.CallOptions).GenerateOfflineCredential[0:len((*c.CallOptions).GenerateOfflineCredential):len((*c.CallOptions).GenerateOfflineCredential)], opts...)
 	var resp *edgecontainerpb.GenerateOfflineCredentialResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1063,9 +1225,15 @@ func (c *gRPCClient) ListNodePools(ctx context.Context, req *edgecontainerpb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/ListNodePools")
+	}
 	opts = append((*c.CallOptions).ListNodePools[0:len((*c.CallOptions).ListNodePools):len((*c.CallOptions).ListNodePools)], opts...)
 	it := &NodePoolIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListNodePoolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.NodePool, string, error) {
 		resp := &edgecontainerpb.ListNodePoolsResponse{}
 		if pageToken != "" {
@@ -1109,6 +1277,12 @@ func (c *gRPCClient) GetNodePool(ctx context.Context, req *edgecontainerpb.GetNo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/GetNodePool")
+	}
 	opts = append((*c.CallOptions).GetNodePool[0:len((*c.CallOptions).GetNodePool):len((*c.CallOptions).GetNodePool)], opts...)
 	var resp *edgecontainerpb.NodePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1127,6 +1301,12 @@ func (c *gRPCClient) CreateNodePool(ctx context.Context, req *edgecontainerpb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/CreateNodePool")
+	}
 	opts = append((*c.CallOptions).CreateNodePool[0:len((*c.CallOptions).CreateNodePool):len((*c.CallOptions).CreateNodePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1137,8 +1317,12 @@ func (c *gRPCClient) CreateNodePool(ctx context.Context, req *edgecontainerpb.Cr
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.CreateNodePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1147,6 +1331,9 @@ func (c *gRPCClient) UpdateNodePool(ctx context.Context, req *edgecontainerpb.Up
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/UpdateNodePool")
+	}
 	opts = append((*c.CallOptions).UpdateNodePool[0:len((*c.CallOptions).UpdateNodePool):len((*c.CallOptions).UpdateNodePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1157,8 +1344,12 @@ func (c *gRPCClient) UpdateNodePool(ctx context.Context, req *edgecontainerpb.Up
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.UpdateNodePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1167,6 +1358,12 @@ func (c *gRPCClient) DeleteNodePool(ctx context.Context, req *edgecontainerpb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/DeleteNodePool")
+	}
 	opts = append((*c.CallOptions).DeleteNodePool[0:len((*c.CallOptions).DeleteNodePool):len((*c.CallOptions).DeleteNodePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1177,8 +1374,12 @@ func (c *gRPCClient) DeleteNodePool(ctx context.Context, req *edgecontainerpb.De
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.DeleteNodePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1187,9 +1388,15 @@ func (c *gRPCClient) ListMachines(ctx context.Context, req *edgecontainerpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/ListMachines")
+	}
 	opts = append((*c.CallOptions).ListMachines[0:len((*c.CallOptions).ListMachines):len((*c.CallOptions).ListMachines)], opts...)
 	it := &MachineIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListMachinesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.Machine, string, error) {
 		resp := &edgecontainerpb.ListMachinesResponse{}
 		if pageToken != "" {
@@ -1233,6 +1440,12 @@ func (c *gRPCClient) GetMachine(ctx context.Context, req *edgecontainerpb.GetMac
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/GetMachine")
+	}
 	opts = append((*c.CallOptions).GetMachine[0:len((*c.CallOptions).GetMachine):len((*c.CallOptions).GetMachine)], opts...)
 	var resp *edgecontainerpb.Machine
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1251,9 +1464,15 @@ func (c *gRPCClient) ListVpnConnections(ctx context.Context, req *edgecontainerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/ListVpnConnections")
+	}
 	opts = append((*c.CallOptions).ListVpnConnections[0:len((*c.CallOptions).ListVpnConnections):len((*c.CallOptions).ListVpnConnections)], opts...)
 	it := &VpnConnectionIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListVpnConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.VpnConnection, string, error) {
 		resp := &edgecontainerpb.ListVpnConnectionsResponse{}
 		if pageToken != "" {
@@ -1297,6 +1516,12 @@ func (c *gRPCClient) GetVpnConnection(ctx context.Context, req *edgecontainerpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/GetVpnConnection")
+	}
 	opts = append((*c.CallOptions).GetVpnConnection[0:len((*c.CallOptions).GetVpnConnection):len((*c.CallOptions).GetVpnConnection)], opts...)
 	var resp *edgecontainerpb.VpnConnection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1315,6 +1540,12 @@ func (c *gRPCClient) CreateVpnConnection(ctx context.Context, req *edgecontainer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/CreateVpnConnection")
+	}
 	opts = append((*c.CallOptions).CreateVpnConnection[0:len((*c.CallOptions).CreateVpnConnection):len((*c.CallOptions).CreateVpnConnection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1325,8 +1556,12 @@ func (c *gRPCClient) CreateVpnConnection(ctx context.Context, req *edgecontainer
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.CreateVpnConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVpnConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1335,6 +1570,12 @@ func (c *gRPCClient) DeleteVpnConnection(ctx context.Context, req *edgecontainer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/DeleteVpnConnection")
+	}
 	opts = append((*c.CallOptions).DeleteVpnConnection[0:len((*c.CallOptions).DeleteVpnConnection):len((*c.CallOptions).DeleteVpnConnection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1345,8 +1586,12 @@ func (c *gRPCClient) DeleteVpnConnection(ctx context.Context, req *edgecontainer
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.DeleteVpnConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVpnConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1355,6 +1600,12 @@ func (c *gRPCClient) GetServerConfig(ctx context.Context, req *edgecontainerpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/GetServerConfig")
+	}
 	opts = append((*c.CallOptions).GetServerConfig[0:len((*c.CallOptions).GetServerConfig):len((*c.CallOptions).GetServerConfig)], opts...)
 	var resp *edgecontainerpb.ServerConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1373,6 +1624,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1391,9 +1645,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1437,6 +1694,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1451,6 +1711,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1465,6 +1728,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1483,9 +1749,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1527,7 +1796,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListClusters lists Clusters in a given project and location.
 func (c *restClient) ListClusters(ctx context.Context, req *edgecontainerpb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.Cluster, string, error) {
 		resp := &edgecontainerpb.ListClustersResponse{}
@@ -1627,6 +1896,13 @@ func (c *restClient) GetCluster(ctx context.Context, req *edgecontainerpb.GetClu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/GetCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}")
+	}
 	opts = append((*c.CallOptions).GetCluster[0:len((*c.CallOptions).GetCluster):len((*c.CallOptions).GetCluster)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &edgecontainerpb.Cluster{}
@@ -1688,6 +1964,13 @@ func (c *restClient) CreateCluster(ctx context.Context, req *edgecontainerpb.Cre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/CreateCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/clusters")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1716,8 +1999,12 @@ func (c *restClient) CreateCluster(ctx context.Context, req *edgecontainerpb.Cre
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1758,6 +2045,10 @@ func (c *restClient) UpdateCluster(ctx context.Context, req *edgecontainerpb.Upd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/UpdateCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{cluster.name=projects/*/locations/*/clusters/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1786,8 +2077,12 @@ func (c *restClient) UpdateCluster(ctx context.Context, req *edgecontainerpb.Upd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1817,6 +2112,13 @@ func (c *restClient) UpgradeCluster(ctx context.Context, req *edgecontainerpb.Up
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/UpgradeCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:upgrade")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1845,8 +2147,12 @@ func (c *restClient) UpgradeCluster(ctx context.Context, req *edgecontainerpb.Up
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.UpgradeClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpgradeClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1873,6 +2179,13 @@ func (c *restClient) DeleteCluster(ctx context.Context, req *edgecontainerpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/DeleteCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1901,8 +2214,12 @@ func (c *restClient) DeleteCluster(ctx context.Context, req *edgecontainerpb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1926,6 +2243,13 @@ func (c *restClient) GenerateAccessToken(ctx context.Context, req *edgecontainer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetCluster()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/GenerateAccessToken")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{cluster=projects/*/locations/*/clusters/*}:generateAccessToken")
+	}
 	opts = append((*c.CallOptions).GenerateAccessToken[0:len((*c.CallOptions).GenerateAccessToken):len((*c.CallOptions).GenerateAccessToken)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &edgecontainerpb.GenerateAccessTokenResponse{}
@@ -1976,6 +2300,13 @@ func (c *restClient) GenerateOfflineCredential(ctx context.Context, req *edgecon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetCluster()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/GenerateOfflineCredential")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{cluster=projects/*/locations/*/clusters/*}:generateOfflineCredential")
+	}
 	opts = append((*c.CallOptions).GenerateOfflineCredential[0:len((*c.CallOptions).GenerateOfflineCredential):len((*c.CallOptions).GenerateOfflineCredential)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &edgecontainerpb.GenerateOfflineCredentialResponse{}
@@ -2010,7 +2341,7 @@ func (c *restClient) GenerateOfflineCredential(ctx context.Context, req *edgecon
 // ListNodePools lists NodePools in a given project and location.
 func (c *restClient) ListNodePools(ctx context.Context, req *edgecontainerpb.ListNodePoolsRequest, opts ...gax.CallOption) *NodePoolIterator {
 	it := &NodePoolIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListNodePoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.NodePool, string, error) {
 		resp := &edgecontainerpb.ListNodePoolsResponse{}
@@ -2110,6 +2441,13 @@ func (c *restClient) GetNodePool(ctx context.Context, req *edgecontainerpb.GetNo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/GetNodePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/nodePools/*}")
+	}
 	opts = append((*c.CallOptions).GetNodePool[0:len((*c.CallOptions).GetNodePool):len((*c.CallOptions).GetNodePool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &edgecontainerpb.NodePool{}
@@ -2171,6 +2509,13 @@ func (c *restClient) CreateNodePool(ctx context.Context, req *edgecontainerpb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/CreateNodePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/clusters/*}/nodePools")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2199,8 +2544,12 @@ func (c *restClient) CreateNodePool(ctx context.Context, req *edgecontainerpb.Cr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.CreateNodePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateNodePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2241,6 +2590,10 @@ func (c *restClient) UpdateNodePool(ctx context.Context, req *edgecontainerpb.Up
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/UpdateNodePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{node_pool.name=projects/*/locations/*/clusters/*/nodePools/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2269,8 +2622,12 @@ func (c *restClient) UpdateNodePool(ctx context.Context, req *edgecontainerpb.Up
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.UpdateNodePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateNodePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2297,6 +2654,13 @@ func (c *restClient) DeleteNodePool(ctx context.Context, req *edgecontainerpb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/DeleteNodePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/nodePools/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2325,8 +2689,12 @@ func (c *restClient) DeleteNodePool(ctx context.Context, req *edgecontainerpb.De
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.DeleteNodePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteNodePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2334,7 +2702,7 @@ func (c *restClient) DeleteNodePool(ctx context.Context, req *edgecontainerpb.De
 // ListMachines lists Machines in a given project and location.
 func (c *restClient) ListMachines(ctx context.Context, req *edgecontainerpb.ListMachinesRequest, opts ...gax.CallOption) *MachineIterator {
 	it := &MachineIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListMachinesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.Machine, string, error) {
 		resp := &edgecontainerpb.ListMachinesResponse{}
@@ -2434,6 +2802,13 @@ func (c *restClient) GetMachine(ctx context.Context, req *edgecontainerpb.GetMac
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/GetMachine")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/machines/*}")
+	}
 	opts = append((*c.CallOptions).GetMachine[0:len((*c.CallOptions).GetMachine):len((*c.CallOptions).GetMachine)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &edgecontainerpb.Machine{}
@@ -2468,7 +2843,7 @@ func (c *restClient) GetMachine(ctx context.Context, req *edgecontainerpb.GetMac
 // ListVpnConnections lists VPN connections in a given project and location.
 func (c *restClient) ListVpnConnections(ctx context.Context, req *edgecontainerpb.ListVpnConnectionsRequest, opts ...gax.CallOption) *VpnConnectionIterator {
 	it := &VpnConnectionIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListVpnConnectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.VpnConnection, string, error) {
 		resp := &edgecontainerpb.ListVpnConnectionsResponse{}
@@ -2568,6 +2943,13 @@ func (c *restClient) GetVpnConnection(ctx context.Context, req *edgecontainerpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/GetVpnConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/vpnConnections/*}")
+	}
 	opts = append((*c.CallOptions).GetVpnConnection[0:len((*c.CallOptions).GetVpnConnection):len((*c.CallOptions).GetVpnConnection)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &edgecontainerpb.VpnConnection{}
@@ -2629,6 +3011,13 @@ func (c *restClient) CreateVpnConnection(ctx context.Context, req *edgecontainer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/CreateVpnConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/vpnConnections")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2657,8 +3046,12 @@ func (c *restClient) CreateVpnConnection(ctx context.Context, req *edgecontainer
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.CreateVpnConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVpnConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2685,6 +3078,13 @@ func (c *restClient) DeleteVpnConnection(ctx context.Context, req *edgecontainer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/DeleteVpnConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/vpnConnections/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2713,8 +3113,12 @@ func (c *restClient) DeleteVpnConnection(ctx context.Context, req *edgecontainer
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.DeleteVpnConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVpnConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2738,6 +3142,13 @@ func (c *restClient) GetServerConfig(ctx context.Context, req *edgecontainerpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgecontainer.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgecontainer.v1.EdgeContainer/GetServerConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}/serverConfig")
+	}
 	opts = append((*c.CallOptions).GetServerConfig[0:len((*c.CallOptions).GetServerConfig):len((*c.CallOptions).GetServerConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &edgecontainerpb.ServerConfig{}
@@ -2788,6 +3199,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -2822,7 +3237,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2925,6 +3340,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2960,6 +3379,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2995,6 +3418,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -3029,7 +3456,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -3114,7 +3541,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
 func (c *gRPCClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.CreateClusterOperation"),
 	}
 }
 
@@ -3123,7 +3550,7 @@ func (c *gRPCClient) CreateClusterOperation(name string) *CreateClusterOperation
 func (c *restClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.CreateClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -3132,7 +3559,7 @@ func (c *restClient) CreateClusterOperation(name string) *CreateClusterOperation
 // The name must be that of a previously created CreateNodePoolOperation, possibly from a different process.
 func (c *gRPCClient) CreateNodePoolOperation(name string) *CreateNodePoolOperation {
 	return &CreateNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.CreateNodePoolOperation"),
 	}
 }
 
@@ -3141,7 +3568,7 @@ func (c *gRPCClient) CreateNodePoolOperation(name string) *CreateNodePoolOperati
 func (c *restClient) CreateNodePoolOperation(name string) *CreateNodePoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateNodePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.CreateNodePoolOperation"),
 		pollPath: override,
 	}
 }
@@ -3150,7 +3577,7 @@ func (c *restClient) CreateNodePoolOperation(name string) *CreateNodePoolOperati
 // The name must be that of a previously created CreateVpnConnectionOperation, possibly from a different process.
 func (c *gRPCClient) CreateVpnConnectionOperation(name string) *CreateVpnConnectionOperation {
 	return &CreateVpnConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.CreateVpnConnectionOperation"),
 	}
 }
 
@@ -3159,7 +3586,7 @@ func (c *gRPCClient) CreateVpnConnectionOperation(name string) *CreateVpnConnect
 func (c *restClient) CreateVpnConnectionOperation(name string) *CreateVpnConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateVpnConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.CreateVpnConnectionOperation"),
 		pollPath: override,
 	}
 }
@@ -3168,7 +3595,7 @@ func (c *restClient) CreateVpnConnectionOperation(name string) *CreateVpnConnect
 // The name must be that of a previously created DeleteClusterOperation, possibly from a different process.
 func (c *gRPCClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.DeleteClusterOperation"),
 	}
 }
 
@@ -3177,7 +3604,7 @@ func (c *gRPCClient) DeleteClusterOperation(name string) *DeleteClusterOperation
 func (c *restClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.DeleteClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -3186,7 +3613,7 @@ func (c *restClient) DeleteClusterOperation(name string) *DeleteClusterOperation
 // The name must be that of a previously created DeleteNodePoolOperation, possibly from a different process.
 func (c *gRPCClient) DeleteNodePoolOperation(name string) *DeleteNodePoolOperation {
 	return &DeleteNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.DeleteNodePoolOperation"),
 	}
 }
 
@@ -3195,7 +3622,7 @@ func (c *gRPCClient) DeleteNodePoolOperation(name string) *DeleteNodePoolOperati
 func (c *restClient) DeleteNodePoolOperation(name string) *DeleteNodePoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteNodePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.DeleteNodePoolOperation"),
 		pollPath: override,
 	}
 }
@@ -3204,7 +3631,7 @@ func (c *restClient) DeleteNodePoolOperation(name string) *DeleteNodePoolOperati
 // The name must be that of a previously created DeleteVpnConnectionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteVpnConnectionOperation(name string) *DeleteVpnConnectionOperation {
 	return &DeleteVpnConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.DeleteVpnConnectionOperation"),
 	}
 }
 
@@ -3213,7 +3640,7 @@ func (c *gRPCClient) DeleteVpnConnectionOperation(name string) *DeleteVpnConnect
 func (c *restClient) DeleteVpnConnectionOperation(name string) *DeleteVpnConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteVpnConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.DeleteVpnConnectionOperation"),
 		pollPath: override,
 	}
 }
@@ -3222,7 +3649,7 @@ func (c *restClient) DeleteVpnConnectionOperation(name string) *DeleteVpnConnect
 // The name must be that of a previously created UpdateClusterOperation, possibly from a different process.
 func (c *gRPCClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.UpdateClusterOperation"),
 	}
 }
 
@@ -3231,7 +3658,7 @@ func (c *gRPCClient) UpdateClusterOperation(name string) *UpdateClusterOperation
 func (c *restClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.UpdateClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -3240,7 +3667,7 @@ func (c *restClient) UpdateClusterOperation(name string) *UpdateClusterOperation
 // The name must be that of a previously created UpdateNodePoolOperation, possibly from a different process.
 func (c *gRPCClient) UpdateNodePoolOperation(name string) *UpdateNodePoolOperation {
 	return &UpdateNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.UpdateNodePoolOperation"),
 	}
 }
 
@@ -3249,7 +3676,7 @@ func (c *gRPCClient) UpdateNodePoolOperation(name string) *UpdateNodePoolOperati
 func (c *restClient) UpdateNodePoolOperation(name string) *UpdateNodePoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateNodePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.UpdateNodePoolOperation"),
 		pollPath: override,
 	}
 }
@@ -3258,7 +3685,7 @@ func (c *restClient) UpdateNodePoolOperation(name string) *UpdateNodePoolOperati
 // The name must be that of a previously created UpgradeClusterOperation, possibly from a different process.
 func (c *gRPCClient) UpgradeClusterOperation(name string) *UpgradeClusterOperation {
 	return &UpgradeClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.UpgradeClusterOperation"),
 	}
 }
 
@@ -3267,7 +3694,7 @@ func (c *gRPCClient) UpgradeClusterOperation(name string) *UpgradeClusterOperati
 func (c *restClient) UpgradeClusterOperation(name string) *UpgradeClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpgradeClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.UpgradeClusterOperation"),
 		pollPath: override,
 	}
 }

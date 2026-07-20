@@ -97,9 +97,7 @@ func (sh *sessionHandle) recycle() {
 	sh.client = nil
 	sh.mu.Unlock()
 	if p != nil {
-		p.mu.Lock()
-		p.decNumMultiplexedInUseLocked(context.Background())
-		p.mu.Unlock()
+		p.decNumMultiplexedInUse(context.Background())
 	}
 }
 
@@ -242,9 +240,9 @@ type sessionManager struct {
 	multiplexedSession            *session
 	multiplexedSessionCreation    *multiplexedSessionCreation
 
-	// locationRouter is set when the experimental location API is enabled.
-	// It is used to wrap round-robin clients with location-aware routing.
-	locationRouter *locationRouter
+	// locationAwareState is set when the experimental location API is enabled.
+	// It owns the shared routing, lifecycle, and cooldown state for the client.
+	locationAwareState *locationAwareState
 
 	// SessionPoolConfig is kept for backward compatibility.
 	SessionPoolConfig
@@ -257,18 +255,19 @@ type sessionManager struct {
 }
 
 // newSessionManager creates a new sessionManager for multiplexed sessions.
-func newSessionManager(sc *sessionClient, config SessionPoolConfig) (*sessionManager, error) {
+func newSessionManager(sc *sessionClient, config SessionPoolConfig, locationAwareState *locationAwareState) (*sessionManager, error) {
 	if config.MultiplexSessionCheckInterval == 0 {
 		config.MultiplexSessionCheckInterval = 10 * time.Minute
 	}
 
 	sm := &sessionManager{
-		sc:                sc,
-		valid:             true,
-		SessionPoolConfig: config,
-		rand:              rand.New(rand.NewSource(time.Now().UnixNano())),
-		otConfig:          sc.otConfig,
-		done:              make(chan struct{}),
+		sc:                 sc,
+		valid:              true,
+		locationAwareState: locationAwareState,
+		SessionPoolConfig:  config,
+		rand:               rand.New(rand.NewSource(time.Now().UnixNano())),
+		otConfig:           sc.otConfig,
+		done:               make(chan struct{}),
 	}
 
 	_, instance, database, err := parseDatabaseName(sc.database)
@@ -372,6 +371,9 @@ func (p *sessionManager) finishMultiplexedSessionCreation(creation *multiplexedS
 			if p.valid && s != nil {
 				s.sm = p
 				p.multiplexedSession = s
+				if p.sc.dynamicPool != nil {
+					p.sc.dynamicPool.setPrimeSession(s.id)
+				}
 				p.recordStat(context.Background(), OpenSessionCount, int64(1), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 				p.recordStat(context.Background(), SessionsCount, 1, tagNumSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 			}
@@ -436,37 +438,61 @@ func (p *sessionManager) close(ctx context.Context) {
 // errInvalidSession is the error for using an invalid session.
 var errInvalidSession = spannerErrorf(codes.InvalidArgument, "invalid session")
 
-// newSessionHandle creates a new session handle for the given session.
-func (p *sessionManager) newSessionHandle(s *session) (sh *sessionHandle) {
-	sh = &sessionHandle{session: s}
-	p.mu.Lock()
-	client := p.getRoundRobinClient()
-	if p.locationRouter != nil && p.locationRouter.endpointCache != nil {
-		client = newLocationAwareSpannerClient(client, p.locationRouter, p.locationRouter.endpointCache)
+// newSessionHandleLocked creates a new session handle for the given session.
+// The caller must hold p.mu.
+func (p *sessionManager) newSessionHandleLocked(ctx context.Context, s *session) (*sessionHandle, error) {
+	sh := &sessionHandle{session: s}
+	if p.sc.dynamicPool != nil && p.locationAwareState == nil {
+		entry, err := p.sc.dynamicPool.pick(ctx)
+		if err != nil {
+			return nil, err
+		}
+		sh.client = newDCPResolvingSpannerClient(p.sc.dynamicPool, entry.id)
+		return sh, nil
+	}
+	client, idx := p.getRoundRobinClientLocked()
+	if p.locationAwareState != nil && p.locationAwareState.endpointCache != nil {
+		client = newIndexedLocationAwareSpannerClient(p.locationAwareState, idx)
 	}
 	sh.client = client
-	p.mu.Unlock()
-	return sh
+	return sh, nil
 }
 
-func (p *sessionManager) getRoundRobinClient() spannerClient {
-	p.sc.mu.Lock()
-	defer func() {
-		p.multiplexSessionClientCounter++
-		p.sc.mu.Unlock()
-	}()
+func (p *sessionManager) getRoundRobinClientLocked() (spannerClient, int) {
 	if len(p.clientPool) == 0 {
+		p.sc.mu.Lock()
 		p.clientPool = make([]spannerClient, p.sc.connPool.Num())
 		for i := 0; i < p.sc.connPool.Num(); i++ {
 			c, err := p.sc.nextClient()
 			if err != nil {
-				return nil
+				p.sc.mu.Unlock()
+				return nil, -1
 			}
 			p.clientPool[i] = c
 		}
+		p.sc.mu.Unlock()
+		if p.locationAwareState != nil {
+			p.locationAwareState.clientPool = p.clientPool
+		}
 	}
-	p.multiplexSessionClientCounter = p.multiplexSessionClientCounter % len(p.clientPool)
-	return p.clientPool[p.multiplexSessionClientCounter]
+	idx := p.multiplexSessionClientCounter % len(p.clientPool)
+	p.multiplexSessionClientCounter++
+	return p.clientPool[idx], idx
+}
+
+func (p *sessionManager) setLocationAwareState(router *locationRouter, cooldowns *endpointOverloadCooldownTracker) {
+	if p == nil {
+		return
+	}
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	var endpointCache channelEndpointCache
+	if router != nil {
+		endpointCache = router.endpointCache
+	}
+	p.locationAwareState = newLocationAwareState(p.clientPool, router, endpointCache, cooldowns)
 }
 
 // errGetSessionTimeout returns error for context timeout during session acquisition.
@@ -495,9 +521,14 @@ func (p *sessionManager) takeMultiplexed(ctx context.Context) (*sessionHandle, e
 			s = p.multiplexedSession
 			trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
 				"Acquired multiplexed session")
+			sh, err := p.newSessionHandleLocked(ctx, s)
+			if err != nil {
+				p.mu.Unlock()
+				return nil, err
+			}
 			p.mu.Unlock()
 			p.incNumMultiplexedInUse(ctx)
-			return p.newSessionHandle(s), nil
+			return sh, nil
 		}
 		creation = p.ensureMultiplexedSessionCreationLocked(false)
 		p.mu.Unlock()
@@ -525,7 +556,7 @@ func (p *sessionManager) incNumMultiplexedInUse(ctx context.Context) {
 	}
 }
 
-func (p *sessionManager) decNumMultiplexedInUseLocked(ctx context.Context) {
+func (p *sessionManager) decNumMultiplexedInUse(ctx context.Context) {
 	p.recordStat(ctx, ReleasedSessionsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 	if p.otConfig != nil {
 		p.recordOTStat(ctx, p.otConfig.releasedSessionsCount, 1, recordOTStatOption{attr: p.otConfig.attributeMapWithMultiplexed})
@@ -559,6 +590,14 @@ func (p *sessionManager) multiplexSessionWorker() {
 			case <-p.done:
 				return
 			}
+		}
+
+		p.mu.Lock()
+		locationAwareState := p.locationAwareState
+		p.mu.Unlock()
+		if locationAwareState != nil && locationAwareState.endpointCooldowns != nil {
+			cooldowns := locationAwareState.endpointCooldowns
+			cooldowns.pruneStaleEntries(2 * cooldowns.resetAfter)
 		}
 
 		// Sleep for a while to avoid burning CPU.

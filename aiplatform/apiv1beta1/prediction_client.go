@@ -31,6 +31,7 @@ import (
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -435,6 +436,16 @@ type predictionGRPCClient struct {
 // A service for online predictions and explanations.
 func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*PredictionClient, error) {
 	clientOpts := defaultPredictionGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "aiplatform",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/aiplatform/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "aiplatform.googleapis.com",
+		}))
+	}
 	if newPredictionClientHook != nil {
 		hookOpts, err := newPredictionClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -459,6 +470,45 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "aiplatform",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/aiplatform/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "aiplatform.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Predict = append(client.CallOptions.Predict, gax.WithClientMetrics(metrics))
+		client.CallOptions.RawPredict = append(client.CallOptions.RawPredict, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamRawPredict = append(client.CallOptions.StreamRawPredict, gax.WithClientMetrics(metrics))
+		client.CallOptions.DirectPredict = append(client.CallOptions.DirectPredict, gax.WithClientMetrics(metrics))
+		client.CallOptions.DirectRawPredict = append(client.CallOptions.DirectRawPredict, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamDirectPredict = append(client.CallOptions.StreamDirectPredict, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamDirectRawPredict = append(client.CallOptions.StreamDirectRawPredict, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamingPredict = append(client.CallOptions.StreamingPredict, gax.WithClientMetrics(metrics))
+		client.CallOptions.ServerStreamingPredict = append(client.CallOptions.ServerStreamingPredict, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamingRawPredict = append(client.CallOptions.StreamingRawPredict, gax.WithClientMetrics(metrics))
+		client.CallOptions.Explain = append(client.CallOptions.Explain, gax.WithClientMetrics(metrics))
+		client.CallOptions.CountTokens = append(client.CallOptions.CountTokens, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateContent = append(client.CallOptions.GenerateContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamGenerateContent = append(client.CallOptions.StreamGenerateContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.ChatCompletions = append(client.CallOptions.ChatCompletions, gax.WithClientMetrics(metrics))
+		client.CallOptions.EmbedContent = append(client.CallOptions.EmbedContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -512,6 +562,16 @@ type predictionRESTClient struct {
 // A service for online predictions and explanations.
 func NewPredictionRESTClient(ctx context.Context, opts ...option.ClientOption) (*PredictionClient, error) {
 	clientOpts := append(defaultPredictionRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "aiplatform",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/aiplatform/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "aiplatform.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -525,6 +585,46 @@ func NewPredictionRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "aiplatform",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/aiplatform/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "aiplatform.googleapis.com",
+			}),
+		)
+
+		callOpts.Predict = append(callOpts.Predict, gax.WithClientMetrics(metrics))
+		callOpts.RawPredict = append(callOpts.RawPredict, gax.WithClientMetrics(metrics))
+		callOpts.StreamRawPredict = append(callOpts.StreamRawPredict, gax.WithClientMetrics(metrics))
+		callOpts.DirectPredict = append(callOpts.DirectPredict, gax.WithClientMetrics(metrics))
+		callOpts.DirectRawPredict = append(callOpts.DirectRawPredict, gax.WithClientMetrics(metrics))
+		callOpts.StreamDirectPredict = append(callOpts.StreamDirectPredict, gax.WithClientMetrics(metrics))
+		callOpts.StreamDirectRawPredict = append(callOpts.StreamDirectRawPredict, gax.WithClientMetrics(metrics))
+		callOpts.StreamingPredict = append(callOpts.StreamingPredict, gax.WithClientMetrics(metrics))
+		callOpts.ServerStreamingPredict = append(callOpts.ServerStreamingPredict, gax.WithClientMetrics(metrics))
+		callOpts.StreamingRawPredict = append(callOpts.StreamingRawPredict, gax.WithClientMetrics(metrics))
+		callOpts.Explain = append(callOpts.Explain, gax.WithClientMetrics(metrics))
+		callOpts.CountTokens = append(callOpts.CountTokens, gax.WithClientMetrics(metrics))
+		callOpts.GenerateContent = append(callOpts.GenerateContent, gax.WithClientMetrics(metrics))
+		callOpts.StreamGenerateContent = append(callOpts.StreamGenerateContent, gax.WithClientMetrics(metrics))
+		callOpts.ChatCompletions = append(callOpts.ChatCompletions, gax.WithClientMetrics(metrics))
+		callOpts.EmbedContent = append(callOpts.EmbedContent, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientMetrics(metrics))
+	}
 
 	return &PredictionClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -571,6 +671,12 @@ func (c *predictionGRPCClient) Predict(ctx context.Context, req *aiplatformpb.Pr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/Predict")
+	}
 	opts = append((*c.CallOptions).Predict[0:len((*c.CallOptions).Predict):len((*c.CallOptions).Predict)], opts...)
 	var resp *aiplatformpb.PredictResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -589,6 +695,12 @@ func (c *predictionGRPCClient) RawPredict(ctx context.Context, req *aiplatformpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/RawPredict")
+	}
 	opts = append((*c.CallOptions).RawPredict[0:len((*c.CallOptions).RawPredict):len((*c.CallOptions).RawPredict)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -607,6 +719,12 @@ func (c *predictionGRPCClient) StreamRawPredict(ctx context.Context, req *aiplat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/StreamRawPredict")
+	}
 	opts = append((*c.CallOptions).StreamRawPredict[0:len((*c.CallOptions).StreamRawPredict):len((*c.CallOptions).StreamRawPredict)], opts...)
 	var resp aiplatformpb.PredictionService_StreamRawPredictClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -627,6 +745,12 @@ func (c *predictionGRPCClient) DirectPredict(ctx context.Context, req *aiplatfor
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/DirectPredict")
+	}
 	opts = append((*c.CallOptions).DirectPredict[0:len((*c.CallOptions).DirectPredict):len((*c.CallOptions).DirectPredict)], opts...)
 	var resp *aiplatformpb.DirectPredictResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -645,6 +769,12 @@ func (c *predictionGRPCClient) DirectRawPredict(ctx context.Context, req *aiplat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/DirectRawPredict")
+	}
 	opts = append((*c.CallOptions).DirectRawPredict[0:len((*c.CallOptions).DirectRawPredict):len((*c.CallOptions).DirectRawPredict)], opts...)
 	var resp *aiplatformpb.DirectRawPredictResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -660,6 +790,9 @@ func (c *predictionGRPCClient) DirectRawPredict(ctx context.Context, req *aiplat
 
 func (c *predictionGRPCClient) StreamDirectPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamDirectPredictClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/StreamDirectPredict")
+	}
 	var resp aiplatformpb.PredictionService_StreamDirectPredictClient
 	opts = append((*c.CallOptions).StreamDirectPredict[0:len((*c.CallOptions).StreamDirectPredict):len((*c.CallOptions).StreamDirectPredict)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -677,6 +810,9 @@ func (c *predictionGRPCClient) StreamDirectPredict(ctx context.Context, opts ...
 
 func (c *predictionGRPCClient) StreamDirectRawPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamDirectRawPredictClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/StreamDirectRawPredict")
+	}
 	var resp aiplatformpb.PredictionService_StreamDirectRawPredictClient
 	opts = append((*c.CallOptions).StreamDirectRawPredict[0:len((*c.CallOptions).StreamDirectRawPredict):len((*c.CallOptions).StreamDirectRawPredict)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -694,6 +830,9 @@ func (c *predictionGRPCClient) StreamDirectRawPredict(ctx context.Context, opts 
 
 func (c *predictionGRPCClient) StreamingPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamingPredictClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/StreamingPredict")
+	}
 	var resp aiplatformpb.PredictionService_StreamingPredictClient
 	opts = append((*c.CallOptions).StreamingPredict[0:len((*c.CallOptions).StreamingPredict):len((*c.CallOptions).StreamingPredict)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -714,6 +853,12 @@ func (c *predictionGRPCClient) ServerStreamingPredict(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/ServerStreamingPredict")
+	}
 	opts = append((*c.CallOptions).ServerStreamingPredict[0:len((*c.CallOptions).ServerStreamingPredict):len((*c.CallOptions).ServerStreamingPredict)], opts...)
 	var resp aiplatformpb.PredictionService_ServerStreamingPredictClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -731,6 +876,9 @@ func (c *predictionGRPCClient) ServerStreamingPredict(ctx context.Context, req *
 
 func (c *predictionGRPCClient) StreamingRawPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamingRawPredictClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/StreamingRawPredict")
+	}
 	var resp aiplatformpb.PredictionService_StreamingRawPredictClient
 	opts = append((*c.CallOptions).StreamingRawPredict[0:len((*c.CallOptions).StreamingRawPredict):len((*c.CallOptions).StreamingRawPredict)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -751,6 +899,12 @@ func (c *predictionGRPCClient) Explain(ctx context.Context, req *aiplatformpb.Ex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/Explain")
+	}
 	opts = append((*c.CallOptions).Explain[0:len((*c.CallOptions).Explain):len((*c.CallOptions).Explain)], opts...)
 	var resp *aiplatformpb.ExplainResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -769,6 +923,12 @@ func (c *predictionGRPCClient) CountTokens(ctx context.Context, req *aiplatformp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/CountTokens")
+	}
 	opts = append((*c.CallOptions).CountTokens[0:len((*c.CallOptions).CountTokens):len((*c.CallOptions).CountTokens)], opts...)
 	var resp *aiplatformpb.CountTokensResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -787,6 +947,12 @@ func (c *predictionGRPCClient) GenerateContent(ctx context.Context, req *aiplatf
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetCachedContent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/GenerateContent")
+	}
 	opts = append((*c.CallOptions).GenerateContent[0:len((*c.CallOptions).GenerateContent):len((*c.CallOptions).GenerateContent)], opts...)
 	var resp *aiplatformpb.GenerateContentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -805,6 +971,12 @@ func (c *predictionGRPCClient) StreamGenerateContent(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetCachedContent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/StreamGenerateContent")
+	}
 	opts = append((*c.CallOptions).StreamGenerateContent[0:len((*c.CallOptions).StreamGenerateContent):len((*c.CallOptions).StreamGenerateContent)], opts...)
 	var resp aiplatformpb.PredictionService_StreamGenerateContentClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -825,6 +997,12 @@ func (c *predictionGRPCClient) ChatCompletions(ctx context.Context, req *aiplatf
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/ChatCompletions")
+	}
 	opts = append((*c.CallOptions).ChatCompletions[0:len((*c.CallOptions).ChatCompletions):len((*c.CallOptions).ChatCompletions)], opts...)
 	var resp aiplatformpb.PredictionService_ChatCompletionsClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -845,6 +1023,12 @@ func (c *predictionGRPCClient) EmbedContent(ctx context.Context, req *aiplatform
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetModel()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/EmbedContent")
+	}
 	opts = append((*c.CallOptions).EmbedContent[0:len((*c.CallOptions).EmbedContent):len((*c.CallOptions).EmbedContent)], opts...)
 	var resp *aiplatformpb.EmbedContentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -863,6 +1047,9 @@ func (c *predictionGRPCClient) GetLocation(ctx context.Context, req *locationpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -881,6 +1068,9 @@ func (c *predictionGRPCClient) ListLocations(ctx context.Context, req *locationp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -927,6 +1117,12 @@ func (c *predictionGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -945,6 +1141,12 @@ func (c *predictionGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -963,6 +1165,12 @@ func (c *predictionGRPCClient) TestIamPermissions(ctx context.Context, req *iamp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -981,6 +1189,9 @@ func (c *predictionGRPCClient) CancelOperation(ctx context.Context, req *longrun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -995,6 +1206,9 @@ func (c *predictionGRPCClient) DeleteOperation(ctx context.Context, req *longrun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1009,6 +1223,9 @@ func (c *predictionGRPCClient) GetOperation(ctx context.Context, req *longrunnin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1027,6 +1244,9 @@ func (c *predictionGRPCClient) ListOperations(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1073,6 +1293,9 @@ func (c *predictionGRPCClient) WaitOperation(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/WaitOperation")
+	}
 	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1111,6 +1334,13 @@ func (c *predictionRESTClient) Predict(ctx context.Context, req *aiplatformpb.Pr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/Predict")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{endpoint=projects/*/locations/*/endpoints/*}:predict")
+	}
 	opts = append((*c.CallOptions).Predict[0:len((*c.CallOptions).Predict):len((*c.CallOptions).Predict)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.PredictResponse{}
@@ -1177,6 +1407,13 @@ func (c *predictionRESTClient) RawPredict(ctx context.Context, req *aiplatformpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/RawPredict")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{endpoint=projects/*/locations/*/endpoints/*}:rawPredict")
+	}
 	opts = append((*c.CallOptions).RawPredict[0:len((*c.CallOptions).RawPredict):len((*c.CallOptions).RawPredict)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1233,6 +1470,13 @@ func (c *predictionRESTClient) StreamRawPredict(ctx context.Context, req *aiplat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/StreamRawPredict")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{endpoint=projects/*/locations/*/endpoints/*}:streamRawPredict")
+	}
 	var streamClient *streamRawPredictRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
@@ -1336,6 +1580,13 @@ func (c *predictionRESTClient) DirectPredict(ctx context.Context, req *aiplatfor
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/DirectPredict")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{endpoint=projects/*/locations/*/endpoints/*}:directPredict")
+	}
 	opts = append((*c.CallOptions).DirectPredict[0:len((*c.CallOptions).DirectPredict):len((*c.CallOptions).DirectPredict)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.DirectPredictResponse{}
@@ -1393,6 +1644,13 @@ func (c *predictionRESTClient) DirectRawPredict(ctx context.Context, req *aiplat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/DirectRawPredict")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{endpoint=projects/*/locations/*/endpoints/*}:directRawPredict")
+	}
 	opts = append((*c.CallOptions).DirectRawPredict[0:len((*c.CallOptions).DirectRawPredict):len((*c.CallOptions).DirectRawPredict)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.DirectRawPredictResponse{}
@@ -1474,6 +1732,13 @@ func (c *predictionRESTClient) ServerStreamingPredict(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/ServerStreamingPredict")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{endpoint=projects/*/locations/*/endpoints/*}:serverStreamingPredict")
+	}
 	var streamClient *serverStreamingPredictRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
@@ -1593,6 +1858,13 @@ func (c *predictionRESTClient) Explain(ctx context.Context, req *aiplatformpb.Ex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/Explain")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{endpoint=projects/*/locations/*/endpoints/*}:explain")
+	}
 	opts = append((*c.CallOptions).Explain[0:len((*c.CallOptions).Explain):len((*c.CallOptions).Explain)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.ExplainResponse{}
@@ -1649,6 +1921,13 @@ func (c *predictionRESTClient) CountTokens(ctx context.Context, req *aiplatformp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/CountTokens")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{endpoint=projects/*/locations/*/endpoints/*}:countTokens")
+	}
 	opts = append((*c.CallOptions).CountTokens[0:len((*c.CallOptions).CountTokens):len((*c.CallOptions).CountTokens)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.CountTokensResponse{}
@@ -1705,6 +1984,13 @@ func (c *predictionRESTClient) GenerateContent(ctx context.Context, req *aiplatf
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetCachedContent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/GenerateContent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{model=projects/*/locations/*/endpoints/*}:generateContent")
+	}
 	opts = append((*c.CallOptions).GenerateContent[0:len((*c.CallOptions).GenerateContent):len((*c.CallOptions).GenerateContent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.GenerateContentResponse{}
@@ -1761,6 +2047,13 @@ func (c *predictionRESTClient) StreamGenerateContent(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetCachedContent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/StreamGenerateContent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{model=projects/*/locations/*/endpoints/*}:streamGenerateContent")
+	}
 	var streamClient *streamGenerateContentRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
@@ -1864,6 +2157,13 @@ func (c *predictionRESTClient) ChatCompletions(ctx context.Context, req *aiplatf
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetEndpoint()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/ChatCompletions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{endpoint=projects/*/locations/*/endpoints/*}/chat/completions")
+	}
 	var streamClient *chatCompletionsRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
@@ -1966,6 +2266,13 @@ func (c *predictionRESTClient) EmbedContent(ctx context.Context, req *aiplatform
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetModel()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.PredictionService/EmbedContent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{model=projects/*/locations/*/publishers/*/models/*}:embedContent")
+	}
 	opts = append((*c.CallOptions).EmbedContent[0:len((*c.CallOptions).EmbedContent):len((*c.CallOptions).EmbedContent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.EmbedContentResponse{}
@@ -2016,6 +2323,10 @@ func (c *predictionRESTClient) GetLocation(ctx context.Context, req *locationpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -2154,6 +2465,13 @@ func (c *predictionRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/locations/*/featurestores/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -2214,6 +2532,13 @@ func (c *predictionRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/locations/*/featurestores/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -2276,6 +2601,13 @@ func (c *predictionRESTClient) TestIamPermissions(ctx context.Context, req *iamp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/locations/*/featurestores/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -2326,6 +2658,10 @@ func (c *predictionRESTClient) CancelOperation(ctx context.Context, req *longrun
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2361,6 +2697,10 @@ func (c *predictionRESTClient) DeleteOperation(ctx context.Context, req *longrun
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2396,6 +2736,10 @@ func (c *predictionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -2537,6 +2881,10 @@ func (c *predictionRESTClient) WaitOperation(ctx context.Context, req *longrunni
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/WaitOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*/operations/*}:wait")
+	}
 	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

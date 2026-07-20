@@ -1,5 +1,13 @@
 # Changes
 
+## [0.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/errorreporting%2Fv0.9.0) (2026-05-07)
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/errorreporting%2Fv0.8.0) (2026-04-30)
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/errorreporting%2Fv0.7.0) (2026-04-13)
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/errorreporting%2Fv0.6.0) (2026-04-09)
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/errorreporting%2Fv0.5.0) (2026-04-02)
 
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/errorreporting%2Fv0.4.0) (2026-01-08)

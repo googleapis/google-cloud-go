@@ -470,6 +470,11 @@
                 "GetSubpropertySyncConfig"
               ]
             },
+            "GetUserProvidedDataSettings": {
+              "methods": [
+                "GetUserProvidedDataSettings"
+              ]
+            },
             "ListAccessBindings": {
               "methods": [
                 "ListAccessBindings"
@@ -758,6 +763,11 @@
             "UpdateReportingDataAnnotation": {
               "methods": [
                 "UpdateReportingDataAnnotation"
+              ]
+            },
+            "UpdateReportingIdentitySettings": {
+              "methods": [
+                "UpdateReportingIdentitySettings"
               ]
             },
             "UpdateSKAdNetworkConversionValueSchema": {
@@ -1245,6 +1255,11 @@
                 "GetSubpropertySyncConfig"
               ]
             },
+            "GetUserProvidedDataSettings": {
+              "methods": [
+                "GetUserProvidedDataSettings"
+              ]
+            },
             "ListAccessBindings": {
               "methods": [
                 "ListAccessBindings"
@@ -1533,6 +1548,11 @@
             "UpdateReportingDataAnnotation": {
               "methods": [
                 "UpdateReportingDataAnnotation"
+              ]
+            },
+            "UpdateReportingIdentitySettings": {
+              "methods": [
+                "UpdateReportingIdentitySettings"
               ]
             },
             "UpdateSKAdNetworkConversionValueSchema": {

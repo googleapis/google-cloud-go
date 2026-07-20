@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -260,7 +262,7 @@ type DatastoreAdminClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DatastoreAdminClient) Close() error {
 	return c.internalClient.Close()
@@ -477,6 +479,16 @@ type datastoreAdminGRPCClient struct {
 //	service google.longrunning.Operations.
 func NewDatastoreAdminClient(ctx context.Context, opts ...option.ClientOption) (*DatastoreAdminClient, error) {
 	clientOpts := defaultDatastoreAdminGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datastore",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datastore/admin/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "datastore.googleapis.com",
+		}))
+	}
 	if newDatastoreAdminClientHook != nil {
 		hookOpts, err := newDatastoreAdminClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -499,6 +511,29 @@ func NewDatastoreAdminClient(ctx context.Context, opts ...option.ClientOption) (
 		operationsClient:     longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datastore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datastore/admin/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datastore.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ExportEntities = append(client.CallOptions.ExportEntities, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportEntities = append(client.CallOptions.ImportEntities, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateIndex = append(client.CallOptions.CreateIndex, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteIndex = append(client.CallOptions.DeleteIndex, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIndex = append(client.CallOptions.GetIndex, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListIndexes = append(client.CallOptions.ListIndexes, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -535,7 +570,7 @@ func (c *datastoreAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *datastoreAdminGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -622,6 +657,16 @@ type datastoreAdminRESTClient struct {
 //	service google.longrunning.Operations.
 func NewDatastoreAdminRESTClient(ctx context.Context, opts ...option.ClientOption) (*DatastoreAdminClient, error) {
 	clientOpts := append(defaultDatastoreAdminRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datastore",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datastore/admin/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "datastore.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -635,6 +680,30 @@ func NewDatastoreAdminRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datastore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datastore/admin/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datastore.googleapis.com",
+			}),
+		)
+
+		callOpts.ExportEntities = append(callOpts.ExportEntities, gax.WithClientMetrics(metrics))
+		callOpts.ImportEntities = append(callOpts.ImportEntities, gax.WithClientMetrics(metrics))
+		callOpts.CreateIndex = append(callOpts.CreateIndex, gax.WithClientMetrics(metrics))
+		callOpts.DeleteIndex = append(callOpts.DeleteIndex, gax.WithClientMetrics(metrics))
+		callOpts.GetIndex = append(callOpts.GetIndex, gax.WithClientMetrics(metrics))
+		callOpts.ListIndexes = append(callOpts.ListIndexes, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -672,7 +741,7 @@ func (c *datastoreAdminRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *datastoreAdminRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -691,6 +760,9 @@ func (c *datastoreAdminGRPCClient) ExportEntities(ctx context.Context, req *admi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.datastore.admin.v1.DatastoreAdmin/ExportEntities")
+	}
 	opts = append((*c.CallOptions).ExportEntities[0:len((*c.CallOptions).ExportEntities):len((*c.CallOptions).ExportEntities)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -701,8 +773,12 @@ func (c *datastoreAdminGRPCClient) ExportEntities(ctx context.Context, req *admi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.ExportEntitiesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportEntitiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -711,6 +787,9 @@ func (c *datastoreAdminGRPCClient) ImportEntities(ctx context.Context, req *admi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.datastore.admin.v1.DatastoreAdmin/ImportEntities")
+	}
 	opts = append((*c.CallOptions).ImportEntities[0:len((*c.CallOptions).ImportEntities):len((*c.CallOptions).ImportEntities)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -721,8 +800,12 @@ func (c *datastoreAdminGRPCClient) ImportEntities(ctx context.Context, req *admi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.ImportEntitiesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportEntitiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -731,6 +814,9 @@ func (c *datastoreAdminGRPCClient) CreateIndex(ctx context.Context, req *adminpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.datastore.admin.v1.DatastoreAdmin/CreateIndex")
+	}
 	opts = append((*c.CallOptions).CreateIndex[0:len((*c.CallOptions).CreateIndex):len((*c.CallOptions).CreateIndex)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -741,8 +827,12 @@ func (c *datastoreAdminGRPCClient) CreateIndex(ctx context.Context, req *adminpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.CreateIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -751,6 +841,9 @@ func (c *datastoreAdminGRPCClient) DeleteIndex(ctx context.Context, req *adminpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.datastore.admin.v1.DatastoreAdmin/DeleteIndex")
+	}
 	opts = append((*c.CallOptions).DeleteIndex[0:len((*c.CallOptions).DeleteIndex):len((*c.CallOptions).DeleteIndex)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -761,8 +854,12 @@ func (c *datastoreAdminGRPCClient) DeleteIndex(ctx context.Context, req *adminpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.DeleteIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -771,6 +868,9 @@ func (c *datastoreAdminGRPCClient) GetIndex(ctx context.Context, req *adminpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.datastore.admin.v1.DatastoreAdmin/GetIndex")
+	}
 	opts = append((*c.CallOptions).GetIndex[0:len((*c.CallOptions).GetIndex):len((*c.CallOptions).GetIndex)], opts...)
 	var resp *adminpb.Index
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -789,9 +889,12 @@ func (c *datastoreAdminGRPCClient) ListIndexes(ctx context.Context, req *adminpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.datastore.admin.v1.DatastoreAdmin/ListIndexes")
+	}
 	opts = append((*c.CallOptions).ListIndexes[0:len((*c.CallOptions).ListIndexes):len((*c.CallOptions).ListIndexes)], opts...)
 	it := &IndexIterator{}
-	req = proto.Clone(req).(*adminpb.ListIndexesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Index, string, error) {
 		resp := &adminpb.ListIndexesResponse{}
 		if pageToken != "" {
@@ -835,6 +938,9 @@ func (c *datastoreAdminGRPCClient) CancelOperation(ctx context.Context, req *lon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -849,6 +955,9 @@ func (c *datastoreAdminGRPCClient) DeleteOperation(ctx context.Context, req *lon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -863,6 +972,9 @@ func (c *datastoreAdminGRPCClient) GetOperation(ctx context.Context, req *longru
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -881,9 +993,12 @@ func (c *datastoreAdminGRPCClient) ListOperations(ctx context.Context, req *long
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -954,6 +1069,10 @@ func (c *datastoreAdminRESTClient) ExportEntities(ctx context.Context, req *admi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.datastore.admin.v1.DatastoreAdmin/ExportEntities")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}:export")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -982,8 +1101,12 @@ func (c *datastoreAdminRESTClient) ExportEntities(ctx context.Context, req *admi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.ExportEntitiesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportEntitiesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1017,6 +1140,10 @@ func (c *datastoreAdminRESTClient) ImportEntities(ctx context.Context, req *admi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.datastore.admin.v1.DatastoreAdmin/ImportEntities")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}:import")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1045,8 +1172,12 @@ func (c *datastoreAdminRESTClient) ImportEntities(ctx context.Context, req *admi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.ImportEntitiesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportEntitiesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1090,6 +1221,10 @@ func (c *datastoreAdminRESTClient) CreateIndex(ctx context.Context, req *adminpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.datastore.admin.v1.DatastoreAdmin/CreateIndex")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/indexes")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1118,8 +1253,12 @@ func (c *datastoreAdminRESTClient) CreateIndex(ctx context.Context, req *adminpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.CreateIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1153,6 +1292,10 @@ func (c *datastoreAdminRESTClient) DeleteIndex(ctx context.Context, req *adminpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.datastore.admin.v1.DatastoreAdmin/DeleteIndex")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/indexes/{index_id}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1181,8 +1324,12 @@ func (c *datastoreAdminRESTClient) DeleteIndex(ctx context.Context, req *adminpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.DeleteIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1206,6 +1353,10 @@ func (c *datastoreAdminRESTClient) GetIndex(ctx context.Context, req *adminpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.datastore.admin.v1.DatastoreAdmin/GetIndex")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/indexes/{index_id}")
+	}
 	opts = append((*c.CallOptions).GetIndex[0:len((*c.CallOptions).GetIndex):len((*c.CallOptions).GetIndex)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.Index{}
@@ -1242,7 +1393,7 @@ func (c *datastoreAdminRESTClient) GetIndex(ctx context.Context, req *adminpb.Ge
 // occasionally return stale results.
 func (c *datastoreAdminRESTClient) ListIndexes(ctx context.Context, req *adminpb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
 	it := &IndexIterator{}
-	req = proto.Clone(req).(*adminpb.ListIndexesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Index, string, error) {
 		resp := &adminpb.ListIndexesResponse{}
@@ -1339,6 +1490,10 @@ func (c *datastoreAdminRESTClient) CancelOperation(ctx context.Context, req *lon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1374,6 +1529,10 @@ func (c *datastoreAdminRESTClient) DeleteOperation(ctx context.Context, req *lon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1409,6 +1568,10 @@ func (c *datastoreAdminRESTClient) GetOperation(ctx context.Context, req *longru
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1443,7 +1606,7 @@ func (c *datastoreAdminRESTClient) GetOperation(ctx context.Context, req *longru
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *datastoreAdminRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1528,7 +1691,7 @@ func (c *datastoreAdminRESTClient) ListOperations(ctx context.Context, req *long
 // The name must be that of a previously created CreateIndexOperation, possibly from a different process.
 func (c *datastoreAdminGRPCClient) CreateIndexOperation(name string) *CreateIndexOperation {
 	return &CreateIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.CreateIndexOperation"),
 	}
 }
 
@@ -1537,7 +1700,7 @@ func (c *datastoreAdminGRPCClient) CreateIndexOperation(name string) *CreateInde
 func (c *datastoreAdminRESTClient) CreateIndexOperation(name string) *CreateIndexOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.CreateIndexOperation"),
 		pollPath: override,
 	}
 }
@@ -1546,7 +1709,7 @@ func (c *datastoreAdminRESTClient) CreateIndexOperation(name string) *CreateInde
 // The name must be that of a previously created DeleteIndexOperation, possibly from a different process.
 func (c *datastoreAdminGRPCClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
 	return &DeleteIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.DeleteIndexOperation"),
 	}
 }
 
@@ -1555,7 +1718,7 @@ func (c *datastoreAdminGRPCClient) DeleteIndexOperation(name string) *DeleteInde
 func (c *datastoreAdminRESTClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.DeleteIndexOperation"),
 		pollPath: override,
 	}
 }
@@ -1564,7 +1727,7 @@ func (c *datastoreAdminRESTClient) DeleteIndexOperation(name string) *DeleteInde
 // The name must be that of a previously created ExportEntitiesOperation, possibly from a different process.
 func (c *datastoreAdminGRPCClient) ExportEntitiesOperation(name string) *ExportEntitiesOperation {
 	return &ExportEntitiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.ExportEntitiesOperation"),
 	}
 }
 
@@ -1573,7 +1736,7 @@ func (c *datastoreAdminGRPCClient) ExportEntitiesOperation(name string) *ExportE
 func (c *datastoreAdminRESTClient) ExportEntitiesOperation(name string) *ExportEntitiesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportEntitiesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.ExportEntitiesOperation"),
 		pollPath: override,
 	}
 }
@@ -1582,7 +1745,7 @@ func (c *datastoreAdminRESTClient) ExportEntitiesOperation(name string) *ExportE
 // The name must be that of a previously created ImportEntitiesOperation, possibly from a different process.
 func (c *datastoreAdminGRPCClient) ImportEntitiesOperation(name string) *ImportEntitiesOperation {
 	return &ImportEntitiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.ImportEntitiesOperation"),
 	}
 }
 
@@ -1591,7 +1754,7 @@ func (c *datastoreAdminGRPCClient) ImportEntitiesOperation(name string) *ImportE
 func (c *datastoreAdminRESTClient) ImportEntitiesOperation(name string) *ImportEntitiesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportEntitiesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.ImportEntitiesOperation"),
 		pollPath: override,
 	}
 }

@@ -36,10 +36,16 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 )
 
 var cidGen = newClientIDGenerator()
+
+const (
+	routedKeepaliveTime    = 2 * time.Second
+	routedKeepaliveTimeout = 20 * time.Second
+)
 
 type clientIDGenerator struct {
 	mu  sync.Mutex
@@ -93,6 +99,7 @@ type sessionClient struct {
 	disableRouteToLeader bool
 
 	connPool             gtransport.ConnPool
+	dynamicPool          *dynamicChannelPool
 	database             string
 	id                   string
 	userAgent            string
@@ -274,6 +281,13 @@ func (sc *sessionClient) sessionWithID(id string) (*session, error) {
 // session. Using the same channel for all gRPC calls for a session ensures the
 // optimal usage of server side caches.
 func (sc *sessionClient) nextClient() (spannerClient, error) {
+	if sc.dynamicPool != nil {
+		entry, err := sc.dynamicPool.pick(context.Background())
+		if err != nil {
+			return nil, err
+		}
+		return entry.client, nil
+	}
 	var clientOpt option.ClientOption
 	var channelID uint64
 	if _, ok := sc.connPool.(*gmeWrapper); ok {
@@ -318,11 +332,13 @@ func (sc *sessionClient) createEndpointClient(ctx context.Context, address strin
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithAuthority(sc.endpointAuthority)))
 	}
 	opts = append(opts, option.WithEndpoint(address))
-	if _, ok := sc.connPool.(*gmeWrapper); ok {
-		// Endpoint-specific clients should keep a single connection per endpoint
-		// when the parent client uses GCPMultiEndpoint.
-		opts = append(opts, option.WithGRPCConnectionPool(1))
-	}
+	// Routed endpoint clients should keep a single connection per endpoint so
+	// bypass traffic does not fan out into the parent's broader pool sizing.
+	opts = append(opts, option.WithGRPCConnectionPool(1))
+	opts = append(opts, option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
+		Time:    routedKeepaliveTime,
+		Timeout: routedKeepaliveTimeout,
+	})))
 	return newGRPCSpannerClient(ctx, sc, 0, opts...)
 }
 

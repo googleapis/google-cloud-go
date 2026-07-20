@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -132,7 +134,7 @@ type InstancesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *InstancesClient) Close() error {
 	return c.internalClient.Close()
@@ -236,6 +238,16 @@ type instancesGRPCClient struct {
 // Manages instances of a version.
 func NewInstancesClient(ctx context.Context, opts ...option.ClientOption) (*InstancesClient, error) {
 	clientOpts := defaultInstancesGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	if newInstancesClientHook != nil {
 		hookOpts, err := newInstancesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -257,6 +269,23 @@ func NewInstancesClient(ctx context.Context, opts ...option.ClientOption) (*Inst
 		logger:          internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.DebugInstance = append(client.CallOptions.DebugInstance, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -293,7 +322,7 @@ func (c *instancesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *instancesGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -326,6 +355,16 @@ type instancesRESTClient struct {
 // Manages instances of a version.
 func NewInstancesRESTClient(ctx context.Context, opts ...option.ClientOption) (*InstancesClient, error) {
 	clientOpts := append(defaultInstancesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -339,6 +378,24 @@ func NewInstancesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientMetrics(metrics))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientMetrics(metrics))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientMetrics(metrics))
+		callOpts.DebugInstance = append(callOpts.DebugInstance, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -376,7 +433,7 @@ func (c *instancesRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *instancesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -395,9 +452,12 @@ func (c *instancesGRPCClient) ListInstances(ctx context.Context, req *appenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Instances/ListInstances")
+	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*appenginepb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.Instance, string, error) {
 		resp := &appenginepb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -441,6 +501,9 @@ func (c *instancesGRPCClient) GetInstance(ctx context.Context, req *appenginepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Instances/GetInstance")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *appenginepb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -459,6 +522,9 @@ func (c *instancesGRPCClient) DeleteInstance(ctx context.Context, req *appengine
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Instances/DeleteInstance")
+	}
 	opts = append((*c.CallOptions).DeleteInstance[0:len((*c.CallOptions).DeleteInstance):len((*c.CallOptions).DeleteInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -469,8 +535,12 @@ func (c *instancesGRPCClient) DeleteInstance(ctx context.Context, req *appengine
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -479,6 +549,9 @@ func (c *instancesGRPCClient) DebugInstance(ctx context.Context, req *appenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Instances/DebugInstance")
+	}
 	opts = append((*c.CallOptions).DebugInstance[0:len((*c.CallOptions).DebugInstance):len((*c.CallOptions).DebugInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -489,8 +562,12 @@ func (c *instancesGRPCClient) DebugInstance(ctx context.Context, req *appenginep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.DebugInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DebugInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -500,7 +577,7 @@ func (c *instancesGRPCClient) DebugInstance(ctx context.Context, req *appenginep
 // Stackdriver Monitoring API (at https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/list).
 func (c *instancesRESTClient) ListInstances(ctx context.Context, req *appenginepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*appenginepb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.Instance, string, error) {
 		resp := &appenginepb.ListInstancesResponse{}
@@ -594,6 +671,10 @@ func (c *instancesRESTClient) GetInstance(ctx context.Context, req *appenginepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Instances/GetInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/services/*/versions/*/instances/*}")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.Instance{}
@@ -655,6 +736,10 @@ func (c *instancesRESTClient) DeleteInstance(ctx context.Context, req *appengine
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Instances/DeleteInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/services/*/versions/*/instances/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -683,8 +768,12 @@ func (c *instancesRESTClient) DeleteInstance(ctx context.Context, req *appengine
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -721,6 +810,10 @@ func (c *instancesRESTClient) DebugInstance(ctx context.Context, req *appenginep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Instances/DebugInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/services/*/versions/*/instances/*}:debug")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -749,8 +842,12 @@ func (c *instancesRESTClient) DebugInstance(ctx context.Context, req *appenginep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.DebugInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DebugInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -759,7 +856,7 @@ func (c *instancesRESTClient) DebugInstance(ctx context.Context, req *appenginep
 // The name must be that of a previously created DebugInstanceOperation, possibly from a different process.
 func (c *instancesGRPCClient) DebugInstanceOperation(name string) *DebugInstanceOperation {
 	return &DebugInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.DebugInstanceOperation"),
 	}
 }
 
@@ -768,7 +865,7 @@ func (c *instancesGRPCClient) DebugInstanceOperation(name string) *DebugInstance
 func (c *instancesRESTClient) DebugInstanceOperation(name string) *DebugInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DebugInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.DebugInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -777,7 +874,7 @@ func (c *instancesRESTClient) DebugInstanceOperation(name string) *DebugInstance
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *instancesGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.DeleteInstanceOperation"),
 	}
 }
 
@@ -786,7 +883,7 @@ func (c *instancesGRPCClient) DeleteInstanceOperation(name string) *DeleteInstan
 func (c *instancesRESTClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.DeleteInstanceOperation"),
 		pollPath: override,
 	}
 }

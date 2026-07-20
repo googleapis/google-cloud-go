@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -116,7 +118,7 @@ type PredictionClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *PredictionClient) Close() error {
 	return c.internalClient.Close()
@@ -227,6 +229,16 @@ type predictionGRPCClient struct {
 // snake_case or kebab-case, either of those cases is accepted.
 func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*PredictionClient, error) {
 	clientOpts := defaultPredictionGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "automl",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/automl/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "automl.googleapis.com",
+		}))
+	}
 	if newPredictionClientHook != nil {
 		hookOpts, err := newPredictionClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -248,6 +260,21 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 		logger:           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Predict = append(client.CallOptions.Predict, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchPredict = append(client.CallOptions.BatchPredict, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -284,7 +311,7 @@ func (c *predictionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *predictionGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -320,6 +347,16 @@ type predictionRESTClient struct {
 // snake_case or kebab-case, either of those cases is accepted.
 func NewPredictionRESTClient(ctx context.Context, opts ...option.ClientOption) (*PredictionClient, error) {
 	clientOpts := append(defaultPredictionRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "automl",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/automl/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "automl.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -333,6 +370,22 @@ func NewPredictionRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		callOpts.Predict = append(callOpts.Predict, gax.WithClientMetrics(metrics))
+		callOpts.BatchPredict = append(callOpts.BatchPredict, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -370,7 +423,7 @@ func (c *predictionRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *predictionRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -389,6 +442,12 @@ func (c *predictionGRPCClient) Predict(ctx context.Context, req *automlpb.Predic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.PredictionService/Predict")
+	}
 	opts = append((*c.CallOptions).Predict[0:len((*c.CallOptions).Predict):len((*c.CallOptions).Predict)], opts...)
 	var resp *automlpb.PredictResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -407,6 +466,12 @@ func (c *predictionGRPCClient) BatchPredict(ctx context.Context, req *automlpb.B
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.PredictionService/BatchPredict")
+	}
 	opts = append((*c.CallOptions).BatchPredict[0:len((*c.CallOptions).BatchPredict):len((*c.CallOptions).BatchPredict)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -417,8 +482,12 @@ func (c *predictionGRPCClient) BatchPredict(ctx context.Context, req *automlpb.B
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.BatchPredictOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchPredictOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -472,6 +541,13 @@ func (c *predictionRESTClient) Predict(ctx context.Context, req *automlpb.Predic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.PredictionService/Predict")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/models/*}:predict")
+	}
 	opts = append((*c.CallOptions).Predict[0:len((*c.CallOptions).Predict):len((*c.CallOptions).Predict)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &automlpb.PredictResponse{}
@@ -544,6 +620,13 @@ func (c *predictionRESTClient) BatchPredict(ctx context.Context, req *automlpb.B
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.PredictionService/BatchPredict")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/models/*}:batchPredict")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -572,8 +655,12 @@ func (c *predictionRESTClient) BatchPredict(ctx context.Context, req *automlpb.B
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.BatchPredictOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchPredictOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -582,7 +669,7 @@ func (c *predictionRESTClient) BatchPredict(ctx context.Context, req *automlpb.B
 // The name must be that of a previously created BatchPredictOperation, possibly from a different process.
 func (c *predictionGRPCClient) BatchPredictOperation(name string) *BatchPredictOperation {
 	return &BatchPredictOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.BatchPredictOperation"),
 	}
 }
 
@@ -591,7 +678,7 @@ func (c *predictionGRPCClient) BatchPredictOperation(name string) *BatchPredictO
 func (c *predictionRESTClient) BatchPredictOperation(name string) *BatchPredictOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &BatchPredictOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.BatchPredictOperation"),
 		pollPath: override,
 	}
 }

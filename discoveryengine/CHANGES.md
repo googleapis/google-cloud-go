@@ -2,6 +2,32 @@
 
 
 
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.30.0...discoveryengine/v1.31.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.29.0...discoveryengine/v1.30.0) (2026-06-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20007](https://github.com/googleapis/google-cloud-go/issues/20007)) ([4d633c8](https://github.com/googleapis/google-cloud-go/commit/4d633c893dd35be48ca353da133e7d483151cd3e))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.29.0) (2026-05-07)
+
+### Features
+
+* update API sources and regenerate (#14537) ([07fe29b](https://github.com/googleapis/google-cloud-go/commit/07fe29ba4c5069d27d4149d8fa5f8814eb8789d7))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.28.0) (2026-04-30)
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.27.0) (2026-04-13)
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.26.0) (2026-04-09)
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.25.0) (2026-04-02)
 
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.24.0) (2026-03-26)

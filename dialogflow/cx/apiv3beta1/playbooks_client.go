@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -423,7 +425,7 @@ type PlaybooksClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *PlaybooksClient) Close() error {
 	return c.internalClient.Close()
@@ -528,14 +530,13 @@ func (c *PlaybooksClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -596,6 +597,16 @@ type playbooksGRPCClient struct {
 // Playbooks.
 func NewPlaybooksClient(ctx context.Context, opts ...option.ClientOption) (*PlaybooksClient, error) {
 	clientOpts := defaultPlaybooksGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dialogflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "dialogflow.googleapis.com",
+		}))
+	}
 	if newPlaybooksClientHook != nil {
 		hookOpts, err := newPlaybooksClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -619,6 +630,36 @@ func NewPlaybooksClient(ctx context.Context, opts ...option.ClientOption) (*Play
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePlaybook = append(client.CallOptions.CreatePlaybook, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePlaybook = append(client.CallOptions.DeletePlaybook, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPlaybooks = append(client.CallOptions.ListPlaybooks, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPlaybook = append(client.CallOptions.GetPlaybook, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportPlaybook = append(client.CallOptions.ExportPlaybook, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportPlaybook = append(client.CallOptions.ImportPlaybook, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePlaybook = append(client.CallOptions.UpdatePlaybook, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreatePlaybookVersion = append(client.CallOptions.CreatePlaybookVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPlaybookVersion = append(client.CallOptions.GetPlaybookVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.RestorePlaybookVersion = append(client.CallOptions.RestorePlaybookVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPlaybookVersions = append(client.CallOptions.ListPlaybookVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePlaybookVersion = append(client.CallOptions.DeletePlaybookVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -655,7 +696,7 @@ func (c *playbooksGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *playbooksGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -689,6 +730,16 @@ type playbooksRESTClient struct {
 // Playbooks.
 func NewPlaybooksRESTClient(ctx context.Context, opts ...option.ClientOption) (*PlaybooksClient, error) {
 	clientOpts := append(defaultPlaybooksRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dialogflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "dialogflow.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -702,6 +753,37 @@ func NewPlaybooksRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePlaybook = append(callOpts.CreatePlaybook, gax.WithClientMetrics(metrics))
+		callOpts.DeletePlaybook = append(callOpts.DeletePlaybook, gax.WithClientMetrics(metrics))
+		callOpts.ListPlaybooks = append(callOpts.ListPlaybooks, gax.WithClientMetrics(metrics))
+		callOpts.GetPlaybook = append(callOpts.GetPlaybook, gax.WithClientMetrics(metrics))
+		callOpts.ExportPlaybook = append(callOpts.ExportPlaybook, gax.WithClientMetrics(metrics))
+		callOpts.ImportPlaybook = append(callOpts.ImportPlaybook, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePlaybook = append(callOpts.UpdatePlaybook, gax.WithClientMetrics(metrics))
+		callOpts.CreatePlaybookVersion = append(callOpts.CreatePlaybookVersion, gax.WithClientMetrics(metrics))
+		callOpts.GetPlaybookVersion = append(callOpts.GetPlaybookVersion, gax.WithClientMetrics(metrics))
+		callOpts.RestorePlaybookVersion = append(callOpts.RestorePlaybookVersion, gax.WithClientMetrics(metrics))
+		callOpts.ListPlaybookVersions = append(callOpts.ListPlaybookVersions, gax.WithClientMetrics(metrics))
+		callOpts.DeletePlaybookVersion = append(callOpts.DeletePlaybookVersion, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -739,7 +821,7 @@ func (c *playbooksRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *playbooksRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -758,6 +840,12 @@ func (c *playbooksGRPCClient) CreatePlaybook(ctx context.Context, req *cxpb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/CreatePlaybook")
+	}
 	opts = append((*c.CallOptions).CreatePlaybook[0:len((*c.CallOptions).CreatePlaybook):len((*c.CallOptions).CreatePlaybook)], opts...)
 	var resp *cxpb.Playbook
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -776,6 +864,12 @@ func (c *playbooksGRPCClient) DeletePlaybook(ctx context.Context, req *cxpb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/DeletePlaybook")
+	}
 	opts = append((*c.CallOptions).DeletePlaybook[0:len((*c.CallOptions).DeletePlaybook):len((*c.CallOptions).DeletePlaybook)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -790,9 +884,15 @@ func (c *playbooksGRPCClient) ListPlaybooks(ctx context.Context, req *cxpb.ListP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/ListPlaybooks")
+	}
 	opts = append((*c.CallOptions).ListPlaybooks[0:len((*c.CallOptions).ListPlaybooks):len((*c.CallOptions).ListPlaybooks)], opts...)
 	it := &PlaybookIterator{}
-	req = proto.Clone(req).(*cxpb.ListPlaybooksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Playbook, string, error) {
 		resp := &cxpb.ListPlaybooksResponse{}
 		if pageToken != "" {
@@ -836,6 +936,12 @@ func (c *playbooksGRPCClient) GetPlaybook(ctx context.Context, req *cxpb.GetPlay
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/GetPlaybook")
+	}
 	opts = append((*c.CallOptions).GetPlaybook[0:len((*c.CallOptions).GetPlaybook):len((*c.CallOptions).GetPlaybook)], opts...)
 	var resp *cxpb.Playbook
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -854,6 +960,12 @@ func (c *playbooksGRPCClient) ExportPlaybook(ctx context.Context, req *cxpb.Expo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/ExportPlaybook")
+	}
 	opts = append((*c.CallOptions).ExportPlaybook[0:len((*c.CallOptions).ExportPlaybook):len((*c.CallOptions).ExportPlaybook)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -864,8 +976,12 @@ func (c *playbooksGRPCClient) ExportPlaybook(ctx context.Context, req *cxpb.Expo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ExportPlaybookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportPlaybookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -874,6 +990,12 @@ func (c *playbooksGRPCClient) ImportPlaybook(ctx context.Context, req *cxpb.Impo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/ImportPlaybook")
+	}
 	opts = append((*c.CallOptions).ImportPlaybook[0:len((*c.CallOptions).ImportPlaybook):len((*c.CallOptions).ImportPlaybook)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -884,8 +1006,12 @@ func (c *playbooksGRPCClient) ImportPlaybook(ctx context.Context, req *cxpb.Impo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ImportPlaybookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportPlaybookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -894,6 +1020,9 @@ func (c *playbooksGRPCClient) UpdatePlaybook(ctx context.Context, req *cxpb.Upda
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/UpdatePlaybook")
+	}
 	opts = append((*c.CallOptions).UpdatePlaybook[0:len((*c.CallOptions).UpdatePlaybook):len((*c.CallOptions).UpdatePlaybook)], opts...)
 	var resp *cxpb.Playbook
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -912,6 +1041,12 @@ func (c *playbooksGRPCClient) CreatePlaybookVersion(ctx context.Context, req *cx
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/CreatePlaybookVersion")
+	}
 	opts = append((*c.CallOptions).CreatePlaybookVersion[0:len((*c.CallOptions).CreatePlaybookVersion):len((*c.CallOptions).CreatePlaybookVersion)], opts...)
 	var resp *cxpb.PlaybookVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -930,6 +1065,12 @@ func (c *playbooksGRPCClient) GetPlaybookVersion(ctx context.Context, req *cxpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/GetPlaybookVersion")
+	}
 	opts = append((*c.CallOptions).GetPlaybookVersion[0:len((*c.CallOptions).GetPlaybookVersion):len((*c.CallOptions).GetPlaybookVersion)], opts...)
 	var resp *cxpb.PlaybookVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -948,6 +1089,12 @@ func (c *playbooksGRPCClient) RestorePlaybookVersion(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/RestorePlaybookVersion")
+	}
 	opts = append((*c.CallOptions).RestorePlaybookVersion[0:len((*c.CallOptions).RestorePlaybookVersion):len((*c.CallOptions).RestorePlaybookVersion)], opts...)
 	var resp *cxpb.RestorePlaybookVersionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -966,9 +1113,15 @@ func (c *playbooksGRPCClient) ListPlaybookVersions(ctx context.Context, req *cxp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/ListPlaybookVersions")
+	}
 	opts = append((*c.CallOptions).ListPlaybookVersions[0:len((*c.CallOptions).ListPlaybookVersions):len((*c.CallOptions).ListPlaybookVersions)], opts...)
 	it := &PlaybookVersionIterator{}
-	req = proto.Clone(req).(*cxpb.ListPlaybookVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.PlaybookVersion, string, error) {
 		resp := &cxpb.ListPlaybookVersionsResponse{}
 		if pageToken != "" {
@@ -1012,6 +1165,12 @@ func (c *playbooksGRPCClient) DeletePlaybookVersion(ctx context.Context, req *cx
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/DeletePlaybookVersion")
+	}
 	opts = append((*c.CallOptions).DeletePlaybookVersion[0:len((*c.CallOptions).DeletePlaybookVersion):len((*c.CallOptions).DeletePlaybookVersion)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1026,6 +1185,9 @@ func (c *playbooksGRPCClient) GetLocation(ctx context.Context, req *locationpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1044,9 +1206,12 @@ func (c *playbooksGRPCClient) ListLocations(ctx context.Context, req *locationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1090,6 +1255,9 @@ func (c *playbooksGRPCClient) CancelOperation(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1104,6 +1272,9 @@ func (c *playbooksGRPCClient) GetOperation(ctx context.Context, req *longrunning
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1122,9 +1293,12 @@ func (c *playbooksGRPCClient) ListOperations(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1189,6 +1363,13 @@ func (c *playbooksRESTClient) CreatePlaybook(ctx context.Context, req *cxpb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/CreatePlaybook")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*/agents/*}/playbooks")
+	}
 	opts = append((*c.CallOptions).CreatePlaybook[0:len((*c.CallOptions).CreatePlaybook):len((*c.CallOptions).CreatePlaybook)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cxpb.Playbook{}
@@ -1239,6 +1420,13 @@ func (c *playbooksRESTClient) DeletePlaybook(ctx context.Context, req *cxpb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/DeletePlaybook")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/playbooks/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1258,7 +1446,7 @@ func (c *playbooksRESTClient) DeletePlaybook(ctx context.Context, req *cxpb.Dele
 // ListPlaybooks returns a list of playbooks in the specified agent.
 func (c *playbooksRESTClient) ListPlaybooks(ctx context.Context, req *cxpb.ListPlaybooksRequest, opts ...gax.CallOption) *PlaybookIterator {
 	it := &PlaybookIterator{}
-	req = proto.Clone(req).(*cxpb.ListPlaybooksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Playbook, string, error) {
 		resp := &cxpb.ListPlaybooksResponse{}
@@ -1352,6 +1540,13 @@ func (c *playbooksRESTClient) GetPlaybook(ctx context.Context, req *cxpb.GetPlay
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/GetPlaybook")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/playbooks/*}")
+	}
 	opts = append((*c.CallOptions).GetPlaybook[0:len((*c.CallOptions).GetPlaybook):len((*c.CallOptions).GetPlaybook)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cxpb.Playbook{}
@@ -1411,6 +1606,13 @@ func (c *playbooksRESTClient) ExportPlaybook(ctx context.Context, req *cxpb.Expo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/ExportPlaybook")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/playbooks/*}:export")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1439,8 +1641,12 @@ func (c *playbooksRESTClient) ExportPlaybook(ctx context.Context, req *cxpb.Expo
 	}
 
 	override := fmt.Sprintf("/v3beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ExportPlaybookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportPlaybookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1470,6 +1676,13 @@ func (c *playbooksRESTClient) ImportPlaybook(ctx context.Context, req *cxpb.Impo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/ImportPlaybook")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*/agents/*}/playbooks:import")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1498,8 +1711,12 @@ func (c *playbooksRESTClient) ImportPlaybook(ctx context.Context, req *cxpb.Impo
 	}
 
 	override := fmt.Sprintf("/v3beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ImportPlaybookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportPlaybookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1537,6 +1754,10 @@ func (c *playbooksRESTClient) UpdatePlaybook(ctx context.Context, req *cxpb.Upda
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/UpdatePlaybook")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{playbook.name=projects/*/locations/*/agents/*/playbooks/*}")
+	}
 	opts = append((*c.CallOptions).UpdatePlaybook[0:len((*c.CallOptions).UpdatePlaybook):len((*c.CallOptions).UpdatePlaybook)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cxpb.Playbook{}
@@ -1594,6 +1815,13 @@ func (c *playbooksRESTClient) CreatePlaybookVersion(ctx context.Context, req *cx
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/CreatePlaybookVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*/agents/*/playbooks/*}/versions")
+	}
 	opts = append((*c.CallOptions).CreatePlaybookVersion[0:len((*c.CallOptions).CreatePlaybookVersion):len((*c.CallOptions).CreatePlaybookVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cxpb.PlaybookVersion{}
@@ -1644,6 +1872,13 @@ func (c *playbooksRESTClient) GetPlaybookVersion(ctx context.Context, req *cxpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/GetPlaybookVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/playbooks/*/versions/*}")
+	}
 	opts = append((*c.CallOptions).GetPlaybookVersion[0:len((*c.CallOptions).GetPlaybookVersion):len((*c.CallOptions).GetPlaybookVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cxpb.PlaybookVersion{}
@@ -1701,6 +1936,13 @@ func (c *playbooksRESTClient) RestorePlaybookVersion(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/RestorePlaybookVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/playbooks/*/versions/*}:restore")
+	}
 	opts = append((*c.CallOptions).RestorePlaybookVersion[0:len((*c.CallOptions).RestorePlaybookVersion):len((*c.CallOptions).RestorePlaybookVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cxpb.RestorePlaybookVersionResponse{}
@@ -1735,7 +1977,7 @@ func (c *playbooksRESTClient) RestorePlaybookVersion(ctx context.Context, req *c
 // ListPlaybookVersions lists versions for the specified Playbook.
 func (c *playbooksRESTClient) ListPlaybookVersions(ctx context.Context, req *cxpb.ListPlaybookVersionsRequest, opts ...gax.CallOption) *PlaybookVersionIterator {
 	it := &PlaybookVersionIterator{}
-	req = proto.Clone(req).(*cxpb.ListPlaybookVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.PlaybookVersion, string, error) {
 		resp := &cxpb.ListPlaybookVersionsResponse{}
@@ -1829,6 +2071,13 @@ func (c *playbooksRESTClient) DeletePlaybookVersion(ctx context.Context, req *cx
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/DeletePlaybookVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/playbooks/*/versions/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1864,6 +2113,10 @@ func (c *playbooksRESTClient) GetLocation(ctx context.Context, req *locationpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -1898,14 +2151,13 @@ func (c *playbooksRESTClient) GetLocation(ctx context.Context, req *locationpb.G
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -1914,7 +2166,7 @@ func (c *playbooksRESTClient) GetLocation(ctx context.Context, req *locationpb.G
 // implementation and version.
 func (c *playbooksRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2011,6 +2263,10 @@ func (c *playbooksRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2046,6 +2302,10 @@ func (c *playbooksRESTClient) GetOperation(ctx context.Context, req *longrunning
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -2080,7 +2340,7 @@ func (c *playbooksRESTClient) GetOperation(ctx context.Context, req *longrunning
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *playbooksRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -2165,7 +2425,7 @@ func (c *playbooksRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created ExportPlaybookOperation, possibly from a different process.
 func (c *playbooksGRPCClient) ExportPlaybookOperation(name string) *ExportPlaybookOperation {
 	return &ExportPlaybookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ExportPlaybookOperation"),
 	}
 }
 
@@ -2174,7 +2434,7 @@ func (c *playbooksGRPCClient) ExportPlaybookOperation(name string) *ExportPlaybo
 func (c *playbooksRESTClient) ExportPlaybookOperation(name string) *ExportPlaybookOperation {
 	override := fmt.Sprintf("/v3beta1/%s", name)
 	return &ExportPlaybookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ExportPlaybookOperation"),
 		pollPath: override,
 	}
 }
@@ -2183,7 +2443,7 @@ func (c *playbooksRESTClient) ExportPlaybookOperation(name string) *ExportPlaybo
 // The name must be that of a previously created ImportPlaybookOperation, possibly from a different process.
 func (c *playbooksGRPCClient) ImportPlaybookOperation(name string) *ImportPlaybookOperation {
 	return &ImportPlaybookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ImportPlaybookOperation"),
 	}
 }
 
@@ -2192,7 +2452,7 @@ func (c *playbooksGRPCClient) ImportPlaybookOperation(name string) *ImportPlaybo
 func (c *playbooksRESTClient) ImportPlaybookOperation(name string) *ImportPlaybookOperation {
 	override := fmt.Sprintf("/v3beta1/%s", name)
 	return &ImportPlaybookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ImportPlaybookOperation"),
 		pollPath: override,
 	}
 }

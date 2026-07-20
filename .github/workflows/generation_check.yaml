@@ -1,9 +1,10 @@
 ---
 name: generation-check
 on:
-  schedule:
-    # Runs every day at 4:00 AM UTC
-    - cron: '0 4 * * *'
+  push:
+    branches:
+      - main
+  pull_request:
   # Allows manual triggering for debugging purpose.
   workflow_dispatch:
 permissions:
@@ -13,43 +14,45 @@ jobs:
   regeneration:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-go@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
-          go-version: '1.26.x'
-      - name: Install Protoc
-        uses: arduino/setup-protoc@v3
+          persist-credentials: false
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4
+        id: changes
         with:
-          version: "25.7"
+          filters: |
+            librarian:
+              - 'librarian.yaml'
+      # Version of librarian is pulled from librarian.yaml,
+      # main corresponds to the action's source definition.
+      - uses: googleapis/librarian@main # zizmor: ignore[unpinned-uses]
+        if: steps.changes.outputs.librarian == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        with:
+          protoc-version: '33.2'
+          protoc-checksum: '8c0a8577311720cc83488f813aeb5046d69cb9824cbf39cb7447e0c5132d677952d5bb7c1130d9df381835eee7352828878d409873ebb407d7a4649ea2a4aee5'
       - name: Install tools
-        run: |
-          version=$(sed -n 's/^version: *//p' librarian.yaml)
-          go run "github.com/googleapis/librarian/cmd/librarian@${version}" install
+        if: steps.changes.outputs.librarian == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        run: librarian install
       - name: Regenerate
+        if: steps.changes.outputs.librarian == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
         run: |
-          version=$(sed -n 's/^version: *//p' librarian.yaml)
-          go run "github.com/googleapis/librarian/cmd/librarian@${version}" generate -all
-      - name: Create issue on diff
-        if: failure()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
+          librarian generate --all
           if [ -n "$(git status --porcelain)" ]; then
-            TITLE="Daily regeneration check found diff"
-            RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            DIFF_STAT=$(git diff --stat)
-            BODY="The daily [regeneration check]($RUN_URL) found a diff.
-
-            Diff summary:
-            \`\`\`
-            $DIFF_STAT
-            \`\`\`"
-
-            EXISTING_ISSUE=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[0].number')
-            if [ -z "$EXISTING_ISSUE" ]; then
-              gh issue create --title "$TITLE" --body "$BODY"
-            else
-              echo "Issue #$EXISTING_ISSUE already exists, adding a comment."
-              gh issue comment "$EXISTING_ISSUE" --body "Another failure with diff occurred: $RUN_URL"
-            fi
+            git status
+            echo "==================== GIT DIFF ===================="
+            git diff
+            echo "=================================================="
+            echo "Regeneration failed. Please run 'librarian generate --all' to update the generated files."
+            exit 1
           fi
+      - name: Create issue if previous step fails
+        if: ${{ failure() && github.ref == 'refs/heads/main' }}
+        uses: googleapis/librarian/.github/actions/create-issue-on-failure@main # zizmor: ignore[unpinned-uses]
+        with:
+          title: "Librarian generate diff check failed on main branch"
+          body: |
+            The librarian generate diff check failed on main branch.
+
+            To keep the `main` branch healthy, please consider **reverting the triggering change** first. Once the revert is merged, you can investigate the failure and submit a new PR with the fix.
+
+            Please check the logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

@@ -2,6 +2,31 @@
 
 
 
+## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.36.0...maps/v1.37.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.36.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.36.0) (2026-05-28)
+
+### Features
+
+* update API sources and regenerate (#14661) ([d0cd917](https://github.com/googleapis/google-cloud-go/commit/d0cd917ce0ad46a4d2c1cd4ea2ef8efa60b591d3))
+
+### Documentation
+
+* correct the samples (#14632) ([7988942](https://github.com/googleapis/google-cloud-go/commit/7988942ceb456a93a5ca43dc2fde7320bde093bc))
+
+## [1.35.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.35.0) (2026-05-07)
+
+## [1.34.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.34.0) (2026-04-30)
+
+## [1.33.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.33.0) (2026-04-13)
+
+## [1.32.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.32.0) (2026-04-09)
+
 ## [1.31.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.31.0) (2026-04-02)
 
 ## [1.30.0](https://github.com/googleapis/google-cloud-go/releases/tag/maps%2Fv1.30.0) (2026-03-26)
@@ -640,4 +665,3 @@
 
 * **maps/addressvalidation:** Start generating apiv1 ([#7012](https://github.com/googleapis/google-cloud-go/issues/7012)) ([3e88250](https://github.com/googleapis/google-cloud-go/commit/3e882501ea196ff4f122989e5726bfd4c72e5133))
 * **maps/routing:** Start generating apiv2 ([#7056](https://github.com/googleapis/google-cloud-go/issues/7056)) ([1b7993d](https://github.com/googleapis/google-cloud-go/commit/1b7993d6931cf33bab07124da4180eeb3faffe7e))
-

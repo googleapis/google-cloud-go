@@ -35,6 +35,11 @@
                 "CreateReaction"
               ]
             },
+            "CreateSection": {
+              "methods": [
+                "CreateSection"
+              ]
+            },
             "CreateSpace": {
               "methods": [
                 "CreateSpace"
@@ -60,6 +65,11 @@
                 "DeleteReaction"
               ]
             },
+            "DeleteSection": {
+              "methods": [
+                "DeleteSection"
+              ]
+            },
             "DeleteSpace": {
               "methods": [
                 "DeleteSpace"
@@ -70,9 +80,19 @@
                 "FindDirectMessage"
               ]
             },
+            "FindGroupChats": {
+              "methods": [
+                "FindGroupChats"
+              ]
+            },
             "GetAttachment": {
               "methods": [
                 "GetAttachment"
+              ]
+            },
+            "GetAvailability": {
+              "methods": [
+                "GetAvailability"
               ]
             },
             "GetCustomEmoji": {
@@ -135,6 +155,16 @@
                 "ListReactions"
               ]
             },
+            "ListSectionItems": {
+              "methods": [
+                "ListSectionItems"
+              ]
+            },
+            "ListSections": {
+              "methods": [
+                "ListSections"
+              ]
+            },
             "ListSpaceEvents": {
               "methods": [
                 "ListSpaceEvents"
@@ -143,6 +173,31 @@
             "ListSpaces": {
               "methods": [
                 "ListSpaces"
+              ]
+            },
+            "MarkAsActive": {
+              "methods": [
+                "MarkAsActive"
+              ]
+            },
+            "MarkAsAway": {
+              "methods": [
+                "MarkAsAway"
+              ]
+            },
+            "MarkAsDoNotDisturb": {
+              "methods": [
+                "MarkAsDoNotDisturb"
+              ]
+            },
+            "MoveSectionItem": {
+              "methods": [
+                "MoveSectionItem"
+              ]
+            },
+            "PositionSection": {
+              "methods": [
+                "PositionSection"
               ]
             },
             "SearchSpaces": {
@@ -155,6 +210,11 @@
                 "SetUpSpace"
               ]
             },
+            "UpdateAvailability": {
+              "methods": [
+                "UpdateAvailability"
+              ]
+            },
             "UpdateMembership": {
               "methods": [
                 "UpdateMembership"
@@ -163,6 +223,11 @@
             "UpdateMessage": {
               "methods": [
                 "UpdateMessage"
+              ]
+            },
+            "UpdateSection": {
+              "methods": [
+                "UpdateSection"
               ]
             },
             "UpdateSpace": {
@@ -215,6 +280,11 @@
                 "CreateReaction"
               ]
             },
+            "CreateSection": {
+              "methods": [
+                "CreateSection"
+              ]
+            },
             "CreateSpace": {
               "methods": [
                 "CreateSpace"
@@ -240,6 +310,11 @@
                 "DeleteReaction"
               ]
             },
+            "DeleteSection": {
+              "methods": [
+                "DeleteSection"
+              ]
+            },
             "DeleteSpace": {
               "methods": [
                 "DeleteSpace"
@@ -250,9 +325,19 @@
                 "FindDirectMessage"
               ]
             },
+            "FindGroupChats": {
+              "methods": [
+                "FindGroupChats"
+              ]
+            },
             "GetAttachment": {
               "methods": [
                 "GetAttachment"
+              ]
+            },
+            "GetAvailability": {
+              "methods": [
+                "GetAvailability"
               ]
             },
             "GetCustomEmoji": {
@@ -315,6 +400,16 @@
                 "ListReactions"
               ]
             },
+            "ListSectionItems": {
+              "methods": [
+                "ListSectionItems"
+              ]
+            },
+            "ListSections": {
+              "methods": [
+                "ListSections"
+              ]
+            },
             "ListSpaceEvents": {
               "methods": [
                 "ListSpaceEvents"
@@ -323,6 +418,31 @@
             "ListSpaces": {
               "methods": [
                 "ListSpaces"
+              ]
+            },
+            "MarkAsActive": {
+              "methods": [
+                "MarkAsActive"
+              ]
+            },
+            "MarkAsAway": {
+              "methods": [
+                "MarkAsAway"
+              ]
+            },
+            "MarkAsDoNotDisturb": {
+              "methods": [
+                "MarkAsDoNotDisturb"
+              ]
+            },
+            "MoveSectionItem": {
+              "methods": [
+                "MoveSectionItem"
+              ]
+            },
+            "PositionSection": {
+              "methods": [
+                "PositionSection"
               ]
             },
             "SearchSpaces": {
@@ -335,6 +455,11 @@
                 "SetUpSpace"
               ]
             },
+            "UpdateAvailability": {
+              "methods": [
+                "UpdateAvailability"
+              ]
+            },
             "UpdateMembership": {
               "methods": [
                 "UpdateMembership"
@@ -343,6 +468,11 @@
             "UpdateMessage": {
               "methods": [
                 "UpdateMessage"
+              ]
+            },
+            "UpdateSection": {
+              "methods": [
+                "UpdateSection"
               ]
             },
             "UpdateSpace": {

@@ -19,6 +19,7 @@ package modelarmor
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"math"
@@ -28,6 +29,7 @@ import (
 
 	modelarmorpb "cloud.google.com/go/modelarmor/apiv1beta/modelarmorpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -44,17 +46,19 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListTemplates         []gax.CallOption
-	GetTemplate           []gax.CallOption
-	CreateTemplate        []gax.CallOption
-	UpdateTemplate        []gax.CallOption
-	DeleteTemplate        []gax.CallOption
-	GetFloorSetting       []gax.CallOption
-	UpdateFloorSetting    []gax.CallOption
-	SanitizeUserPrompt    []gax.CallOption
-	SanitizeModelResponse []gax.CallOption
-	GetLocation           []gax.CallOption
-	ListLocations         []gax.CallOption
+	ListTemplates               []gax.CallOption
+	GetTemplate                 []gax.CallOption
+	CreateTemplate              []gax.CallOption
+	UpdateTemplate              []gax.CallOption
+	DeleteTemplate              []gax.CallOption
+	GetFloorSetting             []gax.CallOption
+	UpdateFloorSetting          []gax.CallOption
+	SanitizeUserPrompt          []gax.CallOption
+	SanitizeModelResponse       []gax.CallOption
+	StreamSanitizeUserPrompt    []gax.CallOption
+	StreamSanitizeModelResponse []gax.CallOption
+	GetLocation                 []gax.CallOption
+	ListLocations               []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -146,8 +150,10 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		GetLocation:   []gax.CallOption{},
-		ListLocations: []gax.CallOption{},
+		StreamSanitizeUserPrompt:    []gax.CallOption{},
+		StreamSanitizeModelResponse: []gax.CallOption{},
+		GetLocation:                 []gax.CallOption{},
+		ListLocations:               []gax.CallOption{},
 	}
 }
 
@@ -220,8 +226,10 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		GetLocation:   []gax.CallOption{},
-		ListLocations: []gax.CallOption{},
+		StreamSanitizeUserPrompt:    []gax.CallOption{},
+		StreamSanitizeModelResponse: []gax.CallOption{},
+		GetLocation:                 []gax.CallOption{},
+		ListLocations:               []gax.CallOption{},
 	}
 }
 
@@ -239,6 +247,8 @@ type internalClient interface {
 	UpdateFloorSetting(context.Context, *modelarmorpb.UpdateFloorSettingRequest, ...gax.CallOption) (*modelarmorpb.FloorSetting, error)
 	SanitizeUserPrompt(context.Context, *modelarmorpb.SanitizeUserPromptRequest, ...gax.CallOption) (*modelarmorpb.SanitizeUserPromptResponse, error)
 	SanitizeModelResponse(context.Context, *modelarmorpb.SanitizeModelResponseRequest, ...gax.CallOption) (*modelarmorpb.SanitizeModelResponseResponse, error)
+	StreamSanitizeUserPrompt(context.Context, ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeUserPromptClient, error)
+	StreamSanitizeModelResponse(context.Context, ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeModelResponseClient, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
@@ -257,7 +267,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -323,12 +333,41 @@ func (c *Client) SanitizeModelResponse(ctx context.Context, req *modelarmorpb.Sa
 	return c.internalClient.SanitizeModelResponse(ctx, req, opts...)
 }
 
+// StreamSanitizeUserPrompt streaming version of Sanitize User Prompt.
+//
+// This method is not supported for the REST transport.
+func (c *Client) StreamSanitizeUserPrompt(ctx context.Context, opts ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeUserPromptClient, error) {
+	return c.internalClient.StreamSanitizeUserPrompt(ctx, opts...)
+}
+
+// StreamSanitizeModelResponse streaming version of Sanitizes Model Response.
+//
+// This method is not supported for the REST transport.
+func (c *Client) StreamSanitizeModelResponse(ctx context.Context, opts ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeModelResponseClient, error) {
+	return c.internalClient.StreamSanitizeModelResponse(ctx, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -360,6 +399,16 @@ type gRPCClient struct {
 // Service describing handlers for resources
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "modelarmor",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/modelarmor/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "modelarmor.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -382,6 +431,32 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient: locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "modelarmor",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/modelarmor/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "modelarmor.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListTemplates = append(client.CallOptions.ListTemplates, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTemplate = append(client.CallOptions.GetTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTemplate = append(client.CallOptions.CreateTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTemplate = append(client.CallOptions.UpdateTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTemplate = append(client.CallOptions.DeleteTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFloorSetting = append(client.CallOptions.GetFloorSetting, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateFloorSetting = append(client.CallOptions.UpdateFloorSetting, gax.WithClientMetrics(metrics))
+		client.CallOptions.SanitizeUserPrompt = append(client.CallOptions.SanitizeUserPrompt, gax.WithClientMetrics(metrics))
+		client.CallOptions.SanitizeModelResponse = append(client.CallOptions.SanitizeModelResponse, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamSanitizeUserPrompt = append(client.CallOptions.StreamSanitizeUserPrompt, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamSanitizeModelResponse = append(client.CallOptions.StreamSanitizeModelResponse, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -407,7 +482,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -435,6 +510,16 @@ type restClient struct {
 // Service describing handlers for resources
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "modelarmor",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/modelarmor/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "modelarmor.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -448,6 +533,33 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "modelarmor",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/modelarmor/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "modelarmor.googleapis.com",
+			}),
+		)
+
+		callOpts.ListTemplates = append(callOpts.ListTemplates, gax.WithClientMetrics(metrics))
+		callOpts.GetTemplate = append(callOpts.GetTemplate, gax.WithClientMetrics(metrics))
+		callOpts.CreateTemplate = append(callOpts.CreateTemplate, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTemplate = append(callOpts.UpdateTemplate, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTemplate = append(callOpts.DeleteTemplate, gax.WithClientMetrics(metrics))
+		callOpts.GetFloorSetting = append(callOpts.GetFloorSetting, gax.WithClientMetrics(metrics))
+		callOpts.UpdateFloorSetting = append(callOpts.UpdateFloorSetting, gax.WithClientMetrics(metrics))
+		callOpts.SanitizeUserPrompt = append(callOpts.SanitizeUserPrompt, gax.WithClientMetrics(metrics))
+		callOpts.SanitizeModelResponse = append(callOpts.SanitizeModelResponse, gax.WithClientMetrics(metrics))
+		callOpts.StreamSanitizeUserPrompt = append(callOpts.StreamSanitizeUserPrompt, gax.WithClientMetrics(metrics))
+		callOpts.StreamSanitizeModelResponse = append(callOpts.StreamSanitizeModelResponse, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -475,7 +587,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -494,9 +606,15 @@ func (c *gRPCClient) ListTemplates(ctx context.Context, req *modelarmorpb.ListTe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//modelarmor.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/ListTemplates")
+	}
 	opts = append((*c.CallOptions).ListTemplates[0:len((*c.CallOptions).ListTemplates):len((*c.CallOptions).ListTemplates)], opts...)
 	it := &TemplateIterator{}
-	req = proto.Clone(req).(*modelarmorpb.ListTemplatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*modelarmorpb.Template, string, error) {
 		resp := &modelarmorpb.ListTemplatesResponse{}
 		if pageToken != "" {
@@ -540,6 +658,12 @@ func (c *gRPCClient) GetTemplate(ctx context.Context, req *modelarmorpb.GetTempl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//modelarmor.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/GetTemplate")
+	}
 	opts = append((*c.CallOptions).GetTemplate[0:len((*c.CallOptions).GetTemplate):len((*c.CallOptions).GetTemplate)], opts...)
 	var resp *modelarmorpb.Template
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -558,6 +682,12 @@ func (c *gRPCClient) CreateTemplate(ctx context.Context, req *modelarmorpb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//modelarmor.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/CreateTemplate")
+	}
 	opts = append((*c.CallOptions).CreateTemplate[0:len((*c.CallOptions).CreateTemplate):len((*c.CallOptions).CreateTemplate)], opts...)
 	var resp *modelarmorpb.Template
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -576,6 +706,9 @@ func (c *gRPCClient) UpdateTemplate(ctx context.Context, req *modelarmorpb.Updat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/UpdateTemplate")
+	}
 	opts = append((*c.CallOptions).UpdateTemplate[0:len((*c.CallOptions).UpdateTemplate):len((*c.CallOptions).UpdateTemplate)], opts...)
 	var resp *modelarmorpb.Template
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -594,6 +727,12 @@ func (c *gRPCClient) DeleteTemplate(ctx context.Context, req *modelarmorpb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//modelarmor.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/DeleteTemplate")
+	}
 	opts = append((*c.CallOptions).DeleteTemplate[0:len((*c.CallOptions).DeleteTemplate):len((*c.CallOptions).DeleteTemplate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -608,6 +747,12 @@ func (c *gRPCClient) GetFloorSetting(ctx context.Context, req *modelarmorpb.GetF
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//modelarmor.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/GetFloorSetting")
+	}
 	opts = append((*c.CallOptions).GetFloorSetting[0:len((*c.CallOptions).GetFloorSetting):len((*c.CallOptions).GetFloorSetting)], opts...)
 	var resp *modelarmorpb.FloorSetting
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -626,6 +771,9 @@ func (c *gRPCClient) UpdateFloorSetting(ctx context.Context, req *modelarmorpb.U
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/UpdateFloorSetting")
+	}
 	opts = append((*c.CallOptions).UpdateFloorSetting[0:len((*c.CallOptions).UpdateFloorSetting):len((*c.CallOptions).UpdateFloorSetting)], opts...)
 	var resp *modelarmorpb.FloorSetting
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -644,6 +792,12 @@ func (c *gRPCClient) SanitizeUserPrompt(ctx context.Context, req *modelarmorpb.S
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//modelarmor.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/SanitizeUserPrompt")
+	}
 	opts = append((*c.CallOptions).SanitizeUserPrompt[0:len((*c.CallOptions).SanitizeUserPrompt):len((*c.CallOptions).SanitizeUserPrompt)], opts...)
 	var resp *modelarmorpb.SanitizeUserPromptResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -662,6 +816,12 @@ func (c *gRPCClient) SanitizeModelResponse(ctx context.Context, req *modelarmorp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//modelarmor.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/SanitizeModelResponse")
+	}
 	opts = append((*c.CallOptions).SanitizeModelResponse[0:len((*c.CallOptions).SanitizeModelResponse):len((*c.CallOptions).SanitizeModelResponse)], opts...)
 	var resp *modelarmorpb.SanitizeModelResponseResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -675,11 +835,54 @@ func (c *gRPCClient) SanitizeModelResponse(ctx context.Context, req *modelarmorp
 	return resp, nil
 }
 
+func (c *gRPCClient) StreamSanitizeUserPrompt(ctx context.Context, opts ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeUserPromptClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/StreamSanitizeUserPrompt")
+	}
+	var resp modelarmorpb.ModelArmor_StreamSanitizeUserPromptClient
+	opts = append((*c.CallOptions).StreamSanitizeUserPrompt[0:len((*c.CallOptions).StreamSanitizeUserPrompt):len((*c.CallOptions).StreamSanitizeUserPrompt)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamSanitizeUserPrompt")
+		resp, err = c.client.StreamSanitizeUserPrompt(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamSanitizeUserPrompt")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) StreamSanitizeModelResponse(ctx context.Context, opts ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeModelResponseClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/StreamSanitizeModelResponse")
+	}
+	var resp modelarmorpb.ModelArmor_StreamSanitizeModelResponseClient
+	opts = append((*c.CallOptions).StreamSanitizeModelResponse[0:len((*c.CallOptions).StreamSanitizeModelResponse):len((*c.CallOptions).StreamSanitizeModelResponse)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamSanitizeModelResponse")
+		resp, err = c.client.StreamSanitizeModelResponse(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamSanitizeModelResponse")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -698,9 +901,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -742,7 +948,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 // ListTemplates lists Templates in a given project and location.
 func (c *restClient) ListTemplates(ctx context.Context, req *modelarmorpb.ListTemplatesRequest, opts ...gax.CallOption) *TemplateIterator {
 	it := &TemplateIterator{}
-	req = proto.Clone(req).(*modelarmorpb.ListTemplatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*modelarmorpb.Template, string, error) {
 		resp := &modelarmorpb.ListTemplatesResponse{}
@@ -842,6 +1048,13 @@ func (c *restClient) GetTemplate(ctx context.Context, req *modelarmorpb.GetTempl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//modelarmor.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/GetTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/templates/*}")
+	}
 	opts = append((*c.CallOptions).GetTemplate[0:len((*c.CallOptions).GetTemplate):len((*c.CallOptions).GetTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &modelarmorpb.Template{}
@@ -903,6 +1116,13 @@ func (c *restClient) CreateTemplate(ctx context.Context, req *modelarmorpb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//modelarmor.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/CreateTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/templates")
+	}
 	opts = append((*c.CallOptions).CreateTemplate[0:len((*c.CallOptions).CreateTemplate):len((*c.CallOptions).CreateTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &modelarmorpb.Template{}
@@ -970,6 +1190,10 @@ func (c *restClient) UpdateTemplate(ctx context.Context, req *modelarmorpb.Updat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/UpdateTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{template.name=projects/*/locations/*/templates/*}")
+	}
 	opts = append((*c.CallOptions).UpdateTemplate[0:len((*c.CallOptions).UpdateTemplate):len((*c.CallOptions).UpdateTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &modelarmorpb.Template{}
@@ -1023,6 +1247,13 @@ func (c *restClient) DeleteTemplate(ctx context.Context, req *modelarmorpb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//modelarmor.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/DeleteTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/templates/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1058,6 +1289,13 @@ func (c *restClient) GetFloorSetting(ctx context.Context, req *modelarmorpb.GetF
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//modelarmor.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/GetFloorSetting")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/floorSetting}")
+	}
 	opts = append((*c.CallOptions).GetFloorSetting[0:len((*c.CallOptions).GetFloorSetting):len((*c.CallOptions).GetFloorSetting)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &modelarmorpb.FloorSetting{}
@@ -1122,6 +1360,10 @@ func (c *restClient) UpdateFloorSetting(ctx context.Context, req *modelarmorpb.U
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/UpdateFloorSetting")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{floor_setting.name=projects/*/locations/*/floorSetting}")
+	}
 	opts = append((*c.CallOptions).UpdateFloorSetting[0:len((*c.CallOptions).UpdateFloorSetting):len((*c.CallOptions).UpdateFloorSetting)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &modelarmorpb.FloorSetting{}
@@ -1178,6 +1420,13 @@ func (c *restClient) SanitizeUserPrompt(ctx context.Context, req *modelarmorpb.S
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//modelarmor.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/SanitizeUserPrompt")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/templates/*}:sanitizeUserPrompt")
+	}
 	opts = append((*c.CallOptions).SanitizeUserPrompt[0:len((*c.CallOptions).SanitizeUserPrompt):len((*c.CallOptions).SanitizeUserPrompt)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &modelarmorpb.SanitizeUserPromptResponse{}
@@ -1234,6 +1483,13 @@ func (c *restClient) SanitizeModelResponse(ctx context.Context, req *modelarmorp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//modelarmor.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1beta.ModelArmor/SanitizeModelResponse")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/templates/*}:sanitizeModelResponse")
+	}
 	opts = append((*c.CallOptions).SanitizeModelResponse[0:len((*c.CallOptions).SanitizeModelResponse):len((*c.CallOptions).SanitizeModelResponse)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &modelarmorpb.SanitizeModelResponseResponse{}
@@ -1265,6 +1521,20 @@ func (c *restClient) SanitizeModelResponse(ctx context.Context, req *modelarmorp
 	return resp, nil
 }
 
+// StreamSanitizeUserPrompt streaming version of Sanitize User Prompt.
+//
+// This method is not supported for the REST transport.
+func (c *restClient) StreamSanitizeUserPrompt(ctx context.Context, opts ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeUserPromptClient, error) {
+	return nil, errors.New("StreamSanitizeUserPrompt not yet supported for REST clients")
+}
+
+// StreamSanitizeModelResponse streaming version of Sanitizes Model Response.
+//
+// This method is not supported for the REST transport.
+func (c *restClient) StreamSanitizeModelResponse(ctx context.Context, opts ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeModelResponseClient, error) {
+	return nil, errors.New("StreamSanitizeModelResponse not yet supported for REST clients")
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1284,6 +1554,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -1316,9 +1590,24 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

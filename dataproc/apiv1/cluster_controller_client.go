@@ -32,6 +32,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -301,7 +303,7 @@ type ClusterControllerClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ClusterControllerClient) Close() error {
 	return c.internalClient.Close()
@@ -494,6 +496,16 @@ type clusterControllerGRPCClient struct {
 // of Compute Engine instances.
 func NewClusterControllerClient(ctx context.Context, opts ...option.ClientOption) (*ClusterControllerClient, error) {
 	clientOpts := defaultClusterControllerGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataproc",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataproc/v2/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "dataproc.googleapis.com",
+		}))
+	}
 	if newClusterControllerClientHook != nil {
 		hookOpts, err := newClusterControllerClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -517,6 +529,34 @@ func NewClusterControllerClient(ctx context.Context, opts ...option.ClientOption
 		iamPolicyClient:         iampb.NewIAMPolicyClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataproc",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataproc/v2/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataproc.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.StopCluster = append(client.CallOptions.StopCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartCluster = append(client.CallOptions.StartCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientMetrics(metrics))
+		client.CallOptions.DiagnoseCluster = append(client.CallOptions.DiagnoseCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -553,7 +593,7 @@ func (c *clusterControllerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *clusterControllerGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -587,6 +627,16 @@ type clusterControllerRESTClient struct {
 // of Compute Engine instances.
 func NewClusterControllerRESTClient(ctx context.Context, opts ...option.ClientOption) (*ClusterControllerClient, error) {
 	clientOpts := append(defaultClusterControllerRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataproc",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataproc/v2/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "dataproc.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -600,6 +650,35 @@ func NewClusterControllerRESTClient(ctx context.Context, opts ...option.ClientOp
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataproc",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataproc/v2/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataproc.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientMetrics(metrics))
+		callOpts.StopCluster = append(callOpts.StopCluster, gax.WithClientMetrics(metrics))
+		callOpts.StartCluster = append(callOpts.StartCluster, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientMetrics(metrics))
+		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientMetrics(metrics))
+		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientMetrics(metrics))
+		callOpts.DiagnoseCluster = append(callOpts.DiagnoseCluster, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -637,7 +716,7 @@ func (c *clusterControllerRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *clusterControllerRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -656,6 +735,9 @@ func (c *clusterControllerGRPCClient) CreateCluster(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/CreateCluster")
+	}
 	opts = append((*c.CallOptions).CreateCluster[0:len((*c.CallOptions).CreateCluster):len((*c.CallOptions).CreateCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -666,8 +748,12 @@ func (c *clusterControllerGRPCClient) CreateCluster(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -676,6 +762,9 @@ func (c *clusterControllerGRPCClient) UpdateCluster(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/UpdateCluster")
+	}
 	opts = append((*c.CallOptions).UpdateCluster[0:len((*c.CallOptions).UpdateCluster):len((*c.CallOptions).UpdateCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -686,8 +775,12 @@ func (c *clusterControllerGRPCClient) UpdateCluster(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -696,6 +789,9 @@ func (c *clusterControllerGRPCClient) StopCluster(ctx context.Context, req *data
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/StopCluster")
+	}
 	opts = append((*c.CallOptions).StopCluster[0:len((*c.CallOptions).StopCluster):len((*c.CallOptions).StopCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -706,8 +802,12 @@ func (c *clusterControllerGRPCClient) StopCluster(ctx context.Context, req *data
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.StopClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -716,6 +816,9 @@ func (c *clusterControllerGRPCClient) StartCluster(ctx context.Context, req *dat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/StartCluster")
+	}
 	opts = append((*c.CallOptions).StartCluster[0:len((*c.CallOptions).StartCluster):len((*c.CallOptions).StartCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -726,8 +829,12 @@ func (c *clusterControllerGRPCClient) StartCluster(ctx context.Context, req *dat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.StartClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -736,6 +843,9 @@ func (c *clusterControllerGRPCClient) DeleteCluster(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/DeleteCluster")
+	}
 	opts = append((*c.CallOptions).DeleteCluster[0:len((*c.CallOptions).DeleteCluster):len((*c.CallOptions).DeleteCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -746,8 +856,12 @@ func (c *clusterControllerGRPCClient) DeleteCluster(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -756,6 +870,9 @@ func (c *clusterControllerGRPCClient) GetCluster(ctx context.Context, req *datap
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/GetCluster")
+	}
 	opts = append((*c.CallOptions).GetCluster[0:len((*c.CallOptions).GetCluster):len((*c.CallOptions).GetCluster)], opts...)
 	var resp *dataprocpb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -774,9 +891,12 @@ func (c *clusterControllerGRPCClient) ListClusters(ctx context.Context, req *dat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/ListClusters")
+	}
 	opts = append((*c.CallOptions).ListClusters[0:len((*c.CallOptions).ListClusters):len((*c.CallOptions).ListClusters)], opts...)
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*dataprocpb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataprocpb.Cluster, string, error) {
 		resp := &dataprocpb.ListClustersResponse{}
 		if pageToken != "" {
@@ -820,6 +940,9 @@ func (c *clusterControllerGRPCClient) DiagnoseCluster(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/DiagnoseCluster")
+	}
 	opts = append((*c.CallOptions).DiagnoseCluster[0:len((*c.CallOptions).DiagnoseCluster):len((*c.CallOptions).DiagnoseCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -830,8 +953,12 @@ func (c *clusterControllerGRPCClient) DiagnoseCluster(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.DiagnoseClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DiagnoseClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -840,6 +967,12 @@ func (c *clusterControllerGRPCClient) GetIamPolicy(ctx context.Context, req *iam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -858,6 +991,12 @@ func (c *clusterControllerGRPCClient) SetIamPolicy(ctx context.Context, req *iam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -876,6 +1015,12 @@ func (c *clusterControllerGRPCClient) TestIamPermissions(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -894,6 +1039,9 @@ func (c *clusterControllerGRPCClient) CancelOperation(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -908,6 +1056,9 @@ func (c *clusterControllerGRPCClient) DeleteOperation(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -922,6 +1073,9 @@ func (c *clusterControllerGRPCClient) GetOperation(ctx context.Context, req *lon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -940,9 +1094,12 @@ func (c *clusterControllerGRPCClient) ListOperations(ctx context.Context, req *l
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1015,6 +1172,10 @@ func (c *clusterControllerRESTClient) CreateCluster(ctx context.Context, req *da
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/CreateCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/regions/{region}/clusters")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1043,8 +1204,12 @@ func (c *clusterControllerRESTClient) CreateCluster(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1097,6 +1262,10 @@ func (c *clusterControllerRESTClient) UpdateCluster(ctx context.Context, req *da
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/UpdateCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/regions/{region}/clusters/{cluster_name}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1125,8 +1294,12 @@ func (c *clusterControllerRESTClient) UpdateCluster(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1156,6 +1329,10 @@ func (c *clusterControllerRESTClient) StopCluster(ctx context.Context, req *data
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/StopCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/regions/{region}/clusters/{cluster_name}:stop")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1184,8 +1361,12 @@ func (c *clusterControllerRESTClient) StopCluster(ctx context.Context, req *data
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.StopClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1215,6 +1396,10 @@ func (c *clusterControllerRESTClient) StartCluster(ctx context.Context, req *dat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/StartCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/regions/{region}/clusters/{cluster_name}:start")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1243,8 +1428,12 @@ func (c *clusterControllerRESTClient) StartCluster(ctx context.Context, req *dat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.StartClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1276,6 +1465,10 @@ func (c *clusterControllerRESTClient) DeleteCluster(ctx context.Context, req *da
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/DeleteCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/regions/{region}/clusters/{cluster_name}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1304,8 +1497,12 @@ func (c *clusterControllerRESTClient) DeleteCluster(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1329,6 +1526,10 @@ func (c *clusterControllerRESTClient) GetCluster(ctx context.Context, req *datap
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/GetCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/regions/{region}/clusters/{cluster_name}")
+	}
 	opts = append((*c.CallOptions).GetCluster[0:len((*c.CallOptions).GetCluster):len((*c.CallOptions).GetCluster)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataprocpb.Cluster{}
@@ -1363,7 +1564,7 @@ func (c *clusterControllerRESTClient) GetCluster(ctx context.Context, req *datap
 // ListClusters lists all regions/{region}/clusters in a project alphabetically.
 func (c *clusterControllerRESTClient) ListClusters(ctx context.Context, req *dataprocpb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*dataprocpb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataprocpb.Cluster, string, error) {
 		resp := &dataprocpb.ListClustersResponse{}
@@ -1472,6 +1673,10 @@ func (c *clusterControllerRESTClient) DiagnoseCluster(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataproc.v1.ClusterController/DiagnoseCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/regions/{region}/clusters/{cluster_name}:diagnose")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1500,8 +1705,12 @@ func (c *clusterControllerRESTClient) DiagnoseCluster(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.DiagnoseClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DiagnoseClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1532,6 +1741,13 @@ func (c *clusterControllerRESTClient) GetIamPolicy(ctx context.Context, req *iam
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/regions/*/clusters/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1592,6 +1808,13 @@ func (c *clusterControllerRESTClient) SetIamPolicy(ctx context.Context, req *iam
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/regions/*/clusters/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1654,6 +1877,13 @@ func (c *clusterControllerRESTClient) TestIamPermissions(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/regions/*/clusters/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -1704,6 +1934,10 @@ func (c *clusterControllerRESTClient) CancelOperation(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/regions/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1739,6 +1973,10 @@ func (c *clusterControllerRESTClient) DeleteOperation(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/regions/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1774,6 +2012,10 @@ func (c *clusterControllerRESTClient) GetOperation(ctx context.Context, req *lon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/regions/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1808,7 +2050,7 @@ func (c *clusterControllerRESTClient) GetOperation(ctx context.Context, req *lon
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *clusterControllerRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1893,7 +2135,7 @@ func (c *clusterControllerRESTClient) ListOperations(ctx context.Context, req *l
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
 func (c *clusterControllerGRPCClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.CreateClusterOperation"),
 	}
 }
 
@@ -1902,7 +2144,7 @@ func (c *clusterControllerGRPCClient) CreateClusterOperation(name string) *Creat
 func (c *clusterControllerRESTClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.CreateClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -1911,7 +2153,7 @@ func (c *clusterControllerRESTClient) CreateClusterOperation(name string) *Creat
 // The name must be that of a previously created DeleteClusterOperation, possibly from a different process.
 func (c *clusterControllerGRPCClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.DeleteClusterOperation"),
 	}
 }
 
@@ -1920,7 +2162,7 @@ func (c *clusterControllerGRPCClient) DeleteClusterOperation(name string) *Delet
 func (c *clusterControllerRESTClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.DeleteClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -1929,7 +2171,7 @@ func (c *clusterControllerRESTClient) DeleteClusterOperation(name string) *Delet
 // The name must be that of a previously created DiagnoseClusterOperation, possibly from a different process.
 func (c *clusterControllerGRPCClient) DiagnoseClusterOperation(name string) *DiagnoseClusterOperation {
 	return &DiagnoseClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.DiagnoseClusterOperation"),
 	}
 }
 
@@ -1938,7 +2180,7 @@ func (c *clusterControllerGRPCClient) DiagnoseClusterOperation(name string) *Dia
 func (c *clusterControllerRESTClient) DiagnoseClusterOperation(name string) *DiagnoseClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DiagnoseClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.DiagnoseClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -1947,7 +2189,7 @@ func (c *clusterControllerRESTClient) DiagnoseClusterOperation(name string) *Dia
 // The name must be that of a previously created StartClusterOperation, possibly from a different process.
 func (c *clusterControllerGRPCClient) StartClusterOperation(name string) *StartClusterOperation {
 	return &StartClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.StartClusterOperation"),
 	}
 }
 
@@ -1956,7 +2198,7 @@ func (c *clusterControllerGRPCClient) StartClusterOperation(name string) *StartC
 func (c *clusterControllerRESTClient) StartClusterOperation(name string) *StartClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StartClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.StartClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -1965,7 +2207,7 @@ func (c *clusterControllerRESTClient) StartClusterOperation(name string) *StartC
 // The name must be that of a previously created StopClusterOperation, possibly from a different process.
 func (c *clusterControllerGRPCClient) StopClusterOperation(name string) *StopClusterOperation {
 	return &StopClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.StopClusterOperation"),
 	}
 }
 
@@ -1974,7 +2216,7 @@ func (c *clusterControllerGRPCClient) StopClusterOperation(name string) *StopClu
 func (c *clusterControllerRESTClient) StopClusterOperation(name string) *StopClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StopClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.StopClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -1983,7 +2225,7 @@ func (c *clusterControllerRESTClient) StopClusterOperation(name string) *StopClu
 // The name must be that of a previously created UpdateClusterOperation, possibly from a different process.
 func (c *clusterControllerGRPCClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.UpdateClusterOperation"),
 	}
 }
 
@@ -1992,7 +2234,7 @@ func (c *clusterControllerGRPCClient) UpdateClusterOperation(name string) *Updat
 func (c *clusterControllerRESTClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.UpdateClusterOperation"),
 		pollPath: override,
 	}
 }

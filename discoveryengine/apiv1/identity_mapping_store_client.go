@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -205,7 +207,7 @@ type IdentityMappingStoreClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *IdentityMappingStoreClient) Close() error {
 	return c.internalClient.Close()
@@ -327,6 +329,16 @@ type identityMappingStoreGRPCClient struct {
 // Service for managing Identity Mapping Stores.
 func NewIdentityMappingStoreClient(ctx context.Context, opts ...option.ClientOption) (*IdentityMappingStoreClient, error) {
 	clientOpts := defaultIdentityMappingStoreGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "discoveryengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/discoveryengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "discoveryengine.googleapis.com",
+		}))
+	}
 	if newIdentityMappingStoreClientHook != nil {
 		hookOpts, err := newIdentityMappingStoreClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -349,6 +361,29 @@ func NewIdentityMappingStoreClient(ctx context.Context, opts ...option.ClientOpt
 		operationsClient:           longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateIdentityMappingStore = append(client.CallOptions.CreateIdentityMappingStore, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIdentityMappingStore = append(client.CallOptions.GetIdentityMappingStore, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteIdentityMappingStore = append(client.CallOptions.DeleteIdentityMappingStore, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportIdentityMappings = append(client.CallOptions.ImportIdentityMappings, gax.WithClientMetrics(metrics))
+		client.CallOptions.PurgeIdentityMappings = append(client.CallOptions.PurgeIdentityMappings, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListIdentityMappings = append(client.CallOptions.ListIdentityMappings, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListIdentityMappingStores = append(client.CallOptions.ListIdentityMappingStores, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -385,7 +420,7 @@ func (c *identityMappingStoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *identityMappingStoreGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -418,6 +453,16 @@ type identityMappingStoreRESTClient struct {
 // Service for managing Identity Mapping Stores.
 func NewIdentityMappingStoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*IdentityMappingStoreClient, error) {
 	clientOpts := append(defaultIdentityMappingStoreRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "discoveryengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/discoveryengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "discoveryengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -431,6 +476,30 @@ func NewIdentityMappingStoreRESTClient(ctx context.Context, opts ...option.Clien
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateIdentityMappingStore = append(callOpts.CreateIdentityMappingStore, gax.WithClientMetrics(metrics))
+		callOpts.GetIdentityMappingStore = append(callOpts.GetIdentityMappingStore, gax.WithClientMetrics(metrics))
+		callOpts.DeleteIdentityMappingStore = append(callOpts.DeleteIdentityMappingStore, gax.WithClientMetrics(metrics))
+		callOpts.ImportIdentityMappings = append(callOpts.ImportIdentityMappings, gax.WithClientMetrics(metrics))
+		callOpts.PurgeIdentityMappings = append(callOpts.PurgeIdentityMappings, gax.WithClientMetrics(metrics))
+		callOpts.ListIdentityMappings = append(callOpts.ListIdentityMappings, gax.WithClientMetrics(metrics))
+		callOpts.ListIdentityMappingStores = append(callOpts.ListIdentityMappingStores, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -468,7 +537,7 @@ func (c *identityMappingStoreRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *identityMappingStoreRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -487,6 +556,12 @@ func (c *identityMappingStoreGRPCClient) CreateIdentityMappingStore(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.IdentityMappingStoreService/CreateIdentityMappingStore")
+	}
 	opts = append((*c.CallOptions).CreateIdentityMappingStore[0:len((*c.CallOptions).CreateIdentityMappingStore):len((*c.CallOptions).CreateIdentityMappingStore)], opts...)
 	var resp *discoveryenginepb.IdentityMappingStore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -505,6 +580,12 @@ func (c *identityMappingStoreGRPCClient) GetIdentityMappingStore(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.IdentityMappingStoreService/GetIdentityMappingStore")
+	}
 	opts = append((*c.CallOptions).GetIdentityMappingStore[0:len((*c.CallOptions).GetIdentityMappingStore):len((*c.CallOptions).GetIdentityMappingStore)], opts...)
 	var resp *discoveryenginepb.IdentityMappingStore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -523,6 +604,12 @@ func (c *identityMappingStoreGRPCClient) DeleteIdentityMappingStore(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.IdentityMappingStoreService/DeleteIdentityMappingStore")
+	}
 	opts = append((*c.CallOptions).DeleteIdentityMappingStore[0:len((*c.CallOptions).DeleteIdentityMappingStore):len((*c.CallOptions).DeleteIdentityMappingStore)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -533,8 +620,12 @@ func (c *identityMappingStoreGRPCClient) DeleteIdentityMappingStore(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteIdentityMappingStoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIdentityMappingStoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -543,6 +634,12 @@ func (c *identityMappingStoreGRPCClient) ImportIdentityMappings(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetIdentityMappingStore()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.IdentityMappingStoreService/ImportIdentityMappings")
+	}
 	opts = append((*c.CallOptions).ImportIdentityMappings[0:len((*c.CallOptions).ImportIdentityMappings):len((*c.CallOptions).ImportIdentityMappings)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -553,8 +650,12 @@ func (c *identityMappingStoreGRPCClient) ImportIdentityMappings(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportIdentityMappingsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportIdentityMappingsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -563,6 +664,12 @@ func (c *identityMappingStoreGRPCClient) PurgeIdentityMappings(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetIdentityMappingStore()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.IdentityMappingStoreService/PurgeIdentityMappings")
+	}
 	opts = append((*c.CallOptions).PurgeIdentityMappings[0:len((*c.CallOptions).PurgeIdentityMappings):len((*c.CallOptions).PurgeIdentityMappings)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -573,8 +680,12 @@ func (c *identityMappingStoreGRPCClient) PurgeIdentityMappings(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.PurgeIdentityMappingsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PurgeIdentityMappingsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -583,9 +694,15 @@ func (c *identityMappingStoreGRPCClient) ListIdentityMappings(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetIdentityMappingStore()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.IdentityMappingStoreService/ListIdentityMappings")
+	}
 	opts = append((*c.CallOptions).ListIdentityMappings[0:len((*c.CallOptions).ListIdentityMappings):len((*c.CallOptions).ListIdentityMappings)], opts...)
 	it := &IdentityMappingEntryIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListIdentityMappingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.IdentityMappingEntry, string, error) {
 		resp := &discoveryenginepb.ListIdentityMappingsResponse{}
 		if pageToken != "" {
@@ -629,9 +746,15 @@ func (c *identityMappingStoreGRPCClient) ListIdentityMappingStores(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.IdentityMappingStoreService/ListIdentityMappingStores")
+	}
 	opts = append((*c.CallOptions).ListIdentityMappingStores[0:len((*c.CallOptions).ListIdentityMappingStores):len((*c.CallOptions).ListIdentityMappingStores)], opts...)
 	it := &IdentityMappingStoreIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListIdentityMappingStoresRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.IdentityMappingStore, string, error) {
 		resp := &discoveryenginepb.ListIdentityMappingStoresResponse{}
 		if pageToken != "" {
@@ -675,6 +798,9 @@ func (c *identityMappingStoreGRPCClient) CancelOperation(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -689,6 +815,9 @@ func (c *identityMappingStoreGRPCClient) GetOperation(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -707,9 +836,12 @@ func (c *identityMappingStoreGRPCClient) ListOperations(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -781,6 +913,13 @@ func (c *identityMappingStoreRESTClient) CreateIdentityMappingStore(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.IdentityMappingStoreService/CreateIdentityMappingStore")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/identityMappingStores")
+	}
 	opts = append((*c.CallOptions).CreateIdentityMappingStore[0:len((*c.CallOptions).CreateIdentityMappingStore):len((*c.CallOptions).CreateIdentityMappingStore)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.IdentityMappingStore{}
@@ -831,6 +970,13 @@ func (c *identityMappingStoreRESTClient) GetIdentityMappingStore(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.IdentityMappingStoreService/GetIdentityMappingStore")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/identityMappingStores/*}")
+	}
 	opts = append((*c.CallOptions).GetIdentityMappingStore[0:len((*c.CallOptions).GetIdentityMappingStore):len((*c.CallOptions).GetIdentityMappingStore)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.IdentityMappingStore{}
@@ -881,6 +1027,13 @@ func (c *identityMappingStoreRESTClient) DeleteIdentityMappingStore(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.IdentityMappingStoreService/DeleteIdentityMappingStore")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/identityMappingStores/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -909,8 +1062,12 @@ func (c *identityMappingStoreRESTClient) DeleteIdentityMappingStore(ctx context.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteIdentityMappingStoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIdentityMappingStoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -940,6 +1097,13 @@ func (c *identityMappingStoreRESTClient) ImportIdentityMappings(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetIdentityMappingStore()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.IdentityMappingStoreService/ImportIdentityMappings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{identity_mapping_store=projects/*/locations/*/identityMappingStores/*}:importIdentityMappings")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -968,8 +1132,12 @@ func (c *identityMappingStoreRESTClient) ImportIdentityMappings(ctx context.Cont
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportIdentityMappingsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportIdentityMappingsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1000,6 +1168,13 @@ func (c *identityMappingStoreRESTClient) PurgeIdentityMappings(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetIdentityMappingStore()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.IdentityMappingStoreService/PurgeIdentityMappings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{identity_mapping_store=projects/*/locations/*/identityMappingStores/*}:purgeIdentityMappings")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1028,8 +1203,12 @@ func (c *identityMappingStoreRESTClient) PurgeIdentityMappings(ctx context.Conte
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.PurgeIdentityMappingsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PurgeIdentityMappingsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1037,7 +1216,7 @@ func (c *identityMappingStoreRESTClient) PurgeIdentityMappings(ctx context.Conte
 // ListIdentityMappings lists Identity Mappings in an Identity Mapping Store.
 func (c *identityMappingStoreRESTClient) ListIdentityMappings(ctx context.Context, req *discoveryenginepb.ListIdentityMappingsRequest, opts ...gax.CallOption) *IdentityMappingEntryIterator {
 	it := &IdentityMappingEntryIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListIdentityMappingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.IdentityMappingEntry, string, error) {
 		resp := &discoveryenginepb.ListIdentityMappingsResponse{}
@@ -1115,7 +1294,7 @@ func (c *identityMappingStoreRESTClient) ListIdentityMappings(ctx context.Contex
 // ListIdentityMappingStores lists all Identity Mapping Stores.
 func (c *identityMappingStoreRESTClient) ListIdentityMappingStores(ctx context.Context, req *discoveryenginepb.ListIdentityMappingStoresRequest, opts ...gax.CallOption) *IdentityMappingStoreIterator {
 	it := &IdentityMappingStoreIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListIdentityMappingStoresRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.IdentityMappingStore, string, error) {
 		resp := &discoveryenginepb.ListIdentityMappingStoresResponse{}
@@ -1215,6 +1394,10 @@ func (c *identityMappingStoreRESTClient) CancelOperation(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1250,6 +1433,10 @@ func (c *identityMappingStoreRESTClient) GetOperation(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1284,7 +1471,7 @@ func (c *identityMappingStoreRESTClient) GetOperation(ctx context.Context, req *
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *identityMappingStoreRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1369,7 +1556,7 @@ func (c *identityMappingStoreRESTClient) ListOperations(ctx context.Context, req
 // The name must be that of a previously created DeleteIdentityMappingStoreOperation, possibly from a different process.
 func (c *identityMappingStoreGRPCClient) DeleteIdentityMappingStoreOperation(name string) *DeleteIdentityMappingStoreOperation {
 	return &DeleteIdentityMappingStoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteIdentityMappingStoreOperation"),
 	}
 }
 
@@ -1378,7 +1565,7 @@ func (c *identityMappingStoreGRPCClient) DeleteIdentityMappingStoreOperation(nam
 func (c *identityMappingStoreRESTClient) DeleteIdentityMappingStoreOperation(name string) *DeleteIdentityMappingStoreOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteIdentityMappingStoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteIdentityMappingStoreOperation"),
 		pollPath: override,
 	}
 }
@@ -1387,7 +1574,7 @@ func (c *identityMappingStoreRESTClient) DeleteIdentityMappingStoreOperation(nam
 // The name must be that of a previously created ImportIdentityMappingsOperation, possibly from a different process.
 func (c *identityMappingStoreGRPCClient) ImportIdentityMappingsOperation(name string) *ImportIdentityMappingsOperation {
 	return &ImportIdentityMappingsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportIdentityMappingsOperation"),
 	}
 }
 
@@ -1396,7 +1583,7 @@ func (c *identityMappingStoreGRPCClient) ImportIdentityMappingsOperation(name st
 func (c *identityMappingStoreRESTClient) ImportIdentityMappingsOperation(name string) *ImportIdentityMappingsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportIdentityMappingsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportIdentityMappingsOperation"),
 		pollPath: override,
 	}
 }
@@ -1405,7 +1592,7 @@ func (c *identityMappingStoreRESTClient) ImportIdentityMappingsOperation(name st
 // The name must be that of a previously created PurgeIdentityMappingsOperation, possibly from a different process.
 func (c *identityMappingStoreGRPCClient) PurgeIdentityMappingsOperation(name string) *PurgeIdentityMappingsOperation {
 	return &PurgeIdentityMappingsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.PurgeIdentityMappingsOperation"),
 	}
 }
 
@@ -1414,7 +1601,7 @@ func (c *identityMappingStoreGRPCClient) PurgeIdentityMappingsOperation(name str
 func (c *identityMappingStoreRESTClient) PurgeIdentityMappingsOperation(name string) *PurgeIdentityMappingsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &PurgeIdentityMappingsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.PurgeIdentityMappingsOperation"),
 		pollPath: override,
 	}
 }

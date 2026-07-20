@@ -28,6 +28,7 @@ import (
 
 	reportspb "cloud.google.com/go/shopping/merchant/reports/apiv1/reportspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -117,7 +118,7 @@ type ReportClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ReportClient) Close() error {
 	return c.internalClient.Close()
@@ -171,6 +172,16 @@ type reportGRPCClient struct {
 // performance, and their competitive environment on Google.
 func NewReportClient(ctx context.Context, opts ...option.ClientOption) (*ReportClient, error) {
 	clientOpts := defaultReportGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/reports/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newReportClientHook != nil {
 		hookOpts, err := newReportClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -192,6 +203,20 @@ func NewReportClient(ctx context.Context, opts ...option.ClientOption) (*ReportC
 		logger:       internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/reports/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Search = append(client.CallOptions.Search, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -217,7 +242,7 @@ func (c *reportGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *reportGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -246,6 +271,16 @@ type reportRESTClient struct {
 // performance, and their competitive environment on Google.
 func NewReportRESTClient(ctx context.Context, opts ...option.ClientOption) (*ReportClient, error) {
 	clientOpts := append(defaultReportRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/reports/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -259,6 +294,21 @@ func NewReportRESTClient(ctx context.Context, opts ...option.ClientOption) (*Rep
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/reports/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.Search = append(callOpts.Search, gax.WithClientMetrics(metrics))
+	}
 
 	return &ReportClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -286,7 +336,7 @@ func (c *reportRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *reportRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -305,9 +355,12 @@ func (c *reportGRPCClient) Search(ctx context.Context, req *reportspb.SearchRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.reports.v1.ReportService/Search")
+	}
 	opts = append((*c.CallOptions).Search[0:len((*c.CallOptions).Search):len((*c.CallOptions).Search)], opts...)
 	it := &ReportRowIterator{}
-	req = proto.Clone(req).(*reportspb.SearchRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reportspb.ReportRow, string, error) {
 		resp := &reportspb.SearchResponse{}
 		if pageToken != "" {
@@ -351,7 +404,7 @@ func (c *reportGRPCClient) Search(ctx context.Context, req *reportspb.SearchRequ
 // determine if there are more rows to be requested.
 func (c *reportRESTClient) Search(ctx context.Context, req *reportspb.SearchRequest, opts ...gax.CallOption) *ReportRowIterator {
 	it := &ReportRowIterator{}
-	req = proto.Clone(req).(*reportspb.SearchRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reportspb.ReportRow, string, error) {

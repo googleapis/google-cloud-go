@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -274,7 +276,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -420,6 +422,16 @@ type gRPCClient struct {
 // Service describing handlers for resources
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "auditmanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/auditmanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "auditmanager.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -443,6 +455,33 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "auditmanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/auditmanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "auditmanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.EnrollResource = append(client.CallOptions.EnrollResource, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateAuditScopeReport = append(client.CallOptions.GenerateAuditScopeReport, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateAuditReport = append(client.CallOptions.GenerateAuditReport, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAuditReports = append(client.CallOptions.ListAuditReports, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAuditReport = append(client.CallOptions.GetAuditReport, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetResourceEnrollmentStatus = append(client.CallOptions.GetResourceEnrollmentStatus, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListResourceEnrollmentStatuses = append(client.CallOptions.ListResourceEnrollmentStatuses, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListControls = append(client.CallOptions.ListControls, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -479,7 +518,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -512,6 +551,16 @@ type restClient struct {
 // Service describing handlers for resources
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "auditmanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/auditmanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "auditmanager.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -525,6 +574,34 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "auditmanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/auditmanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "auditmanager.googleapis.com",
+			}),
+		)
+
+		callOpts.EnrollResource = append(callOpts.EnrollResource, gax.WithClientMetrics(metrics))
+		callOpts.GenerateAuditScopeReport = append(callOpts.GenerateAuditScopeReport, gax.WithClientMetrics(metrics))
+		callOpts.GenerateAuditReport = append(callOpts.GenerateAuditReport, gax.WithClientMetrics(metrics))
+		callOpts.ListAuditReports = append(callOpts.ListAuditReports, gax.WithClientMetrics(metrics))
+		callOpts.GetAuditReport = append(callOpts.GetAuditReport, gax.WithClientMetrics(metrics))
+		callOpts.GetResourceEnrollmentStatus = append(callOpts.GetResourceEnrollmentStatus, gax.WithClientMetrics(metrics))
+		callOpts.ListResourceEnrollmentStatuses = append(callOpts.ListResourceEnrollmentStatuses, gax.WithClientMetrics(metrics))
+		callOpts.ListControls = append(callOpts.ListControls, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -562,7 +639,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -581,6 +658,9 @@ func (c *gRPCClient) EnrollResource(ctx context.Context, req *auditmanagerpb.Enr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/EnrollResource")
+	}
 	opts = append((*c.CallOptions).EnrollResource[0:len((*c.CallOptions).EnrollResource):len((*c.CallOptions).EnrollResource)], opts...)
 	var resp *auditmanagerpb.Enrollment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -599,6 +679,9 @@ func (c *gRPCClient) GenerateAuditScopeReport(ctx context.Context, req *auditman
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GenerateAuditScopeReport")
+	}
 	opts = append((*c.CallOptions).GenerateAuditScopeReport[0:len((*c.CallOptions).GenerateAuditScopeReport):len((*c.CallOptions).GenerateAuditScopeReport)], opts...)
 	var resp *auditmanagerpb.AuditScopeReport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -617,6 +700,9 @@ func (c *gRPCClient) GenerateAuditReport(ctx context.Context, req *auditmanagerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GenerateAuditReport")
+	}
 	opts = append((*c.CallOptions).GenerateAuditReport[0:len((*c.CallOptions).GenerateAuditReport):len((*c.CallOptions).GenerateAuditReport)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -627,8 +713,12 @@ func (c *gRPCClient) GenerateAuditReport(ctx context.Context, req *auditmanagerp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*auditmanager.GenerateAuditReportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &GenerateAuditReportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -637,9 +727,15 @@ func (c *gRPCClient) ListAuditReports(ctx context.Context, req *auditmanagerpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/ListAuditReports")
+	}
 	opts = append((*c.CallOptions).ListAuditReports[0:len((*c.CallOptions).ListAuditReports):len((*c.CallOptions).ListAuditReports)], opts...)
 	it := &AuditReportIterator{}
-	req = proto.Clone(req).(*auditmanagerpb.ListAuditReportsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*auditmanagerpb.AuditReport, string, error) {
 		resp := &auditmanagerpb.ListAuditReportsResponse{}
 		if pageToken != "" {
@@ -683,6 +779,12 @@ func (c *gRPCClient) GetAuditReport(ctx context.Context, req *auditmanagerpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GetAuditReport")
+	}
 	opts = append((*c.CallOptions).GetAuditReport[0:len((*c.CallOptions).GetAuditReport):len((*c.CallOptions).GetAuditReport)], opts...)
 	var resp *auditmanagerpb.AuditReport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -701,6 +803,12 @@ func (c *gRPCClient) GetResourceEnrollmentStatus(ctx context.Context, req *audit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GetResourceEnrollmentStatus")
+	}
 	opts = append((*c.CallOptions).GetResourceEnrollmentStatus[0:len((*c.CallOptions).GetResourceEnrollmentStatus):len((*c.CallOptions).GetResourceEnrollmentStatus)], opts...)
 	var resp *auditmanagerpb.ResourceEnrollmentStatus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -719,9 +827,15 @@ func (c *gRPCClient) ListResourceEnrollmentStatuses(ctx context.Context, req *au
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/ListResourceEnrollmentStatuses")
+	}
 	opts = append((*c.CallOptions).ListResourceEnrollmentStatuses[0:len((*c.CallOptions).ListResourceEnrollmentStatuses):len((*c.CallOptions).ListResourceEnrollmentStatuses)], opts...)
 	it := &ResourceEnrollmentStatusIterator{}
-	req = proto.Clone(req).(*auditmanagerpb.ListResourceEnrollmentStatusesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*auditmanagerpb.ResourceEnrollmentStatus, string, error) {
 		resp := &auditmanagerpb.ListResourceEnrollmentStatusesResponse{}
 		if pageToken != "" {
@@ -765,9 +879,15 @@ func (c *gRPCClient) ListControls(ctx context.Context, req *auditmanagerpb.ListC
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/ListControls")
+	}
 	opts = append((*c.CallOptions).ListControls[0:len((*c.CallOptions).ListControls):len((*c.CallOptions).ListControls)], opts...)
 	it := &ControlIterator{}
-	req = proto.Clone(req).(*auditmanagerpb.ListControlsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*auditmanagerpb.Control, string, error) {
 		resp := &auditmanagerpb.ListControlsResponse{}
 		if pageToken != "" {
@@ -811,6 +931,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -829,9 +952,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -875,6 +1001,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -889,6 +1018,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -903,6 +1035,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -921,9 +1056,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -991,6 +1129,10 @@ func (c *restClient) EnrollResource(ctx context.Context, req *auditmanagerpb.Enr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/EnrollResource")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{scope=folders/*/locations/*}:enrollResource")
+	}
 	opts = append((*c.CallOptions).EnrollResource[0:len((*c.CallOptions).EnrollResource):len((*c.CallOptions).EnrollResource)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &auditmanagerpb.Enrollment{}
@@ -1049,6 +1191,10 @@ func (c *restClient) GenerateAuditScopeReport(ctx context.Context, req *auditman
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GenerateAuditScopeReport")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{scope=folders/*/locations/*}/auditScopeReports:generate")
+	}
 	opts = append((*c.CallOptions).GenerateAuditScopeReport[0:len((*c.CallOptions).GenerateAuditScopeReport):len((*c.CallOptions).GenerateAuditScopeReport)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &auditmanagerpb.AuditScopeReport{}
@@ -1106,6 +1252,10 @@ func (c *restClient) GenerateAuditReport(ctx context.Context, req *auditmanagerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GenerateAuditReport")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{scope=folders/*/locations/*}/auditReports:generate")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1134,8 +1284,12 @@ func (c *restClient) GenerateAuditReport(ctx context.Context, req *auditmanagerp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*auditmanager.GenerateAuditReportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &GenerateAuditReportOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1143,7 +1297,7 @@ func (c *restClient) GenerateAuditReport(ctx context.Context, req *auditmanagerp
 // ListAuditReports lists audit reports in the selected parent scope
 func (c *restClient) ListAuditReports(ctx context.Context, req *auditmanagerpb.ListAuditReportsRequest, opts ...gax.CallOption) *AuditReportIterator {
 	it := &AuditReportIterator{}
-	req = proto.Clone(req).(*auditmanagerpb.ListAuditReportsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*auditmanagerpb.AuditReport, string, error) {
 		resp := &auditmanagerpb.ListAuditReportsResponse{}
@@ -1237,6 +1391,13 @@ func (c *restClient) GetAuditReport(ctx context.Context, req *auditmanagerpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GetAuditReport")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=folders/*/locations/*/auditReports/*}")
+	}
 	opts = append((*c.CallOptions).GetAuditReport[0:len((*c.CallOptions).GetAuditReport):len((*c.CallOptions).GetAuditReport)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &auditmanagerpb.AuditReport{}
@@ -1287,6 +1448,13 @@ func (c *restClient) GetResourceEnrollmentStatus(ctx context.Context, req *audit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GetResourceEnrollmentStatus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/resourceEnrollmentStatuses/*}")
+	}
 	opts = append((*c.CallOptions).GetResourceEnrollmentStatus[0:len((*c.CallOptions).GetResourceEnrollmentStatus):len((*c.CallOptions).GetResourceEnrollmentStatus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &auditmanagerpb.ResourceEnrollmentStatus{}
@@ -1321,7 +1489,7 @@ func (c *restClient) GetResourceEnrollmentStatus(ctx context.Context, req *audit
 // ListResourceEnrollmentStatuses fetches all resources under the parent along with their enrollment.
 func (c *restClient) ListResourceEnrollmentStatuses(ctx context.Context, req *auditmanagerpb.ListResourceEnrollmentStatusesRequest, opts ...gax.CallOption) *ResourceEnrollmentStatusIterator {
 	it := &ResourceEnrollmentStatusIterator{}
-	req = proto.Clone(req).(*auditmanagerpb.ListResourceEnrollmentStatusesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*auditmanagerpb.ResourceEnrollmentStatus, string, error) {
 		resp := &auditmanagerpb.ListResourceEnrollmentStatusesResponse{}
@@ -1399,7 +1567,7 @@ func (c *restClient) ListResourceEnrollmentStatuses(ctx context.Context, req *au
 // ListControls gets controls needed to be implemented to be compliant to a standard.
 func (c *restClient) ListControls(ctx context.Context, req *auditmanagerpb.ListControlsRequest, opts ...gax.CallOption) *ControlIterator {
 	it := &ControlIterator{}
-	req = proto.Clone(req).(*auditmanagerpb.ListControlsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*auditmanagerpb.Control, string, error) {
 		resp := &auditmanagerpb.ListControlsResponse{}
@@ -1493,6 +1661,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -1535,7 +1707,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 //	to the project.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1638,6 +1810,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1673,6 +1849,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1708,6 +1888,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1742,7 +1926,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1827,7 +2011,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created GenerateAuditReportOperation, possibly from a different process.
 func (c *gRPCClient) GenerateAuditReportOperation(name string) *GenerateAuditReportOperation {
 	return &GenerateAuditReportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*auditmanager.GenerateAuditReportOperation"),
 	}
 }
 
@@ -1836,7 +2020,7 @@ func (c *gRPCClient) GenerateAuditReportOperation(name string) *GenerateAuditRep
 func (c *restClient) GenerateAuditReportOperation(name string) *GenerateAuditReportOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &GenerateAuditReportOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*auditmanager.GenerateAuditReportOperation"),
 		pollPath: override,
 	}
 }

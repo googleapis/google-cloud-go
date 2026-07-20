@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -293,7 +295,7 @@ type DocumentProcessorClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DocumentProcessorClient) Close() error {
 	return c.internalClient.Close()
@@ -571,6 +573,16 @@ type documentProcessorGRPCClient struct {
 // structured information from unstructured or semi-structured documents.
 func NewDocumentProcessorClient(ctx context.Context, opts ...option.ClientOption) (*DocumentProcessorClient, error) {
 	clientOpts := defaultDocumentProcessorGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "documentai",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/documentai/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "documentai.googleapis.com",
+		}))
+	}
 	if newDocumentProcessorClientHook != nil {
 		hookOpts, err := newDocumentProcessorClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -594,6 +606,46 @@ func NewDocumentProcessorClient(ctx context.Context, opts ...option.ClientOption
 		locationsClient:         locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ProcessDocument = append(client.CallOptions.ProcessDocument, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchProcessDocuments = append(client.CallOptions.BatchProcessDocuments, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchProcessorTypes = append(client.CallOptions.FetchProcessorTypes, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListProcessorTypes = append(client.CallOptions.ListProcessorTypes, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetProcessorType = append(client.CallOptions.GetProcessorType, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListProcessors = append(client.CallOptions.ListProcessors, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetProcessor = append(client.CallOptions.GetProcessor, gax.WithClientMetrics(metrics))
+		client.CallOptions.TrainProcessorVersion = append(client.CallOptions.TrainProcessorVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetProcessorVersion = append(client.CallOptions.GetProcessorVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListProcessorVersions = append(client.CallOptions.ListProcessorVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteProcessorVersion = append(client.CallOptions.DeleteProcessorVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeployProcessorVersion = append(client.CallOptions.DeployProcessorVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.UndeployProcessorVersion = append(client.CallOptions.UndeployProcessorVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateProcessor = append(client.CallOptions.CreateProcessor, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteProcessor = append(client.CallOptions.DeleteProcessor, gax.WithClientMetrics(metrics))
+		client.CallOptions.EnableProcessor = append(client.CallOptions.EnableProcessor, gax.WithClientMetrics(metrics))
+		client.CallOptions.DisableProcessor = append(client.CallOptions.DisableProcessor, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetDefaultProcessorVersion = append(client.CallOptions.SetDefaultProcessorVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReviewDocument = append(client.CallOptions.ReviewDocument, gax.WithClientMetrics(metrics))
+		client.CallOptions.EvaluateProcessorVersion = append(client.CallOptions.EvaluateProcessorVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEvaluation = append(client.CallOptions.GetEvaluation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEvaluations = append(client.CallOptions.ListEvaluations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -630,7 +682,7 @@ func (c *documentProcessorGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *documentProcessorGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -666,6 +718,16 @@ type documentProcessorRESTClient struct {
 // structured information from unstructured or semi-structured documents.
 func NewDocumentProcessorRESTClient(ctx context.Context, opts ...option.ClientOption) (*DocumentProcessorClient, error) {
 	clientOpts := append(defaultDocumentProcessorRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "documentai",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/documentai/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "documentai.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -679,6 +741,47 @@ func NewDocumentProcessorRESTClient(ctx context.Context, opts ...option.ClientOp
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		callOpts.ProcessDocument = append(callOpts.ProcessDocument, gax.WithClientMetrics(metrics))
+		callOpts.BatchProcessDocuments = append(callOpts.BatchProcessDocuments, gax.WithClientMetrics(metrics))
+		callOpts.FetchProcessorTypes = append(callOpts.FetchProcessorTypes, gax.WithClientMetrics(metrics))
+		callOpts.ListProcessorTypes = append(callOpts.ListProcessorTypes, gax.WithClientMetrics(metrics))
+		callOpts.GetProcessorType = append(callOpts.GetProcessorType, gax.WithClientMetrics(metrics))
+		callOpts.ListProcessors = append(callOpts.ListProcessors, gax.WithClientMetrics(metrics))
+		callOpts.GetProcessor = append(callOpts.GetProcessor, gax.WithClientMetrics(metrics))
+		callOpts.TrainProcessorVersion = append(callOpts.TrainProcessorVersion, gax.WithClientMetrics(metrics))
+		callOpts.GetProcessorVersion = append(callOpts.GetProcessorVersion, gax.WithClientMetrics(metrics))
+		callOpts.ListProcessorVersions = append(callOpts.ListProcessorVersions, gax.WithClientMetrics(metrics))
+		callOpts.DeleteProcessorVersion = append(callOpts.DeleteProcessorVersion, gax.WithClientMetrics(metrics))
+		callOpts.DeployProcessorVersion = append(callOpts.DeployProcessorVersion, gax.WithClientMetrics(metrics))
+		callOpts.UndeployProcessorVersion = append(callOpts.UndeployProcessorVersion, gax.WithClientMetrics(metrics))
+		callOpts.CreateProcessor = append(callOpts.CreateProcessor, gax.WithClientMetrics(metrics))
+		callOpts.DeleteProcessor = append(callOpts.DeleteProcessor, gax.WithClientMetrics(metrics))
+		callOpts.EnableProcessor = append(callOpts.EnableProcessor, gax.WithClientMetrics(metrics))
+		callOpts.DisableProcessor = append(callOpts.DisableProcessor, gax.WithClientMetrics(metrics))
+		callOpts.SetDefaultProcessorVersion = append(callOpts.SetDefaultProcessorVersion, gax.WithClientMetrics(metrics))
+		callOpts.ReviewDocument = append(callOpts.ReviewDocument, gax.WithClientMetrics(metrics))
+		callOpts.EvaluateProcessorVersion = append(callOpts.EvaluateProcessorVersion, gax.WithClientMetrics(metrics))
+		callOpts.GetEvaluation = append(callOpts.GetEvaluation, gax.WithClientMetrics(metrics))
+		callOpts.ListEvaluations = append(callOpts.ListEvaluations, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -716,7 +819,7 @@ func (c *documentProcessorRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *documentProcessorRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -735,6 +838,12 @@ func (c *documentProcessorGRPCClient) ProcessDocument(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/ProcessDocument")
+	}
 	opts = append((*c.CallOptions).ProcessDocument[0:len((*c.CallOptions).ProcessDocument):len((*c.CallOptions).ProcessDocument)], opts...)
 	var resp *documentaipb.ProcessResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -753,6 +862,12 @@ func (c *documentProcessorGRPCClient) BatchProcessDocuments(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/BatchProcessDocuments")
+	}
 	opts = append((*c.CallOptions).BatchProcessDocuments[0:len((*c.CallOptions).BatchProcessDocuments):len((*c.CallOptions).BatchProcessDocuments)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -763,8 +878,12 @@ func (c *documentProcessorGRPCClient) BatchProcessDocuments(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.BatchProcessDocumentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchProcessDocumentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -773,6 +892,12 @@ func (c *documentProcessorGRPCClient) FetchProcessorTypes(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/FetchProcessorTypes")
+	}
 	opts = append((*c.CallOptions).FetchProcessorTypes[0:len((*c.CallOptions).FetchProcessorTypes):len((*c.CallOptions).FetchProcessorTypes)], opts...)
 	var resp *documentaipb.FetchProcessorTypesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -791,9 +916,15 @@ func (c *documentProcessorGRPCClient) ListProcessorTypes(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/ListProcessorTypes")
+	}
 	opts = append((*c.CallOptions).ListProcessorTypes[0:len((*c.CallOptions).ListProcessorTypes):len((*c.CallOptions).ListProcessorTypes)], opts...)
 	it := &ProcessorTypeIterator{}
-	req = proto.Clone(req).(*documentaipb.ListProcessorTypesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.ProcessorType, string, error) {
 		resp := &documentaipb.ListProcessorTypesResponse{}
 		if pageToken != "" {
@@ -837,6 +968,12 @@ func (c *documentProcessorGRPCClient) GetProcessorType(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/GetProcessorType")
+	}
 	opts = append((*c.CallOptions).GetProcessorType[0:len((*c.CallOptions).GetProcessorType):len((*c.CallOptions).GetProcessorType)], opts...)
 	var resp *documentaipb.ProcessorType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -855,9 +992,15 @@ func (c *documentProcessorGRPCClient) ListProcessors(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/ListProcessors")
+	}
 	opts = append((*c.CallOptions).ListProcessors[0:len((*c.CallOptions).ListProcessors):len((*c.CallOptions).ListProcessors)], opts...)
 	it := &ProcessorIterator{}
-	req = proto.Clone(req).(*documentaipb.ListProcessorsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.Processor, string, error) {
 		resp := &documentaipb.ListProcessorsResponse{}
 		if pageToken != "" {
@@ -901,6 +1044,12 @@ func (c *documentProcessorGRPCClient) GetProcessor(ctx context.Context, req *doc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/GetProcessor")
+	}
 	opts = append((*c.CallOptions).GetProcessor[0:len((*c.CallOptions).GetProcessor):len((*c.CallOptions).GetProcessor)], opts...)
 	var resp *documentaipb.Processor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -919,6 +1068,12 @@ func (c *documentProcessorGRPCClient) TrainProcessorVersion(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/TrainProcessorVersion")
+	}
 	opts = append((*c.CallOptions).TrainProcessorVersion[0:len((*c.CallOptions).TrainProcessorVersion):len((*c.CallOptions).TrainProcessorVersion)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -929,8 +1084,12 @@ func (c *documentProcessorGRPCClient) TrainProcessorVersion(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.TrainProcessorVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &TrainProcessorVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -939,6 +1098,12 @@ func (c *documentProcessorGRPCClient) GetProcessorVersion(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/GetProcessorVersion")
+	}
 	opts = append((*c.CallOptions).GetProcessorVersion[0:len((*c.CallOptions).GetProcessorVersion):len((*c.CallOptions).GetProcessorVersion)], opts...)
 	var resp *documentaipb.ProcessorVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -957,9 +1122,15 @@ func (c *documentProcessorGRPCClient) ListProcessorVersions(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/ListProcessorVersions")
+	}
 	opts = append((*c.CallOptions).ListProcessorVersions[0:len((*c.CallOptions).ListProcessorVersions):len((*c.CallOptions).ListProcessorVersions)], opts...)
 	it := &ProcessorVersionIterator{}
-	req = proto.Clone(req).(*documentaipb.ListProcessorVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.ProcessorVersion, string, error) {
 		resp := &documentaipb.ListProcessorVersionsResponse{}
 		if pageToken != "" {
@@ -1003,6 +1174,12 @@ func (c *documentProcessorGRPCClient) DeleteProcessorVersion(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/DeleteProcessorVersion")
+	}
 	opts = append((*c.CallOptions).DeleteProcessorVersion[0:len((*c.CallOptions).DeleteProcessorVersion):len((*c.CallOptions).DeleteProcessorVersion)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1013,8 +1190,12 @@ func (c *documentProcessorGRPCClient) DeleteProcessorVersion(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DeleteProcessorVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProcessorVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1023,6 +1204,12 @@ func (c *documentProcessorGRPCClient) DeployProcessorVersion(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/DeployProcessorVersion")
+	}
 	opts = append((*c.CallOptions).DeployProcessorVersion[0:len((*c.CallOptions).DeployProcessorVersion):len((*c.CallOptions).DeployProcessorVersion)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1033,8 +1220,12 @@ func (c *documentProcessorGRPCClient) DeployProcessorVersion(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DeployProcessorVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeployProcessorVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1043,6 +1234,12 @@ func (c *documentProcessorGRPCClient) UndeployProcessorVersion(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/UndeployProcessorVersion")
+	}
 	opts = append((*c.CallOptions).UndeployProcessorVersion[0:len((*c.CallOptions).UndeployProcessorVersion):len((*c.CallOptions).UndeployProcessorVersion)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1053,8 +1250,12 @@ func (c *documentProcessorGRPCClient) UndeployProcessorVersion(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.UndeployProcessorVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeployProcessorVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1063,6 +1264,12 @@ func (c *documentProcessorGRPCClient) CreateProcessor(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/CreateProcessor")
+	}
 	opts = append((*c.CallOptions).CreateProcessor[0:len((*c.CallOptions).CreateProcessor):len((*c.CallOptions).CreateProcessor)], opts...)
 	var resp *documentaipb.Processor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1081,6 +1288,12 @@ func (c *documentProcessorGRPCClient) DeleteProcessor(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/DeleteProcessor")
+	}
 	opts = append((*c.CallOptions).DeleteProcessor[0:len((*c.CallOptions).DeleteProcessor):len((*c.CallOptions).DeleteProcessor)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1091,8 +1304,12 @@ func (c *documentProcessorGRPCClient) DeleteProcessor(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DeleteProcessorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProcessorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1101,6 +1318,12 @@ func (c *documentProcessorGRPCClient) EnableProcessor(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/EnableProcessor")
+	}
 	opts = append((*c.CallOptions).EnableProcessor[0:len((*c.CallOptions).EnableProcessor):len((*c.CallOptions).EnableProcessor)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1111,8 +1334,12 @@ func (c *documentProcessorGRPCClient) EnableProcessor(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.EnableProcessorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EnableProcessorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1121,6 +1348,12 @@ func (c *documentProcessorGRPCClient) DisableProcessor(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/DisableProcessor")
+	}
 	opts = append((*c.CallOptions).DisableProcessor[0:len((*c.CallOptions).DisableProcessor):len((*c.CallOptions).DisableProcessor)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1131,8 +1364,12 @@ func (c *documentProcessorGRPCClient) DisableProcessor(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DisableProcessorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DisableProcessorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1141,6 +1378,12 @@ func (c *documentProcessorGRPCClient) SetDefaultProcessorVersion(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetProcessor()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/SetDefaultProcessorVersion")
+	}
 	opts = append((*c.CallOptions).SetDefaultProcessorVersion[0:len((*c.CallOptions).SetDefaultProcessorVersion):len((*c.CallOptions).SetDefaultProcessorVersion)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1151,8 +1394,12 @@ func (c *documentProcessorGRPCClient) SetDefaultProcessorVersion(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.SetDefaultProcessorVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SetDefaultProcessorVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1161,6 +1408,12 @@ func (c *documentProcessorGRPCClient) ReviewDocument(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetHumanReviewConfig()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/ReviewDocument")
+	}
 	opts = append((*c.CallOptions).ReviewDocument[0:len((*c.CallOptions).ReviewDocument):len((*c.CallOptions).ReviewDocument)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1171,8 +1424,12 @@ func (c *documentProcessorGRPCClient) ReviewDocument(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.ReviewDocumentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReviewDocumentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1181,6 +1438,12 @@ func (c *documentProcessorGRPCClient) EvaluateProcessorVersion(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetProcessorVersion()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/EvaluateProcessorVersion")
+	}
 	opts = append((*c.CallOptions).EvaluateProcessorVersion[0:len((*c.CallOptions).EvaluateProcessorVersion):len((*c.CallOptions).EvaluateProcessorVersion)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1191,8 +1454,12 @@ func (c *documentProcessorGRPCClient) EvaluateProcessorVersion(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.EvaluateProcessorVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EvaluateProcessorVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1201,6 +1468,12 @@ func (c *documentProcessorGRPCClient) GetEvaluation(ctx context.Context, req *do
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/GetEvaluation")
+	}
 	opts = append((*c.CallOptions).GetEvaluation[0:len((*c.CallOptions).GetEvaluation):len((*c.CallOptions).GetEvaluation)], opts...)
 	var resp *documentaipb.Evaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1219,9 +1492,15 @@ func (c *documentProcessorGRPCClient) ListEvaluations(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/ListEvaluations")
+	}
 	opts = append((*c.CallOptions).ListEvaluations[0:len((*c.CallOptions).ListEvaluations):len((*c.CallOptions).ListEvaluations)], opts...)
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*documentaipb.ListEvaluationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.Evaluation, string, error) {
 		resp := &documentaipb.ListEvaluationsResponse{}
 		if pageToken != "" {
@@ -1265,6 +1544,9 @@ func (c *documentProcessorGRPCClient) GetLocation(ctx context.Context, req *loca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1283,9 +1565,12 @@ func (c *documentProcessorGRPCClient) ListLocations(ctx context.Context, req *lo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1329,6 +1614,9 @@ func (c *documentProcessorGRPCClient) CancelOperation(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1343,6 +1631,9 @@ func (c *documentProcessorGRPCClient) GetOperation(ctx context.Context, req *lon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1361,9 +1652,12 @@ func (c *documentProcessorGRPCClient) ListOperations(ctx context.Context, req *l
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1427,6 +1721,13 @@ func (c *documentProcessorRESTClient) ProcessDocument(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/ProcessDocument")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processors/*}:process")
+	}
 	opts = append((*c.CallOptions).ProcessDocument[0:len((*c.CallOptions).ProcessDocument):len((*c.CallOptions).ProcessDocument)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &documentaipb.ProcessResponse{}
@@ -1484,6 +1785,13 @@ func (c *documentProcessorRESTClient) BatchProcessDocuments(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/BatchProcessDocuments")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processors/*}:batchProcess")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1512,8 +1820,12 @@ func (c *documentProcessorRESTClient) BatchProcessDocuments(ctx context.Context,
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.BatchProcessDocumentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchProcessDocumentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1539,6 +1851,13 @@ func (c *documentProcessorRESTClient) FetchProcessorTypes(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/FetchProcessorTypes")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}:fetchProcessorTypes")
+	}
 	opts = append((*c.CallOptions).FetchProcessorTypes[0:len((*c.CallOptions).FetchProcessorTypes):len((*c.CallOptions).FetchProcessorTypes)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &documentaipb.FetchProcessorTypesResponse{}
@@ -1573,7 +1892,7 @@ func (c *documentProcessorRESTClient) FetchProcessorTypes(ctx context.Context, r
 // ListProcessorTypes lists the processor types that exist.
 func (c *documentProcessorRESTClient) ListProcessorTypes(ctx context.Context, req *documentaipb.ListProcessorTypesRequest, opts ...gax.CallOption) *ProcessorTypeIterator {
 	it := &ProcessorTypeIterator{}
-	req = proto.Clone(req).(*documentaipb.ListProcessorTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.ProcessorType, string, error) {
 		resp := &documentaipb.ListProcessorTypesResponse{}
@@ -1667,6 +1986,13 @@ func (c *documentProcessorRESTClient) GetProcessorType(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/GetProcessorType")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processorTypes/*}")
+	}
 	opts = append((*c.CallOptions).GetProcessorType[0:len((*c.CallOptions).GetProcessorType):len((*c.CallOptions).GetProcessorType)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &documentaipb.ProcessorType{}
@@ -1701,7 +2027,7 @@ func (c *documentProcessorRESTClient) GetProcessorType(ctx context.Context, req 
 // ListProcessors lists all processors which belong to this project.
 func (c *documentProcessorRESTClient) ListProcessors(ctx context.Context, req *documentaipb.ListProcessorsRequest, opts ...gax.CallOption) *ProcessorIterator {
 	it := &ProcessorIterator{}
-	req = proto.Clone(req).(*documentaipb.ListProcessorsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.Processor, string, error) {
 		resp := &documentaipb.ListProcessorsResponse{}
@@ -1795,6 +2121,13 @@ func (c *documentProcessorRESTClient) GetProcessor(ctx context.Context, req *doc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/GetProcessor")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processors/*}")
+	}
 	opts = append((*c.CallOptions).GetProcessor[0:len((*c.CallOptions).GetProcessor):len((*c.CallOptions).GetProcessor)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &documentaipb.Processor{}
@@ -1853,6 +2186,13 @@ func (c *documentProcessorRESTClient) TrainProcessorVersion(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/TrainProcessorVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/processors/*}/processorVersions:train")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1881,8 +2221,12 @@ func (c *documentProcessorRESTClient) TrainProcessorVersion(ctx context.Context,
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.TrainProcessorVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &TrainProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1906,6 +2250,13 @@ func (c *documentProcessorRESTClient) GetProcessorVersion(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/GetProcessorVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processors/*/processorVersions/*}")
+	}
 	opts = append((*c.CallOptions).GetProcessorVersion[0:len((*c.CallOptions).GetProcessorVersion):len((*c.CallOptions).GetProcessorVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &documentaipb.ProcessorVersion{}
@@ -1940,7 +2291,7 @@ func (c *documentProcessorRESTClient) GetProcessorVersion(ctx context.Context, r
 // ListProcessorVersions lists all versions of a processor.
 func (c *documentProcessorRESTClient) ListProcessorVersions(ctx context.Context, req *documentaipb.ListProcessorVersionsRequest, opts ...gax.CallOption) *ProcessorVersionIterator {
 	it := &ProcessorVersionIterator{}
-	req = proto.Clone(req).(*documentaipb.ListProcessorVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.ProcessorVersion, string, error) {
 		resp := &documentaipb.ListProcessorVersionsResponse{}
@@ -2035,6 +2386,13 @@ func (c *documentProcessorRESTClient) DeleteProcessorVersion(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/DeleteProcessorVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processors/*/processorVersions/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2063,8 +2421,12 @@ func (c *documentProcessorRESTClient) DeleteProcessorVersion(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DeleteProcessorVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2094,6 +2456,13 @@ func (c *documentProcessorRESTClient) DeployProcessorVersion(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/DeployProcessorVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processors/*/processorVersions/*}:deploy")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2122,8 +2491,12 @@ func (c *documentProcessorRESTClient) DeployProcessorVersion(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DeployProcessorVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeployProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2153,6 +2526,13 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/UndeployProcessorVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processors/*/processorVersions/*}:undeploy")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2181,8 +2561,12 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.UndeployProcessorVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeployProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2219,6 +2603,13 @@ func (c *documentProcessorRESTClient) CreateProcessor(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/CreateProcessor")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/processors")
+	}
 	opts = append((*c.CallOptions).CreateProcessor[0:len((*c.CallOptions).CreateProcessor):len((*c.CallOptions).CreateProcessor)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &documentaipb.Processor{}
@@ -2270,6 +2661,13 @@ func (c *documentProcessorRESTClient) DeleteProcessor(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/DeleteProcessor")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processors/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2298,8 +2696,12 @@ func (c *documentProcessorRESTClient) DeleteProcessor(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DeleteProcessorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProcessorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2329,6 +2731,13 @@ func (c *documentProcessorRESTClient) EnableProcessor(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/EnableProcessor")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processors/*}:enable")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2357,8 +2766,12 @@ func (c *documentProcessorRESTClient) EnableProcessor(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.EnableProcessorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EnableProcessorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2388,6 +2801,13 @@ func (c *documentProcessorRESTClient) DisableProcessor(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/DisableProcessor")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processors/*}:disable")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2416,8 +2836,12 @@ func (c *documentProcessorRESTClient) DisableProcessor(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DisableProcessorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DisableProcessorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2451,6 +2875,13 @@ func (c *documentProcessorRESTClient) SetDefaultProcessorVersion(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetProcessor()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/SetDefaultProcessorVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{processor=projects/*/locations/*/processors/*}:setDefaultProcessorVersion")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2479,8 +2910,12 @@ func (c *documentProcessorRESTClient) SetDefaultProcessorVersion(ctx context.Con
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.SetDefaultProcessorVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SetDefaultProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2511,6 +2946,13 @@ func (c *documentProcessorRESTClient) ReviewDocument(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetHumanReviewConfig()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/ReviewDocument")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{human_review_config=projects/*/locations/*/processors/*/humanReviewConfig}:reviewDocument")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2539,8 +2981,12 @@ func (c *documentProcessorRESTClient) ReviewDocument(ctx context.Context, req *d
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.ReviewDocumentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReviewDocumentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2571,6 +3017,13 @@ func (c *documentProcessorRESTClient) EvaluateProcessorVersion(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetProcessorVersion()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/EvaluateProcessorVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{processor_version=projects/*/locations/*/processors/*/processorVersions/*}:evaluateProcessorVersion")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2599,8 +3052,12 @@ func (c *documentProcessorRESTClient) EvaluateProcessorVersion(ctx context.Conte
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.EvaluateProcessorVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EvaluateProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2624,6 +3081,13 @@ func (c *documentProcessorRESTClient) GetEvaluation(ctx context.Context, req *do
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1.DocumentProcessorService/GetEvaluation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/processors/*/processorVersions/*/evaluations/*}")
+	}
 	opts = append((*c.CallOptions).GetEvaluation[0:len((*c.CallOptions).GetEvaluation):len((*c.CallOptions).GetEvaluation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &documentaipb.Evaluation{}
@@ -2658,7 +3122,7 @@ func (c *documentProcessorRESTClient) GetEvaluation(ctx context.Context, req *do
 // ListEvaluations retrieves a set of evaluations for a given processor version.
 func (c *documentProcessorRESTClient) ListEvaluations(ctx context.Context, req *documentaipb.ListEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*documentaipb.ListEvaluationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.Evaluation, string, error) {
 		resp := &documentaipb.ListEvaluationsResponse{}
@@ -2752,6 +3216,10 @@ func (c *documentProcessorRESTClient) GetLocation(ctx context.Context, req *loca
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -2786,7 +3254,7 @@ func (c *documentProcessorRESTClient) GetLocation(ctx context.Context, req *loca
 // ListLocations lists information about the supported locations for this service.
 func (c *documentProcessorRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2883,6 +3351,10 @@ func (c *documentProcessorRESTClient) CancelOperation(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2918,6 +3390,10 @@ func (c *documentProcessorRESTClient) GetOperation(ctx context.Context, req *lon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -2952,7 +3428,7 @@ func (c *documentProcessorRESTClient) GetOperation(ctx context.Context, req *lon
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *documentProcessorRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -3037,7 +3513,7 @@ func (c *documentProcessorRESTClient) ListOperations(ctx context.Context, req *l
 // The name must be that of a previously created BatchProcessDocumentsOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) BatchProcessDocumentsOperation(name string) *BatchProcessDocumentsOperation {
 	return &BatchProcessDocumentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.BatchProcessDocumentsOperation"),
 	}
 }
 
@@ -3046,7 +3522,7 @@ func (c *documentProcessorGRPCClient) BatchProcessDocumentsOperation(name string
 func (c *documentProcessorRESTClient) BatchProcessDocumentsOperation(name string) *BatchProcessDocumentsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BatchProcessDocumentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.BatchProcessDocumentsOperation"),
 		pollPath: override,
 	}
 }
@@ -3055,7 +3531,7 @@ func (c *documentProcessorRESTClient) BatchProcessDocumentsOperation(name string
 // The name must be that of a previously created DeleteProcessorOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) DeleteProcessorOperation(name string) *DeleteProcessorOperation {
 	return &DeleteProcessorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DeleteProcessorOperation"),
 	}
 }
 
@@ -3064,7 +3540,7 @@ func (c *documentProcessorGRPCClient) DeleteProcessorOperation(name string) *Del
 func (c *documentProcessorRESTClient) DeleteProcessorOperation(name string) *DeleteProcessorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteProcessorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DeleteProcessorOperation"),
 		pollPath: override,
 	}
 }
@@ -3073,7 +3549,7 @@ func (c *documentProcessorRESTClient) DeleteProcessorOperation(name string) *Del
 // The name must be that of a previously created DeleteProcessorVersionOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) DeleteProcessorVersionOperation(name string) *DeleteProcessorVersionOperation {
 	return &DeleteProcessorVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DeleteProcessorVersionOperation"),
 	}
 }
 
@@ -3082,7 +3558,7 @@ func (c *documentProcessorGRPCClient) DeleteProcessorVersionOperation(name strin
 func (c *documentProcessorRESTClient) DeleteProcessorVersionOperation(name string) *DeleteProcessorVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DeleteProcessorVersionOperation"),
 		pollPath: override,
 	}
 }
@@ -3091,7 +3567,7 @@ func (c *documentProcessorRESTClient) DeleteProcessorVersionOperation(name strin
 // The name must be that of a previously created DeployProcessorVersionOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) DeployProcessorVersionOperation(name string) *DeployProcessorVersionOperation {
 	return &DeployProcessorVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DeployProcessorVersionOperation"),
 	}
 }
 
@@ -3100,7 +3576,7 @@ func (c *documentProcessorGRPCClient) DeployProcessorVersionOperation(name strin
 func (c *documentProcessorRESTClient) DeployProcessorVersionOperation(name string) *DeployProcessorVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeployProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DeployProcessorVersionOperation"),
 		pollPath: override,
 	}
 }
@@ -3109,7 +3585,7 @@ func (c *documentProcessorRESTClient) DeployProcessorVersionOperation(name strin
 // The name must be that of a previously created DisableProcessorOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) DisableProcessorOperation(name string) *DisableProcessorOperation {
 	return &DisableProcessorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DisableProcessorOperation"),
 	}
 }
 
@@ -3118,7 +3594,7 @@ func (c *documentProcessorGRPCClient) DisableProcessorOperation(name string) *Di
 func (c *documentProcessorRESTClient) DisableProcessorOperation(name string) *DisableProcessorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DisableProcessorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DisableProcessorOperation"),
 		pollPath: override,
 	}
 }
@@ -3127,7 +3603,7 @@ func (c *documentProcessorRESTClient) DisableProcessorOperation(name string) *Di
 // The name must be that of a previously created EnableProcessorOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) EnableProcessorOperation(name string) *EnableProcessorOperation {
 	return &EnableProcessorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.EnableProcessorOperation"),
 	}
 }
 
@@ -3136,7 +3612,7 @@ func (c *documentProcessorGRPCClient) EnableProcessorOperation(name string) *Ena
 func (c *documentProcessorRESTClient) EnableProcessorOperation(name string) *EnableProcessorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &EnableProcessorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.EnableProcessorOperation"),
 		pollPath: override,
 	}
 }
@@ -3145,7 +3621,7 @@ func (c *documentProcessorRESTClient) EnableProcessorOperation(name string) *Ena
 // The name must be that of a previously created EvaluateProcessorVersionOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) EvaluateProcessorVersionOperation(name string) *EvaluateProcessorVersionOperation {
 	return &EvaluateProcessorVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.EvaluateProcessorVersionOperation"),
 	}
 }
 
@@ -3154,7 +3630,7 @@ func (c *documentProcessorGRPCClient) EvaluateProcessorVersionOperation(name str
 func (c *documentProcessorRESTClient) EvaluateProcessorVersionOperation(name string) *EvaluateProcessorVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &EvaluateProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.EvaluateProcessorVersionOperation"),
 		pollPath: override,
 	}
 }
@@ -3163,7 +3639,7 @@ func (c *documentProcessorRESTClient) EvaluateProcessorVersionOperation(name str
 // The name must be that of a previously created ReviewDocumentOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) ReviewDocumentOperation(name string) *ReviewDocumentOperation {
 	return &ReviewDocumentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.ReviewDocumentOperation"),
 	}
 }
 
@@ -3172,7 +3648,7 @@ func (c *documentProcessorGRPCClient) ReviewDocumentOperation(name string) *Revi
 func (c *documentProcessorRESTClient) ReviewDocumentOperation(name string) *ReviewDocumentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ReviewDocumentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.ReviewDocumentOperation"),
 		pollPath: override,
 	}
 }
@@ -3181,7 +3657,7 @@ func (c *documentProcessorRESTClient) ReviewDocumentOperation(name string) *Revi
 // The name must be that of a previously created SetDefaultProcessorVersionOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) SetDefaultProcessorVersionOperation(name string) *SetDefaultProcessorVersionOperation {
 	return &SetDefaultProcessorVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.SetDefaultProcessorVersionOperation"),
 	}
 }
 
@@ -3190,7 +3666,7 @@ func (c *documentProcessorGRPCClient) SetDefaultProcessorVersionOperation(name s
 func (c *documentProcessorRESTClient) SetDefaultProcessorVersionOperation(name string) *SetDefaultProcessorVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &SetDefaultProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.SetDefaultProcessorVersionOperation"),
 		pollPath: override,
 	}
 }
@@ -3199,7 +3675,7 @@ func (c *documentProcessorRESTClient) SetDefaultProcessorVersionOperation(name s
 // The name must be that of a previously created TrainProcessorVersionOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) TrainProcessorVersionOperation(name string) *TrainProcessorVersionOperation {
 	return &TrainProcessorVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.TrainProcessorVersionOperation"),
 	}
 }
 
@@ -3208,7 +3684,7 @@ func (c *documentProcessorGRPCClient) TrainProcessorVersionOperation(name string
 func (c *documentProcessorRESTClient) TrainProcessorVersionOperation(name string) *TrainProcessorVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &TrainProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.TrainProcessorVersionOperation"),
 		pollPath: override,
 	}
 }
@@ -3217,7 +3693,7 @@ func (c *documentProcessorRESTClient) TrainProcessorVersionOperation(name string
 // The name must be that of a previously created UndeployProcessorVersionOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) UndeployProcessorVersionOperation(name string) *UndeployProcessorVersionOperation {
 	return &UndeployProcessorVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.UndeployProcessorVersionOperation"),
 	}
 }
 
@@ -3226,7 +3702,7 @@ func (c *documentProcessorGRPCClient) UndeployProcessorVersionOperation(name str
 func (c *documentProcessorRESTClient) UndeployProcessorVersionOperation(name string) *UndeployProcessorVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UndeployProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.UndeployProcessorVersionOperation"),
 		pollPath: override,
 	}
 }

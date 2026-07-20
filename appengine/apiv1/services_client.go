@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -132,7 +134,7 @@ type ServicesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ServicesClient) Close() error {
 	return c.internalClient.Close()
@@ -215,6 +217,16 @@ type servicesGRPCClient struct {
 // Manages services of an application.
 func NewServicesClient(ctx context.Context, opts ...option.ClientOption) (*ServicesClient, error) {
 	clientOpts := defaultServicesGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	if newServicesClientHook != nil {
 		hookOpts, err := newServicesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -236,6 +248,23 @@ func NewServicesClient(ctx context.Context, opts ...option.ClientOption) (*Servi
 		logger:         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateService = append(client.CallOptions.UpdateService, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteService = append(client.CallOptions.DeleteService, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -272,7 +301,7 @@ func (c *servicesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *servicesGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -305,6 +334,16 @@ type servicesRESTClient struct {
 // Manages services of an application.
 func NewServicesRESTClient(ctx context.Context, opts ...option.ClientOption) (*ServicesClient, error) {
 	clientOpts := append(defaultServicesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "appengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/appengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "appengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -318,6 +357,24 @@ func NewServicesRESTClient(ctx context.Context, opts ...option.ClientOption) (*S
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientMetrics(metrics))
+		callOpts.GetService = append(callOpts.GetService, gax.WithClientMetrics(metrics))
+		callOpts.UpdateService = append(callOpts.UpdateService, gax.WithClientMetrics(metrics))
+		callOpts.DeleteService = append(callOpts.DeleteService, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -355,7 +412,7 @@ func (c *servicesRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *servicesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -374,9 +431,12 @@ func (c *servicesGRPCClient) ListServices(ctx context.Context, req *appenginepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Services/ListServices")
+	}
 	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*appenginepb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.Service, string, error) {
 		resp := &appenginepb.ListServicesResponse{}
 		if pageToken != "" {
@@ -420,6 +480,9 @@ func (c *servicesGRPCClient) GetService(ctx context.Context, req *appenginepb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Services/GetService")
+	}
 	opts = append((*c.CallOptions).GetService[0:len((*c.CallOptions).GetService):len((*c.CallOptions).GetService)], opts...)
 	var resp *appenginepb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -438,6 +501,9 @@ func (c *servicesGRPCClient) UpdateService(ctx context.Context, req *appenginepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Services/UpdateService")
+	}
 	opts = append((*c.CallOptions).UpdateService[0:len((*c.CallOptions).UpdateService):len((*c.CallOptions).UpdateService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -448,8 +514,12 @@ func (c *servicesGRPCClient) UpdateService(ctx context.Context, req *appenginepb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.UpdateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -458,6 +528,9 @@ func (c *servicesGRPCClient) DeleteService(ctx context.Context, req *appenginepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Services/DeleteService")
+	}
 	opts = append((*c.CallOptions).DeleteService[0:len((*c.CallOptions).DeleteService):len((*c.CallOptions).DeleteService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -468,15 +541,19 @@ func (c *servicesGRPCClient) DeleteService(ctx context.Context, req *appenginepb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.DeleteServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
 // ListServices lists all the services in the application.
 func (c *servicesRESTClient) ListServices(ctx context.Context, req *appenginepb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*appenginepb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.Service, string, error) {
 		resp := &appenginepb.ListServicesResponse{}
@@ -570,6 +647,10 @@ func (c *servicesRESTClient) GetService(ctx context.Context, req *appenginepb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Services/GetService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/services/*}")
+	}
 	opts = append((*c.CallOptions).GetService[0:len((*c.CallOptions).GetService):len((*c.CallOptions).GetService)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.Service{}
@@ -637,6 +718,10 @@ func (c *servicesRESTClient) UpdateService(ctx context.Context, req *appenginepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Services/UpdateService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/services/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -665,8 +750,12 @@ func (c *servicesRESTClient) UpdateService(ctx context.Context, req *appenginepb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.UpdateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -690,6 +779,10 @@ func (c *servicesRESTClient) DeleteService(ctx context.Context, req *appenginepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.appengine.v1.Services/DeleteService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=apps/*/services/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -718,8 +811,12 @@ func (c *servicesRESTClient) DeleteService(ctx context.Context, req *appenginepb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.DeleteServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -728,7 +825,7 @@ func (c *servicesRESTClient) DeleteService(ctx context.Context, req *appenginepb
 // The name must be that of a previously created DeleteServiceOperation, possibly from a different process.
 func (c *servicesGRPCClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.DeleteServiceOperation"),
 	}
 }
 
@@ -737,7 +834,7 @@ func (c *servicesGRPCClient) DeleteServiceOperation(name string) *DeleteServiceO
 func (c *servicesRESTClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.DeleteServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -746,7 +843,7 @@ func (c *servicesRESTClient) DeleteServiceOperation(name string) *DeleteServiceO
 // The name must be that of a previously created UpdateServiceOperation, possibly from a different process.
 func (c *servicesGRPCClient) UpdateServiceOperation(name string) *UpdateServiceOperation {
 	return &UpdateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.UpdateServiceOperation"),
 	}
 }
 
@@ -755,7 +852,7 @@ func (c *servicesGRPCClient) UpdateServiceOperation(name string) *UpdateServiceO
 func (c *servicesRESTClient) UpdateServiceOperation(name string) *UpdateServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.UpdateServiceOperation"),
 		pollPath: override,
 	}
 }

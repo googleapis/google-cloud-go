@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.17.0) (2026-06-11)
+
+### Features
+
+* update API sources and regenerate (#19950) ([c7607be](https://github.com/googleapis/google-cloud-go/commit/c7607be52757b803df345670b5d0621c2bb9ba30))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.16.0) (2026-05-07)
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.15.0) (2026-04-30)
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.14.0) (2026-04-13)
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.13.0) (2026-04-09)
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.12.0) (2026-04-02)
 
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.11.0) (2026-02-12)
