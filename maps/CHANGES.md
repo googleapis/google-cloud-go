@@ -2,6 +2,13 @@
 
 
 
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.37.0...maps/v1.38.0) (2026-07-20)
+
+
+### Features
+
+* **maps:** Onboard isochrones v1 api ([#20155](https://github.com/googleapis/google-cloud-go/issues/20155)) ([100358a](https://github.com/googleapis/google-cloud-go/commit/100358a5d9e58e6fe4d73d6e70ea6297f4275739))
+
 ## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.36.0...maps/v1.37.0) (2026-07-13)
 
 
