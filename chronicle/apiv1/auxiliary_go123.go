@@ -58,6 +58,18 @@ func (it *FeaturedContentNativeDashboardIterator) All() iter.Seq2[*chroniclepb.F
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *FindingsRefinementDeploymentIterator) All() iter.Seq2[*chroniclepb.FindingsRefinementDeployment, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FindingsRefinementIterator) All() iter.Seq2[*chroniclepb.FindingsRefinement, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *NativeDashboardIterator) All() iter.Seq2[*chroniclepb.NativeDashboard, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -83,6 +95,12 @@ func (it *RetrohuntIterator) All() iter.Seq2[*chroniclepb.Retrohunt, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *RuleDeploymentIterator) All() iter.Seq2[*chroniclepb.RuleDeployment, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RuleExecutionErrorIterator) All() iter.Seq2[*chroniclepb.RuleExecutionError, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

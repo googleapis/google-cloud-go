@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,11 +47,11 @@ type WriteUserEventRequest struct {
 	// [DataStore][google.cloud.discoveryengine.v1beta.DataStore] level, the
 	// format is:
 	// `projects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}`.
-	// If the write user event action is applied in [Location][] level, for
-	// example, the event with
-	// [Document][google.cloud.discoveryengine.v1beta.Document] across multiple
-	// [DataStore][google.cloud.discoveryengine.v1beta.DataStore], the format is:
-	// `projects/{project}/locations/{location}`.
+	// If the write user event action is applied in
+	// [Location][google.cloud.location.Location] level, for example, the event
+	// with [Document][google.cloud.discoveryengine.v1beta.Document] across
+	// multiple [DataStore][google.cloud.discoveryengine.v1beta.DataStore], the
+	// format is: `projects/{project}/locations/{location}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. User event to write.
 	UserEvent *UserEvent `protobuf:"bytes,2,opt,name=user_event,json=userEvent,proto3,oneof" json:"user_event,omitempty"`
@@ -116,8 +116,16 @@ func (x *WriteUserEventRequest) GetWriteAsync() bool {
 // Request message for CollectUserEvent method.
 type CollectUserEventRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The parent DataStore resource name, such as
+	// Required. The parent resource name.
+	// If the collect user event action is applied in
+	// [DataStore][google.cloud.discoveryengine.v1beta.DataStore] level, the
+	// format is:
 	// `projects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}`.
+	// If the collect user event action is applied in
+	// [Location][google.cloud.location.Location] level, for example, the event
+	// with [Document][google.cloud.discoveryengine.v1beta.Document] across
+	// multiple [DataStore][google.cloud.discoveryengine.v1beta.DataStore], the
+	// format is: `projects/{project}/locations/{location}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. URL encoded UserEvent proto with a length limit of 2,000,000
 	// characters.
@@ -214,7 +222,7 @@ const file_google_cloud_discoveryengine_v1beta_user_event_service_proto_rawDesc 
 	"\x03uri\x18\x03 \x01(\tH\x00R\x03uri\x88\x01\x01\x12\x15\n" +
 	"\x03ets\x18\x04 \x01(\x03H\x01R\x03ets\x88\x01\x01B\x06\n" +
 	"\x04_uriB\x06\n" +
-	"\x04_ets2\xfc\f\n" +
+	"\x04_ets2\xfb\x0e\n" +
 	"\x10UserEventService\x12\x84\x03\n" +
 	"\x0eWriteUserEvent\x12:.google.cloud.discoveryengine.v1beta.WriteUserEventRequest\x1a..google.cloud.discoveryengine.v1beta.UserEvent\"\x85\x02\x82\xd3\xe4\x93\x02\xfe\x01:\n" +
 	"user_eventZa:\n" +
@@ -222,9 +230,9 @@ const file_google_cloud_discoveryengine_v1beta_user_event_service_proto_rawDesc 
 	"user_event\"8/v1beta/{parent=projects/*/locations/*}/userEvents:write\"E/v1beta/{parent=projects/*/locations/*/dataStores/*}/userEvents:write\x12\xd0\x02\n" +
 	"\x10CollectUserEvent\x12<.google.cloud.discoveryengine.v1beta.CollectUserEventRequest\x1a\x14.google.api.HttpBody\"\xe7\x01\x82\xd3\xe4\x93\x02\xe0\x01ZW\x12U/v1beta/{parent=projects/*/locations/*/collections/*/dataStores/*}/userEvents:collectZ<\x12:/v1beta/{parent=projects/*/locations/*}/userEvents:collect\x12G/v1beta/{parent=projects/*/locations/*/dataStores/*}/userEvents:collect\x12\x98\x03\n" +
 	"\x0fPurgeUserEvents\x12;.google.cloud.discoveryengine.v1beta.PurgeUserEventsRequest\x1a\x1d.google.longrunning.Operation\"\xa8\x02\xcaAz\n" +
-	";google.cloud.discoveryengine.v1beta.PurgeUserEventsResponse\x12;google.cloud.discoveryengine.v1beta.PurgeUserEventsMetadata\x82\xd3\xe4\x93\x02\xa4\x01:\x01*ZX:\x01*\"S/v1beta/{parent=projects/*/locations/*/collections/*/dataStores/*}/userEvents:purge\"E/v1beta/{parent=projects/*/locations/*/dataStores/*}/userEvents:purge\x12\x9e\x03\n" +
-	"\x10ImportUserEvents\x12<.google.cloud.discoveryengine.v1beta.ImportUserEventsRequest\x1a\x1d.google.longrunning.Operation\"\xac\x02\xcaA|\n" +
-	"<google.cloud.discoveryengine.v1beta.ImportUserEventsResponse\x12<google.cloud.discoveryengine.v1beta.ImportUserEventsMetadata\x82\xd3\xe4\x93\x02\xa6\x01:\x01*ZY:\x01*\"T/v1beta/{parent=projects/*/locations/*/collections/*/dataStores/*}/userEvents:import\"F/v1beta/{parent=projects/*/locations/*/dataStores/*}/userEvents:import\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x9c\x02\n" +
+	";google.cloud.discoveryengine.v1beta.PurgeUserEventsResponse\x12;google.cloud.discoveryengine.v1beta.PurgeUserEventsMetadata\x82\xd3\xe4\x93\x02\xa4\x01:\x01*ZX:\x01*\"S/v1beta/{parent=projects/*/locations/*/collections/*/dataStores/*}/userEvents:purge\"E/v1beta/{parent=projects/*/locations/*/dataStores/*}/userEvents:purge\x12\xde\x03\n" +
+	"\x10ImportUserEvents\x12<.google.cloud.discoveryengine.v1beta.ImportUserEventsRequest\x1a\x1d.google.longrunning.Operation\"\xec\x02\xcaA|\n" +
+	"<google.cloud.discoveryengine.v1beta.ImportUserEventsResponse\x12<google.cloud.discoveryengine.v1beta.ImportUserEventsMetadata\x82\xd3\xe4\x93\x02\xe6\x01:\x01*ZY:\x01*\"T/v1beta/{parent=projects/*/locations/*/collections/*/dataStores/*}/userEvents:importZ>:\x01*\"9/v1beta/{parent=projects/*/locations/*}/userEvents:import\"F/v1beta/{parent=projects/*/locations/*/dataStores/*}/userEvents:import\x1a\x90\x02\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xeb\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.assist.readwrite,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x9c\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\x15UserEventServiceProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
 
 var (

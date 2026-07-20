@@ -1,6 +1,6 @@
 {
     "extends": [
-        "config:base",
+        "config:best-practices",
         "schedule:weekly",
         ":disableDependencyDashboard",
         "docker:disable"
@@ -19,6 +19,11 @@
         "**/snippets/**"
     ],
     "packageRules": [
+    	{
+   	    "description": "prevent go version upgrades",
+      	    "matchManagers": ["gomod"],
+            "constraintsFiltering": "strict"
+    	},
         {
             "matchPackagePatterns": [
                 "^github.com/google/go-github/v",

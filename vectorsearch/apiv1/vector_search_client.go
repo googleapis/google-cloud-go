@@ -32,6 +32,7 @@ import (
 	vectorsearchpb "cloud.google.com/go/vectorsearch/apiv1/vectorsearchpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -532,14 +533,13 @@ func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationReq
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -948,8 +948,12 @@ func (c *gRPCClient) CreateCollection(ctx context.Context, req *vectorsearchpb.C
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.CreateCollectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCollectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -971,8 +975,12 @@ func (c *gRPCClient) UpdateCollection(ctx context.Context, req *vectorsearchpb.U
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.UpdateCollectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCollectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -997,8 +1005,12 @@ func (c *gRPCClient) DeleteCollection(ctx context.Context, req *vectorsearchpb.D
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.DeleteCollectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCollectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1099,8 +1111,12 @@ func (c *gRPCClient) CreateIndex(ctx context.Context, req *vectorsearchpb.Create
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.CreateIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1122,8 +1138,12 @@ func (c *gRPCClient) UpdateIndex(ctx context.Context, req *vectorsearchpb.Update
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.UpdateIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1148,8 +1168,12 @@ func (c *gRPCClient) DeleteIndex(ctx context.Context, req *vectorsearchpb.Delete
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.DeleteIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1174,8 +1198,12 @@ func (c *gRPCClient) ImportDataObjects(ctx context.Context, req *vectorsearchpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.ImportDataObjectsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportDataObjectsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1200,8 +1228,12 @@ func (c *gRPCClient) ExportDataObjects(ctx context.Context, req *vectorsearchpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.ExportDataObjectsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportDataObjectsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1585,8 +1617,12 @@ func (c *restClient) CreateCollection(ctx context.Context, req *vectorsearchpb.C
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.CreateCollectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCollectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1659,8 +1695,12 @@ func (c *restClient) UpdateCollection(ctx context.Context, req *vectorsearchpb.U
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.UpdateCollectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCollectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1675,6 +1715,9 @@ func (c *restClient) DeleteCollection(ctx context.Context, req *vectorsearchpb.D
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1722,8 +1765,12 @@ func (c *restClient) DeleteCollection(ctx context.Context, req *vectorsearchpb.D
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.DeleteCollectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCollectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1934,8 +1981,12 @@ func (c *restClient) CreateIndex(ctx context.Context, req *vectorsearchpb.Create
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.CreateIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2008,8 +2059,12 @@ func (c *restClient) UpdateIndex(ctx context.Context, req *vectorsearchpb.Update
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.UpdateIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2071,8 +2126,12 @@ func (c *restClient) DeleteIndex(ctx context.Context, req *vectorsearchpb.Delete
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.DeleteIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2137,8 +2196,12 @@ func (c *restClient) ImportDataObjects(ctx context.Context, req *vectorsearchpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.ImportDataObjectsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportDataObjectsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2203,8 +2266,12 @@ func (c *restClient) ExportDataObjects(ctx context.Context, req *vectorsearchpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vectorsearch.ExportDataObjectsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportDataObjectsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2266,14 +2333,13 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -2586,7 +2652,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateCollectionOperation, possibly from a different process.
 func (c *gRPCClient) CreateCollectionOperation(name string) *CreateCollectionOperation {
 	return &CreateCollectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.CreateCollectionOperation"),
 	}
 }
 
@@ -2595,7 +2661,7 @@ func (c *gRPCClient) CreateCollectionOperation(name string) *CreateCollectionOpe
 func (c *restClient) CreateCollectionOperation(name string) *CreateCollectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCollectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.CreateCollectionOperation"),
 		pollPath: override,
 	}
 }
@@ -2604,7 +2670,7 @@ func (c *restClient) CreateCollectionOperation(name string) *CreateCollectionOpe
 // The name must be that of a previously created CreateIndexOperation, possibly from a different process.
 func (c *gRPCClient) CreateIndexOperation(name string) *CreateIndexOperation {
 	return &CreateIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.CreateIndexOperation"),
 	}
 }
 
@@ -2613,7 +2679,7 @@ func (c *gRPCClient) CreateIndexOperation(name string) *CreateIndexOperation {
 func (c *restClient) CreateIndexOperation(name string) *CreateIndexOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.CreateIndexOperation"),
 		pollPath: override,
 	}
 }
@@ -2622,7 +2688,7 @@ func (c *restClient) CreateIndexOperation(name string) *CreateIndexOperation {
 // The name must be that of a previously created DeleteCollectionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCollectionOperation(name string) *DeleteCollectionOperation {
 	return &DeleteCollectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.DeleteCollectionOperation"),
 	}
 }
 
@@ -2631,7 +2697,7 @@ func (c *gRPCClient) DeleteCollectionOperation(name string) *DeleteCollectionOpe
 func (c *restClient) DeleteCollectionOperation(name string) *DeleteCollectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCollectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.DeleteCollectionOperation"),
 		pollPath: override,
 	}
 }
@@ -2640,7 +2706,7 @@ func (c *restClient) DeleteCollectionOperation(name string) *DeleteCollectionOpe
 // The name must be that of a previously created DeleteIndexOperation, possibly from a different process.
 func (c *gRPCClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
 	return &DeleteIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.DeleteIndexOperation"),
 	}
 }
 
@@ -2649,7 +2715,7 @@ func (c *gRPCClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
 func (c *restClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.DeleteIndexOperation"),
 		pollPath: override,
 	}
 }
@@ -2658,7 +2724,7 @@ func (c *restClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
 // The name must be that of a previously created ExportDataObjectsOperation, possibly from a different process.
 func (c *gRPCClient) ExportDataObjectsOperation(name string) *ExportDataObjectsOperation {
 	return &ExportDataObjectsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.ExportDataObjectsOperation"),
 	}
 }
 
@@ -2667,7 +2733,7 @@ func (c *gRPCClient) ExportDataObjectsOperation(name string) *ExportDataObjectsO
 func (c *restClient) ExportDataObjectsOperation(name string) *ExportDataObjectsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportDataObjectsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.ExportDataObjectsOperation"),
 		pollPath: override,
 	}
 }
@@ -2676,7 +2742,7 @@ func (c *restClient) ExportDataObjectsOperation(name string) *ExportDataObjectsO
 // The name must be that of a previously created ImportDataObjectsOperation, possibly from a different process.
 func (c *gRPCClient) ImportDataObjectsOperation(name string) *ImportDataObjectsOperation {
 	return &ImportDataObjectsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.ImportDataObjectsOperation"),
 	}
 }
 
@@ -2685,7 +2751,7 @@ func (c *gRPCClient) ImportDataObjectsOperation(name string) *ImportDataObjectsO
 func (c *restClient) ImportDataObjectsOperation(name string) *ImportDataObjectsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportDataObjectsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.ImportDataObjectsOperation"),
 		pollPath: override,
 	}
 }
@@ -2694,7 +2760,7 @@ func (c *restClient) ImportDataObjectsOperation(name string) *ImportDataObjectsO
 // The name must be that of a previously created UpdateCollectionOperation, possibly from a different process.
 func (c *gRPCClient) UpdateCollectionOperation(name string) *UpdateCollectionOperation {
 	return &UpdateCollectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.UpdateCollectionOperation"),
 	}
 }
 
@@ -2703,7 +2769,7 @@ func (c *gRPCClient) UpdateCollectionOperation(name string) *UpdateCollectionOpe
 func (c *restClient) UpdateCollectionOperation(name string) *UpdateCollectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCollectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.UpdateCollectionOperation"),
 		pollPath: override,
 	}
 }
@@ -2712,7 +2778,7 @@ func (c *restClient) UpdateCollectionOperation(name string) *UpdateCollectionOpe
 // The name must be that of a previously created UpdateIndexOperation, possibly from a different process.
 func (c *gRPCClient) UpdateIndexOperation(name string) *UpdateIndexOperation {
 	return &UpdateIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.UpdateIndexOperation"),
 	}
 }
 
@@ -2721,7 +2787,7 @@ func (c *gRPCClient) UpdateIndexOperation(name string) *UpdateIndexOperation {
 func (c *restClient) UpdateIndexOperation(name string) *UpdateIndexOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vectorsearch.UpdateIndexOperation"),
 		pollPath: override,
 	}
 }

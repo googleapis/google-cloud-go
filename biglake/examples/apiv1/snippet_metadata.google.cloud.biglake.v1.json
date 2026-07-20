@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/biglake/apiv1",
-    "version": "1.0.0"
+    "version": "1.2.0"
   },
   "snippets": [
     {
@@ -133,7 +133,7 @@
         "resultType": "*biglakepb.IcebergCatalog",
         "shortName": "CreateIcebergCatalog"
       },
-      "description": "CreateIcebergCatalog creates the Iceberg REST Catalog.\nCurrently only supports Google Cloud Storage Bucket catalogs.\nGoogle Cloud Storage Bucket catalog id is the bucket for which the\ncatalog is created (e.g. `my-catalog` for `gs: //my-catalog`).\n\nIf the bucket does not exist, of the caller does not have bucket metadata\npermissions, the catalog will not be created.",
+      "description": "CreateIcebergCatalog creates the Iceberg REST Catalog.\nGoogle Cloud Storage Bucket catalog id is the bucket for which the\ncatalog is created (e.g. `my-catalog` for `gs: //my-catalog`).\n\nIf the bucket does not exist, of the caller does not have bucket metadata\npermissions, the catalog will not be created.",
       "file": "IcebergCatalogClient/CreateIcebergCatalog/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -833,6 +833,51 @@
         }
       ],
       "title": "biglake RegisterIcebergTable Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogClient",
+          "shortName": "IcebergCatalogClient"
+        },
+        "fullName": "google.cloud.biglake.v1.IcebergCatalogClient.ReportIcebergTableMetrics",
+        "method": {
+          "fullName": "google.cloud.biglake.v1.IcebergCatalogService.ReportIcebergTableMetrics",
+          "service": {
+            "fullName": "google.cloud.biglake.v1.IcebergCatalogService",
+            "shortName": "IcebergCatalogService"
+          },
+          "shortName": "ReportIcebergTableMetrics"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "biglakepb.ReportIcebergTableMetricsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "ReportIcebergTableMetrics"
+      },
+      "description": "ReportIcebergTableMetrics reports a metrics report for a table.",
+      "file": "IcebergCatalogClient/ReportIcebergTableMetrics/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1_generated_IcebergCatalogService_ReportIcebergTableMetrics_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake ReportIcebergTableMetrics Sample"
     },
     {
       "clientMethod": {

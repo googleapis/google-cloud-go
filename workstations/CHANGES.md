@@ -3,6 +3,19 @@
 
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/workstations/v1.7.0...workstations/v1.8.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/workstations%2Fv1.7.0) (2026-06-11)
+
+### Features
+
+* update API sources and regenerate (#19950) ([c7607be](https://github.com/googleapis/google-cloud-go/commit/c7607be52757b803df345670b5d0621c2bb9ba30))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/workstations%2Fv1.6.0) (2026-05-07)
 
 ### Features

@@ -1,5 +1,18 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/geminidataanalytics/v1.3.0...geminidataanalytics/v1.4.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv1.3.0) (2026-06-11)
+
+### Features
+
+* update API sources and regenerate (#19950) ([c7607be](https://github.com/googleapis/google-cloud-go/commit/c7607be52757b803df345670b5d0621c2bb9ba30))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv1.2.0) (2026-05-28)
 
 ### Features

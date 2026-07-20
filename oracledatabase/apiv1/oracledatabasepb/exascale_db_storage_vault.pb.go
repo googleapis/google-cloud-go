@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -186,9 +186,14 @@ type ExascaleDbStorageVault struct {
 	// ExascaleDbStorageVault.
 	EntitlementId string `protobuf:"bytes,6,opt,name=entitlement_id,json=entitlementId,proto3" json:"entitlement_id,omitempty"`
 	// Optional. The labels or tags associated with the ExascaleDbStorageVault.
-	Labels        map[string]string `protobuf:"bytes,7,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Labels map[string]string `protobuf:"bytes,7,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. The Exadata Infrastructure resource on which
+	// ExascaleDbStorageVault
+	// resource is created, in the following format:
+	// projects/{project}/locations/{region}/cloudExadataInfrastuctures/{cloud_extradata_infrastructure}
+	ExadataInfrastructure string `protobuf:"bytes,8,opt,name=exadata_infrastructure,json=exadataInfrastructure,proto3" json:"exadata_infrastructure,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *ExascaleDbStorageVault) Reset() {
@@ -268,6 +273,13 @@ func (x *ExascaleDbStorageVault) GetLabels() map[string]string {
 		return x.Labels
 	}
 	return nil
+}
+
+func (x *ExascaleDbStorageVault) GetExadataInfrastructure() string {
+	if x != nil {
+		return x.ExadataInfrastructure
+	}
+	return ""
 }
 
 // The properties of the ExascaleDbStorageVault.
@@ -613,6 +625,9 @@ type ListExascaleDbStorageVaultsResponse struct {
 	// ListExascaleDbStorageVaults call to list the next page.
 	// If empty, there are no more pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// Unreachable locations when listing resources across all locations using
+	// wildcard location '-'.
+	Unreachable   []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -659,6 +674,13 @@ func (x *ListExascaleDbStorageVaultsResponse) GetNextPageToken() string {
 		return x.NextPageToken
 	}
 	return ""
+}
+
+func (x *ListExascaleDbStorageVaultsResponse) GetUnreachable() []string {
+	if x != nil {
+		return x.Unreachable
+	}
+	return nil
 }
 
 // The request for `ExascaleDbStorageVault.Create`.
@@ -817,7 +839,7 @@ var File_google_cloud_oracledatabase_v1_exascale_db_storage_vault_proto protoref
 
 const file_google_cloud_oracledatabase_v1_exascale_db_storage_vault_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/oracledatabase/v1/exascale_db_storage_vault.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\"\xc2\x05\n" +
+	">google/cloud/oracledatabase/v1/exascale_db_storage_vault.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\"\xbb\x06\n" +
 	"\x16ExascaleDbStorageVault\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12+\n" +
@@ -828,7 +850,9 @@ const file_google_cloud_oracledatabase_v1_exascale_db_storage_vault_proto_rawDes
 	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12*\n" +
 	"\x0eentitlement_id\x18\x06 \x01(\tB\x03\xe0A\x03R\rentitlementId\x12_\n" +
-	"\x06labels\x18\a \x03(\v2B.google.cloud.oracledatabase.v1.ExascaleDbStorageVault.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"\x06labels\x18\a \x03(\v2B.google.cloud.oracledatabase.v1.ExascaleDbStorageVault.LabelsEntryB\x03\xe0A\x01R\x06labels\x12w\n" +
+	"\x16exadata_infrastructure\x18\b \x01(\tB@\xe0A\x01\xfaA:\n" +
+	"8oracledatabase.googleapis.com/CloudExadataInfrastructureR\x15exadataInfrastructure\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xc8\x01\xeaA\xc4\x01\n" +
@@ -872,10 +896,11 @@ const file_google_cloud_oracledatabase_v1_exascale_db_storage_vault_proto_rawDes
 	"\n" +
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
 	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc2\x01\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xe4\x01\n" +
 	"#ListExascaleDbStorageVaultsResponse\x12s\n" +
 	"\x1aexascale_db_storage_vaults\x18\x01 \x03(\v26.google.cloud.oracledatabase.v1.ExascaleDbStorageVaultR\x17exascaleDbStorageVaults\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe4\x02\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xe4\x02\n" +
 	"#CreateExascaleDbStorageVaultRequest\x12T\n" +
 	"\x06parent\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\x124oracledatabase.googleapis.com/ExascaleDbStorageVaultR\x06parent\x12C\n" +
 	"\x1cexascale_db_storage_vault_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x18exascaleDbStorageVaultId\x12v\n" +

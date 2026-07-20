@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/networkservices/apiv1",
-    "version": "1.0.0"
+    "version": "1.3.0"
   },
   "snippets": [
     {
@@ -1394,6 +1394,52 @@
           "fullName": "google.cloud.networkservices.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.networkservices.v1.Client.CreateAgentGateway",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1.NetworkServices.CreateAgentGateway",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1.NetworkServices",
+            "shortName": "NetworkServices"
+          },
+          "shortName": "CreateAgentGateway"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.CreateAgentGatewayRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateAgentGatewayOperation",
+        "shortName": "CreateAgentGateway"
+      },
+      "description": "CreateAgentGateway creates a new AgentGateway in a given project and location.",
+      "file": "Client/CreateAgentGateway/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1_generated_NetworkServices_CreateAgentGateway_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices CreateAgentGateway Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.networkservices.v1.Client.CreateEndpointPolicy",
         "method": {
           "fullName": "google.cloud.networkservices.v1.NetworkServices.CreateEndpointPolicy",
@@ -1893,6 +1939,52 @@
         }
       ],
       "title": "networkservices CreateWasmPluginVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1.Client.DeleteAgentGateway",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1.NetworkServices.DeleteAgentGateway",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1.NetworkServices",
+            "shortName": "NetworkServices"
+          },
+          "shortName": "DeleteAgentGateway"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.DeleteAgentGatewayRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteAgentGatewayOperation",
+        "shortName": "DeleteAgentGateway"
+      },
+      "description": "DeleteAgentGateway deletes a single AgentGateway.",
+      "file": "Client/DeleteAgentGateway/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1_generated_NetworkServices_DeleteAgentGateway_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices DeleteAgentGateway Sample"
     },
     {
       "clientMethod": {
@@ -2444,6 +2536,52 @@
         }
       ],
       "title": "networkservices DeleteWasmPluginVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1.Client.GetAgentGateway",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1.NetworkServices.GetAgentGateway",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1.NetworkServices",
+            "shortName": "NetworkServices"
+          },
+          "shortName": "GetAgentGateway"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.GetAgentGatewayRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*networkservicespb.AgentGateway",
+        "shortName": "GetAgentGateway"
+      },
+      "description": "GetAgentGateway gets details of a single AgentGateway.",
+      "file": "Client/GetAgentGateway/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1_generated_NetworkServices_GetAgentGateway_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices GetAgentGateway Sample"
     },
     {
       "clientMethod": {
@@ -3180,6 +3318,52 @@
         }
       ],
       "title": "networkservices GetWasmPluginVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1.Client.ListAgentGateways",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1.NetworkServices.ListAgentGateways",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1.NetworkServices",
+            "shortName": "NetworkServices"
+          },
+          "shortName": "ListAgentGateways"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.ListAgentGatewaysRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AgentGatewayIterator",
+        "shortName": "ListAgentGateways"
+      },
+      "description": "ListAgentGateways lists AgentGateways in a given project and location.",
+      "file": "Client/ListAgentGateways/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1_generated_NetworkServices_ListAgentGateways_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices ListAgentGateways Sample"
     },
     {
       "clientMethod": {
@@ -3962,6 +4146,52 @@
         }
       ],
       "title": "networkservices TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1.Client.UpdateAgentGateway",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1.NetworkServices.UpdateAgentGateway",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1.NetworkServices",
+            "shortName": "NetworkServices"
+          },
+          "shortName": "UpdateAgentGateway"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.UpdateAgentGatewayRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateAgentGatewayOperation",
+        "shortName": "UpdateAgentGateway"
+      },
+      "description": "UpdateAgentGateway updates the parameters of a single AgentGateway.",
+      "file": "Client/UpdateAgentGateway/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1_generated_NetworkServices_UpdateAgentGateway_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices UpdateAgentGateway Sample"
     },
     {
       "clientMethod": {

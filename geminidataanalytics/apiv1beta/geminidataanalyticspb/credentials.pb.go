@@ -41,7 +41,6 @@ const (
 type Credentials struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The kind of credentials.
-	// }
 	//
 	// Types that are valid to be assigned to Kind:
 	//

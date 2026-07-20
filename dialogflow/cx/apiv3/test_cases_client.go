@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -583,14 +584,13 @@ func (c *TestCasesClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -1051,8 +1051,12 @@ func (c *testCasesGRPCClient) RunTestCase(ctx context.Context, req *cxpb.RunTest
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.RunTestCaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunTestCaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1077,8 +1081,12 @@ func (c *testCasesGRPCClient) BatchRunTestCases(ctx context.Context, req *cxpb.B
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.BatchRunTestCasesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchRunTestCasesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1127,8 +1135,12 @@ func (c *testCasesGRPCClient) ImportTestCases(ctx context.Context, req *cxpb.Imp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ImportTestCasesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportTestCasesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1153,8 +1165,12 @@ func (c *testCasesGRPCClient) ExportTestCases(ctx context.Context, req *cxpb.Exp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ExportTestCasesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportTestCasesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1779,8 +1795,12 @@ func (c *testCasesRESTClient) RunTestCase(ctx context.Context, req *cxpb.RunTest
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.RunTestCaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunTestCaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1855,8 +1875,12 @@ func (c *testCasesRESTClient) BatchRunTestCases(ctx context.Context, req *cxpb.B
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.BatchRunTestCasesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchRunTestCasesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1991,8 +2015,12 @@ func (c *testCasesRESTClient) ImportTestCases(ctx context.Context, req *cxpb.Imp
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ImportTestCasesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportTestCasesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2068,8 +2096,12 @@ func (c *testCasesRESTClient) ExportTestCases(ctx context.Context, req *cxpb.Exp
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ExportTestCasesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportTestCasesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2270,14 +2302,13 @@ func (c *testCasesRESTClient) GetLocation(ctx context.Context, req *locationpb.G
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -2545,7 +2576,7 @@ func (c *testCasesRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created BatchRunTestCasesOperation, possibly from a different process.
 func (c *testCasesGRPCClient) BatchRunTestCasesOperation(name string) *BatchRunTestCasesOperation {
 	return &BatchRunTestCasesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.BatchRunTestCasesOperation"),
 	}
 }
 
@@ -2554,7 +2585,7 @@ func (c *testCasesGRPCClient) BatchRunTestCasesOperation(name string) *BatchRunT
 func (c *testCasesRESTClient) BatchRunTestCasesOperation(name string) *BatchRunTestCasesOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &BatchRunTestCasesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.BatchRunTestCasesOperation"),
 		pollPath: override,
 	}
 }
@@ -2563,7 +2594,7 @@ func (c *testCasesRESTClient) BatchRunTestCasesOperation(name string) *BatchRunT
 // The name must be that of a previously created ExportTestCasesOperation, possibly from a different process.
 func (c *testCasesGRPCClient) ExportTestCasesOperation(name string) *ExportTestCasesOperation {
 	return &ExportTestCasesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ExportTestCasesOperation"),
 	}
 }
 
@@ -2572,7 +2603,7 @@ func (c *testCasesGRPCClient) ExportTestCasesOperation(name string) *ExportTestC
 func (c *testCasesRESTClient) ExportTestCasesOperation(name string) *ExportTestCasesOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &ExportTestCasesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ExportTestCasesOperation"),
 		pollPath: override,
 	}
 }
@@ -2581,7 +2612,7 @@ func (c *testCasesRESTClient) ExportTestCasesOperation(name string) *ExportTestC
 // The name must be that of a previously created ImportTestCasesOperation, possibly from a different process.
 func (c *testCasesGRPCClient) ImportTestCasesOperation(name string) *ImportTestCasesOperation {
 	return &ImportTestCasesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ImportTestCasesOperation"),
 	}
 }
 
@@ -2590,7 +2621,7 @@ func (c *testCasesGRPCClient) ImportTestCasesOperation(name string) *ImportTestC
 func (c *testCasesRESTClient) ImportTestCasesOperation(name string) *ImportTestCasesOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &ImportTestCasesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ImportTestCasesOperation"),
 		pollPath: override,
 	}
 }
@@ -2599,7 +2630,7 @@ func (c *testCasesRESTClient) ImportTestCasesOperation(name string) *ImportTestC
 // The name must be that of a previously created RunTestCaseOperation, possibly from a different process.
 func (c *testCasesGRPCClient) RunTestCaseOperation(name string) *RunTestCaseOperation {
 	return &RunTestCaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.RunTestCaseOperation"),
 	}
 }
 
@@ -2608,7 +2639,7 @@ func (c *testCasesGRPCClient) RunTestCaseOperation(name string) *RunTestCaseOper
 func (c *testCasesRESTClient) RunTestCaseOperation(name string) *RunTestCaseOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &RunTestCaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.RunTestCaseOperation"),
 		pollPath: override,
 	}
 }

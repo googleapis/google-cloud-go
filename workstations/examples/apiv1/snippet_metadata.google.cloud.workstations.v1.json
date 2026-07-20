@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/workstations/apiv1",
-    "version": "1.6.0"
+    "version": "1.8.0"
   },
   "snippets": [
     {
@@ -409,7 +409,7 @@
         "resultType": "*workstationspb.GenerateAccessTokenResponse",
         "shortName": "GenerateAccessToken"
       },
-      "description": "GenerateAccessToken returns a short-lived credential that can be used to send authenticated and\nauthorized traffic to a workstation.",
+      "description": "GenerateAccessToken returns a short-lived credential that can be used to send authenticated and\nauthorized traffic to a workstation.\nOnce generated this token cannot be revoked and is good for the lifetime\nof the token.",
       "file": "Client/GenerateAccessToken/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

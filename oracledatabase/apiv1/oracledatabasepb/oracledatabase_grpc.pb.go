@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,64 +35,84 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	OracleDatabase_ListCloudExadataInfrastructures_FullMethodName     = "/google.cloud.oracledatabase.v1.OracleDatabase/ListCloudExadataInfrastructures"
-	OracleDatabase_GetCloudExadataInfrastructure_FullMethodName       = "/google.cloud.oracledatabase.v1.OracleDatabase/GetCloudExadataInfrastructure"
-	OracleDatabase_CreateCloudExadataInfrastructure_FullMethodName    = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudExadataInfrastructure"
-	OracleDatabase_DeleteCloudExadataInfrastructure_FullMethodName    = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudExadataInfrastructure"
-	OracleDatabase_ListCloudVmClusters_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/ListCloudVmClusters"
-	OracleDatabase_GetCloudVmCluster_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/GetCloudVmCluster"
-	OracleDatabase_CreateCloudVmCluster_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudVmCluster"
-	OracleDatabase_DeleteCloudVmCluster_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudVmCluster"
-	OracleDatabase_ListEntitlements_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/ListEntitlements"
-	OracleDatabase_ListDbServers_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbServers"
-	OracleDatabase_ListDbNodes_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbNodes"
-	OracleDatabase_ListGiVersions_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGiVersions"
-	OracleDatabase_ListMinorVersions_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/ListMinorVersions"
-	OracleDatabase_ListDbSystemShapes_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemShapes"
-	OracleDatabase_ListAutonomousDatabases_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabases"
-	OracleDatabase_GetAutonomousDatabase_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/GetAutonomousDatabase"
-	OracleDatabase_CreateAutonomousDatabase_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateAutonomousDatabase"
-	OracleDatabase_UpdateAutonomousDatabase_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/UpdateAutonomousDatabase"
-	OracleDatabase_DeleteAutonomousDatabase_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteAutonomousDatabase"
-	OracleDatabase_RestoreAutonomousDatabase_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/RestoreAutonomousDatabase"
-	OracleDatabase_GenerateAutonomousDatabaseWallet_FullMethodName    = "/google.cloud.oracledatabase.v1.OracleDatabase/GenerateAutonomousDatabaseWallet"
-	OracleDatabase_ListAutonomousDbVersions_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDbVersions"
-	OracleDatabase_ListAutonomousDatabaseCharacterSets_FullMethodName = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabaseCharacterSets"
-	OracleDatabase_ListAutonomousDatabaseBackups_FullMethodName       = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabaseBackups"
-	OracleDatabase_StopAutonomousDatabase_FullMethodName              = "/google.cloud.oracledatabase.v1.OracleDatabase/StopAutonomousDatabase"
-	OracleDatabase_StartAutonomousDatabase_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/StartAutonomousDatabase"
-	OracleDatabase_RestartAutonomousDatabase_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/RestartAutonomousDatabase"
-	OracleDatabase_SwitchoverAutonomousDatabase_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/SwitchoverAutonomousDatabase"
-	OracleDatabase_FailoverAutonomousDatabase_FullMethodName          = "/google.cloud.oracledatabase.v1.OracleDatabase/FailoverAutonomousDatabase"
-	OracleDatabase_ListOdbNetworks_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbNetworks"
-	OracleDatabase_GetOdbNetwork_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbNetwork"
-	OracleDatabase_CreateOdbNetwork_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbNetwork"
-	OracleDatabase_DeleteOdbNetwork_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbNetwork"
-	OracleDatabase_ListOdbSubnets_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbSubnets"
-	OracleDatabase_GetOdbSubnet_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbSubnet"
-	OracleDatabase_CreateOdbSubnet_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbSubnet"
-	OracleDatabase_DeleteOdbSubnet_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbSubnet"
-	OracleDatabase_ListExadbVmClusters_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExadbVmClusters"
-	OracleDatabase_GetExadbVmCluster_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExadbVmCluster"
-	OracleDatabase_CreateExadbVmCluster_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExadbVmCluster"
-	OracleDatabase_DeleteExadbVmCluster_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteExadbVmCluster"
-	OracleDatabase_UpdateExadbVmCluster_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/UpdateExadbVmCluster"
-	OracleDatabase_RemoveVirtualMachineExadbVmCluster_FullMethodName  = "/google.cloud.oracledatabase.v1.OracleDatabase/RemoveVirtualMachineExadbVmCluster"
-	OracleDatabase_ListExascaleDbStorageVaults_FullMethodName         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExascaleDbStorageVaults"
-	OracleDatabase_GetExascaleDbStorageVault_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExascaleDbStorageVault"
-	OracleDatabase_CreateExascaleDbStorageVault_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExascaleDbStorageVault"
-	OracleDatabase_DeleteExascaleDbStorageVault_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteExascaleDbStorageVault"
-	OracleDatabase_ListDbSystemInitialStorageSizes_FullMethodName     = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemInitialStorageSizes"
-	OracleDatabase_ListDatabases_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabases"
-	OracleDatabase_GetDatabase_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/GetDatabase"
-	OracleDatabase_ListPluggableDatabases_FullMethodName              = "/google.cloud.oracledatabase.v1.OracleDatabase/ListPluggableDatabases"
-	OracleDatabase_GetPluggableDatabase_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/GetPluggableDatabase"
-	OracleDatabase_ListDbSystems_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystems"
-	OracleDatabase_GetDbSystem_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/GetDbSystem"
-	OracleDatabase_CreateDbSystem_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateDbSystem"
-	OracleDatabase_DeleteDbSystem_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteDbSystem"
-	OracleDatabase_ListDbVersions_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbVersions"
-	OracleDatabase_ListDatabaseCharacterSets_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabaseCharacterSets"
+	OracleDatabase_ListCloudExadataInfrastructures_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListCloudExadataInfrastructures"
+	OracleDatabase_GetCloudExadataInfrastructure_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/GetCloudExadataInfrastructure"
+	OracleDatabase_CreateCloudExadataInfrastructure_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudExadataInfrastructure"
+	OracleDatabase_DeleteCloudExadataInfrastructure_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudExadataInfrastructure"
+	OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_FullMethodName = "/google.cloud.oracledatabase.v1.OracleDatabase/ConfigureExascaleCloudExadataInfrastructure"
+	OracleDatabase_ListCloudVmClusters_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListCloudVmClusters"
+	OracleDatabase_GetCloudVmCluster_FullMethodName                           = "/google.cloud.oracledatabase.v1.OracleDatabase/GetCloudVmCluster"
+	OracleDatabase_CreateCloudVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudVmCluster"
+	OracleDatabase_DeleteCloudVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudVmCluster"
+	OracleDatabase_ListEntitlements_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/ListEntitlements"
+	OracleDatabase_ListDbServers_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbServers"
+	OracleDatabase_ListDbNodes_FullMethodName                                 = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbNodes"
+	OracleDatabase_ListGiVersions_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGiVersions"
+	OracleDatabase_ListMinorVersions_FullMethodName                           = "/google.cloud.oracledatabase.v1.OracleDatabase/ListMinorVersions"
+	OracleDatabase_ListDbSystemShapes_FullMethodName                          = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemShapes"
+	OracleDatabase_ListAutonomousDatabases_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabases"
+	OracleDatabase_GetAutonomousDatabase_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/GetAutonomousDatabase"
+	OracleDatabase_CreateAutonomousDatabase_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateAutonomousDatabase"
+	OracleDatabase_UpdateAutonomousDatabase_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/UpdateAutonomousDatabase"
+	OracleDatabase_DeleteAutonomousDatabase_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteAutonomousDatabase"
+	OracleDatabase_RestoreAutonomousDatabase_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/RestoreAutonomousDatabase"
+	OracleDatabase_GenerateAutonomousDatabaseWallet_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/GenerateAutonomousDatabaseWallet"
+	OracleDatabase_ListAutonomousDbVersions_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDbVersions"
+	OracleDatabase_ListAutonomousDatabaseCharacterSets_FullMethodName         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabaseCharacterSets"
+	OracleDatabase_ListAutonomousDatabaseBackups_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabaseBackups"
+	OracleDatabase_StopAutonomousDatabase_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/StopAutonomousDatabase"
+	OracleDatabase_StartAutonomousDatabase_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/StartAutonomousDatabase"
+	OracleDatabase_RestartAutonomousDatabase_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/RestartAutonomousDatabase"
+	OracleDatabase_SwitchoverAutonomousDatabase_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/SwitchoverAutonomousDatabase"
+	OracleDatabase_FailoverAutonomousDatabase_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/FailoverAutonomousDatabase"
+	OracleDatabase_ListOdbNetworks_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbNetworks"
+	OracleDatabase_GetOdbNetwork_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbNetwork"
+	OracleDatabase_CreateOdbNetwork_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbNetwork"
+	OracleDatabase_DeleteOdbNetwork_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbNetwork"
+	OracleDatabase_ListOdbSubnets_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbSubnets"
+	OracleDatabase_GetOdbSubnet_FullMethodName                                = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbSubnet"
+	OracleDatabase_CreateOdbSubnet_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbSubnet"
+	OracleDatabase_DeleteOdbSubnet_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbSubnet"
+	OracleDatabase_ListExadbVmClusters_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExadbVmClusters"
+	OracleDatabase_GetExadbVmCluster_FullMethodName                           = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExadbVmCluster"
+	OracleDatabase_CreateExadbVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExadbVmCluster"
+	OracleDatabase_DeleteExadbVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteExadbVmCluster"
+	OracleDatabase_UpdateExadbVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/UpdateExadbVmCluster"
+	OracleDatabase_RemoveVirtualMachineExadbVmCluster_FullMethodName          = "/google.cloud.oracledatabase.v1.OracleDatabase/RemoveVirtualMachineExadbVmCluster"
+	OracleDatabase_ListExascaleDbStorageVaults_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExascaleDbStorageVaults"
+	OracleDatabase_GetExascaleDbStorageVault_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExascaleDbStorageVault"
+	OracleDatabase_CreateExascaleDbStorageVault_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExascaleDbStorageVault"
+	OracleDatabase_DeleteExascaleDbStorageVault_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteExascaleDbStorageVault"
+	OracleDatabase_ListDbSystemInitialStorageSizes_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemInitialStorageSizes"
+	OracleDatabase_ListDatabases_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabases"
+	OracleDatabase_GetDatabase_FullMethodName                                 = "/google.cloud.oracledatabase.v1.OracleDatabase/GetDatabase"
+	OracleDatabase_ListPluggableDatabases_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListPluggableDatabases"
+	OracleDatabase_GetPluggableDatabase_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/GetPluggableDatabase"
+	OracleDatabase_ListDbSystems_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystems"
+	OracleDatabase_GetDbSystem_FullMethodName                                 = "/google.cloud.oracledatabase.v1.OracleDatabase/GetDbSystem"
+	OracleDatabase_CreateDbSystem_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateDbSystem"
+	OracleDatabase_DeleteDbSystem_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteDbSystem"
+	OracleDatabase_ListGoldengateDeployments_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeployments"
+	OracleDatabase_GetGoldengateDeployment_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeployment"
+	OracleDatabase_CreateGoldengateDeployment_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateDeployment"
+	OracleDatabase_DeleteGoldengateDeployment_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateDeployment"
+	OracleDatabase_StopGoldengateDeployment_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/StopGoldengateDeployment"
+	OracleDatabase_StartGoldengateDeployment_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/StartGoldengateDeployment"
+	OracleDatabase_ListGoldengateConnections_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnections"
+	OracleDatabase_GetGoldengateConnection_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnection"
+	OracleDatabase_CreateGoldengateConnection_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnection"
+	OracleDatabase_DeleteGoldengateConnection_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnection"
+	OracleDatabase_ListGoldengateDeploymentVersions_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentVersions"
+	OracleDatabase_ListGoldengateDeploymentTypes_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentTypes"
+	OracleDatabase_ListGoldengateDeploymentEnvironments_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentEnvironments"
+	OracleDatabase_ListGoldengateConnectionTypes_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnectionTypes"
+	OracleDatabase_ListDbVersions_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbVersions"
+	OracleDatabase_ListDatabaseCharacterSets_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabaseCharacterSets"
+	OracleDatabase_ListGoldengateConnectionAssignments_FullMethodName         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnectionAssignments"
+	OracleDatabase_GetGoldengateConnectionAssignment_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnectionAssignment"
+	OracleDatabase_CreateGoldengateConnectionAssignment_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnectionAssignment"
+	OracleDatabase_DeleteGoldengateConnectionAssignment_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnectionAssignment"
+	OracleDatabase_TestGoldengateConnectionAssignment_FullMethodName          = "/google.cloud.oracledatabase.v1.OracleDatabase/TestGoldengateConnectionAssignment"
 )
 
 // OracleDatabaseClient is the client API for OracleDatabase service.
@@ -107,6 +127,8 @@ type OracleDatabaseClient interface {
 	CreateCloudExadataInfrastructure(ctx context.Context, in *CreateCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Exadata Infrastructure.
 	DeleteCloudExadataInfrastructure(ctx context.Context, in *DeleteCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Configures Exascale for a single Exadata Infrastructure.
+	ConfigureExascaleCloudExadataInfrastructure(ctx context.Context, in *ConfigureExascaleCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists the VM Clusters in a given project and location.
 	ListCloudVmClusters(ctx context.Context, in *ListCloudVmClustersRequest, opts ...grpc.CallOption) (*ListCloudVmClustersResponse, error)
 	// Gets details of a single VM Cluster.
@@ -221,10 +243,49 @@ type OracleDatabaseClient interface {
 	CreateDbSystem(ctx context.Context, in *CreateDbSystemRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single DbSystem.
 	DeleteDbSystem(ctx context.Context, in *DeleteDbSystemRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Lists all the GoldengateDeployments for the given project and location.
+	ListGoldengateDeployments(ctx context.Context, in *ListGoldengateDeploymentsRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentsResponse, error)
+	// Gets details of a single GoldengateDeployment.
+	GetGoldengateDeployment(ctx context.Context, in *GetGoldengateDeploymentRequest, opts ...grpc.CallOption) (*GoldengateDeployment, error)
+	// Creates a new GoldengateDeployment in a given project and location.
+	CreateGoldengateDeployment(ctx context.Context, in *CreateGoldengateDeploymentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a single GoldengateDeployment.
+	DeleteGoldengateDeployment(ctx context.Context, in *DeleteGoldengateDeploymentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Stops a single GoldengateDeployment.
+	StopGoldengateDeployment(ctx context.Context, in *StopGoldengateDeploymentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Starts a single GoldengateDeployment.
+	StartGoldengateDeployment(ctx context.Context, in *StartGoldengateDeploymentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Lists all the GoldengateConnections for the given project and location.
+	ListGoldengateConnections(ctx context.Context, in *ListGoldengateConnectionsRequest, opts ...grpc.CallOption) (*ListGoldengateConnectionsResponse, error)
+	// Gets details of a single GoldengateConnection.
+	GetGoldengateConnection(ctx context.Context, in *GetGoldengateConnectionRequest, opts ...grpc.CallOption) (*GoldengateConnection, error)
+	// Creates a new GoldengateConnection in a given project and location.
+	CreateGoldengateConnection(ctx context.Context, in *CreateGoldengateConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a single GoldengateConnection.
+	DeleteGoldengateConnection(ctx context.Context, in *DeleteGoldengateConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Lists GoldengateDeploymentVersions in a given project and location.
+	ListGoldengateDeploymentVersions(ctx context.Context, in *ListGoldengateDeploymentVersionsRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentVersionsResponse, error)
+	// Lists GoldenGateDeploymentTypes in a given project and location.
+	ListGoldengateDeploymentTypes(ctx context.Context, in *ListGoldengateDeploymentTypesRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentTypesResponse, error)
+	// Lists GoldengateDeploymentEnvironments in a given project and location.
+	ListGoldengateDeploymentEnvironments(ctx context.Context, in *ListGoldengateDeploymentEnvironmentsRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentEnvironmentsResponse, error)
+	// Lists GoldengateConnectionTypes in a given project and location.
+	ListGoldengateConnectionTypes(ctx context.Context, in *ListGoldengateConnectionTypesRequest, opts ...grpc.CallOption) (*ListGoldengateConnectionTypesResponse, error)
 	// List DbVersions for the given project and location.
 	ListDbVersions(ctx context.Context, in *ListDbVersionsRequest, opts ...grpc.CallOption) (*ListDbVersionsResponse, error)
 	// List DatabaseCharacterSets for the given project and location.
 	ListDatabaseCharacterSets(ctx context.Context, in *ListDatabaseCharacterSetsRequest, opts ...grpc.CallOption) (*ListDatabaseCharacterSetsResponse, error)
+	// Lists GoldengateConnectionAssignments in a given project and location.
+	ListGoldengateConnectionAssignments(ctx context.Context, in *ListGoldengateConnectionAssignmentsRequest, opts ...grpc.CallOption) (*ListGoldengateConnectionAssignmentsResponse, error)
+	// Gets details of a single GoldengateConnectionAssignment.
+	GetGoldengateConnectionAssignment(ctx context.Context, in *GetGoldengateConnectionAssignmentRequest, opts ...grpc.CallOption) (*GoldengateConnectionAssignment, error)
+	// Creates a new GoldengateConnectionAssignment in a given project and
+	// location.
+	CreateGoldengateConnectionAssignment(ctx context.Context, in *CreateGoldengateConnectionAssignmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a single GoldengateConnectionAssignment.
+	DeleteGoldengateConnectionAssignment(ctx context.Context, in *DeleteGoldengateConnectionAssignmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Tests a single GoldengateConnectionAssignment.
+	TestGoldengateConnectionAssignment(ctx context.Context, in *TestGoldengateConnectionAssignmentRequest, opts ...grpc.CallOption) (*TestGoldengateConnectionAssignmentResponse, error)
 }
 
 type oracleDatabaseClient struct {
@@ -265,6 +326,15 @@ func (c *oracleDatabaseClient) CreateCloudExadataInfrastructure(ctx context.Cont
 func (c *oracleDatabaseClient) DeleteCloudExadataInfrastructure(ctx context.Context, in *DeleteCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, OracleDatabase_DeleteCloudExadataInfrastructure_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ConfigureExascaleCloudExadataInfrastructure(ctx context.Context, in *ConfigureExascaleCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -739,6 +809,132 @@ func (c *oracleDatabaseClient) DeleteDbSystem(ctx context.Context, in *DeleteDbS
 	return out, nil
 }
 
+func (c *oracleDatabaseClient) ListGoldengateDeployments(ctx context.Context, in *ListGoldengateDeploymentsRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentsResponse, error) {
+	out := new(ListGoldengateDeploymentsResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListGoldengateDeployments_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) GetGoldengateDeployment(ctx context.Context, in *GetGoldengateDeploymentRequest, opts ...grpc.CallOption) (*GoldengateDeployment, error) {
+	out := new(GoldengateDeployment)
+	err := c.cc.Invoke(ctx, OracleDatabase_GetGoldengateDeployment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) CreateGoldengateDeployment(ctx context.Context, in *CreateGoldengateDeploymentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_CreateGoldengateDeployment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) DeleteGoldengateDeployment(ctx context.Context, in *DeleteGoldengateDeploymentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_DeleteGoldengateDeployment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) StopGoldengateDeployment(ctx context.Context, in *StopGoldengateDeploymentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_StopGoldengateDeployment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) StartGoldengateDeployment(ctx context.Context, in *StartGoldengateDeploymentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_StartGoldengateDeployment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListGoldengateConnections(ctx context.Context, in *ListGoldengateConnectionsRequest, opts ...grpc.CallOption) (*ListGoldengateConnectionsResponse, error) {
+	out := new(ListGoldengateConnectionsResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListGoldengateConnections_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) GetGoldengateConnection(ctx context.Context, in *GetGoldengateConnectionRequest, opts ...grpc.CallOption) (*GoldengateConnection, error) {
+	out := new(GoldengateConnection)
+	err := c.cc.Invoke(ctx, OracleDatabase_GetGoldengateConnection_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) CreateGoldengateConnection(ctx context.Context, in *CreateGoldengateConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_CreateGoldengateConnection_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) DeleteGoldengateConnection(ctx context.Context, in *DeleteGoldengateConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_DeleteGoldengateConnection_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListGoldengateDeploymentVersions(ctx context.Context, in *ListGoldengateDeploymentVersionsRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentVersionsResponse, error) {
+	out := new(ListGoldengateDeploymentVersionsResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListGoldengateDeploymentVersions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListGoldengateDeploymentTypes(ctx context.Context, in *ListGoldengateDeploymentTypesRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentTypesResponse, error) {
+	out := new(ListGoldengateDeploymentTypesResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListGoldengateDeploymentTypes_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListGoldengateDeploymentEnvironments(ctx context.Context, in *ListGoldengateDeploymentEnvironmentsRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentEnvironmentsResponse, error) {
+	out := new(ListGoldengateDeploymentEnvironmentsResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListGoldengateDeploymentEnvironments_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ListGoldengateConnectionTypes(ctx context.Context, in *ListGoldengateConnectionTypesRequest, opts ...grpc.CallOption) (*ListGoldengateConnectionTypesResponse, error) {
+	out := new(ListGoldengateConnectionTypesResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListGoldengateConnectionTypes_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *oracleDatabaseClient) ListDbVersions(ctx context.Context, in *ListDbVersionsRequest, opts ...grpc.CallOption) (*ListDbVersionsResponse, error) {
 	out := new(ListDbVersionsResponse)
 	err := c.cc.Invoke(ctx, OracleDatabase_ListDbVersions_FullMethodName, in, out, opts...)
@@ -757,6 +953,51 @@ func (c *oracleDatabaseClient) ListDatabaseCharacterSets(ctx context.Context, in
 	return out, nil
 }
 
+func (c *oracleDatabaseClient) ListGoldengateConnectionAssignments(ctx context.Context, in *ListGoldengateConnectionAssignmentsRequest, opts ...grpc.CallOption) (*ListGoldengateConnectionAssignmentsResponse, error) {
+	out := new(ListGoldengateConnectionAssignmentsResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_ListGoldengateConnectionAssignments_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) GetGoldengateConnectionAssignment(ctx context.Context, in *GetGoldengateConnectionAssignmentRequest, opts ...grpc.CallOption) (*GoldengateConnectionAssignment, error) {
+	out := new(GoldengateConnectionAssignment)
+	err := c.cc.Invoke(ctx, OracleDatabase_GetGoldengateConnectionAssignment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) CreateGoldengateConnectionAssignment(ctx context.Context, in *CreateGoldengateConnectionAssignmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_CreateGoldengateConnectionAssignment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) DeleteGoldengateConnectionAssignment(ctx context.Context, in *DeleteGoldengateConnectionAssignmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_DeleteGoldengateConnectionAssignment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) TestGoldengateConnectionAssignment(ctx context.Context, in *TestGoldengateConnectionAssignmentRequest, opts ...grpc.CallOption) (*TestGoldengateConnectionAssignmentResponse, error) {
+	out := new(TestGoldengateConnectionAssignmentResponse)
+	err := c.cc.Invoke(ctx, OracleDatabase_TestGoldengateConnectionAssignment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OracleDatabaseServer is the server API for OracleDatabase service.
 // All implementations should embed UnimplementedOracleDatabaseServer
 // for forward compatibility
@@ -769,6 +1010,8 @@ type OracleDatabaseServer interface {
 	CreateCloudExadataInfrastructure(context.Context, *CreateCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Exadata Infrastructure.
 	DeleteCloudExadataInfrastructure(context.Context, *DeleteCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error)
+	// Configures Exascale for a single Exadata Infrastructure.
+	ConfigureExascaleCloudExadataInfrastructure(context.Context, *ConfigureExascaleCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error)
 	// Lists the VM Clusters in a given project and location.
 	ListCloudVmClusters(context.Context, *ListCloudVmClustersRequest) (*ListCloudVmClustersResponse, error)
 	// Gets details of a single VM Cluster.
@@ -883,10 +1126,49 @@ type OracleDatabaseServer interface {
 	CreateDbSystem(context.Context, *CreateDbSystemRequest) (*longrunningpb.Operation, error)
 	// Deletes a single DbSystem.
 	DeleteDbSystem(context.Context, *DeleteDbSystemRequest) (*longrunningpb.Operation, error)
+	// Lists all the GoldengateDeployments for the given project and location.
+	ListGoldengateDeployments(context.Context, *ListGoldengateDeploymentsRequest) (*ListGoldengateDeploymentsResponse, error)
+	// Gets details of a single GoldengateDeployment.
+	GetGoldengateDeployment(context.Context, *GetGoldengateDeploymentRequest) (*GoldengateDeployment, error)
+	// Creates a new GoldengateDeployment in a given project and location.
+	CreateGoldengateDeployment(context.Context, *CreateGoldengateDeploymentRequest) (*longrunningpb.Operation, error)
+	// Deletes a single GoldengateDeployment.
+	DeleteGoldengateDeployment(context.Context, *DeleteGoldengateDeploymentRequest) (*longrunningpb.Operation, error)
+	// Stops a single GoldengateDeployment.
+	StopGoldengateDeployment(context.Context, *StopGoldengateDeploymentRequest) (*longrunningpb.Operation, error)
+	// Starts a single GoldengateDeployment.
+	StartGoldengateDeployment(context.Context, *StartGoldengateDeploymentRequest) (*longrunningpb.Operation, error)
+	// Lists all the GoldengateConnections for the given project and location.
+	ListGoldengateConnections(context.Context, *ListGoldengateConnectionsRequest) (*ListGoldengateConnectionsResponse, error)
+	// Gets details of a single GoldengateConnection.
+	GetGoldengateConnection(context.Context, *GetGoldengateConnectionRequest) (*GoldengateConnection, error)
+	// Creates a new GoldengateConnection in a given project and location.
+	CreateGoldengateConnection(context.Context, *CreateGoldengateConnectionRequest) (*longrunningpb.Operation, error)
+	// Deletes a single GoldengateConnection.
+	DeleteGoldengateConnection(context.Context, *DeleteGoldengateConnectionRequest) (*longrunningpb.Operation, error)
+	// Lists GoldengateDeploymentVersions in a given project and location.
+	ListGoldengateDeploymentVersions(context.Context, *ListGoldengateDeploymentVersionsRequest) (*ListGoldengateDeploymentVersionsResponse, error)
+	// Lists GoldenGateDeploymentTypes in a given project and location.
+	ListGoldengateDeploymentTypes(context.Context, *ListGoldengateDeploymentTypesRequest) (*ListGoldengateDeploymentTypesResponse, error)
+	// Lists GoldengateDeploymentEnvironments in a given project and location.
+	ListGoldengateDeploymentEnvironments(context.Context, *ListGoldengateDeploymentEnvironmentsRequest) (*ListGoldengateDeploymentEnvironmentsResponse, error)
+	// Lists GoldengateConnectionTypes in a given project and location.
+	ListGoldengateConnectionTypes(context.Context, *ListGoldengateConnectionTypesRequest) (*ListGoldengateConnectionTypesResponse, error)
 	// List DbVersions for the given project and location.
 	ListDbVersions(context.Context, *ListDbVersionsRequest) (*ListDbVersionsResponse, error)
 	// List DatabaseCharacterSets for the given project and location.
 	ListDatabaseCharacterSets(context.Context, *ListDatabaseCharacterSetsRequest) (*ListDatabaseCharacterSetsResponse, error)
+	// Lists GoldengateConnectionAssignments in a given project and location.
+	ListGoldengateConnectionAssignments(context.Context, *ListGoldengateConnectionAssignmentsRequest) (*ListGoldengateConnectionAssignmentsResponse, error)
+	// Gets details of a single GoldengateConnectionAssignment.
+	GetGoldengateConnectionAssignment(context.Context, *GetGoldengateConnectionAssignmentRequest) (*GoldengateConnectionAssignment, error)
+	// Creates a new GoldengateConnectionAssignment in a given project and
+	// location.
+	CreateGoldengateConnectionAssignment(context.Context, *CreateGoldengateConnectionAssignmentRequest) (*longrunningpb.Operation, error)
+	// Deletes a single GoldengateConnectionAssignment.
+	DeleteGoldengateConnectionAssignment(context.Context, *DeleteGoldengateConnectionAssignmentRequest) (*longrunningpb.Operation, error)
+	// Tests a single GoldengateConnectionAssignment.
+	TestGoldengateConnectionAssignment(context.Context, *TestGoldengateConnectionAssignmentRequest) (*TestGoldengateConnectionAssignmentResponse, error)
 }
 
 // UnimplementedOracleDatabaseServer should be embedded to have forward compatible implementations.
@@ -904,6 +1186,9 @@ func (UnimplementedOracleDatabaseServer) CreateCloudExadataInfrastructure(contex
 }
 func (UnimplementedOracleDatabaseServer) DeleteCloudExadataInfrastructure(context.Context, *DeleteCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCloudExadataInfrastructure not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ConfigureExascaleCloudExadataInfrastructure(context.Context, *ConfigureExascaleCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConfigureExascaleCloudExadataInfrastructure not implemented")
 }
 func (UnimplementedOracleDatabaseServer) ListCloudVmClusters(context.Context, *ListCloudVmClustersRequest) (*ListCloudVmClustersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListCloudVmClusters not implemented")
@@ -1061,11 +1346,68 @@ func (UnimplementedOracleDatabaseServer) CreateDbSystem(context.Context, *Create
 func (UnimplementedOracleDatabaseServer) DeleteDbSystem(context.Context, *DeleteDbSystemRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDbSystem not implemented")
 }
+func (UnimplementedOracleDatabaseServer) ListGoldengateDeployments(context.Context, *ListGoldengateDeploymentsRequest) (*ListGoldengateDeploymentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateDeployments not implemented")
+}
+func (UnimplementedOracleDatabaseServer) GetGoldengateDeployment(context.Context, *GetGoldengateDeploymentRequest) (*GoldengateDeployment, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGoldengateDeployment not implemented")
+}
+func (UnimplementedOracleDatabaseServer) CreateGoldengateDeployment(context.Context, *CreateGoldengateDeploymentRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGoldengateDeployment not implemented")
+}
+func (UnimplementedOracleDatabaseServer) DeleteGoldengateDeployment(context.Context, *DeleteGoldengateDeploymentRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteGoldengateDeployment not implemented")
+}
+func (UnimplementedOracleDatabaseServer) StopGoldengateDeployment(context.Context, *StopGoldengateDeploymentRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StopGoldengateDeployment not implemented")
+}
+func (UnimplementedOracleDatabaseServer) StartGoldengateDeployment(context.Context, *StartGoldengateDeploymentRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartGoldengateDeployment not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListGoldengateConnections(context.Context, *ListGoldengateConnectionsRequest) (*ListGoldengateConnectionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateConnections not implemented")
+}
+func (UnimplementedOracleDatabaseServer) GetGoldengateConnection(context.Context, *GetGoldengateConnectionRequest) (*GoldengateConnection, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGoldengateConnection not implemented")
+}
+func (UnimplementedOracleDatabaseServer) CreateGoldengateConnection(context.Context, *CreateGoldengateConnectionRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGoldengateConnection not implemented")
+}
+func (UnimplementedOracleDatabaseServer) DeleteGoldengateConnection(context.Context, *DeleteGoldengateConnectionRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteGoldengateConnection not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListGoldengateDeploymentVersions(context.Context, *ListGoldengateDeploymentVersionsRequest) (*ListGoldengateDeploymentVersionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateDeploymentVersions not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListGoldengateDeploymentTypes(context.Context, *ListGoldengateDeploymentTypesRequest) (*ListGoldengateDeploymentTypesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateDeploymentTypes not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListGoldengateDeploymentEnvironments(context.Context, *ListGoldengateDeploymentEnvironmentsRequest) (*ListGoldengateDeploymentEnvironmentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateDeploymentEnvironments not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListGoldengateConnectionTypes(context.Context, *ListGoldengateConnectionTypesRequest) (*ListGoldengateConnectionTypesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateConnectionTypes not implemented")
+}
 func (UnimplementedOracleDatabaseServer) ListDbVersions(context.Context, *ListDbVersionsRequest) (*ListDbVersionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDbVersions not implemented")
 }
 func (UnimplementedOracleDatabaseServer) ListDatabaseCharacterSets(context.Context, *ListDatabaseCharacterSetsRequest) (*ListDatabaseCharacterSetsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDatabaseCharacterSets not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ListGoldengateConnectionAssignments(context.Context, *ListGoldengateConnectionAssignmentsRequest) (*ListGoldengateConnectionAssignmentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateConnectionAssignments not implemented")
+}
+func (UnimplementedOracleDatabaseServer) GetGoldengateConnectionAssignment(context.Context, *GetGoldengateConnectionAssignmentRequest) (*GoldengateConnectionAssignment, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGoldengateConnectionAssignment not implemented")
+}
+func (UnimplementedOracleDatabaseServer) CreateGoldengateConnectionAssignment(context.Context, *CreateGoldengateConnectionAssignmentRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGoldengateConnectionAssignment not implemented")
+}
+func (UnimplementedOracleDatabaseServer) DeleteGoldengateConnectionAssignment(context.Context, *DeleteGoldengateConnectionAssignmentRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteGoldengateConnectionAssignment not implemented")
+}
+func (UnimplementedOracleDatabaseServer) TestGoldengateConnectionAssignment(context.Context, *TestGoldengateConnectionAssignmentRequest) (*TestGoldengateConnectionAssignmentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TestGoldengateConnectionAssignment not implemented")
 }
 
 // UnsafeOracleDatabaseServer may be embedded to opt out of forward compatibility for this service.
@@ -1147,6 +1489,24 @@ func _OracleDatabase_DeleteCloudExadataInfrastructure_Handler(srv interface{}, c
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OracleDatabaseServer).DeleteCloudExadataInfrastructure(ctx, req.(*DeleteCloudExadataInfrastructureRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfigureExascaleCloudExadataInfrastructureRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ConfigureExascaleCloudExadataInfrastructure(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ConfigureExascaleCloudExadataInfrastructure(ctx, req.(*ConfigureExascaleCloudExadataInfrastructureRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2087,6 +2447,258 @@ func _OracleDatabase_DeleteDbSystem_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OracleDatabase_ListGoldengateDeployments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListGoldengateDeploymentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListGoldengateDeployments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListGoldengateDeployments_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListGoldengateDeployments(ctx, req.(*ListGoldengateDeploymentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_GetGoldengateDeployment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGoldengateDeploymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).GetGoldengateDeployment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_GetGoldengateDeployment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).GetGoldengateDeployment(ctx, req.(*GetGoldengateDeploymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_CreateGoldengateDeployment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateGoldengateDeploymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).CreateGoldengateDeployment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_CreateGoldengateDeployment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).CreateGoldengateDeployment(ctx, req.(*CreateGoldengateDeploymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_DeleteGoldengateDeployment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteGoldengateDeploymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).DeleteGoldengateDeployment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_DeleteGoldengateDeployment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).DeleteGoldengateDeployment(ctx, req.(*DeleteGoldengateDeploymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_StopGoldengateDeployment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StopGoldengateDeploymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).StopGoldengateDeployment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_StopGoldengateDeployment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).StopGoldengateDeployment(ctx, req.(*StopGoldengateDeploymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_StartGoldengateDeployment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartGoldengateDeploymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).StartGoldengateDeployment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_StartGoldengateDeployment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).StartGoldengateDeployment(ctx, req.(*StartGoldengateDeploymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListGoldengateConnections_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListGoldengateConnectionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListGoldengateConnections(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListGoldengateConnections_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListGoldengateConnections(ctx, req.(*ListGoldengateConnectionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_GetGoldengateConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGoldengateConnectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).GetGoldengateConnection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_GetGoldengateConnection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).GetGoldengateConnection(ctx, req.(*GetGoldengateConnectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_CreateGoldengateConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateGoldengateConnectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).CreateGoldengateConnection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_CreateGoldengateConnection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).CreateGoldengateConnection(ctx, req.(*CreateGoldengateConnectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_DeleteGoldengateConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteGoldengateConnectionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).DeleteGoldengateConnection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_DeleteGoldengateConnection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).DeleteGoldengateConnection(ctx, req.(*DeleteGoldengateConnectionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListGoldengateDeploymentVersions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListGoldengateDeploymentVersionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListGoldengateDeploymentVersions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListGoldengateDeploymentVersions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListGoldengateDeploymentVersions(ctx, req.(*ListGoldengateDeploymentVersionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListGoldengateDeploymentTypes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListGoldengateDeploymentTypesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListGoldengateDeploymentTypes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListGoldengateDeploymentTypes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListGoldengateDeploymentTypes(ctx, req.(*ListGoldengateDeploymentTypesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListGoldengateDeploymentEnvironments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListGoldengateDeploymentEnvironmentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListGoldengateDeploymentEnvironments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListGoldengateDeploymentEnvironments_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListGoldengateDeploymentEnvironments(ctx, req.(*ListGoldengateDeploymentEnvironmentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ListGoldengateConnectionTypes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListGoldengateConnectionTypesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListGoldengateConnectionTypes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListGoldengateConnectionTypes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListGoldengateConnectionTypes(ctx, req.(*ListGoldengateConnectionTypesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _OracleDatabase_ListDbVersions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListDbVersionsRequest)
 	if err := dec(in); err != nil {
@@ -2123,6 +2735,96 @@ func _OracleDatabase_ListDatabaseCharacterSets_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OracleDatabase_ListGoldengateConnectionAssignments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListGoldengateConnectionAssignmentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ListGoldengateConnectionAssignments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ListGoldengateConnectionAssignments_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ListGoldengateConnectionAssignments(ctx, req.(*ListGoldengateConnectionAssignmentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_GetGoldengateConnectionAssignment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGoldengateConnectionAssignmentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).GetGoldengateConnectionAssignment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_GetGoldengateConnectionAssignment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).GetGoldengateConnectionAssignment(ctx, req.(*GetGoldengateConnectionAssignmentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_CreateGoldengateConnectionAssignment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateGoldengateConnectionAssignmentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).CreateGoldengateConnectionAssignment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_CreateGoldengateConnectionAssignment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).CreateGoldengateConnectionAssignment(ctx, req.(*CreateGoldengateConnectionAssignmentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_DeleteGoldengateConnectionAssignment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteGoldengateConnectionAssignmentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).DeleteGoldengateConnectionAssignment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_DeleteGoldengateConnectionAssignment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).DeleteGoldengateConnectionAssignment(ctx, req.(*DeleteGoldengateConnectionAssignmentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_TestGoldengateConnectionAssignment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TestGoldengateConnectionAssignmentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).TestGoldengateConnectionAssignment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_TestGoldengateConnectionAssignment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).TestGoldengateConnectionAssignment(ctx, req.(*TestGoldengateConnectionAssignmentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OracleDatabase_ServiceDesc is the grpc.ServiceDesc for OracleDatabase service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -2145,6 +2847,10 @@ var OracleDatabase_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteCloudExadataInfrastructure",
 			Handler:    _OracleDatabase_DeleteCloudExadataInfrastructure_Handler,
+		},
+		{
+			MethodName: "ConfigureExascaleCloudExadataInfrastructure",
+			Handler:    _OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_Handler,
 		},
 		{
 			MethodName: "ListCloudVmClusters",
@@ -2355,12 +3061,88 @@ var OracleDatabase_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _OracleDatabase_DeleteDbSystem_Handler,
 		},
 		{
+			MethodName: "ListGoldengateDeployments",
+			Handler:    _OracleDatabase_ListGoldengateDeployments_Handler,
+		},
+		{
+			MethodName: "GetGoldengateDeployment",
+			Handler:    _OracleDatabase_GetGoldengateDeployment_Handler,
+		},
+		{
+			MethodName: "CreateGoldengateDeployment",
+			Handler:    _OracleDatabase_CreateGoldengateDeployment_Handler,
+		},
+		{
+			MethodName: "DeleteGoldengateDeployment",
+			Handler:    _OracleDatabase_DeleteGoldengateDeployment_Handler,
+		},
+		{
+			MethodName: "StopGoldengateDeployment",
+			Handler:    _OracleDatabase_StopGoldengateDeployment_Handler,
+		},
+		{
+			MethodName: "StartGoldengateDeployment",
+			Handler:    _OracleDatabase_StartGoldengateDeployment_Handler,
+		},
+		{
+			MethodName: "ListGoldengateConnections",
+			Handler:    _OracleDatabase_ListGoldengateConnections_Handler,
+		},
+		{
+			MethodName: "GetGoldengateConnection",
+			Handler:    _OracleDatabase_GetGoldengateConnection_Handler,
+		},
+		{
+			MethodName: "CreateGoldengateConnection",
+			Handler:    _OracleDatabase_CreateGoldengateConnection_Handler,
+		},
+		{
+			MethodName: "DeleteGoldengateConnection",
+			Handler:    _OracleDatabase_DeleteGoldengateConnection_Handler,
+		},
+		{
+			MethodName: "ListGoldengateDeploymentVersions",
+			Handler:    _OracleDatabase_ListGoldengateDeploymentVersions_Handler,
+		},
+		{
+			MethodName: "ListGoldengateDeploymentTypes",
+			Handler:    _OracleDatabase_ListGoldengateDeploymentTypes_Handler,
+		},
+		{
+			MethodName: "ListGoldengateDeploymentEnvironments",
+			Handler:    _OracleDatabase_ListGoldengateDeploymentEnvironments_Handler,
+		},
+		{
+			MethodName: "ListGoldengateConnectionTypes",
+			Handler:    _OracleDatabase_ListGoldengateConnectionTypes_Handler,
+		},
+		{
 			MethodName: "ListDbVersions",
 			Handler:    _OracleDatabase_ListDbVersions_Handler,
 		},
 		{
 			MethodName: "ListDatabaseCharacterSets",
 			Handler:    _OracleDatabase_ListDatabaseCharacterSets_Handler,
+		},
+		{
+			MethodName: "ListGoldengateConnectionAssignments",
+			Handler:    _OracleDatabase_ListGoldengateConnectionAssignments_Handler,
+		},
+		{
+			MethodName: "GetGoldengateConnectionAssignment",
+			Handler:    _OracleDatabase_GetGoldengateConnectionAssignment_Handler,
+		},
+		{
+			MethodName: "CreateGoldengateConnectionAssignment",
+			Handler:    _OracleDatabase_CreateGoldengateConnectionAssignment_Handler,
+		},
+		{
+			MethodName: "DeleteGoldengateConnectionAssignment",
+			Handler:    _OracleDatabase_DeleteGoldengateConnectionAssignment_Handler,
+		},
+		{
+			MethodName: "TestGoldengateConnectionAssignment",
+			Handler:    _OracleDatabase_TestGoldengateConnectionAssignment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

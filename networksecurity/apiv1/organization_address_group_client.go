@@ -32,6 +32,7 @@ import (
 	networksecuritypb "cloud.google.com/go/networksecurity/apiv1/networksecuritypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -730,8 +731,12 @@ func (c *organizationAddressGroupGRPCClient) CreateAddressGroup(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateAddressGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAddressGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -753,8 +758,12 @@ func (c *organizationAddressGroupGRPCClient) UpdateAddressGroup(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateAddressGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAddressGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -779,8 +788,12 @@ func (c *organizationAddressGroupGRPCClient) AddAddressGroupItems(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.AddAddressGroupItemsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddAddressGroupItemsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -805,8 +818,12 @@ func (c *organizationAddressGroupGRPCClient) RemoveAddressGroupItems(ctx context
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.RemoveAddressGroupItemsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveAddressGroupItemsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -831,8 +848,12 @@ func (c *organizationAddressGroupGRPCClient) CloneAddressGroupItems(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CloneAddressGroupItemsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CloneAddressGroupItemsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -857,8 +878,12 @@ func (c *organizationAddressGroupGRPCClient) DeleteAddressGroup(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteAddressGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAddressGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1363,8 +1388,12 @@ func (c *organizationAddressGroupRESTClient) CreateAddressGroup(ctx context.Cont
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateAddressGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAddressGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1437,8 +1466,12 @@ func (c *organizationAddressGroupRESTClient) UpdateAddressGroup(ctx context.Cont
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateAddressGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAddressGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1503,8 +1536,12 @@ func (c *organizationAddressGroupRESTClient) AddAddressGroupItems(ctx context.Co
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.AddAddressGroupItemsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddAddressGroupItemsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1569,8 +1606,12 @@ func (c *organizationAddressGroupRESTClient) RemoveAddressGroupItems(ctx context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.RemoveAddressGroupItemsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveAddressGroupItemsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1635,8 +1676,12 @@ func (c *organizationAddressGroupRESTClient) CloneAddressGroupItems(ctx context.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CloneAddressGroupItemsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CloneAddressGroupItemsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1698,8 +1743,12 @@ func (c *organizationAddressGroupRESTClient) DeleteAddressGroup(ctx context.Cont
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteAddressGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAddressGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2355,7 +2404,7 @@ func (c *organizationAddressGroupRESTClient) ListOperations(ctx context.Context,
 // The name must be that of a previously created AddAddressGroupItemsOperation, possibly from a different process.
 func (c *organizationAddressGroupGRPCClient) AddAddressGroupItemsOperation(name string) *AddAddressGroupItemsOperation {
 	return &AddAddressGroupItemsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.AddAddressGroupItemsOperation"),
 	}
 }
 
@@ -2364,7 +2413,7 @@ func (c *organizationAddressGroupGRPCClient) AddAddressGroupItemsOperation(name 
 func (c *organizationAddressGroupRESTClient) AddAddressGroupItemsOperation(name string) *AddAddressGroupItemsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &AddAddressGroupItemsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.AddAddressGroupItemsOperation"),
 		pollPath: override,
 	}
 }
@@ -2373,7 +2422,7 @@ func (c *organizationAddressGroupRESTClient) AddAddressGroupItemsOperation(name 
 // The name must be that of a previously created CloneAddressGroupItemsOperation, possibly from a different process.
 func (c *organizationAddressGroupGRPCClient) CloneAddressGroupItemsOperation(name string) *CloneAddressGroupItemsOperation {
 	return &CloneAddressGroupItemsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CloneAddressGroupItemsOperation"),
 	}
 }
 
@@ -2382,7 +2431,7 @@ func (c *organizationAddressGroupGRPCClient) CloneAddressGroupItemsOperation(nam
 func (c *organizationAddressGroupRESTClient) CloneAddressGroupItemsOperation(name string) *CloneAddressGroupItemsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CloneAddressGroupItemsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CloneAddressGroupItemsOperation"),
 		pollPath: override,
 	}
 }
@@ -2391,7 +2440,7 @@ func (c *organizationAddressGroupRESTClient) CloneAddressGroupItemsOperation(nam
 // The name must be that of a previously created CreateAddressGroupOperation, possibly from a different process.
 func (c *organizationAddressGroupGRPCClient) CreateAddressGroupOperation(name string) *CreateAddressGroupOperation {
 	return &CreateAddressGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateAddressGroupOperation"),
 	}
 }
 
@@ -2400,7 +2449,7 @@ func (c *organizationAddressGroupGRPCClient) CreateAddressGroupOperation(name st
 func (c *organizationAddressGroupRESTClient) CreateAddressGroupOperation(name string) *CreateAddressGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAddressGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateAddressGroupOperation"),
 		pollPath: override,
 	}
 }
@@ -2409,7 +2458,7 @@ func (c *organizationAddressGroupRESTClient) CreateAddressGroupOperation(name st
 // The name must be that of a previously created DeleteAddressGroupOperation, possibly from a different process.
 func (c *organizationAddressGroupGRPCClient) DeleteAddressGroupOperation(name string) *DeleteAddressGroupOperation {
 	return &DeleteAddressGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteAddressGroupOperation"),
 	}
 }
 
@@ -2418,7 +2467,7 @@ func (c *organizationAddressGroupGRPCClient) DeleteAddressGroupOperation(name st
 func (c *organizationAddressGroupRESTClient) DeleteAddressGroupOperation(name string) *DeleteAddressGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAddressGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteAddressGroupOperation"),
 		pollPath: override,
 	}
 }
@@ -2427,7 +2476,7 @@ func (c *organizationAddressGroupRESTClient) DeleteAddressGroupOperation(name st
 // The name must be that of a previously created RemoveAddressGroupItemsOperation, possibly from a different process.
 func (c *organizationAddressGroupGRPCClient) RemoveAddressGroupItemsOperation(name string) *RemoveAddressGroupItemsOperation {
 	return &RemoveAddressGroupItemsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.RemoveAddressGroupItemsOperation"),
 	}
 }
 
@@ -2436,7 +2485,7 @@ func (c *organizationAddressGroupGRPCClient) RemoveAddressGroupItemsOperation(na
 func (c *organizationAddressGroupRESTClient) RemoveAddressGroupItemsOperation(name string) *RemoveAddressGroupItemsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RemoveAddressGroupItemsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.RemoveAddressGroupItemsOperation"),
 		pollPath: override,
 	}
 }
@@ -2445,7 +2494,7 @@ func (c *organizationAddressGroupRESTClient) RemoveAddressGroupItemsOperation(na
 // The name must be that of a previously created UpdateAddressGroupOperation, possibly from a different process.
 func (c *organizationAddressGroupGRPCClient) UpdateAddressGroupOperation(name string) *UpdateAddressGroupOperation {
 	return &UpdateAddressGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateAddressGroupOperation"),
 	}
 }
 
@@ -2454,7 +2503,7 @@ func (c *organizationAddressGroupGRPCClient) UpdateAddressGroupOperation(name st
 func (c *organizationAddressGroupRESTClient) UpdateAddressGroupOperation(name string) *UpdateAddressGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateAddressGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateAddressGroupOperation"),
 		pollPath: override,
 	}
 }

@@ -1,5 +1,19 @@
 # Changes
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/vectorsearch/v1.1.0...vectorsearch/v1.2.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/vectorsearch/v1.0.0...vectorsearch/v1.1.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv1.0.0) (2026-05-08)
 
 ## [0.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.11.0) (2026-05-07)
@@ -82,4 +96,3 @@
 ### Documentation
 
 * Added clarification of expected format of collection and index fields ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
-

@@ -45,6 +45,11 @@
                 "ExportBackup"
               ]
             },
+            "FinishMigration": {
+              "methods": [
+                "FinishMigration"
+              ]
+            },
             "GetBackup": {
               "methods": [
                 "GetBackup"
@@ -108,6 +113,11 @@
             "RescheduleMaintenance": {
               "methods": [
                 "RescheduleMaintenance"
+              ]
+            },
+            "StartMigration": {
+              "methods": [
+                "StartMigration"
               ]
             },
             "UpdateInstance": {
@@ -155,6 +165,11 @@
                 "ExportBackup"
               ]
             },
+            "FinishMigration": {
+              "methods": [
+                "FinishMigration"
+              ]
+            },
             "GetBackup": {
               "methods": [
                 "GetBackup"
@@ -218,6 +233,11 @@
             "RescheduleMaintenance": {
               "methods": [
                 "RescheduleMaintenance"
+              ]
+            },
+            "StartMigration": {
+              "methods": [
+                "StartMigration"
               ]
             },
             "UpdateInstance": {

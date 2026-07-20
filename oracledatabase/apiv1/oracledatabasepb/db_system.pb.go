@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -293,7 +293,8 @@ type DbSystemOptions_StorageManagement int32
 const (
 	// The storage management is unspecified.
 	DbSystemOptions_STORAGE_MANAGEMENT_UNSPECIFIED DbSystemOptions_StorageManagement = 0
-	// Automatic storage management.
+	// Automatic storage management. This option is not supported. Only LVM is
+	// supported.
 	DbSystemOptions_ASM DbSystemOptions_StorageManagement = 1
 	// Logical Volume management.
 	DbSystemOptions_LVM DbSystemOptions_StorageManagement = 2
@@ -1173,6 +1174,9 @@ type ListDbSystemsResponse struct {
 	DbSystems []*DbSystem `protobuf:"bytes,1,rep,name=db_systems,json=dbSystems,proto3" json:"db_systems,omitempty"`
 	// A token identifying a page of results the server should return.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// Unreachable locations when listing resources across all locations using
+	// wildcard location '-'.
+	Unreachable   []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1219,6 +1223,13 @@ func (x *ListDbSystemsResponse) GetNextPageToken() string {
 		return x.NextPageToken
 	}
 	return ""
+}
+
+func (x *ListDbSystemsResponse) GetUnreachable() []string {
+	if x != nil {
+		return x.Unreachable
+	}
+	return nil
 }
 
 var File_google_cloud_oracledatabase_v1_db_system_proto protoreflect.FileDescriptor
@@ -1338,11 +1349,12 @@ const file_google_cloud_oracledatabase_v1_db_system_proto_rawDesc = "" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
 	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x88\x01\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xaa\x01\n" +
 	"\x15ListDbSystemsResponse\x12G\n" +
 	"\n" +
 	"db_systems\x18\x01 \x03(\v2(.google.cloud.oracledatabase.v1.DbSystemR\tdbSystems\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageTokenB\xe7\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachableB\xe7\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\rDbSystemProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 
 var (

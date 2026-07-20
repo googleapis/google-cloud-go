@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/ces/apiv1beta",
-    "version": "1.0.0"
+    "version": "1.3.0"
   },
   "snippets": [
     {
@@ -2057,7 +2057,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "AgentClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -3174,6 +3174,98 @@
           "fullName": "google.cloud.ces.v1beta.EvaluationClient",
           "shortName": "EvaluationClient"
         },
+        "fullName": "google.cloud.ces.v1beta.EvaluationClient.ExportEvaluationResults",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.EvaluationService.ExportEvaluationResults",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.EvaluationService",
+            "shortName": "EvaluationService"
+          },
+          "shortName": "ExportEvaluationResults"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.ExportEvaluationResultsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ExportEvaluationResultsOperation",
+        "shortName": "ExportEvaluationResults"
+      },
+      "description": "ExportEvaluationResults exports evaluations results.",
+      "file": "EvaluationClient/ExportEvaluationResults/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_EvaluationService_ExportEvaluationResults_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces ExportEvaluationResults Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.EvaluationClient",
+          "shortName": "EvaluationClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.EvaluationClient.ExportEvaluationRuns",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.EvaluationService.ExportEvaluationRuns",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.EvaluationService",
+            "shortName": "EvaluationService"
+          },
+          "shortName": "ExportEvaluationRuns"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.ExportEvaluationRunsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ExportEvaluationRunsOperation",
+        "shortName": "ExportEvaluationRuns"
+      },
+      "description": "ExportEvaluationRuns exports evaluations runs.",
+      "file": "EvaluationClient/ExportEvaluationRuns/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_EvaluationService_ExportEvaluationRuns_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces ExportEvaluationRuns Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.EvaluationClient",
+          "shortName": "EvaluationClient"
+        },
         "fullName": "google.cloud.ces.v1beta.EvaluationClient.ExportEvaluations",
         "method": {
           "fullName": "google.cloud.ces.v1beta.EvaluationService.ExportEvaluations",
@@ -3936,7 +4028,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "EvaluationClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -4087,6 +4179,52 @@
         }
       ],
       "title": "ces RunEvaluation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.EvaluationClient",
+          "shortName": "EvaluationClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.EvaluationClient.RunEvaluationResultMetrics",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.EvaluationService.RunEvaluationResultMetrics",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.EvaluationService",
+            "shortName": "EvaluationService"
+          },
+          "shortName": "RunEvaluationResultMetrics"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.RunEvaluationResultMetricsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RunEvaluationResultMetricsOperation",
+        "shortName": "RunEvaluationResultMetrics"
+      },
+      "description": "RunEvaluationResultMetrics runs metrics on an existing evaluation result.",
+      "file": "EvaluationClient/RunEvaluationResultMetrics/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_EvaluationService_RunEvaluationResultMetrics_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces RunEvaluationResultMetrics Sample"
     },
     {
       "clientMethod": {
@@ -4392,7 +4530,7 @@
         "resultType": "cespb.SessionService_BidiRunSessionClient",
         "shortName": "BidiRunSession"
       },
-      "description": "BidiRunSession establishes a bidirectional streaming connection with the CES agent.\nThe agent processes continuous multimodal inputs (e.g., text, audio) and\ngenerates real-time multimodal output streams.\n\n--- Client Request Stream ---\nThe client streams requests in the following order: \n\n1.  Initialization: \nThe first message must contain\n[SessionConfig][google.cloud.ces.v1beta.BidiSessionClientMessage.config].\nFor audio sessions, this should also include\n[InputAudioConfig][google.cloud.ces.v1beta.SessionConfig.input_audio_config]\nand\n[OutputAudioConfig][google.cloud.ces.v1beta.SessionConfig.output_audio_config]\nto define audio processing and synthesis parameters.\n\n2.  Interaction: \nSubsequent messages stream\n[SessionInput][google.cloud.ces.v1beta.BidiSessionClientMessage.realtime_input]\ncontaining real-time user input data.\n\n3.  Termination: \nThe client should half-close the stream when there is no more user\ninput. It should also half-close upon receiving\n[EndSession][google.cloud.ces.v1beta.BidiSessionServerMessage.end_session]\nor [GoAway][google.cloud.ces.v1beta.BidiSessionServerMessage.go_away]\nfrom the agent.\n\n--- Server Response Stream ---\nFor each interaction turn, the agent streams messages in the following\nsequence: \n\n1.  Speech Recognition (First N messages): \nContains\n[RecognitionResult][google.cloud.ces.v1beta.BidiSessionServerMessage.recognition_result]\nrepresenting the concatenated user speech segments captured so far.\nThis is only populated for audio sessions.\n\n2.  Response (Next M messages): \nContains\n[SessionOutput][google.cloud.ces.v1beta.BidiSessionServerMessage.session_output]\ndelivering the agent's response in various modalities (e.g., text,\naudio).\n\n3.  Turn Completion (Final message of the turn): \nContains\n[SessionOutput][google.cloud.ces.v1beta.BidiSessionServerMessage.session_output]\nwith\n[turn_completed][google.cloud.ces.v1beta.SessionOutput.turn_completed]\nset to true. This signals the end of the current turn and includes\n[DiagnosticInfo][google.cloud.ces.v1beta.SessionOutput.diagnostic_info]\nwith execution details.\n\n--- Audio Best Practices ---\n1.  Streaming: \nStream [audio data][google.cloud.ces.v1beta.SessionInput.audio]\n**CONTINUOUSLY**, even during silence. Recommended chunk size: 40-120ms\n(balances latency vs. efficiency).\n\n2.  Playback \u0026 Interruption: \nPlay [audio responses][google.cloud.ces.v1beta.SessionOutput.audio]\nupon receipt. Stop playback immediately if an\n[InterruptionSignal][google.cloud.ces.v1beta.BidiSessionServerMessage.interruption_signal]\nis received (e.g., user barge-in or new agent response).\n\n\nThis method is not supported for the REST transport.",
+      "description": "BidiRunSession establishes a bidirectional streaming connection with the CES agent.\nThe agent processes continuous multimodal inputs (e.g., text, audio) and\ngenerates real-time multimodal output streams.\n\n--- Client Request Stream ---\nThe client streams requests in the following order: \n\n1.  Initialization: \nThe first message must contain\n[SessionConfig][google.cloud.ces.v1beta.BidiSessionClientMessage.config].\nFor audio sessions, this should also include\n[InputAudioConfig][google.cloud.ces.v1beta.SessionConfig.input_audio_config]\nand\n[OutputAudioConfig][google.cloud.ces.v1beta.SessionConfig.output_audio_config]\nto define audio processing and synthesis parameters.\n\n2.  Interaction: \nSubsequent messages stream\n[SessionInput][google.cloud.ces.v1beta.BidiSessionClientMessage.realtime_input]\ncontaining real-time user input data.\n\n3.  Termination: \nThe client should half-close the stream when there is no more user\ninput. It should also half-close upon receiving\n[EndSession][google.cloud.ces.v1beta.BidiSessionServerMessage.end_session]\nor [GoAway][google.cloud.ces.v1beta.BidiSessionServerMessage.go_away]\nfrom the agent.\n\n--- Server Response Stream ---\nFor each interaction turn, the agent streams messages in the following\nsequence: \n\n1.  Speech Recognition (First N messages): \nContains\n[RecognitionResult][google.cloud.ces.v1beta.BidiSessionServerMessage.recognition_result]\nrepresenting the concatenated user speech segments captured so far.\nThis is only populated for audio sessions.\n\n2.  Response (Next M messages): \nContains\n[SessionOutput][google.cloud.ces.v1beta.BidiSessionServerMessage.session_output]\ndelivering the agent's response in various modalities (e.g., text,\naudio).\n\n3.  Turn Completion (Final message of the turn): \nContains\n[SessionOutput][google.cloud.ces.v1beta.BidiSessionServerMessage.session_output]\nwith\n[turn_completed][google.cloud.ces.v1beta.SessionOutput.turn_completed]\nset to true. This signals the end of the current turn and includes\n[DiagnosticInfo][google.cloud.ces.v1beta.SessionOutput.diagnostic_info]\nwith execution details.\n\n--- Audio Best Practices ---\n1.  Streaming: \nStream [audio data][google.cloud.ces.v1beta.SessionInput.audio]\n**CONTINUOUSLY**, even during silence. Recommended chunk size: 40-120ms\n(balances latency vs. efficiency).\n\n2.  Playback & Interruption: \nPlay [audio responses][google.cloud.ces.v1beta.SessionOutput.audio]\nupon receipt. Stop playback immediately if an\n[InterruptionSignal][google.cloud.ces.v1beta.BidiSessionServerMessage.interruption_signal]\nis received (e.g., user barge-in or new agent response).\n\n\nThis method is not supported for the REST transport.",
       "file": "SessionClient/BidiRunSession/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -4620,7 +4758,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "SessionClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -4986,7 +5124,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "ToolClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -5398,7 +5536,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "WidgetClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

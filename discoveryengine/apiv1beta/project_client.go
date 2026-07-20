@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -519,8 +520,12 @@ func (c *projectGRPCClient) ProvisionProject(ctx context.Context, req *discovery
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ProvisionProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ProvisionProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -676,8 +681,12 @@ func (c *projectRESTClient) ProvisionProject(ctx context.Context, req *discovery
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ProvisionProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ProvisionProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -869,7 +878,7 @@ func (c *projectRESTClient) ListOperations(ctx context.Context, req *longrunning
 // The name must be that of a previously created ProvisionProjectOperation, possibly from a different process.
 func (c *projectGRPCClient) ProvisionProjectOperation(name string) *ProvisionProjectOperation {
 	return &ProvisionProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ProvisionProjectOperation"),
 	}
 }
 
@@ -878,7 +887,7 @@ func (c *projectGRPCClient) ProvisionProjectOperation(name string) *ProvisionPro
 func (c *projectRESTClient) ProvisionProjectOperation(name string) *ProvisionProjectOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ProvisionProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ProvisionProjectOperation"),
 		pollPath: override,
 	}
 }

@@ -30,6 +30,7 @@ import (
 	stitcherpb "cloud.google.com/go/video/stitcher/apiv1/stitcherpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -776,8 +777,12 @@ func (c *videoStitcherGRPCClient) CreateCdnKey(ctx context.Context, req *stitche
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*stitcher.CreateCdnKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCdnKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -878,8 +883,12 @@ func (c *videoStitcherGRPCClient) DeleteCdnKey(ctx context.Context, req *stitche
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*stitcher.DeleteCdnKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCdnKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -901,8 +910,12 @@ func (c *videoStitcherGRPCClient) UpdateCdnKey(ctx context.Context, req *stitche
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*stitcher.UpdateCdnKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCdnKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1203,8 +1216,12 @@ func (c *videoStitcherGRPCClient) CreateSlate(ctx context.Context, req *stitcher
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*stitcher.CreateSlateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSlateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1302,8 +1319,12 @@ func (c *videoStitcherGRPCClient) UpdateSlate(ctx context.Context, req *stitcher
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*stitcher.UpdateSlateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSlateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1328,8 +1349,12 @@ func (c *videoStitcherGRPCClient) DeleteSlate(ctx context.Context, req *stitcher
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*stitcher.DeleteSlateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSlateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1402,8 +1427,12 @@ func (c *videoStitcherGRPCClient) CreateLiveConfig(ctx context.Context, req *sti
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*stitcher.CreateLiveConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateLiveConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1504,8 +1533,12 @@ func (c *videoStitcherGRPCClient) DeleteLiveConfig(ctx context.Context, req *sti
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*stitcher.DeleteLiveConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteLiveConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1527,8 +1560,12 @@ func (c *videoStitcherGRPCClient) UpdateLiveConfig(ctx context.Context, req *sti
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*stitcher.UpdateLiveConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateLiveConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1553,8 +1590,12 @@ func (c *videoStitcherGRPCClient) CreateVodConfig(ctx context.Context, req *stit
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*stitcher.CreateVodConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVodConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1655,8 +1696,12 @@ func (c *videoStitcherGRPCClient) DeleteVodConfig(ctx context.Context, req *stit
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*stitcher.DeleteVodConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVodConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1678,8 +1723,12 @@ func (c *videoStitcherGRPCClient) UpdateVodConfig(ctx context.Context, req *stit
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*stitcher.UpdateVodConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVodConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1791,7 +1840,7 @@ func (c *videoStitcherGRPCClient) ListOperations(ctx context.Context, req *longr
 // The name must be that of a previously created CreateCdnKeyOperation, possibly from a different process.
 func (c *videoStitcherGRPCClient) CreateCdnKeyOperation(name string) *CreateCdnKeyOperation {
 	return &CreateCdnKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*stitcher.CreateCdnKeyOperation"),
 	}
 }
 
@@ -1799,7 +1848,7 @@ func (c *videoStitcherGRPCClient) CreateCdnKeyOperation(name string) *CreateCdnK
 // The name must be that of a previously created CreateLiveConfigOperation, possibly from a different process.
 func (c *videoStitcherGRPCClient) CreateLiveConfigOperation(name string) *CreateLiveConfigOperation {
 	return &CreateLiveConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*stitcher.CreateLiveConfigOperation"),
 	}
 }
 
@@ -1807,7 +1856,7 @@ func (c *videoStitcherGRPCClient) CreateLiveConfigOperation(name string) *Create
 // The name must be that of a previously created CreateSlateOperation, possibly from a different process.
 func (c *videoStitcherGRPCClient) CreateSlateOperation(name string) *CreateSlateOperation {
 	return &CreateSlateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*stitcher.CreateSlateOperation"),
 	}
 }
 
@@ -1815,7 +1864,7 @@ func (c *videoStitcherGRPCClient) CreateSlateOperation(name string) *CreateSlate
 // The name must be that of a previously created CreateVodConfigOperation, possibly from a different process.
 func (c *videoStitcherGRPCClient) CreateVodConfigOperation(name string) *CreateVodConfigOperation {
 	return &CreateVodConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*stitcher.CreateVodConfigOperation"),
 	}
 }
 
@@ -1823,7 +1872,7 @@ func (c *videoStitcherGRPCClient) CreateVodConfigOperation(name string) *CreateV
 // The name must be that of a previously created DeleteCdnKeyOperation, possibly from a different process.
 func (c *videoStitcherGRPCClient) DeleteCdnKeyOperation(name string) *DeleteCdnKeyOperation {
 	return &DeleteCdnKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*stitcher.DeleteCdnKeyOperation"),
 	}
 }
 
@@ -1831,7 +1880,7 @@ func (c *videoStitcherGRPCClient) DeleteCdnKeyOperation(name string) *DeleteCdnK
 // The name must be that of a previously created DeleteLiveConfigOperation, possibly from a different process.
 func (c *videoStitcherGRPCClient) DeleteLiveConfigOperation(name string) *DeleteLiveConfigOperation {
 	return &DeleteLiveConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*stitcher.DeleteLiveConfigOperation"),
 	}
 }
 
@@ -1839,7 +1888,7 @@ func (c *videoStitcherGRPCClient) DeleteLiveConfigOperation(name string) *Delete
 // The name must be that of a previously created DeleteSlateOperation, possibly from a different process.
 func (c *videoStitcherGRPCClient) DeleteSlateOperation(name string) *DeleteSlateOperation {
 	return &DeleteSlateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*stitcher.DeleteSlateOperation"),
 	}
 }
 
@@ -1847,7 +1896,7 @@ func (c *videoStitcherGRPCClient) DeleteSlateOperation(name string) *DeleteSlate
 // The name must be that of a previously created DeleteVodConfigOperation, possibly from a different process.
 func (c *videoStitcherGRPCClient) DeleteVodConfigOperation(name string) *DeleteVodConfigOperation {
 	return &DeleteVodConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*stitcher.DeleteVodConfigOperation"),
 	}
 }
 
@@ -1855,7 +1904,7 @@ func (c *videoStitcherGRPCClient) DeleteVodConfigOperation(name string) *DeleteV
 // The name must be that of a previously created UpdateCdnKeyOperation, possibly from a different process.
 func (c *videoStitcherGRPCClient) UpdateCdnKeyOperation(name string) *UpdateCdnKeyOperation {
 	return &UpdateCdnKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*stitcher.UpdateCdnKeyOperation"),
 	}
 }
 
@@ -1863,7 +1912,7 @@ func (c *videoStitcherGRPCClient) UpdateCdnKeyOperation(name string) *UpdateCdnK
 // The name must be that of a previously created UpdateLiveConfigOperation, possibly from a different process.
 func (c *videoStitcherGRPCClient) UpdateLiveConfigOperation(name string) *UpdateLiveConfigOperation {
 	return &UpdateLiveConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*stitcher.UpdateLiveConfigOperation"),
 	}
 }
 
@@ -1871,7 +1920,7 @@ func (c *videoStitcherGRPCClient) UpdateLiveConfigOperation(name string) *Update
 // The name must be that of a previously created UpdateSlateOperation, possibly from a different process.
 func (c *videoStitcherGRPCClient) UpdateSlateOperation(name string) *UpdateSlateOperation {
 	return &UpdateSlateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*stitcher.UpdateSlateOperation"),
 	}
 }
 
@@ -1879,6 +1928,6 @@ func (c *videoStitcherGRPCClient) UpdateSlateOperation(name string) *UpdateSlate
 // The name must be that of a previously created UpdateVodConfigOperation, possibly from a different process.
 func (c *videoStitcherGRPCClient) UpdateVodConfigOperation(name string) *UpdateVodConfigOperation {
 	return &UpdateVodConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*stitcher.UpdateVodConfigOperation"),
 	}
 }

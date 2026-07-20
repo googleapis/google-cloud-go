@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/oracledatabase/apiv1",
-    "version": "1.0.0"
+    "version": "1.4.0"
   },
   "snippets": [
     {
@@ -55,6 +55,52 @@
         }
       ],
       "title": "oracledatabase CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.ConfigureExascaleCloudExadataInfrastructure",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ConfigureExascaleCloudExadataInfrastructure",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "ConfigureExascaleCloudExadataInfrastructure"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.ConfigureExascaleCloudExadataInfrastructureRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ConfigureExascaleCloudExadataInfrastructureOperation",
+        "shortName": "ConfigureExascaleCloudExadataInfrastructure"
+      },
+      "description": "ConfigureExascaleCloudExadataInfrastructure configures Exascale for a single Exadata Infrastructure.",
+      "file": "Client/ConfigureExascaleCloudExadataInfrastructure/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase ConfigureExascaleCloudExadataInfrastructure Sample"
     },
     {
       "clientMethod": {
@@ -331,6 +377,144 @@
         }
       ],
       "title": "oracledatabase CreateExascaleDbStorageVault Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.CreateGoldengateConnection",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.CreateGoldengateConnection",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "CreateGoldengateConnection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.CreateGoldengateConnectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateGoldengateConnectionOperation",
+        "shortName": "CreateGoldengateConnection"
+      },
+      "description": "CreateGoldengateConnection creates a new GoldengateConnection in a given project and location.",
+      "file": "Client/CreateGoldengateConnection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_CreateGoldengateConnection_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase CreateGoldengateConnection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.CreateGoldengateConnectionAssignment",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.CreateGoldengateConnectionAssignment",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "CreateGoldengateConnectionAssignment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.CreateGoldengateConnectionAssignmentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateGoldengateConnectionAssignmentOperation",
+        "shortName": "CreateGoldengateConnectionAssignment"
+      },
+      "description": "CreateGoldengateConnectionAssignment creates a new GoldengateConnectionAssignment in a given project and\nlocation.",
+      "file": "Client/CreateGoldengateConnectionAssignment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_CreateGoldengateConnectionAssignment_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase CreateGoldengateConnectionAssignment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.CreateGoldengateDeployment",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.CreateGoldengateDeployment",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "CreateGoldengateDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.CreateGoldengateDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateGoldengateDeploymentOperation",
+        "shortName": "CreateGoldengateDeployment"
+      },
+      "description": "CreateGoldengateDeployment creates a new GoldengateDeployment in a given project and location.",
+      "file": "Client/CreateGoldengateDeployment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_CreateGoldengateDeployment_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase CreateGoldengateDeployment Sample"
     },
     {
       "clientMethod": {
@@ -699,6 +883,144 @@
         }
       ],
       "title": "oracledatabase DeleteExascaleDbStorageVault Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.DeleteGoldengateConnection",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.DeleteGoldengateConnection",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "DeleteGoldengateConnection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.DeleteGoldengateConnectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteGoldengateConnectionOperation",
+        "shortName": "DeleteGoldengateConnection"
+      },
+      "description": "DeleteGoldengateConnection deletes a single GoldengateConnection.",
+      "file": "Client/DeleteGoldengateConnection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_DeleteGoldengateConnection_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase DeleteGoldengateConnection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.DeleteGoldengateConnectionAssignment",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.DeleteGoldengateConnectionAssignment",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "DeleteGoldengateConnectionAssignment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.DeleteGoldengateConnectionAssignmentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteGoldengateConnectionAssignmentOperation",
+        "shortName": "DeleteGoldengateConnectionAssignment"
+      },
+      "description": "DeleteGoldengateConnectionAssignment deletes a single GoldengateConnectionAssignment.",
+      "file": "Client/DeleteGoldengateConnectionAssignment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_DeleteGoldengateConnectionAssignment_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase DeleteGoldengateConnectionAssignment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.DeleteGoldengateDeployment",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.DeleteGoldengateDeployment",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "DeleteGoldengateDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.DeleteGoldengateDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteGoldengateDeploymentOperation",
+        "shortName": "DeleteGoldengateDeployment"
+      },
+      "description": "DeleteGoldengateDeployment deletes a single GoldengateDeployment.",
+      "file": "Client/DeleteGoldengateDeployment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_DeleteGoldengateDeployment_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase DeleteGoldengateDeployment Sample"
     },
     {
       "clientMethod": {
@@ -1250,6 +1572,144 @@
         }
       ],
       "title": "oracledatabase GetExascaleDbStorageVault Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.GetGoldengateConnection",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateConnection",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "GetGoldengateConnection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.GetGoldengateConnectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*oracledatabasepb.GoldengateConnection",
+        "shortName": "GetGoldengateConnection"
+      },
+      "description": "GetGoldengateConnection gets details of a single GoldengateConnection.",
+      "file": "Client/GetGoldengateConnection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetGoldengateConnection_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase GetGoldengateConnection Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.GetGoldengateConnectionAssignment",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateConnectionAssignment",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "GetGoldengateConnectionAssignment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.GetGoldengateConnectionAssignmentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*oracledatabasepb.GoldengateConnectionAssignment",
+        "shortName": "GetGoldengateConnectionAssignment"
+      },
+      "description": "GetGoldengateConnectionAssignment gets details of a single GoldengateConnectionAssignment.",
+      "file": "Client/GetGoldengateConnectionAssignment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetGoldengateConnectionAssignment_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase GetGoldengateConnectionAssignment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.GetGoldengateDeployment",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateDeployment",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "GetGoldengateDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.GetGoldengateDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*oracledatabasepb.GoldengateDeployment",
+        "shortName": "GetGoldengateDeployment"
+      },
+      "description": "GetGoldengateDeployment gets details of a single GoldengateDeployment.",
+      "file": "Client/GetGoldengateDeployment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetGoldengateDeployment_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase GetGoldengateDeployment Sample"
     },
     {
       "clientMethod": {
@@ -2315,6 +2775,328 @@
           "fullName": "google.cloud.oracledatabase.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListGoldengateConnectionAssignments",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateConnectionAssignments",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "ListGoldengateConnectionAssignments"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.ListGoldengateConnectionAssignmentsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GoldengateConnectionAssignmentIterator",
+        "shortName": "ListGoldengateConnectionAssignments"
+      },
+      "description": "ListGoldengateConnectionAssignments lists GoldengateConnectionAssignments in a given project and location.",
+      "file": "Client/ListGoldengateConnectionAssignments/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListGoldengateConnectionAssignments_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase ListGoldengateConnectionAssignments Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListGoldengateConnectionTypes",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateConnectionTypes",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "ListGoldengateConnectionTypes"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.ListGoldengateConnectionTypesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GoldengateConnectionTypeIterator",
+        "shortName": "ListGoldengateConnectionTypes"
+      },
+      "description": "ListGoldengateConnectionTypes lists GoldengateConnectionTypes in a given project and location.",
+      "file": "Client/ListGoldengateConnectionTypes/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListGoldengateConnectionTypes_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase ListGoldengateConnectionTypes Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListGoldengateConnections",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateConnections",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "ListGoldengateConnections"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.ListGoldengateConnectionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GoldengateConnectionIterator",
+        "shortName": "ListGoldengateConnections"
+      },
+      "description": "ListGoldengateConnections lists all the GoldengateConnections for the given project and location.",
+      "file": "Client/ListGoldengateConnections/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListGoldengateConnections_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase ListGoldengateConnections Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListGoldengateDeploymentEnvironments",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentEnvironments",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "ListGoldengateDeploymentEnvironments"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.ListGoldengateDeploymentEnvironmentsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GoldengateDeploymentEnvironmentIterator",
+        "shortName": "ListGoldengateDeploymentEnvironments"
+      },
+      "description": "ListGoldengateDeploymentEnvironments lists GoldengateDeploymentEnvironments in a given project and location.",
+      "file": "Client/ListGoldengateDeploymentEnvironments/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListGoldengateDeploymentEnvironments_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase ListGoldengateDeploymentEnvironments Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListGoldengateDeploymentTypes",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentTypes",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "ListGoldengateDeploymentTypes"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.ListGoldengateDeploymentTypesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GoldengateDeploymentTypeIterator",
+        "shortName": "ListGoldengateDeploymentTypes"
+      },
+      "description": "ListGoldengateDeploymentTypes lists GoldenGateDeploymentTypes in a given project and location.",
+      "file": "Client/ListGoldengateDeploymentTypes/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListGoldengateDeploymentTypes_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase ListGoldengateDeploymentTypes Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListGoldengateDeploymentVersions",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentVersions",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "ListGoldengateDeploymentVersions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.ListGoldengateDeploymentVersionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GoldengateDeploymentVersionIterator",
+        "shortName": "ListGoldengateDeploymentVersions"
+      },
+      "description": "ListGoldengateDeploymentVersions lists GoldengateDeploymentVersions in a given project and location.",
+      "file": "Client/ListGoldengateDeploymentVersions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListGoldengateDeploymentVersions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase ListGoldengateDeploymentVersions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.ListGoldengateDeployments",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeployments",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "ListGoldengateDeployments"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.ListGoldengateDeploymentsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GoldengateDeploymentIterator",
+        "shortName": "ListGoldengateDeployments"
+      },
+      "description": "ListGoldengateDeployments lists all the GoldengateDeployments for the given project and location.",
+      "file": "Client/ListGoldengateDeployments/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ListGoldengateDeployments_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase ListGoldengateDeployments Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.oracledatabase.v1.Client.ListLocations",
         "method": {
           "fullName": "google.cloud.location.Locations.ListLocations",
@@ -2341,7 +3123,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -2775,6 +3557,52 @@
           "fullName": "google.cloud.oracledatabase.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.oracledatabase.v1.Client.StartGoldengateDeployment",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.StartGoldengateDeployment",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "StartGoldengateDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.StartGoldengateDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "StartGoldengateDeploymentOperation",
+        "shortName": "StartGoldengateDeployment"
+      },
+      "description": "StartGoldengateDeployment starts a single GoldengateDeployment.",
+      "file": "Client/StartGoldengateDeployment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_StartGoldengateDeployment_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase StartGoldengateDeployment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.oracledatabase.v1.Client.StopAutonomousDatabase",
         "method": {
           "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.StopAutonomousDatabase",
@@ -2821,6 +3649,52 @@
           "fullName": "google.cloud.oracledatabase.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.oracledatabase.v1.Client.StopGoldengateDeployment",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.StopGoldengateDeployment",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "StopGoldengateDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.StopGoldengateDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "StopGoldengateDeploymentOperation",
+        "shortName": "StopGoldengateDeployment"
+      },
+      "description": "StopGoldengateDeployment stops a single GoldengateDeployment.",
+      "file": "Client/StopGoldengateDeployment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_StopGoldengateDeployment_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase StopGoldengateDeployment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.oracledatabase.v1.Client.SwitchoverAutonomousDatabase",
         "method": {
           "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.SwitchoverAutonomousDatabase",
@@ -2860,6 +3734,52 @@
         }
       ],
       "title": "oracledatabase SwitchoverAutonomousDatabase Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.TestGoldengateConnectionAssignment",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.TestGoldengateConnectionAssignment",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "TestGoldengateConnectionAssignment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.TestGoldengateConnectionAssignmentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*oracledatabasepb.TestGoldengateConnectionAssignmentResponse",
+        "shortName": "TestGoldengateConnectionAssignment"
+      },
+      "description": "TestGoldengateConnectionAssignment tests a single GoldengateConnectionAssignment.",
+      "file": "Client/TestGoldengateConnectionAssignment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_TestGoldengateConnectionAssignment_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase TestGoldengateConnectionAssignment Sample"
     },
     {
       "clientMethod": {

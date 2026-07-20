@@ -14,8 +14,10 @@ jobs:
   regeneration:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: dorny/paths-filter@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4
         id: changes
         with:
           filters: |
@@ -23,7 +25,7 @@ jobs:
               - 'librarian.yaml'
       # Version of librarian is pulled from librarian.yaml,
       # main corresponds to the action's source definition.
-      - uses: googleapis/librarian@main
+      - uses: googleapis/librarian@main # zizmor: ignore[unpinned-uses]
         if: steps.changes.outputs.librarian == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
         with:
           protoc-version: '33.2'
@@ -35,28 +37,22 @@ jobs:
         if: steps.changes.outputs.librarian == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
         run: |
           librarian generate --all
-          git diff --exit-code
-      - name: Create issue on diff
-        if: failure() && github.event_name == 'push' && github.ref == 'refs/heads/main'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
           if [ -n "$(git status --porcelain)" ]; then
-            TITLE="Regeneration check found diff"
-            RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            DIFF_STAT=$(git diff --stat)
-            BODY="The post-submit [regeneration check]($RUN_URL) found a diff.
-
-            Diff summary:
-            \`\`\`
-            $DIFF_STAT
-            \`\`\`"
-
-            EXISTING_ISSUE=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[0].number')
-            if [ -z "$EXISTING_ISSUE" ]; then
-              gh issue create --title "$TITLE" --body "$BODY"
-            else
-              echo "Issue #$EXISTING_ISSUE already exists, adding a comment."
-              gh issue comment "$EXISTING_ISSUE" --body "Another failure with diff occurred: $RUN_URL"
-            fi
+            git status
+            echo "==================== GIT DIFF ===================="
+            git diff
+            echo "=================================================="
+            echo "Regeneration failed. Please run 'librarian generate --all' to update the generated files."
+            exit 1
           fi
+      - name: Create issue if previous step fails
+        if: ${{ failure() && github.ref == 'refs/heads/main' }}
+        uses: googleapis/librarian/.github/actions/create-issue-on-failure@main # zizmor: ignore[unpinned-uses]
+        with:
+          title: "Librarian generate diff check failed on main branch"
+          body: |
+            The librarian generate diff check failed on main branch.
+
+            To keep the `main` branch healthy, please consider **reverting the triggering change** first. Once the revert is merged, you can investigate the failure and submit a new PR with the fix.
+
+            Please check the logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

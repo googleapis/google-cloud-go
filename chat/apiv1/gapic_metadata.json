@@ -90,6 +90,11 @@
                 "GetAttachment"
               ]
             },
+            "GetAvailability": {
+              "methods": [
+                "GetAvailability"
+              ]
+            },
             "GetCustomEmoji": {
               "methods": [
                 "GetCustomEmoji"
@@ -170,6 +175,21 @@
                 "ListSpaces"
               ]
             },
+            "MarkAsActive": {
+              "methods": [
+                "MarkAsActive"
+              ]
+            },
+            "MarkAsAway": {
+              "methods": [
+                "MarkAsAway"
+              ]
+            },
+            "MarkAsDoNotDisturb": {
+              "methods": [
+                "MarkAsDoNotDisturb"
+              ]
+            },
             "MoveSectionItem": {
               "methods": [
                 "MoveSectionItem"
@@ -188,6 +208,11 @@
             "SetUpSpace": {
               "methods": [
                 "SetUpSpace"
+              ]
+            },
+            "UpdateAvailability": {
+              "methods": [
+                "UpdateAvailability"
               ]
             },
             "UpdateMembership": {
@@ -310,6 +335,11 @@
                 "GetAttachment"
               ]
             },
+            "GetAvailability": {
+              "methods": [
+                "GetAvailability"
+              ]
+            },
             "GetCustomEmoji": {
               "methods": [
                 "GetCustomEmoji"
@@ -390,6 +420,21 @@
                 "ListSpaces"
               ]
             },
+            "MarkAsActive": {
+              "methods": [
+                "MarkAsActive"
+              ]
+            },
+            "MarkAsAway": {
+              "methods": [
+                "MarkAsAway"
+              ]
+            },
+            "MarkAsDoNotDisturb": {
+              "methods": [
+                "MarkAsDoNotDisturb"
+              ]
+            },
             "MoveSectionItem": {
               "methods": [
                 "MoveSectionItem"
@@ -408,6 +453,11 @@
             "SetUpSpace": {
               "methods": [
                 "SetUpSpace"
+              ]
+            },
+            "UpdateAvailability": {
+              "methods": [
+                "UpdateAvailability"
               ]
             },
             "UpdateMembership": {

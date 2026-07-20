@@ -54,6 +54,8 @@ func getVersionClient() string {
 func DefaultAuthScopes() []string {
 	return []string{
 		"https://www.googleapis.com/auth/cloud-platform",
+		"https://www.googleapis.com/auth/memorystore.read-only",
+		"https://www.googleapis.com/auth/memorystore.read-write",
 	}
 }
 

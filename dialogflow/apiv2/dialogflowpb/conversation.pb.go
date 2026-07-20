@@ -508,6 +508,10 @@ const (
 	SearchKnowledgeAnswer_GENERATIVE SearchKnowledgeAnswer_AnswerType = 2
 	// The answer is from intent matching.
 	SearchKnowledgeAnswer_INTENT SearchKnowledgeAnswer_AnswerType = 3
+	// The answer is from Playbook.
+	SearchKnowledgeAnswer_PLAYBOOK SearchKnowledgeAnswer_AnswerType = 4
+	// The answer is from event.
+	SearchKnowledgeAnswer_EVENT SearchKnowledgeAnswer_AnswerType = 5
 )
 
 // Enum value maps for SearchKnowledgeAnswer_AnswerType.
@@ -517,12 +521,16 @@ var (
 		1: "FAQ",
 		2: "GENERATIVE",
 		3: "INTENT",
+		4: "PLAYBOOK",
+		5: "EVENT",
 	}
 	SearchKnowledgeAnswer_AnswerType_value = map[string]int32{
 		"ANSWER_TYPE_UNSPECIFIED": 0,
 		"FAQ":                     1,
 		"GENERATIVE":              2,
 		"INTENT":                  3,
+		"PLAYBOOK":                4,
+		"EVENT":                   5,
 	}
 )
 
@@ -2016,8 +2024,10 @@ type SearchKnowledgeDebugInfo struct {
 	IngestedContextReferenceDebugInfo *IngestedContextReferenceDebugInfo `protobuf:"bytes,3,opt,name=ingested_context_reference_debug_info,json=ingestedContextReferenceDebugInfo,proto3" json:"ingested_context_reference_debug_info,omitempty"`
 	// The latency of the service.
 	ServiceLatency *ServiceLatency `protobuf:"bytes,4,opt,name=service_latency,json=serviceLatency,proto3" json:"service_latency,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Optional. Debug info from the Customer Engagement Suite (CES) execution.
+	CesDebugInfo  *structpb.Struct `protobuf:"bytes,5,opt,name=ces_debug_info,json=cesDebugInfo,proto3" json:"ces_debug_info,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SearchKnowledgeDebugInfo) Reset() {
@@ -2074,6 +2084,13 @@ func (x *SearchKnowledgeDebugInfo) GetIngestedContextReferenceDebugInfo() *Inges
 func (x *SearchKnowledgeDebugInfo) GetServiceLatency() *ServiceLatency {
 	if x != nil {
 		return x.ServiceLatency
+	}
+	return nil
+}
+
+func (x *SearchKnowledgeDebugInfo) GetCesDebugInfo() *structpb.Struct {
+	if x != nil {
+		return x.CesDebugInfo
 	}
 	return nil
 }
@@ -3800,12 +3817,13 @@ const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\vQuerySource\x12\x1c\n" +
 	"\x18QUERY_SOURCE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vAGENT_QUERY\x10\x01\x12\x13\n" +
-	"\x0fSUGGESTED_QUERY\x10\x02\"\xdc\x05\n" +
+	"\x0fSUGGESTED_QUERY\x10\x02\"\xa0\x06\n" +
 	"\x18SearchKnowledgeDebugInfo\x12o\n" +
 	"\x19datastore_response_reason\x18\x01 \x01(\x0e23.google.cloud.dialogflow.v2.DatastoreResponseReasonR\x17datastoreResponseReason\x12\x88\x01\n" +
 	"\x19search_knowledge_behavior\x18\x02 \x01(\v2L.google.cloud.dialogflow.v2.SearchKnowledgeDebugInfo.SearchKnowledgeBehaviorR\x17searchKnowledgeBehavior\x12\x8f\x01\n" +
 	"%ingested_context_reference_debug_info\x18\x03 \x01(\v2=.google.cloud.dialogflow.v2.IngestedContextReferenceDebugInfoR!ingestedContextReferenceDebugInfo\x12S\n" +
-	"\x0fservice_latency\x18\x04 \x01(\v2*.google.cloud.dialogflow.v2.ServiceLatencyR\x0eserviceLatency\x1a\xdc\x01\n" +
+	"\x0fservice_latency\x18\x04 \x01(\v2*.google.cloud.dialogflow.v2.ServiceLatencyR\x0eserviceLatency\x12B\n" +
+	"\x0eces_debug_info\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\fcesDebugInfo\x1a\xdc\x01\n" +
 	"\x17SearchKnowledgeBehavior\x12A\n" +
 	"\x1danswer_generation_rewriter_on\x18\x01 \x01(\bR\x1aanswerGenerationRewriterOn\x12;\n" +
 	"\x1aend_user_metadata_included\x18\x02 \x01(\bR\x17endUserMetadataIncluded\x12A\n" +
@@ -3813,7 +3831,7 @@ const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\x17SearchKnowledgeResponse\x12K\n" +
 	"\aanswers\x18\x02 \x03(\v21.google.cloud.dialogflow.v2.SearchKnowledgeAnswerR\aanswers\x12'\n" +
 	"\x0frewritten_query\x18\x03 \x01(\tR\x0erewrittenQuery\x12s\n" +
-	"\x1bsearch_knowledge_debug_info\x18\x04 \x01(\v24.google.cloud.dialogflow.v2.SearchKnowledgeDebugInfoR\x18searchKnowledgeDebugInfo\"\x9f\x04\n" +
+	"\x1bsearch_knowledge_debug_info\x18\x04 \x01(\v24.google.cloud.dialogflow.v2.SearchKnowledgeDebugInfoR\x18searchKnowledgeDebugInfo\"\xb8\x04\n" +
 	"\x15SearchKnowledgeAnswer\x12\x16\n" +
 	"\x06answer\x18\x01 \x01(\tR\x06answer\x12]\n" +
 	"\vanswer_type\x18\x02 \x01(\x0e2<.google.cloud.dialogflow.v2.SearchKnowledgeAnswer.AnswerTypeR\n" +
@@ -3825,7 +3843,7 @@ const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x10\n" +
 	"\x03uri\x18\x02 \x01(\tR\x03uri\x12\x18\n" +
 	"\asnippet\x18\x03 \x01(\tR\asnippet\x123\n" +
-	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"N\n" +
+	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"g\n" +
 	"\n" +
 	"AnswerType\x12\x1b\n" +
 	"\x17ANSWER_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
@@ -3833,7 +3851,9 @@ const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\n" +
 	"GENERATIVE\x10\x02\x12\n" +
 	"\n" +
-	"\x06INTENT\x10\x03\"\x98\x02\n" +
+	"\x06INTENT\x10\x03\x12\f\n" +
+	"\bPLAYBOOK\x10\x04\x12\t\n" +
+	"\x05EVENT\x10\x05\"\x98\x02\n" +
 	"\x1aGenerateSuggestionsRequest\x12R\n" +
 	"\fconversation\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
 	"&dialogflow.googleapis.com/ConversationR\fconversation\x12P\n" +
@@ -3976,64 +3996,65 @@ var file_google_cloud_dialogflow_v2_conversation_proto_depIdxs = []int32{
 	55, // 29: google.cloud.dialogflow.v2.SearchKnowledgeDebugInfo.search_knowledge_behavior:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeDebugInfo.SearchKnowledgeBehavior
 	68, // 30: google.cloud.dialogflow.v2.SearchKnowledgeDebugInfo.ingested_context_reference_debug_info:type_name -> google.cloud.dialogflow.v2.IngestedContextReferenceDebugInfo
 	69, // 31: google.cloud.dialogflow.v2.SearchKnowledgeDebugInfo.service_latency:type_name -> google.cloud.dialogflow.v2.ServiceLatency
-	29, // 32: google.cloud.dialogflow.v2.SearchKnowledgeResponse.answers:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeAnswer
-	27, // 33: google.cloud.dialogflow.v2.SearchKnowledgeResponse.search_knowledge_debug_info:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeDebugInfo
-	8,  // 34: google.cloud.dialogflow.v2.SearchKnowledgeAnswer.answer_type:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeAnswer.AnswerType
-	56, // 35: google.cloud.dialogflow.v2.SearchKnowledgeAnswer.answer_sources:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeAnswer.AnswerSource
-	63, // 36: google.cloud.dialogflow.v2.GenerateSuggestionsRequest.trigger_events:type_name -> google.cloud.dialogflow.v2.TriggerEvent
-	36, // 37: google.cloud.dialogflow.v2.Conversation.TelephonyConnectionInfo.sip_headers:type_name -> google.cloud.dialogflow.v2.Conversation.TelephonyConnectionInfo.SipHeader
-	37, // 38: google.cloud.dialogflow.v2.Conversation.TelephonyConnectionInfo.extra_mime_contents:type_name -> google.cloud.dialogflow.v2.Conversation.TelephonyConnectionInfo.MimeContent
-	38, // 39: google.cloud.dialogflow.v2.Conversation.ContextReference.context_contents:type_name -> google.cloud.dialogflow.v2.Conversation.ContextReference.ContextContent
-	2,  // 40: google.cloud.dialogflow.v2.Conversation.ContextReference.update_mode:type_name -> google.cloud.dialogflow.v2.Conversation.ContextReference.UpdateMode
-	57, // 41: google.cloud.dialogflow.v2.Conversation.ContextReference.create_time:type_name -> google.protobuf.Timestamp
-	4,  // 42: google.cloud.dialogflow.v2.Conversation.GeneratorContext.generator_type:type_name -> google.cloud.dialogflow.v2.Conversation.GeneratorContext.GeneratorType
-	32, // 43: google.cloud.dialogflow.v2.Conversation.IngestedContextReferencesEntry.value:type_name -> google.cloud.dialogflow.v2.Conversation.ContextReference
-	33, // 44: google.cloud.dialogflow.v2.Conversation.InitialGeneratorContextsEntry.value:type_name -> google.cloud.dialogflow.v2.Conversation.GeneratorContext
-	3,  // 45: google.cloud.dialogflow.v2.Conversation.ContextReference.ContextContent.content_format:type_name -> google.cloud.dialogflow.v2.Conversation.ContextReference.ContextContent.ContentFormat
-	57, // 46: google.cloud.dialogflow.v2.Conversation.ContextReference.ContextContent.ingestion_time:type_name -> google.protobuf.Timestamp
-	32, // 47: google.cloud.dialogflow.v2.IngestContextReferencesRequest.ContextReferencesEntry.value:type_name -> google.cloud.dialogflow.v2.Conversation.ContextReference
-	32, // 48: google.cloud.dialogflow.v2.IngestContextReferencesResponse.IngestedContextReferencesEntry.value:type_name -> google.cloud.dialogflow.v2.Conversation.ContextReference
-	43, // 49: google.cloud.dialogflow.v2.SuggestConversationSummaryResponse.Summary.text_sections:type_name -> google.cloud.dialogflow.v2.SuggestConversationSummaryResponse.Summary.TextSectionsEntry
-	42, // 50: google.cloud.dialogflow.v2.SuggestConversationSummaryResponse.Summary.sorted_text_sections:type_name -> google.cloud.dialogflow.v2.SuggestConversationSummaryResponse.Summary.SummarySection
-	59, // 51: google.cloud.dialogflow.v2.GenerateStatelessSummaryRequest.MinimalConversation.messages:type_name -> google.cloud.dialogflow.v2.Message
-	46, // 52: google.cloud.dialogflow.v2.GenerateStatelessSummaryResponse.Summary.text_sections:type_name -> google.cloud.dialogflow.v2.GenerateStatelessSummaryResponse.Summary.TextSectionsEntry
-	32, // 53: google.cloud.dialogflow.v2.GenerateStatelessSuggestionRequest.ContextReferencesEntry.value:type_name -> google.cloud.dialogflow.v2.Conversation.ContextReference
-	49, // 54: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.boost_specs:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs
-	50, // 55: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.filter_specs:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.FilterSpecs
-	51, // 56: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.spec:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec
-	52, // 57: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.condition_boost_specs:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec
-	53, // 58: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.boost_control_spec:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec
-	6,  // 59: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.attribute_type:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeType
-	7,  // 60: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.interpolation_type:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationType
-	54, // 61: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.control_points:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPoint
-	66, // 62: google.cloud.dialogflow.v2.SearchKnowledgeAnswer.AnswerSource.metadata:type_name -> google.protobuf.Struct
-	10, // 63: google.cloud.dialogflow.v2.Conversations.CreateConversation:input_type -> google.cloud.dialogflow.v2.CreateConversationRequest
-	11, // 64: google.cloud.dialogflow.v2.Conversations.ListConversations:input_type -> google.cloud.dialogflow.v2.ListConversationsRequest
-	13, // 65: google.cloud.dialogflow.v2.Conversations.GetConversation:input_type -> google.cloud.dialogflow.v2.GetConversationRequest
-	14, // 66: google.cloud.dialogflow.v2.Conversations.CompleteConversation:input_type -> google.cloud.dialogflow.v2.CompleteConversationRequest
-	18, // 67: google.cloud.dialogflow.v2.Conversations.IngestContextReferences:input_type -> google.cloud.dialogflow.v2.IngestContextReferencesRequest
-	15, // 68: google.cloud.dialogflow.v2.Conversations.ListMessages:input_type -> google.cloud.dialogflow.v2.ListMessagesRequest
-	20, // 69: google.cloud.dialogflow.v2.Conversations.SuggestConversationSummary:input_type -> google.cloud.dialogflow.v2.SuggestConversationSummaryRequest
-	22, // 70: google.cloud.dialogflow.v2.Conversations.GenerateStatelessSummary:input_type -> google.cloud.dialogflow.v2.GenerateStatelessSummaryRequest
-	24, // 71: google.cloud.dialogflow.v2.Conversations.GenerateStatelessSuggestion:input_type -> google.cloud.dialogflow.v2.GenerateStatelessSuggestionRequest
-	26, // 72: google.cloud.dialogflow.v2.Conversations.SearchKnowledge:input_type -> google.cloud.dialogflow.v2.SearchKnowledgeRequest
-	30, // 73: google.cloud.dialogflow.v2.Conversations.GenerateSuggestions:input_type -> google.cloud.dialogflow.v2.GenerateSuggestionsRequest
-	9,  // 74: google.cloud.dialogflow.v2.Conversations.CreateConversation:output_type -> google.cloud.dialogflow.v2.Conversation
-	12, // 75: google.cloud.dialogflow.v2.Conversations.ListConversations:output_type -> google.cloud.dialogflow.v2.ListConversationsResponse
-	9,  // 76: google.cloud.dialogflow.v2.Conversations.GetConversation:output_type -> google.cloud.dialogflow.v2.Conversation
-	9,  // 77: google.cloud.dialogflow.v2.Conversations.CompleteConversation:output_type -> google.cloud.dialogflow.v2.Conversation
-	19, // 78: google.cloud.dialogflow.v2.Conversations.IngestContextReferences:output_type -> google.cloud.dialogflow.v2.IngestContextReferencesResponse
-	16, // 79: google.cloud.dialogflow.v2.Conversations.ListMessages:output_type -> google.cloud.dialogflow.v2.ListMessagesResponse
-	21, // 80: google.cloud.dialogflow.v2.Conversations.SuggestConversationSummary:output_type -> google.cloud.dialogflow.v2.SuggestConversationSummaryResponse
-	23, // 81: google.cloud.dialogflow.v2.Conversations.GenerateStatelessSummary:output_type -> google.cloud.dialogflow.v2.GenerateStatelessSummaryResponse
-	25, // 82: google.cloud.dialogflow.v2.Conversations.GenerateStatelessSuggestion:output_type -> google.cloud.dialogflow.v2.GenerateStatelessSuggestionResponse
-	28, // 83: google.cloud.dialogflow.v2.Conversations.SearchKnowledge:output_type -> google.cloud.dialogflow.v2.SearchKnowledgeResponse
-	70, // 84: google.cloud.dialogflow.v2.Conversations.GenerateSuggestions:output_type -> google.cloud.dialogflow.v2.GenerateSuggestionsResponse
-	74, // [74:85] is the sub-list for method output_type
-	63, // [63:74] is the sub-list for method input_type
-	63, // [63:63] is the sub-list for extension type_name
-	63, // [63:63] is the sub-list for extension extendee
-	0,  // [0:63] is the sub-list for field type_name
+	66, // 32: google.cloud.dialogflow.v2.SearchKnowledgeDebugInfo.ces_debug_info:type_name -> google.protobuf.Struct
+	29, // 33: google.cloud.dialogflow.v2.SearchKnowledgeResponse.answers:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeAnswer
+	27, // 34: google.cloud.dialogflow.v2.SearchKnowledgeResponse.search_knowledge_debug_info:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeDebugInfo
+	8,  // 35: google.cloud.dialogflow.v2.SearchKnowledgeAnswer.answer_type:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeAnswer.AnswerType
+	56, // 36: google.cloud.dialogflow.v2.SearchKnowledgeAnswer.answer_sources:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeAnswer.AnswerSource
+	63, // 37: google.cloud.dialogflow.v2.GenerateSuggestionsRequest.trigger_events:type_name -> google.cloud.dialogflow.v2.TriggerEvent
+	36, // 38: google.cloud.dialogflow.v2.Conversation.TelephonyConnectionInfo.sip_headers:type_name -> google.cloud.dialogflow.v2.Conversation.TelephonyConnectionInfo.SipHeader
+	37, // 39: google.cloud.dialogflow.v2.Conversation.TelephonyConnectionInfo.extra_mime_contents:type_name -> google.cloud.dialogflow.v2.Conversation.TelephonyConnectionInfo.MimeContent
+	38, // 40: google.cloud.dialogflow.v2.Conversation.ContextReference.context_contents:type_name -> google.cloud.dialogflow.v2.Conversation.ContextReference.ContextContent
+	2,  // 41: google.cloud.dialogflow.v2.Conversation.ContextReference.update_mode:type_name -> google.cloud.dialogflow.v2.Conversation.ContextReference.UpdateMode
+	57, // 42: google.cloud.dialogflow.v2.Conversation.ContextReference.create_time:type_name -> google.protobuf.Timestamp
+	4,  // 43: google.cloud.dialogflow.v2.Conversation.GeneratorContext.generator_type:type_name -> google.cloud.dialogflow.v2.Conversation.GeneratorContext.GeneratorType
+	32, // 44: google.cloud.dialogflow.v2.Conversation.IngestedContextReferencesEntry.value:type_name -> google.cloud.dialogflow.v2.Conversation.ContextReference
+	33, // 45: google.cloud.dialogflow.v2.Conversation.InitialGeneratorContextsEntry.value:type_name -> google.cloud.dialogflow.v2.Conversation.GeneratorContext
+	3,  // 46: google.cloud.dialogflow.v2.Conversation.ContextReference.ContextContent.content_format:type_name -> google.cloud.dialogflow.v2.Conversation.ContextReference.ContextContent.ContentFormat
+	57, // 47: google.cloud.dialogflow.v2.Conversation.ContextReference.ContextContent.ingestion_time:type_name -> google.protobuf.Timestamp
+	32, // 48: google.cloud.dialogflow.v2.IngestContextReferencesRequest.ContextReferencesEntry.value:type_name -> google.cloud.dialogflow.v2.Conversation.ContextReference
+	32, // 49: google.cloud.dialogflow.v2.IngestContextReferencesResponse.IngestedContextReferencesEntry.value:type_name -> google.cloud.dialogflow.v2.Conversation.ContextReference
+	43, // 50: google.cloud.dialogflow.v2.SuggestConversationSummaryResponse.Summary.text_sections:type_name -> google.cloud.dialogflow.v2.SuggestConversationSummaryResponse.Summary.TextSectionsEntry
+	42, // 51: google.cloud.dialogflow.v2.SuggestConversationSummaryResponse.Summary.sorted_text_sections:type_name -> google.cloud.dialogflow.v2.SuggestConversationSummaryResponse.Summary.SummarySection
+	59, // 52: google.cloud.dialogflow.v2.GenerateStatelessSummaryRequest.MinimalConversation.messages:type_name -> google.cloud.dialogflow.v2.Message
+	46, // 53: google.cloud.dialogflow.v2.GenerateStatelessSummaryResponse.Summary.text_sections:type_name -> google.cloud.dialogflow.v2.GenerateStatelessSummaryResponse.Summary.TextSectionsEntry
+	32, // 54: google.cloud.dialogflow.v2.GenerateStatelessSuggestionRequest.ContextReferencesEntry.value:type_name -> google.cloud.dialogflow.v2.Conversation.ContextReference
+	49, // 55: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.boost_specs:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs
+	50, // 56: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.filter_specs:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.FilterSpecs
+	51, // 57: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.spec:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec
+	52, // 58: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.condition_boost_specs:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec
+	53, // 59: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.boost_control_spec:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec
+	6,  // 60: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.attribute_type:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeType
+	7,  // 61: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.interpolation_type:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationType
+	54, // 62: google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.control_points:type_name -> google.cloud.dialogflow.v2.SearchKnowledgeRequest.SearchConfig.BoostSpecs.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPoint
+	66, // 63: google.cloud.dialogflow.v2.SearchKnowledgeAnswer.AnswerSource.metadata:type_name -> google.protobuf.Struct
+	10, // 64: google.cloud.dialogflow.v2.Conversations.CreateConversation:input_type -> google.cloud.dialogflow.v2.CreateConversationRequest
+	11, // 65: google.cloud.dialogflow.v2.Conversations.ListConversations:input_type -> google.cloud.dialogflow.v2.ListConversationsRequest
+	13, // 66: google.cloud.dialogflow.v2.Conversations.GetConversation:input_type -> google.cloud.dialogflow.v2.GetConversationRequest
+	14, // 67: google.cloud.dialogflow.v2.Conversations.CompleteConversation:input_type -> google.cloud.dialogflow.v2.CompleteConversationRequest
+	18, // 68: google.cloud.dialogflow.v2.Conversations.IngestContextReferences:input_type -> google.cloud.dialogflow.v2.IngestContextReferencesRequest
+	15, // 69: google.cloud.dialogflow.v2.Conversations.ListMessages:input_type -> google.cloud.dialogflow.v2.ListMessagesRequest
+	20, // 70: google.cloud.dialogflow.v2.Conversations.SuggestConversationSummary:input_type -> google.cloud.dialogflow.v2.SuggestConversationSummaryRequest
+	22, // 71: google.cloud.dialogflow.v2.Conversations.GenerateStatelessSummary:input_type -> google.cloud.dialogflow.v2.GenerateStatelessSummaryRequest
+	24, // 72: google.cloud.dialogflow.v2.Conversations.GenerateStatelessSuggestion:input_type -> google.cloud.dialogflow.v2.GenerateStatelessSuggestionRequest
+	26, // 73: google.cloud.dialogflow.v2.Conversations.SearchKnowledge:input_type -> google.cloud.dialogflow.v2.SearchKnowledgeRequest
+	30, // 74: google.cloud.dialogflow.v2.Conversations.GenerateSuggestions:input_type -> google.cloud.dialogflow.v2.GenerateSuggestionsRequest
+	9,  // 75: google.cloud.dialogflow.v2.Conversations.CreateConversation:output_type -> google.cloud.dialogflow.v2.Conversation
+	12, // 76: google.cloud.dialogflow.v2.Conversations.ListConversations:output_type -> google.cloud.dialogflow.v2.ListConversationsResponse
+	9,  // 77: google.cloud.dialogflow.v2.Conversations.GetConversation:output_type -> google.cloud.dialogflow.v2.Conversation
+	9,  // 78: google.cloud.dialogflow.v2.Conversations.CompleteConversation:output_type -> google.cloud.dialogflow.v2.Conversation
+	19, // 79: google.cloud.dialogflow.v2.Conversations.IngestContextReferences:output_type -> google.cloud.dialogflow.v2.IngestContextReferencesResponse
+	16, // 80: google.cloud.dialogflow.v2.Conversations.ListMessages:output_type -> google.cloud.dialogflow.v2.ListMessagesResponse
+	21, // 81: google.cloud.dialogflow.v2.Conversations.SuggestConversationSummary:output_type -> google.cloud.dialogflow.v2.SuggestConversationSummaryResponse
+	23, // 82: google.cloud.dialogflow.v2.Conversations.GenerateStatelessSummary:output_type -> google.cloud.dialogflow.v2.GenerateStatelessSummaryResponse
+	25, // 83: google.cloud.dialogflow.v2.Conversations.GenerateStatelessSuggestion:output_type -> google.cloud.dialogflow.v2.GenerateStatelessSuggestionResponse
+	28, // 84: google.cloud.dialogflow.v2.Conversations.SearchKnowledge:output_type -> google.cloud.dialogflow.v2.SearchKnowledgeResponse
+	70, // 85: google.cloud.dialogflow.v2.Conversations.GenerateSuggestions:output_type -> google.cloud.dialogflow.v2.GenerateSuggestionsResponse
+	75, // [75:86] is the sub-list for method output_type
+	64, // [64:75] is the sub-list for method input_type
+	64, // [64:64] is the sub-list for extension type_name
+	64, // [64:64] is the sub-list for extension extendee
+	0,  // [0:64] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dialogflow_v2_conversation_proto_init() }

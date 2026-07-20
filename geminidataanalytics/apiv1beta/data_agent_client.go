@@ -33,6 +33,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -631,14 +632,21 @@ func (c *DataAgentClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *DataAgentClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -1083,8 +1091,12 @@ func (c *dataAgentGRPCClient) CreateDataAgent(ctx context.Context, req *geminida
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.CreateDataAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDataAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1130,8 +1142,12 @@ func (c *dataAgentGRPCClient) UpdateDataAgent(ctx context.Context, req *geminida
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.UpdateDataAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDataAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1177,8 +1193,12 @@ func (c *dataAgentGRPCClient) DeleteDataAgent(ctx context.Context, req *geminida
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.DeleteDataAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDataAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1726,8 +1746,12 @@ func (c *dataAgentRESTClient) CreateDataAgent(ctx context.Context, req *geminida
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.CreateDataAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDataAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1870,8 +1894,12 @@ func (c *dataAgentRESTClient) UpdateDataAgent(ctx context.Context, req *geminida
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.UpdateDataAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDataAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2004,8 +2032,12 @@ func (c *dataAgentRESTClient) DeleteDataAgent(ctx context.Context, req *geminida
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.DeleteDataAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDataAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2236,14 +2268,21 @@ func (c *dataAgentRESTClient) GetLocation(ctx context.Context, req *locationpb.G
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *dataAgentRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.CloneOf(req)
@@ -2550,7 +2589,7 @@ func (c *dataAgentRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created CreateDataAgentOperation, possibly from a different process.
 func (c *dataAgentGRPCClient) CreateDataAgentOperation(name string) *CreateDataAgentOperation {
 	return &CreateDataAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.CreateDataAgentOperation"),
 	}
 }
 
@@ -2559,7 +2598,7 @@ func (c *dataAgentGRPCClient) CreateDataAgentOperation(name string) *CreateDataA
 func (c *dataAgentRESTClient) CreateDataAgentOperation(name string) *CreateDataAgentOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateDataAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.CreateDataAgentOperation"),
 		pollPath: override,
 	}
 }
@@ -2568,7 +2607,7 @@ func (c *dataAgentRESTClient) CreateDataAgentOperation(name string) *CreateDataA
 // The name must be that of a previously created DeleteDataAgentOperation, possibly from a different process.
 func (c *dataAgentGRPCClient) DeleteDataAgentOperation(name string) *DeleteDataAgentOperation {
 	return &DeleteDataAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.DeleteDataAgentOperation"),
 	}
 }
 
@@ -2577,7 +2616,7 @@ func (c *dataAgentGRPCClient) DeleteDataAgentOperation(name string) *DeleteDataA
 func (c *dataAgentRESTClient) DeleteDataAgentOperation(name string) *DeleteDataAgentOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteDataAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.DeleteDataAgentOperation"),
 		pollPath: override,
 	}
 }
@@ -2586,7 +2625,7 @@ func (c *dataAgentRESTClient) DeleteDataAgentOperation(name string) *DeleteDataA
 // The name must be that of a previously created UpdateDataAgentOperation, possibly from a different process.
 func (c *dataAgentGRPCClient) UpdateDataAgentOperation(name string) *UpdateDataAgentOperation {
 	return &UpdateDataAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.UpdateDataAgentOperation"),
 	}
 }
 
@@ -2595,7 +2634,7 @@ func (c *dataAgentGRPCClient) UpdateDataAgentOperation(name string) *UpdateDataA
 func (c *dataAgentRESTClient) UpdateDataAgentOperation(name string) *UpdateDataAgentOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpdateDataAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.UpdateDataAgentOperation"),
 		pollPath: override,
 	}
 }

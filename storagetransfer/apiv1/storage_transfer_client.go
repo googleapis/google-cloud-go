@@ -32,6 +32,7 @@ import (
 	storagetransferpb "cloud.google.com/go/storagetransfer/apiv1/storagetransferpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1113,8 +1114,12 @@ func (c *gRPCClient) RunTransferJob(ctx context.Context, req *storagetransferpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*storagetransfer.RunTransferJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunTransferJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1821,8 +1826,12 @@ func (c *restClient) RunTransferJob(ctx context.Context, req *storagetransferpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*storagetransfer.RunTransferJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunTransferJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2380,7 +2389,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created RunTransferJobOperation, possibly from a different process.
 func (c *gRPCClient) RunTransferJobOperation(name string) *RunTransferJobOperation {
 	return &RunTransferJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*storagetransfer.RunTransferJobOperation"),
 	}
 }
 
@@ -2389,7 +2398,7 @@ func (c *gRPCClient) RunTransferJobOperation(name string) *RunTransferJobOperati
 func (c *restClient) RunTransferJobOperation(name string) *RunTransferJobOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RunTransferJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*storagetransfer.RunTransferJobOperation"),
 		pollPath: override,
 	}
 }

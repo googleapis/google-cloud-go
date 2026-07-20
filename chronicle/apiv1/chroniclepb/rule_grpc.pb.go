@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ const (
 	RuleService_ListRules_FullMethodName            = "/google.cloud.chronicle.v1.RuleService/ListRules"
 	RuleService_UpdateRule_FullMethodName           = "/google.cloud.chronicle.v1.RuleService/UpdateRule"
 	RuleService_DeleteRule_FullMethodName           = "/google.cloud.chronicle.v1.RuleService/DeleteRule"
+	RuleService_VerifyRuleText_FullMethodName       = "/google.cloud.chronicle.v1.RuleService/VerifyRuleText"
 	RuleService_ListRuleRevisions_FullMethodName    = "/google.cloud.chronicle.v1.RuleService/ListRuleRevisions"
 	RuleService_CreateRetrohunt_FullMethodName      = "/google.cloud.chronicle.v1.RuleService/CreateRetrohunt"
 	RuleService_GetRetrohunt_FullMethodName         = "/google.cloud.chronicle.v1.RuleService/GetRetrohunt"
@@ -64,6 +65,8 @@ type RuleServiceClient interface {
 	UpdateRule(ctx context.Context, in *UpdateRuleRequest, opts ...grpc.CallOption) (*Rule, error)
 	// Deletes a Rule.
 	DeleteRule(ctx context.Context, in *DeleteRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Verifies the given rule text.
+	VerifyRuleText(ctx context.Context, in *VerifyRuleTextRequest, opts ...grpc.CallOption) (*VerifyRuleTextResponse, error)
 	// Lists all revisions of the rule.
 	ListRuleRevisions(ctx context.Context, in *ListRuleRevisionsRequest, opts ...grpc.CallOption) (*ListRuleRevisionsResponse, error)
 	// Create a Retrohunt.
@@ -130,6 +133,15 @@ func (c *ruleServiceClient) UpdateRule(ctx context.Context, in *UpdateRuleReques
 func (c *ruleServiceClient) DeleteRule(ctx context.Context, in *DeleteRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, RuleService_DeleteRule_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ruleServiceClient) VerifyRuleText(ctx context.Context, in *VerifyRuleTextRequest, opts ...grpc.CallOption) (*VerifyRuleTextResponse, error) {
+	out := new(VerifyRuleTextResponse)
+	err := c.cc.Invoke(ctx, RuleService_VerifyRuleText_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -213,6 +225,8 @@ type RuleServiceServer interface {
 	UpdateRule(context.Context, *UpdateRuleRequest) (*Rule, error)
 	// Deletes a Rule.
 	DeleteRule(context.Context, *DeleteRuleRequest) (*emptypb.Empty, error)
+	// Verifies the given rule text.
+	VerifyRuleText(context.Context, *VerifyRuleTextRequest) (*VerifyRuleTextResponse, error)
 	// Lists all revisions of the rule.
 	ListRuleRevisions(context.Context, *ListRuleRevisionsRequest) (*ListRuleRevisionsResponse, error)
 	// Create a Retrohunt.
@@ -250,6 +264,9 @@ func (UnimplementedRuleServiceServer) UpdateRule(context.Context, *UpdateRuleReq
 }
 func (UnimplementedRuleServiceServer) DeleteRule(context.Context, *DeleteRuleRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRule not implemented")
+}
+func (UnimplementedRuleServiceServer) VerifyRuleText(context.Context, *VerifyRuleTextRequest) (*VerifyRuleTextResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyRuleText not implemented")
 }
 func (UnimplementedRuleServiceServer) ListRuleRevisions(context.Context, *ListRuleRevisionsRequest) (*ListRuleRevisionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRuleRevisions not implemented")
@@ -370,6 +387,24 @@ func _RuleService_DeleteRule_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RuleServiceServer).DeleteRule(ctx, req.(*DeleteRuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RuleService_VerifyRuleText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyRuleTextRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RuleServiceServer).VerifyRuleText(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RuleService_VerifyRuleText_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RuleServiceServer).VerifyRuleText(ctx, req.(*VerifyRuleTextRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -526,6 +561,10 @@ var RuleService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteRule",
 			Handler:    _RuleService_DeleteRule_Handler,
+		},
+		{
+			MethodName: "VerifyRuleText",
+			Handler:    _RuleService_VerifyRuleText_Handler,
 		},
 		{
 			MethodName: "ListRuleRevisions",

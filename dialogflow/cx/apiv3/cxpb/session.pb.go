@@ -54,6 +54,11 @@ const (
 	// Basic response view omits the following fields:
 	// -
 	// [QueryResult.diagnostic_info][google.cloud.dialogflow.cx.v3.QueryResult.diagnostic_info]
+	// - [QueryResult.generative_info][]
+	// -
+	// [QueryResult.trace_blocks][google.cloud.dialogflow.cx.v3.QueryResult.trace_blocks]
+	// -
+	// [QueryResult.data_store_connection_signals][google.cloud.dialogflow.cx.v3.QueryResult.data_store_connection_signals]
 	DetectIntentResponseView_DETECT_INTENT_RESPONSE_VIEW_BASIC DetectIntentResponseView = 2
 	// Default response view omits the following fields:
 	// -

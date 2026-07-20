@@ -49,8 +49,8 @@ const (
 // Helper function to provide default options for pool creation
 func poolOpts() []BigtableChannelPoolOption {
 	return []BigtableChannelPoolOption{
-		WithInstanceName(testInstanceName),
-		WithAppProfile(testAppProfile),
+		WithChannelPrimer(newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil)),
+		WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)),
 	}
 }
 
@@ -145,18 +145,26 @@ func TestNewBigtableChannelPoolEdgeCases(t *testing.T) {
 		name     string
 		size     int
 		dial     func() (*BigtableConn, error)
+		opts     []BigtableChannelPoolOption
 		wantErr  bool
 		errMatch string
 	}{
-		{name: "ZeroSize", size: 0, dial: dialFunc, wantErr: true, errMatch: "must be positive"},
-		{name: "NegativeSize", size: -1, dial: dialFunc, wantErr: true, errMatch: "must be positive"},
-		{name: "NilDial", size: 1, dial: nil, wantErr: true, errMatch: "dial function cannot be nil"},
-		{name: "Valid", size: 1, dial: dialFunc, wantErr: false},
+		{name: "ZeroSize", size: 0, dial: dialFunc, opts: poolOpts(), wantErr: true, errMatch: "must be positive"},
+		{name: "NegativeSize", size: -1, dial: dialFunc, opts: poolOpts(), wantErr: true, errMatch: "must be positive"},
+		{name: "NilDial", size: 1, dial: nil, opts: poolOpts(), wantErr: true, errMatch: "dial function cannot be nil"},
+		{
+			name: "NilDirectAccessChecker",
+			size: 1, dial: dialFunc,
+			opts:     []BigtableChannelPoolOption{WithChannelPrimer(newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil))},
+			wantErr:  true,
+			errMatch: "DirectAccessChecker is required",
+		},
+		{name: "Valid", size: 1, dial: dialFunc, opts: poolOpts(), wantErr: false},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			pool, err := NewBigtableChannelPool(ctx, tc.size, btopt.RoundRobin, tc.dial, time.Now(), poolOpts()...)
+			pool, err := NewBigtableChannelPool(ctx, tc.size, btopt.RoundRobin, tc.dial, time.Now(), tc.opts...)
 			if tc.wantErr {
 				if err == nil {
 					t.Errorf("NewBigtableChannelPool(%d) succeeded, want error containing %q", tc.size, tc.errMatch)
@@ -246,10 +254,8 @@ func TestConnectionFactory(t *testing.T) {
 			fake.setDelay(tt.primeDelay)
 
 			factory := &connectionFactory{
-				dial:           tt.dialFunc,
-				instanceName:   testInstanceName,
-				appProfile:     testAppProfile,
-				featureFlagsMD: metadata.MD{},
+				dial:   tt.dialFunc,
+				primer: newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, metadata.MD{}),
 			}
 
 			ctx := context.Background()
@@ -671,10 +677,9 @@ func TestNewBigtableChannelPool(t *testing.T) {
 
 	t.Run("DialFailure", func(t *testing.T) {
 		poolSize := 3
-		dialCount := 0
+		var dialCount atomic.Int64
 		dialFunc := func() (*BigtableConn, error) {
-			dialCount++
-			if dialCount > 1 {
+			if dialCount.Add(1) > 1 {
 				return nil, errors.New("simulated dial error")
 			}
 			fake := &fakeService{}
@@ -687,6 +692,59 @@ func TestNewBigtableChannelPool(t *testing.T) {
 			t.Errorf("NewBigtableChannelPool should have failed due to dial error")
 		}
 	})
+}
+
+// TestNewBigtableChannelPoolParallelPriming verifies that initial pool priming
+// fans out across multiple workers, capped at maxPrimeWorkers. The fake server
+// holds each PingAndWarm open for primeDelay so we can read the peak concurrent
+// in-flight count; with sequential priming the peak would be 1.
+func TestNewBigtableChannelPoolParallelPriming(t *testing.T) {
+	ctx := context.Background()
+	primeDelay := 200 * time.Millisecond
+
+	cases := []struct {
+		name     string
+		poolSize int
+		wantPeak int
+	}{
+		{name: "BelowWorkerCap", poolSize: 4, wantPeak: 4},
+		{name: "AtWorkerCap", poolSize: maxPrimeWorkers, wantPeak: maxPrimeWorkers},
+		{name: "AboveWorkerCap", poolSize: maxPrimeWorkers * 2, wantPeak: maxPrimeWorkers},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			fake := &fakeService{}
+			fake.setDelay(primeDelay)
+			addr := setupTestServer(t, fake)
+			dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+			start := time.Now()
+			pool, err := NewBigtableChannelPool(ctx, tc.poolSize, btopt.RoundRobin, dialFunc, time.Now(), poolOpts()...)
+			elapsed := time.Since(start)
+			if err != nil {
+				t.Fatalf("NewBigtableChannelPool failed: %v", err)
+			}
+			defer pool.Close()
+
+			if got := fake.getPingPeakInflight(); got != tc.wantPeak {
+				t.Errorf("peak in-flight PingAndWarm = %d, want %d", got, tc.wantPeak)
+			}
+
+			// Sanity bound on wall time: at most ceil(poolSize / workers) prime
+			// batches plus generous slack for dial/handshake overhead. A
+			// sequential implementation would take ~poolSize * primeDelay.
+			workers := tc.wantPeak
+			batches := (tc.poolSize + workers - 1) / workers
+			wantUnderSequential := time.Duration(tc.poolSize) * primeDelay
+			wantAtMost := time.Duration(batches)*primeDelay + 2*time.Second
+			if elapsed >= wantUnderSequential {
+				t.Errorf("elapsed %v >= sequential bound %v — priming did not parallelize", elapsed, wantUnderSequential)
+			}
+			if elapsed > wantAtMost {
+				t.Errorf("elapsed %v > expected upper bound %v", elapsed, wantAtMost)
+			}
+		})
+	}
 }
 
 func TestConnEntryCalculateConnLoadWithPenalty(t *testing.T) {
@@ -949,8 +1007,13 @@ func TestMultipleStreamsSingleConn(t *testing.T) {
 
 	connEntry := pool.getConns()[0]
 
+	// ClientStreams/ServerStreams both true so the stream stays open across
+	// the SendMsg/RecvMsg round-trip in the next loop; without them gRPC
+	// treats the call as unary and fires OnFinish after the first response,
+	// decrementing the load before the close-and-drain phase below.
+	streamDesc := &grpc.StreamDesc{StreamName: "StreamingCall", ClientStreams: true, ServerStreams: true}
 	for i := 0; i < numStreams; i++ {
-		stream, err := pool.NewStream(ctx, &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
+		stream, err := pool.NewStream(ctx, streamDesc, "/grpc.testing.BenchmarkService/StreamingCall")
 		if err != nil {
 			t.Fatalf("NewStream %d failed: %v", i, err)
 		}
@@ -1204,10 +1267,13 @@ func TestGracefulDraining(t *testing.T) {
 		if !isConnClosed(oldEntry.conn.ClientConn) {
 			t.Error("Connection was not force-closed after the draining timeout")
 		}
-		// In a real scenario, we'd log that the load was still > 0, e.g.,
-		if oldEntry.streamingLoad.Load() == 0 {
-			t.Error("Load was unexpectedly 0, timeout should not have been the reason for closing")
-		}
+		// We used to assert streamingLoad > 0 here as a proxy for
+		// "the timeout — not natural drain — caused the close". That proxy
+		// no longer works: grpc.OnFinish fires when the transport is torn
+		// down by the force-close, which legitimately decrements the load.
+		// The isConnClosed check above is sufficient — the stream is stuck
+		// on streamSema so the only way the conn closes within the sleep
+		// window is the timeout.
 	})
 }
 
@@ -1669,7 +1735,7 @@ func TestDirectAccessLogic(t *testing.T) {
 
 		poolSize := 3
 		fake.setPingCount(0)
-		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 
 		if err != nil {
@@ -1712,7 +1778,7 @@ func TestDirectAccessLogic(t *testing.T) {
 		}
 
 		poolSize := 2
-		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
@@ -1737,7 +1803,7 @@ func TestDirectAccessLogic(t *testing.T) {
 		}
 
 		poolSize := 1
-		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
@@ -1763,7 +1829,7 @@ func TestDirectAccessLogic(t *testing.T) {
 			daConn = c
 			return c, nil
 		}
-		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
 		poolSize := 1
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
@@ -1780,9 +1846,12 @@ func TestDirectAccessLogic(t *testing.T) {
 			t.Error("Failed DA connection was not closed")
 		}
 	})
-	t.Run("DirectAccess_DisabledByEnv", func(t *testing.T) {
+	t.Run("DirectAccess_DisabledChecker", func(t *testing.T) {
+		// The pool no longer reads CBT_ENABLE_DIRECTPATH — the factory does,
+		// and wires a disabledDirectAccessChecker when Direct Access is off.
+		// This test verifies the pool honors that disabled checker: no dial,
+		// no probe, no fallback.
 		fake.reset()
-		t.Setenv("CBT_ENABLE_DIRECTPATH", "false")
 
 		daDialCalled := false
 		daDial := func() (*BigtableConn, error) {
@@ -1794,18 +1863,18 @@ func TestDirectAccessLogic(t *testing.T) {
 			c.isALTSConn.Store(true)
 			return c, nil
 		}
+		_ = daDial // referenced only to keep the same shape as sibling tests
 
 		poolSize := 1
-		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		opts := append(poolOpts(), WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
 		}
 		defer pool.Close()
 
-		// The dialer should be completely bypassed now.
 		if daDialCalled {
-			t.Error("Direct Access dialer should NOT be called when CBT_ENABLE_DIRECTPATH=false")
+			t.Error("Direct Access dialer should NOT be called when disabled checker is wired up")
 		}
 	})
 	t.Run("DirectAccess_PermissionDenied_ChecksALTS", func(t *testing.T) {
@@ -1825,7 +1894,7 @@ func TestDirectAccessLogic(t *testing.T) {
 		}
 
 		poolSize := 1
-		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)

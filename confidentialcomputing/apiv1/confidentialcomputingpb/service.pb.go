@@ -493,7 +493,11 @@ type VerifyAttestationRequest struct {
 	TokenOptions *TokenOptions `protobuf:"bytes,5,opt,name=token_options,json=tokenOptions,proto3" json:"token_options,omitempty"`
 	// Optional. An optional indicator of the attester, only applies to certain
 	// products.
-	Attester      string `protobuf:"bytes,8,opt,name=attester,proto3" json:"attester,omitempty"`
+	Attester string `protobuf:"bytes,8,opt,name=attester,proto3" json:"attester,omitempty"`
+	// Optional. Optional resource link of the Compute Engine instance.
+	// Format:
+	// `projects/{project_number}/zones/{zone}/instances/{instance_id}`
+	Instance      string `protobuf:"bytes,10,opt,name=instance,proto3" json:"instance,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -607,6 +611,13 @@ func (x *VerifyAttestationRequest) GetTokenOptions() *TokenOptions {
 func (x *VerifyAttestationRequest) GetAttester() string {
 	if x != nil {
 		return x.Attester
+	}
+	return ""
+}
+
+func (x *VerifyAttestationRequest) GetInstance() string {
+	if x != nil {
+		return x.Instance
 	}
 	return ""
 }
@@ -2491,7 +2502,7 @@ const file_google_cloud_confidentialcomputing_v1_service_proto_rawDesc = "" +
 	"\x16CreateChallengeRequest\x12A\n" +
 	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12S\n" +
-	"\tchallenge\x18\x02 \x01(\v20.google.cloud.confidentialcomputing.v1.ChallengeB\x03\xe0A\x02R\tchallenge\"\x9a\a\n" +
+	"\tchallenge\x18\x02 \x01(\v20.google.cloud.confidentialcomputing.v1.ChallengeB\x03\xe0A\x02R\tchallenge\"\xdf\a\n" +
 	"\x18VerifyAttestationRequest\x12Y\n" +
 	"\atd_ccel\x18\x06 \x01(\v29.google.cloud.confidentialcomputing.v1.TdxCcelAttestationB\x03\xe0A\x01H\x00R\x06tdCcel\x12o\n" +
 	"\x13sev_snp_attestation\x18\a \x01(\v28.google.cloud.confidentialcomputing.v1.SevSnpAttestationB\x03\xe0A\x01H\x00R\x11sevSnpAttestation\x12n\n" +
@@ -2502,7 +2513,10 @@ const file_google_cloud_confidentialcomputing_v1_service_proto_rawDesc = "" +
 	"\x0ftpm_attestation\x18\x03 \x01(\v25.google.cloud.confidentialcomputing.v1.TpmAttestationB\x03\xe0A\x02R\x0etpmAttestation\x12y\n" +
 	"\x17confidential_space_info\x18\x04 \x01(\v2<.google.cloud.confidentialcomputing.v1.ConfidentialSpaceInfoB\x03\xe0A\x01R\x15confidentialSpaceInfo\x12]\n" +
 	"\rtoken_options\x18\x05 \x01(\v23.google.cloud.confidentialcomputing.v1.TokenOptionsB\x03\xe0A\x01R\ftokenOptions\x12\x1f\n" +
-	"\battester\x18\b \x01(\tB\x03\xe0A\x01R\battesterB\x11\n" +
+	"\battester\x18\b \x01(\tB\x03\xe0A\x01R\battester\x12C\n" +
+	"\binstance\x18\n" +
+	" \x01(\tB'\xe0A\x01\xfaA!\n" +
+	"\x1fcompute.googleapis.com/InstanceR\binstanceB\x11\n" +
 	"\x0ftee_attestationB\x14\n" +
 	"\x12device_attestation\"\x9b\f\n" +
 	"\x11NvidiaAttestation\x12i\n" +
@@ -2649,7 +2663,8 @@ const file_google_cloud_confidentialcomputing_v1_service_proto_rawDesc = "" +
 	"\x0fCreateChallenge\x12=.google.cloud.confidentialcomputing.v1.CreateChallengeRequest\x1a0.google.cloud.confidentialcomputing.v1.Challenge\"T\xdaA\x10parent,challenge\x82\xd3\xe4\x93\x02;:\tchallenge\"./v1/{parent=projects/*/locations/*}/challenges\x12\xe8\x01\n" +
 	"\x11VerifyAttestation\x12?.google.cloud.confidentialcomputing.v1.VerifyAttestationRequest\x1a@.google.cloud.confidentialcomputing.v1.VerifyAttestationResponse\"P\x82\xd3\xe4\x93\x02J:\x01*\"E/v1/{challenge=projects/*/locations/*/challenges/*}:verifyAttestation\x12\x80\x02\n" +
 	"\x17VerifyConfidentialSpace\x12E.google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest\x1aF.google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceResponse\"V\x82\xd3\xe4\x93\x02P:\x01*\"K/v1/{challenge=projects/*/locations/*/challenges/*}:verifyConfidentialSpace\x12\xf8\x01\n" +
-	"\x15VerifyConfidentialGke\x12C.google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest\x1aD.google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeResponse\"T\x82\xd3\xe4\x93\x02N:\x01*\"I/v1/{challenge=projects/*/locations/*/challenges/*}:verifyConfidentialGke\x1aX\xcaA$confidentialcomputing.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x97\x02\n" +
+	"\x15VerifyConfidentialGke\x12C.google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest\x1aD.google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeResponse\"T\x82\xd3\xe4\x93\x02N:\x01*\"I/v1/{challenge=projects/*/locations/*/challenges/*}:verifyConfidentialGke\x1aX\xcaA$confidentialcomputing.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x86\x03\xeaAl\n" +
+	"\x1fcompute.googleapis.com/Instance\x124projects/{project}/zones/{zone}/instances/{instance}*\tinstances2\binstance\n" +
 	")com.google.cloud.confidentialcomputing.v1B\fServiceProtoP\x01Z_cloud.google.com/go/confidentialcomputing/apiv1/confidentialcomputingpb;confidentialcomputingpb\xaa\x02%Google.Cloud.ConfidentialComputing.V1\xca\x02%Google\\Cloud\\ConfidentialComputing\\V1\xea\x02(Google::Cloud::ConfidentialComputing::V1b\x06proto3"
 
 var (

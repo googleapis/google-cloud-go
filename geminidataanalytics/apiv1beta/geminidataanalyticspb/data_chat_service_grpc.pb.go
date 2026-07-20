@@ -49,7 +49,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DataChatServiceClient interface {
 	// Answers a data question by generating a stream of
-	// [Message][google.cloud.geminidataanalytics.v1alpha.Message] objects.
+	// [Message][google.cloud.geminidataanalytics.v1.Message] objects.
 	Chat(ctx context.Context, in *ChatRequest, opts ...grpc.CallOption) (DataChatService_ChatClient, error)
 	// Creates a new conversation to persist the conversation history. Each
 	// conversation will have multiple messages associated with it.
@@ -165,7 +165,7 @@ func (c *dataChatServiceClient) QueryData(ctx context.Context, in *QueryDataRequ
 // for forward compatibility
 type DataChatServiceServer interface {
 	// Answers a data question by generating a stream of
-	// [Message][google.cloud.geminidataanalytics.v1alpha.Message] objects.
+	// [Message][google.cloud.geminidataanalytics.v1.Message] objects.
 	Chat(*ChatRequest, DataChatService_ChatServer) error
 	// Creates a new conversation to persist the conversation history. Each
 	// conversation will have multiple messages associated with it.

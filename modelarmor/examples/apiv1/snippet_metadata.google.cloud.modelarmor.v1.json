@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/modelarmor/apiv1",
-    "version": "1.0.0"
+    "version": "1.2.0"
   },
   "snippets": [
     {
@@ -423,6 +423,90 @@
         }
       ],
       "title": "modelarmor SanitizeUserPrompt Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.modelarmor.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.modelarmor.v1.Client.StreamSanitizeModelResponse",
+        "method": {
+          "fullName": "google.cloud.modelarmor.v1.ModelArmor.StreamSanitizeModelResponse",
+          "service": {
+            "fullName": "google.cloud.modelarmor.v1.ModelArmor",
+            "shortName": "ModelArmor"
+          },
+          "shortName": "StreamSanitizeModelResponse"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "modelarmorpb.ModelArmor_StreamSanitizeModelResponseClient",
+        "shortName": "StreamSanitizeModelResponse"
+      },
+      "description": "StreamSanitizeModelResponse streaming version of Sanitizes Model Response.\n\n\nThis method is not supported for the REST transport.",
+      "file": "Client/StreamSanitizeModelResponse/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "modelarmor_v1_generated_ModelArmor_StreamSanitizeModelResponse_sync",
+      "segments": [
+        {
+          "end": 71,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "modelarmor StreamSanitizeModelResponse Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.modelarmor.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.modelarmor.v1.Client.StreamSanitizeUserPrompt",
+        "method": {
+          "fullName": "google.cloud.modelarmor.v1.ModelArmor.StreamSanitizeUserPrompt",
+          "service": {
+            "fullName": "google.cloud.modelarmor.v1.ModelArmor",
+            "shortName": "ModelArmor"
+          },
+          "shortName": "StreamSanitizeUserPrompt"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "modelarmorpb.ModelArmor_StreamSanitizeUserPromptClient",
+        "shortName": "StreamSanitizeUserPrompt"
+      },
+      "description": "StreamSanitizeUserPrompt streaming version of Sanitize User Prompt.\n\n\nThis method is not supported for the REST transport.",
+      "file": "Client/StreamSanitizeUserPrompt/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "modelarmor_v1_generated_ModelArmor_StreamSanitizeUserPrompt_sync",
+      "segments": [
+        {
+          "end": 71,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "modelarmor StreamSanitizeUserPrompt Sample"
     },
     {
       "clientMethod": {

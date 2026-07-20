@@ -31,6 +31,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -349,8 +350,12 @@ func (c *apiHubCollectRESTClient) CollectApiData(ctx context.Context, req *apihu
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.CollectApiDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CollectApiDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -717,7 +722,7 @@ func (c *apiHubCollectRESTClient) ListOperations(ctx context.Context, req *longr
 func (c *apiHubCollectRESTClient) CollectApiDataOperation(name string) *CollectApiDataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CollectApiDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.CollectApiDataOperation"),
 		pollPath: override,
 	}
 }

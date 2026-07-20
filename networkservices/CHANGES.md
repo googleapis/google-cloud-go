@@ -1,5 +1,26 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v1.2.0...networkservices/v1.3.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v1.1.0...networkservices/v1.2.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v1.0.0...networkservices/v1.1.0) (2026-06-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20007](https://github.com/googleapis/google-cloud-go/issues/20007)) ([4d633c8](https://github.com/googleapis/google-cloud-go/commit/4d633c893dd35be48ca353da133e7d483151cd3e))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkservices%2Fv1.0.0) (2026-05-08)
 
 ## [0.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkservices%2Fv0.11.0) (2026-05-07)

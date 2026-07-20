@@ -33,6 +33,7 @@ import (
 	networksecuritypb "cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -863,8 +864,12 @@ func (c *gRPCClient) CreateAuthorizationPolicy(ctx context.Context, req *network
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateAuthorizationPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAuthorizationPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -886,8 +891,12 @@ func (c *gRPCClient) UpdateAuthorizationPolicy(ctx context.Context, req *network
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateAuthorizationPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAuthorizationPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -912,8 +921,12 @@ func (c *gRPCClient) DeleteAuthorizationPolicy(ctx context.Context, req *network
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteAuthorizationPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAuthorizationPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1014,8 +1027,12 @@ func (c *gRPCClient) CreateServerTlsPolicy(ctx context.Context, req *networksecu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateServerTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServerTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1037,8 +1054,12 @@ func (c *gRPCClient) UpdateServerTlsPolicy(ctx context.Context, req *networksecu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateServerTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateServerTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1063,8 +1084,12 @@ func (c *gRPCClient) DeleteServerTlsPolicy(ctx context.Context, req *networksecu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteServerTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServerTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1165,8 +1190,12 @@ func (c *gRPCClient) CreateClientTlsPolicy(ctx context.Context, req *networksecu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateClientTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClientTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1188,8 +1217,12 @@ func (c *gRPCClient) UpdateClientTlsPolicy(ctx context.Context, req *networksecu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateClientTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClientTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1214,8 +1247,12 @@ func (c *gRPCClient) DeleteClientTlsPolicy(ctx context.Context, req *networksecu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteClientTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClientTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1662,8 +1699,12 @@ func (c *restClient) CreateAuthorizationPolicy(ctx context.Context, req *network
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateAuthorizationPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAuthorizationPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1733,8 +1774,12 @@ func (c *restClient) UpdateAuthorizationPolicy(ctx context.Context, req *network
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateAuthorizationPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAuthorizationPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1793,8 +1838,12 @@ func (c *restClient) DeleteAuthorizationPolicy(ctx context.Context, req *network
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteAuthorizationPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAuthorizationPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1996,8 +2045,12 @@ func (c *restClient) CreateServerTlsPolicy(ctx context.Context, req *networksecu
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateServerTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServerTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2067,8 +2120,12 @@ func (c *restClient) UpdateServerTlsPolicy(ctx context.Context, req *networksecu
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateServerTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateServerTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2127,8 +2184,12 @@ func (c *restClient) DeleteServerTlsPolicy(ctx context.Context, req *networksecu
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteServerTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServerTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2330,8 +2391,12 @@ func (c *restClient) CreateClientTlsPolicy(ctx context.Context, req *networksecu
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateClientTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClientTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2401,8 +2466,12 @@ func (c *restClient) UpdateClientTlsPolicy(ctx context.Context, req *networksecu
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateClientTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClientTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2461,8 +2530,12 @@ func (c *restClient) DeleteClientTlsPolicy(ctx context.Context, req *networksecu
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteClientTlsPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClientTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3025,7 +3098,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateAuthorizationPolicyOperation, possibly from a different process.
 func (c *gRPCClient) CreateAuthorizationPolicyOperation(name string) *CreateAuthorizationPolicyOperation {
 	return &CreateAuthorizationPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateAuthorizationPolicyOperation"),
 	}
 }
 
@@ -3034,7 +3107,7 @@ func (c *gRPCClient) CreateAuthorizationPolicyOperation(name string) *CreateAuth
 func (c *restClient) CreateAuthorizationPolicyOperation(name string) *CreateAuthorizationPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &CreateAuthorizationPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateAuthorizationPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -3043,7 +3116,7 @@ func (c *restClient) CreateAuthorizationPolicyOperation(name string) *CreateAuth
 // The name must be that of a previously created CreateClientTlsPolicyOperation, possibly from a different process.
 func (c *gRPCClient) CreateClientTlsPolicyOperation(name string) *CreateClientTlsPolicyOperation {
 	return &CreateClientTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateClientTlsPolicyOperation"),
 	}
 }
 
@@ -3052,7 +3125,7 @@ func (c *gRPCClient) CreateClientTlsPolicyOperation(name string) *CreateClientTl
 func (c *restClient) CreateClientTlsPolicyOperation(name string) *CreateClientTlsPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &CreateClientTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateClientTlsPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -3061,7 +3134,7 @@ func (c *restClient) CreateClientTlsPolicyOperation(name string) *CreateClientTl
 // The name must be that of a previously created CreateServerTlsPolicyOperation, possibly from a different process.
 func (c *gRPCClient) CreateServerTlsPolicyOperation(name string) *CreateServerTlsPolicyOperation {
 	return &CreateServerTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateServerTlsPolicyOperation"),
 	}
 }
 
@@ -3070,7 +3143,7 @@ func (c *gRPCClient) CreateServerTlsPolicyOperation(name string) *CreateServerTl
 func (c *restClient) CreateServerTlsPolicyOperation(name string) *CreateServerTlsPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &CreateServerTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateServerTlsPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -3079,7 +3152,7 @@ func (c *restClient) CreateServerTlsPolicyOperation(name string) *CreateServerTl
 // The name must be that of a previously created DeleteAuthorizationPolicyOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAuthorizationPolicyOperation(name string) *DeleteAuthorizationPolicyOperation {
 	return &DeleteAuthorizationPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteAuthorizationPolicyOperation"),
 	}
 }
 
@@ -3088,7 +3161,7 @@ func (c *gRPCClient) DeleteAuthorizationPolicyOperation(name string) *DeleteAuth
 func (c *restClient) DeleteAuthorizationPolicyOperation(name string) *DeleteAuthorizationPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &DeleteAuthorizationPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteAuthorizationPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -3097,7 +3170,7 @@ func (c *restClient) DeleteAuthorizationPolicyOperation(name string) *DeleteAuth
 // The name must be that of a previously created DeleteClientTlsPolicyOperation, possibly from a different process.
 func (c *gRPCClient) DeleteClientTlsPolicyOperation(name string) *DeleteClientTlsPolicyOperation {
 	return &DeleteClientTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteClientTlsPolicyOperation"),
 	}
 }
 
@@ -3106,7 +3179,7 @@ func (c *gRPCClient) DeleteClientTlsPolicyOperation(name string) *DeleteClientTl
 func (c *restClient) DeleteClientTlsPolicyOperation(name string) *DeleteClientTlsPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &DeleteClientTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteClientTlsPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -3115,7 +3188,7 @@ func (c *restClient) DeleteClientTlsPolicyOperation(name string) *DeleteClientTl
 // The name must be that of a previously created DeleteServerTlsPolicyOperation, possibly from a different process.
 func (c *gRPCClient) DeleteServerTlsPolicyOperation(name string) *DeleteServerTlsPolicyOperation {
 	return &DeleteServerTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteServerTlsPolicyOperation"),
 	}
 }
 
@@ -3124,7 +3197,7 @@ func (c *gRPCClient) DeleteServerTlsPolicyOperation(name string) *DeleteServerTl
 func (c *restClient) DeleteServerTlsPolicyOperation(name string) *DeleteServerTlsPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &DeleteServerTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteServerTlsPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -3133,7 +3206,7 @@ func (c *restClient) DeleteServerTlsPolicyOperation(name string) *DeleteServerTl
 // The name must be that of a previously created UpdateAuthorizationPolicyOperation, possibly from a different process.
 func (c *gRPCClient) UpdateAuthorizationPolicyOperation(name string) *UpdateAuthorizationPolicyOperation {
 	return &UpdateAuthorizationPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateAuthorizationPolicyOperation"),
 	}
 }
 
@@ -3142,7 +3215,7 @@ func (c *gRPCClient) UpdateAuthorizationPolicyOperation(name string) *UpdateAuth
 func (c *restClient) UpdateAuthorizationPolicyOperation(name string) *UpdateAuthorizationPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &UpdateAuthorizationPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateAuthorizationPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -3151,7 +3224,7 @@ func (c *restClient) UpdateAuthorizationPolicyOperation(name string) *UpdateAuth
 // The name must be that of a previously created UpdateClientTlsPolicyOperation, possibly from a different process.
 func (c *gRPCClient) UpdateClientTlsPolicyOperation(name string) *UpdateClientTlsPolicyOperation {
 	return &UpdateClientTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateClientTlsPolicyOperation"),
 	}
 }
 
@@ -3160,7 +3233,7 @@ func (c *gRPCClient) UpdateClientTlsPolicyOperation(name string) *UpdateClientTl
 func (c *restClient) UpdateClientTlsPolicyOperation(name string) *UpdateClientTlsPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &UpdateClientTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateClientTlsPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -3169,7 +3242,7 @@ func (c *restClient) UpdateClientTlsPolicyOperation(name string) *UpdateClientTl
 // The name must be that of a previously created UpdateServerTlsPolicyOperation, possibly from a different process.
 func (c *gRPCClient) UpdateServerTlsPolicyOperation(name string) *UpdateServerTlsPolicyOperation {
 	return &UpdateServerTlsPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateServerTlsPolicyOperation"),
 	}
 }
 
@@ -3178,7 +3251,7 @@ func (c *gRPCClient) UpdateServerTlsPolicyOperation(name string) *UpdateServerTl
 func (c *restClient) UpdateServerTlsPolicyOperation(name string) *UpdateServerTlsPolicyOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &UpdateServerTlsPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateServerTlsPolicyOperation"),
 		pollPath: override,
 	}
 }

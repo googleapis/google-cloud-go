@@ -41,12 +41,14 @@ const (
 	Dataform_CreateTeamFolder_FullMethodName                   = "/google.cloud.dataform.v1beta1.Dataform/CreateTeamFolder"
 	Dataform_UpdateTeamFolder_FullMethodName                   = "/google.cloud.dataform.v1beta1.Dataform/UpdateTeamFolder"
 	Dataform_DeleteTeamFolder_FullMethodName                   = "/google.cloud.dataform.v1beta1.Dataform/DeleteTeamFolder"
+	Dataform_DeleteTeamFolderTree_FullMethodName               = "/google.cloud.dataform.v1beta1.Dataform/DeleteTeamFolderTree"
 	Dataform_QueryTeamFolderContents_FullMethodName            = "/google.cloud.dataform.v1beta1.Dataform/QueryTeamFolderContents"
 	Dataform_SearchTeamFolders_FullMethodName                  = "/google.cloud.dataform.v1beta1.Dataform/SearchTeamFolders"
 	Dataform_GetFolder_FullMethodName                          = "/google.cloud.dataform.v1beta1.Dataform/GetFolder"
 	Dataform_CreateFolder_FullMethodName                       = "/google.cloud.dataform.v1beta1.Dataform/CreateFolder"
 	Dataform_UpdateFolder_FullMethodName                       = "/google.cloud.dataform.v1beta1.Dataform/UpdateFolder"
 	Dataform_DeleteFolder_FullMethodName                       = "/google.cloud.dataform.v1beta1.Dataform/DeleteFolder"
+	Dataform_DeleteFolderTree_FullMethodName                   = "/google.cloud.dataform.v1beta1.Dataform/DeleteFolderTree"
 	Dataform_QueryFolderContents_FullMethodName                = "/google.cloud.dataform.v1beta1.Dataform/QueryFolderContents"
 	Dataform_QueryUserRootContents_FullMethodName              = "/google.cloud.dataform.v1beta1.Dataform/QueryUserRootContents"
 	Dataform_MoveFolder_FullMethodName                         = "/google.cloud.dataform.v1beta1.Dataform/MoveFolder"
@@ -55,6 +57,7 @@ const (
 	Dataform_CreateRepository_FullMethodName                   = "/google.cloud.dataform.v1beta1.Dataform/CreateRepository"
 	Dataform_UpdateRepository_FullMethodName                   = "/google.cloud.dataform.v1beta1.Dataform/UpdateRepository"
 	Dataform_DeleteRepository_FullMethodName                   = "/google.cloud.dataform.v1beta1.Dataform/DeleteRepository"
+	Dataform_DeleteRepositoryLongRunning_FullMethodName        = "/google.cloud.dataform.v1beta1.Dataform/DeleteRepositoryLongRunning"
 	Dataform_MoveRepository_FullMethodName                     = "/google.cloud.dataform.v1beta1.Dataform/MoveRepository"
 	Dataform_CommitRepositoryChanges_FullMethodName            = "/google.cloud.dataform.v1beta1.Dataform/CommitRepositoryChanges"
 	Dataform_ReadRepositoryFile_FullMethodName                 = "/google.cloud.dataform.v1beta1.Dataform/ReadRepositoryFile"
@@ -122,6 +125,9 @@ type DataformClient interface {
 	UpdateTeamFolder(ctx context.Context, in *UpdateTeamFolderRequest, opts ...grpc.CallOption) (*TeamFolder, error)
 	// Deletes a single TeamFolder.
 	DeleteTeamFolder(ctx context.Context, in *DeleteTeamFolderRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Deletes a TeamFolder with its contents (Folders, Repositories, Workspaces,
+	// ReleaseConfigs, and WorkflowConfigs).
+	DeleteTeamFolderTree(ctx context.Context, in *DeleteTeamFolderTreeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns the contents of a given TeamFolder.
 	QueryTeamFolderContents(ctx context.Context, in *QueryTeamFolderContentsRequest, opts ...grpc.CallOption) (*QueryTeamFolderContentsResponse, error)
 	// Returns all TeamFolders in a given location that the caller has access to
@@ -135,6 +141,9 @@ type DataformClient interface {
 	UpdateFolder(ctx context.Context, in *UpdateFolderRequest, opts ...grpc.CallOption) (*Folder, error)
 	// Deletes a single Folder.
 	DeleteFolder(ctx context.Context, in *DeleteFolderRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Deletes a Folder with its contents (Folders, Repositories, Workspaces,
+	// ReleaseConfigs, and WorkflowConfigs).
+	DeleteFolderTree(ctx context.Context, in *DeleteFolderTreeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns the contents of a given Folder.
 	QueryFolderContents(ctx context.Context, in *QueryFolderContentsRequest, opts ...grpc.CallOption) (*QueryFolderContentsResponse, error)
 	// Returns the contents of a caller's root folder in a given location.
@@ -161,6 +170,8 @@ type DataformClient interface {
 	UpdateRepository(ctx context.Context, in *UpdateRepositoryRequest, opts ...grpc.CallOption) (*Repository, error)
 	// Deletes a single Repository.
 	DeleteRepository(ctx context.Context, in *DeleteRepositoryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Deletes a single repository asynchronously.
+	DeleteRepositoryLongRunning(ctx context.Context, in *DeleteRepositoryLongRunningRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Moves a Repository to a new location.
 	MoveRepository(ctx context.Context, in *MoveRepositoryRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Applies a Git commit to a Repository. The Repository must not have a value
@@ -344,6 +355,15 @@ func (c *dataformClient) DeleteTeamFolder(ctx context.Context, in *DeleteTeamFol
 	return out, nil
 }
 
+func (c *dataformClient) DeleteTeamFolderTree(ctx context.Context, in *DeleteTeamFolderTreeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Dataform_DeleteTeamFolderTree_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *dataformClient) QueryTeamFolderContents(ctx context.Context, in *QueryTeamFolderContentsRequest, opts ...grpc.CallOption) (*QueryTeamFolderContentsResponse, error) {
 	out := new(QueryTeamFolderContentsResponse)
 	err := c.cc.Invoke(ctx, Dataform_QueryTeamFolderContents_FullMethodName, in, out, opts...)
@@ -392,6 +412,15 @@ func (c *dataformClient) UpdateFolder(ctx context.Context, in *UpdateFolderReque
 func (c *dataformClient) DeleteFolder(ctx context.Context, in *DeleteFolderRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, Dataform_DeleteFolder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) DeleteFolderTree(ctx context.Context, in *DeleteFolderTreeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Dataform_DeleteFolderTree_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -464,6 +493,15 @@ func (c *dataformClient) UpdateRepository(ctx context.Context, in *UpdateReposit
 func (c *dataformClient) DeleteRepository(ctx context.Context, in *DeleteRepositoryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, Dataform_DeleteRepository_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataformClient) DeleteRepositoryLongRunning(ctx context.Context, in *DeleteRepositoryLongRunningRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Dataform_DeleteRepositoryLongRunning_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -959,6 +997,9 @@ type DataformServer interface {
 	UpdateTeamFolder(context.Context, *UpdateTeamFolderRequest) (*TeamFolder, error)
 	// Deletes a single TeamFolder.
 	DeleteTeamFolder(context.Context, *DeleteTeamFolderRequest) (*emptypb.Empty, error)
+	// Deletes a TeamFolder with its contents (Folders, Repositories, Workspaces,
+	// ReleaseConfigs, and WorkflowConfigs).
+	DeleteTeamFolderTree(context.Context, *DeleteTeamFolderTreeRequest) (*longrunningpb.Operation, error)
 	// Returns the contents of a given TeamFolder.
 	QueryTeamFolderContents(context.Context, *QueryTeamFolderContentsRequest) (*QueryTeamFolderContentsResponse, error)
 	// Returns all TeamFolders in a given location that the caller has access to
@@ -972,6 +1013,9 @@ type DataformServer interface {
 	UpdateFolder(context.Context, *UpdateFolderRequest) (*Folder, error)
 	// Deletes a single Folder.
 	DeleteFolder(context.Context, *DeleteFolderRequest) (*emptypb.Empty, error)
+	// Deletes a Folder with its contents (Folders, Repositories, Workspaces,
+	// ReleaseConfigs, and WorkflowConfigs).
+	DeleteFolderTree(context.Context, *DeleteFolderTreeRequest) (*longrunningpb.Operation, error)
 	// Returns the contents of a given Folder.
 	QueryFolderContents(context.Context, *QueryFolderContentsRequest) (*QueryFolderContentsResponse, error)
 	// Returns the contents of a caller's root folder in a given location.
@@ -998,6 +1042,8 @@ type DataformServer interface {
 	UpdateRepository(context.Context, *UpdateRepositoryRequest) (*Repository, error)
 	// Deletes a single Repository.
 	DeleteRepository(context.Context, *DeleteRepositoryRequest) (*emptypb.Empty, error)
+	// Deletes a single repository asynchronously.
+	DeleteRepositoryLongRunning(context.Context, *DeleteRepositoryLongRunningRequest) (*longrunningpb.Operation, error)
 	// Moves a Repository to a new location.
 	MoveRepository(context.Context, *MoveRepositoryRequest) (*longrunningpb.Operation, error)
 	// Applies a Git commit to a Repository. The Repository must not have a value
@@ -1153,6 +1199,9 @@ func (UnimplementedDataformServer) UpdateTeamFolder(context.Context, *UpdateTeam
 func (UnimplementedDataformServer) DeleteTeamFolder(context.Context, *DeleteTeamFolderRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTeamFolder not implemented")
 }
+func (UnimplementedDataformServer) DeleteTeamFolderTree(context.Context, *DeleteTeamFolderTreeRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTeamFolderTree not implemented")
+}
 func (UnimplementedDataformServer) QueryTeamFolderContents(context.Context, *QueryTeamFolderContentsRequest) (*QueryTeamFolderContentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryTeamFolderContents not implemented")
 }
@@ -1170,6 +1219,9 @@ func (UnimplementedDataformServer) UpdateFolder(context.Context, *UpdateFolderRe
 }
 func (UnimplementedDataformServer) DeleteFolder(context.Context, *DeleteFolderRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteFolder not implemented")
+}
+func (UnimplementedDataformServer) DeleteFolderTree(context.Context, *DeleteFolderTreeRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteFolderTree not implemented")
 }
 func (UnimplementedDataformServer) QueryFolderContents(context.Context, *QueryFolderContentsRequest) (*QueryFolderContentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryFolderContents not implemented")
@@ -1194,6 +1246,9 @@ func (UnimplementedDataformServer) UpdateRepository(context.Context, *UpdateRepo
 }
 func (UnimplementedDataformServer) DeleteRepository(context.Context, *DeleteRepositoryRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRepository not implemented")
+}
+func (UnimplementedDataformServer) DeleteRepositoryLongRunning(context.Context, *DeleteRepositoryLongRunningRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRepositoryLongRunning not implemented")
 }
 func (UnimplementedDataformServer) MoveRepository(context.Context, *MoveRepositoryRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MoveRepository not implemented")
@@ -1438,6 +1493,24 @@ func _Dataform_DeleteTeamFolder_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Dataform_DeleteTeamFolderTree_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTeamFolderTreeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).DeleteTeamFolderTree(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_DeleteTeamFolderTree_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).DeleteTeamFolderTree(ctx, req.(*DeleteTeamFolderTreeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Dataform_QueryTeamFolderContents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryTeamFolderContentsRequest)
 	if err := dec(in); err != nil {
@@ -1542,6 +1615,24 @@ func _Dataform_DeleteFolder_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataformServer).DeleteFolder(ctx, req.(*DeleteFolderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_DeleteFolderTree_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteFolderTreeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).DeleteFolderTree(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_DeleteFolderTree_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).DeleteFolderTree(ctx, req.(*DeleteFolderTreeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1686,6 +1777,24 @@ func _Dataform_DeleteRepository_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataformServer).DeleteRepository(ctx, req.(*DeleteRepositoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Dataform_DeleteRepositoryLongRunning_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRepositoryLongRunningRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataformServer).DeleteRepositoryLongRunning(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Dataform_DeleteRepositoryLongRunning_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataformServer).DeleteRepositoryLongRunning(ctx, req.(*DeleteRepositoryLongRunningRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2668,6 +2777,10 @@ var Dataform_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Dataform_DeleteTeamFolder_Handler,
 		},
 		{
+			MethodName: "DeleteTeamFolderTree",
+			Handler:    _Dataform_DeleteTeamFolderTree_Handler,
+		},
+		{
 			MethodName: "QueryTeamFolderContents",
 			Handler:    _Dataform_QueryTeamFolderContents_Handler,
 		},
@@ -2690,6 +2803,10 @@ var Dataform_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteFolder",
 			Handler:    _Dataform_DeleteFolder_Handler,
+		},
+		{
+			MethodName: "DeleteFolderTree",
+			Handler:    _Dataform_DeleteFolderTree_Handler,
 		},
 		{
 			MethodName: "QueryFolderContents",
@@ -2722,6 +2839,10 @@ var Dataform_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteRepository",
 			Handler:    _Dataform_DeleteRepository_Handler,
+		},
+		{
+			MethodName: "DeleteRepositoryLongRunning",
+			Handler:    _Dataform_DeleteRepositoryLongRunning_Handler,
 		},
 		{
 			MethodName: "MoveRepository",

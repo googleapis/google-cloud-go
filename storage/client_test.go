@@ -1929,65 +1929,291 @@ func TestReadObjectWrongChunkChecksumEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 
 	for _, bidiReads := range []bool{false, true} {
-		t.Run(fmt.Sprintf("bidiReads=%v", bidiReads), func(t *testing.T) {
-			ctx := context.Background()
+		for _, disableChecksum := range []bool{false, true} {
+			t.Run(fmt.Sprintf("bidiReads=%v/disableChecksum=%v", bidiReads, disableChecksum), func(t *testing.T) {
+				ctx := context.Background()
 
-			streamInterceptor := grpc.WithStreamInterceptor(
-				func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-					clientStream, err := streamer(ctx, desc, cc, method, opts...)
+				streamInterceptor := grpc.WithStreamInterceptor(
+					func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+						clientStream, err := streamer(ctx, desc, cc, method, opts...)
 
-					switch method {
-					case "/google.storage.v2.Storage/ReadObject":
-						clientStream = &customChunkCRCReadStream{ClientStream: clientStream, isBidi: false}
-					case "/google.storage.v2.Storage/BidiReadObject":
-						clientStream = &customChunkCRCReadStream{ClientStream: clientStream, isBidi: true}
+						switch method {
+						case "/google.storage.v2.Storage/ReadObject":
+							clientStream = &customChunkCRCReadStream{ClientStream: clientStream, isBidi: false}
+						case "/google.storage.v2.Storage/BidiReadObject":
+							clientStream = &customChunkCRCReadStream{ClientStream: clientStream, isBidi: true}
+						}
+						return clientStream, err
+					})
+
+				var clientOpts []option.ClientOption
+				clientOpts = append(clientOpts, option.WithGRPCDialOption(streamInterceptor))
+				if bidiReads {
+					clientOpts = append(clientOpts, experimental.WithGRPCBidiReads())
+				}
+
+				client, err := NewGRPCClient(ctx, clientOpts...)
+				if err != nil {
+					t.Fatalf("NewGRPCClient: %v", err)
+				}
+
+				var (
+					contents = randomBytes9MiB
+					prefix   = time.Now().Nanosecond()
+					bucket   = fmt.Sprintf("bucket-%d", prefix)
+					objName  = fmt.Sprintf("%d-object", prefix)
+					o        = client.Bucket(bucket).Object(objName)
+				)
+
+				if err := client.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+					t.Fatalf("creating test bucket: %v", err)
+				}
+				w := o.NewWriter(ctx)
+				if _, err = w.Write(contents); err != nil {
+					t.Fatalf("writing test data: got %v; want ok", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("closing test data writer: got %v; want ok", err)
+				}
+
+				var readerOpts []ReaderOption
+				if disableChecksum {
+					readerOpts = append(readerOpts, WithDisableReaderChecksum())
+				}
+
+				// Download content and validate.
+				r, err := o.NewReader(ctx, readerOpts...)
+				if err != nil {
+					t.Fatalf("NewReader: %v", err)
+				}
+
+				if disableChecksum {
+					buf := new(bytes.Buffer)
+					_, err = io.Copy(buf, r)
+					if err != nil {
+						t.Fatalf("expected nil error with checksum disabled, got %v", err)
 					}
-					return clientStream, err
+					if got, want := buf.Bytes(), contents; !bytes.Equal(got, want) {
+						t.Errorf("content mismatch: got %v bytes, want %v bytes", len(got), len(want))
+					}
+				} else {
+					_, err = io.Copy(io.Discard, r)
+					if err == nil {
+						t.Fatalf("expected error due to bad chunk CRC, got nil")
+					}
+					if got, want := err.Error(), "bad CRC on chunk read"; !strings.Contains(got, want) {
+						t.Errorf("error mismatch: got %q, want to contain %q", got, want)
+					}
+				}
+			})
+		}
+	}
+}
+
+// customObjectCRCReadStream intercepts ReadObjectResponse and BidiReadObjectResponse
+// messages and injects an invalid object-level CRC32C checksum.
+type customObjectCRCReadStream struct {
+	grpc.ClientStream
+	isBidi bool
+}
+
+func (s *customObjectCRCReadStream) RecvMsg(m any) error {
+	err := s.ClientStream.RecvMsg(m)
+	if err != nil {
+		return err
+	}
+
+	databufs, ok := m.(*mem.BufferSlice)
+	if !ok {
+		return errors.New("unable to cast received message to mem.BufferSlice")
+	}
+
+	var respMsg proto.Message
+	var badCRC uint32 = 12345
+
+	if s.isBidi {
+		resp := &storagepb.BidiReadObjectResponse{}
+		if uErr := proto.Unmarshal(databufs.Materialize(), resp); uErr != nil {
+			return fmt.Errorf("failed to unmarshal BidiReadObjectResponse: %w", uErr)
+		}
+		if resp.Metadata != nil {
+			if resp.Metadata.Checksums == nil {
+				resp.Metadata.Checksums = &storagepb.ObjectChecksums{}
+			}
+			resp.Metadata.Checksums.Crc32C = &badCRC
+		}
+		respMsg = resp
+	} else {
+		resp := &storagepb.ReadObjectResponse{}
+		if uErr := proto.Unmarshal(databufs.Materialize(), resp); uErr != nil {
+			return fmt.Errorf("failed to unmarshal ReadObjectResponse: %w", uErr)
+		}
+		if resp.ObjectChecksums == nil {
+			resp.ObjectChecksums = &storagepb.ObjectChecksums{}
+		}
+		resp.ObjectChecksums.Crc32C = &badCRC
+		respMsg = resp
+	}
+
+	marshalled, mErr := proto.Marshal(respMsg)
+	if mErr != nil {
+		return fmt.Errorf("failed to marshal modified response: %w", mErr)
+	}
+	databufs.Free()
+	if ptr, ok := m.(*mem.BufferSlice); ok {
+		*ptr = mem.BufferSlice{mem.SliceBuffer(marshalled)}
+	}
+
+	return nil
+}
+
+func TestReadObjectWrongChecksumWholeObjectSizeEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	for _, bidiReads := range []bool{false, true} {
+		for _, disableChecksum := range []bool{false, true} {
+			for _, negativeOffset := range []bool{false, true} {
+				t.Run(fmt.Sprintf("bidiReads=%v/disableChecksum=%v/negativeOffset=%v", bidiReads, disableChecksum, negativeOffset), func(t *testing.T) {
+					ctx := context.Background()
+
+					streamInterceptor := grpc.WithStreamInterceptor(
+						func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+							clientStream, err := streamer(ctx, desc, cc, method, opts...)
+
+							switch method {
+							case "/google.storage.v2.Storage/ReadObject":
+								clientStream = &customObjectCRCReadStream{ClientStream: clientStream, isBidi: false}
+							case "/google.storage.v2.Storage/BidiReadObject":
+								clientStream = &customObjectCRCReadStream{ClientStream: clientStream, isBidi: true}
+							}
+							return clientStream, err
+						})
+
+					var clientOpts []option.ClientOption
+					clientOpts = append(clientOpts, option.WithGRPCDialOption(streamInterceptor))
+					if bidiReads {
+						clientOpts = append(clientOpts, experimental.WithGRPCBidiReads())
+					}
+
+					client, err := NewGRPCClient(ctx, clientOpts...)
+					if err != nil {
+						t.Fatalf("NewGRPCClient: %v", err)
+					}
+					defer client.Close()
+					var (
+						contents = randomBytes9MiB
+						prefix   = time.Now().Nanosecond()
+						bucket   = fmt.Sprintf("bucket-%d", prefix)
+						objName  = fmt.Sprintf("%d-object", prefix)
+						o        = client.Bucket(bucket).Object(objName)
+					)
+
+					if err := client.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+						t.Fatalf("creating test bucket: %v", err)
+					}
+					w := o.NewWriter(ctx)
+					if _, err = w.Write(contents); err != nil {
+						t.Fatalf("writing test data: got %v; want ok", err)
+					}
+					if err := w.Close(); err != nil {
+						t.Fatalf("closing test data writer: got %v; want ok", err)
+					}
+
+					var readerOpts []ReaderOption
+					if disableChecksum {
+						readerOpts = append(readerOpts, WithDisableReaderChecksum())
+					}
+
+					var offset, length int64
+					if negativeOffset {
+						offset = -int64(len(contents) + 1000)
+						length = -1
+					} else {
+						offset = 0
+						length = int64(len(contents))
+					}
+					r, err := o.NewRangeReader(ctx, offset, length, readerOpts...)
+					if err != nil {
+						t.Fatalf("NewRangeReader: %v", err)
+					}
+					defer r.Close()
+					if disableChecksum {
+						buf := new(bytes.Buffer)
+						_, err = io.Copy(buf, r)
+						if err != nil {
+							t.Fatalf("expected nil error with checksum disabled, got %v", err)
+						}
+						if got, want := buf.Bytes(), contents; !bytes.Equal(got, want) {
+							t.Errorf("content mismatch: got %v bytes, want %v bytes", len(got), len(want))
+						}
+					} else {
+						_, err = io.Copy(io.Discard, r)
+						if err == nil {
+							t.Fatalf("expected error due to bad object CRC, got nil")
+						}
+						if got, want := err.Error(), "bad CRC on read"; !strings.Contains(got, want) {
+							t.Errorf("error mismatch: got %q, want to contain %q", got, want)
+						}
+					}
 				})
+			}
+		}
+	}
+}
 
-			var clientOpts []option.ClientOption
-			clientOpts = append(clientOpts, option.WithGRPCDialOption(streamInterceptor))
-			if bidiReads {
-				clientOpts = append(clientOpts, experimental.WithGRPCBidiReads())
-			}
+func TestReadObjectWrongChecksumUnfinalizedWholeObjectSizeEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
 
-			client, err := NewGRPCClient(ctx, clientOpts...)
-			if err != nil {
-				t.Fatalf("NewGRPCClient: %v", err)
-			}
+	ctx := context.Background()
 
-			var (
-				contents = randomBytes9MiB
-				prefix   = time.Now().Nanosecond()
-				bucket   = fmt.Sprintf("bucket-%d", prefix)
-				objName  = fmt.Sprintf("%d-object", prefix)
-				o        = client.Bucket(bucket).Object(objName)
-			)
+	streamInterceptor := grpc.WithStreamInterceptor(
+		func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			clientStream, err := streamer(ctx, desc, cc, method, opts...)
 
-			if err := client.Bucket(bucket).Create(ctx, "project", nil); err != nil {
-				t.Fatalf("creating test bucket: %v", err)
+			if method == "/google.storage.v2.Storage/BidiReadObject" {
+				clientStream = &customObjectCRCReadStream{ClientStream: clientStream, isBidi: true}
 			}
-			w := o.NewWriter(ctx)
-			if _, err = w.Write(contents); err != nil {
-				t.Fatalf("writing test data: got %v; want ok", err)
-			}
-			if err := w.Close(); err != nil {
-				t.Fatalf("closing test data writer: got %v; want ok", err)
-			}
-
-			// Download content and validate that it fails due to bad chunk CRC.
-			r, err := o.NewReader(ctx)
-			if err != nil {
-				t.Fatalf("NewReader: %v", err)
-			}
-			_, err = io.Copy(io.Discard, r)
-			if err == nil {
-				t.Fatalf("expected error due to bad chunk CRC, got nil")
-			}
-			if got, want := err.Error(), "bad CRC on chunk read"; !strings.Contains(got, want) {
-				t.Errorf("error mismatch: got %q, want to contain %q", got, want)
-			}
+			return clientStream, err
 		})
+
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
+	defer client.Close()
+
+	var (
+		contents = randomBytes9MiB
+		prefix   = time.Now().Nanosecond()
+		bucket   = fmt.Sprintf("bucket-%d", prefix)
+		objName  = fmt.Sprintf("%d-object", prefix)
+		o        = client.Bucket(bucket).Object(objName)
+	)
+
+	if err := client.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+		t.Fatalf("creating test bucket: %v", err)
+	}
+	w := o.NewWriter(ctx)
+	w.Append = true
+	if _, err = w.Write(contents); err != nil {
+		t.Fatalf("writing test data: got %v; want ok", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("closing test data writer: got %v; want ok", err)
+	}
+
+	// Download content with exact size (whole object size is given) and validate that it succeeds because the object is not finalized.
+	r, err := o.NewRangeReader(ctx, 0, int64(len(contents)))
+	if err != nil {
+		t.Fatalf("NewRangeReader: %v", err)
+	}
+	buf := new(bytes.Buffer)
+	_, err = io.Copy(buf, r)
+	if err != nil {
+		t.Fatalf("expected nil error despite bad checksum since object is unfinalized, got %v", err)
+	}
+	if got, want := buf.Bytes(), contents; !bytes.Equal(got, want) {
+		t.Errorf("content mismatch: got %v bytes, want %v bytes", len(got), len(want))
 	}
 }
 
@@ -2034,7 +2260,7 @@ func TestMRDWrongChunkChecksumEmulated(t *testing.T) {
 
 			var opts []MRDOption
 			if disableChecksum {
-				opts = append(opts, WithDisableReadChecksum())
+				opts = append(opts, WithDisableMRDReadChecksum())
 			}
 
 			reader, err := o.NewMultiRangeDownloader(ctx, opts...)

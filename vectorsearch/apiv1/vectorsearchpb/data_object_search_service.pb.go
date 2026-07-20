@@ -595,9 +595,10 @@ func (x *SemanticSearch) GetSearchHint() *SearchHint {
 // Defines a text search operation.
 type TextSearch struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The query text.
+	// Optional. The query text. Required when using the default text search mode.
 	SearchText string `protobuf:"bytes,1,opt,name=search_text,json=searchText,proto3" json:"search_text,omitempty"`
-	// Required. The data field names to search.
+	// Optional. The data field names to search. Required when using the default
+	// text search mode.
 	DataFieldNames []string `protobuf:"bytes,2,rep,name=data_field_names,json=dataFieldNames,proto3" json:"data_field_names,omitempty"`
 	// Optional. The fields to return in the search results.
 	OutputFields *OutputFields `protobuf:"bytes,3,opt,name=output_fields,json=outputFields,proto3" json:"output_fields,omitempty"`
@@ -1622,9 +1623,9 @@ const file_google_cloud_vectorsearch_v1_data_object_search_service_proto_rawDesc
 	"\x06_top_k\"\x96\x02\n" +
 	"\n" +
 	"TextSearch\x12$\n" +
-	"\vsearch_text\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"\vsearch_text\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
 	"searchText\x12-\n" +
-	"\x10data_field_names\x18\x02 \x03(\tB\x03\xe0A\x02R\x0edataFieldNames\x12T\n" +
+	"\x10data_field_names\x18\x02 \x03(\tB\x03\xe0A\x01R\x0edataFieldNames\x12T\n" +
 	"\routput_fields\x18\x03 \x01(\v2*.google.cloud.vectorsearch.v1.OutputFieldsB\x03\xe0A\x01R\foutputFields\x12\x1d\n" +
 	"\x05top_k\x18\x04 \x01(\x05B\x03\xe0A\x01H\x00R\x04topK\x88\x01\x01\x124\n" +
 	"\x06filter\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06filterB\b\n" +

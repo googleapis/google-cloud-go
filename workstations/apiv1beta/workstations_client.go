@@ -33,6 +33,7 @@ import (
 	workstationspb "cloud.google.com/go/workstations/apiv1beta/workstationspb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -68,6 +69,7 @@ type CallOptions struct {
 	StartWorkstation             []gax.CallOption
 	StopWorkstation              []gax.CallOption
 	GenerateAccessToken          []gax.CallOption
+	PushCredentials              []gax.CallOption
 	GetIamPolicy                 []gax.CallOption
 	SetIamPolicy                 []gax.CallOption
 	TestIamPermissions           []gax.CallOption
@@ -235,6 +237,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		PushCredentials:    []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
@@ -379,6 +382,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		PushCredentials:    []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
@@ -425,6 +429,8 @@ type internalClient interface {
 	StopWorkstation(context.Context, *workstationspb.StopWorkstationRequest, ...gax.CallOption) (*StopWorkstationOperation, error)
 	StopWorkstationOperation(name string) *StopWorkstationOperation
 	GenerateAccessToken(context.Context, *workstationspb.GenerateAccessTokenRequest, ...gax.CallOption) (*workstationspb.GenerateAccessTokenResponse, error)
+	PushCredentials(context.Context, *workstationspb.PushCredentialsRequest, ...gax.CallOption) (*PushCredentialsOperation, error)
+	PushCredentialsOperation(name string) *PushCredentialsOperation
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
@@ -639,8 +645,23 @@ func (c *Client) StopWorkstationOperation(name string) *StopWorkstationOperation
 
 // GenerateAccessToken returns a short-lived credential that can be used to send authenticated and
 // authorized traffic to a workstation.
+// Once generated this token cannot be revoked and is good for the lifetime
+// of the token.
 func (c *Client) GenerateAccessToken(ctx context.Context, req *workstationspb.GenerateAccessTokenRequest, opts ...gax.CallOption) (*workstationspb.GenerateAccessTokenResponse, error) {
 	return c.internalClient.GenerateAccessToken(ctx, req, opts...)
+}
+
+// PushCredentials pushes credentials to a running workstation on behalf of a user. Once
+// complete, supported credential types (application_default_credentials) are
+// made available to processes running in the user container.
+func (c *Client) PushCredentials(ctx context.Context, req *workstationspb.PushCredentialsRequest, opts ...gax.CallOption) (*PushCredentialsOperation, error) {
+	return c.internalClient.PushCredentials(ctx, req, opts...)
+}
+
+// PushCredentialsOperation returns a new PushCredentialsOperation from a given name.
+// The name must be that of a previously created PushCredentialsOperation, possibly from a different process.
+func (c *Client) PushCredentialsOperation(name string) *PushCredentialsOperation {
+	return c.internalClient.PushCredentialsOperation(name)
 }
 
 // GetIamPolicy gets the access control policy for a resource. Returns an empty policy
@@ -788,6 +809,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.StartWorkstation = append(client.CallOptions.StartWorkstation, gax.WithClientMetrics(metrics))
 		client.CallOptions.StopWorkstation = append(client.CallOptions.StopWorkstation, gax.WithClientMetrics(metrics))
 		client.CallOptions.GenerateAccessToken = append(client.CallOptions.GenerateAccessToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.PushCredentials = append(client.CallOptions.PushCredentials, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
@@ -921,6 +943,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.StartWorkstation = append(callOpts.StartWorkstation, gax.WithClientMetrics(metrics))
 		callOpts.StopWorkstation = append(callOpts.StopWorkstation, gax.WithClientMetrics(metrics))
 		callOpts.GenerateAccessToken = append(callOpts.GenerateAccessToken, gax.WithClientMetrics(metrics))
+		callOpts.PushCredentials = append(callOpts.PushCredentials, gax.WithClientMetrics(metrics))
 		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
@@ -1077,8 +1100,12 @@ func (c *gRPCClient) CreateWorkstationCluster(ctx context.Context, req *workstat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.CreateWorkstationClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkstationClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1100,8 +1127,12 @@ func (c *gRPCClient) UpdateWorkstationCluster(ctx context.Context, req *workstat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.UpdateWorkstationClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkstationClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1126,8 +1157,12 @@ func (c *gRPCClient) DeleteWorkstationCluster(ctx context.Context, req *workstat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.DeleteWorkstationClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkstationClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1280,8 +1315,12 @@ func (c *gRPCClient) CreateWorkstationConfig(ctx context.Context, req *workstati
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.CreateWorkstationConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkstationConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1303,8 +1342,12 @@ func (c *gRPCClient) UpdateWorkstationConfig(ctx context.Context, req *workstati
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.UpdateWorkstationConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkstationConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1329,8 +1372,12 @@ func (c *gRPCClient) DeleteWorkstationConfig(ctx context.Context, req *workstati
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.DeleteWorkstationConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkstationConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1483,8 +1530,12 @@ func (c *gRPCClient) CreateWorkstation(ctx context.Context, req *workstationspb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.CreateWorkstationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkstationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1506,8 +1557,12 @@ func (c *gRPCClient) UpdateWorkstation(ctx context.Context, req *workstationspb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.UpdateWorkstationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkstationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1532,8 +1587,12 @@ func (c *gRPCClient) DeleteWorkstation(ctx context.Context, req *workstationspb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.DeleteWorkstationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkstationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1558,8 +1617,12 @@ func (c *gRPCClient) StartWorkstation(ctx context.Context, req *workstationspb.S
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.StartWorkstationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartWorkstationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1584,8 +1647,12 @@ func (c *gRPCClient) StopWorkstation(ctx context.Context, req *workstationspb.St
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.StopWorkstationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopWorkstationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1611,6 +1678,36 @@ func (c *gRPCClient) GenerateAccessToken(ctx context.Context, req *workstationsp
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) PushCredentials(ctx context.Context, req *workstationspb.PushCredentialsRequest, opts ...gax.CallOption) (*PushCredentialsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "workstation", url.QueryEscape(req.GetWorkstation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workstations.googleapis.com/%v", req.GetWorkstation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workstations.v1beta.Workstations/PushCredentials")
+	}
+	opts = append((*c.CallOptions).PushCredentials[0:len((*c.CallOptions).PushCredentials):len((*c.CallOptions).PushCredentials)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.PushCredentials, req, settings.GRPC, c.logger, "PushCredentials")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.PushCredentialsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &PushCredentialsOperation{
+		lro: lro,
+	}, nil
 }
 
 func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
@@ -1869,6 +1966,9 @@ func (c *restClient) ListWorkstationClusters(ctx context.Context, req *workstati
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1989,8 +2089,12 @@ func (c *restClient) CreateWorkstationCluster(ctx context.Context, req *workstat
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.CreateWorkstationClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkstationClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2066,8 +2170,12 @@ func (c *restClient) UpdateWorkstationCluster(ctx context.Context, req *workstat
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.UpdateWorkstationClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkstationClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2135,8 +2243,12 @@ func (c *restClient) DeleteWorkstationCluster(ctx context.Context, req *workstat
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.DeleteWorkstationClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkstationClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2221,6 +2333,9 @@ func (c *restClient) ListWorkstationConfigs(ctx context.Context, req *workstatio
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2420,8 +2535,12 @@ func (c *restClient) CreateWorkstationConfig(ctx context.Context, req *workstati
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.CreateWorkstationConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkstationConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2497,8 +2616,12 @@ func (c *restClient) UpdateWorkstationConfig(ctx context.Context, req *workstati
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.UpdateWorkstationConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkstationConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2566,8 +2689,12 @@ func (c *restClient) DeleteWorkstationConfig(ctx context.Context, req *workstati
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.DeleteWorkstationConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkstationConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2652,6 +2779,9 @@ func (c *restClient) ListWorkstations(ctx context.Context, req *workstationspb.L
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2851,8 +2981,12 @@ func (c *restClient) CreateWorkstation(ctx context.Context, req *workstationspb.
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.CreateWorkstationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkstationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2928,8 +3062,12 @@ func (c *restClient) UpdateWorkstation(ctx context.Context, req *workstationspb.
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.UpdateWorkstationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkstationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2994,8 +3132,12 @@ func (c *restClient) DeleteWorkstation(ctx context.Context, req *workstationspb.
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.DeleteWorkstationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkstationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3060,8 +3202,12 @@ func (c *restClient) StartWorkstation(ctx context.Context, req *workstationspb.S
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.StartWorkstationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartWorkstationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3126,14 +3272,20 @@ func (c *restClient) StopWorkstation(ctx context.Context, req *workstationspb.St
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.StopWorkstationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopWorkstationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
 
 // GenerateAccessToken returns a short-lived credential that can be used to send authenticated and
 // authorized traffic to a workstation.
+// Once generated this token cannot be revoked and is good for the lifetime
+// of the token.
 func (c *restClient) GenerateAccessToken(ctx context.Context, req *workstationspb.GenerateAccessTokenRequest, opts ...gax.CallOption) (*workstationspb.GenerateAccessTokenResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -3194,6 +3346,78 @@ func (c *restClient) GenerateAccessToken(ctx context.Context, req *workstationsp
 		return nil, e
 	}
 	return resp, nil
+}
+
+// PushCredentials pushes credentials to a running workstation on behalf of a user. Once
+// complete, supported credential types (application_default_credentials) are
+// made available to processes running in the user container.
+func (c *restClient) PushCredentials(ctx context.Context, req *workstationspb.PushCredentialsRequest, opts ...gax.CallOption) (*PushCredentialsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:pushCredentials", req.GetWorkstation())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "workstation", url.QueryEscape(req.GetWorkstation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workstations.googleapis.com/%v", req.GetWorkstation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workstations.v1beta.Workstations/PushCredentials")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{workstation=projects/*/locations/*/workstationClusters/*/workstationConfigs/*/workstations/*}:pushCredentials")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PushCredentials")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workstations.PushCredentialsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &PushCredentialsOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
 }
 
 // GetIamPolicy gets the access control policy for a resource. Returns an empty policy
@@ -3619,7 +3843,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateWorkstationOperation, possibly from a different process.
 func (c *gRPCClient) CreateWorkstationOperation(name string) *CreateWorkstationOperation {
 	return &CreateWorkstationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.CreateWorkstationOperation"),
 	}
 }
 
@@ -3628,7 +3852,7 @@ func (c *gRPCClient) CreateWorkstationOperation(name string) *CreateWorkstationO
 func (c *restClient) CreateWorkstationOperation(name string) *CreateWorkstationOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateWorkstationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.CreateWorkstationOperation"),
 		pollPath: override,
 	}
 }
@@ -3637,7 +3861,7 @@ func (c *restClient) CreateWorkstationOperation(name string) *CreateWorkstationO
 // The name must be that of a previously created CreateWorkstationClusterOperation, possibly from a different process.
 func (c *gRPCClient) CreateWorkstationClusterOperation(name string) *CreateWorkstationClusterOperation {
 	return &CreateWorkstationClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.CreateWorkstationClusterOperation"),
 	}
 }
 
@@ -3646,7 +3870,7 @@ func (c *gRPCClient) CreateWorkstationClusterOperation(name string) *CreateWorks
 func (c *restClient) CreateWorkstationClusterOperation(name string) *CreateWorkstationClusterOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateWorkstationClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.CreateWorkstationClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -3655,7 +3879,7 @@ func (c *restClient) CreateWorkstationClusterOperation(name string) *CreateWorks
 // The name must be that of a previously created CreateWorkstationConfigOperation, possibly from a different process.
 func (c *gRPCClient) CreateWorkstationConfigOperation(name string) *CreateWorkstationConfigOperation {
 	return &CreateWorkstationConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.CreateWorkstationConfigOperation"),
 	}
 }
 
@@ -3664,7 +3888,7 @@ func (c *gRPCClient) CreateWorkstationConfigOperation(name string) *CreateWorkst
 func (c *restClient) CreateWorkstationConfigOperation(name string) *CreateWorkstationConfigOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateWorkstationConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.CreateWorkstationConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -3673,7 +3897,7 @@ func (c *restClient) CreateWorkstationConfigOperation(name string) *CreateWorkst
 // The name must be that of a previously created DeleteWorkstationOperation, possibly from a different process.
 func (c *gRPCClient) DeleteWorkstationOperation(name string) *DeleteWorkstationOperation {
 	return &DeleteWorkstationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.DeleteWorkstationOperation"),
 	}
 }
 
@@ -3682,7 +3906,7 @@ func (c *gRPCClient) DeleteWorkstationOperation(name string) *DeleteWorkstationO
 func (c *restClient) DeleteWorkstationOperation(name string) *DeleteWorkstationOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteWorkstationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.DeleteWorkstationOperation"),
 		pollPath: override,
 	}
 }
@@ -3691,7 +3915,7 @@ func (c *restClient) DeleteWorkstationOperation(name string) *DeleteWorkstationO
 // The name must be that of a previously created DeleteWorkstationClusterOperation, possibly from a different process.
 func (c *gRPCClient) DeleteWorkstationClusterOperation(name string) *DeleteWorkstationClusterOperation {
 	return &DeleteWorkstationClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.DeleteWorkstationClusterOperation"),
 	}
 }
 
@@ -3700,7 +3924,7 @@ func (c *gRPCClient) DeleteWorkstationClusterOperation(name string) *DeleteWorks
 func (c *restClient) DeleteWorkstationClusterOperation(name string) *DeleteWorkstationClusterOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteWorkstationClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.DeleteWorkstationClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -3709,7 +3933,7 @@ func (c *restClient) DeleteWorkstationClusterOperation(name string) *DeleteWorks
 // The name must be that of a previously created DeleteWorkstationConfigOperation, possibly from a different process.
 func (c *gRPCClient) DeleteWorkstationConfigOperation(name string) *DeleteWorkstationConfigOperation {
 	return &DeleteWorkstationConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.DeleteWorkstationConfigOperation"),
 	}
 }
 
@@ -3718,7 +3942,25 @@ func (c *gRPCClient) DeleteWorkstationConfigOperation(name string) *DeleteWorkst
 func (c *restClient) DeleteWorkstationConfigOperation(name string) *DeleteWorkstationConfigOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteWorkstationConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.DeleteWorkstationConfigOperation"),
+		pollPath: override,
+	}
+}
+
+// PushCredentialsOperation returns a new PushCredentialsOperation from a given name.
+// The name must be that of a previously created PushCredentialsOperation, possibly from a different process.
+func (c *gRPCClient) PushCredentialsOperation(name string) *PushCredentialsOperation {
+	return &PushCredentialsOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.PushCredentialsOperation"),
+	}
+}
+
+// PushCredentialsOperation returns a new PushCredentialsOperation from a given name.
+// The name must be that of a previously created PushCredentialsOperation, possibly from a different process.
+func (c *restClient) PushCredentialsOperation(name string) *PushCredentialsOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &PushCredentialsOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.PushCredentialsOperation"),
 		pollPath: override,
 	}
 }
@@ -3727,7 +3969,7 @@ func (c *restClient) DeleteWorkstationConfigOperation(name string) *DeleteWorkst
 // The name must be that of a previously created StartWorkstationOperation, possibly from a different process.
 func (c *gRPCClient) StartWorkstationOperation(name string) *StartWorkstationOperation {
 	return &StartWorkstationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.StartWorkstationOperation"),
 	}
 }
 
@@ -3736,7 +3978,7 @@ func (c *gRPCClient) StartWorkstationOperation(name string) *StartWorkstationOpe
 func (c *restClient) StartWorkstationOperation(name string) *StartWorkstationOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &StartWorkstationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.StartWorkstationOperation"),
 		pollPath: override,
 	}
 }
@@ -3745,7 +3987,7 @@ func (c *restClient) StartWorkstationOperation(name string) *StartWorkstationOpe
 // The name must be that of a previously created StopWorkstationOperation, possibly from a different process.
 func (c *gRPCClient) StopWorkstationOperation(name string) *StopWorkstationOperation {
 	return &StopWorkstationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.StopWorkstationOperation"),
 	}
 }
 
@@ -3754,7 +3996,7 @@ func (c *gRPCClient) StopWorkstationOperation(name string) *StopWorkstationOpera
 func (c *restClient) StopWorkstationOperation(name string) *StopWorkstationOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &StopWorkstationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.StopWorkstationOperation"),
 		pollPath: override,
 	}
 }
@@ -3763,7 +4005,7 @@ func (c *restClient) StopWorkstationOperation(name string) *StopWorkstationOpera
 // The name must be that of a previously created UpdateWorkstationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateWorkstationOperation(name string) *UpdateWorkstationOperation {
 	return &UpdateWorkstationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.UpdateWorkstationOperation"),
 	}
 }
 
@@ -3772,7 +4014,7 @@ func (c *gRPCClient) UpdateWorkstationOperation(name string) *UpdateWorkstationO
 func (c *restClient) UpdateWorkstationOperation(name string) *UpdateWorkstationOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpdateWorkstationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.UpdateWorkstationOperation"),
 		pollPath: override,
 	}
 }
@@ -3781,7 +4023,7 @@ func (c *restClient) UpdateWorkstationOperation(name string) *UpdateWorkstationO
 // The name must be that of a previously created UpdateWorkstationClusterOperation, possibly from a different process.
 func (c *gRPCClient) UpdateWorkstationClusterOperation(name string) *UpdateWorkstationClusterOperation {
 	return &UpdateWorkstationClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.UpdateWorkstationClusterOperation"),
 	}
 }
 
@@ -3790,7 +4032,7 @@ func (c *gRPCClient) UpdateWorkstationClusterOperation(name string) *UpdateWorks
 func (c *restClient) UpdateWorkstationClusterOperation(name string) *UpdateWorkstationClusterOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpdateWorkstationClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.UpdateWorkstationClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -3799,7 +4041,7 @@ func (c *restClient) UpdateWorkstationClusterOperation(name string) *UpdateWorks
 // The name must be that of a previously created UpdateWorkstationConfigOperation, possibly from a different process.
 func (c *gRPCClient) UpdateWorkstationConfigOperation(name string) *UpdateWorkstationConfigOperation {
 	return &UpdateWorkstationConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.UpdateWorkstationConfigOperation"),
 	}
 }
 
@@ -3808,7 +4050,7 @@ func (c *gRPCClient) UpdateWorkstationConfigOperation(name string) *UpdateWorkst
 func (c *restClient) UpdateWorkstationConfigOperation(name string) *UpdateWorkstationConfigOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpdateWorkstationConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workstations.UpdateWorkstationConfigOperation"),
 		pollPath: override,
 	}
 }

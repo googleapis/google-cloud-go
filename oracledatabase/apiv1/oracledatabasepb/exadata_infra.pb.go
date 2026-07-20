@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -163,7 +163,7 @@ func (x MaintenanceWindow_MaintenanceWindowPreference) Number() protoreflect.Enu
 
 // Deprecated: Use MaintenanceWindow_MaintenanceWindowPreference.Descriptor instead.
 func (MaintenanceWindow_MaintenanceWindowPreference) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDescGZIP(), []int{2, 0}
+	return file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDescGZIP(), []int{3, 0}
 }
 
 // Patching mode.
@@ -217,7 +217,7 @@ func (x MaintenanceWindow_PatchingMode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MaintenanceWindow_PatchingMode.Descriptor instead.
 func (MaintenanceWindow_PatchingMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDescGZIP(), []int{2, 1}
+	return file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDescGZIP(), []int{3, 1}
 }
 
 // Represents CloudExadataInfrastructure resource.
@@ -400,8 +400,10 @@ type CloudExadataInfrastructureProperties struct {
 	DatabaseServerType string `protobuf:"bytes,29,opt,name=database_server_type,json=databaseServerType,proto3" json:"database_server_type,omitempty"`
 	// Output only. The storage server type of the Exadata Infrastructure.
 	StorageServerType string `protobuf:"bytes,30,opt,name=storage_server_type,json=storageServerType,proto3" json:"storage_server_type,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// Output only. The Exascale configuration for the Exadata Infrastructure.
+	ExascaleConfig *ExascaleConfig `protobuf:"bytes,32,opt,name=exascale_config,json=exascaleConfig,proto3" json:"exascale_config,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *CloudExadataInfrastructureProperties) Reset() {
@@ -644,6 +646,68 @@ func (x *CloudExadataInfrastructureProperties) GetStorageServerType() string {
 	return ""
 }
 
+func (x *CloudExadataInfrastructureProperties) GetExascaleConfig() *ExascaleConfig {
+	if x != nil {
+		return x.ExascaleConfig
+	}
+	return nil
+}
+
+// Details of the Exascale configuration for the Exadata Infrastructure.
+type ExascaleConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Total storage size needed for Exascale in GBs.
+	TotalStorageSizeGb int32 `protobuf:"varint,1,opt,name=total_storage_size_gb,json=totalStorageSizeGb,proto3" json:"total_storage_size_gb,omitempty"`
+	// Output only. Available storage size for Exascale in GBs.
+	AvailableStorageSizeGb int32 `protobuf:"varint,2,opt,name=available_storage_size_gb,json=availableStorageSizeGb,proto3" json:"available_storage_size_gb,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *ExascaleConfig) Reset() {
+	*x = ExascaleConfig{}
+	mi := &file_google_cloud_oracledatabase_v1_exadata_infra_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExascaleConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExascaleConfig) ProtoMessage() {}
+
+func (x *ExascaleConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_oracledatabase_v1_exadata_infra_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExascaleConfig.ProtoReflect.Descriptor instead.
+func (*ExascaleConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ExascaleConfig) GetTotalStorageSizeGb() int32 {
+	if x != nil {
+		return x.TotalStorageSizeGb
+	}
+	return 0
+}
+
+func (x *ExascaleConfig) GetAvailableStorageSizeGb() int32 {
+	if x != nil {
+		return x.AvailableStorageSizeGb
+	}
+	return 0
+}
+
 // Maintenance window as defined by Oracle.
 // https://docs.oracle.com/en-us/iaas/api/#/en/database/20160918/datatypes/MaintenanceWindow
 type MaintenanceWindow struct {
@@ -688,7 +752,7 @@ type MaintenanceWindow struct {
 
 func (x *MaintenanceWindow) Reset() {
 	*x = MaintenanceWindow{}
-	mi := &file_google_cloud_oracledatabase_v1_exadata_infra_proto_msgTypes[2]
+	mi := &file_google_cloud_oracledatabase_v1_exadata_infra_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -700,7 +764,7 @@ func (x *MaintenanceWindow) String() string {
 func (*MaintenanceWindow) ProtoMessage() {}
 
 func (x *MaintenanceWindow) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_oracledatabase_v1_exadata_infra_proto_msgTypes[2]
+	mi := &file_google_cloud_oracledatabase_v1_exadata_infra_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -713,7 +777,7 @@ func (x *MaintenanceWindow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MaintenanceWindow.ProtoReflect.Descriptor instead.
 func (*MaintenanceWindow) Descriptor() ([]byte, []int) {
-	return file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *MaintenanceWindow) GetPreference() MaintenanceWindow_MaintenanceWindowPreference {
@@ -779,11 +843,77 @@ func (x *MaintenanceWindow) GetIsCustomActionTimeoutEnabled() bool {
 	return false
 }
 
+// The request for `CloudExadataInfrastructure.ConfigureExascale`.
+type ConfigureExascaleCloudExadataInfrastructureRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the Cloud Exadata Infrastructure in the following
+	// format:
+	// projects/{project}/locations/{location}/cloudExadataInfrastructures/{cloud_exadata_infrastructure}.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The total storage to be allocated to Exascale in GBs.
+	TotalStorageSizeGb int32 `protobuf:"varint,2,opt,name=total_storage_size_gb,json=totalStorageSizeGb,proto3" json:"total_storage_size_gb,omitempty"`
+	// Optional. An optional ID to identify the request.
+	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ConfigureExascaleCloudExadataInfrastructureRequest) Reset() {
+	*x = ConfigureExascaleCloudExadataInfrastructureRequest{}
+	mi := &file_google_cloud_oracledatabase_v1_exadata_infra_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ConfigureExascaleCloudExadataInfrastructureRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConfigureExascaleCloudExadataInfrastructureRequest) ProtoMessage() {}
+
+func (x *ConfigureExascaleCloudExadataInfrastructureRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_oracledatabase_v1_exadata_infra_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConfigureExascaleCloudExadataInfrastructureRequest.ProtoReflect.Descriptor instead.
+func (*ConfigureExascaleCloudExadataInfrastructureRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ConfigureExascaleCloudExadataInfrastructureRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ConfigureExascaleCloudExadataInfrastructureRequest) GetTotalStorageSizeGb() int32 {
+	if x != nil {
+		return x.TotalStorageSizeGb
+	}
+	return 0
+}
+
+func (x *ConfigureExascaleCloudExadataInfrastructureRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
 var File_google_cloud_oracledatabase_v1_exadata_infra_proto protoreflect.FileDescriptor
 
 const file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/oracledatabase/v1/exadata_infra.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/oracledatabase/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x17google/type/month.proto\"\xe1\x05\n" +
+	"2google/cloud/oracledatabase/v1/exadata_infra.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/oracledatabase/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x17google/type/month.proto\"\xe1\x05\n" +
 	"\x1aCloudExadataInfrastructure\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12+\n" +
@@ -798,7 +928,7 @@ const file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDesc = "" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xdb\x01\xeaA\xd7\x01\n" +
-	"8oracledatabase.googleapis.com/CloudExadataInfrastructure\x12bprojects/{project}/locations/{location}/cloudExadataInfrastructures/{cloud_exadata_infrastructure}*\x1bcloudExadataInfrastructures2\x1acloudExadataInfrastructure\"\xd0\x0f\n" +
+	"8oracledatabase.googleapis.com/CloudExadataInfrastructure\x12bprojects/{project}/locations/{location}/cloudExadataInfrastructures/{cloud_exadata_infrastructure}*\x1bcloudExadataInfrastructures2\x1acloudExadataInfrastructure\"\xae\x10\n" +
 	"$CloudExadataInfrastructureProperties\x12\x17\n" +
 	"\x04ocid\x18\x01 \x01(\tB\x03\xe0A\x03R\x04ocid\x12(\n" +
 	"\rcompute_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\fcomputeCount\x12(\n" +
@@ -830,7 +960,8 @@ const file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDesc = "" +
 	"\x19monthly_db_server_version\x18\x1b \x01(\tB\x03\xe0A\x03R\x16monthlyDbServerVersion\x12V\n" +
 	"\rcompute_model\x18\x1f \x01(\x0e2,.google.cloud.oracledatabase.v1.ComputeModelB\x03\xe0A\x03R\fcomputeModel\x125\n" +
 	"\x14database_server_type\x18\x1d \x01(\tB\x03\xe0A\x03R\x12databaseServerType\x123\n" +
-	"\x13storage_server_type\x18\x1e \x01(\tB\x03\xe0A\x03R\x11storageServerType\"\x97\x01\n" +
+	"\x13storage_server_type\x18\x1e \x01(\tB\x03\xe0A\x03R\x11storageServerType\x12\\\n" +
+	"\x0fexascale_config\x18  \x01(\v2..google.cloud.oracledatabase.v1.ExascaleConfigB\x03\xe0A\x03R\x0eexascaleConfig\"\x97\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fPROVISIONING\x10\x01\x12\r\n" +
@@ -841,7 +972,10 @@ const file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDesc = "" +
 	"TERMINATED\x10\x05\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x06\x12\x1b\n" +
-	"\x17MAINTENANCE_IN_PROGRESS\x10\a\"\xb2\x06\n" +
+	"\x17MAINTENANCE_IN_PROGRESS\x10\a\"\x88\x01\n" +
+	"\x0eExascaleConfig\x126\n" +
+	"\x15total_storage_size_gb\x18\x01 \x01(\x05B\x03\xe0A\x03R\x12totalStorageSizeGb\x12>\n" +
+	"\x19available_storage_size_gb\x18\x02 \x01(\x05B\x03\xe0A\x03R\x16availableStorageSizeGb\"\xb2\x06\n" +
 	"\x11MaintenanceWindow\x12r\n" +
 	"\n" +
 	"preference\x18\x01 \x01(\x0e2M.google.cloud.oracledatabase.v1.MaintenanceWindow.MaintenanceWindowPreferenceB\x03\xe0A\x01R\n" +
@@ -863,7 +997,13 @@ const file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDesc = "" +
 	"\fPatchingMode\x12\x1d\n" +
 	"\x19PATCHING_MODE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aROLLING\x10\x01\x12\x0f\n" +
-	"\vNON_ROLLING\x10\x02B\xf9\x01\n" +
+	"\vNON_ROLLING\x10\x02\"\xee\x01\n" +
+	"2ConfigureExascaleCloudExadataInfrastructureRequest\x12T\n" +
+	"\x04name\x18\x01 \x01(\tB@\xe0A\x02\xfaA:\n" +
+	"8oracledatabase.googleapis.com/CloudExadataInfrastructureR\x04name\x126\n" +
+	"\x15total_storage_size_gb\x18\x02 \x01(\x05B\x03\xe0A\x02R\x12totalStorageSizeGb\x12*\n" +
+	"\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\xf9\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x1fCloudExadataInfrastructureProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 
 var (
@@ -879,40 +1019,43 @@ func file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDescGZIP() []byt
 }
 
 var file_google_cloud_oracledatabase_v1_exadata_infra_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_oracledatabase_v1_exadata_infra_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_google_cloud_oracledatabase_v1_exadata_infra_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_google_cloud_oracledatabase_v1_exadata_infra_proto_goTypes = []any{
-	(CloudExadataInfrastructureProperties_State)(0),    // 0: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.State
-	(MaintenanceWindow_MaintenanceWindowPreference)(0), // 1: google.cloud.oracledatabase.v1.MaintenanceWindow.MaintenanceWindowPreference
-	(MaintenanceWindow_PatchingMode)(0),                // 2: google.cloud.oracledatabase.v1.MaintenanceWindow.PatchingMode
-	(*CloudExadataInfrastructure)(nil),                 // 3: google.cloud.oracledatabase.v1.CloudExadataInfrastructure
-	(*CloudExadataInfrastructureProperties)(nil),       // 4: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties
-	(*MaintenanceWindow)(nil),                          // 5: google.cloud.oracledatabase.v1.MaintenanceWindow
-	nil,                                                // 6: google.cloud.oracledatabase.v1.CloudExadataInfrastructure.LabelsEntry
-	(*timestamppb.Timestamp)(nil),                      // 7: google.protobuf.Timestamp
-	(*CustomerContact)(nil),                            // 8: google.cloud.oracledatabase.v1.CustomerContact
-	(ComputeModel)(0),                                  // 9: google.cloud.oracledatabase.v1.ComputeModel
-	(month.Month)(0),                                   // 10: google.type.Month
-	(dayofweek.DayOfWeek)(0),                           // 11: google.type.DayOfWeek
+	(CloudExadataInfrastructureProperties_State)(0),            // 0: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.State
+	(MaintenanceWindow_MaintenanceWindowPreference)(0),         // 1: google.cloud.oracledatabase.v1.MaintenanceWindow.MaintenanceWindowPreference
+	(MaintenanceWindow_PatchingMode)(0),                        // 2: google.cloud.oracledatabase.v1.MaintenanceWindow.PatchingMode
+	(*CloudExadataInfrastructure)(nil),                         // 3: google.cloud.oracledatabase.v1.CloudExadataInfrastructure
+	(*CloudExadataInfrastructureProperties)(nil),               // 4: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties
+	(*ExascaleConfig)(nil),                                     // 5: google.cloud.oracledatabase.v1.ExascaleConfig
+	(*MaintenanceWindow)(nil),                                  // 6: google.cloud.oracledatabase.v1.MaintenanceWindow
+	(*ConfigureExascaleCloudExadataInfrastructureRequest)(nil), // 7: google.cloud.oracledatabase.v1.ConfigureExascaleCloudExadataInfrastructureRequest
+	nil,                           // 8: google.cloud.oracledatabase.v1.CloudExadataInfrastructure.LabelsEntry
+	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
+	(*CustomerContact)(nil),       // 10: google.cloud.oracledatabase.v1.CustomerContact
+	(ComputeModel)(0),             // 11: google.cloud.oracledatabase.v1.ComputeModel
+	(month.Month)(0),              // 12: google.type.Month
+	(dayofweek.DayOfWeek)(0),      // 13: google.type.DayOfWeek
 }
 var file_google_cloud_oracledatabase_v1_exadata_infra_proto_depIdxs = []int32{
 	4,  // 0: google.cloud.oracledatabase.v1.CloudExadataInfrastructure.properties:type_name -> google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties
-	6,  // 1: google.cloud.oracledatabase.v1.CloudExadataInfrastructure.labels:type_name -> google.cloud.oracledatabase.v1.CloudExadataInfrastructure.LabelsEntry
-	7,  // 2: google.cloud.oracledatabase.v1.CloudExadataInfrastructure.create_time:type_name -> google.protobuf.Timestamp
-	5,  // 3: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.maintenance_window:type_name -> google.cloud.oracledatabase.v1.MaintenanceWindow
+	8,  // 1: google.cloud.oracledatabase.v1.CloudExadataInfrastructure.labels:type_name -> google.cloud.oracledatabase.v1.CloudExadataInfrastructure.LabelsEntry
+	9,  // 2: google.cloud.oracledatabase.v1.CloudExadataInfrastructure.create_time:type_name -> google.protobuf.Timestamp
+	6,  // 3: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.maintenance_window:type_name -> google.cloud.oracledatabase.v1.MaintenanceWindow
 	0,  // 4: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.state:type_name -> google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.State
-	7,  // 5: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.next_maintenance_run_time:type_name -> google.protobuf.Timestamp
-	7,  // 6: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.next_security_maintenance_run_time:type_name -> google.protobuf.Timestamp
-	8,  // 7: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.customer_contacts:type_name -> google.cloud.oracledatabase.v1.CustomerContact
-	9,  // 8: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.compute_model:type_name -> google.cloud.oracledatabase.v1.ComputeModel
-	1,  // 9: google.cloud.oracledatabase.v1.MaintenanceWindow.preference:type_name -> google.cloud.oracledatabase.v1.MaintenanceWindow.MaintenanceWindowPreference
-	10, // 10: google.cloud.oracledatabase.v1.MaintenanceWindow.months:type_name -> google.type.Month
-	11, // 11: google.cloud.oracledatabase.v1.MaintenanceWindow.days_of_week:type_name -> google.type.DayOfWeek
-	2,  // 12: google.cloud.oracledatabase.v1.MaintenanceWindow.patching_mode:type_name -> google.cloud.oracledatabase.v1.MaintenanceWindow.PatchingMode
-	13, // [13:13] is the sub-list for method output_type
-	13, // [13:13] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	9,  // 5: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.next_maintenance_run_time:type_name -> google.protobuf.Timestamp
+	9,  // 6: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.next_security_maintenance_run_time:type_name -> google.protobuf.Timestamp
+	10, // 7: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.customer_contacts:type_name -> google.cloud.oracledatabase.v1.CustomerContact
+	11, // 8: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.compute_model:type_name -> google.cloud.oracledatabase.v1.ComputeModel
+	5,  // 9: google.cloud.oracledatabase.v1.CloudExadataInfrastructureProperties.exascale_config:type_name -> google.cloud.oracledatabase.v1.ExascaleConfig
+	1,  // 10: google.cloud.oracledatabase.v1.MaintenanceWindow.preference:type_name -> google.cloud.oracledatabase.v1.MaintenanceWindow.MaintenanceWindowPreference
+	12, // 11: google.cloud.oracledatabase.v1.MaintenanceWindow.months:type_name -> google.type.Month
+	13, // 12: google.cloud.oracledatabase.v1.MaintenanceWindow.days_of_week:type_name -> google.type.DayOfWeek
+	2,  // 13: google.cloud.oracledatabase.v1.MaintenanceWindow.patching_mode:type_name -> google.cloud.oracledatabase.v1.MaintenanceWindow.PatchingMode
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_oracledatabase_v1_exadata_infra_proto_init() }
@@ -927,7 +1070,7 @@ func file_google_cloud_oracledatabase_v1_exadata_infra_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDesc), len(file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

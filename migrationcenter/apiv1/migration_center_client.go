@@ -32,6 +32,7 @@ import (
 	migrationcenterpb "cloud.google.com/go/migrationcenter/apiv1/migrationcenterpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1532,8 +1533,12 @@ func (c *gRPCClient) CreateImportJob(ctx context.Context, req *migrationcenterpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.CreateImportJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateImportJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1634,8 +1639,12 @@ func (c *gRPCClient) DeleteImportJob(ctx context.Context, req *migrationcenterpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.DeleteImportJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteImportJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1657,8 +1666,12 @@ func (c *gRPCClient) UpdateImportJob(ctx context.Context, req *migrationcenterpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.UpdateImportJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateImportJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1683,8 +1696,12 @@ func (c *gRPCClient) ValidateImportJob(ctx context.Context, req *migrationcenter
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.ValidateImportJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ValidateImportJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1709,8 +1726,12 @@ func (c *gRPCClient) RunImportJob(ctx context.Context, req *migrationcenterpb.Ru
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.RunImportJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunImportJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1811,8 +1832,12 @@ func (c *gRPCClient) CreateImportDataFile(ctx context.Context, req *migrationcen
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.CreateImportDataFileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateImportDataFileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1837,8 +1862,12 @@ func (c *gRPCClient) DeleteImportDataFile(ctx context.Context, req *migrationcen
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.DeleteImportDataFileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteImportDataFileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1939,8 +1968,12 @@ func (c *gRPCClient) CreateGroup(ctx context.Context, req *migrationcenterpb.Cre
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.CreateGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1962,8 +1995,12 @@ func (c *gRPCClient) UpdateGroup(ctx context.Context, req *migrationcenterpb.Upd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.UpdateGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1988,8 +2025,12 @@ func (c *gRPCClient) DeleteGroup(ctx context.Context, req *migrationcenterpb.Del
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.DeleteGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2014,8 +2055,12 @@ func (c *gRPCClient) AddAssetsToGroup(ctx context.Context, req *migrationcenterp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.AddAssetsToGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddAssetsToGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2040,8 +2085,12 @@ func (c *gRPCClient) RemoveAssetsFromGroup(ctx context.Context, req *migrationce
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.RemoveAssetsFromGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveAssetsFromGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2218,8 +2267,12 @@ func (c *gRPCClient) CreateSource(ctx context.Context, req *migrationcenterpb.Cr
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.CreateSourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2241,8 +2294,12 @@ func (c *gRPCClient) UpdateSource(ctx context.Context, req *migrationcenterpb.Up
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.UpdateSourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2267,8 +2324,12 @@ func (c *gRPCClient) DeleteSource(ctx context.Context, req *migrationcenterpb.De
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.DeleteSourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2369,8 +2430,12 @@ func (c *gRPCClient) CreatePreferenceSet(ctx context.Context, req *migrationcent
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.CreatePreferenceSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePreferenceSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2392,8 +2457,12 @@ func (c *gRPCClient) UpdatePreferenceSet(ctx context.Context, req *migrationcent
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.UpdatePreferenceSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePreferenceSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2418,8 +2487,12 @@ func (c *gRPCClient) DeletePreferenceSet(ctx context.Context, req *migrationcent
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.DeletePreferenceSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePreferenceSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2465,8 +2538,12 @@ func (c *gRPCClient) UpdateSettings(ctx context.Context, req *migrationcenterpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.UpdateSettingsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSettingsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2491,8 +2568,12 @@ func (c *gRPCClient) CreateReportConfig(ctx context.Context, req *migrationcente
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.CreateReportConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateReportConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2593,8 +2674,12 @@ func (c *gRPCClient) DeleteReportConfig(ctx context.Context, req *migrationcente
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.DeleteReportConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteReportConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2619,8 +2704,12 @@ func (c *gRPCClient) CreateReport(ctx context.Context, req *migrationcenterpb.Cr
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.CreateReportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateReportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2721,8 +2810,12 @@ func (c *gRPCClient) DeleteReport(ctx context.Context, req *migrationcenterpb.De
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.DeleteReportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteReportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3464,8 +3557,12 @@ func (c *restClient) CreateImportJob(ctx context.Context, req *migrationcenterpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.CreateImportJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateImportJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3677,8 +3774,12 @@ func (c *restClient) DeleteImportJob(ctx context.Context, req *migrationcenterpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.DeleteImportJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteImportJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3751,8 +3852,12 @@ func (c *restClient) UpdateImportJob(ctx context.Context, req *migrationcenterpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.UpdateImportJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateImportJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3817,8 +3922,12 @@ func (c *restClient) ValidateImportJob(ctx context.Context, req *migrationcenter
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.ValidateImportJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ValidateImportJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3883,8 +3992,12 @@ func (c *restClient) RunImportJob(ctx context.Context, req *migrationcenterpb.Ru
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.RunImportJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunImportJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4095,8 +4208,12 @@ func (c *restClient) CreateImportDataFile(ctx context.Context, req *migrationcen
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.CreateImportDataFileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateImportDataFileOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4158,8 +4275,12 @@ func (c *restClient) DeleteImportDataFile(ctx context.Context, req *migrationcen
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.DeleteImportDataFileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteImportDataFileOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4370,8 +4491,12 @@ func (c *restClient) CreateGroup(ctx context.Context, req *migrationcenterpb.Cre
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.CreateGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4444,8 +4569,12 @@ func (c *restClient) UpdateGroup(ctx context.Context, req *migrationcenterpb.Upd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.UpdateGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4507,8 +4636,12 @@ func (c *restClient) DeleteGroup(ctx context.Context, req *migrationcenterpb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.DeleteGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4573,8 +4706,12 @@ func (c *restClient) AddAssetsToGroup(ctx context.Context, req *migrationcenterp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.AddAssetsToGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddAssetsToGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4639,8 +4776,12 @@ func (c *restClient) RemoveAssetsFromGroup(ctx context.Context, req *migrationce
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.RemoveAssetsFromGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveAssetsFromGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4992,8 +5133,12 @@ func (c *restClient) CreateSource(ctx context.Context, req *migrationcenterpb.Cr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.CreateSourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5066,8 +5211,12 @@ func (c *restClient) UpdateSource(ctx context.Context, req *migrationcenterpb.Up
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.UpdateSourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5129,8 +5278,12 @@ func (c *restClient) DeleteSource(ctx context.Context, req *migrationcenterpb.De
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.DeleteSourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5338,8 +5491,12 @@ func (c *restClient) CreatePreferenceSet(ctx context.Context, req *migrationcent
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.CreatePreferenceSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePreferenceSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5412,8 +5569,12 @@ func (c *restClient) UpdatePreferenceSet(ctx context.Context, req *migrationcent
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.UpdatePreferenceSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePreferenceSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5475,8 +5636,12 @@ func (c *restClient) DeletePreferenceSet(ctx context.Context, req *migrationcent
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.DeletePreferenceSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePreferenceSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5606,8 +5771,12 @@ func (c *restClient) UpdateSettings(ctx context.Context, req *migrationcenterpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.UpdateSettingsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSettingsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5677,8 +5846,12 @@ func (c *restClient) CreateReportConfig(ctx context.Context, req *migrationcente
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.CreateReportConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateReportConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5884,8 +6057,12 @@ func (c *restClient) DeleteReportConfig(ctx context.Context, req *migrationcente
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.DeleteReportConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteReportConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5955,8 +6132,12 @@ func (c *restClient) CreateReport(ctx context.Context, req *migrationcenterpb.Cr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.CreateReportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateReportOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6165,8 +6346,12 @@ func (c *restClient) DeleteReport(ctx context.Context, req *migrationcenterpb.De
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*migrationcenter.DeleteReportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteReportOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6532,7 +6717,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created AddAssetsToGroupOperation, possibly from a different process.
 func (c *gRPCClient) AddAssetsToGroupOperation(name string) *AddAssetsToGroupOperation {
 	return &AddAssetsToGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.AddAssetsToGroupOperation"),
 	}
 }
 
@@ -6541,7 +6726,7 @@ func (c *gRPCClient) AddAssetsToGroupOperation(name string) *AddAssetsToGroupOpe
 func (c *restClient) AddAssetsToGroupOperation(name string) *AddAssetsToGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &AddAssetsToGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.AddAssetsToGroupOperation"),
 		pollPath: override,
 	}
 }
@@ -6550,7 +6735,7 @@ func (c *restClient) AddAssetsToGroupOperation(name string) *AddAssetsToGroupOpe
 // The name must be that of a previously created CreateGroupOperation, possibly from a different process.
 func (c *gRPCClient) CreateGroupOperation(name string) *CreateGroupOperation {
 	return &CreateGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.CreateGroupOperation"),
 	}
 }
 
@@ -6559,7 +6744,7 @@ func (c *gRPCClient) CreateGroupOperation(name string) *CreateGroupOperation {
 func (c *restClient) CreateGroupOperation(name string) *CreateGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.CreateGroupOperation"),
 		pollPath: override,
 	}
 }
@@ -6568,7 +6753,7 @@ func (c *restClient) CreateGroupOperation(name string) *CreateGroupOperation {
 // The name must be that of a previously created CreateImportDataFileOperation, possibly from a different process.
 func (c *gRPCClient) CreateImportDataFileOperation(name string) *CreateImportDataFileOperation {
 	return &CreateImportDataFileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.CreateImportDataFileOperation"),
 	}
 }
 
@@ -6577,7 +6762,7 @@ func (c *gRPCClient) CreateImportDataFileOperation(name string) *CreateImportDat
 func (c *restClient) CreateImportDataFileOperation(name string) *CreateImportDataFileOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateImportDataFileOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.CreateImportDataFileOperation"),
 		pollPath: override,
 	}
 }
@@ -6586,7 +6771,7 @@ func (c *restClient) CreateImportDataFileOperation(name string) *CreateImportDat
 // The name must be that of a previously created CreateImportJobOperation, possibly from a different process.
 func (c *gRPCClient) CreateImportJobOperation(name string) *CreateImportJobOperation {
 	return &CreateImportJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.CreateImportJobOperation"),
 	}
 }
 
@@ -6595,7 +6780,7 @@ func (c *gRPCClient) CreateImportJobOperation(name string) *CreateImportJobOpera
 func (c *restClient) CreateImportJobOperation(name string) *CreateImportJobOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateImportJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.CreateImportJobOperation"),
 		pollPath: override,
 	}
 }
@@ -6604,7 +6789,7 @@ func (c *restClient) CreateImportJobOperation(name string) *CreateImportJobOpera
 // The name must be that of a previously created CreatePreferenceSetOperation, possibly from a different process.
 func (c *gRPCClient) CreatePreferenceSetOperation(name string) *CreatePreferenceSetOperation {
 	return &CreatePreferenceSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.CreatePreferenceSetOperation"),
 	}
 }
 
@@ -6613,7 +6798,7 @@ func (c *gRPCClient) CreatePreferenceSetOperation(name string) *CreatePreference
 func (c *restClient) CreatePreferenceSetOperation(name string) *CreatePreferenceSetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePreferenceSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.CreatePreferenceSetOperation"),
 		pollPath: override,
 	}
 }
@@ -6622,7 +6807,7 @@ func (c *restClient) CreatePreferenceSetOperation(name string) *CreatePreference
 // The name must be that of a previously created CreateReportOperation, possibly from a different process.
 func (c *gRPCClient) CreateReportOperation(name string) *CreateReportOperation {
 	return &CreateReportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.CreateReportOperation"),
 	}
 }
 
@@ -6631,7 +6816,7 @@ func (c *gRPCClient) CreateReportOperation(name string) *CreateReportOperation {
 func (c *restClient) CreateReportOperation(name string) *CreateReportOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateReportOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.CreateReportOperation"),
 		pollPath: override,
 	}
 }
@@ -6640,7 +6825,7 @@ func (c *restClient) CreateReportOperation(name string) *CreateReportOperation {
 // The name must be that of a previously created CreateReportConfigOperation, possibly from a different process.
 func (c *gRPCClient) CreateReportConfigOperation(name string) *CreateReportConfigOperation {
 	return &CreateReportConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.CreateReportConfigOperation"),
 	}
 }
 
@@ -6649,7 +6834,7 @@ func (c *gRPCClient) CreateReportConfigOperation(name string) *CreateReportConfi
 func (c *restClient) CreateReportConfigOperation(name string) *CreateReportConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateReportConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.CreateReportConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -6658,7 +6843,7 @@ func (c *restClient) CreateReportConfigOperation(name string) *CreateReportConfi
 // The name must be that of a previously created CreateSourceOperation, possibly from a different process.
 func (c *gRPCClient) CreateSourceOperation(name string) *CreateSourceOperation {
 	return &CreateSourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.CreateSourceOperation"),
 	}
 }
 
@@ -6667,7 +6852,7 @@ func (c *gRPCClient) CreateSourceOperation(name string) *CreateSourceOperation {
 func (c *restClient) CreateSourceOperation(name string) *CreateSourceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.CreateSourceOperation"),
 		pollPath: override,
 	}
 }
@@ -6676,7 +6861,7 @@ func (c *restClient) CreateSourceOperation(name string) *CreateSourceOperation {
 // The name must be that of a previously created DeleteGroupOperation, possibly from a different process.
 func (c *gRPCClient) DeleteGroupOperation(name string) *DeleteGroupOperation {
 	return &DeleteGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.DeleteGroupOperation"),
 	}
 }
 
@@ -6685,7 +6870,7 @@ func (c *gRPCClient) DeleteGroupOperation(name string) *DeleteGroupOperation {
 func (c *restClient) DeleteGroupOperation(name string) *DeleteGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.DeleteGroupOperation"),
 		pollPath: override,
 	}
 }
@@ -6694,7 +6879,7 @@ func (c *restClient) DeleteGroupOperation(name string) *DeleteGroupOperation {
 // The name must be that of a previously created DeleteImportDataFileOperation, possibly from a different process.
 func (c *gRPCClient) DeleteImportDataFileOperation(name string) *DeleteImportDataFileOperation {
 	return &DeleteImportDataFileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.DeleteImportDataFileOperation"),
 	}
 }
 
@@ -6703,7 +6888,7 @@ func (c *gRPCClient) DeleteImportDataFileOperation(name string) *DeleteImportDat
 func (c *restClient) DeleteImportDataFileOperation(name string) *DeleteImportDataFileOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteImportDataFileOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.DeleteImportDataFileOperation"),
 		pollPath: override,
 	}
 }
@@ -6712,7 +6897,7 @@ func (c *restClient) DeleteImportDataFileOperation(name string) *DeleteImportDat
 // The name must be that of a previously created DeleteImportJobOperation, possibly from a different process.
 func (c *gRPCClient) DeleteImportJobOperation(name string) *DeleteImportJobOperation {
 	return &DeleteImportJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.DeleteImportJobOperation"),
 	}
 }
 
@@ -6721,7 +6906,7 @@ func (c *gRPCClient) DeleteImportJobOperation(name string) *DeleteImportJobOpera
 func (c *restClient) DeleteImportJobOperation(name string) *DeleteImportJobOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteImportJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.DeleteImportJobOperation"),
 		pollPath: override,
 	}
 }
@@ -6730,7 +6915,7 @@ func (c *restClient) DeleteImportJobOperation(name string) *DeleteImportJobOpera
 // The name must be that of a previously created DeletePreferenceSetOperation, possibly from a different process.
 func (c *gRPCClient) DeletePreferenceSetOperation(name string) *DeletePreferenceSetOperation {
 	return &DeletePreferenceSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.DeletePreferenceSetOperation"),
 	}
 }
 
@@ -6739,7 +6924,7 @@ func (c *gRPCClient) DeletePreferenceSetOperation(name string) *DeletePreference
 func (c *restClient) DeletePreferenceSetOperation(name string) *DeletePreferenceSetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePreferenceSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.DeletePreferenceSetOperation"),
 		pollPath: override,
 	}
 }
@@ -6748,7 +6933,7 @@ func (c *restClient) DeletePreferenceSetOperation(name string) *DeletePreference
 // The name must be that of a previously created DeleteReportOperation, possibly from a different process.
 func (c *gRPCClient) DeleteReportOperation(name string) *DeleteReportOperation {
 	return &DeleteReportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.DeleteReportOperation"),
 	}
 }
 
@@ -6757,7 +6942,7 @@ func (c *gRPCClient) DeleteReportOperation(name string) *DeleteReportOperation {
 func (c *restClient) DeleteReportOperation(name string) *DeleteReportOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteReportOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.DeleteReportOperation"),
 		pollPath: override,
 	}
 }
@@ -6766,7 +6951,7 @@ func (c *restClient) DeleteReportOperation(name string) *DeleteReportOperation {
 // The name must be that of a previously created DeleteReportConfigOperation, possibly from a different process.
 func (c *gRPCClient) DeleteReportConfigOperation(name string) *DeleteReportConfigOperation {
 	return &DeleteReportConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.DeleteReportConfigOperation"),
 	}
 }
 
@@ -6775,7 +6960,7 @@ func (c *gRPCClient) DeleteReportConfigOperation(name string) *DeleteReportConfi
 func (c *restClient) DeleteReportConfigOperation(name string) *DeleteReportConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteReportConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.DeleteReportConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -6784,7 +6969,7 @@ func (c *restClient) DeleteReportConfigOperation(name string) *DeleteReportConfi
 // The name must be that of a previously created DeleteSourceOperation, possibly from a different process.
 func (c *gRPCClient) DeleteSourceOperation(name string) *DeleteSourceOperation {
 	return &DeleteSourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.DeleteSourceOperation"),
 	}
 }
 
@@ -6793,7 +6978,7 @@ func (c *gRPCClient) DeleteSourceOperation(name string) *DeleteSourceOperation {
 func (c *restClient) DeleteSourceOperation(name string) *DeleteSourceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteSourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.DeleteSourceOperation"),
 		pollPath: override,
 	}
 }
@@ -6802,7 +6987,7 @@ func (c *restClient) DeleteSourceOperation(name string) *DeleteSourceOperation {
 // The name must be that of a previously created RemoveAssetsFromGroupOperation, possibly from a different process.
 func (c *gRPCClient) RemoveAssetsFromGroupOperation(name string) *RemoveAssetsFromGroupOperation {
 	return &RemoveAssetsFromGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.RemoveAssetsFromGroupOperation"),
 	}
 }
 
@@ -6811,7 +6996,7 @@ func (c *gRPCClient) RemoveAssetsFromGroupOperation(name string) *RemoveAssetsFr
 func (c *restClient) RemoveAssetsFromGroupOperation(name string) *RemoveAssetsFromGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RemoveAssetsFromGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.RemoveAssetsFromGroupOperation"),
 		pollPath: override,
 	}
 }
@@ -6820,7 +7005,7 @@ func (c *restClient) RemoveAssetsFromGroupOperation(name string) *RemoveAssetsFr
 // The name must be that of a previously created RunImportJobOperation, possibly from a different process.
 func (c *gRPCClient) RunImportJobOperation(name string) *RunImportJobOperation {
 	return &RunImportJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.RunImportJobOperation"),
 	}
 }
 
@@ -6829,7 +7014,7 @@ func (c *gRPCClient) RunImportJobOperation(name string) *RunImportJobOperation {
 func (c *restClient) RunImportJobOperation(name string) *RunImportJobOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RunImportJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.RunImportJobOperation"),
 		pollPath: override,
 	}
 }
@@ -6838,7 +7023,7 @@ func (c *restClient) RunImportJobOperation(name string) *RunImportJobOperation {
 // The name must be that of a previously created UpdateGroupOperation, possibly from a different process.
 func (c *gRPCClient) UpdateGroupOperation(name string) *UpdateGroupOperation {
 	return &UpdateGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.UpdateGroupOperation"),
 	}
 }
 
@@ -6847,7 +7032,7 @@ func (c *gRPCClient) UpdateGroupOperation(name string) *UpdateGroupOperation {
 func (c *restClient) UpdateGroupOperation(name string) *UpdateGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.UpdateGroupOperation"),
 		pollPath: override,
 	}
 }
@@ -6856,7 +7041,7 @@ func (c *restClient) UpdateGroupOperation(name string) *UpdateGroupOperation {
 // The name must be that of a previously created UpdateImportJobOperation, possibly from a different process.
 func (c *gRPCClient) UpdateImportJobOperation(name string) *UpdateImportJobOperation {
 	return &UpdateImportJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.UpdateImportJobOperation"),
 	}
 }
 
@@ -6865,7 +7050,7 @@ func (c *gRPCClient) UpdateImportJobOperation(name string) *UpdateImportJobOpera
 func (c *restClient) UpdateImportJobOperation(name string) *UpdateImportJobOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateImportJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.UpdateImportJobOperation"),
 		pollPath: override,
 	}
 }
@@ -6874,7 +7059,7 @@ func (c *restClient) UpdateImportJobOperation(name string) *UpdateImportJobOpera
 // The name must be that of a previously created UpdatePreferenceSetOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePreferenceSetOperation(name string) *UpdatePreferenceSetOperation {
 	return &UpdatePreferenceSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.UpdatePreferenceSetOperation"),
 	}
 }
 
@@ -6883,7 +7068,7 @@ func (c *gRPCClient) UpdatePreferenceSetOperation(name string) *UpdatePreference
 func (c *restClient) UpdatePreferenceSetOperation(name string) *UpdatePreferenceSetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePreferenceSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.UpdatePreferenceSetOperation"),
 		pollPath: override,
 	}
 }
@@ -6892,7 +7077,7 @@ func (c *restClient) UpdatePreferenceSetOperation(name string) *UpdatePreference
 // The name must be that of a previously created UpdateSettingsOperation, possibly from a different process.
 func (c *gRPCClient) UpdateSettingsOperation(name string) *UpdateSettingsOperation {
 	return &UpdateSettingsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.UpdateSettingsOperation"),
 	}
 }
 
@@ -6901,7 +7086,7 @@ func (c *gRPCClient) UpdateSettingsOperation(name string) *UpdateSettingsOperati
 func (c *restClient) UpdateSettingsOperation(name string) *UpdateSettingsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateSettingsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.UpdateSettingsOperation"),
 		pollPath: override,
 	}
 }
@@ -6910,7 +7095,7 @@ func (c *restClient) UpdateSettingsOperation(name string) *UpdateSettingsOperati
 // The name must be that of a previously created UpdateSourceOperation, possibly from a different process.
 func (c *gRPCClient) UpdateSourceOperation(name string) *UpdateSourceOperation {
 	return &UpdateSourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.UpdateSourceOperation"),
 	}
 }
 
@@ -6919,7 +7104,7 @@ func (c *gRPCClient) UpdateSourceOperation(name string) *UpdateSourceOperation {
 func (c *restClient) UpdateSourceOperation(name string) *UpdateSourceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateSourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.UpdateSourceOperation"),
 		pollPath: override,
 	}
 }
@@ -6928,7 +7113,7 @@ func (c *restClient) UpdateSourceOperation(name string) *UpdateSourceOperation {
 // The name must be that of a previously created ValidateImportJobOperation, possibly from a different process.
 func (c *gRPCClient) ValidateImportJobOperation(name string) *ValidateImportJobOperation {
 	return &ValidateImportJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.ValidateImportJobOperation"),
 	}
 }
 
@@ -6937,7 +7122,7 @@ func (c *gRPCClient) ValidateImportJobOperation(name string) *ValidateImportJobO
 func (c *restClient) ValidateImportJobOperation(name string) *ValidateImportJobOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ValidateImportJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*migrationcenter.ValidateImportJobOperation"),
 		pollPath: override,
 	}
 }
