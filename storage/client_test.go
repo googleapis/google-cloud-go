@@ -3295,7 +3295,7 @@ func TestRetryReadStallEmulated(t *testing.T) {
 	client, err := NewClient(ctx, experimental.WithReadStallTimeout(
 		&experimental.ReadStallTimeoutConfig{
 			TargetPercentile: 0.99,
-			Min:              10 * time.Millisecond,
+			Min:              250 * time.Millisecond,
 		}))
 	if err != nil {
 		t.Fatalf("storage.NewClient: %v", err)
@@ -3361,7 +3361,7 @@ func TestGRPCRetryReadStallEmulated(t *testing.T) {
 				experimental.WithReadStallTimeout(
 					&experimental.ReadStallTimeoutConfig{
 						TargetPercentile: 0.99,
-						Min:              10 * time.Millisecond,
+						Min:              250 * time.Millisecond,
 					}),
 			}
 			if tt.bidiReads {

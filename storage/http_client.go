@@ -1736,14 +1736,18 @@ func setHeadersFromCtx(ctx context.Context, header http.Header) {
 		// Merge x-goog-api-client values into a single space-separated value.
 		if strings.EqualFold(k, xGoogHeaderKey) {
 			alreadySetValues := header.Values(xGoogHeaderKey)
-			vals = append(vals, alreadySetValues...)
-
-			if len(vals) > 0 {
-				xGoogHeader := vals[0]
-				for _, v := range vals[1:] {
-					xGoogHeader = strings.Join([]string{xGoogHeader, v}, " ")
+			var uniqueVals []string
+			seenVals := make(map[string]bool)
+			for _, v := range append(vals, alreadySetValues...) {
+				for _, part := range strings.Split(v, " ") {
+					if part != "" && !seenVals[part] {
+						seenVals[part] = true
+						uniqueVals = append(uniqueVals, part)
+					}
 				}
-				header.Set(k, xGoogHeader)
+			}
+			if len(uniqueVals) > 0 {
+				header.Set(k, strings.Join(uniqueVals, " "))
 			}
 		} else {
 			for _, v := range vals {
