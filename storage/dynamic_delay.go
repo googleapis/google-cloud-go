@@ -265,7 +265,7 @@ func executeWithReadStallTimeout(
 		if innerErr == nil {
 			reqLatency := time.Since(reqStartTime)
 			dm.update(bucket, reqLatency)
-		} else if (ctx.Err() == nil && cancelCtx.Err() != nil) {
+		} else if ctx.Err() == nil && cancelCtx.Err() != nil {
 			dm.increase(bucket)
 		}
 		done <- struct{}{}
