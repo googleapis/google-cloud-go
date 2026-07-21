@@ -396,6 +396,13 @@ func (m *ClientConfigurationManager) AddSessionPoolListener(listener func(*bigta
 	})
 }
 
+// TODO(sushanb): plumb TelemetryConfiguration. The server-side
+// ClientConfiguration proto also carries a TelemetryConfiguration message
+// (see google/bigtable/v2/session.proto) that we currently ignore. Once the
+// telemetry surface stabilizes, add an AddTelemetryConfigurationListener
+// sibling of AddSessionPoolListener / AddSessionLoadListener and route the
+// server-supplied value through it. Raised by mutianf on PR #19986.
+
 // AddSessionLoadListener registers a callback that receives the server-driven
 // SessionLoad value (0.0 = all-classic, 1.0 = all-session) on every
 // configuration update from a successful poll. Returns an unregister thunk.
