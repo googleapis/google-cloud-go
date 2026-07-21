@@ -55,11 +55,6 @@ type InvokeResult struct {
 	// (1, 2, 3, …). Distinguishes warm-up vRPCs (small id) from
 	// established-session vRPCs.
 	RpcIDOnSession int64
-	// TransportLatency is the time between the vRPC frame being handed
-	// to the bidi Send and the response (or server-side error) arriving
-	// on the stream. Approximates network RTT + server queue + Backend;
-	// (TransportLatency - BackendLatency) surfaces "everything except
-	// server processing". Zero when Invoke returned before a Recv event
-	// (context cancellation or pre-Send failure).
+	// TransportLatency = AttemptLatency - BackendLatency.
 	TransportLatency time.Duration
 }
