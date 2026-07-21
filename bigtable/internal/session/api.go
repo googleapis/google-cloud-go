@@ -75,7 +75,12 @@ type SessionClient interface {
 	// Returns an unregister thunk.
 	AddSessionLoadListener(func(load float64)) func()
 
-	// Close closes the underlying channel pool. SessionTableAPI
-	// instances previously vended become unusable.
+	// Close closes the underlying channel pool.
+	//
+	// Callers should close every vended SessionTableAPI first — this
+	// tears down the shared channel pool, and vended tables can no
+	// longer issue cleanup RPCs (e.g., session deletion) once the pool
+	// is gone. Any SessionTableAPI still open at the time of this call
+	// becomes unusable.
 	Close() error
 }
