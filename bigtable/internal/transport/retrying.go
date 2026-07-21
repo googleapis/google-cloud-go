@@ -67,12 +67,16 @@ func RetryingVRpc(opts RetryingOptions) Interceptor {
 		var lastErr error
 
 		for {
-			currentAttempt := atomic.AddInt32(&attempt, 1)
-			if currentAttempt > atomic.LoadInt32(&opts.MaxAttempts) {
+			attempt++
+			// opts.MaxAttempts stays behind atomic.Load — outside code
+			// (config-manager UpdateConfig fan-out) may swap it while
+			// the loop is running. The local attempt counter is
+			// goroutine-local and needs no synchronization.
+			if attempt > atomic.LoadInt32(&opts.MaxAttempts) {
 				break
 			}
 
-			attemptCtx := WithAttempt(ctx, int(currentAttempt))
+			attemptCtx := WithAttempt(ctx, int(attempt))
 			// Tag the next attempt's context with the prior attempt's
 			// error so the downstream Session.Invoke can record a
 			// "retry" SessionEvent carrying the original gRPC code +
@@ -141,10 +145,15 @@ func RetryingVRpc(opts RetryingOptions) Interceptor {
 				}
 			}
 
+			// time.NewTimer + Stop() (rather than time.After) so a
+			// ctx-cancel exit path releases the timer immediately
+			// instead of leaking it until `delay` elapses.
+			timer := time.NewTimer(delay)
 			select {
 			case <-ctx.Done():
+				timer.Stop()
 				return nil, ctx.Err()
-			case <-time.After(delay):
+			case <-timer.C:
 			}
 		}
 

@@ -20,7 +20,19 @@ import (
 
 // ChainInterceptors chains multiple interceptors into a single virtual RPC execution Handler.
 // The first interceptor in the list is executed first, wrapping the subsequent ones.
+//
+// Fast paths for the degenerate cases (0 or 1 interceptors) match
+// gRPC's own ChainUnaryInterceptor convention — no nested closure or
+// per-call allocation when there is nothing to chain.
 func ChainInterceptors(interceptors ...Interceptor) Interceptor {
+	if len(interceptors) == 0 {
+		return func(ctx context.Context, req interface{}, invoker Handler) (interface{}, error) {
+			return invoker(ctx, req)
+		}
+	}
+	if len(interceptors) == 1 {
+		return interceptors[0]
+	}
 	return func(ctx context.Context, req interface{}, invoker Handler) (interface{}, error) {
 		chain := invoker
 		for i := len(interceptors) - 1; i >= 0; i-- {
