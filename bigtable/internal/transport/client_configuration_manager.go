@@ -47,137 +47,60 @@ const maxBackoffSeconds = 30
 // can't pin a polling slot for the full polling interval.
 const pollDeadline = 5 * time.Second
 
-// clientConfig holds configuration for the client.
-type clientConfig struct {
-	Polling          pollingConfig
-	Session          sessionConfig
-	HasSessionConfig bool
+// maxValidityDuration caps the ValidityDuration honored from a server response
+// so the manager never adds an overflowing time.Duration to time.Now(). Also
+// serves as the sentinel initial value for m.validUntil (via
+// validityDuration(defaultClientConfig)).
+const maxValidityDuration = 100 * 365 * 24 * time.Hour
+
+// pollingInterval returns the effective poll cadence from cfg's Polling oneof,
+// preferring PollingConfiguration.PollingInterval over the deprecated
+// ClientConfiguration.polling_interval scalar. Falls back to the default's
+// polling interval when neither is set. Always floored at minPollingInterval
+// so a misconfigured server can't DDoS the control plane.
+func pollingInterval(cfg *bigtablepb.ClientConfiguration) time.Duration {
+	var interval time.Duration
+	if pi := cfg.GetPollingConfiguration().GetPollingInterval(); pi != nil {
+		interval = pi.AsDuration()
+	} else if pi := cfg.GetPollingInterval(); pi != nil {
+		interval = pi.AsDuration()
+	} else if cfg != defaultClientConfig {
+		interval = defaultClientConfig.GetPollingConfiguration().GetPollingInterval().AsDuration()
+	}
+	if interval < minPollingInterval {
+		interval = minPollingInterval
+	}
+	return interval
 }
 
-// Clone returns a deep copy of the clientConfig.
-func (c clientConfig) Clone() clientConfig {
-	// return by value so it copies but future proofing
-	return c
+// validityDuration returns PollingConfiguration.ValidityDuration, or the
+// default when the field is absent. Capped at maxValidityDuration to avoid
+// time.Duration overflow when adding to time.Now().
+func validityDuration(cfg *bigtablepb.ClientConfiguration) time.Duration {
+	var d time.Duration
+	if vd := cfg.GetPollingConfiguration().GetValidityDuration(); vd != nil {
+		d = vd.AsDuration()
+	} else if cfg != defaultClientConfig {
+		d = defaultClientConfig.GetPollingConfiguration().GetValidityDuration().AsDuration()
+	}
+	if d > maxValidityDuration {
+		d = maxValidityDuration
+	}
+	return d
 }
 
-type pollingConfig struct {
-	// PollingInterval is the wall-clock period between successive
-	// GetClientConfiguration polls. Floored at minPollingInterval.
-	PollingInterval time.Duration
-	// ValidityDuration is how long a successfully-polled configuration
-	// remains in effect before, on a failed poll, the manager falls back to
-	// the default config. Capped at 100 years to avoid time.Duration overflow.
-	ValidityDuration time.Duration
-	// MaxRPCRetryCount is the number of additional GetClientConfiguration
-	// retries (beyond the first attempt) before a single poll() call gives
-	// up. Each retry is preceded by randomized exponential backoff capped at
-	// maxBackoffSeconds.
-	MaxRPCRetryCount int
-	// StopPolling, when true, tells the pollingLoop to exit. It is set when
-	// the server picks the StopPolling case of the ClientConfiguration.Polling
-	// oneof — a backstop the control plane can flip to halt excessive
-	// GetClientConfiguration RPCs. The current configuration stays in effect
-	// (no fallback to defaults); the loop just stops issuing further polls.
-	StopPolling bool
-}
-
-type sessionConfig struct {
-	// SessionLoad is the server-driven fraction of requests to route through
-	// the session pool vs. the classic channel pool. 0.0 = all-classic,
-	// 1.0 = all-session.
-	SessionLoad float64
-	// ChannelPool configures the session pool's underlying channel pool.
-	ChannelPool channelPoolConfig
-	// SessionPool configures the session pool itself (size, churn budget,
-	// load balancing).
-	SessionPool sessionPoolConfig
-}
-
-// channelPoolMode mirrors the SessionClientConfiguration_ChannelPoolConfiguration
-// Mode oneof and tells session-pool factories whether the server wants the
-// client to use Direct Access, fall back to Cloud Path on errors, or skip
-// Direct Access entirely. The clientConfigDirectAccessChecker consults this
-// when deciding whether to adopt a direct-access connection.
-type channelPoolMode int
-
-const (
-	// modeDirectAccessWithFallback (server default) — try Direct Access, but
-	// fall back to Cloud Path when the failure rate breaches the threshold.
-	modeDirectAccessWithFallback channelPoolMode = iota
-	// modeDirectAccessOnly — Direct Access only, no Cloud Path fallback.
-	modeDirectAccessOnly
-	// modeCloudPathOnly — never use Direct Access.
-	modeCloudPathOnly
-)
-
-type channelPoolConfig struct {
-	// MinServerCount is the lower bound on the number of subchannels the
-	// session pool's channel pool is allowed to shrink to.
-	MinServerCount int
-	// MaxServerCount is the upper bound on the number of subchannels the
-	// session pool's channel pool is allowed to grow to.
-	MaxServerCount int
-	// PerServerSessionCount is the target number of sessions hosted on each
-	// subchannel; the session pool uses it to derive how many subchannels to
-	// keep open for a given session count.
-	PerServerSessionCount int
-	// Mode is the Direct Access decision the server wants the client to
-	// honor. See the channelPoolMode constants.
-	Mode channelPoolMode
-	// DirectAccessCheckInterval is how often clientConfigDirectAccessChecker
-	// re-evaluates whether to adopt a direct-access connection.
-	DirectAccessCheckInterval time.Duration
-	// DirectAccessErrorThreshold is the failure-rate threshold above which
-	// modeDirectAccessWithFallback gives up on Direct Access and falls back
-	// to Cloud Path.
-	DirectAccessErrorThreshold float32
-}
-
-type sessionPoolConfig struct {
-	// Headroom is the fraction of spare capacity the session pool keeps
-	// above current demand (e.g., 0.5 = pool is sized to 1.5x demand).
-	Headroom float32
-	// MinSessionCount is the lower bound on the pool size; the pool will
-	// not shrink below this count even if demand drops.
-	MinSessionCount int
-	// MaxSessionCount is the upper bound on the pool size; the pool will
-	// not grow above this count even if demand spikes.
-	MaxSessionCount int
-	// NewSessionCreationBudget caps how many concurrent CreateSession RPCs
-	// the pool will have in flight; further requests queue behind the budget.
-	NewSessionCreationBudget int
-	// NewSessionCreationPenalty is the cool-down a CreateSession failure
-	// imposes on its target subchannel before the pool will retry it.
-	NewSessionCreationPenalty time.Duration
-	// ConsecutiveSessionFailureThreshold is how many back-to-back vRPC
-	// failures on a session before the pool retires it.
-	ConsecutiveSessionFailureThreshold int
-	// NewSessionQueueLength caps the depth of the queue of pending
-	// CreateSession requests waiting on NewSessionCreationBudget.
-	NewSessionQueueLength int
-	// LoadBalancing selects how the pool picks a session for a vRPC.
-	LoadBalancing loadBalancingOptions
-}
-
-type loadBalancingStrategy int
-
-// Load-balancing strategy variants surfaced via the SessionPool's
-// LoadBalancingOptions. Mirrors the variants of the
-// SessionClientConfiguration.LoadBalancingOptions oneof.
-const (
-	StrategyLeastInFlight loadBalancingStrategy = iota
-	StrategyRandom
-	StrategyPeakEwma
-)
-
-type loadBalancingOptions struct {
-	// Strategy is the picking algorithm — see the StrategyXxx constants.
-	Strategy loadBalancingStrategy
-	// RandomSubsetSize, when non-zero, restricts strategies like
-	// StrategyLeastInFlight or StrategyPeakEwma to scoring only this many
-	// randomly-sampled sessions per pick instead of the whole pool, to
-	// bound per-pick cost on large pools.
-	RandomSubsetSize int
+// maxRPCRetryCount returns PollingConfiguration.MaxRpcRetryCount when the
+// server sent a PollingConfiguration (honoring an explicit 0 as "no
+// retries"), or the default when the server left PollingConfiguration out
+// of the Polling oneof entirely.
+func maxRPCRetryCount(cfg *bigtablepb.ClientConfiguration) int {
+	if pc := cfg.GetPollingConfiguration(); pc != nil {
+		return int(pc.GetMaxRpcRetryCount())
+	}
+	if cfg == defaultClientConfig {
+		return 0
+	}
+	return maxRPCRetryCount(defaultClientConfig)
 }
 
 // configListener is a callback function for configuration changes.
@@ -188,16 +111,23 @@ type loadBalancingOptions struct {
 // fallback to default. addListener and poll() both serialize their fires
 // through m.mu, so a listener observes seq values in strictly increasing
 // order and no explicit listener-side guard is required.
-type configListener func(newConfig clientConfig, seq int64)
+//
+// newConfig is a fresh proto.Clone of the manager's currentConfig, safe
+// for the listener to store or mutate without racing subsequent polls.
+type configListener func(newConfig *bigtablepb.ClientConfiguration, seq int64)
 
-// ClientConfigurationManager manages the dynamic client configuration for Bigtable.
-// It periodically polls for client configuration updates via GetClientConfiguration RPCs.
+// ClientConfigurationManager manages the dynamic client configuration for
+// Bigtable. It periodically polls for client configuration updates via
+// GetClientConfiguration RPCs and fans changes out to registered listeners.
 type ClientConfigurationManager struct {
-	client        bigtablepb.BigtableClient
-	instanceName  string
-	appProfileID  string
-	metadata      metadata.MD
-	defaultConfig clientConfig
+	client       bigtablepb.BigtableClient
+	instanceName string
+	appProfileID string
+	metadata     metadata.MD
+	// defaultConfig is the ClientConfiguration proto served before the first
+	// successful poll and used as the fallback when a poll fails after the
+	// previous server-supplied configuration's validity window has expired.
+	defaultConfig *bigtablepb.ClientConfiguration
 	logger        *log.Logger
 
 	// ctx scopes the polling loop and every per-poll RPC. Start() derives it
@@ -217,13 +147,53 @@ type ClientConfigurationManager struct {
 	// callbacks firing after Close() returns.
 	pollsWG sync.WaitGroup
 
-	mu            sync.RWMutex
-	currentConfig clientConfig
+	mu sync.RWMutex
+	// currentConfig is the manager's authoritative view of the client config.
+	// Starts as defaultConfig; every successful poll replaces it with the
+	// server's raw response (accessors like pollingInterval() do field-level
+	// fallback to defaultConfig for unset fields). Always non-nil.
+	currentConfig *bigtablepb.ClientConfiguration
 	// configSeq is a monotonically increasing sequence number incremented every time the configuration changes.
 	configSeq      int64
 	validUntil     time.Time
 	listeners      map[int]configListener
 	nextListenerID int
+
+	// lastResponse / lastFetchedAt / lastErr / lastErrAt mirror the most
+	// recent poll() outcome — kept verbatim (cloned proto) so the configz
+	// debug UI can render the server's raw GetClientConfiguration response
+	// without re-deriving it from currentConfig.
+	lastResponse  *bigtablepb.ClientConfiguration
+	lastFetchedAt time.Time
+	lastErr       error
+	lastErrAt     time.Time
+	// pollHistory is a ring buffer of the last poll outcomes, capped at
+	// maxPollHistory so memory stays bounded over a long-lived client.
+	pollHistory []PollEvent
+}
+
+// PollEvent records one GetClientConfiguration poll outcome surfaced by
+// configz so an operator can see "polls stopped 4 minutes ago" or "the last
+// three polls failed" without trawling logs.
+type PollEvent struct {
+	At        time.Time
+	Duration  time.Duration
+	Err       string // empty on success
+	ConfigSeq int64  // post-poll seq; 0 if the poll didn't bump it
+}
+
+// maxPollHistory bounds the per-manager ring buffer. At the default polling
+// interval (5 min) this covers at least the last ~8 hours of activity.
+const maxPollHistory = 100
+
+// recordPoll appends a poll outcome to the ring buffer, evicting the oldest
+// when full. Caller must hold m.mu.
+func (m *ClientConfigurationManager) recordPoll(ev PollEvent) {
+	if len(m.pollHistory) >= maxPollHistory {
+		copy(m.pollHistory, m.pollHistory[1:])
+		m.pollHistory = m.pollHistory[:len(m.pollHistory)-1]
+	}
+	m.pollHistory = append(m.pollHistory, ev)
 }
 
 // NewClientConfigurationManager creates a new ClientConfigurationManager.
@@ -241,9 +211,11 @@ func NewClientConfigurationManager(
 		metadata:      md,
 		defaultConfig: defaultClientConfig,
 		currentConfig: defaultClientConfig,
-		validUntil:    time.Now().Add(time.Hour * 24 * 365 * 100), //  default far in future
-		listeners:     make(map[int]configListener),
-		logger:        logger,
+		// Derived from defaultClientConfig so the sentinel far-future time is
+		// defined once, in the defaults table — not open-coded here.
+		validUntil: time.Now().Add(validityDuration(defaultClientConfig)),
+		listeners:  make(map[int]configListener),
+		logger:     logger,
 		// No-op until Start() wires the real cancel; makes Close-before-Start safe.
 		cancel: func() {},
 	}
@@ -298,11 +270,58 @@ func (m *ClientConfigurationManager) isClosed() bool {
 	return m.closed.Load()
 }
 
-// getConfig returns the current configuration.
-func (m *ClientConfigurationManager) getConfig() clientConfig {
+// getConfig returns a clone of the current configuration. Safe for the caller
+// to store or mutate without racing subsequent polls.
+func (m *ClientConfigurationManager) getConfig() *bigtablepb.ClientConfiguration {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-	return m.currentConfig.Clone()
+	return proto.Clone(m.currentConfig).(*bigtablepb.ClientConfiguration)
+}
+
+// ConfigSnapshot is an immutable view of the most recent
+// GetClientConfiguration poll outcome — what the configz debug UI renders.
+//
+// Both Response and LastErr can be set: Response holds the last successful
+// response (if any), LastErr the most recent failure (if any). The two
+// timestamps are zero if the corresponding event has never occurred.
+type ConfigSnapshot struct {
+	InstanceName string
+	AppProfileID string
+	ConfigSeq    int64
+	ValidUntil   time.Time
+	Response     *bigtablepb.ClientConfiguration
+	FetchedAt    time.Time
+	LastErr      error
+	LastErrAt    time.Time
+	// PollHistory carries the last few poll outcomes (oldest first).
+	PollHistory []PollEvent
+	CapturedAt  time.Time
+}
+
+// Snapshot returns a ConfigSnapshot capturing the manager's most recent poll
+// outcome. The returned ClientConfiguration proto is a clone — safe for the
+// caller to marshal without racing with subsequent polls.
+func (m *ClientConfigurationManager) Snapshot() ConfigSnapshot {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	var respClone *bigtablepb.ClientConfiguration
+	if m.lastResponse != nil {
+		respClone = proto.Clone(m.lastResponse).(*bigtablepb.ClientConfiguration)
+	}
+	history := make([]PollEvent, len(m.pollHistory))
+	copy(history, m.pollHistory)
+	return ConfigSnapshot{
+		InstanceName: m.instanceName,
+		AppProfileID: m.appProfileID,
+		ConfigSeq:    m.configSeq,
+		ValidUntil:   m.validUntil,
+		Response:     respClone,
+		FetchedAt:    m.lastFetchedAt,
+		LastErr:      m.lastErr,
+		LastErrAt:    m.lastErrAt,
+		PollHistory:  history,
+		CapturedAt:   time.Now(),
+	}
 }
 
 // addListener adds a listener for configuration changes.
@@ -332,7 +351,7 @@ func (m *ClientConfigurationManager) addListener(listener configListener) func()
 	m.listeners[id] = listener
 
 	btopt.Debugf(m.logger, "bigtable: adding configuration listener (id: %d)", id)
-	listener(m.currentConfig.Clone(), m.configSeq)
+	listener(proto.Clone(m.currentConfig).(*bigtablepb.ClientConfiguration), m.configSeq)
 
 	return func() {
 		m.mu.Lock()
@@ -344,31 +363,36 @@ func (m *ClientConfigurationManager) addListener(listener configListener) func()
 // AddSessionPoolListener registers a callback that receives raw
 // SessionPoolConfiguration updates.
 //
-// The wrapper extracts only the SessionPool slice from each incoming
-// clientConfig and short-circuits when that slice is unchanged from the
-// previous delivery (proto-equality), so unrelated changes — e.g., a new
-// PollingInterval — won't redundantly fire a SessionPool resize. Mirrors
-// the per-listener diff in Java's ListenerEntry.maybeNotify.
+// The wrapper extracts the SessionPool slice the server sent (or the default
+// when the server didn't set one) and short-circuits when that slice is
+// unchanged from the previous delivery (proto-equality), so unrelated changes
+// — e.g., a new PollingInterval — won't redundantly fire a SessionPool
+// resize. Mirrors the per-listener diff in Java's ListenerEntry.maybeNotify.
+//
+// Since currentConfig is now a live proto, the extractor forwards the
+// server's full SessionPoolConfiguration verbatim — every field (Headroom,
+// NewSessionCreationBudget, LoadBalancingOptions, etc.) reaches the listener,
+// not just the size bounds the old Go-struct wrapper happened to copy.
 func (m *ClientConfigurationManager) AddSessionPoolListener(listener func(*bigtablepb.SessionClientConfiguration_SessionPoolConfiguration)) func() {
 	var (
 		diffMu  sync.Mutex
 		hasPrev bool
 		prev    *bigtablepb.SessionClientConfiguration_SessionPoolConfiguration
 	)
-	return m.addListener(func(cfg clientConfig, seq int64) {
-		spCfg := &bigtablepb.SessionClientConfiguration_SessionPoolConfiguration{
-			MinSessionCount: int32(cfg.Session.SessionPool.MinSessionCount),
-			MaxSessionCount: int32(cfg.Session.SessionPool.MaxSessionCount),
+	return m.addListener(func(cfg *bigtablepb.ClientConfiguration, _ int64) {
+		sp := cfg.GetSessionConfiguration().GetSessionPoolConfiguration()
+		if sp == nil {
+			sp = defaultClientConfig.GetSessionConfiguration().GetSessionPoolConfiguration()
 		}
 		diffMu.Lock()
-		if hasPrev && proto.Equal(prev, spCfg) {
+		if hasPrev && proto.Equal(prev, sp) {
 			diffMu.Unlock()
 			return
 		}
 		hasPrev = true
-		prev = spCfg
+		prev = sp
 		diffMu.Unlock()
-		listener(spCfg)
+		listener(sp)
 	})
 }
 
@@ -393,11 +417,11 @@ func (m *ClientConfigurationManager) AddSessionLoadListener(listener func(load f
 		hasPrev bool
 		prev    float64
 	)
-	return m.addListener(func(cfg clientConfig, seq int64) {
+	return m.addListener(func(cfg *bigtablepb.ClientConfiguration, seq int64) {
 		if seq == 0 {
 			return
 		}
-		load := cfg.Session.SessionLoad
+		load := float64(cfg.GetSessionConfiguration().GetSessionLoad())
 		diffMu.Lock()
 		if hasPrev && prev == load {
 			diffMu.Unlock()
@@ -418,15 +442,12 @@ func (m *ClientConfigurationManager) pollingLoop() {
 		cfg := m.currentConfig
 		m.mu.RUnlock()
 
-		if cfg.Polling.StopPolling {
+		if cfg.GetStopPolling() {
 			btopt.Debugf(m.logger, "bigtable: server requested polling stop; exiting pollingLoop")
 			return
 		}
 
-		interval := cfg.Polling.PollingInterval
-		if interval < minPollingInterval {
-			interval = minPollingInterval
-		}
+		interval := pollingInterval(cfg)
 
 		select {
 		case <-m.ctx.Done():
@@ -445,7 +466,7 @@ func (m *ClientConfigurationManager) pollingLoop() {
 
 // fetchClientConfiguration issues GetClientConfiguration with randomized
 // exponential backoff between attempts (per the current config's
-// MaxRPCRetryCount; backoff capped at maxBackoffSeconds). It returns the
+// MaxRpcRetryCount; backoff capped at maxBackoffSeconds). It returns the
 // server's response on the first successful attempt, or the last RPC error
 // after exhausting retries. If ctx is cancelled mid-backoff it returns
 // ctx.Err() immediately so the caller can distinguish a shutdown from a
@@ -458,7 +479,7 @@ func (m *ClientConfigurationManager) fetchClientConfiguration(ctx context.Contex
 	ctx = metadata.NewOutgoingContext(ctx, m.metadata)
 
 	m.mu.RLock()
-	maxRetries := m.currentConfig.Polling.MaxRPCRetryCount
+	maxRetries := maxRPCRetryCount(m.currentConfig)
 	m.mu.RUnlock()
 
 	var resp *bigtablepb.ClientConfiguration
@@ -477,7 +498,7 @@ func (m *ClientConfigurationManager) fetchClientConfiguration(ctx context.Contex
 			break
 		}
 		// Cap the shift width so 1<<i can't overflow on absurd
-		// MaxRPCRetryCount values, then cap the wait at maxBackoffSeconds
+		// MaxRpcRetryCount values, then cap the wait at maxBackoffSeconds
 		// so prolonged outages don't stretch a single retry into hours.
 		backoffLimit := min(1<<min(i, 30), maxBackoffSeconds)
 		delay := time.Duration(rand.Intn(backoffLimit)) * time.Second
@@ -494,6 +515,7 @@ func (m *ClientConfigurationManager) fetchClientConfiguration(ctx context.Contex
 // If the poll fails and the previous configuration's validity has expired, it falls back to the default config.
 func (m *ClientConfigurationManager) poll(ctx context.Context) {
 	btopt.Debugf(m.logger, "bigtable: polling client configuration...")
+	pollStart := time.Now()
 	resp, err := m.fetchClientConfiguration(ctx)
 
 	// Caller cancelled (typically Close()). Don't trigger fallback-to-default
@@ -505,19 +527,28 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 	if err != nil {
 		btopt.Debugf(m.logger, "bigtable: failed to poll client configuration: %v", err)
 		m.mu.Lock()
+		m.lastErr = err
+		m.lastErrAt = time.Now()
+		m.recordPoll(PollEvent{
+			At:        pollStart,
+			Duration:  time.Since(pollStart),
+			Err:       err.Error(),
+			ConfigSeq: m.configSeq,
+		})
 		var listeners []configListener
-		var cfgToNotify clientConfig
+		var cfgToNotify *bigtablepb.ClientConfiguration
 		var seq int64
 		// Fall back to default configuration if validity window has expired.
-		// Reset validUntil to the same far-future sentinel used at
-		// construction so subsequent failed polls don't re-trigger this
-		// branch every interval and spam listeners with the same default.
+		// Reset validUntil via the default's own ValidityDuration (which is
+		// the far-future sentinel) so subsequent failed polls don't
+		// re-trigger this branch every interval and spam listeners with the
+		// same default.
 		if time.Now().After(m.validUntil) {
 			btopt.Debugf(m.logger, "bigtable: client configuration validity window expired, falling back to default config")
 			m.currentConfig = m.defaultConfig
 			m.configSeq++
 			seq = m.configSeq
-			m.validUntil = time.Now().Add(time.Hour * 24 * 365 * 100)
+			m.validUntil = time.Now().Add(validityDuration(m.defaultConfig))
 			listeners = make([]configListener, 0, len(m.listeners))
 			for _, l := range m.listeners {
 				listeners = append(listeners, l)
@@ -530,34 +561,55 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 		// SessionPools they target may already be Close'd.
 		if listeners != nil && !m.isClosed() {
 			for _, l := range listeners {
-				l(cfgToNotify.Clone(), seq)
+				l(proto.Clone(cfgToNotify).(*bigtablepb.ClientConfiguration), seq)
 			}
 		}
 		return
 	}
 
-	parsedResp := parseConfig(resp, m.defaultConfig)
-	btopt.Debugf(m.logger, "bigtable: successfully polled new client configuration. validityDuration: %v", parsedResp.Polling.ValidityDuration)
+	btopt.Debugf(m.logger, "bigtable: successfully polled new client configuration. validityDuration: %v", validityDuration(resp))
 
 	m.mu.Lock()
 	// Always refresh the validity window — the server's reply re-affirms
 	// the current config, so we shouldn't later fall back to default just
 	// because the prior ValidityDuration elapsed during a no-op poll.
-	m.validUntil = time.Now().Add(parsedResp.Polling.ValidityDuration)
-	// clientConfig is a fully-comparable value struct (no slices/maps/
-	// pointers/funcs), so == is a complete deep equality check. When the
-	// server returns the same config, skip the seq bump and listener
-	// fan-out so downstream consumers don't re-run idempotent work
-	// (channel-pool reshapes, session-pool resizes) every poll.
-	if parsedResp == m.currentConfig {
+	m.validUntil = time.Now().Add(validityDuration(resp))
+	// Capture the raw response for configz + poll-history observability.
+	// Clone so subsequent server-side mutations cannot reach debug readers
+	// that are inspecting the snapshot.
+	if resp != nil {
+		m.lastResponse = proto.Clone(resp).(*bigtablepb.ClientConfiguration)
+	}
+	m.lastFetchedAt = time.Now()
+	m.lastErr = nil
+	m.lastErrAt = time.Time{}
+
+	// proto.Equal short-circuits the seq bump + listener fan-out when the
+	// server returns the same config as before. Downstream consumers don't
+	// re-run idempotent work (channel-pool reshapes, session-pool resizes)
+	// every poll. Note: proto.Equal treats "unset field" and "explicitly
+	// set to default" as distinct, so responses that vary only in whether
+	// an explicit 0/false is on the wire will not short-circuit here — a
+	// safe false-positive (listeners refire with equivalent state).
+	if proto.Equal(resp, m.currentConfig) {
 		seq := m.configSeq
+		m.recordPoll(PollEvent{
+			At:        pollStart,
+			Duration:  time.Since(pollStart),
+			ConfigSeq: seq,
+		})
 		m.mu.Unlock()
 		btopt.Debugf(m.logger, "bigtable: client configuration unchanged (seq=%d), refreshed validity, skipping listener fan-out", seq)
 		return
 	}
-	m.currentConfig = parsedResp
+	m.currentConfig = resp
 	m.configSeq++
 	seq := m.configSeq
+	m.recordPoll(PollEvent{
+		At:        pollStart,
+		Duration:  time.Since(pollStart),
+		ConfigSeq: seq,
+	})
 
 	listeners := make([]configListener, 0, len(m.listeners))
 	for _, l := range m.listeners {
@@ -572,133 +624,6 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 		return
 	}
 	for _, l := range listeners {
-		l(cfgToNotify.Clone(), seq)
+		l(proto.Clone(cfgToNotify).(*bigtablepb.ClientConfiguration), seq)
 	}
-}
-
-// parseConfig converts the protobuf ClientConfiguration message into the internal clientConfig structure,
-// validating bounds such as minPollingInterval and capping validity duration to prevent integer overflows.
-func parseConfig(protoCfg *bigtablepb.ClientConfiguration, defaultCfg clientConfig) clientConfig {
-	res := defaultCfg
-
-	if protoCfg == nil {
-		return res
-	}
-
-	if p := protoCfg.GetPollingConfiguration(); p != nil {
-		res.Polling = parsePollingConfig(p, res.Polling)
-	}
-	if protoCfg.GetStopPolling() {
-		res.Polling.StopPolling = true
-	}
-
-	if protoCfg.SessionConfiguration != nil {
-		s := protoCfg.SessionConfiguration
-		res.Session = parseSessionConfig(s, res.Session)
-		res.HasSessionConfig = s.SessionLoad > 0
-	} else {
-		res.HasSessionConfig = false
-	}
-
-	return res
-}
-
-func parsePollingConfig(p *bigtablepb.ClientConfiguration_PollingConfiguration, defaultCfg pollingConfig) pollingConfig {
-	res := defaultCfg
-	if p == nil {
-		return res
-	}
-	if p.PollingInterval != nil {
-		res.PollingInterval = p.PollingInterval.AsDuration()
-	}
-	if res.PollingInterval < minPollingInterval {
-		res.PollingInterval = minPollingInterval
-	}
-	if p.ValidityDuration != nil {
-		res.ValidityDuration = p.ValidityDuration.AsDuration()
-		if res.ValidityDuration > 100*365*24*time.Hour {
-			res.ValidityDuration = 100 * 365 * 24 * time.Hour
-		}
-	}
-	res.MaxRPCRetryCount = int(p.MaxRpcRetryCount)
-	return res
-}
-
-func parseSessionConfig(s *bigtablepb.SessionClientConfiguration, defaultCfg sessionConfig) sessionConfig {
-	res := defaultCfg
-	if s == nil {
-		return res
-	}
-	res.SessionLoad = float64(s.SessionLoad)
-	if s.ChannelConfiguration != nil {
-		res.ChannelPool = parseChannelPoolConfig(s.ChannelConfiguration, res.ChannelPool)
-	}
-	if s.SessionPoolConfiguration != nil {
-		res.SessionPool = parseSessionPoolConfig(s.SessionPoolConfiguration, res.SessionPool)
-	}
-	return res
-}
-
-func parseChannelPoolConfig(cc *bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration, defaultCfg channelPoolConfig) channelPoolConfig {
-	res := defaultCfg
-	if cc == nil {
-		return res
-	}
-	res.MinServerCount = int(cc.MinServerCount)
-	res.MaxServerCount = int(cc.MaxServerCount)
-	res.PerServerSessionCount = int(cc.PerServerSessionCount)
-	// Switch on the proto's Mode oneof so the manager preserves the server's
-	// Direct Access decision. clientConfigDirectAccessChecker reads
-	// channelPoolConfig.Mode to decide whether to adopt the direct-access
-	// dialer for a session-pool channel.
-	switch m := cc.Mode.(type) {
-	case *bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessWithFallback_:
-		res.Mode = modeDirectAccessWithFallback
-		if fb := m.DirectAccessWithFallback; fb != nil {
-			if fb.CheckInterval != nil {
-				res.DirectAccessCheckInterval = fb.CheckInterval.AsDuration()
-			}
-			res.DirectAccessErrorThreshold = fb.ErrorRateThreshold
-		}
-	case *bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessOnly_:
-		res.Mode = modeDirectAccessOnly
-	case *bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration_CloudPathOnly_:
-		res.Mode = modeCloudPathOnly
-	}
-	return res
-}
-
-func parseSessionPoolConfig(sp *bigtablepb.SessionClientConfiguration_SessionPoolConfiguration, defaultCfg sessionPoolConfig) sessionPoolConfig {
-	res := defaultCfg
-	if sp == nil {
-		return res
-	}
-	res.Headroom = sp.Headroom
-	res.MinSessionCount = int(sp.MinSessionCount)
-	res.MaxSessionCount = int(sp.MaxSessionCount)
-	res.NewSessionCreationBudget = int(sp.NewSessionCreationBudget)
-	if sp.NewSessionCreationPenalty != nil {
-		res.NewSessionCreationPenalty = sp.NewSessionCreationPenalty.AsDuration()
-	}
-	res.ConsecutiveSessionFailureThreshold = int(sp.ConsecutiveSessionFailureThreshold)
-	res.NewSessionQueueLength = int(sp.NewSessionQueueLength)
-
-	if sp.LoadBalancingOptions != nil {
-		lbo := sp.LoadBalancingOptions
-		switch opt := lbo.LoadBalancingStrategy.(type) {
-		case *bigtablepb.LoadBalancingOptions_Random_:
-			res.LoadBalancing.Strategy = StrategyRandom
-		case *bigtablepb.LoadBalancingOptions_LeastInFlight_:
-			res.LoadBalancing.Strategy = StrategyLeastInFlight
-			if opt.LeastInFlight != nil {
-				res.LoadBalancing.RandomSubsetSize = int(opt.LeastInFlight.RandomSubsetSize)
-			}
-		case *bigtablepb.LoadBalancingOptions_PeakEwma_:
-			res.LoadBalancing.Strategy = StrategyPeakEwma
-			if opt.PeakEwma != nil {
-				res.LoadBalancing.RandomSubsetSize = int(opt.PeakEwma.RandomSubsetSize)
-			}
-		}
-	}
-	return res
 }

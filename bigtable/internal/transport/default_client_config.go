@@ -14,45 +14,59 @@
 
 package internal
 
-import "time"
+import (
+	"time"
 
-// defaultClientConfig is the configuration the ClientConfigurationManager
-// uses before the first successful GetClientConfiguration poll and as the
-// fallback when a poll fails after the previous server-supplied
-// configuration's validity window has expired.
+	bigtablepb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"google.golang.org/protobuf/types/known/durationpb"
+)
+
+// defaultClientConfig is the ClientConfiguration proto the
+// ClientConfigurationManager uses before the first successful
+// GetClientConfiguration poll and as the fallback when a poll fails after
+// the previous server-supplied configuration's validity window has expired.
 //
-// Values are kept in this file (rather than inline in
-// client_configuration_manager.go) so they read as a tunable defaults
-// table independent of the polling machinery that consumes them.
-var defaultClientConfig = clientConfig{
-	Polling: pollingConfig{
-		PollingInterval:  300 * time.Second,
-		ValidityDuration: 100 * 365 * 24 * time.Hour, // Safe representation of 10,000 years.
-		MaxRPCRetryCount: 5,
-	},
-	Session: sessionConfig{
-		SessionLoad: 0,
-		ChannelPool: channelPoolConfig{
-			MinServerCount:             2,
-			MaxServerCount:             25,
-			PerServerSessionCount:      10,
-			Mode:                       modeDirectAccessWithFallback,
-			DirectAccessCheckInterval:  60 * time.Second,
-			DirectAccessErrorThreshold: 0.8,
+// Kept as a live *bigtablepb.ClientConfiguration (rather than a parallel
+// Go-struct hierarchy) so the manager never has to translate between two
+// representations of the same shape. Field-level fallbacks read from this
+// proto via the accessors defined in client_configuration_manager.go.
+//
+// Values live in this file so the defaults read as a tunable table
+// independent of the polling machinery that consumes them.
+var defaultClientConfig = &bigtablepb.ClientConfiguration{
+	Polling: &bigtablepb.ClientConfiguration_PollingConfiguration_{
+		PollingConfiguration: &bigtablepb.ClientConfiguration_PollingConfiguration{
+			PollingInterval:  durationpb.New(300 * time.Second),
+			ValidityDuration: durationpb.New(100 * 365 * 24 * time.Hour), // safe representation of 10,000 years
+			MaxRpcRetryCount: 5,
 		},
-		SessionPool: sessionPoolConfig{
+	},
+	SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+		SessionLoad: 0,
+		ChannelConfiguration: &bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration{
+			MinServerCount:        2,
+			MaxServerCount:        25,
+			PerServerSessionCount: 10,
+			Mode: &bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessWithFallback_{
+				DirectAccessWithFallback: &bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessWithFallback{
+					CheckInterval:      durationpb.New(60 * time.Second),
+					ErrorRateThreshold: 0.8,
+				},
+			},
+		},
+		SessionPoolConfiguration: &bigtablepb.SessionClientConfiguration_SessionPoolConfiguration{
 			Headroom:                           0.5,
 			MinSessionCount:                    5,
 			MaxSessionCount:                    400,
 			NewSessionCreationBudget:           50,
-			NewSessionCreationPenalty:          60 * time.Second,
+			NewSessionCreationPenalty:          durationpb.New(60 * time.Second),
 			ConsecutiveSessionFailureThreshold: 10,
 			NewSessionQueueLength:              10,
-			LoadBalancing: loadBalancingOptions{
-				Strategy:         StrategyLeastInFlight,
-				RandomSubsetSize: 0,
+			LoadBalancingOptions: &bigtablepb.LoadBalancingOptions{
+				LoadBalancingStrategy: &bigtablepb.LoadBalancingOptions_LeastInFlight_{
+					LeastInFlight: &bigtablepb.LoadBalancingOptions_LeastInFlight{},
+				},
 			},
 		},
 	},
-	HasSessionConfig: true,
 }
