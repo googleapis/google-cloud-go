@@ -30,41 +30,41 @@ import (
 	"go.opentelemetry.io/otel/metric"
 )
 
-// SessionTableAPI is the per-resource, proto-native data-plane API.
+// TableAPI is the per-resource, proto-native data-plane API.
 // Implementations route ReadRow over a read session pool and MutateRow
 // over a separate write session pool; callers do not see the
 // distinction. Pools open lazily on first call, so a resource that
 // only ever reads never pays for a write pool.
-type SessionTableAPI interface {
+type TableAPI interface {
 	ReadRow(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error)
 	MutateRow(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error)
 
 	// Close releases this resource's underlying read + write session
-	// pools. Independent from SessionClient.Close — closing a single
+	// pools. Independent from Client.Close — closing a single
 	// resource does not close the shared channel pool.
 	Close() error
 }
 
-// SessionClient owns the underlying gRPC channel pool + stub and vends
-// per-resource SessionTableAPI instances. Does NOT cache — callers are
+// Client owns the underlying gRPC channel pool + stub and vends
+// per-resource TableAPI instances. Does NOT cache — callers are
 // responsible for caching per-resource entries so repeat Opens reuse
 // the same underlying pools.
-type SessionClient interface {
-	// OpenSessionTable returns a SessionTableAPI for a standard table,
+type Client interface {
+	// OpenSessionTable returns a TableAPI for a standard table,
 	// identified by the leaf table name (e.g. "my-table"). Full
 	// resource composition happens inside the implementation.
-	OpenSessionTable(tableName string) SessionTableAPI
+	OpenSessionTable(tableName string) TableAPI
 
-	// OpenAuthorizedView returns a SessionTableAPI for a specific
+	// OpenAuthorizedView returns a TableAPI for a specific
 	// authorized view under table.
-	OpenAuthorizedView(table, view string) SessionTableAPI
+	OpenAuthorizedView(table, view string) TableAPI
 
-	// OpenMaterializedView returns a read-only SessionTableAPI for a
+	// OpenMaterializedView returns a read-only TableAPI for a
 	// materialized view. MutateRow on the returned handle errors.
-	OpenMaterializedView(view string) SessionTableAPI
+	OpenMaterializedView(view string) TableAPI
 
 	// MeterProvider exposes the OpenTelemetry meter provider the
-	// SessionClient was constructed with — same instance the bigtable
+	// Client was constructed with — same instance the bigtable
 	// client uses for its own metrics, so callers can register
 	// additional instruments against the same provider.
 	MeterProvider() metric.MeterProvider
@@ -77,10 +77,10 @@ type SessionClient interface {
 
 	// Close closes the underlying channel pool.
 	//
-	// Callers should close every vended SessionTableAPI first — this
+	// Callers should close every vended TableAPI first — this
 	// tears down the shared channel pool, and vended tables can no
 	// longer issue cleanup RPCs (e.g., session deletion) once the pool
-	// is gone. Any SessionTableAPI still open at the time of this call
+	// is gone. Any TableAPI still open at the time of this call
 	// becomes unusable.
 	Close() error
 }
