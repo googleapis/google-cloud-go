@@ -44,10 +44,10 @@ type InvokeResult struct {
 	// derive client-side blocking latency (sentAt - attemptStart).
 	SentAt   time.Time
 	PeerInfo *spb.PeerInfo
-	// RpcIDOnSession is the per-session monotonic id of this call
+	// RPCIDOnSession is the per-session monotonic id of this call
 	// (1, 2, 3, …). Distinguishes warm-up vRPCs (small id) from
 	// established-session vRPCs.
-	RpcIDOnSession int64
+	RPCIDOnSession int64
 	// TransportLatency = AttemptLatency - BackendLatency.
 	TransportLatency time.Duration
 }
