@@ -16,7 +16,6 @@ package storage
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"math"
@@ -24,8 +23,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 // dynamicDelay dynamically calculates the delay at a fixed percentile, based on
@@ -268,7 +265,7 @@ func executeWithReadStallTimeout(
 		if innerErr == nil {
 			reqLatency := time.Since(reqStartTime)
 			dm.update(bucket, reqLatency)
-		} else if (errors.Is(innerErr, context.Canceled) || status.Code(innerErr) == codes.Canceled) && ctx.Err() == nil {
+		} else if (ctx.Err() == nil && cancelCtx.Err() != nil) {
 			dm.increase(bucket)
 		}
 		done <- struct{}{}
@@ -288,7 +285,9 @@ func executeWithReadStallTimeout(
 		}
 		return context.DeadlineExceeded
 	case <-done:
-		cancel()
+		if innerErr != nil {
+			cancel()
+		}
 	}
 	return innerErr
 }

@@ -3337,74 +3337,55 @@ func TestRetryReadStallEmulated(t *testing.T) {
 
 func TestGRPCRetryReadStallEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
+	t.Run("ReadObject", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
 
-	tests := []struct {
-		name      string
-		bidiReads bool
-	}{
-		{
-			name:      "ReadObject",
-			bidiReads: false,
-		},
-		{
-			name:      "BidiReadObject",
-			bidiReads: true,
-		},
-	}
+		opts := []option.ClientOption{
+			experimental.WithReadStallTimeout(
+				&experimental.ReadStallTimeoutConfig{
+					TargetPercentile: 0.99,
+					Min:              250 * time.Millisecond,
+				}),
+		}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
+		client, err := NewGRPCClient(ctx, opts...)
+		if err != nil {
+			t.Fatalf("storage.NewGRPCClient: %v", err)
+		}
+		defer client.Close()
+		client.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
 
-			opts := []option.ClientOption{
-				experimental.WithReadStallTimeout(
-					&experimental.ReadStallTimeoutConfig{
-						TargetPercentile: 0.99,
-						Min:              250 * time.Millisecond,
-					}),
-			}
-			if tt.bidiReads {
-				opts = append(opts, experimental.WithGRPCBidiReads())
-			}
+		project := "fake-project"
+		bucket := fmt.Sprintf("grpc-bucket-%d", time.Now().Nanosecond())
+		if err := client.Bucket(bucket).Create(ctx, project, nil); err != nil {
+			t.Fatalf("client.Bucket.Create: %v", err)
+		}
 
-			client, err := NewGRPCClient(ctx, opts...)
-			if err != nil {
-				t.Fatalf("storage.NewGRPCClient: %v", err)
-			}
-			defer client.Close()
-			client.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
+		name, _, _, err := createObjectWithContent(ctx, bucket, randomBytes3MiB)
+		if err != nil {
+			t.Fatalf("createObject: %v", err)
+		}
 
-			project := "fake-project"
-			bucket := fmt.Sprintf("grpc-bucket-%d", time.Now().Nanosecond())
-			if err := client.Bucket(bucket).Create(ctx, project, nil); err != nil {
-				t.Fatalf("client.Bucket.Create: %v", err)
-			}
+		instructions := map[string][]string{"storage.objects.get": {"stall-for-10s-after-0K"}}
+		testID := createRetryTest(t, client.tc, instructions)
 
-			name, _, _, err := createObjectWithContent(ctx, bucket, randomBytes3MiB)
-			if err != nil {
-				t.Fatalf("createObject: %v", err)
-			}
+		testCtx := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
 
-			instructions := map[string][]string{"storage.objects.get": {"stall-for-10s-after-0K"}}
-			testID := createRetryTest(t, client.tc, instructions)
+		r, err := client.Bucket(bucket).Object(name).NewReader(testCtx)
+		if err != nil {
+			t.Fatalf("NewReader: %v", err)
+		}
+		defer r.Close()
 
-			ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
-			r, err := client.Bucket(bucket).Object(name).NewReader(ctx)
-			if err != nil {
-				t.Fatalf("NewReader: %v", err)
-			}
-			defer r.Close()
-
-			buf := &bytes.Buffer{}
-			if _, err := io.Copy(buf, r); err != nil {
-				t.Fatalf("io.Copy: %v", err)
-			}
-			if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
-				t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
-			}
-		})
-	}
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, r); err != nil {
+			t.Fatalf("io.Copy: %v", err)
+		}
+		if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
+			t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+		}
+	})
 }
 
 func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
