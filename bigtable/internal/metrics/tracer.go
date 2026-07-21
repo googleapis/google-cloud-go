@@ -453,6 +453,13 @@ func (mt *Tracer) toOtelMetricAttrs(metricName string) (attribute.Set, error) {
 		clusterID = FallbackString(clusterID, mt.currOp.lastClusterID)
 		zoneID = FallbackString(zoneID, mt.currOp.lastZoneID)
 	}
+	// Cloud Monitoring rejects bigtable_client_raw writes with an empty
+	// zone/cluster ("Unrecognized region or location"). Empty values reach
+	// here when an attempt errors before response headers/trailers arrive
+	// (e.g. DEADLINE_EXCEEDED on the first attempt), so ExtractLocation
+	// never runs and there's no lastClusterID/lastZoneID to fall back on.
+	clusterID = FallbackString(clusterID, defaultCluster)
+	zoneID = FallbackString(zoneID, defaultZone)
 
 	// 4 fixed attributes below (method / table / cluster / zone) plus the
 	// per-client attributes plus this metric's additional attributes.
