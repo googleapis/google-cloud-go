@@ -224,3 +224,37 @@ func TestThrottler_ConcurrentAcquireRelease(t *testing.T) {
 		t.Fatalf("InUse after all releases = %d, want 0", got.InUse)
 	}
 }
+
+// TestThrottler_BlockedWaiterWokenByPenaltyExpiry pins down the
+// regression fixed by scheduling a time.AfterFunc broadcast on
+// failed Release: a waiter parked in cond.Wait must wake when the
+// penalty expires, without needing an unrelated Release/UpdateConfig
+// event to fire the broadcast. Uses real time so the AfterFunc timer
+// runs against the same clock as the deadline.
+func TestThrottler_BlockedWaiterWokenByPenaltyExpiry(t *testing.T) {
+	tr := NewAdaptiveSessionThrottler(1, 50*time.Millisecond)
+	if err := tr.Acquire(context.Background()); err != nil {
+		t.Fatalf("Acquire: %v", err)
+	}
+	tr.Release(false) // failure → slot held for 50ms
+
+	acquired := make(chan error, 1)
+	go func() { acquired <- tr.Acquire(context.Background()) }()
+
+	// Waiter must still be parked well before penalty expiry.
+	select {
+	case err := <-acquired:
+		t.Fatalf("Acquire returned before penalty expired: err=%v", err)
+	case <-time.After(20 * time.Millisecond):
+	}
+
+	// After penalty expiry the scheduled broadcast must wake the waiter.
+	select {
+	case err := <-acquired:
+		if err != nil {
+			t.Fatalf("Acquire after penalty expiry: %v", err)
+		}
+	case <-time.After(500 * time.Millisecond):
+		t.Fatal("Acquire hung past penalty expiry — timer wake did not fire")
+	}
+}

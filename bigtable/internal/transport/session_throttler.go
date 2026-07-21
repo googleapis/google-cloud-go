@@ -126,10 +126,14 @@ func (b *AdaptiveSessionThrottler) tryAcquireLocked() bool {
 	return true
 }
 
-// Release returns a token. On success the slot is freed immediately.
-// On failure the slot is held for penaltyDuration (as of Release time),
-// then reclaimed on the next Acquire. Java parity:
-// SessionCreationBudget.onSessionCreationSuccess / onSessionCreationFailure.
+// Release returns a token. On success the slot is freed immediately
+// and any parked waiters are woken. On failure the slot is held for
+// penaltyDuration (as of Release time), then reclaimed on the next
+// Acquire — a time.AfterFunc schedules a broadcast at expiry so a
+// waiter parked on cond.Wait is woken exactly when the slot frees,
+// not on the next unrelated Release / UpdateConfig event. Java
+// parity: SessionCreationBudget.onSessionCreationSuccess /
+// onSessionCreationFailure.
 func (b *AdaptiveSessionThrottler) Release(success bool) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -138,10 +142,15 @@ func (b *AdaptiveSessionThrottler) Release(success bool) {
 	}
 	if !success && b.penaltyDuration > 0 {
 		b.penalties = append(b.penalties, b.nowFn().Add(b.penaltyDuration))
+		// No slot freed yet — schedule the wake for when the penalty
+		// expires. Broadcast without holding b.mu (sync.Cond permits it)
+		// so the callback doesn't fight the Acquire loop for the lock.
+		time.AfterFunc(b.penaltyDuration, b.cond.Broadcast)
+		return
 	}
-	// A slot may have just opened up (success) or the ceiling may have
-	// grown since the waiter parked (UpdateConfig). Wake everyone; the
-	// loop re-checks under the lock.
+	// Slot freed immediately (success) or ceiling grew (UpdateConfig
+	// broadcasts on its own path); either way, wake everyone and let
+	// the loop re-check under the lock.
 	b.cond.Broadcast()
 }
 
