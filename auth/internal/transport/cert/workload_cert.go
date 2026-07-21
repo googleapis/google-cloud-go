@@ -144,6 +144,26 @@ func getCertKeyAndUseEcp(configFilePath string) (string, string, bool, error) {
 
 	if config.CertConfigs.Workload == nil {
 		// If 'workload' field is absent, it is an ECP config.
+		// Validate that the config file is a valid ECP file.
+		var rawMap map[string]any
+		if err := json.Unmarshal(byteValue, &rawMap); err != nil {
+			return "", "", false, err
+		}
+		certConfigs, ok := rawMap["cert_configs"].(map[string]any)
+		if !ok {
+			return "", "", false, errSourceUnavailable
+		}
+		hasECPSection := false
+		for _, section := range []string{"pkcs11", "windows_store", "macos_keychain"} {
+			if _, exists := certConfigs[section]; exists {
+				hasECPSection = true
+				break
+			}
+		}
+		_, hasLibs := rawMap["libs"]
+		if !hasECPSection || !hasLibs {
+			return "", "", false, errSourceUnavailable
+		}
 		return "", "", true, nil
 	}
 

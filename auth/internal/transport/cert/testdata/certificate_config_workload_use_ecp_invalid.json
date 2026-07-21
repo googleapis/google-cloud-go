@@ -1,8 +1,6 @@
 {
   "cert_configs": {
-    "workload": {
-      "use_ecp": true
-    }
+    "pkcs11": {}
   },
   "libs": {
     "ecp": "./testdata/signer_invalid_pem.sh"
