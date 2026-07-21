@@ -424,6 +424,59 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		// TVF (table-valued function) call in FROM clause, used for change stream queries.
+		{
+			`SELECT ChangeRecord FROM READ_SingerStream(start_timestamp => @start, end_timestamp => @end, heartbeat_milliseconds => @hb)`,
+			Query{
+				Select: Select{
+					List: []Expr{ID("ChangeRecord")},
+					From: []SelectFrom{SelectFromTVF{
+						Name: "READ_SingerStream",
+						Args: []TVFArgument{
+							{Name: "start_timestamp", Value: Param("start")},
+							{Name: "end_timestamp", Value: Param("end")},
+							{Name: "heartbeat_milliseconds", Value: Param("hb")},
+						},
+					}},
+				},
+			},
+		},
+		// TVF with explicit AS alias.
+		{
+			`SELECT s.ChangeRecord FROM READ_SingerStream(start_timestamp => @start, end_timestamp => @end, heartbeat_milliseconds => @hb) AS s`,
+			Query{
+				Select: Select{
+					List: []Expr{PathExp{"s", "ChangeRecord"}},
+					From: []SelectFrom{SelectFromTVF{
+						Name: "READ_SingerStream",
+						Args: []TVFArgument{
+							{Name: "start_timestamp", Value: Param("start")},
+							{Name: "end_timestamp", Value: Param("end")},
+							{Name: "heartbeat_milliseconds", Value: Param("hb")},
+						},
+						Alias: "s",
+					}},
+				},
+			},
+		},
+		// TVF with bare (implicit AS) alias.
+		{
+			`SELECT s.ChangeRecord FROM READ_SingerStream(start_timestamp => @start, end_timestamp => @end, heartbeat_milliseconds => @hb) s`,
+			Query{
+				Select: Select{
+					List: []Expr{PathExp{"s", "ChangeRecord"}},
+					From: []SelectFrom{SelectFromTVF{
+						Name: "READ_SingerStream",
+						Args: []TVFArgument{
+							{Name: "start_timestamp", Value: Param("start")},
+							{Name: "end_timestamp", Value: Param("end")},
+							{Name: "heartbeat_milliseconds", Value: Param("hb")},
+						},
+						Alias: "s",
+					}},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseQuery(test.in)

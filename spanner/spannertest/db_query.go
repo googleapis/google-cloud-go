@@ -17,12 +17,19 @@ limitations under the License.
 package spannertest
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"sort"
+	"strings"
+	"time"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 /*
@@ -416,6 +423,8 @@ func (d *database) queryContext(q spansql.Query, params queryParams) (*queryCont
 		case spansql.SelectFromUnnest:
 			// TODO: if array paths get supported, this will need more work.
 			return nil
+		case spansql.SelectFromTVF:
+			return nil
 		}
 	}
 	for _, sf := range q.Select.From {
@@ -747,6 +756,8 @@ func (d *database) evalSelectFrom(qc *queryContext, ec evalContext, sf spansql.S
 		}
 		ec.cols = ri.cols
 		return ec, ri, nil
+	case spansql.SelectFromTVF:
+		return d.evalSelectFromTVF(qc, ec, sf)
 	}
 }
 
@@ -1102,4 +1113,369 @@ func (ers externalRowSorter) Less(i, j int) bool {
 func (ers externalRowSorter) Swap(i, j int) {
 	ers.rows[i], ers.rows[j] = ers.rows[j], ers.rows[i]
 	ers.keys[i], ers.keys[j] = ers.keys[j], ers.keys[i]
+}
+
+// evalSelectFromTVF evaluates a table-valued function call in a FROM clause.
+// Currently only the change stream read TVF (READ_<StreamName>) is supported.
+func (d *database) evalSelectFromTVF(qc *queryContext, ec evalContext, sf spansql.SelectFromTVF) (evalContext, rowIter, error) {
+	const readPrefix = "READ_"
+	name := string(sf.Name)
+	if !strings.HasPrefix(name, readPrefix) {
+		return ec, nil, fmt.Errorf("unknown TVF %q", name)
+	}
+	streamName := spansql.ID(name[len(readPrefix):])
+
+	d.mu.Lock()
+	cs, ok := d.changeStreams[streamName]
+	d.mu.Unlock()
+	if !ok {
+		return ec, nil, status.Errorf(codes.NotFound, "change stream %q not found", streamName)
+	}
+
+	// Evaluate named arguments.
+	args := make(map[string]interface{})
+	for _, arg := range sf.Args {
+		v, err := ec.evalExpr(arg.Value)
+		if err != nil {
+			return ec, nil, fmt.Errorf("evaluating TVF arg %q: %w", arg.Name, err)
+		}
+		args[string(arg.Name)] = v
+	}
+
+	startTS, ok := args["start_timestamp"].(time.Time)
+	if !ok {
+		return ec, nil, fmt.Errorf("TVF start_timestamp is required and must be a TIMESTAMP")
+	}
+	if time.Now().Add(10 * time.Minute).Before(startTS) {
+		return ec, nil, status.Errorf(codes.InvalidArgument, "start_timestamp must not be more than 10 minutes in the future")
+	}
+	var endTS time.Time
+	var hasEndTS bool
+	if v, ok := args["end_timestamp"]; ok && v != nil {
+		if ts, ok := v.(time.Time); ok {
+			endTS = ts
+			hasEndTS = true
+		}
+	}
+	if hasEndTS && endTS.Before(startTS) {
+		return ec, nil, status.Errorf(codes.InvalidArgument, "end_timestamp must not be earlier than start_timestamp")
+	}
+
+	// heartbeat_milliseconds: required and non-null, must be in [100, 300000].
+	if hbVal, ok := args["heartbeat_milliseconds"]; ok {
+		hbMs, ok := hbVal.(int64)
+		if !ok || hbMs < 100 || hbMs > 300000 {
+			return ec, nil, status.Errorf(codes.InvalidArgument, "heartbeat_milliseconds must be between 100 and 300000")
+		}
+	}
+
+	// read_options must be NULL if provided.
+	if roVal, ok := args["read_options"]; ok && roVal != nil {
+		return ec, nil, status.Errorf(codes.InvalidArgument, "read_options is not supported; it must be NULL")
+	}
+
+	ri := &changeStreamIter{
+		cs:      cs,
+		startTS: startTS,
+		endTS:   endTS,
+		hasEnd:  hasEndTS,
+	}
+	// partition_token is optional. When provided (even as NULL), it drives the
+	// partition-based streaming flow; when absent, we fall back to returning data
+	// directly (backward-compatible behaviour for callers that omit the argument).
+	if ptVal, ok := args["partition_token"]; ok {
+		if ptStr, ok := ptVal.(string); ok {
+			ri.partitionToken = &ptStr
+		} else {
+			// NULL value — signal the initial partition query.
+			empty := ""
+			ri.partitionToken = &empty
+		}
+	}
+	changeRecordCol := colInfo{
+		Name: "ChangeRecord",
+		Type: spansql.Type{Array: true, Base: spansql.JSON},
+	}
+	newEC := ec
+	newEC.cols = []colInfo{changeRecordCol}
+	return newEC, ri, nil
+}
+
+// fakePartitionToken is the token representing the single fake partition.
+// Consumers that use the partition-based API receive this token via a
+// child_partitions_record and then use it in subsequent TVF calls.
+const fakePartitionToken = "spannertest-0"
+
+// changeStreamIter iterates over change stream records yielded by a READ_<stream> TVF call.
+type changeStreamIter struct {
+	cs      *changeStreamInfo
+	startTS time.Time
+	endTS   time.Time
+	hasEnd  bool
+	pos     int
+
+	heartbeatSent        bool
+	partitionToken       *string // nil = not provided (backward compat); "" = NULL (initial query); else data token
+	emittedInitialRecord bool    // true after the child_partitions_record row has been returned
+}
+
+func (ci *changeStreamIter) Cols() []colInfo {
+	return []colInfo{{
+		Name: "ChangeRecord",
+		Type: spansql.Type{Array: true, Base: spansql.JSON},
+	}}
+}
+
+// Next yields one row per commit timestamp group from the change stream log.
+// After all data records are exhausted, it yields a single heartbeat row.
+func (ci *changeStreamIter) Next() (row, error) {
+	ci.cs.mu.Lock()
+	defer ci.cs.mu.Unlock()
+
+	hbRow := func() row {
+		ts := ci.startTS
+		if ci.hasEnd {
+			ts = ci.endTS
+		}
+		cr := changeRecord{HeartbeatRecords: []heartbeatRecord{{Timestamp: ts}}}
+		return row{[]interface{}{cr.toSlice()}}
+	}
+
+	// partition_token == NULL: emit child_partitions_record then one heartbeat.
+	if ci.partitionToken != nil && *ci.partitionToken == "" {
+		if !ci.emittedInitialRecord {
+			ci.emittedInitialRecord = true
+			cr := changeRecord{ChildPartitionsRecords: []childPartitionsRecord{{
+				StartTimestamp:  ci.startTS,
+				RecordSequence:  "00000000",
+				ChildPartitions: []childPartition{{Token: fakePartitionToken}},
+			}}}
+			return row{[]interface{}{cr.toSlice()}}, nil
+		}
+		if !ci.heartbeatSent {
+			ci.heartbeatSent = true
+			return hbRow(), nil
+		}
+		return nil, io.EOF
+	}
+
+	// partition_token provided with an unrecognised value: nothing to return.
+	if ci.partitionToken != nil && *ci.partitionToken != "" && *ci.partitionToken != fakePartitionToken {
+		return nil, io.EOF
+	}
+
+	// Normal data path (partition_token absent or == fakePartitionToken).
+
+	// Advance past records before the start timestamp.
+	for ci.pos < len(ci.cs.log) && ci.cs.log[ci.pos].CommitTimestamp.Before(ci.startTS) {
+		ci.pos++
+	}
+
+	// If no more data records in range, emit a heartbeat (once) then EOF.
+	if ci.pos >= len(ci.cs.log) || (ci.hasEnd && ci.cs.log[ci.pos].CommitTimestamp.After(ci.endTS)) {
+		if !ci.heartbeatSent {
+			ci.heartbeatSent = true
+			return hbRow(), nil
+		}
+		return nil, io.EOF
+	}
+
+	// Collect all records belonging to the same transaction (same CommitTimestamp
+	// and TxID). Multiple transactions can share a timestamp in the emulator, so
+	// both fields are required to correctly identify a transaction boundary.
+	ts := ci.cs.log[ci.pos].CommitTimestamp
+	txID := ci.cs.log[ci.pos].TxID
+	var txEntries []changeLogEntry
+	for ci.pos < len(ci.cs.log) && ci.cs.log[ci.pos].CommitTimestamp.Equal(ts) && ci.cs.log[ci.pos].TxID == txID {
+		txEntries = append(txEntries, ci.cs.log[ci.pos])
+		ci.pos++
+	}
+
+	// Group entries by (TableName, ModType, explicit non-PK column set), preserving
+	// encounter order. Real Spanner emits one DataChangeRecord per such group:
+	// UPDATEs touching different column sets form separate records.
+	type groupKey struct {
+		table     spansql.ID
+		modType   string
+		columnSet string // sorted, NUL-joined non-PK col names for UPDATE; "" otherwise
+	}
+	columnSetKey := func(e changeLogEntry) string {
+		if e.ModType != "UPDATE" || e.ExplicitColNames == nil {
+			return ""
+		}
+		names := make([]string, 0, len(e.ExplicitColNames))
+		for n := range e.ExplicitColNames {
+			names = append(names, string(n))
+		}
+		sort.Strings(names)
+		return strings.Join(names, "\x00")
+	}
+	var groupOrder []groupKey
+	groups := make(map[groupKey][]changeLogEntry)
+	for _, e := range txEntries {
+		k := groupKey{e.TableName, e.ModType, columnSetKey(e)}
+		if _, exists := groups[k]; !exists {
+			groupOrder = append(groupOrder, k)
+		}
+		groups[k] = append(groups[k], e)
+	}
+
+	numGroups := len(groupOrder)
+	dcrs := make([]dataChangeRecord, numGroups)
+	for i, k := range groupOrder {
+		dcrs[i] = buildDataChangeRecord(groups[k], i, numGroups)
+	}
+	cr := changeRecord{DataChangeRecords: dcrs}
+	return row{[]interface{}{cr.toSlice()}}, nil
+}
+
+// spannerTypeCode returns the Spanner type code string for a given non-array spansql type.
+func spannerTypeCode(typ spansql.Type) string {
+	switch typ.Base {
+	case spansql.Bool:
+		return "BOOL"
+	case spansql.Int64:
+		return "INT64"
+	case spansql.Float64:
+		return "FLOAT64"
+	case spansql.String:
+		return "STRING"
+	case spansql.Bytes:
+		return "BYTES"
+	case spansql.Date:
+		return "DATE"
+	case spansql.Timestamp:
+		return "TIMESTAMP"
+	case spansql.Numeric:
+		return "NUMERIC"
+	case spansql.JSON:
+		return "JSON"
+	default:
+		return "STRING"
+	}
+}
+
+// spannerTypeJSON returns the Spanner type as a JSON object matching the change
+// stream wire format: {"code": "INT64"} or {"code": "ARRAY", "array_element_type": {...}}.
+func spannerTypeJSON(typ spansql.Type) map[string]interface{} {
+	if typ.Array {
+		inner := typ
+		inner.Array = false
+		return map[string]interface{}{
+			"code":               "ARRAY",
+			"array_element_type": spannerTypeJSON(inner),
+		}
+	}
+	return map[string]interface{}{"code": spannerTypeCode(typ)}
+}
+
+// valueToChangeStreamJSON converts an internal spannertest value to its
+// JSON-wire representation as used in Spanner change stream records.
+func valueToChangeStreamJSON(v interface{}) interface{} {
+	switch x := v.(type) {
+	case nil:
+		return nil
+	case bool:
+		return x
+	case int64:
+		return fmt.Sprintf("%d", x) // Spanner encodes INT64 as a decimal string
+	case float64:
+		return x
+	case string:
+		return x
+	case []byte:
+		return base64.StdEncoding.EncodeToString(x)
+	case civil.Date:
+		return x.String()
+	case time.Time:
+		return x.Format("2006-01-02T15:04:05.999999999Z")
+	case []interface{}:
+		result := make([]interface{}, len(x))
+		for i, elem := range x {
+			result[i] = valueToChangeStreamJSON(elem)
+		}
+		return result
+	default:
+		return fmt.Sprintf("%v", v)
+	}
+}
+
+// jsonString serializes v to a JSON string for use as a JSON-typed struct field value.
+func jsonString(v interface{}) string {
+	b, _ := json.Marshal(v)
+	return string(b)
+}
+
+// buildColumnTypeRecord constructs a columnTypeRecord for one column_types entry.
+func buildColumnTypeRecord(name string, typ spansql.Type, isPK bool, ordinalPos int) columnTypeRecord {
+	return columnTypeRecord{
+		Name:            name,
+		Type:            jsonString(spannerTypeJSON(typ)),
+		IsPrimaryKey:    isPK,
+		OrdinalPosition: int64(ordinalPos),
+	}
+}
+
+// buildModRecord constructs a modRecord for one mods entry.
+func buildModRecord(keys, newVals map[string]interface{}) modRecord {
+	return modRecord{
+		Keys:      jsonString(keys),
+		NewValues: jsonString(newVals),
+		OldValues: jsonString(map[string]interface{}{}), // old_values always empty for NEW_VALUES capture
+	}
+}
+
+// buildDataChangeRecord constructs a dataChangeRecord representing a group of
+// mutations to the same table with the same mod_type in one transaction.
+func buildDataChangeRecord(entries []changeLogEntry, recordIndex, numRecordsInTx int) dataChangeRecord {
+	e0 := entries[0] // all entries share the same table, mod_type, schema, and tx metadata
+
+	// column_types from the first entry (all entries in the group share the same
+	// table schema). For UPDATE, only include PK columns and the explicitly
+	// modified non-PK columns; ordinal_position counts only included columns.
+	var colTypes []columnTypeRecord
+	ordinal := 0
+	for i, name := range e0.ColNames {
+		isPK := i < e0.PKCols
+		if !isPK && e0.ExplicitColNames != nil && !e0.ExplicitColNames[name] {
+			continue // UPDATE: omit columns not explicitly written
+		}
+		ordinal++
+		colTypes = append(colTypes, buildColumnTypeRecord(string(name), e0.ColTypes[i], isPK, ordinal))
+	}
+
+	// One mod per entry in the group.
+	mods := make([]modRecord, len(entries))
+	for j, e := range entries {
+		keys := make(map[string]interface{})
+		newVals := make(map[string]interface{})
+		for i, name := range e.ColNames {
+			v := valueToChangeStreamJSON(e.NewRow[i])
+			if i < e.PKCols {
+				keys[string(name)] = v
+			} else if e.ModType != "DELETE" {
+				// For UPDATE, only include explicitly modified columns in new_values.
+				if e.ExplicitColNames == nil || e.ExplicitColNames[name] {
+					newVals[string(name)] = v
+				}
+			}
+		}
+		mods[j] = buildModRecord(keys, newVals)
+	}
+
+	return dataChangeRecord{
+		CommitTimestamp:                      e0.CommitTimestamp,
+		RecordSequence:                       fmt.Sprintf("%08d", recordIndex),
+		ServerTransactionID:                  e0.TxID,
+		IsLastRecordInTransactionInPartition: recordIndex == numRecordsInTx-1,
+		TableName:                            string(e0.TableName),
+		ColumnTypes:                          colTypes,
+		Mods:                                 mods,
+		ModType:                              e0.ModType,
+		ValueCaptureType:                     "NEW_VALUES",
+		NumberOfRecordsInTransaction:         int64(numRecordsInTx),
+		NumberOfPartitionsInTransaction:      int64(1),
+		TransactionTag:                       "",
+		IsSystemTransaction:                  false,
+	}
 }

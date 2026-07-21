@@ -1709,3 +1709,1101 @@ func genericValue(t *testing.T, gcv spanner.GenericColumnValue) interface{} {
 	}
 	return reflect.ValueOf(dst).Elem().Interface()
 }
+
+// dropChangeStream drops a change stream, ignoring NotFound errors.
+func dropChangeStream(t *testing.T, adminClient *dbadmin.DatabaseAdminClient, name string) {
+	t.Helper()
+	err := updateDDL(t, adminClient, "DROP CHANGE STREAM "+name)
+	if st, _ := status.FromError(err); st.Code() == codes.NotFound {
+		err = nil
+	}
+	if err != nil {
+		t.Logf("Warning: dropping change stream %q: %v", name, err)
+	}
+}
+
+// readChangeStream queries a change stream TVF and returns all ChangeRecord structs.
+func readChangeStream(ctx context.Context, t *testing.T, client *spanner.Client, stream string, start, end time.Time) []*ChangeRecord {
+	t.Helper()
+	stmt := spanner.Statement{
+		SQL: "SELECT ChangeRecord FROM READ_" + stream + `(
+			start_timestamp => @start,
+			end_timestamp   => @end,
+			heartbeat_milliseconds => @hb
+		)`,
+		Params: map[string]interface{}{
+			"start": start,
+			"end":   end,
+			"hb":    int64(10000),
+		},
+	}
+	var all []*ChangeRecord
+	ri := client.Single().Query(ctx, stmt)
+	defer ri.Stop()
+	if err := ri.Do(func(row *spanner.Row) error {
+		var crs []*ChangeRecord
+		if err := row.Column(0, &crs); err != nil {
+			return err
+		}
+		all = append(all, crs...)
+		return nil
+	}); err != nil {
+		t.Fatalf("Reading change stream %q: %v", stream, err)
+	}
+	return all
+}
+
+// csFirstMod returns the first mod from a data_change_record.
+func csFirstMod(t *testing.T, dcr DataChangeRecord) Mod {
+	t.Helper()
+	if len(dcr.Mods) == 0 || dcr.Mods[0] == nil {
+		t.Fatalf("data_change_record has no mods")
+	}
+	return *dcr.Mods[0]
+}
+
+// csKeyVal returns the value for a key column from a change stream mod.
+func csKeyVal(mod Mod, col string) interface{} {
+	if !mod.Keys.Valid {
+		return nil
+	}
+	if keys, ok := mod.Keys.Value.(map[string]interface{}); ok {
+		return keys[col]
+	}
+	return nil
+}
+
+// csNewVal returns the new_value for a non-key column from a change stream mod.
+func csNewVal(mod Mod, col string) interface{} {
+	if !mod.NewValues.Valid {
+		return nil
+	}
+	if nv, ok := mod.NewValues.Value.(map[string]interface{}); ok {
+		return nv[col]
+	}
+	return nil
+}
+
+func TestIntegration_ChangeStream(t *testing.T) {
+	client, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	const (
+		tableName  = "CSTestSingers"
+		streamName = "CSTestSingerStream"
+	)
+	dropChangeStream(t, adminClient, streamName)
+	if err := dropTable(t, adminClient, tableName); err != nil {
+		t.Fatal(err)
+	}
+	if err := updateDDL(t, adminClient,
+		`CREATE TABLE `+tableName+` (
+			SingerId  INT64 NOT NULL,
+			FirstName STRING(MAX),
+			LastName  STRING(MAX),
+		) PRIMARY KEY (SingerId)`,
+		`CREATE CHANGE STREAM `+streamName+` FOR `+tableName,
+	); err != nil {
+		t.Fatalf("Setup DDL: %v", err)
+	}
+	defer func() {
+		dropChangeStream(t, adminClient, streamName)
+		dropTable(t, adminClient, tableName)
+	}()
+
+	// --- DDL error cases ---
+
+	// Duplicate CREATE should fail with AlreadyExists.
+	if err := updateDDL(t, adminClient, `CREATE CHANGE STREAM `+streamName+` FOR `+tableName); err == nil {
+		t.Error("Expected AlreadyExists creating duplicate change stream")
+	} else if got := spanner.ErrCode(err); got != codes.AlreadyExists {
+		t.Errorf("Duplicate change stream: got code %v, want AlreadyExists", got)
+	}
+
+	// DROP of nonexistent stream should fail with NotFound.
+	if err := updateDDL(t, adminClient, `DROP CHANGE STREAM CSTestNonExistent`); err == nil {
+		t.Error("Expected NotFound dropping nonexistent change stream")
+	} else if got := spanner.ErrCode(err); got != codes.NotFound {
+		t.Errorf("Drop nonexistent: got code %v, want NotFound", got)
+	}
+
+	// --- Mutation capture ---
+
+	startTS := time.Now().UTC()
+
+	// INSERT
+	insertCommitTS, err := client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert(tableName, []string{"SingerId", "FirstName", "LastName"},
+			[]interface{}{int64(1), "Alice", "Smith"}),
+	})
+	if err != nil {
+		t.Fatalf("Insert: %v", err)
+	}
+
+	// UPDATE — partial columns; only LastName is updated.
+	_, err = client.Apply(ctx, []*spanner.Mutation{
+		spanner.Update(tableName, []string{"SingerId", "LastName"},
+			[]interface{}{int64(1), "Jones"}),
+	})
+	if err != nil {
+		t.Fatalf("Update: %v", err)
+	}
+
+	// DELETE
+	_, err = client.Apply(ctx, []*spanner.Mutation{
+		spanner.Delete(tableName, spanner.Key{int64(1)}),
+	})
+	if err != nil {
+		t.Fatalf("Delete: %v", err)
+	}
+
+	endTS := time.Now().UTC()
+
+	allRecords := readChangeStream(ctx, t, client, streamName, startTS, endTS)
+
+	findDCR := func(modType string) *DataChangeRecord {
+		for i := range allRecords {
+			for j := range allRecords[i].DataChangeRecords {
+				if allRecords[i].DataChangeRecords[j].ModType == modType {
+					return allRecords[i].DataChangeRecords[j]
+				}
+			}
+		}
+		return nil
+	}
+
+	// Validate INSERT record.
+	ins := findDCR("INSERT")
+	if ins == nil {
+		t.Fatal("No INSERT data_change_record found")
+	}
+	if got := ins.TableName; got != tableName {
+		t.Errorf("INSERT table_name: got %q, want %q", got, tableName)
+	}
+	if got := ins.ValueCaptureType; got != "NEW_VALUES" {
+		t.Errorf("INSERT value_capture_type: got %q, want NEW_VALUES", got)
+	}
+	// Validate column_types structure: type must use lowercase "code" key and
+	// correct type code strings (not "STRING(MAX)").
+	if len(ins.ColumnTypes) > 0 {
+		for _, ct := range ins.ColumnTypes {
+			typeMap, ok := ct.Type.Value.(map[string]interface{})
+			if !ok {
+				t.Errorf("column_types entry %v missing or invalid 'type' field", ct.Name)
+				continue
+			}
+			code, ok := typeMap["code"].(string)
+			if !ok {
+				t.Errorf("column_types[%v].type has no 'code' key (got: %v)", ct.Name, typeMap)
+				continue
+			}
+			switch ct.Name {
+			case "SingerId":
+				if code != "INT64" {
+					t.Errorf("column_types[SingerId].type.code: got %q, want INT64", code)
+				}
+			case "FirstName", "LastName":
+				if code != "STRING" {
+					t.Errorf("column_types[%v].type.code: got %q, want STRING", ct.Name, code)
+				}
+			}
+		}
+	} else {
+		t.Error("INSERT column_types missing or empty")
+	}
+	insMod := csFirstMod(t, *ins)
+	if got := csKeyVal(insMod, "SingerId"); got != "1" {
+		t.Errorf("INSERT SingerId key: got %v, want \"1\"", got)
+	}
+	if got := csNewVal(insMod, "FirstName"); got != "Alice" {
+		t.Errorf("INSERT FirstName new_value: got %v, want \"Alice\"", got)
+	}
+	if got := csNewVal(insMod, "LastName"); got != "Smith" {
+		t.Errorf("INSERT LastName new_value: got %v, want \"Smith\"", got)
+	}
+
+	// Validate UPDATE record.
+	// In NEW_VALUES mode, only explicitly modified columns appear in new_values;
+	// unchanged columns (FirstName) must be absent.
+	upd := findDCR("UPDATE")
+	if upd == nil {
+		t.Fatal("No UPDATE data_change_record found")
+	}
+	updMod := csFirstMod(t, *upd)
+	if got := csKeyVal(updMod, "SingerId"); got != "1" {
+		t.Errorf("UPDATE SingerId key: got %v, want \"1\"", got)
+	}
+	if got := csNewVal(updMod, "LastName"); got != "Jones" {
+		t.Errorf("UPDATE LastName (updated column): got %v, want \"Jones\"", got)
+	}
+	if got := csNewVal(updMod, "FirstName"); got != nil {
+		t.Errorf("UPDATE FirstName (unchanged column): got %v, want nil (not in new_values for NEW_VALUES mode)", got)
+	}
+
+	// Validate DELETE record — keys present, new_values empty.
+	del := findDCR("DELETE")
+	if del == nil {
+		t.Fatal("No DELETE data_change_record found")
+	}
+	delMod := csFirstMod(t, *del)
+	if got := csKeyVal(delMod, "SingerId"); got != "1" {
+		t.Errorf("DELETE SingerId key: got %v, want \"1\"", got)
+	}
+	if nv, ok := delMod.NewValues.Value.(map[string]interface{}); ok && len(nv) > 0 {
+		t.Errorf("DELETE new_values should be empty, got %v", nv)
+	}
+
+	// Commit timestamps must fall within the query window.
+	if !startTS.Before(insertCommitTS) {
+		t.Errorf("startTS %v not before INSERT commit %v", startTS, insertCommitTS)
+	}
+	if !insertCommitTS.Before(endTS) {
+		t.Errorf("INSERT commit %v not before endTS %v", insertCommitTS, endTS)
+	}
+
+	// --- Timestamp filtering ---
+
+	// A window entirely after all mutations should return no data records.
+	futureStart := endTS.Add(time.Second)
+	futureEnd := futureStart.Add(time.Second)
+	filtered := readChangeStream(ctx, t, client, streamName, futureStart, futureEnd)
+	for _, r := range filtered {
+		if len(r.DataChangeRecords) > 0 {
+			t.Errorf("Unexpected data_change_record in future window: %v", r.DataChangeRecords)
+		}
+	}
+
+	// --- Heartbeat ---
+
+	// An empty window should yield at least one heartbeat_record.
+	foundHeartbeat := false
+	for _, r := range filtered {
+		if len(r.HeartbeatRecords) > 0 {
+			foundHeartbeat = true
+			break
+		}
+	}
+	if !foundHeartbeat {
+		t.Error("Expected heartbeat_record in empty time window")
+	}
+}
+
+func TestIntegration_ChangeStream_WatchAllTables(t *testing.T) {
+	client, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	const (
+		tableName  = "CSTestAlbums"
+		streamName = "CSTestAllStream"
+	)
+	dropChangeStream(t, adminClient, streamName)
+	if err := dropTable(t, adminClient, tableName); err != nil {
+		t.Fatal(err)
+	}
+	if err := updateDDL(t, adminClient,
+		`CREATE TABLE `+tableName+` (
+			AlbumId INT64 NOT NULL,
+			Title   STRING(MAX),
+		) PRIMARY KEY (AlbumId)`,
+		`CREATE CHANGE STREAM `+streamName+` FOR ALL`,
+	); err != nil {
+		t.Fatalf("Setup DDL: %v", err)
+	}
+	defer func() {
+		dropChangeStream(t, adminClient, streamName)
+		dropTable(t, adminClient, tableName)
+	}()
+
+	startTS := time.Now().UTC()
+
+	_, err := client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert(tableName, []string{"AlbumId", "Title"},
+			[]interface{}{int64(42), "Go Songs"}),
+	})
+	if err != nil {
+		t.Fatalf("Insert: %v", err)
+	}
+
+	endTS := time.Now().UTC()
+
+	records := readChangeStream(ctx, t, client, streamName, startTS, endTS)
+	found := false
+	for _, r := range records {
+		for _, dcr := range r.DataChangeRecords {
+			if dcr.TableName == tableName && dcr.ModType == "INSERT" {
+				found = true
+				break
+			}
+		}
+	}
+	if !found {
+		t.Errorf("No INSERT record for %q in FOR ALL stream", tableName)
+	}
+}
+
+func TestIntegration_ChangeStream_PartialWatch(t *testing.T) {
+	client, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	const (
+		watchedTable   = "CSTestWatched"
+		unwatchedTable = "CSTestUnwatched"
+		streamName     = "CSTestPartialStream"
+	)
+	dropChangeStream(t, adminClient, streamName)
+	dropTable(t, adminClient, watchedTable)
+	dropTable(t, adminClient, unwatchedTable)
+	if err := updateDDL(t, adminClient,
+		`CREATE TABLE `+watchedTable+` (Id INT64 NOT NULL) PRIMARY KEY (Id)`,
+		`CREATE TABLE `+unwatchedTable+` (Id INT64 NOT NULL) PRIMARY KEY (Id)`,
+		`CREATE CHANGE STREAM `+streamName+` FOR `+watchedTable,
+	); err != nil {
+		t.Fatalf("Setup DDL: %v", err)
+	}
+	defer func() {
+		dropChangeStream(t, adminClient, streamName)
+		dropTable(t, adminClient, watchedTable)
+		dropTable(t, adminClient, unwatchedTable)
+	}()
+
+	startTS := time.Now().UTC()
+
+	_, err := client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert(watchedTable, []string{"Id"}, []interface{}{int64(1)}),
+		spanner.Insert(unwatchedTable, []string{"Id"}, []interface{}{int64(2)}),
+	})
+	if err != nil {
+		t.Fatalf("Apply: %v", err)
+	}
+
+	endTS := time.Now().UTC()
+
+	records := readChangeStream(ctx, t, client, streamName, startTS, endTS)
+
+	// The unwatched table must not appear.
+	for _, r := range records {
+		for _, dcr := range r.DataChangeRecords {
+			if dcr.TableName == unwatchedTable {
+				t.Errorf("Stream received record for unwatched table %q", unwatchedTable)
+			}
+		}
+	}
+
+	// The watched table must appear.
+	foundWatched := false
+	for _, r := range records {
+		for _, dcr := range r.DataChangeRecords {
+			if dcr.TableName == watchedTable {
+				foundWatched = true
+				break
+			}
+		}
+	}
+	if !foundWatched {
+		t.Errorf("No record for watched table %q in stream", watchedTable)
+	}
+}
+
+func TestIntegration_ChangeStream_DeleteAll(t *testing.T) {
+	client, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	const (
+		tableName  = "CSTestDeleteAll"
+		streamName = "CSTestDeleteAllStream"
+	)
+	dropChangeStream(t, adminClient, streamName)
+	if err := dropTable(t, adminClient, tableName); err != nil {
+		t.Fatal(err)
+	}
+	if err := updateDDL(t, adminClient,
+		`CREATE TABLE `+tableName+` (Id INT64 NOT NULL) PRIMARY KEY (Id)`,
+		`CREATE CHANGE STREAM `+streamName+` FOR `+tableName,
+	); err != nil {
+		t.Fatalf("Setup DDL: %v", err)
+	}
+	defer func() {
+		dropChangeStream(t, adminClient, streamName)
+		dropTable(t, adminClient, tableName)
+	}()
+
+	// Seed three rows.
+	_, err := client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert(tableName, []string{"Id"}, []interface{}{int64(1)}),
+		spanner.Insert(tableName, []string{"Id"}, []interface{}{int64(2)}),
+		spanner.Insert(tableName, []string{"Id"}, []interface{}{int64(3)}),
+	})
+	if err != nil {
+		t.Fatalf("Seeding rows: %v", err)
+	}
+
+	startTS := time.Now().UTC()
+
+	// Delete all rows with AllKeys() — exercises the all=true code path.
+	_, err = client.Apply(ctx, []*spanner.Mutation{
+		spanner.Delete(tableName, spanner.AllKeys()),
+	})
+	if err != nil {
+		t.Fatalf("Delete all: %v", err)
+	}
+
+	endTS := time.Now().UTC()
+
+	records := readChangeStream(ctx, t, client, streamName, startTS, endTS)
+
+	var deleteRecords []*DataChangeRecord
+	for _, r := range records {
+		for _, dcr := range r.DataChangeRecords {
+			if dcr.ModType == "DELETE" {
+				deleteRecords = append(deleteRecords, dcr)
+			}
+		}
+	}
+	// All three deletes are in one transaction and target the same table, so they
+	// should be batched into a single DataChangeRecord with three mods.
+	if len(deleteRecords) != 1 {
+		t.Errorf("Expected 1 DELETE data_change_record from delete-all, got %d", len(deleteRecords))
+	} else if len(deleteRecords[0].Mods) != 3 {
+		t.Errorf("Expected 3 mods in the DELETE record, got %d", len(deleteRecords[0].Mods))
+	}
+}
+
+func TestIntegration_ChangeStream_Replace(t *testing.T) {
+	client, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	const (
+		tableName  = "CSTestReplace"
+		streamName = "CSTestReplaceStream"
+	)
+	dropChangeStream(t, adminClient, streamName)
+	if err := dropTable(t, adminClient, tableName); err != nil {
+		t.Fatal(err)
+	}
+	if err := updateDDL(t, adminClient,
+		`CREATE TABLE `+tableName+` (
+			Id    INT64 NOT NULL,
+			Value STRING(MAX),
+		) PRIMARY KEY (Id)`,
+		`CREATE CHANGE STREAM `+streamName+` FOR `+tableName,
+	); err != nil {
+		t.Fatalf("Setup DDL: %v", err)
+	}
+	defer func() {
+		dropChangeStream(t, adminClient, streamName)
+		dropTable(t, adminClient, tableName)
+	}()
+
+	// Seed an existing row.
+	_, err := client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert(tableName, []string{"Id", "Value"}, []interface{}{int64(1), "original"}),
+	})
+	if err != nil {
+		t.Fatalf("Seed: %v", err)
+	}
+
+	startTS := time.Now().UTC()
+
+	// Replace the existing row and insert a new one.
+	_, err = client.Apply(ctx, []*spanner.Mutation{
+		spanner.Replace(tableName, []string{"Id", "Value"}, []interface{}{int64(1), "replaced"}),
+		spanner.Replace(tableName, []string{"Id", "Value"}, []interface{}{int64(2), "new"}),
+	})
+	if err != nil {
+		t.Fatalf("Replace: %v", err)
+	}
+
+	endTS := time.Now().UTC()
+
+	records := readChangeStream(ctx, t, client, streamName, startTS, endTS)
+
+	var inserts []*DataChangeRecord
+	for _, r := range records {
+		for _, dcr := range r.DataChangeRecords {
+			if dcr.ModType == "INSERT" {
+				inserts = append(inserts, dcr)
+			}
+		}
+	}
+	// Both Replace mutations target the same table and produce INSERT records in one
+	// transaction, so they are batched into a single DataChangeRecord with two mods.
+	if len(inserts) != 1 {
+		t.Errorf("Expected 1 INSERT data_change_record from 2 Replace mutations, got %d", len(inserts))
+	} else if len(inserts[0].Mods) != 2 {
+		t.Errorf("Expected 2 mods in the INSERT record, got %d", len(inserts[0].Mods))
+	}
+	// No DELETE records should appear.
+	for _, r := range records {
+		for _, dcr := range r.DataChangeRecords {
+			if dcr.ModType == "DELETE" {
+				t.Errorf("Unexpected DELETE record from Replace: %v", dcr)
+			}
+		}
+	}
+}
+
+func TestIntegration_ChangeStream_DML(t *testing.T) {
+	client, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	const (
+		tableName  = "CSTestDML"
+		streamName = "CSTestDMLStream"
+	)
+	dropChangeStream(t, adminClient, streamName)
+	if err := dropTable(t, adminClient, tableName); err != nil {
+		t.Fatal(err)
+	}
+	if err := updateDDL(t, adminClient,
+		`CREATE TABLE `+tableName+` (
+			Id    INT64 NOT NULL,
+			Name  STRING(MAX),
+		) PRIMARY KEY (Id)`,
+		`CREATE CHANGE STREAM `+streamName+` FOR `+tableName,
+	); err != nil {
+		t.Fatalf("Setup DDL: %v", err)
+	}
+	defer func() {
+		dropChangeStream(t, adminClient, streamName)
+		dropTable(t, adminClient, tableName)
+	}()
+
+	startTS := time.Now().UTC()
+
+	// DML INSERT
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *spanner.ReadWriteTransaction) error {
+		_, err := txn.Update(ctx, spanner.NewStatement(
+			`INSERT INTO `+tableName+` (Id, Name) VALUES (1, 'Alice')`,
+		))
+		return err
+	})
+	if err != nil {
+		t.Fatalf("DML INSERT: %v", err)
+	}
+
+	// DML UPDATE
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *spanner.ReadWriteTransaction) error {
+		_, err := txn.Update(ctx, spanner.NewStatement(
+			`UPDATE `+tableName+` SET Name = 'Alicia' WHERE Id = 1`,
+		))
+		return err
+	})
+	if err != nil {
+		t.Fatalf("DML UPDATE: %v", err)
+	}
+
+	// DML DELETE
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *spanner.ReadWriteTransaction) error {
+		_, err := txn.Update(ctx, spanner.NewStatement(
+			`DELETE FROM `+tableName+` WHERE Id = 1`,
+		))
+		return err
+	})
+	if err != nil {
+		t.Fatalf("DML DELETE: %v", err)
+	}
+
+	endTS := time.Now().UTC()
+
+	allRecords := readChangeStream(ctx, t, client, streamName, startTS, endTS)
+
+	findDCR := func(modType string) *DataChangeRecord {
+		for i := range allRecords {
+			for j := range allRecords[i].DataChangeRecords {
+				if allRecords[i].DataChangeRecords[j].ModType == modType {
+					return allRecords[i].DataChangeRecords[j]
+				}
+			}
+		}
+		return nil
+	}
+
+	if ins := findDCR("INSERT"); ins == nil {
+		t.Error("No INSERT data_change_record from DML INSERT")
+	} else {
+		mod := csFirstMod(t, *ins)
+		if got := csKeyVal(mod, "Id"); got != "1" {
+			t.Errorf("DML INSERT Id key: got %v, want \"1\"", got)
+		}
+		if got := csNewVal(mod, "Name"); got != "Alice" {
+			t.Errorf("DML INSERT Name: got %v, want \"Alice\"", got)
+		}
+	}
+
+	if upd := findDCR("UPDATE"); upd == nil {
+		t.Error("No UPDATE data_change_record from DML UPDATE")
+	} else {
+		mod := csFirstMod(t, *upd)
+		if got := csNewVal(mod, "Name"); got != "Alicia" {
+			t.Errorf("DML UPDATE Name: got %v, want \"Alicia\"", got)
+		}
+	}
+
+	if del := findDCR("DELETE"); del == nil {
+		t.Error("No DELETE data_change_record from DML DELETE")
+	} else {
+		mod := csFirstMod(t, *del)
+		if got := csKeyVal(mod, "Id"); got != "1" {
+			t.Errorf("DML DELETE Id key: got %v, want \"1\"", got)
+		}
+	}
+}
+
+func TestIntegration_ChangeStream_MultiRecord(t *testing.T) {
+	client, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	const (
+		tableName  = "CSTestMulti"
+		streamName = "CSTestMultiStream"
+	)
+	dropChangeStream(t, adminClient, streamName)
+	if err := dropTable(t, adminClient, tableName); err != nil {
+		t.Fatal(err)
+	}
+	if err := updateDDL(t, adminClient,
+		`CREATE TABLE `+tableName+` (Id INT64 NOT NULL) PRIMARY KEY (Id)`,
+		`CREATE CHANGE STREAM `+streamName+` FOR `+tableName,
+	); err != nil {
+		t.Fatalf("Setup DDL: %v", err)
+	}
+	defer func() {
+		dropChangeStream(t, adminClient, streamName)
+		dropTable(t, adminClient, tableName)
+	}()
+
+	startTS := time.Now().UTC()
+
+	// Three row insertions in a single transaction.
+	_, err := client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert(tableName, []string{"Id"}, []interface{}{int64(1)}),
+		spanner.Insert(tableName, []string{"Id"}, []interface{}{int64(2)}),
+		spanner.Insert(tableName, []string{"Id"}, []interface{}{int64(3)}),
+	})
+	if err != nil {
+		t.Fatalf("Apply: %v", err)
+	}
+
+	endTS := time.Now().UTC()
+
+	records := readChangeStream(ctx, t, client, streamName, startTS, endTS)
+
+	var dataRecords []*DataChangeRecord
+	for _, r := range records {
+		dataRecords = append(dataRecords, r.DataChangeRecords...)
+	}
+	// Three INSERTs to the same table in one transaction should produce a single
+	// DataChangeRecord with three mods (one per row), not three separate records.
+	if len(dataRecords) != 1 {
+		t.Fatalf("Expected 1 data_change_record for a 3-row transaction, got %d", len(dataRecords))
+	}
+	if len(dataRecords[0].Mods) != 3 {
+		t.Errorf("Expected 3 mods, got %d", len(dataRecords[0].Mods))
+	}
+
+	// number_of_records_in_transaction should equal the number of DCRs (1 group).
+	if dataRecords[0].NumberOfRecordsInTransaction != 1 {
+		t.Errorf("number_of_records_in_transaction: got %v, want 1", dataRecords[0].NumberOfRecordsInTransaction)
+	}
+
+	// The only record should be flagged as the last in the transaction.
+	if !dataRecords[0].IsLastRecordInTransactionInPartition {
+		t.Error("Expected is_last_record_in_transaction_in_partition=true for the only record")
+	}
+}
+
+func TestIntegration_ChangeStream_ColumnSpecificWatch(t *testing.T) {
+	client, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	const (
+		tableName  = "CSTestColWatch"
+		streamName = "CSTestColWatchStream"
+	)
+	dropChangeStream(t, adminClient, streamName)
+	if err := dropTable(t, adminClient, tableName); err != nil {
+		t.Fatal(err)
+	}
+	// Watch only FirstName — LastName and Age should be excluded from records.
+	if err := updateDDL(t, adminClient,
+		`CREATE TABLE `+tableName+` (
+			SingerId INT64 NOT NULL,
+			FirstName STRING(MAX),
+			LastName  STRING(MAX),
+			Age       INT64,
+		) PRIMARY KEY (SingerId)`,
+		`CREATE CHANGE STREAM `+streamName+` FOR `+tableName+`(FirstName)`,
+	); err != nil {
+		t.Fatalf("Setup DDL: %v", err)
+	}
+	defer func() {
+		dropChangeStream(t, adminClient, streamName)
+		dropTable(t, adminClient, tableName)
+	}()
+
+	startTS := time.Now().UTC()
+
+	_, err := client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert(tableName,
+			[]string{"SingerId", "FirstName", "LastName", "Age"},
+			[]interface{}{int64(1), "Alice", "Smith", int64(30)}),
+	})
+	if err != nil {
+		t.Fatalf("Insert: %v", err)
+	}
+
+	endTS := time.Now().UTC()
+
+	records := readChangeStream(ctx, t, client, streamName, startTS, endTS)
+
+	var dcr *DataChangeRecord
+	for i := range records {
+		if len(records[i].DataChangeRecords) > 0 {
+			dcr = records[i].DataChangeRecords[0]
+			break
+		}
+	}
+	if dcr == nil {
+		t.Fatal("No data_change_record found")
+	}
+
+	// column_types must contain SingerId (PK) and FirstName (watched),
+	// but not LastName or Age (not watched).
+	colTypeNames := map[string]bool{}
+	for _, ct := range dcr.ColumnTypes {
+		colTypeNames[ct.Name] = true
+	}
+	if !colTypeNames["SingerId"] {
+		t.Error("column_types missing PK column SingerId")
+	}
+	if !colTypeNames["FirstName"] {
+		t.Error("column_types missing watched column FirstName")
+	}
+	if colTypeNames["LastName"] {
+		t.Error("column_types should not contain unwatched column LastName")
+	}
+	if colTypeNames["Age"] {
+		t.Error("column_types should not contain unwatched column Age")
+	}
+
+	// keys must contain SingerId.
+	mod := csFirstMod(t, *dcr)
+	if got := csKeyVal(mod, "SingerId"); got != "1" {
+		t.Errorf("keys.SingerId: got %v, want \"1\"", got)
+	}
+
+	// new_values must contain FirstName but not LastName or Age.
+	nv, _ := mod.NewValues.Value.(map[string]interface{})
+	if _, ok := nv["FirstName"]; !ok {
+		t.Error("new_values missing watched column FirstName")
+	}
+	if _, ok := nv["LastName"]; ok {
+		t.Error("new_values should not contain unwatched column LastName")
+	}
+	if _, ok := nv["Age"]; ok {
+		t.Error("new_values should not contain unwatched column Age")
+	}
+}
+
+func TestIntegration_ChangeStream_AlterWatch(t *testing.T) {
+	client, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	const (
+		tableA     = "CSTestAlterA"
+		tableB     = "CSTestAlterB"
+		streamName = "CSTestAlterWatchStream"
+	)
+	dropChangeStream(t, adminClient, streamName)
+	dropTable(t, adminClient, tableA)
+	dropTable(t, adminClient, tableB)
+	if err := updateDDL(t, adminClient,
+		`CREATE TABLE `+tableA+` (Id INT64 NOT NULL) PRIMARY KEY (Id)`,
+		`CREATE TABLE `+tableB+` (Id INT64 NOT NULL) PRIMARY KEY (Id)`,
+		`CREATE CHANGE STREAM `+streamName+` FOR `+tableA,
+	); err != nil {
+		t.Fatalf("Setup DDL: %v", err)
+	}
+	defer func() {
+		dropChangeStream(t, adminClient, streamName)
+		dropTable(t, adminClient, tableA)
+		dropTable(t, adminClient, tableB)
+	}()
+
+	// Insert into A while the stream watches A.
+	if _, err := client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert(tableA, []string{"Id"}, []interface{}{int64(1)}),
+	}); err != nil {
+		t.Fatalf("Insert into A before alter: %v", err)
+	}
+
+	// Record the timestamp right before the ALTER so we can query only post-alter changes.
+	alterStart := time.Now().UTC()
+
+	// Switch the stream to watch B instead of A.
+	if err := updateDDL(t, adminClient,
+		`ALTER CHANGE STREAM `+streamName+` SET FOR `+tableB,
+	); err != nil {
+		t.Fatalf("ALTER CHANGE STREAM: %v", err)
+	}
+
+	// Insert into A (stream no longer watches A) and B (stream now watches B).
+	if _, err := client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert(tableA, []string{"Id"}, []interface{}{int64(2)}),
+	}); err != nil {
+		t.Fatalf("Insert into A after alter: %v", err)
+	}
+	if _, err := client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert(tableB, []string{"Id"}, []interface{}{int64(3)}),
+	}); err != nil {
+		t.Fatalf("Insert into B after alter: %v", err)
+	}
+
+	alterEnd := time.Now().UTC()
+
+	// Query from after the ALTER — only B's record should appear.
+	records := readChangeStream(ctx, t, client, streamName, alterStart, alterEnd)
+	for _, r := range records {
+		for _, dcr := range r.DataChangeRecords {
+			if dcr.TableName == tableA {
+				t.Errorf("Got unexpected record for %q after ALTER switched watch to %q", tableA, tableB)
+			}
+		}
+	}
+	foundB := false
+	for _, r := range records {
+		for _, dcr := range r.DataChangeRecords {
+			if dcr.TableName == tableB {
+				foundB = true
+				break
+			}
+		}
+	}
+	if !foundB {
+		t.Errorf("Expected record for %q after ALTER; none found", tableB)
+	}
+}
+
+// TestIntegration_ChangeStream_PartitionToken verifies the partition-based
+// change stream API:
+//  1. Query with partition_token => NULL returns a child_partitions_record
+//     whose child_partitions list contains the single fake partition token.
+//  2. Query with that token returns actual data change records.
+func TestIntegration_ChangeStream_PartitionToken(t *testing.T) {
+	client, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	const (
+		tableName  = "CSTestPartToken"
+		streamName = "CSTestPartTokenStream"
+	)
+	dropChangeStream(t, adminClient, streamName)
+	if err := dropTable(t, adminClient, tableName); err != nil {
+		t.Fatal(err)
+	}
+	if err := updateDDL(t, adminClient,
+		`CREATE TABLE `+tableName+` (Id INT64 NOT NULL, Val STRING(MAX)) PRIMARY KEY (Id)`,
+		`CREATE CHANGE STREAM `+streamName+` FOR `+tableName,
+	); err != nil {
+		t.Fatalf("Setup DDL: %v", err)
+	}
+	defer func() {
+		dropChangeStream(t, adminClient, streamName)
+		dropTable(t, adminClient, tableName)
+	}()
+
+	startTS := time.Now().UTC()
+
+	if _, err := client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert(tableName, []string{"Id", "Val"}, []interface{}{int64(1), "hello"}),
+	}); err != nil {
+		t.Fatalf("Insert: %v", err)
+	}
+
+	endTS := time.Now().UTC()
+
+	// Step 1: query with partition_token => NULL to get child_partitions_record.
+	initialStmt := spanner.Statement{
+		SQL: `SELECT ChangeRecord FROM READ_` + streamName + `(
+			start_timestamp        => @start,
+			end_timestamp          => @end,
+			heartbeat_milliseconds => @hb,
+			partition_token        => @pt
+		)`,
+		Params: map[string]interface{}{
+			"start": startTS,
+			"end":   endTS,
+			"hb":    int64(10000),
+			"pt":    spanner.NullString{Valid: false},
+		},
+	}
+
+	var childToken string
+	ri := client.Single().Query(ctx, initialStmt)
+	defer ri.Stop()
+	if err := ri.Do(func(row *spanner.Row) error {
+		var crs []*ChangeRecord
+		if err := row.Column(0, &crs); err != nil {
+			return err
+		}
+		for _, cr := range crs {
+			for _, cpr := range cr.ChildPartitionsRecords {
+				if cpr == nil {
+					continue
+				}
+				for _, cp := range cpr.ChildPartitions {
+					if cp != nil {
+						childToken = cp.Token
+					}
+				}
+			}
+		}
+		return nil
+	}); err != nil {
+		t.Fatalf("Initial query (partition_token=NULL): %v", err)
+	}
+
+	if childToken == "" {
+		t.Fatalf("Expected child_partitions_record with a token, got none")
+	}
+
+	// Step 2: query with the child token to get actual data records.
+	dataStmt := spanner.Statement{
+		SQL: `SELECT ChangeRecord FROM READ_` + streamName + `(
+			start_timestamp        => @start,
+			end_timestamp          => @end,
+			heartbeat_milliseconds => @hb,
+			partition_token        => @pt
+		)`,
+		Params: map[string]interface{}{
+			"start": startTS,
+			"end":   endTS,
+			"hb":    int64(10000),
+			"pt":    childToken,
+		},
+	}
+
+	var dcrs []*DataChangeRecord
+	ri2 := client.Single().Query(ctx, dataStmt)
+	defer ri2.Stop()
+	if err := ri2.Do(func(row *spanner.Row) error {
+		var crs []*ChangeRecord
+		if err := row.Column(0, &crs); err != nil {
+			return err
+		}
+		for _, cr := range crs {
+			dcrs = append(dcrs, cr.DataChangeRecords...)
+		}
+		return nil
+	}); err != nil {
+		t.Fatalf("Data query (partition_token=%q): %v", childToken, err)
+	}
+
+	inserts := filterDCRsByModType(dcrs, "INSERT")
+	if len(inserts) == 0 {
+		t.Fatalf("Expected INSERT data_change_record from partition token query, got none")
+	}
+	dcr := inserts[0]
+	if dcr.TableName != tableName {
+		t.Errorf("table_name: got %q, want %q", dcr.TableName, tableName)
+	}
+	mod := csFirstMod(t, *dcr)
+	if got := csKeyVal(mod, "Id"); got != "1" { // INT64 is encoded as a decimal string in JSON
+		t.Errorf("key Id: got %v (%T), want \"1\"", got, got)
+	}
+	if got := csNewVal(mod, "Val"); got != "hello" {
+		t.Errorf("new_value Val: got %v, want %q", got, "hello")
+	}
+}
+
+// filterDCRsByModType returns data change records matching the given mod_type.
+func filterDCRsByModType(dcrs []*DataChangeRecord, modType string) []*DataChangeRecord {
+	var out []*DataChangeRecord
+	for _, dcr := range dcrs {
+		if dcr != nil && dcr.ModType == modType {
+			out = append(out, dcr)
+		}
+	}
+	return out
+}
+
+func TestIntegration_ChangeStream_DropWatch(t *testing.T) {
+	client, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	const (
+		tableName  = "CSTestDropWatch"
+		streamName = "CSTestDropWatchStream"
+	)
+	dropChangeStream(t, adminClient, streamName)
+	if err := dropTable(t, adminClient, tableName); err != nil {
+		t.Fatal(err)
+	}
+	if err := updateDDL(t, adminClient,
+		`CREATE TABLE `+tableName+` (Id INT64 NOT NULL) PRIMARY KEY (Id)`,
+		`CREATE CHANGE STREAM `+streamName+` FOR `+tableName,
+	); err != nil {
+		t.Fatalf("Setup DDL: %v", err)
+	}
+	defer func() {
+		dropChangeStream(t, adminClient, streamName)
+		dropTable(t, adminClient, tableName)
+	}()
+
+	// Remove all watch specifications — the stream now captures nothing.
+	if err := updateDDL(t, adminClient,
+		`ALTER CHANGE STREAM `+streamName+` DROP FOR ALL`,
+	); err != nil {
+		t.Fatalf("ALTER CHANGE STREAM DROP FOR ALL: %v", err)
+	}
+
+	startTS := time.Now().UTC()
+
+	if _, err := client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert(tableName, []string{"Id"}, []interface{}{int64(1)}),
+	}); err != nil {
+		t.Fatalf("Insert: %v", err)
+	}
+
+	endTS := time.Now().UTC()
+
+	records := readChangeStream(ctx, t, client, streamName, startTS, endTS)
+	for _, r := range records {
+		if len(r.DataChangeRecords) > 0 {
+			t.Errorf("Got unexpected data_change_record after DROP FOR ALL: %v", r.DataChangeRecords)
+		}
+	}
+}

@@ -698,6 +698,22 @@ type SelectFromUnnest struct {
 
 func (SelectFromUnnest) isSelectFrom() {}
 
+// SelectFromTVF is a SelectFrom that calls a table-valued function.
+// https://cloud.google.com/spanner/docs/change-streams/manage#read-change-stream
+type SelectFromTVF struct {
+	Name  ID
+	Args  []TVFArgument
+	Alias ID // empty if not aliased
+}
+
+func (SelectFromTVF) isSelectFrom() {}
+
+// TVFArgument is a named argument in a TVF call (name => expr).
+type TVFArgument struct {
+	Name  ID
+	Value Expr
+}
+
 // TODO: SelectFromSubquery, etc.
 
 type Order struct {

@@ -979,6 +979,21 @@ func (sfu SelectFromUnnest) SQL() string {
 	return str
 }
 
+func (sft SelectFromTVF) SQL() string {
+	str := sft.Name.SQL() + "("
+	for i, arg := range sft.Args {
+		if i > 0 {
+			str += ", "
+		}
+		str += arg.Name.SQL() + " => " + arg.Value.SQL()
+	}
+	str += ")"
+	if sft.Alias != "" {
+		str += " AS " + sft.Alias.SQL()
+	}
+	return str
+}
+
 func (o Order) SQL() string { return buildSQL(o) }
 func (o Order) addSQL(sb *strings.Builder) {
 	o.Expr.addSQL(sb)
