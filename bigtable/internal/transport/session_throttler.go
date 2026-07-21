@@ -46,13 +46,12 @@ type ThrottlerSnapshot struct {
 }
 
 // AdaptiveSessionThrottler is a concurrency governor with adaptive
-// failure penalties. Semantics match Java's SessionCreationBudget
-// (google-cloud-java: SessionCreationBudget.java): a failed OpenSession
-// keeps its slot reserved for penaltyDuration before returning it to
-// the pool, so repeated failures throttle further attempts. Unlike a
-// chan-based semaphore, the counter+slice representation lets
-// UpdateConfig raise or lower the ceiling without leaking in-flight
-// callers or orphaning a channel.
+// failure penalties: a failed OpenSession keeps its slot reserved for
+// penaltyDuration before returning it to the pool, so repeated
+// failures throttle further attempts. Unlike a chan-based semaphore,
+// the counter+slice representation lets UpdateConfig raise or lower
+// the ceiling without leaking in-flight callers or orphaning a
+// channel.
 type AdaptiveSessionThrottler struct {
 	mu              sync.Mutex
 	cond            *sync.Cond
@@ -131,9 +130,7 @@ func (b *AdaptiveSessionThrottler) tryAcquireLocked() bool {
 // penaltyDuration (as of Release time), then reclaimed on the next
 // Acquire — a time.AfterFunc schedules a broadcast at expiry so a
 // waiter parked on cond.Wait is woken exactly when the slot frees,
-// not on the next unrelated Release / UpdateConfig event. Java
-// parity: SessionCreationBudget.onSessionCreationSuccess /
-// onSessionCreationFailure.
+// not on the next unrelated Release / UpdateConfig event.
 func (b *AdaptiveSessionThrottler) Release(success bool) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
