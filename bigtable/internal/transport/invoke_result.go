@@ -42,7 +42,7 @@ type InvokeResult struct {
 	// SentAt is a local monotonic timestamp captured immediately before
 	// the vRPC frame is handed to the bidi Send. Used downstream to
 	// derive client-side blocking latency (sentAt - attemptStart).
-	SentAt time.Time
+	SentAt   time.Time
 	PeerInfo *spb.PeerInfo
 	// RpcIDOnSession is the per-session monotonic id of this call
 	// (1, 2, 3, …). Distinguishes warm-up vRPCs (small id) from
