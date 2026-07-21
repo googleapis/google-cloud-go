@@ -39,7 +39,10 @@ type InvokeResult struct {
 	Response    interface{}
 	ClusterInfo *spb.ClusterInformation
 	Stats       *spb.SessionRequestStats
-	SentAt      time.Time
+	// SentAt is a local monotonic timestamp captured immediately before
+	// the vRPC frame is handed to the bidi Send. Used downstream to
+	// derive client-side blocking latency (sentAt - attemptStart).
+	SentAt time.Time
 	// PeerInfo is the serving session's parsed peer info (from the
 	// bigtable-peer-info header the server sent on session open). Bound to
 	// the session, not this specific vRPC — every InvokeResult on the same
