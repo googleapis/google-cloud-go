@@ -4,20 +4,8 @@
     "agentplatform": {
       "component": "agentplatform"
     },
-    "bigquery": {
-      "component": "bigquery",
-      "exclude-paths": [
-        "bigquery/v2"
-      ]
-    },
     "bigtable": {
       "component": "bigtable"
-    },
-    "datastore": {
-      "component": "datastore"
-    },
-    "firestore": {
-      "component": "firestore"
     },
     "pubsub": {
       "component": "pubsub",

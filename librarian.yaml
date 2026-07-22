@@ -31,6 +31,9 @@ tools:
       version: v1.3.0
     - name: google.golang.org/protobuf/cmd/protoc-gen-go
       version: v1.36.11
+  protoc:
+    version: "33.2"
+    sha256: b24b53f87c151bfd48b112fe4c3a6e6574e5198874f38036aff41df3456b8caf
 default:
   tag_format: '{name}/v{version}'
   go:

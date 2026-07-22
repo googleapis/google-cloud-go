@@ -406,6 +406,12 @@
         }
       ]
     },
+    "bigquery": {
+      "component": "bigquery",
+      "exclude-paths": [
+        "bigquery/v2"
+      ]
+    },
     "billing": {
       "component": "billing",
       "extra-files": [
@@ -822,6 +828,9 @@
         }
       ]
     },
+    "datastore": {
+      "component": "datastore"
+    },
     "datastream": {
       "component": "datastream",
       "extra-files": [
@@ -1021,6 +1030,9 @@
           "type": "json"
         }
       ]
+    },
+    "firestore": {
+      "component": "firestore"
     },
     "functions": {
       "component": "functions",
