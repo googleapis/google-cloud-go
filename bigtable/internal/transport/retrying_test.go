@@ -68,10 +68,9 @@ func TestRetryingVRpc_SuccessOnRetry(t *testing.T) {
 
 	tracer := &mockTracer{}
 	retryInterceptor := RetryingVRpc(RetryingOptions{
-		MaxAttempts:    5,
-		InitialBackoff: 1 * time.Millisecond,
-		Tracer:         tracer,
-		Idempotent:     true,
+		MaxAttempts: 5,
+		Tracer:      tracer,
+		Idempotent:  true,
 	})
 
 	ctx := WithVRpcMetadata(context.Background(), "TestMethod", 1)
@@ -115,8 +114,7 @@ func TestRetryingVRpc_NonRetryableError(t *testing.T) {
 	}
 
 	retryInterceptor := RetryingVRpc(RetryingOptions{
-		MaxAttempts:    5,
-		InitialBackoff: 1 * time.Millisecond,
+		MaxAttempts: 5,
 	})
 
 	ctx := WithVRpcMetadata(context.Background(), "TestMethod", 1)
@@ -141,7 +139,7 @@ func TestRetryingVRpc_HonorServerRetryDelay(t *testing.T) {
 		attempts++
 		if attempts == 1 {
 			// Server-returned error carrying RetryInfo — permits retry
-			// regardless of state (Java parity: server explicitly said
+			// regardless of state (Server explicitly said
 			// "try again in Nms"). Tag as ServerResult to match the real
 			// production path (handleVRPCErrorResponse).
 			st := status.New(codes.Unavailable, "overloaded")
@@ -157,8 +155,7 @@ func TestRetryingVRpc_HonorServerRetryDelay(t *testing.T) {
 	}
 
 	retryInterceptor := RetryingVRpc(RetryingOptions{
-		MaxAttempts:    3,
-		InitialBackoff: 200 * time.Millisecond, // Default initial backoff is large, but server details should override it
+		MaxAttempts: 3,
 	})
 
 	startTime := time.Now()
@@ -187,9 +184,8 @@ func TestRetryingVRpc_MaxAttemptsExceeded(t *testing.T) {
 	}
 
 	retryInterceptor := RetryingVRpc(RetryingOptions{
-		MaxAttempts:    3,
-		InitialBackoff: 1 * time.Millisecond,
-		Idempotent:     true,
+		MaxAttempts: 3,
+		Idempotent:  true,
 	})
 
 	ctx := WithVRpcMetadata(context.Background(), "TestMethod", 1)
@@ -211,8 +207,7 @@ func TestRetryingVRpc_NonGrpcError(t *testing.T) {
 	}
 
 	retryInterceptor := RetryingVRpc(RetryingOptions{
-		MaxAttempts:    3,
-		InitialBackoff: 1 * time.Millisecond,
+		MaxAttempts: 3,
 	})
 
 	ctx := WithVRpcMetadata(context.Background(), "TestMethod", 1)
@@ -240,9 +235,8 @@ func TestRetryingVRpc_UncommittedAlwaysRetries(t *testing.T) {
 	}
 
 	retryInterceptor := RetryingVRpc(RetryingOptions{
-		MaxAttempts:    5,
-		InitialBackoff: 1 * time.Millisecond,
-		Idempotent:     false, // non-idempotent: uncommitted still retries
+		MaxAttempts: 5,
+		Idempotent:  false, // non-idempotent: uncommitted still retries
 	})
 
 	ctx := WithVRpcMetadata(context.Background(), "TestMethod", 1)
@@ -271,9 +265,8 @@ func TestRetryingVRpc_TransportFailureIdempotent(t *testing.T) {
 	}
 
 	retryInterceptor := RetryingVRpc(RetryingOptions{
-		MaxAttempts:    5,
-		InitialBackoff: 1 * time.Millisecond,
-		Idempotent:     true,
+		MaxAttempts: 5,
+		Idempotent:  true,
 	})
 
 	ctx := WithVRpcMetadata(context.Background(), "TestMethod", 1)
@@ -298,9 +291,8 @@ func TestRetryingVRpc_TransportFailureNonIdempotentNoRetry(t *testing.T) {
 	}
 
 	retryInterceptor := RetryingVRpc(RetryingOptions{
-		MaxAttempts:    5,
-		InitialBackoff: 1 * time.Millisecond,
-		Idempotent:     false,
+		MaxAttempts: 5,
+		Idempotent:  false,
 	})
 
 	ctx := WithVRpcMetadata(context.Background(), "TestMethod", 1)
@@ -314,11 +306,11 @@ func TestRetryingVRpc_TransportFailureNonIdempotentNoRetry(t *testing.T) {
 }
 
 // TestRetryingVRpc_ServerResultNotRetriedByDefault verifies strict
-// Java parity for the ServerResult path: a server-explicit error is NOT
+// Strict oracle for the ServerResult path: a server-explicit error is NOT
 // retried without server-attached RetryInfo, regardless of gRPC code.
 // The permissive pre-parity behavior (retry on Unavailable / Aborted /
-// Internal / ResourceExhausted / DeadlineExceeded) is gone; callers who
-// need it must set RetryingOptions.ShouldRetry.
+// Internal / ResourceExhausted / DeadlineExceeded) is gone; the server
+// must attach RetryInfo to opt in.
 func TestRetryingVRpc_ServerResultNotRetriedByDefault(t *testing.T) {
 	cases := []struct {
 		name string
@@ -338,9 +330,8 @@ func TestRetryingVRpc_ServerResultNotRetriedByDefault(t *testing.T) {
 				return nil, tagErr(StateServerResult, status.Error(tc.code, "server said no"))
 			}
 			retryInterceptor := RetryingVRpc(RetryingOptions{
-				MaxAttempts:    5,
-				InitialBackoff: 1 * time.Millisecond,
-				Idempotent:     true, // even idempotent: ServerResult without RetryInfo never retries
+				MaxAttempts: 5,
+				Idempotent:  true, // even idempotent: ServerResult without RetryInfo never retries
 			})
 			ctx := WithVRpcMetadata(context.Background(), "TestMethod", 1)
 			_, err := retryInterceptor(ctx, "req", baseHandler)
@@ -355,7 +346,7 @@ func TestRetryingVRpc_ServerResultNotRetriedByDefault(t *testing.T) {
 	}
 }
 
-// TestRetryingVRpc_ServerDeadlineExceededNoRetryByDefault verifies Java
+// TestRetryingVRpc_ServerDeadlineExceededNoRetryByDefault verifies
 // parity: a server-returned DEADLINE_EXCEEDED is NOT retried by default.
 // The server said "I gave up"; blindly retrying burns budget on ops the
 // server already discarded.
@@ -367,9 +358,8 @@ func TestRetryingVRpc_ServerDeadlineExceededNoRetryByDefault(t *testing.T) {
 	}
 
 	retryInterceptor := RetryingVRpc(RetryingOptions{
-		MaxAttempts:    5,
-		InitialBackoff: 1 * time.Millisecond,
-		Idempotent:     true, // even idempotent: server DEADLINE_EXCEEDED still no retry
+		MaxAttempts: 5,
+		Idempotent:  true, // even idempotent: server DEADLINE_EXCEEDED still no retry
 	})
 
 	ctx := WithVRpcMetadata(context.Background(), "TestMethod", 1)
@@ -404,9 +394,8 @@ func TestRetryingVRpc_ServerDeadlineExceededRetriesWithRetryInfo(t *testing.T) {
 	}
 
 	retryInterceptor := RetryingVRpc(RetryingOptions{
-		MaxAttempts:    3,
-		InitialBackoff: 1 * time.Millisecond,
-		Idempotent:     true,
+		MaxAttempts: 3,
+		Idempotent:  true,
 	})
 
 	ctx := WithVRpcMetadata(context.Background(), "TestMethod", 1)
@@ -419,6 +408,75 @@ func TestRetryingVRpc_ServerDeadlineExceededRetriesWithRetryInfo(t *testing.T) {
 	}
 	if attempts != 2 {
 		t.Errorf("expected 2 attempts, got %d", attempts)
+	}
+}
+
+// TestRetryingVRpc_ServerRetryInfoUncapsMaxAttempts pins the contract
+// that MaxAttempts applies only to non-server-directed retries
+// (Uncommitted or TransportFailure without RetryInfo). When the server
+// keeps returning RetryInfo, we honor it beyond MaxAttempts —
+// bounded only by the caller's ctx deadline.
+func TestRetryingVRpc_ServerRetryInfoUncapsMaxAttempts(t *testing.T) {
+	attempts := 0
+	baseHandler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		attempts++
+		if attempts < 6 {
+			return nil, tagErr(StateServerResult, mustStatusWithRetryInfo(t,
+				codes.Unavailable, "still overloaded", 1*time.Millisecond))
+		}
+		return "ok", nil
+	}
+
+	// MaxAttempts=3 would cap a non-server-directed retry after the
+	// third attempt. Server RetryInfo must bypass that cap; we expect
+	// to reach attempt 6.
+	retryInterceptor := RetryingVRpc(RetryingOptions{MaxAttempts: 3})
+
+	ctx := WithVRpcMetadata(context.Background(), "TestMethod", 1)
+	resp, err := retryInterceptor(ctx, "req", baseHandler)
+	if err != nil {
+		t.Fatalf("expected success (server-directed retries uncap MaxAttempts), got %v", err)
+	}
+	if resp.(string) != "ok" {
+		t.Errorf("expected 'ok', got %v", resp)
+	}
+	if attempts != 6 {
+		t.Errorf("expected 6 attempts (server RetryInfo bypasses MaxAttempts=3), got %d", attempts)
+	}
+}
+
+// TestRetryingVRpc_NoClientBackoffOnNonServerRetry pins that a
+// non-server-directed retry (e.g. TransportFailure) fires with zero
+// delay — no client-side exponential backoff. The
+// onStateChange(new Idle()) branch when RetryInfo is absent triggers
+// the next attempt immediately.
+func TestRetryingVRpc_NoClientBackoffOnNonServerRetry(t *testing.T) {
+	attempts := 0
+	baseHandler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		attempts++
+		if attempts < 3 {
+			return nil, tagErr(StateTransportFailure, status.Error(codes.Unavailable, "wire error"))
+		}
+		return "ok", nil
+	}
+
+	retryInterceptor := RetryingVRpc(RetryingOptions{
+		MaxAttempts: 5,
+		Idempotent:  true,
+	})
+
+	start := time.Now()
+	ctx := WithVRpcMetadata(context.Background(), "TestMethod", 1)
+	_, err := retryInterceptor(ctx, "req", baseHandler)
+	elapsed := time.Since(start)
+
+	if err != nil {
+		t.Fatalf("expected success, got %v", err)
+	}
+	// 3 back-to-back attempts with no client sleep should complete
+	// within a couple of ms on any machine. Generous cap for CI jitter.
+	if elapsed > 50*time.Millisecond {
+		t.Errorf("elapsed = %v, want < 50ms (no client-side backoff between attempts)", elapsed)
 	}
 }
 
@@ -436,9 +494,8 @@ func TestRetryingVRpc_CtxCancelPreservesLastErr(t *testing.T) {
 	ctx, cancel := context.WithCancel(WithVRpcMetadata(context.Background(), "TestMethod", 1))
 
 	retryInterceptor := RetryingVRpc(RetryingOptions{
-		MaxAttempts:    5,
-		InitialBackoff: 50 * time.Millisecond,
-		Idempotent:     true,
+		MaxAttempts: 5,
+		Idempotent:  true,
 	})
 
 	// Cancel after the first attempt lands but before the backoff timer fires.
@@ -474,9 +531,8 @@ func TestRetryingVRpc_DeadlineFitSkipsRetry(t *testing.T) {
 	defer cancel()
 
 	retryInterceptor := RetryingVRpc(RetryingOptions{
-		MaxAttempts:    5,
-		InitialBackoff: 1 * time.Millisecond,
-		Idempotent:     true,
+		MaxAttempts: 5,
+		Idempotent:  true,
 	})
 
 	start := time.Now()
@@ -491,42 +547,6 @@ func TestRetryingVRpc_DeadlineFitSkipsRetry(t *testing.T) {
 	}
 	if elapsed > 100*time.Millisecond {
 		t.Errorf("expected fast return (no 5s sleep), took %v", elapsed)
-	}
-}
-
-// TestRetryingVRpc_ServerRetryInfoOverridesShouldRetry pins SESSION_SPEC
-// #9's "server-only inputs" contract: server RetryInfo is server-only
-// authority and MUST override any caller-supplied ShouldRetry callback.
-// Without this, a strict client policy could veto a server-directed
-// retry — losing the whole point of the RetryInfo detail.
-func TestRetryingVRpc_ServerRetryInfoOverridesShouldRetry(t *testing.T) {
-	attempts := 0
-	baseHandler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		attempts++
-		if attempts == 1 {
-			return nil, tagErr(StateServerResult, mustStatusWithRetryInfo(t,
-				codes.DeadlineExceeded, "overloaded, retry", 1*time.Millisecond))
-		}
-		return "ok", nil
-	}
-
-	// ShouldRetry says "never retry"; the server's RetryInfo must win.
-	retryInterceptor := RetryingVRpc(RetryingOptions{
-		MaxAttempts:    5,
-		InitialBackoff: 1 * time.Millisecond,
-		ShouldRetry:    func(error) bool { return false },
-	})
-
-	ctx := WithVRpcMetadata(context.Background(), "TestMethod", 1)
-	resp, err := retryInterceptor(ctx, "req", baseHandler)
-	if err != nil {
-		t.Fatalf("expected success (server RetryInfo overrides ShouldRetry), got %v", err)
-	}
-	if resp.(string) != "ok" {
-		t.Errorf("expected 'ok', got %v", resp)
-	}
-	if attempts != 2 {
-		t.Errorf("expected 2 attempts, got %d", attempts)
 	}
 }
 
