@@ -32,11 +32,11 @@ jobs:
           protoc-checksum: '8c0a8577311720cc83488f813aeb5046d69cb9824cbf39cb7447e0c5132d677952d5bb7c1130d9df381835eee7352828878d409873ebb407d7a4649ea2a4aee5'
       - name: Install tools
         if: steps.changes.outputs.librarian == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
-        run: librarian install
+        run: librarian install -v
       - name: Regenerate
         if: steps.changes.outputs.librarian == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
         run: |
-          librarian generate --all
+          librarian generate --all -v
           if [ -n "$(git status --porcelain)" ]; then
             git status
             echo "==================== GIT DIFF ===================="
