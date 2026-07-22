@@ -439,6 +439,13 @@ type ReasoningEngineSpecContainerSpec struct {
 	ImageURI string `json:"imageUri,omitempty"`
 }
 
+// Specification for building container image.
+type ReasoningEngineSpecBuildSpec struct {
+	// Optional. Identifier. The resource name of the Cloud Build WorkerPool to use for
+	// the build. Format: `projects/{project}/locations/{location}/workerPools/{worker_pool}`
+	WorkerPool string `json:"workerPool,omitempty"`
+}
+
 // The specification of an agent engine.
 type ReasoningEngineSpec struct {
 	// Optional. The A2A Agent Card for the agent (if available). It follows the specification
@@ -475,6 +482,8 @@ type ReasoningEngineSpec struct {
 	SourceCodeSpec *ReasoningEngineSpecSourceCodeSpec `json:"sourceCodeSpec,omitempty"`
 	// Deploy from a container image with a defined entrypoint and commands.
 	ContainerSpec *ReasoningEngineSpecContainerSpec `json:"containerSpec,omitempty"`
+	// Optional. Configuration for building container image.
+	BuildSpec *ReasoningEngineSpecBuildSpec `json:"buildSpec,omitempty"`
 }
 
 // The conversation source event for generating memories.
@@ -3446,14 +3455,16 @@ type listPublisherModelDeployOptionsConfig struct {
 
 // Config for listing custom model deploy options.
 type listCustomModelDeployOptionsConfig struct {
-	// Optional. Whether to check per-region machine availability. When true (the
-	// default), the API returns per-region recommendations that include the
-	// machine spec, region and user quota state. When false, the API returns a
-	// flat list of specs without per-region or quota information (and
-	// FilterByUserQuota has no effect).
+	// Optional. Whether to check per-region machine availability.
+	// When True (the default), the API returns per-region recommendations
+	// that include the machine spec, region and user quota state. When
+	// False, the API returns a flat list of specs without per-region or
+	// quota information (and ``filter_by_user_quota`` has no effect).
 	CheckMachineAvailability bool `json:"checkMachineAvailability,omitempty"`
 	// Optional. Whether to filter recommendations to regions with user quota.
-	// Only takes effect when CheckMachineAvailability is true.
+	// Only takes effect when ``check_machine_availability=True``; the specs
+	// fallback returned when ``check_machine_availability=False`` carries no
+	// per-region quota information, so this flag is ignored in that mode.
 	FilterByUserQuota bool `json:"filterByUserQuota,omitempty"`
 }
 
