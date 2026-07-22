@@ -16,7 +16,6 @@ package internal
 
 import (
 	"context"
-	"sync/atomic"
 	"time"
 
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -25,7 +24,14 @@ import (
 
 // RetryingOptions configures the retry behavior of RetryingVRpc.
 type RetryingOptions struct {
-	MaxAttempts       int32 // Atomic race cap for max attempts.
+	// MaxAttempts caps the total number of tries per Invoke (initial +
+	// retries). Defaults to 3 for Java parity — RetryingVRpc.java
+	// hardcodes a 3-attempt cap. Read once at RetryingVRpc construction
+	// and captured in the closure; the server-driven client config has
+	// no channel to swap this today (no matching proto field), so
+	// mutating it after RetryingVRpc(...) returns has no effect on
+	// in-flight loops.
+	MaxAttempts       int32
 	InitialBackoff    time.Duration
 	MaxBackoff        time.Duration
 	BackoffMultiplier float64
@@ -36,10 +42,15 @@ type RetryingOptions struct {
 	// Uncommitted attempts (never left the client) retry regardless.
 	// Ignored if ShouldRetry is non-nil.
 	Idempotent bool
-	// ShouldRetry, if non-nil, overrides the default state-based check
-	// entirely. Callers with unusual retry policies use it; the default
-	// (nil) applies Java-parity classification via AttemptState +
-	// Idempotent + server-provided RetryInfo.
+	// ShouldRetry, if non-nil, overrides the default state-based check.
+	// Callers with unusual retry policies use it; the default (nil)
+	// applies Java-parity classification via AttemptState + Idempotent.
+	//
+	// Server-attached RetryInfo is checked BEFORE ShouldRetry and always
+	// wins — a server-directed retry is honored even if ShouldRetry
+	// would otherwise return false (SESSION_SPEC #9 "server-only
+	// inputs"). ShouldRetry sees only errors the server did not
+	// explicitly grant retry for.
 	ShouldRetry func(error) bool
 }
 
@@ -59,6 +70,8 @@ func RetryingVRpc(opts RetryingOptions) Interceptor {
 		opts.BackoffMultiplier = 1.3
 	}
 
+	maxAttempts := opts.MaxAttempts
+
 	return func(ctx context.Context, req interface{}, next Handler) (interface{}, error) {
 		var attempt int32
 		backoff := opts.InitialBackoff
@@ -68,11 +81,7 @@ func RetryingVRpc(opts RetryingOptions) Interceptor {
 
 		for {
 			attempt++
-			// opts.MaxAttempts stays behind atomic.Load — outside code
-			// (config-manager UpdateConfig fan-out) may swap it while
-			// the loop is running. The local attempt counter is
-			// goroutine-local and needs no synchronization.
-			if attempt > atomic.LoadInt32(&opts.MaxAttempts) {
+			if attempt > maxAttempts {
 				break
 			}
 
@@ -101,8 +110,12 @@ func RetryingVRpc(opts RetryingOptions) Interceptor {
 
 			lastErr = err
 
+			// SESSION_SPEC #9 "last-observed err preserved": Java's
+			// RetryingVRpc returns the last attempt's typed error, not
+			// raw context.Canceled/DeadlineExceeded. lastErr carries the
+			// gRPC code + AttemptState tag callers need.
 			if ctx.Err() != nil {
-				return nil, ctx.Err()
+				return nil, lastErr
 			}
 
 			var delay time.Duration
@@ -127,12 +140,19 @@ func RetryingVRpc(opts RetryingOptions) Interceptor {
 				}
 			}
 
-			if opts.ShouldRetry != nil {
-				if !opts.ShouldRetry(err) {
+			// Server RetryInfo is server-only authority (SESSION_SPEC #9
+			// "server-only inputs"): if the server explicitly grants
+			// retry, honor it regardless of any caller-supplied
+			// ShouldRetry policy or state-based default. Falling into
+			// either gate would let a client-side rule veto the server.
+			if !serverPermitsRetry {
+				if opts.ShouldRetry != nil {
+					if !opts.ShouldRetry(err) {
+						return nil, err
+					}
+				} else if !shouldRetryDefault(err, opts.Idempotent) {
 					return nil, err
 				}
-			} else if !shouldRetryDefault(err, opts.Idempotent, serverPermitsRetry) {
-				return nil, err
 			}
 
 			if !hasServerDelay {
@@ -145,6 +165,18 @@ func RetryingVRpc(opts RetryingOptions) Interceptor {
 				}
 			}
 
+			// SESSION_SPEC #9 "deadline-fit check": if the delay would
+			// exhaust the caller's remaining deadline, skip the retry
+			// entirely and surface lastErr — Java parity
+			// (RetryingVRpc.java:290-298). Waiting past the deadline
+			// only to have the next attempt immediately fail with
+			// DeadlineExceeded loses the typed error and burns budget.
+			// Applied to any delay (server RetryInfo or client
+			// backoff) — the rationale is the same in either case.
+			if dl, ok := ctx.Deadline(); ok && time.Until(dl) < delay {
+				return nil, lastErr
+			}
+
 			// time.NewTimer + Stop() (rather than time.After) so a
 			// ctx-cancel exit path releases the timer immediately
 			// instead of leaking it until `delay` elapses.
@@ -152,7 +184,9 @@ func RetryingVRpc(opts RetryingOptions) Interceptor {
 			select {
 			case <-ctx.Done():
 				timer.Stop()
-				return nil, ctx.Err()
+				// Preserve lastErr on the backoff-window cancel, same
+				// rationale as the post-attempt ctx.Err() branch above.
+				return nil, lastErr
 			case <-timer.C:
 			}
 		}
@@ -161,27 +195,25 @@ func RetryingVRpc(opts RetryingOptions) Interceptor {
 	}
 }
 
-// shouldRetryDefault applies strict Java-parity retry classification.
-// Callers with a bespoke policy set RetryingOptions.ShouldRetry to bypass
-// this entirely.
+// shouldRetryDefault applies strict Java-parity retry classification for
+// the default retry path (no caller-supplied ShouldRetry, no server
+// RetryInfo). Server RetryInfo is handled by the caller before this fn
+// is consulted — its short-circuit lives at the interceptor level so the
+// custom-ShouldRetry path honors it uniformly (SESSION_SPEC #9).
 //
 // Retry rules (see AttemptState doc for state semantics):
 //   - Uncommitted → always retry (server saw nothing).
 //   - TransportFailure → retry only if idempotent (server may have applied).
-//   - ServerResult → retry ONLY if the server attached RetryInfo (checked
-//     by the caller and passed in as serverPermitsRetry). A bare
-//     server-explicit error — even Unavailable / Aborted / DeadlineExceeded —
-//     is NOT retried without an explicit server go-ahead. This matches
-//     Java's RetryingVRpc: the server said something specific; the client
-//     doesn't second-guess it.
+//   - ServerResult → NEVER retry from this path. A bare server-explicit
+//     error — even Unavailable / Aborted / DeadlineExceeded — is NOT
+//     retried without an explicit server go-ahead (RetryInfo handled
+//     upstream). This matches Java's RetryingVRpc: the server said
+//     something specific; the client doesn't second-guess it.
 //
 // Callers that need the pre-parity permissive behavior (retry on
 // {Aborted, Internal, ResourceExhausted, Unavailable} without RetryInfo)
 // set RetryingOptions.ShouldRetry.
-func shouldRetryDefault(err error, idempotent, serverPermitsRetry bool) bool {
-	if serverPermitsRetry {
-		return true
-	}
+func shouldRetryDefault(err error, idempotent bool) bool {
 	outcome := ClassifyErr(err)
 	switch outcome.State {
 	case StateUncommitted:

@@ -421,3 +421,122 @@ func TestRetryingVRpc_ServerDeadlineExceededRetriesWithRetryInfo(t *testing.T) {
 		t.Errorf("expected 2 attempts, got %d", attempts)
 	}
 }
+
+// TestRetryingVRpc_CtxCancelPreservesLastErr pins SESSION_SPEC #9's
+// "last-observed err preserved" rule: when the caller ctx cancels
+// between attempts (after a real RPC failure), the returned error MUST
+// be the typed lastErr (carrying the gRPC code + AttemptState tag), not
+// raw context.Canceled. Regression would strip the retry oracle's view
+// of what actually failed.
+func TestRetryingVRpc_CtxCancelPreservesLastErr(t *testing.T) {
+	sentinel := tagErr(StateTransportFailure, status.Error(codes.Unavailable, "wire error"))
+	baseHandler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return nil, sentinel
+	}
+	ctx, cancel := context.WithCancel(WithVRpcMetadata(context.Background(), "TestMethod", 1))
+
+	retryInterceptor := RetryingVRpc(RetryingOptions{
+		MaxAttempts:    5,
+		InitialBackoff: 50 * time.Millisecond,
+		Idempotent:     true,
+	})
+
+	// Cancel after the first attempt lands but before the backoff timer fires.
+	go func() {
+		time.Sleep(5 * time.Millisecond)
+		cancel()
+	}()
+
+	_, err := retryInterceptor(ctx, "req", baseHandler)
+	if !errors.Is(err, sentinel) {
+		t.Fatalf("expected lastErr sentinel, got %v", err)
+	}
+	if errors.Is(err, context.Canceled) {
+		t.Errorf("expected typed lastErr, not raw context.Canceled: %v", err)
+	}
+}
+
+// TestRetryingVRpc_DeadlineFitSkipsRetry pins SESSION_SPEC #9's
+// "deadline-fit check": when the next delay would exhaust the caller's
+// remaining deadline, skip the retry and surface lastErr. Sleeping past
+// the deadline only to have the retry immediately fail with
+// DeadlineExceeded burns budget and loses the typed error.
+func TestRetryingVRpc_DeadlineFitSkipsRetry(t *testing.T) {
+	sentinel := tagErr(StateServerResult, mustStatusWithRetryInfo(t, codes.Unavailable, "overloaded", 5*time.Second))
+	attempts := 0
+	baseHandler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		attempts++
+		return nil, sentinel
+	}
+
+	// 20ms remaining, server asks for a 5s delay — skip.
+	ctx, cancel := context.WithTimeout(WithVRpcMetadata(context.Background(), "TestMethod", 1), 20*time.Millisecond)
+	defer cancel()
+
+	retryInterceptor := RetryingVRpc(RetryingOptions{
+		MaxAttempts:    5,
+		InitialBackoff: 1 * time.Millisecond,
+		Idempotent:     true,
+	})
+
+	start := time.Now()
+	_, err := retryInterceptor(ctx, "req", baseHandler)
+	elapsed := time.Since(start)
+
+	if !errors.Is(err, sentinel) {
+		t.Fatalf("expected lastErr sentinel, got %v", err)
+	}
+	if attempts != 1 {
+		t.Errorf("expected 1 attempt (deadline-fit skip), got %d", attempts)
+	}
+	if elapsed > 100*time.Millisecond {
+		t.Errorf("expected fast return (no 5s sleep), took %v", elapsed)
+	}
+}
+
+// TestRetryingVRpc_ServerRetryInfoOverridesShouldRetry pins SESSION_SPEC
+// #9's "server-only inputs" contract: server RetryInfo is server-only
+// authority and MUST override any caller-supplied ShouldRetry callback.
+// Without this, a strict client policy could veto a server-directed
+// retry — losing the whole point of the RetryInfo detail.
+func TestRetryingVRpc_ServerRetryInfoOverridesShouldRetry(t *testing.T) {
+	attempts := 0
+	baseHandler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		attempts++
+		if attempts == 1 {
+			return nil, tagErr(StateServerResult, mustStatusWithRetryInfo(t,
+				codes.DeadlineExceeded, "overloaded, retry", 1*time.Millisecond))
+		}
+		return "ok", nil
+	}
+
+	// ShouldRetry says "never retry"; the server's RetryInfo must win.
+	retryInterceptor := RetryingVRpc(RetryingOptions{
+		MaxAttempts:    5,
+		InitialBackoff: 1 * time.Millisecond,
+		ShouldRetry:    func(error) bool { return false },
+	})
+
+	ctx := WithVRpcMetadata(context.Background(), "TestMethod", 1)
+	resp, err := retryInterceptor(ctx, "req", baseHandler)
+	if err != nil {
+		t.Fatalf("expected success (server RetryInfo overrides ShouldRetry), got %v", err)
+	}
+	if resp.(string) != "ok" {
+		t.Errorf("expected 'ok', got %v", resp)
+	}
+	if attempts != 2 {
+		t.Errorf("expected 2 attempts, got %d", attempts)
+	}
+}
+
+func mustStatusWithRetryInfo(t *testing.T, code codes.Code, msg string, delay time.Duration) error {
+	t.Helper()
+	st, err := status.New(code, msg).WithDetails(&errdetails.RetryInfo{
+		RetryDelay: durationpb.New(delay),
+	})
+	if err != nil {
+		t.Fatalf("WithDetails: %v", err)
+	}
+	return st.Err()
+}
