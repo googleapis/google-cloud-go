@@ -69,14 +69,6 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 	// Ensure any lingering HTTP/2 connections are closed to avoid goroutine leaks.
 	defer http.DefaultTransport.(*http.Transport).CloseIdleConnections()
 
-	exporter := tracetest.NewInMemoryExporter()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
-	defer tp.Shutdown(context.Background())
-
-	// Restore the global tracer provider after the test to avoid side effects.
-	defer func(prev oteltrace.TracerProvider) { otel.SetTracerProvider(prev) }(otel.GetTracerProvider())
-	otel.SetTracerProvider(tp)
-
 	successfulEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
 			return &echo.EchoReply{Message: req.Message}, nil
@@ -257,7 +249,13 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			exporter.Reset()
+			exporter := tracetest.NewInMemoryExporter()
+			tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
+			defer tp.Shutdown(context.Background())
+
+			// Restore the global tracer provider after the test to avoid side effects.
+			defer func(prev oteltrace.TracerProvider) { otel.SetTracerProvider(prev) }(otel.GetTracerProvider())
+			otel.SetTracerProvider(tp)
 
 			l, err := net.Listen("tcp", "127.0.0.1:0")
 			if err != nil {
@@ -348,14 +346,6 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 
 	// Ensure any lingering HTTP/2 connections are closed to avoid goroutine leaks.
 	defer http.DefaultTransport.(*http.Transport).CloseIdleConnections()
-
-	exporter := tracetest.NewInMemoryExporter()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
-	defer tp.Shutdown(context.Background())
-
-	// Restore the global tracer provider after the test to avoid side effects.
-	defer func(prev oteltrace.TracerProvider) { otel.SetTracerProvider(prev) }(otel.GetTracerProvider())
-	otel.SetTracerProvider(tp)
 
 	successfulEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
@@ -523,7 +513,13 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			exporter.Reset()
+			exporter := tracetest.NewInMemoryExporter()
+			tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
+			defer tp.Shutdown(context.Background())
+
+			// Restore the global tracer provider after the test to avoid side effects.
+			defer func(prev oteltrace.TracerProvider) { otel.SetTracerProvider(prev) }(otel.GetTracerProvider())
+			otel.SetTracerProvider(tp)
 
 			l, err := net.Listen("tcp", "127.0.0.1:0")
 			if err != nil {
@@ -835,14 +831,6 @@ func TestDial_Telemetry_Combinations(t *testing.T) {
 	// Ensure any lingering HTTP/2 connections are closed to avoid goroutine leaks.
 	defer http.DefaultTransport.(*http.Transport).CloseIdleConnections()
 
-	exporter := tracetest.NewInMemoryExporter()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
-	defer tp.Shutdown(context.Background())
-
-	// Restore the global tracer provider after the test to avoid side effects.
-	defer func(prev oteltrace.TracerProvider) { otel.SetTracerProvider(prev) }(otel.GetTracerProvider())
-	otel.SetTracerProvider(tp)
-
 	errorEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
 			return nil, status.Error(grpccodes.Internal, "test error")
@@ -934,7 +922,14 @@ func TestDial_Telemetry_Combinations(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			exporter.Reset()
+			exporter := tracetest.NewInMemoryExporter()
+			tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
+			defer tp.Shutdown(context.Background())
+
+			// Restore the global tracer provider after the test to avoid side effects.
+			defer func(prev oteltrace.TracerProvider) { otel.SetTracerProvider(prev) }(otel.GetTracerProvider())
+			otel.SetTracerProvider(tp)
+
 			gax.TestOnlyResetIsFeatureEnabled()
 			defer gax.TestOnlyResetIsFeatureEnabled()
 
