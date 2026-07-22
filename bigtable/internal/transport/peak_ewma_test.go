@@ -36,25 +36,68 @@ func TestPeakEwma_SeededValueBeforeUpdate(t *testing.T) {
 	}
 }
 
-// TestPeakEwma_FirstUpdateOverridesSeed pins the "seed is authoritative
-// only until the first Update" behavior documented on NewPeakEwmaSeeded.
-// If this ever silently changed to blend the seed into the first sample,
-// AFE picker cold-start behavior would drift for a full tau window.
-func TestPeakEwma_FirstUpdateOverridesSeed(t *testing.T) {
-	seed := 1 * time.Millisecond
-	sample := 42 * time.Millisecond
-	e := NewPeakEwmaSeeded(1*time.Second, seed)
-	e.Update(sample)
-	if got := e.Value(); got != float64(sample) {
-		t.Errorf("Value() after first Update = %v, want %v (seed must be overridden)",
-			got, float64(sample))
+// TestPeakEwma_PeakSnapOnHigherSample pins the "peak" in PeakEwma:
+// samples strictly higher than the current value snap up immediately
+// with no blend. Without this, the tracker degenerates into a plain
+// symmetric EWMA and a new AFE with one lucky-fast sample would look
+// instantly cheap to the least-latency picker.
+func TestPeakEwma_PeakSnapOnHigherSample(t *testing.T) {
+	e := NewPeakEwmaSeeded(1*time.Second, 1*time.Millisecond)
+	e.Update(50 * time.Millisecond)
+	if got := e.Value(); got != float64(50*time.Millisecond) {
+		t.Errorf("Value() after higher sample = %v, want peak-snap to %v",
+			got, float64(50*time.Millisecond))
 	}
 }
 
-// TestPeakEwma_ConvergesOnConstantSample proves the EWMA is exact on a
-// constant stream: for any weight, w*L + (1-w)*L == L. This holds
-// regardless of the wall-clock gap between updates, so the test is
-// deterministic without time control.
+// TestPeakEwma_SeedRetainedOnLowerFirstSample pins the contract that
+// a seeded PeakEwma's first Update does NOT snap to the sample when
+// the sample is lower than the seed. The seed remains the
+// authoritative baseline; the sample decays into it per e^(-dt/tau).
+//
+// Regression this test prevents: an earlier impl used a
+// `lastUpdate.IsZero()` branch that snapped to the sample on the
+// first Update, discarding the seed and defeating cold-start
+// weighting.
+func TestPeakEwma_SeedRetainedOnLowerFirstSample(t *testing.T) {
+	seed := 1 * time.Millisecond
+	sample := 100 * time.Microsecond // below seed
+	// Large tau so decay in the microseconds between construction and
+	// Update is negligible; value should stay very close to seed.
+	e := NewPeakEwmaSeeded(1*time.Hour, seed)
+	e.Update(sample)
+	got := e.Value()
+	// Sample is 10% of seed. With near-zero elapsed vs tau=1h, decay ~ 1
+	// so value ~ seed * 1 + sample * ~0 ~= seed. Allow a 1% band for
+	// non-zero elapsed.
+	if math.Abs(got-float64(seed)) > float64(seed)*0.01 {
+		t.Errorf("Value() = %v after lower-sample Update, want ~seed (%v) — seed must not be snapped away",
+			got, float64(seed))
+	}
+	if got == float64(sample) {
+		t.Error("Value() snapped to lower sample; seed was discarded")
+	}
+}
+
+// TestPeakEwma_NonPositiveSampleIgnored pins the rule that zero or
+// negative latencies are ignored, not blended in. A negative rtt is a
+// bug at the source (clock skew, underflow) and must not corrupt the
+// tracker.
+func TestPeakEwma_NonPositiveSampleIgnored(t *testing.T) {
+	const seed = 5 * time.Millisecond
+	e := NewPeakEwmaSeeded(1*time.Second, seed)
+	e.Update(0)
+	e.Update(-1 * time.Millisecond)
+	if got := e.Value(); got != float64(seed) {
+		t.Errorf("Value() after non-positive updates = %v, want unchanged %v",
+			got, float64(seed))
+	}
+}
+
+// TestPeakEwma_ConvergesOnConstantSample proves the tracker is exact
+// on a constant stream: for any decay weight, w*L + (1-w)*L == L. The
+// peak-step is a no-op when sample == current, so the decay-step
+// dominates. Holds regardless of the wall-clock gap between updates.
 func TestPeakEwma_ConvergesOnConstantSample(t *testing.T) {
 	const L = 5 * time.Millisecond
 	e := NewPeakEwma(100 * time.Millisecond)
@@ -67,10 +110,12 @@ func TestPeakEwma_ConvergesOnConstantSample(t *testing.T) {
 	}
 }
 
-// TestPeakEwma_ValueBoundedByObservedSamples pins the convex-combination
-// invariant: the EWMA can never leave the [min, max] range of samples it
-// has seen. Guards against a math typo (e.g. blending with a negative
-// weight) that would let the value overshoot in either direction.
+// TestPeakEwma_ValueBoundedByObservedSamples pins the convex-
+// combination invariant on the decay-step: after any sequence of
+// samples, Value stays within [min, max] of samples seen. Peak-step
+// preserves this trivially (snap-up to an observed sample); decay-step
+// preserves it via the blend. Guards against a math typo that would
+// let value overshoot.
 func TestPeakEwma_ValueBoundedByObservedSamples(t *testing.T) {
 	samples := []time.Duration{
 		3 * time.Millisecond,
@@ -114,12 +159,12 @@ func TestPeakEwma_ValueIsPureRead(t *testing.T) {
 	}
 }
 
-// TestPeakEwma_LargeGapDominatesWithNewSample verifies the decay math:
-// when dt >> tau, weight = e^(-dt/tau) collapses toward 0 and Value
-// tracks the newest sample. Uses tau=1ms and a 50ms real sleep so
-// weight ≈ e^-50 ≈ 2e-22 — five orders of magnitude below the tolerance
-// so scheduler jitter cannot flake the test.
-func TestPeakEwma_LargeGapDominatesWithNewSample(t *testing.T) {
+// TestPeakEwma_LargeGapDominatesLowerSample verifies the decay math on
+// the decay-step: with dt >> tau, weight → 0 and Value tracks the
+// (lower) new sample. Peak-snap doesn't fire because the second sample
+// is smaller than the first. Uses tau=1ms + 50ms sleep so residual
+// weight on the first sample is ~e^-50 ≈ 2e-22.
+func TestPeakEwma_LargeGapDominatesLowerSample(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping under -short: relies on a real 50ms sleep")
 	}
@@ -134,12 +179,63 @@ func TestPeakEwma_LargeGapDominatesWithNewSample(t *testing.T) {
 	e.Update(secondSamp)
 
 	got := e.Value()
-	// After a 50ms gap with tau=1ms the residual weight on firstSamp is
-	// vanishing; Value should be within 1% of secondSamp.
 	tolerance := float64(secondSamp) * 0.01
 	if math.Abs(got-float64(secondSamp)) > tolerance {
-		t.Errorf("Value() = %v after wide gap, want within %v of %v",
+		t.Errorf("Value() = %v after wide gap + lower sample, want within %v of %v",
 			got, tolerance, float64(secondSamp))
+	}
+}
+
+// TestPeakEwma_ZeroTauSafe pins the defensive guard against a
+// NaN-producing edge case: tau == 0 combined with dt == 0 would
+// otherwise evaluate exp(-0/0) = exp(NaN) = NaN. With the tau <= 0
+// branch collapsing decay to 0, the new sample fully replaces the old
+// — the natural limit as tau → 0. Reported by gemini-code-assist on
+// PR #20187.
+func TestPeakEwma_ZeroTauSafe(t *testing.T) {
+	e := NewPeakEwmaSeeded(0, 5*time.Millisecond)
+	e.Update(3 * time.Millisecond)
+	got := e.Value()
+	if math.IsNaN(got) {
+		t.Fatal("Value() = NaN after tau=0 Update")
+	}
+	if got != float64(3*time.Millisecond) {
+		t.Errorf("Value() = %v after tau=0, want new sample %v (zero-memory limit)",
+			got, float64(3*time.Millisecond))
+	}
+}
+
+// TestPeakEwma_BackwardClockNoOvershoot pins the defensive clamp
+// against a backward clock jump: dt < 0 would otherwise produce a
+// blend weight > 1 (exp of a positive number), which would let the
+// new sample push Value outside [min,max] of observed samples. Also
+// addresses the second part of gemini-code-assist's PR #20187 review.
+//
+// We can't rewind the wall clock in a test, so instead reach into the
+// state and set lastUpdate to the future; the next Update's dt is
+// then negative and must be clamped.
+func TestPeakEwma_BackwardClockNoOvershoot(t *testing.T) {
+	const (
+		seed   = 10 * time.Millisecond
+		sample = 3 * time.Millisecond // must be < seed so peak-snap doesn't fire
+	)
+	e := NewPeakEwmaSeeded(1*time.Second, seed)
+	// Simulate a wall clock rewind by pushing lastUpdate 1 minute
+	// ahead. Without the clamp, dt = -1min → decay = exp(+60/1) → huge;
+	// value = seed*huge + sample*(1-huge) → unbounded (or negative).
+	e.mu.Lock()
+	e.lastUpdate = time.Now().Add(1 * time.Minute)
+	e.mu.Unlock()
+
+	e.Update(sample)
+	got := e.Value()
+	// With dt clamped to 0, decay = 1, so value = seed*1 + sample*0 = seed.
+	if math.IsNaN(got) || math.IsInf(got, 0) {
+		t.Fatalf("Value() = %v after backward-clock Update; want finite", got)
+	}
+	if got < float64(sample) || got > float64(seed) {
+		t.Errorf("Value() = %v, want in [%v, %v] (backward clock must not push value outside sample range)",
+			got, float64(sample), float64(seed))
 	}
 }
 
@@ -189,8 +285,8 @@ func TestPeakEwma_ConcurrentUpdatesRaceSafe(t *testing.T) {
 	close(stop)     // release readers.
 	readerWG.Wait()
 
-	// All samples were `sample`, so the EWMA must equal `sample` exactly
-	// regardless of interleaving (constant-sample invariant).
+	// All samples were `sample`, so the tracker must equal `sample`
+	// exactly regardless of interleaving (constant-sample invariant).
 	if got := e.Value(); got != float64(sample) {
 		t.Errorf("Value() after concurrent constant-sample updates = %v, want %v",
 			got, float64(sample))
