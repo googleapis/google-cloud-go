@@ -2864,8 +2864,8 @@ const file_google_cloud_commerceproducer_v1beta_private_offer_proto_rawDesc = ""
 	"&STANDARD_END_USER_LICENSE_AGREEMENT_V1\x10\x03\x12*\n" +
 	"&STANDARD_END_USER_LICENSE_AGREEMENT_V2\x10\x04:\xc3\x01\xeaA\xbf\x01\n" +
 	"4commerceproducer.googleapis.com/PrivateOfferDocument\x12Zprojects/{project}/locations/{location}/privateOffers/{private_offer}/documents/{document}*\x15privateOfferDocuments2\x14privateOfferDocumentB\t\n" +
-	"\acontentB\xbc\x01\n" +
-	"(com.google.cloud.commerceproducer.v1betaB\x11PrivateOfferProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Betab\x06proto3"
+	"\acontentB\xe6\x01\n" +
+	"(com.google.cloud.commerceproducer.v1betaB\x11PrivateOfferProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Beta\xea\x02'Google::Cloud::CommerceProducer::V1betab\x06proto3"
 
 var (
 	file_google_cloud_commerceproducer_v1beta_private_offer_proto_rawDescOnce sync.Once

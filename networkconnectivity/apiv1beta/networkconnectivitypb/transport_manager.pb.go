@@ -307,6 +307,59 @@ func (RemoteTransportProfile_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{0, 3}
 }
 
+// Provider type for this profile.
+type RemoteTransportProfile_ProviderType int32
+
+const (
+	// Unspecified provider type.
+	RemoteTransportProfile_PROVIDER_TYPE_UNSPECIFIED RemoteTransportProfile_ProviderType = 0
+	// Represents a Cloud service provider.
+	RemoteTransportProfile_CLOUD RemoteTransportProfile_ProviderType = 1
+	// Represents a Network service provider.
+	RemoteTransportProfile_NETWORK RemoteTransportProfile_ProviderType = 2
+)
+
+// Enum value maps for RemoteTransportProfile_ProviderType.
+var (
+	RemoteTransportProfile_ProviderType_name = map[int32]string{
+		0: "PROVIDER_TYPE_UNSPECIFIED",
+		1: "CLOUD",
+		2: "NETWORK",
+	}
+	RemoteTransportProfile_ProviderType_value = map[string]int32{
+		"PROVIDER_TYPE_UNSPECIFIED": 0,
+		"CLOUD":                     1,
+		"NETWORK":                   2,
+	}
+)
+
+func (x RemoteTransportProfile_ProviderType) Enum() *RemoteTransportProfile_ProviderType {
+	p := new(RemoteTransportProfile_ProviderType)
+	*p = x
+	return p
+}
+
+func (x RemoteTransportProfile_ProviderType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RemoteTransportProfile_ProviderType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[4].Descriptor()
+}
+
+func (RemoteTransportProfile_ProviderType) Type() protoreflect.EnumType {
+	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[4]
+}
+
+func (x RemoteTransportProfile_ProviderType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use RemoteTransportProfile_ProviderType.Descriptor instead.
+func (RemoteTransportProfile_ProviderType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{0, 4}
+}
+
 // Supported bandwidth options.
 type Transport_Bandwidth int32
 
@@ -388,11 +441,11 @@ func (x Transport_Bandwidth) String() string {
 }
 
 func (Transport_Bandwidth) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[4].Descriptor()
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[5].Descriptor()
 }
 
 func (Transport_Bandwidth) Type() protoreflect.EnumType {
-	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[4]
+	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[5]
 }
 
 func (x Transport_Bandwidth) Number() protoreflect.EnumNumber {
@@ -401,7 +454,7 @@ func (x Transport_Bandwidth) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Transport_Bandwidth.Descriptor instead.
 func (Transport_Bandwidth) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{4, 0}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{6, 0}
 }
 
 // IP version stack for the established connectivity.
@@ -441,11 +494,11 @@ func (x Transport_StackType) String() string {
 }
 
 func (Transport_StackType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[5].Descriptor()
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[6].Descriptor()
 }
 
 func (Transport_StackType) Type() protoreflect.EnumType {
-	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[5]
+	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[6]
 }
 
 func (x Transport_StackType) Number() protoreflect.EnumNumber {
@@ -454,7 +507,7 @@ func (x Transport_StackType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Transport_StackType.Descriptor instead.
 func (Transport_StackType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{4, 1}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{6, 1}
 }
 
 // Represents the status of the underlying connectivity. One of
@@ -521,11 +574,11 @@ func (x Transport_State) String() string {
 }
 
 func (Transport_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[6].Descriptor()
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[7].Descriptor()
 }
 
 func (Transport_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[6]
+	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[7]
 }
 
 func (x Transport_State) Number() protoreflect.EnumNumber {
@@ -534,7 +587,7 @@ func (x Transport_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Transport_State.Descriptor instead.
 func (Transport_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{4, 2}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{6, 2}
 }
 
 // The overall status of the Transport.
@@ -588,11 +641,11 @@ func (x GetStatusResponse_OverallStatus) String() string {
 }
 
 func (GetStatusResponse_OverallStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[7].Descriptor()
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[8].Descriptor()
 }
 
 func (GetStatusResponse_OverallStatus) Type() protoreflect.EnumType {
-	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[7]
+	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[8]
 }
 
 func (x GetStatusResponse_OverallStatus) Number() protoreflect.EnumNumber {
@@ -601,7 +654,7 @@ func (x GetStatusResponse_OverallStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GetStatusResponse_OverallStatus.Descriptor instead.
 func (GetStatusResponse_OverallStatus) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{9, 0}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{11, 0}
 }
 
 // The operational status of the underlying networking components.
@@ -641,11 +694,11 @@ func (x GetStatusResponse_OperationalStatus) String() string {
 }
 
 func (GetStatusResponse_OperationalStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[8].Descriptor()
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[9].Descriptor()
 }
 
 func (GetStatusResponse_OperationalStatus) Type() protoreflect.EnumType {
-	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[8]
+	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[9]
 }
 
 func (x GetStatusResponse_OperationalStatus) Number() protoreflect.EnumNumber {
@@ -654,7 +707,7 @@ func (x GetStatusResponse_OperationalStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GetStatusResponse_OperationalStatus.Descriptor instead.
 func (GetStatusResponse_OperationalStatus) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{9, 1}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{11, 1}
 }
 
 // Current status of connectivity to the local GCP resource. This reflects
@@ -695,11 +748,11 @@ func (x GetStatusResponse_ConnectivityStatus) String() string {
 }
 
 func (GetStatusResponse_ConnectivityStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[9].Descriptor()
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[10].Descriptor()
 }
 
 func (GetStatusResponse_ConnectivityStatus) Type() protoreflect.EnumType {
-	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[9]
+	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[10]
 }
 
 func (x GetStatusResponse_ConnectivityStatus) Number() protoreflect.EnumNumber {
@@ -708,7 +761,7 @@ func (x GetStatusResponse_ConnectivityStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GetStatusResponse_ConnectivityStatus.Descriptor instead.
 func (GetStatusResponse_ConnectivityStatus) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{9, 2}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{11, 2}
 }
 
 // Current status of MACSec on the underlying network connectivity between GC
@@ -754,11 +807,11 @@ func (x GetStatusResponse_MacSecStatus) String() string {
 }
 
 func (GetStatusResponse_MacSecStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[10].Descriptor()
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[11].Descriptor()
 }
 
 func (GetStatusResponse_MacSecStatus) Type() protoreflect.EnumType {
-	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[10]
+	return &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes[11]
 }
 
 func (x GetStatusResponse_MacSecStatus) Number() protoreflect.EnumNumber {
@@ -767,7 +820,7 @@ func (x GetStatusResponse_MacSecStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GetStatusResponse_MacSecStatus.Descriptor instead.
 func (GetStatusResponse_MacSecStatus) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{9, 3}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{11, 3}
 }
 
 // Message describing RemoteTransportProfile object.
@@ -799,7 +852,9 @@ type RemoteTransportProfile struct {
 	OrderState RemoteTransportProfile_State `protobuf:"varint,12,opt,name=order_state,json=orderState,proto3,enum=google.cloud.networkconnectivity.v1beta.RemoteTransportProfile_State" json:"order_state,omitempty"`
 	// Output only. Human readable name of this profile, used to identify this
 	// profile in the UI.
-	DisplayName   string `protobuf:"bytes,13,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	DisplayName string `protobuf:"bytes,13,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	// Output only. Provider type for this profile.
+	ProviderType  RemoteTransportProfile_ProviderType `protobuf:"varint,14,opt,name=provider_type,json=providerType,proto3,enum=google.cloud.networkconnectivity.v1beta.RemoteTransportProfile_ProviderType" json:"provider_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -902,6 +957,13 @@ func (x *RemoteTransportProfile) GetDisplayName() string {
 		return x.DisplayName
 	}
 	return ""
+}
+
+func (x *RemoteTransportProfile) GetProviderType() RemoteTransportProfile_ProviderType {
+	if x != nil {
+		return x.ProviderType
+	}
+	return RemoteTransportProfile_PROVIDER_TYPE_UNSPECIFIED
 }
 
 // Message for requesting list of RemoteTransportProfiles.
@@ -1097,6 +1159,108 @@ func (x *GetRemoteTransportProfileRequest) GetName() string {
 	return ""
 }
 
+// Message for getting a RemoteTransportProfile from an activation key.
+type ParseFromActivationKeyRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Parent value for ParseFromActivationKeyRequest.
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The activation key to get the RemoteTransportProfile for.
+	ActivationKey string `protobuf:"bytes,2,opt,name=activation_key,json=activationKey,proto3" json:"activation_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ParseFromActivationKeyRequest) Reset() {
+	*x = ParseFromActivationKeyRequest{}
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ParseFromActivationKeyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ParseFromActivationKeyRequest) ProtoMessage() {}
+
+func (x *ParseFromActivationKeyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ParseFromActivationKeyRequest.ProtoReflect.Descriptor instead.
+func (*ParseFromActivationKeyRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ParseFromActivationKeyRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ParseFromActivationKeyRequest) GetActivationKey() string {
+	if x != nil {
+		return x.ActivationKey
+	}
+	return ""
+}
+
+// Message for response to getting a RemoteTransportProfile from an activation
+// key.
+type ParseFromActivationKeyResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The RemoteTransportProfile that was parsed from the activation key.
+	RemoteTransportProfile *RemoteTransportProfile `protobuf:"bytes,1,opt,name=remote_transport_profile,json=remoteTransportProfile,proto3" json:"remote_transport_profile,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *ParseFromActivationKeyResponse) Reset() {
+	*x = ParseFromActivationKeyResponse{}
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ParseFromActivationKeyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ParseFromActivationKeyResponse) ProtoMessage() {}
+
+func (x *ParseFromActivationKeyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ParseFromActivationKeyResponse.ProtoReflect.Descriptor instead.
+func (*ParseFromActivationKeyResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ParseFromActivationKeyResponse) GetRemoteTransportProfile() *RemoteTransportProfile {
+	if x != nil {
+		return x.RemoteTransportProfile
+	}
+	return nil
+}
+
 // Message describing Transport object.
 type Transport struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1110,12 +1274,12 @@ type Transport struct {
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Optional. Description of the Transport.
 	Description string `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
-	// Optional. Name of the remoteTransportProfile that this Transport is
-	// connecting to.
+	// Optional. Immutable. Name of the remoteTransportProfile that this Transport
+	// is connecting to.
 	RemoteProfile string `protobuf:"bytes,7,opt,name=remote_profile,json=remoteProfile,proto3" json:"remote_profile,omitempty"`
-	// Optional. Key used for establishing a connection with the remote transport.
-	// This key can only be provided if the profile supports an INPUT key flow and
-	// the resource is in the PENDING_KEY state.
+	// Optional. Immutable. Key used for establishing a connection with the remote
+	// transport. This key can only be provided if the profile supports an INPUT
+	// key flow and the resource is in the PENDING_KEY state.
 	ProvidedActivationKey string `protobuf:"bytes,8,opt,name=provided_activation_key,json=providedActivationKey,proto3" json:"provided_activation_key,omitempty"`
 	// Output only. Google-generated activation key. This is only output if the
 	// selected profile supports an OUTPUT key flow. Inputting this to the
@@ -1140,27 +1304,43 @@ type Transport struct {
 	// your Transport does not affect billing, and retains the underlying network
 	// bandwidth associated with the connectivity.
 	AdminEnabled bool `protobuf:"varint,14,opt,name=admin_enabled,json=adminEnabled,proto3" json:"admin_enabled,omitempty"`
-	// Optional. Resource URI of the Network that will be peered with this
-	// Transport. This field must be provided during resource creation and cannot
-	// be changed.
+	// Optional. Immutable. Resource URI of the Network that will be peered with
+	// this Transport. This field must be provided during resource creation and
+	// cannot be changed.
 	Network string `protobuf:"bytes,15,opt,name=network,proto3" json:"network,omitempty"`
 	// Optional. List of IP Prefixes that will be advertised to the remote
 	// provider. Both IPv4 and IPv6 addresses are supported.
 	AdvertisedRoutes []string `protobuf:"bytes,16,rep,name=advertised_routes,json=advertisedRoutes,proto3" json:"advertised_routes,omitempty"`
-	// Optional. The user supplied account id for the CSP associated with the
-	// remote profile.
+	// Optional. Immutable. The user supplied account id for the CSP associated
+	// with the remote profile.
 	RemoteAccountId string `protobuf:"bytes,17,opt,name=remote_account_id,json=remoteAccountId,proto3" json:"remote_account_id,omitempty"`
 	// Output only. VPC Network URI that was created for the VPC Peering
 	// connection to the provided `network`. If VPC Peering is disconnected, this
 	// can be used to re-establish.
 	PeeringNetwork string `protobuf:"bytes,18,opt,name=peering_network,json=peeringNetwork,proto3" json:"peering_network,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Optional. Immutable. The NCC Hub that the Transport should attach to. The
+	// hub must be in the same project as the Transport. Format:
+	// `{hub}` or `projects/{project}/locations/global/hubs/{hub}`
+	Hub string `protobuf:"bytes,19,opt,name=hub,proto3" json:"hub,omitempty"`
+	// Optional. Immutable. Controls whether a Routing VPC Spoke should be created
+	// and attached to the NCC Hub. This will provide Private Service Connect
+	// (PSC) connectivity through NCC. This can only be set when the Transport is
+	// first created.
+	PscRoutingEnabled bool `protobuf:"varint,20,opt,name=psc_routing_enabled,json=pscRoutingEnabled,proto3" json:"psc_routing_enabled,omitempty"`
+	// Optional. Immutable. Controls whether resources proposed by the Transport
+	// are automatically accepted on behalf of the user. List of actions that can
+	// be automatically accepted are:
+	// 1. VPC Peering creation
+	// 2. Routing VPC Spoke creation
+	// 3. Hybrid Spoke creation
+	AutoAccept    bool `protobuf:"varint,21,opt,name=auto_accept,json=autoAccept,proto3" json:"auto_accept,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Transport) Reset() {
 	*x = Transport{}
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[4]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1172,7 +1352,7 @@ func (x *Transport) String() string {
 func (*Transport) ProtoMessage() {}
 
 func (x *Transport) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[4]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1185,7 +1365,7 @@ func (x *Transport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Transport.ProtoReflect.Descriptor instead.
 func (*Transport) Descriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Transport) GetName() string {
@@ -1307,6 +1487,27 @@ func (x *Transport) GetPeeringNetwork() string {
 	return ""
 }
 
+func (x *Transport) GetHub() string {
+	if x != nil {
+		return x.Hub
+	}
+	return ""
+}
+
+func (x *Transport) GetPscRoutingEnabled() bool {
+	if x != nil {
+		return x.PscRoutingEnabled
+	}
+	return false
+}
+
+func (x *Transport) GetAutoAccept() bool {
+	if x != nil {
+		return x.AutoAccept
+	}
+	return false
+}
+
 // Message for requesting list of Transports.
 type ListTransportsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1327,7 +1528,7 @@ type ListTransportsRequest struct {
 
 func (x *ListTransportsRequest) Reset() {
 	*x = ListTransportsRequest{}
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[5]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1339,7 +1540,7 @@ func (x *ListTransportsRequest) String() string {
 func (*ListTransportsRequest) ProtoMessage() {}
 
 func (x *ListTransportsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[5]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1352,7 +1553,7 @@ func (x *ListTransportsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTransportsRequest.ProtoReflect.Descriptor instead.
 func (*ListTransportsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListTransportsRequest) GetParent() string {
@@ -1405,7 +1606,7 @@ type ListTransportsResponse struct {
 
 func (x *ListTransportsResponse) Reset() {
 	*x = ListTransportsResponse{}
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[6]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1417,7 +1618,7 @@ func (x *ListTransportsResponse) String() string {
 func (*ListTransportsResponse) ProtoMessage() {}
 
 func (x *ListTransportsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[6]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1430,7 +1631,7 @@ func (x *ListTransportsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTransportsResponse.ProtoReflect.Descriptor instead.
 func (*ListTransportsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListTransportsResponse) GetTransports() []*Transport {
@@ -1465,7 +1666,7 @@ type GetTransportRequest struct {
 
 func (x *GetTransportRequest) Reset() {
 	*x = GetTransportRequest{}
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[7]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1477,7 +1678,7 @@ func (x *GetTransportRequest) String() string {
 func (*GetTransportRequest) ProtoMessage() {}
 
 func (x *GetTransportRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[7]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1490,7 +1691,7 @@ func (x *GetTransportRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTransportRequest.ProtoReflect.Descriptor instead.
 func (*GetTransportRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetTransportRequest) GetName() string {
@@ -1504,14 +1705,17 @@ func (x *GetTransportRequest) GetName() string {
 type GetStatusRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Name of the resource.
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. If set to true, the response will bypass any caches and return
+	// the freshest possible data.
+	SkipCache     bool `protobuf:"varint,2,opt,name=skip_cache,json=skipCache,proto3" json:"skip_cache,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetStatusRequest) Reset() {
 	*x = GetStatusRequest{}
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[8]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1523,7 +1727,7 @@ func (x *GetStatusRequest) String() string {
 func (*GetStatusRequest) ProtoMessage() {}
 
 func (x *GetStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[8]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1536,7 +1740,7 @@ func (x *GetStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetStatusRequest.ProtoReflect.Descriptor instead.
 func (*GetStatusRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetStatusRequest) GetName() string {
@@ -1544,6 +1748,13 @@ func (x *GetStatusRequest) GetName() string {
 		return x.Name
 	}
 	return ""
+}
+
+func (x *GetStatusRequest) GetSkipCache() bool {
+	if x != nil {
+		return x.SkipCache
+	}
+	return false
 }
 
 // Message for the response to getting a Transport's operational status.
@@ -1568,7 +1779,7 @@ type GetStatusResponse struct {
 
 func (x *GetStatusResponse) Reset() {
 	*x = GetStatusResponse{}
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[9]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1580,7 +1791,7 @@ func (x *GetStatusResponse) String() string {
 func (*GetStatusResponse) ProtoMessage() {}
 
 func (x *GetStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[9]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1593,7 +1804,7 @@ func (x *GetStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetStatusResponse.ProtoReflect.Descriptor instead.
 func (*GetStatusResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetStatusResponse) GetOverallStatus() GetStatusResponse_OverallStatus {
@@ -1653,7 +1864,7 @@ type CreateTransportRequest struct {
 
 func (x *CreateTransportRequest) Reset() {
 	*x = CreateTransportRequest{}
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[10]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1665,7 +1876,7 @@ func (x *CreateTransportRequest) String() string {
 func (*CreateTransportRequest) ProtoMessage() {}
 
 func (x *CreateTransportRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[10]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1678,7 +1889,7 @@ func (x *CreateTransportRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTransportRequest.ProtoReflect.Descriptor instead.
 func (*CreateTransportRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *CreateTransportRequest) GetParent() string {
@@ -1741,7 +1952,7 @@ type UpdateTransportRequest struct {
 
 func (x *UpdateTransportRequest) Reset() {
 	*x = UpdateTransportRequest{}
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[11]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1753,7 +1964,7 @@ func (x *UpdateTransportRequest) String() string {
 func (*UpdateTransportRequest) ProtoMessage() {}
 
 func (x *UpdateTransportRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[11]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1766,7 +1977,7 @@ func (x *UpdateTransportRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateTransportRequest.ProtoReflect.Descriptor instead.
 func (*UpdateTransportRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *UpdateTransportRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -1815,7 +2026,7 @@ type DeleteTransportRequest struct {
 
 func (x *DeleteTransportRequest) Reset() {
 	*x = DeleteTransportRequest{}
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[12]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1827,7 +2038,7 @@ func (x *DeleteTransportRequest) String() string {
 func (*DeleteTransportRequest) ProtoMessage() {}
 
 func (x *DeleteTransportRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[12]
+	mi := &file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1840,7 +2051,7 @@ func (x *DeleteTransportRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTransportRequest.ProtoReflect.Descriptor instead.
 func (*DeleteTransportRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DeleteTransportRequest) GetName() string {
@@ -1861,7 +2072,7 @@ var File_google_cloud_networkconnectivity_v1beta_transport_manager_proto protore
 
 const file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/networkconnectivity/v1beta/transport_manager.proto\x12'google.cloud.networkconnectivity.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/networkconnectivity/v1beta/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xed\v\n" +
+	"?google/cloud/networkconnectivity/v1beta/transport_manager.proto\x12'google.cloud.networkconnectivity.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/networkconnectivity/v1beta/common.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\r\n" +
 	"\x16RemoteTransportProfile\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12h\n" +
 	"\x06labels\x18\x04 \x03(\v2K.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.LabelsEntryB\x03\xe0A\x03R\x06labels\x12%\n" +
@@ -1874,7 +2085,8 @@ const file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDe
 	"\x04flow\x18\v \x01(\x0e2S.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.KeyProvisioningFlowB\x03\xe0A\x03R\x04flow\x12k\n" +
 	"\vorder_state\x18\f \x01(\x0e2E.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.StateB\x03\xe0A\x03R\n" +
 	"orderState\x12&\n" +
-	"\fdisplay_name\x18\r \x01(\tB\x03\xe0A\x03R\vdisplayName\x1a9\n" +
+	"\fdisplay_name\x18\r \x01(\tB\x03\xe0A\x03R\vdisplayName\x12v\n" +
+	"\rprovider_type\x18\x0e \x01(\x0e2L.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.ProviderTypeB\x03\xe0A\x03R\fproviderType\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd2\x01\n" +
@@ -1911,7 +2123,11 @@ const file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDe
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06CLOSED\x10\x01\x12\b\n" +
-	"\x04OPEN\x10\x02:\xcc\x01\xeaA\xc8\x01\n" +
+	"\x04OPEN\x10\x02\"E\n" +
+	"\fProviderType\x12\x1d\n" +
+	"\x19PROVIDER_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
+	"\x05CLOUD\x10\x01\x12\v\n" +
+	"\aNETWORK\x10\x02:\xcc\x01\xeaA\xc8\x01\n" +
 	"9networkconnectivity.googleapis.com/RemoteTransportProfile\x12Zprojects/{project}/locations/{location}/remoteTransportProfiles/{remote_transport_profile}*\x17remoteTransportProfiles2\x16remoteTransportProfile\"\x82\x02\n" +
 	"\"ListRemoteTransportProfilesRequest\x12Y\n" +
 	"\x06parent\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\x129networkconnectivity.googleapis.com/RemoteTransportProfileR\x06parent\x12 \n" +
@@ -1926,7 +2142,12 @@ const file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDe
 	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"y\n" +
 	" GetRemoteTransportProfileRequest\x12U\n" +
 	"\x04name\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\n" +
-	"9networkconnectivity.googleapis.com/RemoteTransportProfileR\x04name\"\xac\r\n" +
+	"9networkconnectivity.googleapis.com/RemoteTransportProfileR\x04name\"\xa6\x01\n" +
+	"\x1dParseFromActivationKeyRequest\x12Y\n" +
+	"\x06parent\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\x129networkconnectivity.googleapis.com/RemoteTransportProfileR\x06parent\x12*\n" +
+	"\x0eactivation_key\x18\x02 \x01(\tB\x03\xe0A\x02R\ractivationKey\"\x9b\x01\n" +
+	"\x1eParseFromActivationKeyResponse\x12y\n" +
+	"\x18remote_transport_profile\x18\x01 \x01(\v2?.google.cloud.networkconnectivity.v1beta.RemoteTransportProfileR\x16remoteTransportProfile\"\xde\x0e\n" +
 	"\tTransport\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -1934,10 +2155,10 @@ const file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDe
 	"\vupdate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"updateTime\x12[\n" +
 	"\x06labels\x18\x04 \x03(\v2>.google.cloud.networkconnectivity.v1beta.Transport.LabelsEntryB\x03\xe0A\x01R\x06labels\x12%\n" +
-	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01R\vdescription\x12h\n" +
-	"\x0eremote_profile\x18\a \x01(\tBA\xe0A\x01\xfaA;\n" +
-	"9networkconnectivity.googleapis.com/RemoteTransportProfileR\rremoteProfile\x12;\n" +
-	"\x17provided_activation_key\x18\b \x01(\tB\x03\xe0A\x01R\x15providedActivationKey\x12=\n" +
+	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01R\vdescription\x12k\n" +
+	"\x0eremote_profile\x18\a \x01(\tBD\xe0A\x01\xe0A\x05\xfaA;\n" +
+	"9networkconnectivity.googleapis.com/RemoteTransportProfileR\rremoteProfile\x12>\n" +
+	"\x17provided_activation_key\x18\b \x01(\tB\x06\xe0A\x01\xe0A\x05R\x15providedActivationKey\x12=\n" +
 	"\x18generated_activation_key\x18\t \x01(\tB\x03\xe0A\x03R\x16generatedActivationKey\x12_\n" +
 	"\tbandwidth\x18\n" +
 	" \x01(\x0e2<.google.cloud.networkconnectivity.v1beta.Transport.BandwidthB\x03\xe0A\x01R\tbandwidth\x12`\n" +
@@ -1945,12 +2166,17 @@ const file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDe
 	"stack_type\x18\v \x01(\x0e2<.google.cloud.networkconnectivity.v1beta.Transport.StackTypeB\x03\xe0A\x01R\tstackType\x12S\n" +
 	"\x05state\x18\f \x01(\x0e28.google.cloud.networkconnectivity.v1beta.Transport.StateB\x03\xe0A\x03R\x05state\x12 \n" +
 	"\tmtu_limit\x18\r \x01(\x05B\x03\xe0A\x03R\bmtuLimit\x12(\n" +
-	"\radmin_enabled\x18\x0e \x01(\bB\x03\xe0A\x01R\fadminEnabled\x12@\n" +
-	"\anetwork\x18\x0f \x01(\tB&\xe0A\x01\xfaA \n" +
+	"\radmin_enabled\x18\x0e \x01(\bB\x03\xe0A\x01R\fadminEnabled\x12C\n" +
+	"\anetwork\x18\x0f \x01(\tB)\xe0A\x01\xe0A\x05\xfaA \n" +
 	"\x1ecompute.googleapis.com/NetworkR\anetwork\x120\n" +
-	"\x11advertised_routes\x18\x10 \x03(\tB\x03\xe0A\x01R\x10advertisedRoutes\x12/\n" +
-	"\x11remote_account_id\x18\x11 \x01(\tB\x03\xe0A\x01R\x0fremoteAccountId\x12,\n" +
-	"\x0fpeering_network\x18\x12 \x01(\tB\x03\xe0A\x03R\x0epeeringNetwork\x1a9\n" +
+	"\x11advertised_routes\x18\x10 \x03(\tB\x03\xe0A\x01R\x10advertisedRoutes\x122\n" +
+	"\x11remote_account_id\x18\x11 \x01(\tB\x06\xe0A\x01\xe0A\x05R\x0fremoteAccountId\x12,\n" +
+	"\x0fpeering_network\x18\x12 \x01(\tB\x03\xe0A\x03R\x0epeeringNetwork\x12C\n" +
+	"\x03hub\x18\x13 \x01(\tB1\xe0A\x01\xe0A\x05\xfaA(\n" +
+	"&networkconnectivity.googleapis.com/HubR\x03hub\x126\n" +
+	"\x13psc_routing_enabled\x18\x14 \x01(\bB\x06\xe0A\x01\xe0A\x05R\x11pscRoutingEnabled\x12'\n" +
+	"\vauto_accept\x18\x15 \x01(\bB\x06\xe0A\x01\xe0A\x05R\n" +
+	"autoAccept\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd2\x01\n" +
@@ -2003,10 +2229,12 @@ const file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDe
 	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"_\n" +
 	"\x13GetTransportRequest\x12H\n" +
 	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",networkconnectivity.googleapis.com/TransportR\x04name\"\\\n" +
+	",networkconnectivity.googleapis.com/TransportR\x04name\"\x80\x01\n" +
 	"\x10GetStatusRequest\x12H\n" +
 	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
-	",networkconnectivity.googleapis.com/TransportR\x04name\"\x85\b\n" +
+	",networkconnectivity.googleapis.com/TransportR\x04name\x12\"\n" +
+	"\n" +
+	"skip_cache\x18\x02 \x01(\bB\x03\xe0A\x01R\tskipCache\"\x85\b\n" +
 	"\x11GetStatusResponse\x12o\n" +
 	"\x0eoverall_status\x18\x01 \x01(\x0e2H.google.cloud.networkconnectivity.v1beta.GetStatusResponse.OverallStatusR\roverallStatus\x12{\n" +
 	"\x12operational_status\x18\x02 \x01(\x0e2L.google.cloud.networkconnectivity.v1beta.GetStatusResponse.OperationalStatusR\x11operationalStatus\x12~\n" +
@@ -2049,10 +2277,11 @@ const file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDe
 	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
 	",networkconnectivity.googleapis.com/TransportR\x04name\x12*\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId2\xc2\x0f\n" +
+	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId2\xe1\x11\n" +
 	"\x10TransportManager\x12\x8a\x02\n" +
 	"\x1bListRemoteTransportProfiles\x12K.google.cloud.networkconnectivity.v1beta.ListRemoteTransportProfilesRequest\x1aL.google.cloud.networkconnectivity.v1beta.ListRemoteTransportProfilesResponse\"P\xdaA\x06parent\x82\xd3\xe4\x93\x02A\x12?/v1beta/{parent=projects/*/locations/*}/remoteTransportProfiles\x12\xf7\x01\n" +
-	"\x19GetRemoteTransportProfile\x12I.google.cloud.networkconnectivity.v1beta.GetRemoteTransportProfileRequest\x1a?.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile\"N\xdaA\x04name\x82\xd3\xe4\x93\x02A\x12?/v1beta/{name=projects/*/locations/*/remoteTransportProfiles/*}\x12\xd6\x01\n" +
+	"\x19GetRemoteTransportProfile\x12I.google.cloud.networkconnectivity.v1beta.GetRemoteTransportProfileRequest\x1a?.google.cloud.networkconnectivity.v1beta.RemoteTransportProfile\"N\xdaA\x04name\x82\xd3\xe4\x93\x02A\x12?/v1beta/{name=projects/*/locations/*/remoteTransportProfiles/*}\x12\x9c\x02\n" +
+	"\x16ParseFromActivationKey\x12F.google.cloud.networkconnectivity.v1beta.ParseFromActivationKeyRequest\x1aG.google.cloud.networkconnectivity.v1beta.ParseFromActivationKeyResponse\"q\xdaA\x15parent,activation_key\x82\xd3\xe4\x93\x02S\x12Q/v1beta/{parent=projects/*/locations/*}/remoteTransportProfiles:fromActivationKey\x12\xd6\x01\n" +
 	"\x0eListTransports\x12>.google.cloud.networkconnectivity.v1beta.ListTransportsRequest\x1a?.google.cloud.networkconnectivity.v1beta.ListTransportsResponse\"C\xdaA\x06parent\x82\xd3\xe4\x93\x024\x122/v1beta/{parent=projects/*/locations/*}/transports\x12\xc3\x01\n" +
 	"\fGetTransport\x12<.google.cloud.networkconnectivity.v1beta.GetTransportRequest\x1a2.google.cloud.networkconnectivity.v1beta.Transport\"A\xdaA\x04name\x82\xd3\xe4\x93\x024\x122/v1beta/{name=projects/*/locations/*/transports/*}\x12\xcf\x01\n" +
 	"\tGetStatus\x129.google.cloud.networkconnectivity.v1beta.GetStatusRequest\x1a:.google.cloud.networkconnectivity.v1beta.GetStatusResponse\"K\xdaA\x04name\x82\xd3\xe4\x93\x02>\x12</v1beta/{name=projects/*/locations/*/transports/*}:getStatus\x12\xfa\x01\n" +
@@ -2076,81 +2305,88 @@ func file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDes
 	return file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDescData
 }
 
-var file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
-var file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_enumTypes = make([]protoimpl.EnumInfo, 12)
+var file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_goTypes = []any{
 	(RemoteTransportProfile_Bandwidth)(0),                // 0: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.Bandwidth
 	(RemoteTransportProfile_ServiceLevelAvailability)(0), // 1: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.ServiceLevelAvailability
 	(RemoteTransportProfile_KeyProvisioningFlow)(0),      // 2: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.KeyProvisioningFlow
 	(RemoteTransportProfile_State)(0),                    // 3: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.State
-	(Transport_Bandwidth)(0),                             // 4: google.cloud.networkconnectivity.v1beta.Transport.Bandwidth
-	(Transport_StackType)(0),                             // 5: google.cloud.networkconnectivity.v1beta.Transport.StackType
-	(Transport_State)(0),                                 // 6: google.cloud.networkconnectivity.v1beta.Transport.State
-	(GetStatusResponse_OverallStatus)(0),                 // 7: google.cloud.networkconnectivity.v1beta.GetStatusResponse.OverallStatus
-	(GetStatusResponse_OperationalStatus)(0),             // 8: google.cloud.networkconnectivity.v1beta.GetStatusResponse.OperationalStatus
-	(GetStatusResponse_ConnectivityStatus)(0),            // 9: google.cloud.networkconnectivity.v1beta.GetStatusResponse.ConnectivityStatus
-	(GetStatusResponse_MacSecStatus)(0),                  // 10: google.cloud.networkconnectivity.v1beta.GetStatusResponse.MacSecStatus
-	(*RemoteTransportProfile)(nil),                       // 11: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile
-	(*ListRemoteTransportProfilesRequest)(nil),           // 12: google.cloud.networkconnectivity.v1beta.ListRemoteTransportProfilesRequest
-	(*ListRemoteTransportProfilesResponse)(nil),          // 13: google.cloud.networkconnectivity.v1beta.ListRemoteTransportProfilesResponse
-	(*GetRemoteTransportProfileRequest)(nil),             // 14: google.cloud.networkconnectivity.v1beta.GetRemoteTransportProfileRequest
-	(*Transport)(nil),                                    // 15: google.cloud.networkconnectivity.v1beta.Transport
-	(*ListTransportsRequest)(nil),                        // 16: google.cloud.networkconnectivity.v1beta.ListTransportsRequest
-	(*ListTransportsResponse)(nil),                       // 17: google.cloud.networkconnectivity.v1beta.ListTransportsResponse
-	(*GetTransportRequest)(nil),                          // 18: google.cloud.networkconnectivity.v1beta.GetTransportRequest
-	(*GetStatusRequest)(nil),                             // 19: google.cloud.networkconnectivity.v1beta.GetStatusRequest
-	(*GetStatusResponse)(nil),                            // 20: google.cloud.networkconnectivity.v1beta.GetStatusResponse
-	(*CreateTransportRequest)(nil),                       // 21: google.cloud.networkconnectivity.v1beta.CreateTransportRequest
-	(*UpdateTransportRequest)(nil),                       // 22: google.cloud.networkconnectivity.v1beta.UpdateTransportRequest
-	(*DeleteTransportRequest)(nil),                       // 23: google.cloud.networkconnectivity.v1beta.DeleteTransportRequest
-	nil,                                                  // 24: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.LabelsEntry
-	nil,                                                  // 25: google.cloud.networkconnectivity.v1beta.Transport.LabelsEntry
-	(*timestamppb.Timestamp)(nil),                        // 26: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),                        // 27: google.protobuf.FieldMask
-	(*longrunningpb.Operation)(nil),                      // 28: google.longrunning.Operation
+	(RemoteTransportProfile_ProviderType)(0),             // 4: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.ProviderType
+	(Transport_Bandwidth)(0),                             // 5: google.cloud.networkconnectivity.v1beta.Transport.Bandwidth
+	(Transport_StackType)(0),                             // 6: google.cloud.networkconnectivity.v1beta.Transport.StackType
+	(Transport_State)(0),                                 // 7: google.cloud.networkconnectivity.v1beta.Transport.State
+	(GetStatusResponse_OverallStatus)(0),                 // 8: google.cloud.networkconnectivity.v1beta.GetStatusResponse.OverallStatus
+	(GetStatusResponse_OperationalStatus)(0),             // 9: google.cloud.networkconnectivity.v1beta.GetStatusResponse.OperationalStatus
+	(GetStatusResponse_ConnectivityStatus)(0),            // 10: google.cloud.networkconnectivity.v1beta.GetStatusResponse.ConnectivityStatus
+	(GetStatusResponse_MacSecStatus)(0),                  // 11: google.cloud.networkconnectivity.v1beta.GetStatusResponse.MacSecStatus
+	(*RemoteTransportProfile)(nil),                       // 12: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile
+	(*ListRemoteTransportProfilesRequest)(nil),           // 13: google.cloud.networkconnectivity.v1beta.ListRemoteTransportProfilesRequest
+	(*ListRemoteTransportProfilesResponse)(nil),          // 14: google.cloud.networkconnectivity.v1beta.ListRemoteTransportProfilesResponse
+	(*GetRemoteTransportProfileRequest)(nil),             // 15: google.cloud.networkconnectivity.v1beta.GetRemoteTransportProfileRequest
+	(*ParseFromActivationKeyRequest)(nil),                // 16: google.cloud.networkconnectivity.v1beta.ParseFromActivationKeyRequest
+	(*ParseFromActivationKeyResponse)(nil),               // 17: google.cloud.networkconnectivity.v1beta.ParseFromActivationKeyResponse
+	(*Transport)(nil),                                    // 18: google.cloud.networkconnectivity.v1beta.Transport
+	(*ListTransportsRequest)(nil),                        // 19: google.cloud.networkconnectivity.v1beta.ListTransportsRequest
+	(*ListTransportsResponse)(nil),                       // 20: google.cloud.networkconnectivity.v1beta.ListTransportsResponse
+	(*GetTransportRequest)(nil),                          // 21: google.cloud.networkconnectivity.v1beta.GetTransportRequest
+	(*GetStatusRequest)(nil),                             // 22: google.cloud.networkconnectivity.v1beta.GetStatusRequest
+	(*GetStatusResponse)(nil),                            // 23: google.cloud.networkconnectivity.v1beta.GetStatusResponse
+	(*CreateTransportRequest)(nil),                       // 24: google.cloud.networkconnectivity.v1beta.CreateTransportRequest
+	(*UpdateTransportRequest)(nil),                       // 25: google.cloud.networkconnectivity.v1beta.UpdateTransportRequest
+	(*DeleteTransportRequest)(nil),                       // 26: google.cloud.networkconnectivity.v1beta.DeleteTransportRequest
+	nil,                                                  // 27: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.LabelsEntry
+	nil,                                                  // 28: google.cloud.networkconnectivity.v1beta.Transport.LabelsEntry
+	(*timestamppb.Timestamp)(nil),                        // 29: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),                        // 30: google.protobuf.FieldMask
+	(*longrunningpb.Operation)(nil),                      // 31: google.longrunning.Operation
 }
 var file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_depIdxs = []int32{
-	24, // 0: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.labels:type_name -> google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.LabelsEntry
+	27, // 0: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.labels:type_name -> google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.LabelsEntry
 	0,  // 1: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.supported_bandwidths:type_name -> google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.Bandwidth
 	1,  // 2: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.sla:type_name -> google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.ServiceLevelAvailability
 	2,  // 3: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.flow:type_name -> google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.KeyProvisioningFlow
 	3,  // 4: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.order_state:type_name -> google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.State
-	11, // 5: google.cloud.networkconnectivity.v1beta.ListRemoteTransportProfilesResponse.remote_transport_profiles:type_name -> google.cloud.networkconnectivity.v1beta.RemoteTransportProfile
-	26, // 6: google.cloud.networkconnectivity.v1beta.Transport.create_time:type_name -> google.protobuf.Timestamp
-	26, // 7: google.cloud.networkconnectivity.v1beta.Transport.update_time:type_name -> google.protobuf.Timestamp
-	25, // 8: google.cloud.networkconnectivity.v1beta.Transport.labels:type_name -> google.cloud.networkconnectivity.v1beta.Transport.LabelsEntry
-	4,  // 9: google.cloud.networkconnectivity.v1beta.Transport.bandwidth:type_name -> google.cloud.networkconnectivity.v1beta.Transport.Bandwidth
-	5,  // 10: google.cloud.networkconnectivity.v1beta.Transport.stack_type:type_name -> google.cloud.networkconnectivity.v1beta.Transport.StackType
-	6,  // 11: google.cloud.networkconnectivity.v1beta.Transport.state:type_name -> google.cloud.networkconnectivity.v1beta.Transport.State
-	15, // 12: google.cloud.networkconnectivity.v1beta.ListTransportsResponse.transports:type_name -> google.cloud.networkconnectivity.v1beta.Transport
-	7,  // 13: google.cloud.networkconnectivity.v1beta.GetStatusResponse.overall_status:type_name -> google.cloud.networkconnectivity.v1beta.GetStatusResponse.OverallStatus
-	8,  // 14: google.cloud.networkconnectivity.v1beta.GetStatusResponse.operational_status:type_name -> google.cloud.networkconnectivity.v1beta.GetStatusResponse.OperationalStatus
-	9,  // 15: google.cloud.networkconnectivity.v1beta.GetStatusResponse.connectivity_status:type_name -> google.cloud.networkconnectivity.v1beta.GetStatusResponse.ConnectivityStatus
-	10, // 16: google.cloud.networkconnectivity.v1beta.GetStatusResponse.mac_sec_status:type_name -> google.cloud.networkconnectivity.v1beta.GetStatusResponse.MacSecStatus
-	15, // 17: google.cloud.networkconnectivity.v1beta.CreateTransportRequest.transport:type_name -> google.cloud.networkconnectivity.v1beta.Transport
-	27, // 18: google.cloud.networkconnectivity.v1beta.UpdateTransportRequest.update_mask:type_name -> google.protobuf.FieldMask
-	15, // 19: google.cloud.networkconnectivity.v1beta.UpdateTransportRequest.transport:type_name -> google.cloud.networkconnectivity.v1beta.Transport
-	12, // 20: google.cloud.networkconnectivity.v1beta.TransportManager.ListRemoteTransportProfiles:input_type -> google.cloud.networkconnectivity.v1beta.ListRemoteTransportProfilesRequest
-	14, // 21: google.cloud.networkconnectivity.v1beta.TransportManager.GetRemoteTransportProfile:input_type -> google.cloud.networkconnectivity.v1beta.GetRemoteTransportProfileRequest
-	16, // 22: google.cloud.networkconnectivity.v1beta.TransportManager.ListTransports:input_type -> google.cloud.networkconnectivity.v1beta.ListTransportsRequest
-	18, // 23: google.cloud.networkconnectivity.v1beta.TransportManager.GetTransport:input_type -> google.cloud.networkconnectivity.v1beta.GetTransportRequest
-	19, // 24: google.cloud.networkconnectivity.v1beta.TransportManager.GetStatus:input_type -> google.cloud.networkconnectivity.v1beta.GetStatusRequest
-	21, // 25: google.cloud.networkconnectivity.v1beta.TransportManager.CreateTransport:input_type -> google.cloud.networkconnectivity.v1beta.CreateTransportRequest
-	22, // 26: google.cloud.networkconnectivity.v1beta.TransportManager.UpdateTransport:input_type -> google.cloud.networkconnectivity.v1beta.UpdateTransportRequest
-	23, // 27: google.cloud.networkconnectivity.v1beta.TransportManager.DeleteTransport:input_type -> google.cloud.networkconnectivity.v1beta.DeleteTransportRequest
-	13, // 28: google.cloud.networkconnectivity.v1beta.TransportManager.ListRemoteTransportProfiles:output_type -> google.cloud.networkconnectivity.v1beta.ListRemoteTransportProfilesResponse
-	11, // 29: google.cloud.networkconnectivity.v1beta.TransportManager.GetRemoteTransportProfile:output_type -> google.cloud.networkconnectivity.v1beta.RemoteTransportProfile
-	17, // 30: google.cloud.networkconnectivity.v1beta.TransportManager.ListTransports:output_type -> google.cloud.networkconnectivity.v1beta.ListTransportsResponse
-	15, // 31: google.cloud.networkconnectivity.v1beta.TransportManager.GetTransport:output_type -> google.cloud.networkconnectivity.v1beta.Transport
-	20, // 32: google.cloud.networkconnectivity.v1beta.TransportManager.GetStatus:output_type -> google.cloud.networkconnectivity.v1beta.GetStatusResponse
-	28, // 33: google.cloud.networkconnectivity.v1beta.TransportManager.CreateTransport:output_type -> google.longrunning.Operation
-	28, // 34: google.cloud.networkconnectivity.v1beta.TransportManager.UpdateTransport:output_type -> google.longrunning.Operation
-	28, // 35: google.cloud.networkconnectivity.v1beta.TransportManager.DeleteTransport:output_type -> google.longrunning.Operation
-	28, // [28:36] is the sub-list for method output_type
-	20, // [20:28] is the sub-list for method input_type
-	20, // [20:20] is the sub-list for extension type_name
-	20, // [20:20] is the sub-list for extension extendee
-	0,  // [0:20] is the sub-list for field type_name
+	4,  // 5: google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.provider_type:type_name -> google.cloud.networkconnectivity.v1beta.RemoteTransportProfile.ProviderType
+	12, // 6: google.cloud.networkconnectivity.v1beta.ListRemoteTransportProfilesResponse.remote_transport_profiles:type_name -> google.cloud.networkconnectivity.v1beta.RemoteTransportProfile
+	12, // 7: google.cloud.networkconnectivity.v1beta.ParseFromActivationKeyResponse.remote_transport_profile:type_name -> google.cloud.networkconnectivity.v1beta.RemoteTransportProfile
+	29, // 8: google.cloud.networkconnectivity.v1beta.Transport.create_time:type_name -> google.protobuf.Timestamp
+	29, // 9: google.cloud.networkconnectivity.v1beta.Transport.update_time:type_name -> google.protobuf.Timestamp
+	28, // 10: google.cloud.networkconnectivity.v1beta.Transport.labels:type_name -> google.cloud.networkconnectivity.v1beta.Transport.LabelsEntry
+	5,  // 11: google.cloud.networkconnectivity.v1beta.Transport.bandwidth:type_name -> google.cloud.networkconnectivity.v1beta.Transport.Bandwidth
+	6,  // 12: google.cloud.networkconnectivity.v1beta.Transport.stack_type:type_name -> google.cloud.networkconnectivity.v1beta.Transport.StackType
+	7,  // 13: google.cloud.networkconnectivity.v1beta.Transport.state:type_name -> google.cloud.networkconnectivity.v1beta.Transport.State
+	18, // 14: google.cloud.networkconnectivity.v1beta.ListTransportsResponse.transports:type_name -> google.cloud.networkconnectivity.v1beta.Transport
+	8,  // 15: google.cloud.networkconnectivity.v1beta.GetStatusResponse.overall_status:type_name -> google.cloud.networkconnectivity.v1beta.GetStatusResponse.OverallStatus
+	9,  // 16: google.cloud.networkconnectivity.v1beta.GetStatusResponse.operational_status:type_name -> google.cloud.networkconnectivity.v1beta.GetStatusResponse.OperationalStatus
+	10, // 17: google.cloud.networkconnectivity.v1beta.GetStatusResponse.connectivity_status:type_name -> google.cloud.networkconnectivity.v1beta.GetStatusResponse.ConnectivityStatus
+	11, // 18: google.cloud.networkconnectivity.v1beta.GetStatusResponse.mac_sec_status:type_name -> google.cloud.networkconnectivity.v1beta.GetStatusResponse.MacSecStatus
+	18, // 19: google.cloud.networkconnectivity.v1beta.CreateTransportRequest.transport:type_name -> google.cloud.networkconnectivity.v1beta.Transport
+	30, // 20: google.cloud.networkconnectivity.v1beta.UpdateTransportRequest.update_mask:type_name -> google.protobuf.FieldMask
+	18, // 21: google.cloud.networkconnectivity.v1beta.UpdateTransportRequest.transport:type_name -> google.cloud.networkconnectivity.v1beta.Transport
+	13, // 22: google.cloud.networkconnectivity.v1beta.TransportManager.ListRemoteTransportProfiles:input_type -> google.cloud.networkconnectivity.v1beta.ListRemoteTransportProfilesRequest
+	15, // 23: google.cloud.networkconnectivity.v1beta.TransportManager.GetRemoteTransportProfile:input_type -> google.cloud.networkconnectivity.v1beta.GetRemoteTransportProfileRequest
+	16, // 24: google.cloud.networkconnectivity.v1beta.TransportManager.ParseFromActivationKey:input_type -> google.cloud.networkconnectivity.v1beta.ParseFromActivationKeyRequest
+	19, // 25: google.cloud.networkconnectivity.v1beta.TransportManager.ListTransports:input_type -> google.cloud.networkconnectivity.v1beta.ListTransportsRequest
+	21, // 26: google.cloud.networkconnectivity.v1beta.TransportManager.GetTransport:input_type -> google.cloud.networkconnectivity.v1beta.GetTransportRequest
+	22, // 27: google.cloud.networkconnectivity.v1beta.TransportManager.GetStatus:input_type -> google.cloud.networkconnectivity.v1beta.GetStatusRequest
+	24, // 28: google.cloud.networkconnectivity.v1beta.TransportManager.CreateTransport:input_type -> google.cloud.networkconnectivity.v1beta.CreateTransportRequest
+	25, // 29: google.cloud.networkconnectivity.v1beta.TransportManager.UpdateTransport:input_type -> google.cloud.networkconnectivity.v1beta.UpdateTransportRequest
+	26, // 30: google.cloud.networkconnectivity.v1beta.TransportManager.DeleteTransport:input_type -> google.cloud.networkconnectivity.v1beta.DeleteTransportRequest
+	14, // 31: google.cloud.networkconnectivity.v1beta.TransportManager.ListRemoteTransportProfiles:output_type -> google.cloud.networkconnectivity.v1beta.ListRemoteTransportProfilesResponse
+	12, // 32: google.cloud.networkconnectivity.v1beta.TransportManager.GetRemoteTransportProfile:output_type -> google.cloud.networkconnectivity.v1beta.RemoteTransportProfile
+	17, // 33: google.cloud.networkconnectivity.v1beta.TransportManager.ParseFromActivationKey:output_type -> google.cloud.networkconnectivity.v1beta.ParseFromActivationKeyResponse
+	20, // 34: google.cloud.networkconnectivity.v1beta.TransportManager.ListTransports:output_type -> google.cloud.networkconnectivity.v1beta.ListTransportsResponse
+	18, // 35: google.cloud.networkconnectivity.v1beta.TransportManager.GetTransport:output_type -> google.cloud.networkconnectivity.v1beta.Transport
+	23, // 36: google.cloud.networkconnectivity.v1beta.TransportManager.GetStatus:output_type -> google.cloud.networkconnectivity.v1beta.GetStatusResponse
+	31, // 37: google.cloud.networkconnectivity.v1beta.TransportManager.CreateTransport:output_type -> google.longrunning.Operation
+	31, // 38: google.cloud.networkconnectivity.v1beta.TransportManager.UpdateTransport:output_type -> google.longrunning.Operation
+	31, // 39: google.cloud.networkconnectivity.v1beta.TransportManager.DeleteTransport:output_type -> google.longrunning.Operation
+	31, // [31:40] is the sub-list for method output_type
+	22, // [22:31] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_init() }
@@ -2164,8 +2400,8 @@ func file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_init()
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDesc), len(file_google_cloud_networkconnectivity_v1beta_transport_manager_proto_rawDesc)),
-			NumEnums:      11,
-			NumMessages:   15,
+			NumEnums:      12,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

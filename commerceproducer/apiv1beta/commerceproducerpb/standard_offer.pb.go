@@ -543,8 +543,8 @@ const file_google_cloud_commerceproducer_v1beta_standard_offer_proto_rawDesc = "
 	"#commerceproducer.googleapis.com/SkuR\x03skuB\x0e\n" +
 	"\fsubscription:\xae\x01\xeaA\xaa\x01\n" +
 	"-commerceproducer.googleapis.com/StandardOffer\x12Zprojects/{project}/locations/{location}/services/{service}/standardOffers/{standard_offer}*\x0estandardOffers2\rstandardOfferB\x06\n" +
-	"\x04termB\xbd\x01\n" +
-	"(com.google.cloud.commerceproducer.v1betaB\x12StandardOfferProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Betab\x06proto3"
+	"\x04termB\xe7\x01\n" +
+	"(com.google.cloud.commerceproducer.v1betaB\x12StandardOfferProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Beta\xea\x02'Google::Cloud::CommerceProducer::V1betab\x06proto3"
 
 var (
 	file_google_cloud_commerceproducer_v1beta_standard_offer_proto_rawDescOnce sync.Once

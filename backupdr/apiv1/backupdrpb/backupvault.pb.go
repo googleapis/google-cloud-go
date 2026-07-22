@@ -690,11 +690,9 @@ type BackupVault struct {
 	// Optional. User annotations. See https://google.aip.dev/128#annotations
 	// Stores small amounts of arbitrary data.
 	Annotations map[string]string `protobuf:"bytes,22,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// Optional. Note: This field is added for future use case and will not be
-	// supported in the current release.
-	//
-	// Access restriction for the backup vault.
-	// Default value is WITHIN_ORGANIZATION if not provided during creation.
+	// Optional. Restricts access to certain sources and destinations for data
+	// being sent into, or restored from, the backup vault.
+	// Defaults to WITHIN_ORGANIZATION if not provided during creation.
 	AccessRestriction BackupVault_AccessRestriction `protobuf:"varint,24,opt,name=access_restriction,json=accessRestriction,proto3,enum=google.cloud.backupdr.v1.BackupVault_AccessRestriction" json:"access_restriction,omitempty"`
 	// Optional. The encryption config of the backup vault.
 	EncryptionConfig *BackupVault_EncryptionConfig `protobuf:"bytes,29,opt,name=encryption_config,json=encryptionConfig,proto3,oneof" json:"encryption_config,omitempty"`

@@ -65,6 +65,7 @@ type HiveMetastoreCallOptions struct {
 	BatchDeletePartitions []gax.CallOption
 	BatchUpdatePartitions []gax.CallOption
 	ListPartitions        []gax.CallOption
+	FailoverHiveCatalog   []gax.CallOption
 }
 
 func defaultHiveMetastoreGRPCClientOptions() []option.ClientOption {
@@ -330,6 +331,19 @@ func defaultHiveMetastoreCallOptions() *HiveMetastoreCallOptions {
 				})
 			}),
 		},
+		FailoverHiveCatalog: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -563,6 +577,18 @@ func defaultHiveMetastoreRESTCallOptions() *HiveMetastoreCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		FailoverHiveCatalog: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -590,6 +616,7 @@ type internalHiveMetastoreClient interface {
 	BatchDeletePartitions(context.Context, *hivepb.BatchDeletePartitionsRequest, ...gax.CallOption) error
 	BatchUpdatePartitions(context.Context, *hivepb.BatchUpdatePartitionsRequest, ...gax.CallOption) (*hivepb.BatchUpdatePartitionsResponse, error)
 	ListPartitions(context.Context, *hivepb.ListPartitionsRequest, ...gax.CallOption) (hivepb.HiveMetastoreService_ListPartitionsClient, error)
+	FailoverHiveCatalog(context.Context, *hivepb.FailoverHiveCatalogRequest, ...gax.CallOption) (*hivepb.FailoverHiveCatalogResponse, error)
 }
 
 // HiveMetastoreClient is a client for interacting with Lakehouse API.
@@ -740,6 +767,11 @@ func (c *HiveMetastoreClient) ListPartitions(ctx context.Context, req *hivepb.Li
 	return c.internalClient.ListPartitions(ctx, req, opts...)
 }
 
+// FailoverHiveCatalog failover the catalog to a new primary replica region.
+func (c *HiveMetastoreClient) FailoverHiveCatalog(ctx context.Context, req *hivepb.FailoverHiveCatalogRequest, opts ...gax.CallOption) (*hivepb.FailoverHiveCatalogResponse, error) {
+	return c.internalClient.FailoverHiveCatalog(ctx, req, opts...)
+}
+
 // hiveMetastoreGRPCClient is a client for interacting with Lakehouse API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -843,6 +875,7 @@ func NewHiveMetastoreClient(ctx context.Context, opts ...option.ClientOption) (*
 		client.CallOptions.BatchDeletePartitions = append(client.CallOptions.BatchDeletePartitions, gax.WithClientMetrics(metrics))
 		client.CallOptions.BatchUpdatePartitions = append(client.CallOptions.BatchUpdatePartitions, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListPartitions = append(client.CallOptions.ListPartitions, gax.WithClientMetrics(metrics))
+		client.CallOptions.FailoverHiveCatalog = append(client.CallOptions.FailoverHiveCatalog, gax.WithClientMetrics(metrics))
 	}
 
 	client.internalClient = c
@@ -968,6 +1001,7 @@ func NewHiveMetastoreRESTClient(ctx context.Context, opts ...option.ClientOption
 		callOpts.BatchDeletePartitions = append(callOpts.BatchDeletePartitions, gax.WithClientMetrics(metrics))
 		callOpts.BatchUpdatePartitions = append(callOpts.BatchUpdatePartitions, gax.WithClientMetrics(metrics))
 		callOpts.ListPartitions = append(callOpts.ListPartitions, gax.WithClientMetrics(metrics))
+		callOpts.FailoverHiveCatalog = append(callOpts.FailoverHiveCatalog, gax.WithClientMetrics(metrics))
 	}
 
 	return &HiveMetastoreClient{internalClient: c, CallOptions: callOpts}, nil
@@ -1519,6 +1553,27 @@ func (c *hiveMetastoreGRPCClient) ListPartitions(ctx context.Context, req *hivep
 		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ListPartitions")
 		resp, err = c.hiveMetastoreClient.ListPartitions(ctx, req, settings.GRPC...)
 		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ListPartitions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *hiveMetastoreGRPCClient) FailoverHiveCatalog(ctx context.Context, req *hivepb.FailoverHiveCatalogRequest, opts ...gax.CallOption) (*hivepb.FailoverHiveCatalogResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/FailoverHiveCatalog")
+	}
+	opts = append((*c.CallOptions).FailoverHiveCatalog[0:len((*c.CallOptions).FailoverHiveCatalog):len((*c.CallOptions).FailoverHiveCatalog)], opts...)
+	var resp *hivepb.FailoverHiveCatalogResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.hiveMetastoreClient.FailoverHiveCatalog, req, settings.GRPC, c.logger, "FailoverHiveCatalog")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2738,4 +2793,64 @@ func (c *listPartitionsRESTStreamClient) SendMsg(m interface{}) error {
 func (c *listPartitionsRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
+}
+
+// FailoverHiveCatalog failover the catalog to a new primary replica region.
+func (c *hiveMetastoreRESTClient) FailoverHiveCatalog(ctx context.Context, req *hivepb.FailoverHiveCatalogRequest, opts ...gax.CallOption) (*hivepb.FailoverHiveCatalogResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/hive/v1beta/%v:failover", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/FailoverHiveCatalog")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{name=projects/*/catalogs/*}:failover")
+	}
+	opts = append((*c.CallOptions).FailoverHiveCatalog[0:len((*c.CallOptions).FailoverHiveCatalog):len((*c.CallOptions).FailoverHiveCatalog)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &hivepb.FailoverHiveCatalogResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FailoverHiveCatalog")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
