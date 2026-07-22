@@ -184,9 +184,7 @@ func TestPoolSizer_EffectivePendingCeil(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := NewPoolSizer(fixedFetcher(&PoolStats{PendingCount: tt.pending}), 1, 100, 0.10)
-			if tt.qlen != defaultNewSessionQueueLength {
-				s.newSessionQLen = tt.qlen
-			}
+			s.newSessionQLen = tt.qlen
 			d := s.Decide()
 			if d.EffectivePending != tt.want {
 				t.Errorf("EffectivePending(pending=%d, qlen=%d) = %d, want %d",
@@ -197,16 +195,18 @@ func TestPoolSizer_EffectivePendingCeil(t *testing.T) {
 }
 
 // TestPoolSizer_HeadroomDefaultOnNonPositive pins the constructor
-// guard: headroomPct <= 0 falls back to 0.10 so a mis-configured
-// callsite doesn't shrink the pool to the exact in-use count and
-// starve the next checkout.
+// guard: headroomPct <= 0 falls back to the server-shipped default
+// carried in defaultClientConfig so a mis-configured callsite doesn't
+// shrink the pool to the exact in-use count and starve the next
+// checkout.
 func TestPoolSizer_HeadroomDefaultOnNonPositive(t *testing.T) {
+	want := float64(defaultPoolConfig().GetHeadroom())
 	for _, hp := range []float64{0, -1, -0.5} {
 		t.Run("", func(t *testing.T) {
 			s := NewPoolSizer(fixedFetcher(&PoolStats{}), 1, 10, hp)
-			if got := s.Decide().HeadroomPct; got != 0.10 {
-				t.Errorf("headroomPct=%v → decision.HeadroomPct=%v, want default 0.10",
-					hp, got)
+			if got := s.Decide().HeadroomPct; got != want {
+				t.Errorf("headroomPct=%v → decision.HeadroomPct=%v, want default %v",
+					hp, got, want)
 			}
 		})
 	}
@@ -330,13 +330,14 @@ func TestPoolSizer_EffectivePendingIntegerArithmeticExhaustive(t *testing.T) {
 
 // TestPoolSizer_UpdateConfigNormalizesNonPositiveHeadroom pins the
 // contract that UpdateConfig mirrors the constructor's headroom guard:
-// a zero or negative Headroom from the server falls back to 0.10
-// instead of being written through as-is. Without this, HeadroomPct
-// on the ScaleDecision trace would render as 0 on loadz/sessionz and
-// mislead operators — the pool would still work (MinIdleSessions
-// floor prevents cushion-collapse), but the diagnostic trace would
-// lie.
+// a zero or negative Headroom from the server falls back to the
+// defaultClientConfig value instead of being written through as-is.
+// Without this, HeadroomPct on the ScaleDecision trace would render
+// as 0 on loadz/sessionz and mislead operators — the pool would still
+// work (MinIdleSessions floor prevents cushion-collapse), but the
+// diagnostic trace would lie.
 func TestPoolSizer_UpdateConfigNormalizesNonPositiveHeadroom(t *testing.T) {
+	want := float64(defaultPoolConfig().GetHeadroom())
 	for _, hp := range []float32{0, -1, -0.5} {
 		t.Run("", func(t *testing.T) {
 			s := NewPoolSizer(fixedFetcher(&PoolStats{}), 1, 10, 0.25)
@@ -346,8 +347,8 @@ func TestPoolSizer_UpdateConfigNormalizesNonPositiveHeadroom(t *testing.T) {
 				Headroom:              hp,
 				NewSessionQueueLength: 10,
 			})
-			if got := s.Decide().HeadroomPct; got != 0.10 {
-				t.Errorf("UpdateConfig headroom=%v → HeadroomPct=%v, want default 0.10", hp, got)
+			if got := s.Decide().HeadroomPct; got != want {
+				t.Errorf("UpdateConfig headroom=%v → HeadroomPct=%v, want default %v", hp, got, want)
 			}
 		})
 	}

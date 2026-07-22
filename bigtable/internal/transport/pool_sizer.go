@@ -62,25 +62,37 @@ type PoolSizer struct {
 	minIdleSessions int     // floor on the idle cushion so headroom never collapses to 0
 }
 
-const (
-	defaultNewSessionQueueLength = 10
-	defaultMinIdleSessions       = 1
-)
+// defaultMinIdleSessions is the only knob without a matching field on
+// the SessionPoolConfiguration proto — a purely client-side cushion
+// floor that prevents ceil(0 * HeadroomPct)==0 from starving the
+// warmup path. All other fallbacks read from defaultClientConfig so
+// there's one place to update when a proto default moves.
+const defaultMinIdleSessions = 1
 
-// NewPoolSizer creates a new PoolSizer. headroomPct <= 0 defaults to
-// 0.10 (10%). NewSessionQueueLength and MinIdleSessions get built-in
-// defaults; UpdateConfig can override the queue length from server
-// config.
+// defaultPoolConfig returns the server-shipped pool configuration
+// defaults (headroom, min/max session count, per-session queue length,
+// etc.) from defaultClientConfig. Kept as a helper so both NewPoolSizer
+// and UpdateConfig read the same table when the server hasn't yet
+// supplied a value.
+func defaultPoolConfig() *spb.SessionClientConfiguration_SessionPoolConfiguration {
+	return defaultClientConfig.GetSessionConfiguration().GetSessionPoolConfiguration()
+}
+
+// NewPoolSizer creates a new PoolSizer. headroomPct <= 0 falls back to
+// the server-shipped default carried in defaultClientConfig. The
+// per-session queue length and MinIdleSessions use the same source /
+// built-in floor; UpdateConfig can override any of these once the
+// server config lands.
 func NewPoolSizer(fetcher StatsFetcher, minSessions, maxSessions int, headroomPct float64) *PoolSizer {
 	if headroomPct <= 0 {
-		headroomPct = 0.10
+		headroomPct = float64(defaultPoolConfig().GetHeadroom())
 	}
 	return &PoolSizer{
 		fetcher:         fetcher,
 		minSessions:     minSessions,
 		maxSessions:     maxSessions,
 		headroomPct:     headroomPct,
-		newSessionQLen:  defaultNewSessionQueueLength,
+		newSessionQLen:  int(defaultPoolConfig().GetNewSessionQueueLength()),
 		minIdleSessions: defaultMinIdleSessions,
 	}
 }
@@ -108,7 +120,7 @@ func (s *PoolSizer) UpdateConfig(config *spb.SessionClientConfiguration_SessionP
 	if hp := float64(config.Headroom); hp > 0 {
 		s.headroomPct = hp
 	} else {
-		s.headroomPct = 0.10
+		s.headroomPct = float64(defaultPoolConfig().GetHeadroom())
 	}
 	if nsql := int(config.GetNewSessionQueueLength()); nsql > 0 {
 		s.newSessionQLen = nsql
@@ -207,7 +219,7 @@ func (s *PoolSizer) Decide() ScaleDecision {
 	// NewSessionQLen concurrent vRPCs).
 	divisor := s.newSessionQLen
 	if divisor <= 0 {
-		divisor = defaultNewSessionQueueLength
+		divisor = int(defaultPoolConfig().GetNewSessionQueueLength())
 	}
 	d.EffectivePending = (stats.PendingCount + divisor - 1) / divisor
 	d.SessionsInUse = stats.InUseCount + d.EffectivePending
