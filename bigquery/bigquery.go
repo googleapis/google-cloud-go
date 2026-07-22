@@ -320,6 +320,6 @@ func retryableError(err error, allowedReasons []string) bool {
 			return true
 		}
 	}
-	// Check wrapped error.
+	// Check wrapped error
 	return retryableError(errors.Unwrap(err), allowedReasons)
 }
