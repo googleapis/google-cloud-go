@@ -88,8 +88,13 @@ func NewPoolSizer(fetcher StatsFetcher, minSessions, maxSessions int, headroomPc
 // UpdateConfig dynamically adjusts the sizer's capacity bounds,
 // headroom cushion, and per-session queue length at runtime. Called
 // from the server-config listener path; safe against concurrent
-// Decide calls via the sizer's own mutex.
+// Decide calls via the sizer's own mutex. A nil config is a no-op —
+// the listener path is defensive about intermediate zero-valued
+// updates during startup.
 func (s *PoolSizer) UpdateConfig(config *spb.SessionClientConfiguration_SessionPoolConfiguration) {
+	if config == nil {
+		return
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -164,6 +169,17 @@ func (s *PoolSizer) GetScaleDelta() int {
 //     pending demand.
 //   - no-stats:  the StatsFetcher returned nil (pool not started yet).
 func (s *PoolSizer) Decide() ScaleDecision {
+	// Call the fetcher BEFORE acquiring s.mu — the fetcher runs
+	// pool-owned code that may take the pool's own mutex, and holding
+	// two mutexes across a callback is a lock-inversion trap. Fetcher
+	// is read-only after construction so this races nothing. A nil
+	// fetcher short-circuits to no-stats (defensive; production
+	// always passes one).
+	var stats *PoolStats
+	if s.fetcher != nil {
+		stats = s.fetcher()
+	}
+
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -175,7 +191,6 @@ func (s *PoolSizer) Decide() ScaleDecision {
 		MinIdleSessions: s.minIdleSessions,
 	}
 
-	stats := s.fetcher()
 	if stats == nil {
 		d.Branch = "no-stats"
 		return d
@@ -185,19 +200,22 @@ func (s *PoolSizer) Decide() ScaleDecision {
 	d.InUseCount = stats.InUseCount
 	d.PendingCount = stats.PendingCount
 
-	// effectivePending = ceil(PendingCount / NewSessionQueueLength)
-	// Waiters at the pool boundary become the number of *sessions* we'd
-	// need to open to drain them (each new session can absorb up to
+	// effectivePending = ceil(PendingCount / NewSessionQueueLength) via
+	// integer arithmetic: (a + b - 1) / b for non-negative a. Waiters
+	// at the pool boundary become the number of *sessions* we'd need
+	// to open to drain them (each new session can absorb up to
 	// NewSessionQLen concurrent vRPCs).
 	divisor := s.newSessionQLen
 	if divisor <= 0 {
 		divisor = defaultNewSessionQueueLength
 	}
-	d.EffectivePending = int(math.Ceil(float64(stats.PendingCount) / float64(divisor)))
+	d.EffectivePending = (stats.PendingCount + divisor - 1) / divisor
 	d.SessionsInUse = stats.InUseCount + d.EffectivePending
 
 	// Idle headroom as a fraction of in-use, floored so a brief in-use
-	// dip can't collapse the cushion to zero.
+	// dip can't collapse the cushion to zero. Kept as math.Ceil on a
+	// float multiply — HeadroomPct is a fraction (e.g. 0.10), not a
+	// discrete count, so the integer-ceil trick doesn't apply cleanly.
 	d.IdleHeadroom = int(math.Ceil(float64(d.SessionsInUse) * s.headroomPct))
 	if d.IdleHeadroom < s.minIdleSessions {
 		d.IdleHeadroom = s.minIdleSessions
