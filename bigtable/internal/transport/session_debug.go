@@ -34,6 +34,10 @@ import (
 // using bare field access (s.okRpcs, s.recordEvent, s.tracer, ...).
 // The split exists so session.go stays focused on the protocol state
 // machine and vRPC dispatch; new observability hooks land here.
+//
+// Writer sites for the counter/close-reason/remote-addr fields land in
+// the follow-up session_vrpc.go and session_lifecycle.go PRs; today
+// most read-side accessors defined below return zero-values.
 type sessionDebug struct {
 	logger *log.Logger
 	tracer *sessionTracer
@@ -98,72 +102,98 @@ type sessionDebug struct {
 	channelIndex atomic.Int32
 
 	// eventsMu guards the per-session debug-event ring surfaced in
-	// sessionz. maxSessionEvents caps the size.
-	eventsMu sync.Mutex
-	events   []SessionEvent
+	// sessionz. maxSessionEvents caps the size; eventsNext is the write
+	// cursor once the buffer wraps.
+	eventsMu   sync.Mutex
+	events     []SessionEvent
+	eventsNext int
 }
 
 // init sets the non-zero defaults for a freshly-embedded sessionDebug.
-// Called once from NewSession.
-func (d *sessionDebug) init(sessionType SessionType) {
-	d.tracer = newSessionTracer(sessionType)
+// Called once from NewSession. Takes an already-constructed tracer so
+// the sessionType parameter (redundant with Session.sessionType) doesn't
+// have to be threaded through.
+func (d *sessionDebug) init(tracer *sessionTracer) {
+	d.tracer = tracer
 	d.lastStateChangeNano.Store(time.Now().UnixNano())
 	d.channelIndex.Store(-1)
 }
 
+// SessionEventKind is the closed set of debug-event categories emitted
+// into the per-session ring buffer. A typed const (rather than a bare
+// string) keeps writers honest as they land in the follow-up vRPC and
+// lifecycle PRs.
+type SessionEventKind string
+
+// Enumerated SessionEventKind values.
+const (
+	// SessionEventClose fires from handleClose on stream tear-down.
+	// Message carries reason, age, in-flight count, last rpc id, raw err.
+	SessionEventClose SessionEventKind = "close"
+	// SessionEventHBMissed fires from the heartbeat watchdog when it force-
+	// closes. Message carries in-flight count and last-frame age.
+	SessionEventHBMissed SessionEventKind = "hb-missed"
+	// SessionEventHBAlive fires when the heartbeat tick observes in-flight
+	// RPC(s) while a recent frame already pushed the deadline out — useful
+	// for spotting "server kept stream alive but lost specific vRPC
+	// response" stalls. Suppressed unless lastFrameAge is at least one
+	// heartbeat interval.
+	SessionEventHBAlive SessionEventKind = "hb-alive"
+	// SessionEventCtxDone fires when Session.Invoke's per-attempt wait is
+	// killed by the caller's context (deadline or cancel). Message carries
+	// method, rpc id, time waited, ctx err, session state. Sole vRPC-drop-
+	// adjacent event kind — drainSlot serializes exactly one caller per
+	// resultChan, so a two-writers race on resultChan is unreachable.
+	SessionEventCtxDone SessionEventKind = "ctx-done"
+	// SessionEventRetry fires from noteRetryAttempt when Invoke sees
+	// VRpcAttempt>1 on the ctx. Message carries attempt, method, and the
+	// prior attempt's gRPC code + err (if the retry interceptor stashed
+	// one on ctx).
+	SessionEventRetry SessionEventKind = "retry"
+)
+
 // SessionEvent is one entry in a session's per-session debug ring buffer.
 // Surfaced through SessionSnapshot.RecentEvents and merged across all
 // sessions into PoolSnapshot.RecentEvents for the sessionz UI.
-//
-// Kinds in use:
-//
-//	"close"     — stream tear-down handled by handleClose; Message carries
-//	              reason, age, in-flight count, last rpc id, raw err.
-//	"hb-missed" — heartbeat watchdog fired ForceClose; Message carries
-//	              in-flight count and last-frame age.
-//	"hb-alive"  — heartbeat tick observed in-flight RPC(s) while a recent
-//	              frame had already pushed the deadline; useful for spotting
-//	              "server kept stream alive but lost specific vRPC response"
-//	              stalls. Suppressed (not recorded) unless lastFrameAge is
-//	              at least one heartbeat interval to avoid log noise.
-//	"ctx-done"  — Session.Invoke's per-attempt wait was killed by the
-//	              caller's context (deadline or cancel); Message carries
-//	              method, rpc id, time waited, ctx err, session state.
-//	"ctx-done" (see above) is the sole vRPC-drop-adjacent event kind
-//	under the slotMu slot lifecycle. drainSlot serializes exactly one
-//	caller per resultChan, so a two-writers race on resultChan is
-//	unreachable in production.
 type SessionEvent struct {
 	At      time.Time
-	Kind    string
+	Kind    SessionEventKind
 	Message string
 }
 
 const maxSessionEvents = 64
 
 // recordEvent appends a SessionEvent to the per-session ring buffer.
-// Safe to call from any goroutine (readLoop, heartBeatLoop, etc.).
-func (s *Session) recordEvent(kind, format string, args ...interface{}) {
+// Safe to call from any goroutine (readLoop, heartBeatLoop, etc.). Uses
+// the same wrap-index scheme as latencySamples so an at-cap append is
+// O(1), not an O(N) shift.
+func (s *Session) recordEvent(kind SessionEventKind, format string, args ...interface{}) {
 	ev := SessionEvent{
 		At:      time.Now(),
 		Kind:    kind,
 		Message: fmt.Sprintf(format, args...),
 	}
 	s.eventsMu.Lock()
-	if len(s.events) >= maxSessionEvents {
-		copy(s.events, s.events[1:])
-		s.events = s.events[:len(s.events)-1]
+	if len(s.events) < maxSessionEvents {
+		s.events = append(s.events, ev)
+	} else {
+		s.events[s.eventsNext] = ev
+		s.eventsNext = (s.eventsNext + 1) % maxSessionEvents
 	}
-	s.events = append(s.events, ev)
 	s.eventsMu.Unlock()
 }
 
-// snapshotEvents returns a copy of the session's debug-event ring buffer
-// (oldest first).
+// snapshotEvents returns a copy of the session's debug-event ring buffer,
+// oldest first. Unwraps around eventsNext when the buffer has wrapped.
 func (s *Session) snapshotEvents() []SessionEvent {
 	s.eventsMu.Lock()
 	out := make([]SessionEvent, len(s.events))
-	copy(out, s.events)
+	if len(s.events) < maxSessionEvents {
+		copy(out, s.events)
+	} else {
+		n := copy(out, s.events[s.eventsNext:])
+		copy(out[n:], s.events[:s.eventsNext])
+	}
 	s.eventsMu.Unlock()
 	return out
 }
@@ -176,7 +206,7 @@ func (s *Session) peerInfoSummary() string {
 	if p == nil {
 		return "peer=unknown"
 	}
-	return fmt.Sprintf("peer={afe=%x/%s/%s gfe=%x transport=%s}",
+	return fmt.Sprintf("peer={afe=%d/%s/%s gfe=%d transport=%s}",
 		p.GetApplicationFrontendId(),
 		p.GetApplicationFrontendRegion(),
 		p.GetApplicationFrontendSubzone(),
@@ -249,15 +279,16 @@ func (s *Session) snapshotClusters() map[string]int64 {
 	return out
 }
 
-// SetChannelIndex records the BigtableChannelPool connEntry index the
-// session's stream landed on. Called once at session construction.
-func (s *Session) SetChannelIndex(idx int) {
-	s.channelIndex.Store(int32(idx))
+// setChannelIndex records the BigtableChannelPool connEntry index the
+// session's stream landed on. Package-private — the only writer is the
+// pool wiring in the follow-up PRs.
+func (s *Session) setChannelIndex(idx int32) {
+	s.channelIndex.Store(idx)
 }
 
 // ChannelIndex returns the per-pool channel index, or -1 if unset.
-func (s *Session) ChannelIndex() int {
-	return int(s.channelIndex.Load())
+func (s *Session) ChannelIndex() int32 {
+	return s.channelIndex.Load()
 }
 
 // setCloseReason records the reason for the session's terminal close.

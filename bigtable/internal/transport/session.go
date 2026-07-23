@@ -193,7 +193,7 @@ func NewSession(logName string, stream Stream, hooks SessionHooks, sessionType S
 	s.state.Store(int32(StateNew))
 	s.heartbeatIntervalNano.Store(int64(defaultHeartbeatInterval))
 	s.nextHeartbeatDeadlineNano.Store(time.Now().Add(initialHeartbeatGrace).UnixNano())
-	s.sessionDebug.init(sessionType)
+	s.sessionDebug.init(newSessionTracer(sessionType))
 	for _, o := range opts {
 		o(s)
 	}
