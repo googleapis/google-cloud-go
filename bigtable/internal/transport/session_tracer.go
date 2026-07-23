@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
@@ -115,24 +116,37 @@ func InitializeSessionMetrics(meterProvider metric.MeterProvider) error {
 }
 
 // sessionTracer tracks and records metrics for a Session's lifecycle and
-// individual operations. poolName is a pool-scoped identifier stamped on
-// the session_name metric label — matches java-bigtable's SessionPoolInfo
-// name semantics (bounded cardinality, one per pool per process), NOT the
-// per-session logName (which lives on Session and is unbounded).
+// individual operations.
+//
+// Field lifecycle (all fields are single-writer-at-construction except
+// `opened`; readers are lock-free):
+//
+//   - startTime / sessionType — set once in newSessionTracer; immutable.
+//   - poolName — set once via setPoolName, called from WithSessionPoolName
+//     during NewSession before Session.Start spawns any goroutine.
+//     Pool-scoped name matches java-bigtable's SessionPoolInfo name
+//     semantics (bounded cardinality, one per pool per process) — NOT
+//     the per-session logName (unbounded).
+//   - opened — atomic.Bool flipped once by recordOpen; read by
+//     recordClose / sampleUptime for the `ready` label.
+//
+// peerInfo is NOT stored on the tracer. It lives on Session as an
+// atomic.Pointer (single source of truth per SESSION_SPEC #3 — set
+// once, synchronously, in handleOpenSession) and is passed in at every
+// record*/sample* call. Duplicating it on the tracer would be shadow
+// state with a separate synchronization mechanism.
 //
 // startTime is the single wall-clock anchor for every emitted metric —
-// mirrors java-bigtable's SessionTracerImpl.uptime stopwatch, which is
-// started once in onStart() and drives session.open_latencies (start →
-// open), session.durations (start → close), and session.uptime (start →
-// sample). `opened` is the boolean "did the session ever reach Ready"
-// flag, filling the same role as Java's State enum for the ready label.
+// mirrors java-bigtable's SessionTracerImpl.uptime stopwatch, started
+// once in onStart() and driving session.open_latencies (start → open),
+// session.durations (start → close), and session.uptime (start →
+// sample). `opened` fills the same role as Java's State enum for the
+// ready label.
 type sessionTracer struct {
-	mu          sync.Mutex
 	startTime   time.Time
-	opened      bool
-	peerInfo    *spb.PeerInfo
-	poolName    string
 	sessionType SessionType
+	poolName    string
+	opened      atomic.Bool
 }
 
 // newSessionTracer starts the "open" timer.
@@ -145,10 +159,9 @@ func newSessionTracer(sessionType SessionType) *sessionTracer {
 
 // setPoolName stamps the pool-scoped name used for the session_name label
 // on every emitted metric. Called from WithSessionPoolName during
-// NewSession.
+// NewSession — before Session.Start spawns any goroutine, so no
+// synchronization is required.
 func (t *sessionTracer) setPoolName(name string) {
-	t.mu.Lock()
-	defer t.mu.Unlock()
 	t.poolName = name
 }
 
@@ -159,65 +172,50 @@ func (t *sessionTracer) StartedAt() time.Time {
 	return t.startTime
 }
 
-func (t *sessionTracer) setPeerInfo(peerInfo *spb.PeerInfo) {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-	t.peerInfo = peerInfo
-}
-
-// snapshot captures the fields we need under the lock so that we can do
-// allocating work (string formatting, attribute builds) without holding it.
-type tracerSnapshot struct {
-	startTime     time.Time
-	opened        bool
-	transportType string
-	afeLocation   string
-	poolName      string
-}
-
-func (t *sessionTracer) snapshot() tracerSnapshot {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-	snap := tracerSnapshot{
-		startTime:     t.startTime,
-		opened:        t.opened,
-		poolName:      t.poolName,
-		transportType: "unknown",
+// peerInfoLabels derives the (transport_type, afe_location) metric-label
+// pair from a PeerInfo. Nil peerInfo yields ("unknown", "") — matching
+// pre-handshake state. Callers pass Session.PeerInfo() (an
+// atomic.Pointer load — SESSION_SPEC #3 makes the pointer set-once, so
+// the returned strings are stable for the session's lifetime).
+func peerInfoLabels(pi *spb.PeerInfo) (transportType, afeLocation string) {
+	if pi == nil {
+		return "unknown", ""
 	}
-	if t.peerInfo != nil {
-		snap.transportType = metricsinternal.TransportTypeName(t.peerInfo.GetTransportType())
-		snap.afeLocation = t.peerInfo.GetApplicationFrontendSubzone()
-	}
-	return snap
+	return metricsinternal.TransportTypeName(pi.GetTransportType()), pi.GetApplicationFrontendSubzone()
 }
 
 // recordOpen records the latency to open the session and flips the
 // `opened` flag so subsequent recordClose / sampleUptime label the
-// session as ready.
-func (t *sessionTracer) recordOpen(ctx context.Context, err error) {
-	t.mu.Lock()
-	t.opened = true
-	t.mu.Unlock()
+// session as ready. peerInfo is the caller-supplied Session.PeerInfo()
+// at the moment of the OpenSession completion; may be nil if the
+// handshake failed before headers arrived.
+func (t *sessionTracer) recordOpen(ctx context.Context, peerInfo *spb.PeerInfo, err error) {
+	t.opened.Store(true)
 
 	if sessionOpenLatencies == nil {
 		return
 	}
-	snap := t.snapshot()
+	transportType, afeLocation := peerInfoLabels(peerInfo)
 	statusStr := "OK"
 	if err != nil {
 		statusStr = status.Code(err).String()
 	}
-	sessionOpenLatencies.Record(ctx, msSince(snap.startTime), metric.WithAttributes(
-		attribute.String("transport_type", snap.transportType),
+	sessionOpenLatencies.Record(ctx, msSince(t.startTime), metric.WithAttributes(
+		attribute.String("transport_type", transportType),
 		attribute.String("status", statusStr),
 		attribute.String("session_type", t.sessionType.String()),
-		attribute.String("afe_location", snap.afeLocation),
-		attribute.String("session_name", snap.poolName),
+		attribute.String("afe_location", afeLocation),
+		attribute.String("session_name", t.poolName),
 	))
 }
 
 // recordClose records the session's total elapsed time on close.
-//   - closingReason: the terminal Session.CloseReason(), or "" if none.
+//   - peerInfo: Session.PeerInfo() at close time (may be nil if the
+//     session died pre-handshake).
+//   - closingReason: the terminal Session.CloseReason(), always
+//     non-empty — Session synthesizes a fallback if the close path
+//     forgot to set one, mirroring Java's SessionImpl.notifyTerminalClose
+//     guard (SessionImpl.java:782-793).
 //   - streamErr: the terminal stream error; nil means clean close ("OK").
 //   - hadOk / hadErr: whether the session served any OK / error vRPCs.
 //
@@ -225,16 +223,15 @@ func (t *sessionTracer) recordOpen(ctx context.Context, err error) {
 // SessionTracerImpl.onClose (`uptime.elapsed()`, where uptime is anchored
 // at onStart). The `ready` label distinguishes sessions that reached Ready
 // from those that died pre-open.
-func (t *sessionTracer) recordClose(ctx context.Context, closingReason string, streamErr error, hadOk, hadErr bool) {
+func (t *sessionTracer) recordClose(ctx context.Context, peerInfo *spb.PeerInfo, closingReason string, streamErr error, hadOk, hadErr bool) {
 	if sessionDurations == nil {
 		return
 	}
-	snap := t.snapshot()
-
 	var elapsed float64
-	if !snap.startTime.IsZero() {
-		elapsed = msSince(snap.startTime)
+	if !t.startTime.IsZero() {
+		elapsed = msSince(t.startTime)
 	}
+	transportType, afeLocation := peerInfoLabels(peerInfo)
 
 	statusStr := "OK"
 	if streamErr != nil {
@@ -242,14 +239,14 @@ func (t *sessionTracer) recordClose(ctx context.Context, closingReason string, s
 	}
 
 	sessionDurations.Record(ctx, elapsed, metric.WithAttributes(
-		attribute.String("transport_type", snap.transportType),
+		attribute.String("transport_type", transportType),
 		attribute.String("status", statusStr),
 		attribute.String("session_type", t.sessionType.String()),
 		attribute.String("closing_reason", closingReason),
 		attribute.String("vrpcs", vrpcCloseState(hadOk, hadErr)),
-		attribute.Bool("ready", snap.opened),
-		attribute.String("afe_location", snap.afeLocation),
-		attribute.String("session_name", snap.poolName),
+		attribute.Bool("ready", t.opened.Load()),
+		attribute.String("afe_location", afeLocation),
+		attribute.String("session_name", t.poolName),
 	))
 }
 
@@ -275,20 +272,20 @@ func vrpcCloseState(hadOk, hadErr bool) string {
 // heartbeat so the histogram represents the distribution of ages across
 // currently-active sessions. Java parity: SessionTracerImpl.recordAsyncMetrics
 // records uptime.elapsed() with `state == Ready` as the label.
-func (t *sessionTracer) sampleUptime(ctx context.Context) {
+func (t *sessionTracer) sampleUptime(ctx context.Context, peerInfo *spb.PeerInfo) {
 	if sessionUptime == nil {
 		return
 	}
-	snap := t.snapshot()
-	if snap.startTime.IsZero() {
+	if t.startTime.IsZero() {
 		return
 	}
-	sessionUptime.Record(ctx, msSince(snap.startTime), metric.WithAttributes(
-		attribute.String("transport_type", snap.transportType),
+	transportType, afeLocation := peerInfoLabels(peerInfo)
+	sessionUptime.Record(ctx, msSince(t.startTime), metric.WithAttributes(
+		attribute.String("transport_type", transportType),
 		attribute.String("session_type", t.sessionType.String()),
-		attribute.Bool("ready", snap.opened),
-		attribute.String("afe_location", snap.afeLocation),
-		attribute.String("session_name", snap.poolName),
+		attribute.Bool("ready", t.opened.Load()),
+		attribute.String("afe_location", afeLocation),
+		attribute.String("session_name", t.poolName),
 	))
 }
 
@@ -302,16 +299,16 @@ func msSince(t time.Time) float64 {
 // overhead outside server processing. Caller has already validated the
 // delta is positive; this is a no-op if the metric isn't registered.
 // Method is the vRPC method name (e.g. "ExecuteVRpc/Read").
-func (t *sessionTracer) recordTransportOverhead(ctx context.Context, method string, overhead time.Duration) {
+func (t *sessionTracer) recordTransportOverhead(ctx context.Context, peerInfo *spb.PeerInfo, method string, overhead time.Duration) {
 	if transportLatencies == nil || overhead <= 0 {
 		return
 	}
-	snap := t.snapshot()
+	transportType, afeLocation := peerInfoLabels(peerInfo)
 	transportLatencies.Record(ctx, float64(overhead)/float64(time.Millisecond), metric.WithAttributes(
-		attribute.String("transport_type", snap.transportType),
+		attribute.String("transport_type", transportType),
 		attribute.String("session_type", t.sessionType.String()),
-		attribute.String("afe_location", snap.afeLocation),
-		attribute.String("session_name", snap.poolName),
+		attribute.String("afe_location", afeLocation),
+		attribute.String("session_name", t.poolName),
 		attribute.String("method", method),
 	))
 }

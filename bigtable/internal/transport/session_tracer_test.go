@@ -75,11 +75,9 @@ func TestSessionTracer_MetricsRoundTrip(t *testing.T) {
 	t.Run("RecordOpenPopulatesLatencyHistogram", func(t *testing.T) {
 		tr := newSessionTracer(SessionTypeTable)
 		tr.setPoolName("test-pool")
-		tr.setPeerInfo(&spb.PeerInfo{
-			ApplicationFrontendSubzone: "us-east1-b",
-		})
+		pi := &spb.PeerInfo{ApplicationFrontendSubzone: "us-east1-b"}
 		time.Sleep(2 * time.Millisecond) // give the elapsed a positive value
-		tr.recordOpen(context.Background(), nil)
+		tr.recordOpen(context.Background(), pi, nil)
 
 		rm := &metricdata.ResourceMetrics{}
 		if err := reader.Collect(context.Background(), rm); err != nil {
@@ -100,7 +98,7 @@ func TestSessionTracer_MetricsRoundTrip(t *testing.T) {
 	t.Run("RecordOpenStampsStatusOnError", func(t *testing.T) {
 		tr := newSessionTracer(SessionTypeTable)
 		tr.setPoolName("err-pool")
-		tr.recordOpen(context.Background(), status.Error(codes.Unavailable, "boom"))
+		tr.recordOpen(context.Background(), nil, status.Error(codes.Unavailable, "boom"))
 
 		rm := &metricdata.ResourceMetrics{}
 		if err := reader.Collect(context.Background(), rm); err != nil {
@@ -134,7 +132,7 @@ func TestSessionTracer_MetricsRoundTrip(t *testing.T) {
 				pool := "close-" + tc.wantLabel
 				tr := newSessionTracer(SessionTypeTable)
 				tr.setPoolName(pool)
-				tr.recordClose(context.Background(), "test-reason", nil, tc.hadOk, tc.hadErr)
+				tr.recordClose(context.Background(), nil, "test-reason", nil, tc.hadOk, tc.hadErr)
 
 				rm := &metricdata.ResourceMetrics{}
 				if err := reader.Collect(context.Background(), rm); err != nil {
@@ -157,7 +155,7 @@ func TestSessionTracer_MetricsRoundTrip(t *testing.T) {
 		// produces, but defensive) must not emit — the histogram would
 		// see negative-ish nonsense from the wall-clock delta.
 		tr := &sessionTracer{sessionType: SessionTypeTable}
-		tr.sampleUptime(context.Background())
+		tr.sampleUptime(context.Background(), nil)
 
 		rm := &metricdata.ResourceMetrics{}
 		if err := reader.Collect(context.Background(), rm); err != nil {
@@ -174,7 +172,7 @@ func TestSessionTracer_MetricsRoundTrip(t *testing.T) {
 		tr := newSessionTracer(SessionTypeTable)
 		tr.setPoolName("uptime-pool")
 		time.Sleep(2 * time.Millisecond)
-		tr.sampleUptime(context.Background())
+		tr.sampleUptime(context.Background(), nil)
 
 		rm := &metricdata.ResourceMetrics{}
 		if err := reader.Collect(context.Background(), rm); err != nil {
@@ -193,11 +191,11 @@ func TestSessionTracer_MetricsRoundTrip(t *testing.T) {
 		// Zero and negative overheads MUST NOT emit — the metric's
 		// contract is e2e minus backend, gated on positive delta by
 		// the caller.
-		tr.recordTransportOverhead(context.Background(), "Read", 0)
-		tr.recordTransportOverhead(context.Background(), "Read", -3*time.Millisecond)
+		tr.recordTransportOverhead(context.Background(), nil, "Read", 0)
+		tr.recordTransportOverhead(context.Background(), nil, "Read", -3*time.Millisecond)
 
 		// Positive overhead emits.
-		tr.recordTransportOverhead(context.Background(), "Read", 5*time.Millisecond)
+		tr.recordTransportOverhead(context.Background(), nil, "Read", 5*time.Millisecond)
 
 		rm := &metricdata.ResourceMetrics{}
 		if err := reader.Collect(context.Background(), rm); err != nil {
@@ -239,10 +237,13 @@ func TestSessionTracer_NilHistogramsAreNoOps(t *testing.T) {
 	tr := newSessionTracer(SessionTypeTable)
 	// Each recorder MUST early-return without panic when its histogram
 	// is nil (documented in-file). Simple call-and-return smoke test.
-	tr.recordOpen(context.Background(), nil)
-	tr.recordClose(context.Background(), "", nil, false, false)
-	tr.sampleUptime(context.Background())
-	tr.recordTransportOverhead(context.Background(), "Read", 1*time.Millisecond)
+	// closingReason is "" here only because the nil-histogram check
+	// short-circuits before any label is built — the always-non-empty
+	// contract is a caller-side invariant, not enforced by the tracer.
+	tr.recordOpen(context.Background(), nil, nil)
+	tr.recordClose(context.Background(), nil, "", nil, false, false)
+	tr.sampleUptime(context.Background(), nil)
+	tr.recordTransportOverhead(context.Background(), nil, "Read", 1*time.Millisecond)
 }
 
 func TestNewSessionTracer_DefaultsStamped(t *testing.T) {
@@ -259,44 +260,36 @@ func TestNewSessionTracer_DefaultsStamped(t *testing.T) {
 	if got := tr.StartedAt(); !got.Equal(tr.startTime) {
 		t.Errorf("StartedAt() = %v, want %v", got, tr.startTime)
 	}
-	if tr.opened {
+	if tr.opened.Load() {
 		t.Error("opened = true at construction, want false")
 	}
 }
 
-func TestSessionTracer_SnapshotUnknownTransportOnNilPeer(t *testing.T) {
-	tr := newSessionTracer(SessionTypeTable)
-	tr.setPoolName("pool-abc")
-	snap := tr.snapshot()
-	if snap.transportType != "unknown" {
-		t.Errorf("transportType = %q, want unknown (nil peerInfo)", snap.transportType)
-	}
-	if snap.poolName != "pool-abc" {
-		t.Errorf("poolName = %q, want pool-abc", snap.poolName)
-	}
-	if snap.afeLocation != "" {
-		t.Errorf("afeLocation = %q, want empty", snap.afeLocation)
-	}
-	if snap.opened {
-		t.Error("snap.opened = true, want false pre-recordOpen")
-	}
-}
-
-func TestSessionTracer_SnapshotAfterPeerInfoSet(t *testing.T) {
-	tr := newSessionTracer(SessionTypeTable)
-	tr.setPeerInfo(&spb.PeerInfo{
-		ApplicationFrontendSubzone: "us-central1-a",
+// TestPeerInfoLabels covers the label-derivation helper that replaced
+// the old tracerSnapshot: nil peerInfo → ("unknown", ""), a populated
+// PeerInfo forwards TransportTypeName + AFE subzone.
+func TestPeerInfoLabels(t *testing.T) {
+	t.Run("Nil", func(t *testing.T) {
+		tt, afe := peerInfoLabels(nil)
+		if tt != "unknown" {
+			t.Errorf("transportType = %q, want unknown (nil peerInfo)", tt)
+		}
+		if afe != "" {
+			t.Errorf("afeLocation = %q, want empty", afe)
+		}
 	})
-	snap := tr.snapshot()
-	if snap.afeLocation != "us-central1-a" {
-		t.Errorf("afeLocation = %q, want us-central1-a", snap.afeLocation)
-	}
-	// TransportType defaults to whatever the (unset) proto enum maps
-	// to — the tracer doesn't invent one; it forwards
-	// metricsinternal.TransportTypeName's mapping.
-	if snap.transportType == "" {
-		t.Error("transportType empty, want a metricsinternal mapping (fallback string)")
-	}
+	t.Run("SubzoneSet", func(t *testing.T) {
+		tt, afe := peerInfoLabels(&spb.PeerInfo{ApplicationFrontendSubzone: "us-central1-a"})
+		if afe != "us-central1-a" {
+			t.Errorf("afeLocation = %q, want us-central1-a", afe)
+		}
+		// TransportType defaults to whatever the (unset) proto enum maps
+		// to — the helper doesn't invent one; it forwards
+		// metricsinternal.TransportTypeName's mapping.
+		if tt == "" {
+			t.Error("transportType empty, want a metricsinternal mapping (fallback string)")
+		}
+	})
 }
 
 func TestVRpcCloseState(t *testing.T) {
