@@ -17,6 +17,7 @@ package internal
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"sync"
 	"testing"
@@ -42,13 +43,133 @@ func (s *stubStream) Recv() (*spb.SessionResponse, error) {
 func (s *stubStream) Header() (metadata.MD, error) { return metadata.MD{}, nil }
 func (s *stubStream) Context() context.Context     { return s.ctx }
 
-func newTestSession(t *testing.T, opts ...SessionOption) *Session {
+// fakeStream implements Stream and exposes channels so tests can drive both
+// sides of the conversation. sendFn allows a test to inject Send failures.
+type fakeStream struct {
+	sentMu    sync.Mutex
+	sent      []*spb.SessionRequest
+	recv      chan recvOp
+	hdr       metadata.MD
+	hdrErr    error
+	sendFn    func(*spb.SessionRequest) error
+	closeOnce sync.Once
+}
+
+type recvOp struct {
+	resp *spb.SessionResponse
+	err  error
+}
+
+func newFakeStream() *fakeStream {
+	return &fakeStream{
+		recv: make(chan recvOp, 32),
+		hdr:  metadata.MD{},
+	}
+}
+
+// Close unblocks Recv() by closing the recv channel. Idempotent so cleanup
+// and explicit test teardown don't collide.
+func (f *fakeStream) Close() {
+	f.closeOnce.Do(func() { close(f.recv) })
+}
+
+func (f *fakeStream) Send(req *spb.SessionRequest) error {
+	if f.sendFn != nil {
+		if err := f.sendFn(req); err != nil {
+			return err
+		}
+	}
+	f.sentMu.Lock()
+	f.sent = append(f.sent, req)
+	f.sentMu.Unlock()
+	return nil
+}
+
+func (f *fakeStream) Recv() (*spb.SessionResponse, error) {
+	op, ok := <-f.recv
+	if !ok {
+		return nil, fmt.Errorf("stream closed")
+	}
+	return op.resp, op.err
+}
+
+func (f *fakeStream) Header() (metadata.MD, error) { return f.hdr, f.hdrErr }
+func (f *fakeStream) Context() context.Context     { return context.Background() }
+
+func (f *fakeStream) snapshotSent() []*spb.SessionRequest {
+	f.sentMu.Lock()
+	defer f.sentMu.Unlock()
+	out := make([]*spb.SessionRequest, len(f.sent))
+	copy(out, f.sent)
+	return out
+}
+
+// fakeDesc is a minimal VRpcDescriptor for Invoke tests.
+type fakeDesc struct {
+	method string
+	enc    func(req interface{}) ([]byte, error)
+	dec    func(buf []byte) (interface{}, error)
+}
+
+func (f *fakeDesc) Method() string                         { return f.method }
+func (f *fakeDesc) Encode(req interface{}) ([]byte, error) { return f.enc(req) }
+func (f *fakeDesc) Decode(buf []byte) (interface{}, error) { return f.dec(buf) }
+
+// newRoundTripDesc returns a trivial descriptor that round-trips string
+// payloads through the encode/decode pair.
+func newRoundTripDesc() *fakeDesc {
+	return &fakeDesc{
+		method: "RoundTrip",
+		enc: func(req interface{}) ([]byte, error) {
+			return []byte(fmt.Sprintf("req:%v", req)), nil
+		},
+		dec: func(buf []byte) (interface{}, error) {
+			return string(buf), nil
+		},
+	}
+}
+
+// waitFor polls cond every 5ms up to timeout, failing the test if cond never
+// becomes true.
+func waitFor(t *testing.T, timeout time.Duration, cond func() bool, msg string) {
 	t.Helper()
-	return NewSession("test-session", newStubStream(), SessionHooks{}, SessionTypeTable, opts...)
+	deadline := time.Now().Add(timeout)
+	for time.Now().Before(deadline) {
+		if cond() {
+			return
+		}
+		time.Sleep(5 * time.Millisecond)
+	}
+	t.Fatalf("timed out after %v waiting for: %s", timeout, msg)
+}
+
+// newTestSession constructs a Session bound to the given stream with the
+// given hooks. Passing (t) alone via newDefaultTestSession also works for
+// callers that don't care about the stream.
+func newTestSession(t *testing.T, stream Stream, hooks SessionHooks) *Session {
+	t.Helper()
+	return NewSession("test-session", stream, hooks, SessionTypeTable)
+}
+
+// newDefaultTestSession is a shortcut for tests that don't drive the stream.
+func newDefaultTestSession(t *testing.T) *Session {
+	t.Helper()
+	return newTestSession(t, newStubStream(), SessionHooks{})
+}
+
+// makeActive constructs a session and forces it into StateReady without
+// going through the handshake. Returns the session + the underlying
+// fakeStream so tests can inspect sent frames or inject responses.
+func makeActive(t *testing.T, hooks SessionHooks) (*Session, *fakeStream) {
+	t.Helper()
+	stream := newFakeStream()
+	s := newTestSession(t, stream, hooks)
+	s.state.Store(int32(StateReady))
+	return s, stream
 }
 
 func TestNewSession_Defaults(t *testing.T) {
-	s := newTestSession(t)
+	s := newDefaultTestSession(t)
 
 	if got := s.State(); got != StateNew {
 		t.Errorf("initial State: got %s, want StateNew", got)
@@ -79,7 +200,7 @@ func TestNewSession_Defaults(t *testing.T) {
 }
 
 func TestSession_SignalQuiescent_ClosesChannel(t *testing.T) {
-	s := newTestSession(t)
+	s := newDefaultTestSession(t)
 	s.signalQuiescent()
 	select {
 	case <-s.quiescent:
@@ -91,7 +212,7 @@ func TestSession_SignalQuiescent_ClosesChannel(t *testing.T) {
 // TestSession_SignalQuiescent_IdempotentUnderRace guards the sync.Once — a
 // racy close(ch) would panic.
 func TestSession_SignalQuiescent_IdempotentUnderRace(t *testing.T) {
-	s := newTestSession(t)
+	s := newDefaultTestSession(t)
 	const workers = 64
 	var wg sync.WaitGroup
 	wg.Add(workers)
@@ -111,14 +232,14 @@ func TestSession_SignalQuiescent_IdempotentUnderRace(t *testing.T) {
 }
 
 func TestSession_AfeID_ZeroBeforePeerInfo(t *testing.T) {
-	s := newTestSession(t)
+	s := newDefaultTestSession(t)
 	if got := s.AfeID(); got != 0 {
 		t.Errorf("AfeID before PeerInfo: got %d, want 0", got)
 	}
 }
 
 func TestSession_AfeID_FromPeerInfo(t *testing.T) {
-	s := newTestSession(t)
+	s := newDefaultTestSession(t)
 	s.peerInfo.Store(&spb.PeerInfo{ApplicationFrontendId: 0xABCDEF})
 	if got := s.AfeID(); got != AfeID(0xABCDEF) {
 		t.Errorf("AfeID: got %#x, want %#x", int64(got), 0xABCDEF)
@@ -126,7 +247,7 @@ func TestSession_AfeID_FromPeerInfo(t *testing.T) {
 }
 
 func TestSession_RefreshConfig_StoreLoad(t *testing.T) {
-	s := newTestSession(t)
+	s := newDefaultTestSession(t)
 	rc := &spb.SessionRefreshConfig{}
 	s.refreshConfig.Store(rc)
 	if got := s.RefreshConfig(); got != rc {
