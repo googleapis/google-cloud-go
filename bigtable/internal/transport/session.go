@@ -31,10 +31,15 @@ import (
 const multiPlexingLimit = 1
 
 const (
-	defaultHeartbeatInterval = 10 * time.Second
-	// initialHeartbeatGrace covers the OpenSession handshake; replaced by
-	// SessionParametersResponse.
-	initialHeartbeatGrace = 30 * time.Minute
+	// defaultHeartbeatInterval is the fallback cadence when no server-provided
+	// SessionParametersResponse has landed yet. Once negotiated, this is
+	// overwritten by the server-supplied interval.
+	defaultHeartbeatInterval = 100 * time.Millisecond
+	// initialHeartbeatGrace is the deadline used from OpenSession until
+	// SessionParametersResponse arrives with the real cadence; kept in
+	// lock-step with defaultHeartbeatInterval so a session that never
+	// receives SessionParameters trips within one interval.
+	initialHeartbeatGrace = 100 * time.Millisecond
 )
 
 // Session-level errors, wrapped in codes.Unavailable so retry plumbing works
