@@ -22,6 +22,7 @@ import (
 	"io"
 	"log"
 	"sync"
+	"time"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"google.golang.org/grpc"
@@ -350,6 +351,8 @@ type mrdSessionResult struct {
 	err      error
 	session  *bidiReadStreamSession
 	redirect *storagepb.BidiReadObjectRedirectedError
+	t5       time.Time
+	t6       time.Time
 }
 
 var (
@@ -404,6 +407,7 @@ type rangeRequest struct {
 	readID       int64
 	bytesWritten int64
 	completed    bool
+	t4           time.Time
 }
 
 // Methods implementing internalMultiRangeDownloader
@@ -1063,9 +1067,27 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 			continue
 		}
 
+		if result.session != nil {
+			if t, ok := result.session.t4Map.LoadAndDelete(readID); ok {
+				req.t4 = t.(time.Time)
+			}
+		}
+
 		written, _, err := result.decoder.writeToAndUpdateCRC(req.output, readID, nil)
 		req.bytesWritten += written
 		mrdStream.updateCapacity(m, 0, -written)
+
+		t7 := time.Now()
+		if m.client != nil && m.client.metrics != nil {
+			ctx := context.WithoutCancel(m.spanCtx)
+			if !req.t4.IsZero() {
+				m.client.metrics.bidiEndToEndRangeReadLatency.Record(ctx, float64(t7.Sub(req.t4))/float64(time.Microsecond))
+				m.client.metrics.bidiServerNetworkTransitLatency.Record(ctx, float64(result.t5.Sub(req.t4))/float64(time.Microsecond))
+			}
+			m.client.metrics.bidiSDKProcessingOverhead.Record(ctx, float64(result.t6.Sub(result.t5))/float64(time.Microsecond))
+			m.client.metrics.bidiClientHandoffDelay.Record(ctx, float64(t7.Sub(result.t6))/float64(time.Microsecond))
+		}
+
 		if err != nil {
 			m.failRange(mrdStream, req, err)
 			continue
@@ -1239,6 +1261,12 @@ type bidiReadStreamSession struct {
 	errOnce        sync.Once
 	streamErr      error
 	manualShutdown bool
+
+	t0        time.Time
+	t1        time.Time
+	t2        time.Time
+	t4Map     sync.Map
+	firstResp bool
 }
 
 func newBidiReadStreamSession(ctx context.Context, id int, respC chan<- mrdSessionResult, client *grpcStorageClient, settings *settings, params *newMultiRangeDownloaderParams, readSpec *storagepb.BidiReadObjectSpec) (*bidiReadStreamSession, error) {
@@ -1263,7 +1291,9 @@ func newBidiReadStreamSession(ctx context.Context, id int, respC chan<- mrdSessi
 	reqCtx := gax.InsertMetadataIntoOutgoingContext(s.ctx, contextMetadataFromBidiReadObject(initialReq)...)
 
 	var err error
+	t0 := time.Now()
 	s.stream, err = client.raw.BidiReadObject(reqCtx, s.settings.gax...)
+	t1 := time.Now()
 	if err != nil {
 		cancel()
 		return nil, err
@@ -1274,6 +1304,11 @@ func newBidiReadStreamSession(ctx context.Context, id int, respC chan<- mrdSessi
 		cancel()
 		return nil, err
 	}
+	t2 := time.Now()
+	s.t0 = t0
+	s.t1 = t1
+	s.t2 = t2
+	s.firstResp = true
 
 	s.wg.Add(2)
 	go s.sendLoop()
@@ -1318,6 +1353,7 @@ func (s *bidiReadStreamSession) sendLoop() {
 	defer s.stream.CloseSend()
 	for {
 		select {
+
 		case req, ok := <-s.reqC:
 			if !ok {
 				return
@@ -1329,6 +1365,11 @@ func (s *bidiReadStreamSession) sendLoop() {
 				}
 				return
 			}
+			t4 := time.Now()
+			for _, rr := range req.ReadRanges {
+				s.t4Map.Store(rr.ReadId, t4)
+			}
+
 		case <-s.ctx.Done():
 			return
 		}
@@ -1341,6 +1382,7 @@ func (s *bidiReadStreamSession) receiveLoop() {
 		// Receive message without a copy.
 		databufs := mem.BufferSlice{}
 		err := s.stream.RecvMsg(&databufs)
+		t5 := time.Now()
 		var decoder *readResponseDecoder
 		if err == nil {
 			// Use the custom decoder to parse the raw buffer without copying object data.
@@ -1352,6 +1394,7 @@ func (s *bidiReadStreamSession) receiveLoop() {
 				decoder.verifyChecksums()
 			}
 		}
+		t6 := time.Now()
 
 		if err != nil {
 			databufs.Free()
@@ -1392,7 +1435,20 @@ func (s *bidiReadStreamSession) receiveLoop() {
 			decoder: decoder,
 			id:      s.id,
 			session: s,
+			t5:      t5,
+			t6:      t6,
 		}:
+			if s.client != nil && s.client.metrics != nil {
+				m := s.client.metrics
+				ctx := context.WithoutCancel(s.managerCtx)
+				if s.firstResp {
+					s.firstResp = false
+					t3 := t5
+					m.bidiStreamOpenLatency.Record(ctx, float64(t3.Sub(s.t0))/float64(time.Microsecond))
+					m.bidiNetworkHandshakeLatency.Record(ctx, float64(s.t1.Sub(s.t0))/float64(time.Microsecond))
+					m.bidiServerMetadataLatency.Record(ctx, float64(t3.Sub(s.t2))/float64(time.Microsecond))
+				}
+			}
 
 		case <-s.ctx.Done():
 			s.mu.RLock()
