@@ -18,11 +18,6 @@ import (
 	"math/rand/v2"
 )
 
-// defaultAfeRandomSubsetSize is the default K for K-choice random draws
-// in LeastInFlightAfePicker / LeastLatencyAfePicker when the caller
-// doesn't specify one.
-const defaultAfeRandomSubsetSize = 2
-
 // PickCandidate is one AFE the picker considered during a K-choice draw,
 // with the cost value the picker's decision rule used to score it.
 // Cost's interpretation depends on the picker in play: NumOutstanding
@@ -57,6 +52,9 @@ type PickDecision struct {
 //
 // picked == false means "no AFE eligible" — the pool treats that the
 // same as len(ready) == 0 (park the caller, kick scale-up).
+//
+// Implementations MAY mutate ready in place; callers must pass a
+// throwaway slice.
 type AfePicker interface {
 	PickAfe(ready []afeSnapshot) (winner afeID, picked bool, decision PickDecision)
 	Name() string
@@ -148,9 +146,8 @@ func decisionFor(winner afeID, picked bool, cands []PickCandidate, reason string
 }
 
 // kChoiceMinCost implements partial-Fisher-Yates + min-cost selection
-// over a snapshot slice. K is clamped to len(ready); K<=0 is treated as
-// the default (defaultAfeRandomSubsetSize) when len(ready) >= default,
-// else scan everything.
+// over a snapshot slice. K is clamped to len(ready); K<=0 means scan
+// every candidate.
 //
 // The algorithm mutates ready in place (swap-to-front). Callers must
 // pass a throwaway slice — every production call site produces one via
@@ -168,10 +165,7 @@ func kChoiceMinCost(ready []afeSnapshot, k int, cost func(afeSnapshot) float64) 
 	if n == 0 {
 		return 0, false, nil
 	}
-	if k <= 0 {
-		k = defaultAfeRandomSubsetSize
-	}
-	if k > n {
+	if k <= 0 || k > n {
 		k = n
 	}
 
