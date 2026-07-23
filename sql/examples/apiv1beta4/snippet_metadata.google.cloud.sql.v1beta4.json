@@ -1,0 +1,3506 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.sql.v1beta4",
+        "version": "v1beta4"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/sql/apiv1beta4",
+    "version": "0.0.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsClient",
+          "shortName": "SqlBackupRunsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsClient.Delete",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsService.Delete",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsService",
+            "shortName": "SqlBackupRunsService"
+          },
+          "shortName": "Delete"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlBackupRunsDeleteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Delete"
+      },
+      "description": "Delete deletes the backup taken by a backup run.",
+      "file": "SqlBackupRunsClient/Delete/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlBackupRunsService_Delete_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Delete Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsClient",
+          "shortName": "SqlBackupRunsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsClient.Get",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsService.Get",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsService",
+            "shortName": "SqlBackupRunsService"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlBackupRunsGetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.BackupRun",
+        "shortName": "Get"
+      },
+      "description": "Get retrieves a resource containing information about a backup run.",
+      "file": "SqlBackupRunsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlBackupRunsService_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsClient",
+          "shortName": "SqlBackupRunsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsClient.Insert",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsService.Insert",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsService",
+            "shortName": "SqlBackupRunsService"
+          },
+          "shortName": "Insert"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlBackupRunsInsertRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Insert"
+      },
+      "description": "Insert creates a new backup run on demand.",
+      "file": "SqlBackupRunsClient/Insert/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlBackupRunsService_Insert_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Insert Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsClient",
+          "shortName": "SqlBackupRunsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsClient.List",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsService.List",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlBackupRunsService",
+            "shortName": "SqlBackupRunsService"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlBackupRunsListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BackupRunIterator",
+        "shortName": "List"
+      },
+      "description": "List lists all backup runs associated with the project or a given instance and\nconfiguration in the reverse chronological order of the backup initiation\ntime.",
+      "file": "SqlBackupRunsClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlBackupRunsService_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupsClient",
+          "shortName": "SqlBackupsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlBackupsClient.CreateBackup",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupsService.CreateBackup",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlBackupsService",
+            "shortName": "SqlBackupsService"
+          },
+          "shortName": "CreateBackup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.CreateBackupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "CreateBackup"
+      },
+      "description": "CreateBackup creates a backup for a Cloud SQL instance. This API can be used only to\ncreate on-demand backups.",
+      "file": "SqlBackupsClient/CreateBackup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlBackupsService_CreateBackup_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin CreateBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupsClient",
+          "shortName": "SqlBackupsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlBackupsClient.DeleteBackup",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupsService.DeleteBackup",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlBackupsService",
+            "shortName": "SqlBackupsService"
+          },
+          "shortName": "DeleteBackup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.DeleteBackupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "DeleteBackup"
+      },
+      "description": "DeleteBackup deletes the backup.",
+      "file": "SqlBackupsClient/DeleteBackup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlBackupsService_DeleteBackup_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin DeleteBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupsClient",
+          "shortName": "SqlBackupsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlBackupsClient.GetBackup",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupsService.GetBackup",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlBackupsService",
+            "shortName": "SqlBackupsService"
+          },
+          "shortName": "GetBackup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.GetBackupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Backup",
+        "shortName": "GetBackup"
+      },
+      "description": "GetBackup retrieves a resource containing information about a backup.",
+      "file": "SqlBackupsClient/GetBackup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlBackupsService_GetBackup_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin GetBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupsClient",
+          "shortName": "SqlBackupsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlBackupsClient.ListBackups",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupsService.ListBackups",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlBackupsService",
+            "shortName": "SqlBackupsService"
+          },
+          "shortName": "ListBackups"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.ListBackupsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BackupIterator",
+        "shortName": "ListBackups"
+      },
+      "description": "ListBackups lists all backups associated with the project.",
+      "file": "SqlBackupsClient/ListBackups/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlBackupsService_ListBackups_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin ListBackups Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupsClient",
+          "shortName": "SqlBackupsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlBackupsClient.UpdateBackup",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlBackupsService.UpdateBackup",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlBackupsService",
+            "shortName": "SqlBackupsService"
+          },
+          "shortName": "UpdateBackup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.UpdateBackupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "UpdateBackup"
+      },
+      "description": "UpdateBackup updates the retention period and the description of the backup. You can use\nthis API to update final backups only.",
+      "file": "SqlBackupsClient/UpdateBackup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlBackupsService_UpdateBackup_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin UpdateBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlConnectClient",
+          "shortName": "SqlConnectClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlConnectClient.GenerateEphemeralCert",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlConnectService.GenerateEphemeralCert",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlConnectService",
+            "shortName": "SqlConnectService"
+          },
+          "shortName": "GenerateEphemeralCert"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.GenerateEphemeralCertRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.GenerateEphemeralCertResponse",
+        "shortName": "GenerateEphemeralCert"
+      },
+      "description": "GenerateEphemeralCert generates a short-lived X509 certificate containing the provided public key\nand signed by a private key specific to the target instance. Users may use\nthe certificate to authenticate as themselves when connecting to the\ndatabase.",
+      "file": "SqlConnectClient/GenerateEphemeralCert/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlConnectService_GenerateEphemeralCert_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin GenerateEphemeralCert Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlConnectClient",
+          "shortName": "SqlConnectClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlConnectClient.GetConnectSettings",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlConnectService.GetConnectSettings",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlConnectService",
+            "shortName": "SqlConnectService"
+          },
+          "shortName": "GetConnectSettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.GetConnectSettingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.ConnectSettings",
+        "shortName": "GetConnectSettings"
+      },
+      "description": "GetConnectSettings retrieves connect settings about a Cloud SQL instance.",
+      "file": "SqlConnectClient/GetConnectSettings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlConnectService_GetConnectSettings_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin GetConnectSettings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlConnectClient",
+          "shortName": "SqlConnectClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlConnectClient.ResolveConnectSettings",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlConnectService.ResolveConnectSettings",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlConnectService",
+            "shortName": "SqlConnectService"
+          },
+          "shortName": "ResolveConnectSettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.ResolveConnectSettingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.ConnectSettings",
+        "shortName": "ResolveConnectSettings"
+      },
+      "description": "ResolveConnectSettings retrieves connect settings about a Cloud SQL instance using the instance\nDNS name.",
+      "file": "SqlConnectClient/ResolveConnectSettings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlConnectService_ResolveConnectSettings_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin ResolveConnectSettings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlDataClient",
+          "shortName": "SqlDataClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlDataClient.StreamSqlData",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlDataService.StreamSqlData",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlDataService",
+            "shortName": "SqlDataService"
+          },
+          "shortName": "StreamSqlData"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "sqlpb.SqlDataService_StreamSqlDataClient",
+        "shortName": "StreamSqlData"
+      },
+      "description": "StreamSqlData `StreamSqlData` establishes a bidirectional stream to a Cloud SQL instance,\nand then streams data to and from the instance.\n\nThe first message from the client MUST be a `StreamSqlDataRequest` request\nwith configuration settings, including required values for the\n`connection_settings` field. Subsequent messages from the client may\ncontain the `payload` field.\n\nMessages from the server may contain the `payload` field.\n\nThe `payload` fields of the request and response streams contain the raw\ndata of the database's native wire protocol (e.g., PostgreSQL wire\nprotocol). The database client is responsible for generating and parsing\nthis data.\n\nAny errors on initial connection (e.g., connection failure, authorization\nissues, network problems) will result in the stream being terminated with\nan appropriate RPC status exception.\n\nAfter a successful connection is made, if an error occurs, then the server\nterminates connection and returns the appropriate RPC status exception.\n\nAdd the request params headers to the request to ensure that\nthe streaming request is routed to the correct service for your database.\n\nUse this format for the request params header: \n\n`x-goog-request-params`: \nlocation_id={location_path}&instance_id={instance_path}`\n\n`location_path` is `locations/{location_name}`\n`instance_path` is `projects/{project_name}/instances/{instance_name}`\n\nfor example: \n`x-goog-request-params`: \n`location_id=locations/us-central1&instance_id=projects/myproject/instances/instancename`",
+      "file": "SqlDataClient/StreamSqlData/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlDataService_StreamSqlData_sync",
+      "segments": [
+        {
+          "end": 71,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin StreamSqlData Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlDatabasesClient",
+          "shortName": "SqlDatabasesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlDatabasesClient.Delete",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlDatabasesService.Delete",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlDatabasesService",
+            "shortName": "SqlDatabasesService"
+          },
+          "shortName": "Delete"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlDatabasesDeleteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Delete"
+      },
+      "description": "Delete deletes a database from a Cloud SQL instance.",
+      "file": "SqlDatabasesClient/Delete/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlDatabasesService_Delete_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Delete Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlDatabasesClient",
+          "shortName": "SqlDatabasesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlDatabasesClient.Get",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlDatabasesService.Get",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlDatabasesService",
+            "shortName": "SqlDatabasesService"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlDatabasesGetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Database",
+        "shortName": "Get"
+      },
+      "description": "Get retrieves a resource containing information about a database inside a Cloud\nSQL instance.",
+      "file": "SqlDatabasesClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlDatabasesService_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlDatabasesClient",
+          "shortName": "SqlDatabasesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlDatabasesClient.Insert",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlDatabasesService.Insert",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlDatabasesService",
+            "shortName": "SqlDatabasesService"
+          },
+          "shortName": "Insert"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlDatabasesInsertRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Insert"
+      },
+      "description": "Insert inserts a resource containing information about a database inside a Cloud\nSQL instance.\n\n**Note: ** You can't modify the default character set and collation.",
+      "file": "SqlDatabasesClient/Insert/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlDatabasesService_Insert_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Insert Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlDatabasesClient",
+          "shortName": "SqlDatabasesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlDatabasesClient.List",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlDatabasesService.List",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlDatabasesService",
+            "shortName": "SqlDatabasesService"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlDatabasesListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.DatabasesListResponse",
+        "shortName": "List"
+      },
+      "description": "List lists databases in the specified Cloud SQL instance.",
+      "file": "SqlDatabasesClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlDatabasesService_List_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlDatabasesClient",
+          "shortName": "SqlDatabasesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlDatabasesClient.Patch",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlDatabasesService.Patch",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlDatabasesService",
+            "shortName": "SqlDatabasesService"
+          },
+          "shortName": "Patch"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlDatabasesUpdateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Patch"
+      },
+      "description": "Patch partially updates a resource containing information about a database inside\na Cloud SQL instance. This method supports patch semantics.",
+      "file": "SqlDatabasesClient/Patch/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlDatabasesService_Patch_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Patch Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlDatabasesClient",
+          "shortName": "SqlDatabasesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlDatabasesClient.Update",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlDatabasesService.Update",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlDatabasesService",
+            "shortName": "SqlDatabasesService"
+          },
+          "shortName": "Update"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlDatabasesUpdateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Update"
+      },
+      "description": "Update updates a resource containing information about a database inside a Cloud\nSQL instance.",
+      "file": "SqlDatabasesClient/Update/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlDatabasesService_Update_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Update Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlFlagsClient",
+          "shortName": "SqlFlagsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlFlagsClient.List",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlFlagsService.List",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlFlagsService",
+            "shortName": "SqlFlagsService"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlFlagsListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.FlagsListResponse",
+        "shortName": "List"
+      },
+      "description": "List lists all available database flags for Cloud SQL instances.",
+      "file": "SqlFlagsClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlFlagsService_List_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.AcquireSsrsLease",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.AcquireSsrsLease",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "AcquireSsrsLease"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesAcquireSsrsLeaseRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.SqlInstancesAcquireSsrsLeaseResponse",
+        "shortName": "AcquireSsrsLease"
+      },
+      "description": "AcquireSsrsLease acquire a lease for the setup of SQL Server Reporting Services (SSRS).",
+      "file": "SqlInstancesClient/AcquireSsrsLease/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_AcquireSsrsLease_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin AcquireSsrsLease Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.AddEntraIdCertificate",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.AddEntraIdCertificate",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "AddEntraIdCertificate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesAddEntraIdCertificateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "AddEntraIdCertificate"
+      },
+      "description": "AddEntraIdCertificate adds a new Entra ID certificate for the specified instance. If an Entra ID\ncertificate was previously added but never used in a certificate rotation,\nthis operation replaces that version.",
+      "file": "SqlInstancesClient/AddEntraIdCertificate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_AddEntraIdCertificate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin AddEntraIdCertificate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.AddServerCa",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.AddServerCa",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "AddServerCa"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesAddServerCaRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "AddServerCa"
+      },
+      "description": "AddServerCa add a new trusted Certificate Authority (CA) version for the specified\ninstance. Required to prepare for a certificate rotation. If a CA version\nwas previously added but never used in a certificate rotation, this\noperation replaces that version. There cannot be more than one CA version\nwaiting to be rotated in. For instances that have enabled Certificate\nAuthority Service (CAS) based server CA, use AddServerCertificate to add a\nnew server certificate.",
+      "file": "SqlInstancesClient/AddServerCa/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_AddServerCa_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin AddServerCa Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.AddServerCertificate",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.AddServerCertificate",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "AddServerCertificate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesAddServerCertificateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "AddServerCertificate"
+      },
+      "description": "AddServerCertificate add a new trusted server certificate version for the specified instance\nusing Certificate Authority Service (CAS) server CA. Required to prepare\nfor a certificate rotation. If a server certificate version was previously\nadded but never used in a certificate rotation, this operation replaces\nthat version. There cannot be more than one certificate version waiting to\nbe rotated in. For instances not using CAS server CA, use AddServerCa\ninstead.",
+      "file": "SqlInstancesClient/AddServerCertificate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_AddServerCertificate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin AddServerCertificate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.Clone",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.Clone",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Clone"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesCloneRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Clone"
+      },
+      "description": "Clone creates a Cloud SQL instance as a clone of the source instance. Using this\noperation might cause your instance to restart.",
+      "file": "SqlInstancesClient/Clone/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_Clone_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Clone Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.CreateEphemeral",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.CreateEphemeral",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "CreateEphemeral"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesCreateEphemeralCertRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.SslCert",
+        "shortName": "CreateEphemeral"
+      },
+      "description": "CreateEphemeral generates a short-lived X509 certificate containing the provided public key\nand signed by a private key specific to the target instance. Users may use\nthe certificate to authenticate as themselves when connecting to the\ndatabase.",
+      "file": "SqlInstancesClient/CreateEphemeral/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_CreateEphemeral_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin CreateEphemeral Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.Delete",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.Delete",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Delete"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesDeleteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Delete"
+      },
+      "description": "Delete deletes a Cloud SQL instance.",
+      "file": "SqlInstancesClient/Delete/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_Delete_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Delete Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.Demote",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.Demote",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Demote"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesDemoteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Demote"
+      },
+      "description": "Demote demotes an existing standalone instance to be a Cloud SQL read replica\nfor an external database server.",
+      "file": "SqlInstancesClient/Demote/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_Demote_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Demote Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.DemoteMaster",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.DemoteMaster",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "DemoteMaster"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesDemoteMasterRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "DemoteMaster"
+      },
+      "description": "DemoteMaster demotes the stand-alone instance to be a Cloud SQL read replica for an\nexternal database server.",
+      "file": "SqlInstancesClient/DemoteMaster/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_DemoteMaster_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin DemoteMaster Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.ExecuteSql",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.ExecuteSql",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "ExecuteSql"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesExecuteSqlRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.SqlInstancesExecuteSqlResponse",
+        "shortName": "ExecuteSql"
+      },
+      "description": "ExecuteSql execute SQL statements.",
+      "file": "SqlInstancesClient/ExecuteSql/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_ExecuteSql_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin ExecuteSql Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.Export",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.Export",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Export"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesExportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Export"
+      },
+      "description": "Export exports data from a Cloud SQL instance to a Cloud Storage bucket as a SQL\ndump or CSV file.",
+      "file": "SqlInstancesClient/Export/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_Export_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Export Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.Failover",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.Failover",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Failover"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesFailoverRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Failover"
+      },
+      "description": "Failover initiates a manual failover of a high availability (HA) primary instance\nto a standby instance, which becomes the primary instance. Users are\nthen rerouted to the new primary. For more information, see the\n[Overview of high\navailability](https: //cloud.google.com/sql/docs/mysql/high-availability)\npage in the Cloud SQL documentation.\nIf using Legacy HA (MySQL only), this causes the instance to failover to\nits failover replica instance.",
+      "file": "SqlInstancesClient/Failover/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_Failover_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Failover Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.Get",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.Get",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesGetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.DatabaseInstance",
+        "shortName": "Get"
+      },
+      "description": "Get retrieves a resource containing information about a Cloud SQL instance.",
+      "file": "SqlInstancesClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.GetDiskShrinkConfig",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.GetDiskShrinkConfig",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "GetDiskShrinkConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesGetDiskShrinkConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.SqlInstancesGetDiskShrinkConfigResponse",
+        "shortName": "GetDiskShrinkConfig"
+      },
+      "description": "GetDiskShrinkConfig get Disk Shrink Config for a given instance.",
+      "file": "SqlInstancesClient/GetDiskShrinkConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_GetDiskShrinkConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin GetDiskShrinkConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.GetLatestRecoveryTime",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.GetLatestRecoveryTime",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "GetLatestRecoveryTime"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesGetLatestRecoveryTimeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.SqlInstancesGetLatestRecoveryTimeResponse",
+        "shortName": "GetLatestRecoveryTime"
+      },
+      "description": "GetLatestRecoveryTime get Latest Recovery Time for a given instance.",
+      "file": "SqlInstancesClient/GetLatestRecoveryTime/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_GetLatestRecoveryTime_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin GetLatestRecoveryTime Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.Import",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.Import",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Import"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesImportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Import"
+      },
+      "description": "Import imports data into a Cloud SQL instance from a SQL dump  or CSV file in\nCloud Storage.",
+      "file": "SqlInstancesClient/Import/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_Import_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Import Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.Insert",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.Insert",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Insert"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesInsertRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Insert"
+      },
+      "description": "Insert creates a new Cloud SQL instance.",
+      "file": "SqlInstancesClient/Insert/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_Insert_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Insert Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.List",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.List",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ApiWarningIterator",
+        "shortName": "List"
+      },
+      "description": "List lists instances under a given project.",
+      "file": "SqlInstancesClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.ListEntraIdCertificates",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.ListEntraIdCertificates",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "ListEntraIdCertificates"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesListEntraIdCertificatesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.InstancesListEntraIdCertificatesResponse",
+        "shortName": "ListEntraIdCertificates"
+      },
+      "description": "ListEntraIdCertificates lists all versions of EntraID certificates for the specified instance.\nThere can be up to three sets of certificates listed: the certificate that\nis currently in use, a future that has been added but not yet used to sign\na certificate, and a certificate that has been rotated out.",
+      "file": "SqlInstancesClient/ListEntraIdCertificates/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_ListEntraIdCertificates_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin ListEntraIdCertificates Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.ListServerCas",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.ListServerCas",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "ListServerCas"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesListServerCasRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.InstancesListServerCasResponse",
+        "shortName": "ListServerCas"
+      },
+      "description": "ListServerCas lists all of the trusted Certificate Authorities (CAs) for the specified\ninstance. There can be up to three CAs listed: the CA that was used to sign\nthe certificate that is currently in use, a CA that has been added but not\nyet used to sign a certificate, and a CA used to sign a certificate that\nhas previously rotated out.",
+      "file": "SqlInstancesClient/ListServerCas/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_ListServerCas_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin ListServerCas Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.ListServerCertificates",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.ListServerCertificates",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "ListServerCertificates"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesListServerCertificatesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.InstancesListServerCertificatesResponse",
+        "shortName": "ListServerCertificates"
+      },
+      "description": "ListServerCertificates lists all versions of server certificates and certificate authorities (CAs)\nfor the specified instance. There can be up to three sets of certs listed: \nthe certificate that is currently in use, a future that has been added but\nnot yet used to sign a certificate, and a certificate that has been rotated\nout. For instances not using Certificate Authority Service (CAS) server CA,\nuse ListServerCas instead.",
+      "file": "SqlInstancesClient/ListServerCertificates/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_ListServerCertificates_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin ListServerCertificates Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.Patch",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.Patch",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Patch"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesPatchRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Patch"
+      },
+      "description": "Patch partially updates settings of a Cloud SQL instance by merging the request\nwith the current configuration. This method supports patch semantics.",
+      "file": "SqlInstancesClient/Patch/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_Patch_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Patch Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.PerformDiskShrink",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.PerformDiskShrink",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "PerformDiskShrink"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesPerformDiskShrinkRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "PerformDiskShrink"
+      },
+      "description": "PerformDiskShrink perform Disk Shrink on primary instance.",
+      "file": "SqlInstancesClient/PerformDiskShrink/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_PerformDiskShrink_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin PerformDiskShrink Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.PointInTimeRestore",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.PointInTimeRestore",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "PointInTimeRestore"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesPointInTimeRestoreRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "PointInTimeRestore"
+      },
+      "description": "PointInTimeRestore point in time restore for an instance managed by Google Cloud Backup and\nDisaster Recovery.",
+      "file": "SqlInstancesClient/PointInTimeRestore/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_PointInTimeRestore_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin PointInTimeRestore Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.PreCheckMajorVersionUpgrade",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.PreCheckMajorVersionUpgrade",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "PreCheckMajorVersionUpgrade"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesPreCheckMajorVersionUpgradeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "PreCheckMajorVersionUpgrade"
+      },
+      "description": "PreCheckMajorVersionUpgrade execute MVU Pre-checks",
+      "file": "SqlInstancesClient/PreCheckMajorVersionUpgrade/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_PreCheckMajorVersionUpgrade_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin PreCheckMajorVersionUpgrade Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.PromoteReplica",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.PromoteReplica",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "PromoteReplica"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesPromoteReplicaRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "PromoteReplica"
+      },
+      "description": "PromoteReplica promotes the read replica instance to be an independent Cloud SQL\nprimary instance.\nUsing this operation might cause your instance to restart.",
+      "file": "SqlInstancesClient/PromoteReplica/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_PromoteReplica_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin PromoteReplica Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.Reencrypt",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.Reencrypt",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Reencrypt"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesReencryptRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Reencrypt"
+      },
+      "description": "Reencrypt reencrypt CMEK instance with latest key version.",
+      "file": "SqlInstancesClient/Reencrypt/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_Reencrypt_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Reencrypt Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.ReleaseSsrsLease",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.ReleaseSsrsLease",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "ReleaseSsrsLease"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesReleaseSsrsLeaseRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.SqlInstancesReleaseSsrsLeaseResponse",
+        "shortName": "ReleaseSsrsLease"
+      },
+      "description": "ReleaseSsrsLease release a lease for the setup of SQL Server Reporting Services (SSRS).",
+      "file": "SqlInstancesClient/ReleaseSsrsLease/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_ReleaseSsrsLease_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin ReleaseSsrsLease Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.RescheduleMaintenance",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.RescheduleMaintenance",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "RescheduleMaintenance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesRescheduleMaintenanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "RescheduleMaintenance"
+      },
+      "description": "RescheduleMaintenance reschedules the maintenance on the given instance.",
+      "file": "SqlInstancesClient/RescheduleMaintenance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_RescheduleMaintenance_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin RescheduleMaintenance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.ResetReplicaSize",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.ResetReplicaSize",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "ResetReplicaSize"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesResetReplicaSizeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "ResetReplicaSize"
+      },
+      "description": "ResetReplicaSize reset Replica Size to primary instance disk size.",
+      "file": "SqlInstancesClient/ResetReplicaSize/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_ResetReplicaSize_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin ResetReplicaSize Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.ResetSslConfig",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.ResetSslConfig",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "ResetSslConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesResetSslConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "ResetSslConfig"
+      },
+      "description": "ResetSslConfig deletes all client certificates and generates a new server SSL certificate\nfor the instance.",
+      "file": "SqlInstancesClient/ResetSslConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_ResetSslConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin ResetSslConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.Restart",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.Restart",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Restart"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesRestartRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Restart"
+      },
+      "description": "Restart restarts a Cloud SQL instance.",
+      "file": "SqlInstancesClient/Restart/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_Restart_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Restart Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.RestoreBackup",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.RestoreBackup",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "RestoreBackup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesRestoreBackupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "RestoreBackup"
+      },
+      "description": "RestoreBackup restores a backup of a Cloud SQL instance. Using this operation might cause\nyour instance to restart.",
+      "file": "SqlInstancesClient/RestoreBackup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_RestoreBackup_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin RestoreBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.RotateEntraIdCertificate",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.RotateEntraIdCertificate",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "RotateEntraIdCertificate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesRotateEntraIdCertificateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "RotateEntraIdCertificate"
+      },
+      "description": "RotateEntraIdCertificate rotates the Entra Id certificate version to one previously added with the\naddEntraIdCertificate method.",
+      "file": "SqlInstancesClient/RotateEntraIdCertificate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_RotateEntraIdCertificate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin RotateEntraIdCertificate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.RotateServerCa",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.RotateServerCa",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "RotateServerCa"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesRotateServerCaRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "RotateServerCa"
+      },
+      "description": "RotateServerCa rotates the server certificate to one signed by the Certificate Authority\n(CA) version previously added with the addServerCA method. For instances\nthat have enabled Certificate Authority Service (CAS) based server CA,\nuse RotateServerCertificate to rotate the server certificate.",
+      "file": "SqlInstancesClient/RotateServerCa/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_RotateServerCa_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin RotateServerCa Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.RotateServerCertificate",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.RotateServerCertificate",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "RotateServerCertificate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesRotateServerCertificateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "RotateServerCertificate"
+      },
+      "description": "RotateServerCertificate rotates the server certificate version to one previously added with the\naddServerCertificate method. For instances not using Certificate Authority\nService (CAS) server CA, use RotateServerCa instead.",
+      "file": "SqlInstancesClient/RotateServerCertificate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_RotateServerCertificate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin RotateServerCertificate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.StartExternalSync",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.StartExternalSync",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "StartExternalSync"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesStartExternalSyncRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "StartExternalSync"
+      },
+      "description": "StartExternalSync start External primary instance migration.",
+      "file": "SqlInstancesClient/StartExternalSync/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_StartExternalSync_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin StartExternalSync Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.StartReplica",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.StartReplica",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "StartReplica"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesStartReplicaRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "StartReplica"
+      },
+      "description": "StartReplica starts the replication in the read replica instance.",
+      "file": "SqlInstancesClient/StartReplica/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_StartReplica_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin StartReplica Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.StopReplica",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.StopReplica",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "StopReplica"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesStopReplicaRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "StopReplica"
+      },
+      "description": "StopReplica stops the replication in the read replica instance.",
+      "file": "SqlInstancesClient/StopReplica/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_StopReplica_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin StopReplica Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.Switchover",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.Switchover",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Switchover"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesSwitchoverRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Switchover"
+      },
+      "description": "Switchover switches over from the primary instance to the DR replica\ninstance.",
+      "file": "SqlInstancesClient/Switchover/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_Switchover_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Switchover Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.TruncateLog",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.TruncateLog",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "TruncateLog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesTruncateLogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "TruncateLog"
+      },
+      "description": "TruncateLog truncate MySQL general and slow query log tables\nMySQL only.",
+      "file": "SqlInstancesClient/TruncateLog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_TruncateLog_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin TruncateLog Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.Update",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.Update",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "Update"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesUpdateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Update"
+      },
+      "description": "Update updates settings of a Cloud SQL instance. Using this operation might cause\nyour instance to restart.",
+      "file": "SqlInstancesClient/Update/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_Update_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Update Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient",
+          "shortName": "SqlInstancesClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlInstancesClient.VerifyExternalSyncSettings",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlInstancesService.VerifyExternalSyncSettings",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlInstancesService",
+            "shortName": "SqlInstancesService"
+          },
+          "shortName": "VerifyExternalSyncSettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlInstancesVerifyExternalSyncSettingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.SqlInstancesVerifyExternalSyncSettingsResponse",
+        "shortName": "VerifyExternalSyncSettings"
+      },
+      "description": "VerifyExternalSyncSettings verify External primary instance external sync settings.",
+      "file": "SqlInstancesClient/VerifyExternalSyncSettings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlInstancesService_VerifyExternalSyncSettings_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin VerifyExternalSyncSettings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlOperationsClient",
+          "shortName": "SqlOperationsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlOperationsClient.Cancel",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlOperationsService.Cancel",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlOperationsService",
+            "shortName": "SqlOperationsService"
+          },
+          "shortName": "Cancel"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlOperationsCancelRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "Cancel"
+      },
+      "description": "Cancel cancels an instance operation that has been performed on an instance.\nOrdinarily, this method name should be `CancelSqlOperation`.",
+      "file": "SqlOperationsClient/Cancel/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlOperationsService_Cancel_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Cancel Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlOperationsClient",
+          "shortName": "SqlOperationsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlOperationsClient.Get",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlOperationsService.Get",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlOperationsService",
+            "shortName": "SqlOperationsService"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlOperationsGetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Get"
+      },
+      "description": "Get retrieves an instance operation that has been performed on an instance.",
+      "file": "SqlOperationsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlOperationsService_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlOperationsClient",
+          "shortName": "SqlOperationsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlOperationsClient.List",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlOperationsService.List",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlOperationsService",
+            "shortName": "SqlOperationsService"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlOperationsListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "List"
+      },
+      "description": "List lists all instance operations that have been performed on the given Cloud\nSQL instance in the reverse chronological order of the start time.",
+      "file": "SqlOperationsClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlOperationsService_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlSslCertsClient",
+          "shortName": "SqlSslCertsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlSslCertsClient.Delete",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlSslCertsService.Delete",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlSslCertsService",
+            "shortName": "SqlSslCertsService"
+          },
+          "shortName": "Delete"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlSslCertsDeleteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Delete"
+      },
+      "description": "Delete deletes the SSL certificate. For First Generation instances, the\ncertificate remains valid until the instance is restarted.",
+      "file": "SqlSslCertsClient/Delete/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlSslCertsService_Delete_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Delete Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlSslCertsClient",
+          "shortName": "SqlSslCertsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlSslCertsClient.Get",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlSslCertsService.Get",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlSslCertsService",
+            "shortName": "SqlSslCertsService"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlSslCertsGetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.SslCert",
+        "shortName": "Get"
+      },
+      "description": "Get retrieves a particular SSL certificate.  Does not include the private key\n(required for usage).  The private key must be saved from the response to\ninitial creation.",
+      "file": "SqlSslCertsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlSslCertsService_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlSslCertsClient",
+          "shortName": "SqlSslCertsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlSslCertsClient.Insert",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlSslCertsService.Insert",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlSslCertsService",
+            "shortName": "SqlSslCertsService"
+          },
+          "shortName": "Insert"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlSslCertsInsertRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.SslCertsInsertResponse",
+        "shortName": "Insert"
+      },
+      "description": "Insert creates an SSL certificate and returns it along with the private key and\nserver certificate authority.  The new certificate will not be usable until\nthe instance is restarted.",
+      "file": "SqlSslCertsClient/Insert/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlSslCertsService_Insert_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Insert Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlSslCertsClient",
+          "shortName": "SqlSslCertsClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlSslCertsClient.List",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlSslCertsService.List",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlSslCertsService",
+            "shortName": "SqlSslCertsService"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlSslCertsListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.SslCertsListResponse",
+        "shortName": "List"
+      },
+      "description": "List lists all of the current SSL certificates for the instance.",
+      "file": "SqlSslCertsClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlSslCertsService_List_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlTiersClient",
+          "shortName": "SqlTiersClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlTiersClient.List",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlTiersService.List",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlTiersService",
+            "shortName": "SqlTiersService"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlTiersListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.TiersListResponse",
+        "shortName": "List"
+      },
+      "description": "List lists all available machine types (tiers) for Cloud SQL, for example,\n`db-custom-1-3840`. For related information, see [Pricing](/sql/pricing).",
+      "file": "SqlTiersClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlTiersService_List_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlUsersClient",
+          "shortName": "SqlUsersClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlUsersClient.Delete",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlUsersService.Delete",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlUsersService",
+            "shortName": "SqlUsersService"
+          },
+          "shortName": "Delete"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlUsersDeleteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Delete"
+      },
+      "description": "Delete deletes a user from a Cloud SQL instance.",
+      "file": "SqlUsersClient/Delete/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlUsersService_Delete_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Delete Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlUsersClient",
+          "shortName": "SqlUsersClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlUsersClient.Get",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlUsersService.Get",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlUsersService",
+            "shortName": "SqlUsersService"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlUsersGetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.User",
+        "shortName": "Get"
+      },
+      "description": "Get retrieves a resource containing information about a user.",
+      "file": "SqlUsersClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlUsersService_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlUsersClient",
+          "shortName": "SqlUsersClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlUsersClient.Insert",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlUsersService.Insert",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlUsersService",
+            "shortName": "SqlUsersService"
+          },
+          "shortName": "Insert"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlUsersInsertRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Insert"
+      },
+      "description": "Insert creates a new user in a Cloud SQL instance.",
+      "file": "SqlUsersClient/Insert/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlUsersService_Insert_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Insert Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlUsersClient",
+          "shortName": "SqlUsersClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlUsersClient.List",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlUsersService.List",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlUsersService",
+            "shortName": "SqlUsersService"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlUsersListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.UsersListResponse",
+        "shortName": "List"
+      },
+      "description": "List lists users in the specified Cloud SQL instance.",
+      "file": "SqlUsersClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlUsersService_List_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1beta4.SqlUsersClient",
+          "shortName": "SqlUsersClient"
+        },
+        "fullName": "google.cloud.sql.v1beta4.SqlUsersClient.Update",
+        "method": {
+          "fullName": "google.cloud.sql.v1beta4.SqlUsersService.Update",
+          "service": {
+            "fullName": "google.cloud.sql.v1beta4.SqlUsersService",
+            "shortName": "SqlUsersService"
+          },
+          "shortName": "Update"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlUsersUpdateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Update"
+      },
+      "description": "Update updates an existing user in a Cloud SQL instance.",
+      "file": "SqlUsersClient/Update/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1beta4_generated_SqlUsersService_Update_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Update Sample"
+    }
+  ]
+}

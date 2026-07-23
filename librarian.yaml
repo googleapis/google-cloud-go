@@ -1337,6 +1337,12 @@ libraries:
       - path: google/cloud/speech/v2
       - path: google/cloud/speech/v1
       - path: google/cloud/speech/v1p1beta1
+  - name: sql
+    version: 0.0.0
+    apis:
+      - path: google/cloud/sql/v1
+      - path: google/cloud/sql/v1beta4
+    copyright_year: "2026"
   - name: storage
     version: 1.64.0
     apis:
