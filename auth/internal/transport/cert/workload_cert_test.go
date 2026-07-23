@@ -16,6 +16,7 @@ package cert
 
 import (
 	"errors"
+	"strings"
 	"testing"
 )
 
@@ -87,5 +88,61 @@ func TestWorkloadCertSource_GetClientCertificateSuccess(t *testing.T) {
 	}
 	if cert.PrivateKey == nil {
 		t.Fatal("got nil, want non-nil PrivateKey")
+	}
+}
+
+func TestWorkloadCertSource_UseEcpSuccess(t *testing.T) {
+	source, err := NewWorkloadX509CertProvider("testdata/certificate_config_workload_use_ecp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	cert, err := source(nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cert.Certificate == nil {
+		t.Fatal("got nil, want non-nil Certificate")
+	}
+	if cert.PrivateKey == nil {
+		t.Fatal("got nil, want non-nil PrivateKey")
+	}
+}
+
+func TestWorkloadCertSource_UseEcpFailure(t *testing.T) {
+	_, err := NewWorkloadX509CertProvider("testdata/certificate_config_workload_use_ecp_invalid.json")
+	if err == nil {
+		t.Fatal("got nil, want non-nil error")
+	}
+}
+
+func TestGetFileBasedCertificatePath(t *testing.T) {
+	got, err := GetFileBasedCertificatePath("testdata/certificate_config_workload.json")
+	if err != nil {
+		t.Fatalf("GetFileBasedCertificatePath failed: %v", err)
+	}
+	if !strings.HasSuffix(got, "workload_cert.pem") {
+		t.Errorf("GetFileBasedCertificatePath() = %q, want path ending with workload_cert.pem", got)
+	}
+
+	_, err = GetFileBasedCertificatePath("testdata/certificate_config_workload_use_ecp.json")
+	if err == nil {
+		t.Error("GetFileBasedCertificatePath() with use_ecp expected error, got nil")
+	}
+}
+
+func TestIsECPConfig(t *testing.T) {
+	if got := IsECPConfig("testdata/certificate_config_workload_use_ecp.json"); !got {
+		t.Error("IsECPConfig() with use_ecp=true expected true, got false")
+	}
+
+	if got := IsECPConfig("testdata/certificate_config_workload.json"); got {
+		t.Error("IsECPConfig() with use_ecp=false expected false, got true")
+	}
+}
+
+func TestGetConfigFilePath(t *testing.T) {
+	t.Setenv("GOOGLE_API_CERTIFICATE_CONFIG", "some/path.json")
+	if got := GetConfigFilePath(""); got != "some/path.json" {
+		t.Errorf("GetConfigFilePath() = %q, want %q", got, "some/path.json")
 	}
 }
