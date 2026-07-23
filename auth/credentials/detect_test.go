@@ -1058,6 +1058,9 @@ func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 func TestDefaultCredentials_OnGCE(t *testing.T) {
 	ctx := context.Background()
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if got, want := r.Header.Get("Metadata-Flavor"), "Google"; got != want {
+			t.Errorf("Metadata-Flavor header: got %q, want %q", got, want)
+		}
 		switch r.URL.Path {
 		case "/computeMetadata/v1/project/project-id":
 			fmt.Fprint(w, "fake-project")
