@@ -30,11 +30,27 @@ import (
 //   - pingAndWarmChannelPrimer issues a PingAndWarm against the configured
 //     instance / app profile with the supplied feature-flag metadata
 //     (today's only behavior, used by the classic channel pool factory).
+//   - NoOpChannelPrimer skips priming entirely. Prefer this over nil at
+//     construction sites where "no priming" is a deliberate architectural
+//     choice (e.g. session channel pools that warm via OpenSession on
+//     each stream) rather than a placeholder waiting for a real primer.
 type ChannelPrimer interface {
 	// Prime warms conn so the next request served by it does not pay the
 	// first-RPC connection-setup cost. The factory wraps Prime in a retry
 	// loop, so transient errors should propagate as-is.
 	Prime(ctx context.Context, conn *BigtableConn) error
+}
+
+// NoOpChannelPrimer explicitly disables per-connection priming. Session
+// channel pools warm their channels via the OpenSession handshake on
+// each newly-opened stream, so a PingAndWarm at dial time is redundant.
+// Passing NoOpChannelPrimer{} makes the "no priming" choice explicit at
+// the construction site instead of relying on nil-as-sentinel.
+type NoOpChannelPrimer struct{}
+
+// Prime is a no-op — the channel is returned unprimed.
+func (NoOpChannelPrimer) Prime(_ context.Context, _ *BigtableConn) error {
+	return nil
 }
 
 // pingAndWarmChannelPrimer primes a channel by issuing a PingAndWarm RPC
