@@ -500,7 +500,7 @@ func TestHeartBeatLoop_ExitsOnCtxCancel(t *testing.T) {
 	}
 }
 
-// --- peerInfoExtracter -------------------------------------------------------
+// --- extractPeerInfo -------------------------------------------------------
 
 func TestPeerInfoExtracter_ParsesValidHeader(t *testing.T) {
 	pi := &spb.PeerInfo{
@@ -523,7 +523,7 @@ func TestPeerInfoExtracter_ParsesValidHeader(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			s := newTestSession(t, newFakeStream(), SessionHooks{})
-			s.peerInfoExtracter([]string{tc.encoded})
+			s.extractPeerInfo([]string{tc.encoded})
 			got := s.PeerInfo()
 			if got == nil {
 				t.Fatal("PeerInfo nil after extraction")
@@ -541,13 +541,13 @@ func TestPeerInfoExtracter_ParsesValidHeader(t *testing.T) {
 func TestPeerInfoExtracter_EmptyAndBadInputs(t *testing.T) {
 	s := newTestSession(t, newFakeStream(), SessionHooks{})
 
-	s.peerInfoExtracter(nil)
-	s.peerInfoExtracter([]string{})
+	s.extractPeerInfo(nil)
+	s.extractPeerInfo([]string{})
 	if s.PeerInfo() != nil {
 		t.Error("PeerInfo should remain nil for empty input")
 	}
 
-	s.peerInfoExtracter([]string{"!!!not-base64!!!"})
+	s.extractPeerInfo([]string{"!!!not-base64!!!"})
 	if s.PeerInfo() != nil {
 		t.Error("PeerInfo should remain nil for undecodable input")
 	}

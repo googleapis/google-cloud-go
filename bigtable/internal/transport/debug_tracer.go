@@ -93,6 +93,11 @@ const (
 	tagSessionHeartbeatMissed        = "session_heartbeat_missed"
 	tagSessionForceCloseNeverStarted = "session_force_close_never_started"
 	tagSessionCloseNoReason          = "session_close_no_reason"
+	// tagSessionReadLoopPanic fires when readLoop's deferred recover
+	// catches a panic from handleSessionResponse (or any downstream
+	// handler). Session is force-closed with REASON_ERROR carrying the
+	// panic value in the description.
+	tagSessionReadLoopPanic = "session_read_loop_panic"
 
 	// vRPC dispatch observations.
 	tagSessionVRPCNil                = "session_vrpc_nil"
