@@ -72,20 +72,15 @@ func GetFileBasedCertificatePath(configFilePath string) (string, error) {
 	return certFile, nil
 }
 
-// GetECPConfigPath retrieves the configuration file path and checks if
-// ECP (Enterprise Certificate Proxy) is enabled. If configFilePath is empty,
-// it attempts to load the configuration from a well-known gcloud location.
-// If use_ecp is true, it returns the configuration file path.
-func GetECPConfigPath(configFilePath string) (string, error) {
+// IsECPConfig checks if the given configuration specifies that ECP
+// (Enterprise Certificate Proxy) is enabled.
+func IsECPConfig(configFilePath string) bool {
 	configFilePath = GetConfigFilePath(configFilePath)
 	_, _, useEcp, err := getCertKeyAndUseEcp(configFilePath)
 	if err != nil {
-		return "", err
+		return false
 	}
-	if !useEcp {
-		return "", errors.New("enterprise certificate proxy is not enabled")
-	}
-	return configFilePath, nil
+	return useEcp
 }
 
 // NewWorkloadX509CertProvider creates a certificate source
@@ -131,6 +126,7 @@ func getCertKeyAndUseEcp(configFilePath string) (string, string, bool, error) {
 	if err != nil {
 		return "", "", false, errSourceUnavailable
 	}
+	defer jsonFile.Close()
 
 	byteValue, err := io.ReadAll(jsonFile)
 	if err != nil {

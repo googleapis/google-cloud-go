@@ -147,6 +147,7 @@ func (xp *x509Provider) ecpSubjectToken() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to initialize ECP client: %w", err)
 	}
+	defer key.Close()
 
 	rawChain := key.CertificateChain()
 	if len(rawChain) == 0 {
@@ -180,7 +181,7 @@ func (xp *x509Provider) subjectToken(context.Context) (string, error) {
 	xp.ConfigFilePath = cert.GetConfigFilePath(xp.ConfigFilePath)
 
 	// First check if it's ECP based cert config
-	if _, err := cert.GetECPConfigPath(xp.ConfigFilePath); err == nil {
+	if cert.IsECPConfig(xp.ConfigFilePath) {
 		return xp.ecpSubjectToken()
 	}
 

@@ -130,18 +130,13 @@ func TestGetFileBasedCertificatePath(t *testing.T) {
 	}
 }
 
-func TestGetECPConfigPath(t *testing.T) {
-	got, err := GetECPConfigPath("testdata/certificate_config_workload_use_ecp.json")
-	if err != nil {
-		t.Fatalf("GetECPConfigPath failed: %v", err)
-	}
-	if got != "testdata/certificate_config_workload_use_ecp.json" {
-		t.Errorf("GetECPConfigPath() = %q, want %q", got, "testdata/certificate_config_workload_use_ecp.json")
+func TestIsECPConfig(t *testing.T) {
+	if got := IsECPConfig("testdata/certificate_config_workload_use_ecp.json"); !got {
+		t.Error("IsECPConfig() with use_ecp=true expected true, got false")
 	}
 
-	_, err = GetECPConfigPath("testdata/certificate_config_workload.json")
-	if err == nil {
-		t.Error("GetECPConfigPath() with use_ecp=false expected error, got nil")
+	if got := IsECPConfig("testdata/certificate_config_workload.json"); got {
+		t.Error("IsECPConfig() with use_ecp=false expected false, got true")
 	}
 }
 
