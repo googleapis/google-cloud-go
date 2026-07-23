@@ -150,15 +150,18 @@ func (s *Session) Invoke(ctx context.Context, desc VRpcDescriptor, req interface
 		// this branch — sendMessage there is async and failures come
 		// back through the response observer — but Go's Send is
 		// synchronous, so an early drain is on the Invoke path.
-		s.drainSlot(rpc)
-		// v3: drain is the sole "session became free" signal. Fire the
-		// pool wake here as well — ReleaseToPool's inExpectedCount guard
-		// (see SESSION_POOL_SPEC #6, I5) drops the re-enqueue if
-		// OnSessionClosing already dropped this handle in the teardown
-		// that the Send failure typically kicks off.
-		s.hooks.onSlotDrained()
-		if State(s.state.Load()) == StateClosing {
-			s.signalQuiescent()
+		// drainSlot returns ok=false when concurrent teardown
+		// (cancelActiveRPCs / ForceClose) beat us to freeing the slot.
+		// In that case, the teardown path is responsible for pool
+		// notification via OnClosing/OnClose and quiescence signalling —
+		// firing onSlotDrained here would violate the SessionHooks
+		// contract that reserves it for the drain-succeeded path
+		// (SESSION_SPEC #5/#10). Only fire when we actually did the drain.
+		if _, _, ok := s.drainSlot(rpc); ok {
+			s.hooks.onSlotDrained()
+			if State(s.state.Load()) == StateClosing {
+				s.signalQuiescent()
+			}
 		}
 		return result, tagErr(StateTransportFailure, fmt.Errorf("send vRPC request: %w", sendErr))
 	}
