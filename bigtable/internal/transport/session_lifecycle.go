@@ -262,8 +262,7 @@ func (s *Session) handleSessionResponse(resp *spb.SessionResponse) {
 // any bidi message, so by the time we've received the OpenSession response
 // the header is already buffered and stream.Header() returns without
 // blocking. Ordering: extract first, then fire onActive, so every observer
-// sees a session whose PeerInfo (and therefore AfeID) is populated. This
-// matches Java's onHeaders synchrony.
+// sees a session whose PeerInfo (and therefore AfeID) is populated.
 func (s *Session) handleOpenSession(_ *spb.OpenSessionResponse) {
 	if prev, ok := s.transitionTo(StateReady, isState(StateStarting)); !ok {
 		// Server confirmed OpenSession while we were in a state that
@@ -322,19 +321,16 @@ func (s *Session) handleSessionRefreshConfig(cfg *spb.SessionRefreshConfig) {
 
 // handleGoAway processes a server-initiated GoAway:
 //  1. Transitions to StateClosing so pool.CheckoutSession stops handing
-//     this session out for new work (matches Java's onSessionGoAway
-//     which marks the session as no longer eligible for new picks).
+//     this session out for new work.
 //  2. Stamps "GoAway" as the close reason so it survives the eventual
 //     handleClose stamp.
-//  3. Does NOT cancel the in-flight RPC. Java parity: SessionImpl's
-//     handleGoAwayResponse just transitions state and leaves currentRpc
-//     alone — if the server sends the response before dropping the
-//     stream, the RPC completes successfully. Only when the stream
-//     actually terminates does the RPC get failed with TRANSPORT_FAILURE
-//     (via handleClose → cancelActiveRPCs). This grace period matters
-//     most for non-idempotent Apply on server graceful drains: previously
-//     GoAway made the client fail-fast even when the server was about to
-//     send success.
+//  3. Does NOT cancel the in-flight RPC. If the server sends the response
+//     before dropping the stream, the RPC completes successfully. Only
+//     when the stream actually terminates does the RPC get failed with
+//     TRANSPORT_FAILURE (via handleClose → cancelActiveRPCs). This grace
+//     period matters most for non-idempotent Apply on server graceful
+//     drains — a fail-fast on GoAway would surface as spurious errors when
+//     the response was already on the wire.
 //  4. Spawns a goroutine that drives the session through Closing →
 //     WaitServerClose → Closed via s.Close. s.Close already drains the
 //     in-flight RPC (waits on s.quiescent, or ForceCloses after its 30s
@@ -555,9 +551,9 @@ func (s *Session) heartBeatLoop(ctx context.Context) {
 }
 
 // peerInfoExtracter parses the base64-encoded peer info header and caches
-// the decoded PeerInfo on the session. Server emits URL-safe base64
-// (matches java-bigtable's Base64.getUrlDecoder()); trailing '=' padding
-// is stripped so a single RawURLEncoding decoder handles both shapes.
+// the decoded PeerInfo on the session. Server emits URL-safe base64;
+// trailing '=' padding is stripped so a single RawURLEncoding decoder
+// handles both shapes.
 func (s *Session) peerInfoExtracter(peerInfoData []string) {
 	if len(peerInfoData) == 0 {
 		return
