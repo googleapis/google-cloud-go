@@ -459,3 +459,116 @@ func TestPublishFlowControl_OversizedLeak(t *testing.T) {
 		t.Fatal("BUG: publish blocked, credit leaked by oversized message")
 	}
 }
+
+func TestCancellationSharer(t *testing.T) {
+	ctx := context.Background()
+	mainCtx, mainCancel := context.WithCancel(ctx)
+	hedgedCtx, hedgedCancel := context.WithCancel(ctx)
+
+	cs := newCancellationSharer()
+	mainID := cs.add(mainCancel)
+	_ = cs.add(hedgedCancel)
+
+	// Test that winning main cancels hedged
+	cs.win(mainID)
+	if hedgedCtx.Err() == nil {
+		t.Errorf("expected hedgedCtx to be cancelled when win(mainID) is called")
+	}
+	if mainCtx.Err() != nil {
+		t.Errorf("expected mainCtx to not be cancelled yet")
+	}
+
+	cs.cancelAll()
+	if mainCtx.Err() == nil {
+		t.Errorf("expected mainCtx to be cancelled after cancelAll()")
+	}
+
+	// Test adding after done returns -1 and cancels immediately
+	lateCtx, lateCancel := context.WithCancel(ctx)
+	lateID := cs.add(lateCancel)
+	if lateID != -1 {
+		t.Errorf("expected lateID to be -1, got %d", lateID)
+	}
+	if lateCtx.Err() == nil {
+		t.Errorf("expected lateCtx to be cancelled immediately upon add after done")
+	}
+}
+
+func TestPublishHedging(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic := fmt.Sprintf("projects/%s/topics/test-topic-hedging", testutil.ProjID())
+	publisher := mustCreateTopic(t, c, topic)
+	defer publisher.Stop()
+
+	publisher.PublishSettings.HedgingSettings = &HedgingSettings{
+		Delay: 10 * time.Millisecond,
+	}
+
+	srv.SetAutoPublishResponse(false)
+	for i := 0; i < 10; i++ {
+		addSingleResponse(srv, "msg-123")
+	}
+
+	res := publishSingleMessage(ctx, publisher, "test data")
+	id, err := res.Get(ctx)
+	if err != nil {
+		t.Fatalf("res.Get got err: %v", err)
+	}
+	if id != "msg-123" {
+		t.Errorf("got msg ID %q, want msg-123", id)
+	}
+}
+
+func TestPublishHedgingWithOrdering(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic := fmt.Sprintf("projects/%s/topics/test-topic-hedging-ordering", testutil.ProjID())
+	publisher := mustCreateTopic(t, c, topic)
+	defer publisher.Stop()
+
+	publisher.EnableMessageOrdering = true
+	publisher.PublishSettings.HedgingSettings = &HedgingSettings{
+		Delay: 10 * time.Millisecond,
+	}
+
+	res := publishSingleMessageWithKey(ctx, publisher, "test", "key")
+	if _, err := res.Get(ctx); !errors.Is(err, errPublisherHedgingAndOrderingEnabled) {
+		t.Errorf("got %v, want errPublisherHedgingAndOrderingEnabled", err)
+	}
+}
+
+func TestPublishDynamicMultiHedging(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic := fmt.Sprintf("projects/%s/topics/test-topic-multi-hedging", testutil.ProjID())
+	publisher := mustCreateTopic(t, c, topic)
+	defer publisher.Stop()
+
+	publisher.PublishSettings.HedgingSettings = &HedgingSettings{
+		Delay: 10 * time.Millisecond,
+	}
+
+	srv.SetAutoPublishResponse(false)
+	for i := 0; i < 10; i++ {
+		addSingleResponse(srv, "msg-multi-123")
+	}
+
+	res := publishSingleMessage(ctx, publisher, "test data")
+	id, err := res.Get(ctx)
+	if err != nil {
+		t.Fatalf("res.Get got err: %v", err)
+	}
+	if id != "msg-multi-123" {
+		t.Errorf("got msg ID %q, want msg-multi-123", id)
+	}
+}
