@@ -256,6 +256,15 @@ func latencyHistogramBoundaries() []float64 {
 	return boundaries
 }
 
+func latencyMicrosecondsHistogramBoundaries() []float64 {
+	sBoundaries := latencyHistogramBoundaries()
+	usBoundaries := make([]float64, len(sBoundaries))
+	for i, b := range sBoundaries {
+		usBoundaries[i] = b * 1000000.0
+	}
+	return usBoundaries
+}
+
 func sizeHistogramBoundaries() []float64 {
 	kb := 1024.0
 	mb := 1024.0 * kb
