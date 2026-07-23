@@ -23,6 +23,7 @@ import (
 	"io"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
+	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
@@ -85,6 +86,7 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReaderReadObject")
 	defer func() { endSpan(ctx, err) }()
 
+	requestID := uuid.New()
 	s := callSettings(c.settings, opts...)
 
 	s.gax = append(s.gax, gax.WithGRPCOptions(
@@ -134,7 +136,7 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 		var err error
 		var decoder *readObjectResponseDecoder
 
-		err = run(cc, func(ctx context.Context) error {
+		openStream := func(ctx context.Context) error {
 			stream, err = c.raw.ReadObject(ctx, req, s.gax...)
 			if err != nil {
 				return err
@@ -157,6 +159,15 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 			}
 			err = decoder.readFullObjectResponse()
 			return err
+		}
+
+		err = run(cc, func(ctx context.Context) error {
+			return executeWithReadStallTimeout(ctx, c.dynamicReadReqStallTimeout, params.bucket, requestID, openStream, func() {
+				if decoder != nil && decoder.databufs != nil {
+					decoder.databufs.Free()
+					decoder = nil
+				}
+			})
 		}, s.retry, s.idempotent, withOperation("ReadObject"), withBucket(params.bucket), withObject(params.object))
 		if err != nil {
 			// Close the stream context we just created to ensure we don't leak

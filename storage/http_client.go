@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -1003,42 +1002,16 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 				return c.hc.Do(req.WithContext(ctx))
 			}
 
-			cancelCtx, cancel := context.WithCancel(ctx)
-			var (
-				res *http.Response
-				err error
-			)
-
-			done := make(chan bool)
-			go func() {
-				reqStartTime := time.Now()
-				res, err = c.hc.Do(req.WithContext(cancelCtx))
-				if err == nil {
-					reqLatency := time.Since(reqStartTime)
-					c.dynamicReadReqStallTimeout.update(params.bucket, reqLatency)
-				} else if errors.Is(err, context.Canceled) {
-					// context.Canceled means operation took more than current dynamicTimeout,
-					// hence should be increased.
-					c.dynamicReadReqStallTimeout.increase(params.bucket)
-				}
-				done <- true
-			}()
-
-			// Wait until stall timeout or request is successful.
-			stallTimeout := c.dynamicReadReqStallTimeout.getValue(params.bucket)
-			timer := time.After(stallTimeout)
-			select {
-			case <-timer:
-				log.Printf("[%s] stalled read-req cancelled after %fs", requestID, stallTimeout.Seconds())
-				cancel()
-				<-done
+			var res *http.Response
+			err := executeWithReadStallTimeout(ctx, c.dynamicReadReqStallTimeout, params.bucket, requestID, func(ctx context.Context) error {
+				var err error
+				res, err = c.hc.Do(req.WithContext(ctx))
+				return err
+			}, func() {
 				if res != nil && res.Body != nil {
 					res.Body.Close()
 				}
-				return res, context.DeadlineExceeded
-			case <-done:
-				cancel = nil
-			}
+			})
 			return res, err
 		},
 		func() error { return setConditionsHeaders(req.Header, params.conds) },
@@ -1763,14 +1736,18 @@ func setHeadersFromCtx(ctx context.Context, header http.Header) {
 		// Merge x-goog-api-client values into a single space-separated value.
 		if strings.EqualFold(k, xGoogHeaderKey) {
 			alreadySetValues := header.Values(xGoogHeaderKey)
-			vals = append(vals, alreadySetValues...)
-
-			if len(vals) > 0 {
-				xGoogHeader := vals[0]
-				for _, v := range vals[1:] {
-					xGoogHeader = strings.Join([]string{xGoogHeader, v}, " ")
+			var uniqueVals []string
+			seenVals := make(map[string]bool)
+			for _, v := range append(vals, alreadySetValues...) {
+				for _, part := range strings.Split(v, " ") {
+					if part != "" && !seenVals[part] {
+						seenVals[part] = true
+						uniqueVals = append(uniqueVals, part)
+					}
 				}
-				header.Set(k, xGoogHeader)
+			}
+			if len(uniqueVals) > 0 {
+				header.Set(k, strings.Join(uniqueVals, " "))
 			}
 		} else {
 			for _, v := range vals {
