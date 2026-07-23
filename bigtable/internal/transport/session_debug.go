@@ -359,4 +359,3 @@ func WithSessionLogger(logger *log.Logger) SessionOption {
 func WithSessionPoolName(name string) SessionOption {
 	return func(s *Session) { s.tracer.setPoolName(name) }
 }
-
