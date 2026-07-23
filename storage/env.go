@@ -24,4 +24,11 @@ const (
 	// enable advanced OpenTelemetry debug and network metrics. When set to "true",
 	// the storage client will capture additional connection metrics such as DNS, TCP, and TLS durations.
 	envOtelDebugMetrics = "GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS"
+
+	// storageOtelTracingDevVar is the environment variable that enables OTel tracing.
+	storageOtelTracingDevVar = "GO_STORAGE_DEV_OTEL_TRACING"
+
+	// storageBucketMetadataDisabledVar is the environment variable that disables
+	// Autorequester Bucket Metadata optimization.
+	storageBucketMetadataDisabledVar = "GO_OTEL_BUCKETMETADATA_DISABLED"
 )

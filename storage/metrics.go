@@ -77,7 +77,9 @@ func formatMetricWithPrefix(m metricdata.Metrics, prefix string) string {
 }
 
 // isOtelMetricsEnabled checks if Otel metrics are enabled.
-// The environment variable GCP_STORAGE_GO_ENABLE_OTEL_METRICS takes precedence.
+// The environment variable GCP_STORAGE_GO_ENABLE_OTEL_METRICS takes precedence
+// over the config option. Note that if metrics are completely disabled via
+// disableClientMetrics, this will always return false regardless of the environment variable.
 func isOtelMetricsEnabled(config *storageConfig) bool {
 	if config.disableClientMetrics {
 		return false
@@ -92,7 +94,9 @@ func isOtelMetricsEnabled(config *storageConfig) bool {
 }
 
 // isOtelDebugMetricsEnabled checks if debug Otel metrics are enabled.
-// The environment variable GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS takes precedence.
+// The environment variable GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS takes precedence
+// over the config option. Note that if metrics are completely disabled via
+// disableClientMetrics, this will always return false regardless of the environment variable.
 func isOtelDebugMetricsEnabled(config *storageConfig) bool {
 	if config.disableClientMetrics {
 		return false
@@ -459,8 +463,16 @@ func computeErrorType(err error, isHTTP bool, statusCode int64) string {
 		return "AUTHENTICATION_ERROR"
 	}
 
-	if strings.Contains(errStr, "connection refused") || strings.Contains(errStr, "dial tcp") || strings.Contains(errStr, "no such host") || strings.Contains(errStr, "broken pipe") || strings.Contains(errStr, "connection reset") || strings.Contains(errStr, "eof") {
-		return "CONNECTIVITY"
+	if strings.Contains(errStr, "no such host") || strings.Contains(errStr, "no address") {
+		return "DNS_FAILURE"
+	}
+
+	if strings.Contains(errStr, "connection refused") || strings.Contains(errStr, "connection reset") || strings.Contains(errStr, "dial tcp") || strings.Contains(errStr, "broken pipe") || strings.Contains(errStr, "eof") {
+		return "CONNECTION_ERROR"
+	}
+
+	if strings.Contains(errStr, "tls") || strings.Contains(errStr, "certificate") || strings.Contains(errStr, "x509") {
+		return "TLS_FAILURE"
 	}
 
 	if !isHTTP {
@@ -688,21 +700,16 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 	}()
 
 	if rt.metrics != nil && (rt.metrics.dnsLookupDuration != nil || rt.metrics.tcpConnectDuration != nil || rt.metrics.tlsHandshakeDuration != nil) {
-		var mu sync.Mutex
 		var dnsStart, tlsStart time.Time
-		tcpStarts := make(map[string]time.Time)
+		var tcpStarts sync.Map
 
 		trace := &httptrace.ClientTrace{
 			DNSStart: func(info httptrace.DNSStartInfo) {
-				mu.Lock()
 				dnsStart = time.Now()
-				mu.Unlock()
 			},
 			DNSDone: func(info httptrace.DNSDoneInfo) {
 				if rt.metrics.dnsLookupDuration != nil {
-					mu.Lock()
 					start := dnsStart
-					mu.Unlock()
 					if !start.IsZero() {
 						duration := time.Since(start).Seconds()
 						rt.metrics.dnsLookupDuration.Record(req.Context(), duration, netAttrs)
@@ -710,34 +717,22 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 				}
 			},
 			ConnectStart: func(network, addr string) {
-				mu.Lock()
-				tcpStarts[addr] = time.Now()
-				mu.Unlock()
+				tcpStarts.Store(addr, time.Now())
 			},
 			ConnectDone: func(network, addr string, err error) {
 				if err == nil && rt.metrics.tcpConnectDuration != nil {
-					mu.Lock()
-					start, ok := tcpStarts[addr]
-					if ok {
-						delete(tcpStarts, addr)
-					}
-					mu.Unlock()
-					if ok {
-						duration := time.Since(start).Seconds()
+					if startV, ok := tcpStarts.LoadAndDelete(addr); ok {
+						duration := time.Since(startV.(time.Time)).Seconds()
 						rt.metrics.tcpConnectDuration.Record(req.Context(), duration, netAttrs)
 					}
 				}
 			},
 			TLSHandshakeStart: func() {
-				mu.Lock()
 				tlsStart = time.Now()
-				mu.Unlock()
 			},
 			TLSHandshakeDone: func(state tls.ConnectionState, err error) {
 				if err == nil && rt.metrics.tlsHandshakeDuration != nil {
-					mu.Lock()
 					start := tlsStart
-					mu.Unlock()
 					if !start.IsZero() {
 						duration := time.Since(start).Seconds()
 						rt.metrics.tlsHandshakeDuration.Record(req.Context(), duration, netAttrs)
@@ -782,7 +777,13 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 				headerVal = resp.Header.Get("X-Goog-Gfe-Service-Time")
 			}
 			if resp == nil || headerVal == "" {
-				rt.metrics.gfeHeaderMissing.Add(req.Context(), 1, rpcAttrs)
+				missingAttrs := metric.WithAttributes(
+					attribute.String("rpc.method", logicalMethod),
+					attribute.String("rpc.system.name", "http"),
+					attribute.String("server.address", stripPort(req.URL.Host)),
+					attribute.String("error.type", errorType),
+				)
+				rt.metrics.gfeHeaderMissing.Add(req.Context(), 1, missingAttrs)
 			} else if rt.metrics.gfeDuration != nil {
 				if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
 					rt.metrics.gfeDuration.Record(req.Context(), ms/1000.0, rpcAttrs)
@@ -925,7 +926,14 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 				headerVal = headerVals[0]
 			}
 			if headerVal == "" {
-				cm.gfeHeaderMissing.Add(ctx, 1, rpcAttrs)
+				errType := computeErrorType(err, false, int64(status.Code(err)))
+				missingAttrs := metric.WithAttributes(
+					attribute.String("rpc.method", logicalMethod),
+					attribute.String("rpc.system.name", "grpc"),
+					attribute.String("server.address", stripPort(target)),
+					attribute.String("error.type", errType),
+				)
+				cm.gfeHeaderMissing.Add(ctx, 1, missingAttrs)
 			} else if cm.gfeDuration != nil {
 				if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
 					cm.gfeDuration.Record(ctx, ms/1000.0, rpcAttrs)
@@ -1056,7 +1064,14 @@ func (w *wrappedClientStream) record(err error) {
 				headerVal = headerVals[0]
 			}
 			if headerVal == "" {
-				w.metrics.gfeHeaderMissing.Add(w.ctx, 1, rpcAttrs)
+				errType := computeErrorType(err, false, int64(status.Code(err)))
+				missingAttrs := metric.WithAttributes(
+					attribute.String("rpc.method", logicalMethod),
+					attribute.String("rpc.system.name", "grpc"),
+					attribute.String("server.address", stripPort(w.target)),
+					attribute.String("error.type", errType),
+				)
+				w.metrics.gfeHeaderMissing.Add(w.ctx, 1, missingAttrs)
 			} else if w.metrics.gfeDuration != nil {
 				if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
 					w.metrics.gfeDuration.Record(w.ctx, ms/1000.0, rpcAttrs)
@@ -1519,10 +1534,12 @@ func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option
 		tcpStart := time.Now()
 		var d net.Dialer
 		conn, err := d.DialContext(ctx, "tcp", addr)
-		if err == nil && metrics.tcpConnectDuration != nil {
-			tcpDuration := time.Since(tcpStart).Seconds()
-			metrics.tcpConnectDuration.Record(ctx, tcpDuration, netAttrs)
-			if conn != nil {
+		if err == nil {
+			if metrics.tcpConnectDuration != nil {
+				tcpDuration := time.Since(tcpStart).Seconds()
+				metrics.tcpConnectDuration.Record(ctx, tcpDuration, netAttrs)
+			}
+			if conn != nil && metrics.tlsHandshakeDuration != nil {
 				dialTimes.Store(conn.LocalAddr().String(), dialInfo{doneTime: time.Now(), host: host})
 			}
 		}

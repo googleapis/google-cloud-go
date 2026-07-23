@@ -17,6 +17,7 @@ package storage
 import (
 	"bytes"
 	"context"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -784,5 +785,30 @@ func TestRecordTTFB_MetadataOnly(t *testing.T) {
 
 	if !w.recordedTTFB.Load() {
 		t.Errorf("recordTTFB did not trigger TTFB for metadata-only ReadObjectResponse")
+	}
+}
+
+func TestComputeErrorType(t *testing.T) {
+	tests := []struct {
+		err        error
+		isHTTP     bool
+		statusCode int64
+		want       string
+	}{
+		{err: errors.New("dial tcp: no such host"), want: "DNS_FAILURE"},
+		{err: errors.New("connection refused"), want: "CONNECTION_ERROR"},
+		{err: errors.New("connection reset by peer"), want: "CONNECTION_ERROR"},
+		{err: errors.New("tls: bad certificate"), want: "TLS_FAILURE"},
+		{err: errors.New("unexpected eof"), want: "CONNECTION_ERROR"},
+		{err: context.DeadlineExceeded, want: "TIMEOUT"},
+		{err: context.Canceled, want: "CANCELLED"},
+		{err: status.Error(codes.NotFound, "not found"), want: "NOT_FOUND"},
+	}
+
+	for _, tc := range tests {
+		got := computeErrorType(tc.err, tc.isHTTP, tc.statusCode)
+		if got != tc.want {
+			t.Errorf("computeErrorType(%v, %v, %v) = %v, want %v", tc.err, tc.isHTTP, tc.statusCode, got, tc.want)
+		}
 	}
 }
