@@ -102,8 +102,8 @@ const file_google_cloud_commerceproducer_v1beta_service_proto_rawDesc = "" +
 	"\aService\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x03R\x05title:{\xeaAx\n" +
-	"'commerceproducer.googleapis.com/Service\x12:projects/{project}/locations/{location}/services/{service}*\bservices2\aserviceB\xb7\x01\n" +
-	"(com.google.cloud.commerceproducer.v1betaB\fServiceProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Betab\x06proto3"
+	"'commerceproducer.googleapis.com/Service\x12:projects/{project}/locations/{location}/services/{service}*\bservices2\aserviceB\xe1\x01\n" +
+	"(com.google.cloud.commerceproducer.v1betaB\fServiceProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Beta\xea\x02'Google::Cloud::CommerceProducer::V1betab\x06proto3"
 
 var (
 	file_google_cloud_commerceproducer_v1beta_service_proto_rawDescOnce sync.Once

@@ -2680,8 +2680,8 @@ const file_google_cloud_commerceproducer_v1beta_sku_proto_rawDesc = "" +
 	"\blocationB\n" +
 	"\n" +
 	"\bsku_type:z\xeaAw\n" +
-	"#commerceproducer.googleapis.com/Sku\x12Eprojects/{project}/locations/{location}/services/{service}/skus/{sku}*\x04skus2\x03skuB\xb3\x01\n" +
-	"(com.google.cloud.commerceproducer.v1betaB\bSkuProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Betab\x06proto3"
+	"#commerceproducer.googleapis.com/Sku\x12Eprojects/{project}/locations/{location}/services/{service}/skus/{sku}*\x04skus2\x03skuB\xdd\x01\n" +
+	"(com.google.cloud.commerceproducer.v1betaB\bSkuProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Beta\xea\x02'Google::Cloud::CommerceProducer::V1betab\x06proto3"
 
 var (
 	file_google_cloud_commerceproducer_v1beta_sku_proto_rawDescOnce sync.Once

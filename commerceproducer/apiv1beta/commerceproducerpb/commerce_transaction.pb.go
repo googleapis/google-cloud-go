@@ -1904,8 +1904,8 @@ const file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDe
 	"\x06GetSku\x123.google.cloud.commerceproducer.v1beta.GetSkuRequest\x1a).google.cloud.commerceproducer.v1beta.Sku\"F\xdaA\x04name\x82\xd3\xe4\x93\x029\x127/v1beta/{name=projects/*/locations/*/services/*/skus/*}\x12\xc3\x01\n" +
 	"\bListSkus\x125.google.cloud.commerceproducer.v1beta.ListSkusRequest\x1a6.google.cloud.commerceproducer.v1beta.ListSkusResponse\"H\xdaA\x06parent\x82\xd3\xe4\x93\x029\x127/v1beta/{parent=projects/*/locations/*/services/*}/skus\x12\xb9\x01\n" +
 	"\vGetSkuGroup\x128.google.cloud.commerceproducer.v1beta.GetSkuGroupRequest\x1a..google.cloud.commerceproducer.v1beta.SkuGroup\"@\xdaA\x04name\x82\xd3\xe4\x93\x023\x121/v1beta/{name=projects/*/locations/*/skuGroups/*}\x12\xcc\x01\n" +
-	"\rListSkuGroups\x12:.google.cloud.commerceproducer.v1beta.ListSkuGroupsRequest\x1a;.google.cloud.commerceproducer.v1beta.ListSkuGroupsResponse\"B\xdaA\x06parent\x82\xd3\xe4\x93\x023\x121/v1beta/{parent=projects/*/locations/*}/skuGroups\x1aS\xcaA\x1fcommerceproducer.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xc3\x01\n" +
-	"(com.google.cloud.commerceproducer.v1betaB\x18CommerceTransactionProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Betab\x06proto3"
+	"\rListSkuGroups\x12:.google.cloud.commerceproducer.v1beta.ListSkuGroupsRequest\x1a;.google.cloud.commerceproducer.v1beta.ListSkuGroupsResponse\"B\xdaA\x06parent\x82\xd3\xe4\x93\x023\x121/v1beta/{parent=projects/*/locations/*}/skuGroups\x1aS\xcaA\x1fcommerceproducer.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xed\x01\n" +
+	"(com.google.cloud.commerceproducer.v1betaB\x18CommerceTransactionProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Beta\xea\x02'Google::Cloud::CommerceProducer::V1betab\x06proto3"
 
 var (
 	file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescOnce sync.Once

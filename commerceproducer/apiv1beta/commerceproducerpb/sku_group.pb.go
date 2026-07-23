@@ -120,8 +120,8 @@ const file_google_cloud_commerceproducer_v1beta_sku_group_proto_rawDesc = "" +
 	"\x04skus\x18\x02 \x03(\tB+\xe0A\x03\xfaA%\n" +
 	"#commerceproducer.googleapis.com/SkuR\x04skus\x121\n" +
 	"\x12cloud_billing_skus\x18\x03 \x03(\tB\x03\xe0A\x03R\x10cloudBillingSkus:\x81\x01\xeaA~\n" +
-	"(commerceproducer.googleapis.com/SkuGroup\x12=projects/{project}/locations/{location}/skuGroups/{sku_group}*\tskuGroups2\bskuGroupB\xb8\x01\n" +
-	"(com.google.cloud.commerceproducer.v1betaB\rSkuGroupProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Betab\x06proto3"
+	"(commerceproducer.googleapis.com/SkuGroup\x12=projects/{project}/locations/{location}/skuGroups/{sku_group}*\tskuGroups2\bskuGroupB\xe2\x01\n" +
+	"(com.google.cloud.commerceproducer.v1betaB\rSkuGroupProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Beta\xea\x02'Google::Cloud::CommerceProducer::V1betab\x06proto3"
 
 var (
 	file_google_cloud_commerceproducer_v1beta_sku_group_proto_rawDescOnce sync.Once
