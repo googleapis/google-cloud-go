@@ -220,7 +220,7 @@ libraries:
           proto_only: true
     copyright_year: "2026"
   - name: backupdr
-    version: 1.15.0
+    version: 1.16.0
     apis:
       - path: google/cloud/backupdr/v1
   - name: baremetalsolution
@@ -228,7 +228,7 @@ libraries:
     apis:
       - path: google/cloud/baremetalsolution/v2
   - name: batch
-    version: 1.20.0
+    version: 1.21.0
     apis:
       - path: google/cloud/batch/v1
     keep:
@@ -242,7 +242,7 @@ libraries:
       - path: google/cloud/beyondcorp/clientconnectorservices/v1
       - path: google/cloud/beyondcorp/clientgateways/v1
   - name: biglake
-    version: 1.2.0
+    version: 1.3.0
     apis:
       - path: google/cloud/biglake/v1
       - path: google/cloud/biglake/hive/v1beta
@@ -429,7 +429,7 @@ libraries:
     apis:
       - path: google/cloud/channel/v1
   - name: chat
-    version: 1.4.0
+    version: 1.5.0
     apis:
       - path: google/chat/v1
   - name: chronicle
@@ -461,7 +461,7 @@ libraries:
         go:
           import_path: cloudprofiler/apiv2
   - name: cloudquotas
-    version: 1.11.0
+    version: 1.12.0
     apis:
       - path: google/api/cloudquotas/v1
         go:
@@ -474,7 +474,7 @@ libraries:
     apis:
       - path: google/cloud/cloudsecuritycompliance/v1
   - name: cloudtasks
-    version: 1.18.0
+    version: 1.19.0
     apis:
       - path: google/cloud/tasks/v2
         go:
@@ -502,7 +502,7 @@ libraries:
     apis:
       - path: google/cloud/commerce/consumer/procurement/v1
   - name: commerceproducer
-    version: 0.1.0
+    version: 0.2.0
     apis:
       - path: google/cloud/commerceproducer/v1beta
     copyright_year: "2026"
@@ -618,7 +618,7 @@ libraries:
     apis:
       - path: google/cloud/dataqna/v1alpha
   - name: datastore
-    version: 1.25.0
+    version: 1.26.0
     apis:
       - path: google/datastore/v1
         go:
@@ -769,7 +769,7 @@ libraries:
     apis:
       - path: google/cloud/gkehub/v1beta1
   - name: gkemulticloud
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/cloud/gkemulticloud/v1
   - name: gkerecommender
@@ -838,7 +838,7 @@ libraries:
     apis:
       - path: google/cloud/iot/v1
   - name: kms
-    version: 1.32.0
+    version: 1.33.0
     apis:
       - path: google/cloud/kms/v1
         go:
@@ -936,7 +936,7 @@ libraries:
       - path: google/cloud/memcache/v1
       - path: google/cloud/memcache/v1beta2
   - name: memorystore
-    version: 1.2.0
+    version: 1.3.0
     apis:
       - path: google/cloud/memorystore/v1
       - path: google/cloud/memorystore/v1beta
@@ -979,7 +979,7 @@ libraries:
     apis:
       - path: google/cloud/netapp/v1
   - name: networkconnectivity
-    version: 1.27.0
+    version: 1.28.0
     apis:
       - path: google/cloud/networkconnectivity/v1
       - path: google/cloud/networkconnectivity/v1beta
@@ -994,7 +994,7 @@ libraries:
       - path: google/cloud/networksecurity/v1
       - path: google/cloud/networksecurity/v1beta1
   - name: networkservices
-    version: 1.3.0
+    version: 1.4.0
     apis:
       - path: google/cloud/networkservices/v1
   - name: notebooks
@@ -1153,7 +1153,7 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
   - name: redis
-    version: 1.24.0
+    version: 1.25.0
     apis:
       - path: google/cloud/redis/v1
       - path: google/cloud/redis/cluster/v1
@@ -1239,7 +1239,7 @@ libraries:
     apis:
       - path: google/cloud/securityposture/v1
   - name: servicecontrol
-    version: 1.18.0
+    version: 1.19.0
     apis:
       - path: google/api/servicecontrol/v1
         go:
@@ -1270,7 +1270,7 @@ libraries:
     apis:
       - path: google/cloud/shell/v1
   - name: shopping
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/shopping/css/v1
       - path: google/shopping/merchant/promotions/v1
@@ -1338,7 +1338,7 @@ libraries:
       - path: google/cloud/speech/v1
       - path: google/cloud/speech/v1p1beta1
   - name: sql
-    version: 0.0.0
+    version: 0.1.0
     apis:
       - path: google/cloud/sql/v1
       - path: google/cloud/sql/v1beta4
