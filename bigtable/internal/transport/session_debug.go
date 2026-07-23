@@ -130,10 +130,9 @@ func (d *sessionDebug) init(sessionType SessionType) {
 //	              caller's context (deadline or cancel); Message carries
 //	              method, rpc id, time waited, ctx err, session state.
 //	"ctx-done" (see above) is the sole vRPC-drop-adjacent event kind
-//	under the slotMu Java-parity slot lifecycle. The pre-refactor
-//	"dup-deliver" kind is gone: drainSlot serializes exactly one
-//	caller per resultChan, so the two-writers race that populated
-//	dup-deliver is unreachable in production.
+//	under the slotMu slot lifecycle. drainSlot serializes exactly one
+//	caller per resultChan, so a two-writers race on resultChan is
+//	unreachable in production.
 type SessionEvent struct {
 	At      time.Time
 	Kind    string
@@ -353,9 +352,8 @@ func WithSessionLogger(logger *log.Logger) SessionOption {
 }
 
 // WithSessionPoolName stamps the pool-scoped name used for the
-// session_name label on session lifecycle metrics. Matches java-bigtable's
-// per-pool SessionPoolInfo name — cardinality stays bounded by the number
-// of pools per process, not per session.
+// session_name label on session lifecycle metrics — cardinality stays
+// bounded by the number of pools per process, not per session.
 func WithSessionPoolName(name string) SessionOption {
 	return func(s *Session) { s.tracer.setPoolName(name) }
 }
