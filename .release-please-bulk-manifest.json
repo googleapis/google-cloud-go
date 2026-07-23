@@ -164,6 +164,7 @@
   "shell": "1.13.0",
   "shopping": "1.12.0",
   "speech": "1.36.0",
+  "sql": "0.0.0",
   "storagebatchoperations": "1.1.0",
   "storageinsights": "1.8.0",
   "storagetransfer": "1.19.0",

@@ -2235,6 +2235,21 @@
         }
       ]
     },
+    "sql": {
+      "component": "sql",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.sql.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta4/snippet_metadata.google.cloud.sql.v1beta4.json",
+          "type": "json"
+        }
+      ]
+    },
     "storagebatchoperations": {
       "component": "storagebatchoperations",
       "extra-files": [
