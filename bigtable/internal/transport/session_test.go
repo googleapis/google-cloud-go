@@ -129,6 +129,50 @@ func newRoundTripDesc() *fakeDesc {
 	}
 }
 
+// hookCounts captures lifecycle callbacks via a SessionHooks value.
+type hookCounts struct {
+	mu          sync.Mutex
+	startCount  int
+	activeCount int
+	closeCount  int
+	closeErr    error
+}
+
+func (c *hookCounts) hooks() SessionHooks {
+	return SessionHooks{
+		OnStart: func(context.Context) {
+			c.mu.Lock()
+			defer c.mu.Unlock()
+			c.startCount++
+		},
+		OnActive: func(*Session) {
+			c.mu.Lock()
+			defer c.mu.Unlock()
+			c.activeCount++
+		},
+		OnClose: func(_ *Session, err error) {
+			c.mu.Lock()
+			defer c.mu.Unlock()
+			c.closeCount++
+			c.closeErr = err
+		},
+	}
+}
+
+func (c *hookCounts) counts() (start, active, closed int) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.startCount, c.activeCount, c.closeCount
+}
+
+// setSlotForTest seeds the in-flight slot with rpc for fixture setup in
+// same-package tests. Production code MUST use claimSlot.
+func (s *Session) setSlotForTest(rpc *vrpcImpl) {
+	s.slotMu.Lock()
+	s.activeRPC = rpc
+	s.slotMu.Unlock()
+}
+
 // waitFor polls cond every 5ms up to timeout, failing the test if cond never
 // becomes true.
 func waitFor(t *testing.T, timeout time.Duration, cond func() bool, msg string) {
