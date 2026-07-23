@@ -780,9 +780,10 @@ func TestInvoke_ForceCloseWhileSending_BoundedReturn(t *testing.T) {
 		Description: "mid-send teardown",
 	})
 
-	// Give ForceClose a moment to run before unblocking Send so the
-	// race resolves in the intended order.
-	time.Sleep(20 * time.Millisecond)
+	// Block on cancelActiveRPCs actually clearing the slot before we
+	// unblock Send — deterministic sync in place of a scheduler-hoping
+	// time.Sleep so the test can't flake on a loaded CI box.
+	waitFor(t, time.Second, func() bool { return s.activeVRPC() == nil }, "slot drained by cancelActiveRPCs")
 	close(sendGate)
 
 	select {
