@@ -202,12 +202,9 @@ func (s *Session) State() State { return State(s.state.Load()) }
 // PeerInfo returns the peer info, or nil pre-Ready.
 func (s *Session) PeerInfo() *spb.PeerInfo { return s.peerInfo.Load() }
 
-// AfeID identifies the AFE a session is pinned to (from
-// PeerInfo.ApplicationFrontendId). Zero = unknown.
-type AfeID int64
-
 // AfeID returns the AFE identifier, or 0 pre-Ready. Stable for the session's
-// lifetime — PeerInfo is populated once at StateReady.
+// lifetime — PeerInfo is populated once at StateReady. AfeID type lives in
+// afe_snapshot.go (same package).
 func (s *Session) AfeID() AfeID {
 	if p := s.peerInfo.Load(); p != nil {
 		return AfeID(p.GetApplicationFrontendId())
