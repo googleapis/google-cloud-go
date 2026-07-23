@@ -35,6 +35,8 @@ type OmniClientConfig interface {
 	GetCaCertificateFile() string
 	GetClientCertificateFile() string
 	GetClientKeyFile() string
+	GetUsername() string
+	GetPassword() []byte
 }
 
 // NewDatabaseAdminClientWithConfig creates a new database admin client with
@@ -55,6 +57,18 @@ func NewDatabaseAdminClientWithConfig(ctx context.Context, config OmniClientConf
 			return nil, err
 		}
 		opts = append(opts, omniOpts...)
+
+		hasUsername := config.GetUsername() != ""
+		hasPassword := len(config.GetPassword()) > 0
+		if hasUsername != hasPassword {
+			return nil, status.Errorf(codes.InvalidArgument, "both Username and Password must be specified for Omni authentication")
+		}
+		if hasUsername && hasPassword {
+			tsOpts := append([]option.ClientOption(nil), opts...)
+			opts = append(opts, option.WithTokenSource(omni.NewTokenSource(ctx, config.GetUsername(), config.GetPassword(), tsOpts)))
+		} else {
+			opts = append(opts, option.WithoutAuthentication())
+		}
 	}
 
 	return NewDatabaseAdminClient(ctx, opts...)

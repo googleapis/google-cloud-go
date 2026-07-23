@@ -28,6 +28,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -120,7 +121,6 @@ type contextKey string
 
 const (
 	statsContextKey         contextKey = "bigtable/clientBlockingLatencyTracker"
-	t4t7ContextKey          contextKey = "bigtable/t4t7Tracker"
 	metricsTracerContextKey contextKey = "bigtable/metricsTracer"
 )
 
@@ -237,8 +237,17 @@ type metricInfo struct {
 
 // Tracer is created one per operation
 // It is used to store metric instruments, attribute values
-// and other data required to obtain and record them
+// and other data required to obtain and record them.
+//
+// mu serializes writes from ingestMetadata (called on the transport
+// reader goroutine from InHeader/InTrailer) against reads from
+// RecordAttemptCompletion / RecordOperationCompletion (which may run
+// on the caller goroutine when csAttempt.finish dispatches End under
+// cancel/deadline/GOAWAY). Held only around the field
+// reads/writes — not across metric.Record calls — but a per-attempt
+// mutex has no realistic contention beyond that rare race window.
 type Tracer struct {
+	mu             sync.Mutex
 	ctx            context.Context
 	BuiltInEnabled bool
 
@@ -345,12 +354,15 @@ type AttemptTracer struct {
 	// Client blocking latency in ms
 	clientBlockingLatency float64
 
-	// Tracker for t4t7
-	t4t7Tracker *t4t7Tracker
+	// locationExtracted is set once cluster/zone have been read from a
+	// response-metadata frame. Guards against a later InTrailer
+	// clobbering values that InHeader already populated.
+	locationExtracted bool
 
-	// Response header and trailer metadata captured by the stats handler.
-	headerMD  metadata.MD
-	trailerMD metadata.MD
+	// peerInfoExtracted is set once the bigtable-peer-info sideband
+	// metadata has been read. Same header-preferred-trailer-fallback
+	// rule as locationExtracted.
+	peerInfoExtracted bool
 }
 
 // SetStartTime stamps the attempt start time. attempt_latencies and
@@ -441,6 +453,13 @@ func (mt *Tracer) toOtelMetricAttrs(metricName string) (attribute.Set, error) {
 		clusterID = FallbackString(clusterID, mt.currOp.lastClusterID)
 		zoneID = FallbackString(zoneID, mt.currOp.lastZoneID)
 	}
+	// Cloud Monitoring rejects bigtable_client_raw writes with an empty
+	// zone/cluster ("Unrecognized region or location"). Empty values reach
+	// here when an attempt errors before response headers/trailers arrive
+	// (e.g. DEADLINE_EXCEEDED on the first attempt), so ExtractLocation
+	// never runs and there's no lastClusterID/lastZoneID to fall back on.
+	clusterID = FallbackString(clusterID, defaultCluster)
+	zoneID = FallbackString(zoneID, defaultZone)
 
 	// 4 fixed attributes below (method / table / cluster / zone) plus the
 	// per-client attributes plus this metric's additional attributes.
@@ -491,6 +510,13 @@ func (mt *Tracer) RecordAttemptStart() {
 		return
 	}
 
+	// Locks against any lingering ingestMetadata from a prior attempt's
+	// late-arriving InTrailer (retry paths can race attempt N+1's
+	// TagRPC-dispatched RecordAttemptStart with attempt N's transport
+	// reader still draining trailers into the shared Tracer).
+	mt.mu.Lock()
+	defer mt.mu.Unlock()
+
 	// Increment number of attempts
 	mt.currOp.incrementAttemptCount()
 
@@ -500,85 +526,137 @@ func (mt *Tracer) RecordAttemptStart() {
 	mt.currOp.currAttempt.SetStartTime(time.Now())
 }
 
-// RecordAttemptCompletionWithMetadata extracts location, server latency (with t4t7 fallback),
-// and client blocking latency from headers, trailers, and active trackers, saves them to
-// the current attempt tracer, and then records the attempt metrics.
+// ingestMetadata parses cluster/zone, peer-info, and server latency out
+// of a response-metadata frame and stashes the results as primitive
+// fields on the current attempt. Called from HandleRPC on the transport
+// reader goroutine — once for InHeader (headerMD, nil) and once for
+// InTrailer (nil, trailerMD). RecordAttemptCompletion then reads only
+// those primitives, so stats.End (which may dispatch on a different
+// goroutine under cancel/deadline/GOAWAY) never touches the raw MD.
+//
+// extractLocation / extractPeerInfo / extractServerLatency all check
+// header first then trailer, so passing one MD at a time and gating on
+// the *Extracted booleans preserves the header-preferred-trailer-fallback
+// behaviour. Server latency uses the "serverLatency == 0" gate directly
+// since it has no sentinel-default value distinct from unset.
+func (mt *Tracer) ingestMetadata(headerMD, trailerMD metadata.MD) {
+	if !mt.BuiltInEnabled {
+		return
+	}
+
+	mt.mu.Lock()
+	defer mt.mu.Unlock()
+
+	a := &mt.currOp.currAttempt
+
+	if !a.locationExtracted {
+		// extractLocation returns (defaultCluster, defaultZone, err) when the
+		// LocationMDKey header is missing. Stamp the sentinel anyway —
+		// RecordAttemptCompletion uses clusterID == defaultCluster as the
+		// "no server-side signals" marker that feeds connectivity_error_count.
+		// Only mark locationExtracted when we got a real value, so a later
+		// InTrailer carrying real data can still overwrite the sentinel.
+		clusterID, zoneID, err := extractLocation(headerMD, trailerMD)
+		// Don't overwrite a cluster/zone that the vRPC path has
+		// already populated (SessionTable sets these directly from
+		// the ClusterInformation payload); only fill in if the
+		// attempt's value is missing or the sentinel default.
+		// lastClusterID / lastZoneID always track the freshest real
+		// value so operation-level metrics get a sensible fallback.
+		if clusterID != "" {
+			if existing := a.clusterID; existing == "" || existing == defaultCluster {
+				a.SetClusterID(clusterID)
+			}
+			if clusterID != defaultCluster {
+				mt.currOp.lastClusterID = clusterID
+			}
+		}
+		if zoneID != "" {
+			if existing := a.zoneID; existing == "" || existing == defaultZone {
+				a.SetZoneID(zoneID)
+			}
+			if zoneID != defaultZone {
+				mt.currOp.lastZoneID = zoneID
+			}
+		}
+		if err == nil {
+			a.locationExtracted = true
+		}
+	}
+
+	if !a.peerInfoExtracted {
+		// Extract transport labels from the bigtable-peer-info sideband
+		// metadata (populated by the server when the PeerInfo feature
+		// flag is negotiated on). Feeds attempt_latencies2 only; other
+		// metrics stay on the classic label set.
+		//
+		// Latch peerInfoExtracted only when extractPeerInfo returned a
+		// parsed *PeerInfo (which implies err == nil). Bare
+		// (nil, err) — a base64 or proto-decode failure — and bare
+		// (nil, nil) — the key is absent — both leave the latch off so
+		// the trailer still gets a chance to populate.
+		if peerInfo, _ := extractPeerInfo(headerMD, trailerMD); peerInfo != nil {
+			a.transportType = TransportTypeName(peerInfo.GetTransportType())
+			a.transportRegion = peerInfo.GetApplicationFrontendRegion()
+			a.transportZone = peerInfo.GetApplicationFrontendZone()
+			a.transportSubZone = peerInfo.GetApplicationFrontendSubzone()
+			a.peerInfoExtracted = true
+		}
+	}
+
+	if a.serverLatency == 0 {
+		if latency, err := extractServerLatency(headerMD, trailerMD); err == nil && latency > 0 {
+			a.serverLatency = latency
+			a.serverLatencyErr = nil
+		} else if err != nil {
+			// Remember the first extraction error so RecordAttemptCompletion
+			// can decide whether to skip the server_latencies metric; a
+			// later successful extraction from the trailer clears it.
+			a.serverLatencyErr = err
+		}
+	}
+}
+
+// RecordAttemptCompletionWithMetadata is retained as a thin adapter for
+// call sites that already hold both metadata bags (e.g. session/vRPC
+// paths on downstream branches). New callers should use ingestMetadata
+// + RecordAttemptCompletion directly.
 func (mt *Tracer) RecordAttemptCompletionWithMetadata(attemptHeaderMD, attempTrailerMD metadata.MD, err error) {
 	if !mt.BuiltInEnabled {
 		return
 	}
-
-	// 1. Calculate client blocking latency
-	if mt.currOp.currAttempt.blockingLatencyTracker != nil {
-		messageSentNanos := mt.currOp.currAttempt.blockingLatencyTracker.getMessageSentNanos()
-		if messageSentNanos > 0 {
-			mt.currOp.currAttempt.clientBlockingLatency = ConvertToMs(time.Unix(0, messageSentNanos).Sub(mt.currOp.currAttempt.startTime))
-		}
-	}
-
-	// 2. Extract server latency and apply t4t7 fallback
-	serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
-	if serverLatency == 0 && mt.currOp.currAttempt.t4t7Tracker != nil {
-		fallbackLatency := mt.currOp.currAttempt.t4t7Tracker.getLatencyMs()
-		if fallbackLatency > 0 {
-			serverLatency = fallbackLatency
-			serverLatencyErr = nil
-		}
-	}
-	mt.currOp.currAttempt.serverLatency = serverLatency
-	mt.currOp.currAttempt.serverLatencyErr = serverLatencyErr
-
-	// 3. Call RecordAttemptCompletion
-	mt.RecordAttemptCompletion(attemptHeaderMD, attempTrailerMD, err)
+	mt.ingestMetadata(attemptHeaderMD, attempTrailerMD)
+	mt.RecordAttemptCompletion(err)
 }
 
 // RecordAttemptCompletion records as many attempt specific metrics as it can
 // Ignore errors seen while creating metric attributes since metric can still
-// be recorded with rest of the attributes
-func (mt *Tracer) RecordAttemptCompletion(attemptHeaderMD, attempTrailerMD metadata.MD, err error) {
+// be recorded with rest of the attributes.
+//
+// Reads only primitive fields on the current attempt — cluster/zone/peer
+// info/server latency must have been populated by ingestMetadata on
+// prior InHeader/InTrailer dispatches. See ingestMetadata for why the
+// extraction is done there rather than here.
+func (mt *Tracer) RecordAttemptCompletion(err error) {
 	if !mt.BuiltInEnabled {
 		return
 	}
+
+	mt.mu.Lock()
+	defer mt.mu.Unlock()
 
 	// Set attempt status
 	statusCode, _ := ConvertToGrpcStatusErr(err)
 	mt.currOp.currAttempt.setStatus(statusCode.String())
 
-	// Get location attributes from metadata and set it in tracer.
-	// Ignore get location error since the metric can still be recorded with
-	// rest of the attributes. Don't overwrite a cluster/zone that the vRPC
-	// path has already populated (SessionTable sets these directly from the
-	// ClusterInformation payload); only fill in if the attempt's value is
-	// missing or the sentinel default. lastClusterID/lastZoneID always track
-	// the freshest real value so operation-level metrics get a sensible
-	// fallback.
-	clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
-	if clusterID != "" {
-		if existing := mt.currOp.currAttempt.clusterID; existing == "" || existing == defaultCluster {
-			mt.currOp.currAttempt.SetClusterID(clusterID)
+	// Calculate client blocking latency from the blockingLatencyTracker;
+	// finalized only at attempt end because it depends on the OutPayload
+	// stats event landing before End.
+	if mt.currOp.currAttempt.blockingLatencyTracker != nil {
+		messageSentNanos := mt.currOp.currAttempt.blockingLatencyTracker.getMessageSentNanos()
+		if messageSentNanos > 0 {
+			mt.currOp.currAttempt.clientBlockingLatency = ConvertToMs(time.Unix(0, messageSentNanos).Sub(mt.currOp.currAttempt.startTime))
 		}
-		if clusterID != defaultCluster {
-			mt.currOp.lastClusterID = clusterID
-		}
-	}
-	if zoneID != "" {
-		if existing := mt.currOp.currAttempt.zoneID; existing == "" || existing == defaultZone {
-			mt.currOp.currAttempt.SetZoneID(zoneID)
-		}
-		if zoneID != defaultZone {
-			mt.currOp.lastZoneID = zoneID
-		}
-	}
-
-	// Extract transport labels from the bigtable-peer-info sideband metadata
-	// (populated by the server when the PeerInfo feature flag is negotiated
-	// on). Feeds the attempt_latencies2 metric only; other metrics stay on
-	// the classic label set. No-op when the header is absent.
-	if peerInfo, _ := extractPeerInfo(attemptHeaderMD, attempTrailerMD); peerInfo != nil {
-		mt.currOp.currAttempt.transportType = TransportTypeName(peerInfo.GetTransportType())
-		mt.currOp.currAttempt.transportRegion = peerInfo.GetApplicationFrontendRegion()
-		mt.currOp.currAttempt.transportZone = peerInfo.GetApplicationFrontendZone()
-		mt.currOp.currAttempt.transportSubZone = peerInfo.GetApplicationFrontendSubzone()
 	}
 
 	// Calculate elapsed time
@@ -629,6 +707,9 @@ func (mt *Tracer) RecordOperationCompletion() {
 	if !mt.BuiltInEnabled {
 		return
 	}
+
+	mt.mu.Lock()
+	defer mt.mu.Unlock()
 
 	// Calculate elapsed time
 	elapsedTimeMs := ConvertToMs(time.Since(mt.currOp.startTime))
@@ -751,52 +832,25 @@ func (t *blockingLatencyTracker) getMessageSentNanos() int64 {
 	return t.endNanos.Load()
 }
 
-// t4t7Tracker measures the time between sending the client
-// request headers and receiving the initial metadata (InHeader) from the server.
-type t4t7Tracker struct {
-	outHeaderSentNanos atomic.Int64
-	inHeaderRecvNanos  atomic.Int64
-}
-
-func (t *t4t7Tracker) recordOutHeaderSent(start time.Time) {
-	// Ensure we only record the very first time headers are sent
-	t.outHeaderSentNanos.CompareAndSwap(0, start.UnixNano())
-}
-
-func (t *t4t7Tracker) recordInHeaderRecv(end time.Time) {
-	// Ensure we only record the very first time headers are received
-	t.inHeaderRecvNanos.CompareAndSwap(0, end.UnixNano())
-}
-
-// getLatencyMs returns the calculated latency in milliseconds.
-func (t *t4t7Tracker) getLatencyMs() float64 {
-	start := t.outHeaderSentNanos.Load()
-	end := t.inHeaderRecvNanos.Load()
-	if start == 0 || end == 0 {
-		return 0
-	}
-	return float64(end-start) / float64(time.Millisecond)
-}
-
 // StatsHandler is the gRPC stats.Handler that drives per-attempt metrics
 // recording. It is the single source of truth for attempt boundaries: TagRPC
 // starts a new attempt, HandleRPC observes the OutPayload/Header/Trailer events
-// to feed the blocking-latency and t4t7 trackers, and the End event records
-// attempt completion with the final status from gRPC (no io.EOF translation
-// needed because stats.End.Error is nil on successful stream close).
+// to feed the blocking-latency tracker, and the End event records attempt
+// completion with the final status from gRPC (no io.EOF translation needed
+// because stats.End.Error is nil on successful stream close).
 //
 // A *Tracer is plumbed through the call context by the public
 // entry points (ReadRows, Apply, etc.) via NewContext. RPCs that
 // don't carry a tracer (or carry a disabled one) are observed only for the
-// existing blocking/t4t7 trackers if present, so non-Bigtable RPCs on the same
-// channel emit no metrics.
+// existing blocking-latency tracker if present, so non-Bigtable RPCs on the
+// same channel emit no metrics.
 type StatsHandler struct{}
 
 var _ stats.Handler = (*StatsHandler)(nil)
 
 // TagRPC implements grpc/stats.Handler. Called once per attempt when
 // the client begins the RPC; drives RecordAttemptStart and installs
-// the per-attempt blocking / t4t7 trackers onto ctx.
+// the per-attempt blocking-latency tracker onto ctx.
 func (h *StatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
 	mt := FromContext(ctx)
 	if !mt.BuiltInEnabled {
@@ -820,10 +874,6 @@ func (h *StatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) conte
 	mt.currOp.currAttempt.blockingLatencyTracker = blockTracker
 	ctx = context.WithValue(ctx, statsContextKey, blockTracker)
 
-	t4t7 := &t4t7Tracker{}
-	mt.currOp.currAttempt.t4t7Tracker = t4t7
-	ctx = context.WithValue(ctx, t4t7ContextKey, t4t7)
-
 	return ctx
 }
 
@@ -837,36 +887,34 @@ func (h *StatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 		}
 	}
 
-	if t4t7, ok := ctx.Value(t4t7ContextKey).(*t4t7Tracker); ok {
-		switch s.(type) {
-		case *stats.OutHeader:
-			// The client has sent the request headers.
-			t4t7.recordOutHeaderSent(time.Now())
-		case *stats.InHeader:
-			// The client has received the initial metadata from the server.
-			t4t7.recordInHeaderRecv(time.Now())
-		}
-	}
-
 	mt := FromContext(ctx)
 	if !mt.BuiltInEnabled {
 		return
 	}
 	switch ev := s.(type) {
 	case *stats.InHeader:
-		mt.currOp.currAttempt.headerMD = ev.Header
+		// Runs on the transport reader goroutine, once per stream at
+		// initial-HEADERS receive time (skipped when the response is
+		// trailers-only). Extract everything we care about now; do not
+		// retain a pointer to ev.Header, which grpc still owns and may
+		// mutate.
+		mt.ingestMetadata(ev.Header, nil)
 	case *stats.InTrailer:
-		mt.currOp.currAttempt.trailerMD = ev.Trailer
+		// Same goroutine as InHeader — fires from operateHeaders when a
+		// HEADERS frame carrying END_STREAM arrives. Second (and last)
+		// chance to pull cluster/zone/peer-info out of the response;
+		// gated by locationExtracted/peerInfoExtracted so InHeader wins.
+		mt.ingestMetadata(nil, ev.Trailer)
 	case *stats.End:
-		// stats.End fires after InTrailer and before the caller's final
-		// RecvMsg returns, so currAttempt.{header,trailer}MD are populated.
-		// ev.Error is nil on graceful stream close, so attempt status maps
-		// to OK without any io.EOF special-casing.
-		mt.RecordAttemptCompletionWithMetadata(
-			mt.currOp.currAttempt.headerMD,
-			mt.currOp.currAttempt.trailerMD,
-			ev.Error,
-		)
+		// May dispatch on a different goroutine from InHeader/InTrailer
+		// under cancel/deadline/GOAWAY (csAttempt.finish, stream.go:1251).
+		// Reads only primitive fields ingestMetadata already wrote — no
+		// MD access here, so End is safe to race with a still-pending
+		// InTrailer. Any InTrailer that fires after End is effectively
+		// dropped (its writes go to an attempt no one reads again),
+		// which matches the pre-race-fix behaviour under the same
+		// interleave.
+		mt.RecordAttemptCompletion(ev.Error)
 	}
 }
 

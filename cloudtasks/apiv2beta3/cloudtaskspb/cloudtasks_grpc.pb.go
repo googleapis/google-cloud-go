@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import (
 	context "context"
 
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -50,8 +51,12 @@ const (
 	CloudTasks_ListTasks_FullMethodName          = "/google.cloud.tasks.v2beta3.CloudTasks/ListTasks"
 	CloudTasks_GetTask_FullMethodName            = "/google.cloud.tasks.v2beta3.CloudTasks/GetTask"
 	CloudTasks_CreateTask_FullMethodName         = "/google.cloud.tasks.v2beta3.CloudTasks/CreateTask"
+	CloudTasks_BatchCreateTasks_FullMethodName   = "/google.cloud.tasks.v2beta3.CloudTasks/BatchCreateTasks"
 	CloudTasks_DeleteTask_FullMethodName         = "/google.cloud.tasks.v2beta3.CloudTasks/DeleteTask"
+	CloudTasks_BatchDeleteTasks_FullMethodName   = "/google.cloud.tasks.v2beta3.CloudTasks/BatchDeleteTasks"
 	CloudTasks_RunTask_FullMethodName            = "/google.cloud.tasks.v2beta3.CloudTasks/RunTask"
+	CloudTasks_UpdateCmekConfig_FullMethodName   = "/google.cloud.tasks.v2beta3.CloudTasks/UpdateCmekConfig"
+	CloudTasks_GetCmekConfig_FullMethodName      = "/google.cloud.tasks.v2beta3.CloudTasks/GetCmekConfig"
 )
 
 // CloudTasksClient is the client API for CloudTasks service.
@@ -97,8 +102,15 @@ type CloudTasksClient interface {
 	//
 	// This command will delete the queue even if it has tasks in it.
 	//
-	// Note: If you delete a queue, a queue with the same name can't be created
-	// for 7 days.
+	// Note : If you delete a queue, you may be prevented from creating a new
+	// queue with the same name as the deleted queue for a tombstone window of up
+	// to 3 days. During this window, the CreateQueue operation may appear to
+	// recreate the queue, but this can be misleading. If you attempt to create
+	// a queue with the same name as one that is in the tombstone window, run
+	// GetQueue to confirm that the queue creation was successful. If GetQueue
+	// returns 200 response code, your queue was successfully created with the
+	// name of the previously deleted queue. Otherwise, your queue did not
+	// successfully recreate.
 	//
 	// WARNING: Using this method may have unintended side effects if you are
 	// using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
@@ -181,6 +193,10 @@ type CloudTasksClient interface {
 	// time.
 	ListTasks(ctx context.Context, in *ListTasksRequest, opts ...grpc.CallOption) (*ListTasksResponse, error)
 	// Gets a task.
+	//
+	// After a task is successfully executed or has exhausted its retry attempts,
+	// the task is deleted. A `GetTask` request for a deleted task returns a
+	// `NOT_FOUND` error.
 	GetTask(ctx context.Context, in *GetTaskRequest, opts ...grpc.CallOption) (*Task, error)
 	// Creates a task and adds it to a queue.
 	//
@@ -188,12 +204,24 @@ type CloudTasksClient interface {
 	//
 	// * The maximum task size is 100KB.
 	CreateTask(ctx context.Context, in *CreateTaskRequest, opts ...grpc.CallOption) (*Task, error)
+	// Creates a batch of tasks and adds them to a queue.
+	// This call is not atomic.
+	//
+	// All tasks must be for the same queue.
+	// A maximum of 100 tasks can be created in a single batch.
+	BatchCreateTasks(ctx context.Context, in *BatchCreateTasksRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a task.
 	//
 	// A task can be deleted if it is scheduled or dispatched. A task
 	// cannot be deleted if it has executed successfully or permanently
 	// failed.
 	DeleteTask(ctx context.Context, in *DeleteTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Deletes a batch of tasks.
+	// This is a non-atomic operation: if deletion fails for some tasks, it
+	// can still succeed for others. The metadata field of
+	// google.longrunning.Operation contains details of failed deletions.
+	// A maximum of 1000 tasks can be deleted in a batch.
+	BatchDeleteTasks(ctx context.Context, in *BatchDeleteTasksRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Forces a task to run now.
 	//
 	// When this method is called, Cloud Tasks will dispatch the task, even if
@@ -207,8 +235,8 @@ type CloudTasksClient interface {
 	// a task to be dispatched now.
 	//
 	// The dispatched task is returned. That is, the task that is returned
-	// contains the [status][Task.status] after the task is dispatched but
-	// before the task is received by its target.
+	// contains the [status][google.cloud.tasks.v2beta3.Task.first_attempt] after
+	// the task is dispatched but before the task is received by its target.
 	//
 	// If Cloud Tasks receives a successful response from the task's
 	// target, then the task will be deleted; otherwise the task's
@@ -222,6 +250,18 @@ type CloudTasksClient interface {
 	// [NOT_FOUND][google.rpc.Code.NOT_FOUND] when it is called on a
 	// task that has already succeeded or permanently failed.
 	RunTask(ctx context.Context, in *RunTaskRequest, opts ...grpc.CallOption) (*Task, error)
+	// Creates or Updates a CMEK config.
+	//
+	// Updates the Customer Managed Encryption Key associated with the Cloud Tasks
+	// location (Creates if the key does not already exist). All new tasks created
+	// in the location will be encrypted at-rest with the KMS-key provided in the
+	// config.
+	UpdateCmekConfig(ctx context.Context, in *UpdateCmekConfigRequest, opts ...grpc.CallOption) (*CmekConfig, error)
+	// Gets the CMEK config.
+	//
+	// Gets the Customer Managed Encryption Key configured with the Cloud Tasks
+	// lcoation. By default there is no kms_key configured.
+	GetCmekConfig(ctx context.Context, in *GetCmekConfigRequest, opts ...grpc.CallOption) (*CmekConfig, error)
 }
 
 type cloudTasksClient struct {
@@ -358,6 +398,15 @@ func (c *cloudTasksClient) CreateTask(ctx context.Context, in *CreateTaskRequest
 	return out, nil
 }
 
+func (c *cloudTasksClient) BatchCreateTasks(ctx context.Context, in *BatchCreateTasksRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, CloudTasks_BatchCreateTasks_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *cloudTasksClient) DeleteTask(ctx context.Context, in *DeleteTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, CloudTasks_DeleteTask_FullMethodName, in, out, opts...)
@@ -367,9 +416,36 @@ func (c *cloudTasksClient) DeleteTask(ctx context.Context, in *DeleteTaskRequest
 	return out, nil
 }
 
+func (c *cloudTasksClient) BatchDeleteTasks(ctx context.Context, in *BatchDeleteTasksRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, CloudTasks_BatchDeleteTasks_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *cloudTasksClient) RunTask(ctx context.Context, in *RunTaskRequest, opts ...grpc.CallOption) (*Task, error) {
 	out := new(Task)
 	err := c.cc.Invoke(ctx, CloudTasks_RunTask_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *cloudTasksClient) UpdateCmekConfig(ctx context.Context, in *UpdateCmekConfigRequest, opts ...grpc.CallOption) (*CmekConfig, error) {
+	out := new(CmekConfig)
+	err := c.cc.Invoke(ctx, CloudTasks_UpdateCmekConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *cloudTasksClient) GetCmekConfig(ctx context.Context, in *GetCmekConfigRequest, opts ...grpc.CallOption) (*CmekConfig, error) {
+	out := new(CmekConfig)
+	err := c.cc.Invoke(ctx, CloudTasks_GetCmekConfig_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -419,8 +495,15 @@ type CloudTasksServer interface {
 	//
 	// This command will delete the queue even if it has tasks in it.
 	//
-	// Note: If you delete a queue, a queue with the same name can't be created
-	// for 7 days.
+	// Note : If you delete a queue, you may be prevented from creating a new
+	// queue with the same name as the deleted queue for a tombstone window of up
+	// to 3 days. During this window, the CreateQueue operation may appear to
+	// recreate the queue, but this can be misleading. If you attempt to create
+	// a queue with the same name as one that is in the tombstone window, run
+	// GetQueue to confirm that the queue creation was successful. If GetQueue
+	// returns 200 response code, your queue was successfully created with the
+	// name of the previously deleted queue. Otherwise, your queue did not
+	// successfully recreate.
 	//
 	// WARNING: Using this method may have unintended side effects if you are
 	// using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
@@ -503,6 +586,10 @@ type CloudTasksServer interface {
 	// time.
 	ListTasks(context.Context, *ListTasksRequest) (*ListTasksResponse, error)
 	// Gets a task.
+	//
+	// After a task is successfully executed or has exhausted its retry attempts,
+	// the task is deleted. A `GetTask` request for a deleted task returns a
+	// `NOT_FOUND` error.
 	GetTask(context.Context, *GetTaskRequest) (*Task, error)
 	// Creates a task and adds it to a queue.
 	//
@@ -510,12 +597,24 @@ type CloudTasksServer interface {
 	//
 	// * The maximum task size is 100KB.
 	CreateTask(context.Context, *CreateTaskRequest) (*Task, error)
+	// Creates a batch of tasks and adds them to a queue.
+	// This call is not atomic.
+	//
+	// All tasks must be for the same queue.
+	// A maximum of 100 tasks can be created in a single batch.
+	BatchCreateTasks(context.Context, *BatchCreateTasksRequest) (*longrunningpb.Operation, error)
 	// Deletes a task.
 	//
 	// A task can be deleted if it is scheduled or dispatched. A task
 	// cannot be deleted if it has executed successfully or permanently
 	// failed.
 	DeleteTask(context.Context, *DeleteTaskRequest) (*emptypb.Empty, error)
+	// Deletes a batch of tasks.
+	// This is a non-atomic operation: if deletion fails for some tasks, it
+	// can still succeed for others. The metadata field of
+	// google.longrunning.Operation contains details of failed deletions.
+	// A maximum of 1000 tasks can be deleted in a batch.
+	BatchDeleteTasks(context.Context, *BatchDeleteTasksRequest) (*longrunningpb.Operation, error)
 	// Forces a task to run now.
 	//
 	// When this method is called, Cloud Tasks will dispatch the task, even if
@@ -529,8 +628,8 @@ type CloudTasksServer interface {
 	// a task to be dispatched now.
 	//
 	// The dispatched task is returned. That is, the task that is returned
-	// contains the [status][Task.status] after the task is dispatched but
-	// before the task is received by its target.
+	// contains the [status][google.cloud.tasks.v2beta3.Task.first_attempt] after
+	// the task is dispatched but before the task is received by its target.
 	//
 	// If Cloud Tasks receives a successful response from the task's
 	// target, then the task will be deleted; otherwise the task's
@@ -544,6 +643,18 @@ type CloudTasksServer interface {
 	// [NOT_FOUND][google.rpc.Code.NOT_FOUND] when it is called on a
 	// task that has already succeeded or permanently failed.
 	RunTask(context.Context, *RunTaskRequest) (*Task, error)
+	// Creates or Updates a CMEK config.
+	//
+	// Updates the Customer Managed Encryption Key associated with the Cloud Tasks
+	// location (Creates if the key does not already exist). All new tasks created
+	// in the location will be encrypted at-rest with the KMS-key provided in the
+	// config.
+	UpdateCmekConfig(context.Context, *UpdateCmekConfigRequest) (*CmekConfig, error)
+	// Gets the CMEK config.
+	//
+	// Gets the Customer Managed Encryption Key configured with the Cloud Tasks
+	// lcoation. By default there is no kms_key configured.
+	GetCmekConfig(context.Context, *GetCmekConfigRequest) (*CmekConfig, error)
 }
 
 // UnimplementedCloudTasksServer should be embedded to have forward compatible implementations.
@@ -592,11 +703,23 @@ func (UnimplementedCloudTasksServer) GetTask(context.Context, *GetTaskRequest) (
 func (UnimplementedCloudTasksServer) CreateTask(context.Context, *CreateTaskRequest) (*Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTask not implemented")
 }
+func (UnimplementedCloudTasksServer) BatchCreateTasks(context.Context, *BatchCreateTasksRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchCreateTasks not implemented")
+}
 func (UnimplementedCloudTasksServer) DeleteTask(context.Context, *DeleteTaskRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTask not implemented")
 }
+func (UnimplementedCloudTasksServer) BatchDeleteTasks(context.Context, *BatchDeleteTasksRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchDeleteTasks not implemented")
+}
 func (UnimplementedCloudTasksServer) RunTask(context.Context, *RunTaskRequest) (*Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunTask not implemented")
+}
+func (UnimplementedCloudTasksServer) UpdateCmekConfig(context.Context, *UpdateCmekConfigRequest) (*CmekConfig, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCmekConfig not implemented")
+}
+func (UnimplementedCloudTasksServer) GetCmekConfig(context.Context, *GetCmekConfigRequest) (*CmekConfig, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCmekConfig not implemented")
 }
 
 // UnsafeCloudTasksServer may be embedded to opt out of forward compatibility for this service.
@@ -862,6 +985,24 @@ func _CloudTasks_CreateTask_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CloudTasks_BatchCreateTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchCreateTasksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CloudTasksServer).BatchCreateTasks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CloudTasks_BatchCreateTasks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CloudTasksServer).BatchCreateTasks(ctx, req.(*BatchCreateTasksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CloudTasks_DeleteTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteTaskRequest)
 	if err := dec(in); err != nil {
@@ -880,6 +1021,24 @@ func _CloudTasks_DeleteTask_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CloudTasks_BatchDeleteTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchDeleteTasksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CloudTasksServer).BatchDeleteTasks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CloudTasks_BatchDeleteTasks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CloudTasksServer).BatchDeleteTasks(ctx, req.(*BatchDeleteTasksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CloudTasks_RunTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RunTaskRequest)
 	if err := dec(in); err != nil {
@@ -894,6 +1053,42 @@ func _CloudTasks_RunTask_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CloudTasksServer).RunTask(ctx, req.(*RunTaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CloudTasks_UpdateCmekConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCmekConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CloudTasksServer).UpdateCmekConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CloudTasks_UpdateCmekConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CloudTasksServer).UpdateCmekConfig(ctx, req.(*UpdateCmekConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CloudTasks_GetCmekConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCmekConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CloudTasksServer).GetCmekConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CloudTasks_GetCmekConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CloudTasksServer).GetCmekConfig(ctx, req.(*GetCmekConfigRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -962,12 +1157,28 @@ var CloudTasks_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CloudTasks_CreateTask_Handler,
 		},
 		{
+			MethodName: "BatchCreateTasks",
+			Handler:    _CloudTasks_BatchCreateTasks_Handler,
+		},
+		{
 			MethodName: "DeleteTask",
 			Handler:    _CloudTasks_DeleteTask_Handler,
 		},
 		{
+			MethodName: "BatchDeleteTasks",
+			Handler:    _CloudTasks_BatchDeleteTasks_Handler,
+		},
+		{
 			MethodName: "RunTask",
 			Handler:    _CloudTasks_RunTask_Handler,
+		},
+		{
+			MethodName: "UpdateCmekConfig",
+			Handler:    _CloudTasks_UpdateCmekConfig_Handler,
+		},
+		{
+			MethodName: "GetCmekConfig",
+			Handler:    _CloudTasks_GetCmekConfig_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

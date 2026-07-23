@@ -1,0 +1,979 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.agentidentity.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/agentidentity/apiv1",
+    "version": "0.1.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.CreateAuthProvider",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.CreateAuthProvider",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "CreateAuthProvider"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.CreateAuthProviderRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*agentidentitypb.AuthProvider",
+        "shortName": "CreateAuthProvider"
+      },
+      "description": "CreateAuthProvider creates a new AuthProvider in a given project and location.",
+      "file": "AuthProviderClient/CreateAuthProvider/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_CreateAuthProvider_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity CreateAuthProvider Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.DeleteAuthProvider",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.DeleteAuthProvider",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "DeleteAuthProvider"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.DeleteAuthProviderRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteAuthProvider"
+      },
+      "description": "DeleteAuthProvider deletes a single AuthProvider.",
+      "file": "AuthProviderClient/DeleteAuthProvider/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_DeleteAuthProvider_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity DeleteAuthProvider Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.DeleteAuthorization",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.DeleteAuthorization",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "DeleteAuthorization"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.DeleteAuthorizationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteAuthorization"
+      },
+      "description": "DeleteAuthorization deletes a single Authorization.",
+      "file": "AuthProviderClient/DeleteAuthorization/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_DeleteAuthorization_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity DeleteAuthorization Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.DisableAuthProvider",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.DisableAuthProvider",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "DisableAuthProvider"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.DisableAuthProviderRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*agentidentitypb.AuthProvider",
+        "shortName": "DisableAuthProvider"
+      },
+      "description": "DisableAuthProvider disables a single AuthProvider.",
+      "file": "AuthProviderClient/DisableAuthProvider/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_DisableAuthProvider_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity DisableAuthProvider Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.EnableAuthProvider",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.EnableAuthProvider",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "EnableAuthProvider"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.EnableAuthProviderRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*agentidentitypb.AuthProvider",
+        "shortName": "EnableAuthProvider"
+      },
+      "description": "EnableAuthProvider enables a single AuthProvider.",
+      "file": "AuthProviderClient/EnableAuthProvider/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_EnableAuthProvider_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity EnableAuthProvider Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.GetAccessSummary",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.GetAccessSummary",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "GetAccessSummary"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.GetAccessSummaryRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*agentidentitypb.AccessSummary",
+        "shortName": "GetAccessSummary"
+      },
+      "description": "GetAccessSummary gets details of a single AccessSummary.",
+      "file": "AuthProviderClient/GetAccessSummary/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_GetAccessSummary_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity GetAccessSummary Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.GetAuthProvider",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.GetAuthProvider",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "GetAuthProvider"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.GetAuthProviderRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*agentidentitypb.AuthProvider",
+        "shortName": "GetAuthProvider"
+      },
+      "description": "GetAuthProvider gets details of a single AuthProvider.",
+      "file": "AuthProviderClient/GetAuthProvider/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_GetAuthProvider_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity GetAuthProvider Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.GetAuthorization",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.GetAuthorization",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "GetAuthorization"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.GetAuthorizationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*agentidentitypb.Authorization",
+        "shortName": "GetAuthorization"
+      },
+      "description": "GetAuthorization gets details of a single Authorization.",
+      "file": "AuthProviderClient/GetAuthorization/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_GetAuthorization_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity GetAuthorization Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "AuthProviderClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "AuthProviderClient/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.ListAccessSummaries",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.ListAccessSummaries",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "ListAccessSummaries"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.ListAccessSummariesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AccessSummaryIterator",
+        "shortName": "ListAccessSummaries"
+      },
+      "description": "ListAccessSummaries lists AccessSummaries in a given project and location.\nSupported Filters: \n- `workload_id`: Filter by the SPIFFE ID of the agent.\nExample: `workload_id=\"spiffe: //example.com/ns/default/sa/my-agent\"`",
+      "file": "AuthProviderClient/ListAccessSummaries/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_ListAccessSummaries_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity ListAccessSummaries Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.ListAuthProviders",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.ListAuthProviders",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "ListAuthProviders"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.ListAuthProvidersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AuthProviderIterator",
+        "shortName": "ListAuthProviders"
+      },
+      "description": "ListAuthProviders lists AuthProviders in a given project and location.",
+      "file": "AuthProviderClient/ListAuthProviders/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_ListAuthProviders_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity ListAuthProviders Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.ListAuthorizations",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.ListAuthorizations",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "ListAuthorizations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.ListAuthorizationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AuthorizationIterator",
+        "shortName": "ListAuthorizations"
+      },
+      "description": "ListAuthorizations lists Authorizations in a given project and location.",
+      "file": "AuthProviderClient/ListAuthorizations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_ListAuthorizations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity ListAuthorizations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "AuthProviderClient/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.QueryAuthProviders",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.QueryAuthProviders",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "QueryAuthProviders"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.QueryAuthProvidersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "StringIterator",
+        "shortName": "QueryAuthProviders"
+      },
+      "description": "QueryAuthProviders queries what all auth_providers are used by a given workload_id.",
+      "file": "AuthProviderClient/QueryAuthProviders/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_QueryAuthProviders_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity QueryAuthProviders Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.QueryWorkloads",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.QueryWorkloads",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "QueryWorkloads"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.QueryWorkloadsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "StringIterator",
+        "shortName": "QueryWorkloads"
+      },
+      "description": "QueryWorkloads queries what all workloads are using a given auth_provider.",
+      "file": "AuthProviderClient/QueryWorkloads/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_QueryWorkloads_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity QueryWorkloads Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.RevokeAuthorization",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.RevokeAuthorization",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "RevokeAuthorization"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.RevokeAuthorizationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*agentidentitypb.RevokeAuthorizationResponse",
+        "shortName": "RevokeAuthorization"
+      },
+      "description": "RevokeAuthorization revokes all authorizations for a specific user on an AuthProvider.\nThis deletes all authorization records associated with the user and\nAuthProvider, effectively revoking access across all agents.",
+      "file": "AuthProviderClient/RevokeAuthorization/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_RevokeAuthorization_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity RevokeAuthorization Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "AuthProviderClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "AuthProviderClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_TestIamPermissions_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.UndeleteAuthProvider",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.UndeleteAuthProvider",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "UndeleteAuthProvider"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.UndeleteAuthProviderRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*agentidentitypb.AuthProvider",
+        "shortName": "UndeleteAuthProvider"
+      },
+      "description": "UndeleteAuthProvider undeletes a single AuthProvider.",
+      "file": "AuthProviderClient/UndeleteAuthProvider/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_UndeleteAuthProvider_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity UndeleteAuthProvider Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderClient",
+          "shortName": "AuthProviderClient"
+        },
+        "fullName": "google.cloud.agentidentity.v1.AuthProviderClient.UpdateAuthProvider",
+        "method": {
+          "fullName": "google.cloud.agentidentity.v1.AuthProviderService.UpdateAuthProvider",
+          "service": {
+            "fullName": "google.cloud.agentidentity.v1.AuthProviderService",
+            "shortName": "AuthProviderService"
+          },
+          "shortName": "UpdateAuthProvider"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentidentitypb.UpdateAuthProviderRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*agentidentitypb.AuthProvider",
+        "shortName": "UpdateAuthProvider"
+      },
+      "description": "UpdateAuthProvider updates the parameters of a single AuthProvider.",
+      "file": "AuthProviderClient/UpdateAuthProvider/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentidentity_v1_generated_AuthProviderService_UpdateAuthProvider_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentidentity UpdateAuthProvider Sample"
+    }
+  ]
+}

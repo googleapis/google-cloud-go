@@ -280,6 +280,9 @@ const (
 	// [GetPublicKey][google.cloud.kms.v1.KeyManagementService.GetPublicKey]
 	// and [Decapsulate][google.cloud.kms.v1.KeyManagementService.Decapsulate].
 	CryptoKey_KEY_ENCAPSULATION CryptoKey_CryptoKeyPurpose = 10
+	// [CryptoKeys][google.cloud.kms.v1.CryptoKey] with this purpose may be used
+	// for AES key
+	CryptoKey_AES_WRAPPING CryptoKey_CryptoKeyPurpose = 11
 )
 
 // Enum value maps for CryptoKey_CryptoKeyPurpose.
@@ -292,6 +295,7 @@ var (
 		7:  "RAW_ENCRYPT_DECRYPT",
 		9:  "MAC",
 		10: "KEY_ENCAPSULATION",
+		11: "AES_WRAPPING",
 	}
 	CryptoKey_CryptoKeyPurpose_value = map[string]int32{
 		"CRYPTO_KEY_PURPOSE_UNSPECIFIED": 0,
@@ -301,6 +305,7 @@ var (
 		"RAW_ENCRYPT_DECRYPT":            7,
 		"MAC":                            9,
 		"KEY_ENCAPSULATION":              10,
+		"AES_WRAPPING":                   11,
 	}
 )
 
@@ -552,6 +557,9 @@ const (
 	// security level 5. Randomized version supporting externally-computed
 	// message representatives.
 	CryptoKeyVersion_PQ_SIGN_ML_DSA_87_EXTERNAL_MU CryptoKeyVersion_CryptoKeyVersionAlgorithm = 71
+	// AES key wrap with zero padding algorithm (RFC 5649). Can only be used
+	// by keys with purpose AES_WRAPPING.
+	CryptoKeyVersion_AES_256_KWP CryptoKeyVersion_CryptoKeyVersionAlgorithm = 73
 )
 
 // Enum value maps for CryptoKeyVersion_CryptoKeyVersionAlgorithm.
@@ -604,6 +612,7 @@ var (
 		70: "PQ_SIGN_ML_DSA_44_EXTERNAL_MU",
 		67: "PQ_SIGN_ML_DSA_65_EXTERNAL_MU",
 		71: "PQ_SIGN_ML_DSA_87_EXTERNAL_MU",
+		73: "AES_256_KWP",
 	}
 	CryptoKeyVersion_CryptoKeyVersionAlgorithm_value = map[string]int32{
 		"CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED": 0,
@@ -653,6 +662,7 @@ var (
 		"PQ_SIGN_ML_DSA_44_EXTERNAL_MU":            70,
 		"PQ_SIGN_ML_DSA_65_EXTERNAL_MU":            67,
 		"PQ_SIGN_ML_DSA_87_EXTERNAL_MU":            71,
+		"AES_256_KWP":                              73,
 	}
 )
 
@@ -1666,8 +1676,24 @@ type CryptoKeyVersion struct {
 	// being specified as a target in
 	// [ImportCryptoKeyVersionRequest.crypto_key_version][google.cloud.kms.v1.ImportCryptoKeyVersionRequest.crypto_key_version].
 	ReimportEligible bool `protobuf:"varint,18,opt,name=reimport_eligible,json=reimportEligible,proto3" json:"reimport_eligible,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Immutable. Field indicating that the key may be wrapped by a trusted key.
+	// This field can be set for all key purposes except
+	// [ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ENCRYPT_DECRYPT],
+	// and is only valid for keys with protection level
+	// [HSM_SINGLE_TENANT][google.cloud.kms.v1.ProtectionLevel.HSM_SINGLE_TENANT].
+	// This field can only be set at creation or import time via
+	// [CreateCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.CreateCryptoKeyVersion],
+	// or
+	// [ImportCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.ImportCryptoKeyVersion].
+	TrustedWrappingEnabled bool `protobuf:"varint,21,opt,name=trusted_wrapping_enabled,json=trustedWrappingEnabled,proto3" json:"trusted_wrapping_enabled,omitempty"`
+	// Output only. Field indicating that the key wrapping key is trusted.
+	// This field is only valid for key purpose
+	// [AES_256_WRAPPING][CryptoKey.CryptoKeyPurpose.AES_256_WRAPPING], and
+	// protection level
+	// [HSM_SINGLE_TENANT][google.cloud.kms.v1.ProtectionLevel.HSM_SINGLE_TENANT].
+	HsmTrusted    bool `protobuf:"varint,23,opt,name=hsm_trusted,json=hsmTrusted,proto3" json:"hsm_trusted,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CryptoKeyVersion) Reset() {
@@ -1808,6 +1834,20 @@ func (x *CryptoKeyVersion) GetExternalProtectionLevelOptions() *ExternalProtecti
 func (x *CryptoKeyVersion) GetReimportEligible() bool {
 	if x != nil {
 		return x.ReimportEligible
+	}
+	return false
+}
+
+func (x *CryptoKeyVersion) GetTrustedWrappingEnabled() bool {
+	if x != nil {
+		return x.TrustedWrappingEnabled
+	}
+	return false
+}
+
+func (x *CryptoKeyVersion) GetHsmTrusted() bool {
+	if x != nil {
+		return x.HsmTrusted
 	}
 	return false
 }
@@ -2569,7 +2609,7 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime:a\xeaA^\n" +
-	"\x1fcloudkms.googleapis.com/KeyRing\x12;projects/{project}/locations/{location}/keyRings/{key_ring}\"\xeb\t\n" +
+	"\x1fcloudkms.googleapis.com/KeyRing\x12;projects/{project}/locations/{location}/keyRings/{key_ring}\"\xfd\t\n" +
 	"\tCryptoKey\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12D\n" +
 	"\aprimary\x18\x02 \x01(\v2%.google.cloud.kms.v1.CryptoKeyVersionB\x03\xe0A\x03R\aprimary\x12N\n" +
@@ -2589,7 +2629,7 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	" key_access_justifications_policy\x18\x11 \x01(\v22.google.cloud.kms.v1.KeyAccessJustificationsPolicyB\x03\xe0A\x01R\x1dkeyAccessJustificationsPolicy\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb1\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc3\x01\n" +
 	"\x10CryptoKeyPurpose\x12\"\n" +
 	"\x1eCRYPTO_KEY_PURPOSE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fENCRYPT_DECRYPT\x10\x01\x12\x13\n" +
@@ -2598,7 +2638,8 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	"\x13RAW_ENCRYPT_DECRYPT\x10\a\x12\a\n" +
 	"\x03MAC\x10\t\x12\x15\n" +
 	"\x11KEY_ENCAPSULATION\x10\n" +
-	":{\xeaAx\n" +
+	"\x12\x10\n" +
+	"\fAES_WRAPPING\x10\v:{\xeaAx\n" +
 	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}B\x13\n" +
 	"\x11rotation_schedule\"\xcf\x01\n" +
 	"\x18CryptoKeyVersionTemplate\x12O\n" +
@@ -2616,7 +2657,7 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	"\x11AttestationFormat\x12\"\n" +
 	"\x1eATTESTATION_FORMAT_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14CAVIUM_V1_COMPRESSED\x10\x03\x12\x18\n" +
-	"\x14CAVIUM_V2_COMPRESSED\x10\x04\"\xb1\x17\n" +
+	"\x14CAVIUM_V2_COMPRESSED\x10\x04\"\xa7\x18\n" +
 	"\x10CryptoKeyVersion\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12Q\n" +
 	"\x05state\x18\x03 \x01(\x0e2;.google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionStateR\x05state\x12T\n" +
@@ -2637,7 +2678,10 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	"\x19generation_failure_reason\x18\x13 \x01(\tB\x03\xe0A\x03R\x17generationFailureReason\x12R\n" +
 	"#external_destruction_failure_reason\x18\x14 \x01(\tB\x03\xe0A\x03R externalDestructionFailureReason\x12~\n" +
 	"!external_protection_level_options\x18\x11 \x01(\v23.google.cloud.kms.v1.ExternalProtectionLevelOptionsR\x1eexternalProtectionLevelOptions\x120\n" +
-	"\x11reimport_eligible\x18\x12 \x01(\bB\x03\xe0A\x03R\x10reimportEligible\"\x8a\n" +
+	"\x11reimport_eligible\x18\x12 \x01(\bB\x03\xe0A\x03R\x10reimportEligible\x12=\n" +
+	"\x18trusted_wrapping_enabled\x18\x15 \x01(\bB\x03\xe0A\x05R\x16trustedWrappingEnabled\x12$\n" +
+	"\vhsm_trusted\x18\x17 \x01(\bB\x03\xe0A\x03R\n" +
+	"hsmTrusted\"\x9b\n" +
 	"\n" +
 	"\x19CryptoKeyVersionAlgorithm\x12,\n" +
 	"(CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED\x10\x00\x12\x1f\n" +
@@ -2688,7 +2732,8 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	"%PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256\x10<\x12!\n" +
 	"\x1dPQ_SIGN_ML_DSA_44_EXTERNAL_MU\x10F\x12!\n" +
 	"\x1dPQ_SIGN_ML_DSA_65_EXTERNAL_MU\x10C\x12!\n" +
-	"\x1dPQ_SIGN_ML_DSA_87_EXTERNAL_MU\x10G\"\x9b\x02\n" +
+	"\x1dPQ_SIGN_ML_DSA_87_EXTERNAL_MU\x10G\x12\x0f\n" +
+	"\vAES_256_KWP\x10I\"\x9b\x02\n" +
 	"\x15CryptoKeyVersionState\x12(\n" +
 	"$CRYPTO_KEY_VERSION_STATE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12PENDING_GENERATION\x10\x05\x12\v\n" +

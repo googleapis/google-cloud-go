@@ -1148,9 +1148,9 @@ func gaxInvokeWithRecorder(ctx context.Context, method string,
 		finalMD := metadata.Join(existingMD, md)
 		newCtx := metadata.NewOutgoingContext(ctx, finalMD)
 
-		// Per-attempt metric setup (RecordAttemptStart, blockingLatencyTracker,
-		// t4t7Tracker) is owned by StatsHandler.TagRPC. f's headerMD /
-		// trailerMD are still needed for routing-cookie extraction below.
+		// Per-attempt metric setup (RecordAttemptStart, blockingLatencyTracker)
+		// is owned by StatsHandler.TagRPC. f's headerMD / trailerMD are still
+		// needed for routing-cookie extraction below.
 		err := f(newCtx, &attemptHeaderMD, &attempTrailerMD, callSettings)
 
 		mt.ExtractCookiesFromMD(attemptHeaderMD, cookiePrefix)

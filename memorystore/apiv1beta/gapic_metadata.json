@@ -10,6 +10,21 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "AddAuthToken": {
+              "methods": [
+                "AddAuthToken"
+              ]
+            },
+            "AddTokenAuthUser": {
+              "methods": [
+                "AddTokenAuthUser"
+              ]
+            },
+            "BackupInstance": {
+              "methods": [
+                "BackupInstance"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -20,6 +35,16 @@
                 "CreateInstance"
               ]
             },
+            "DeleteAuthToken": {
+              "methods": [
+                "DeleteAuthToken"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
             "DeleteInstance": {
               "methods": [
                 "DeleteInstance"
@@ -28,6 +53,36 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeleteTokenAuthUser": {
+              "methods": [
+                "DeleteTokenAuthUser"
+              ]
+            },
+            "ExportBackup": {
+              "methods": [
+                "ExportBackup"
+              ]
+            },
+            "FinishMigration": {
+              "methods": [
+                "FinishMigration"
+              ]
+            },
+            "GetAuthToken": {
+              "methods": [
+                "GetAuthToken"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupCollection": {
+              "methods": [
+                "GetBackupCollection"
               ]
             },
             "GetCertificateAuthority": {
@@ -55,6 +110,26 @@
                 "GetSharedRegionalCertificateAuthority"
               ]
             },
+            "GetTokenAuthUser": {
+              "methods": [
+                "GetTokenAuthUser"
+              ]
+            },
+            "ListAuthTokens": {
+              "methods": [
+                "ListAuthTokens"
+              ]
+            },
+            "ListBackupCollections": {
+              "methods": [
+                "ListBackupCollections"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
             "ListInstances": {
               "methods": [
                 "ListInstances"
@@ -68,6 +143,21 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListTokenAuthUsers": {
+              "methods": [
+                "ListTokenAuthUsers"
+              ]
+            },
+            "RescheduleMaintenance": {
+              "methods": [
+                "RescheduleMaintenance"
+              ]
+            },
+            "StartMigration": {
+              "methods": [
+                "StartMigration"
               ]
             },
             "UpdateInstance": {
@@ -80,6 +170,21 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "AddAuthToken": {
+              "methods": [
+                "AddAuthToken"
+              ]
+            },
+            "AddTokenAuthUser": {
+              "methods": [
+                "AddTokenAuthUser"
+              ]
+            },
+            "BackupInstance": {
+              "methods": [
+                "BackupInstance"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -90,6 +195,16 @@
                 "CreateInstance"
               ]
             },
+            "DeleteAuthToken": {
+              "methods": [
+                "DeleteAuthToken"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
             "DeleteInstance": {
               "methods": [
                 "DeleteInstance"
@@ -98,6 +213,36 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeleteTokenAuthUser": {
+              "methods": [
+                "DeleteTokenAuthUser"
+              ]
+            },
+            "ExportBackup": {
+              "methods": [
+                "ExportBackup"
+              ]
+            },
+            "FinishMigration": {
+              "methods": [
+                "FinishMigration"
+              ]
+            },
+            "GetAuthToken": {
+              "methods": [
+                "GetAuthToken"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupCollection": {
+              "methods": [
+                "GetBackupCollection"
               ]
             },
             "GetCertificateAuthority": {
@@ -125,6 +270,26 @@
                 "GetSharedRegionalCertificateAuthority"
               ]
             },
+            "GetTokenAuthUser": {
+              "methods": [
+                "GetTokenAuthUser"
+              ]
+            },
+            "ListAuthTokens": {
+              "methods": [
+                "ListAuthTokens"
+              ]
+            },
+            "ListBackupCollections": {
+              "methods": [
+                "ListBackupCollections"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
             "ListInstances": {
               "methods": [
                 "ListInstances"
@@ -138,6 +303,21 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListTokenAuthUsers": {
+              "methods": [
+                "ListTokenAuthUsers"
+              ]
+            },
+            "RescheduleMaintenance": {
+              "methods": [
+                "RescheduleMaintenance"
+              ]
+            },
+            "StartMigration": {
+              "methods": [
+                "StartMigration"
               ]
             },
             "UpdateInstance": {

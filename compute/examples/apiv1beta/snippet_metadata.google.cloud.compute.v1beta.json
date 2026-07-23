@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/compute/apiv1beta",
-    "version": "1.64.0"
+    "version": "1.65.0"
   },
   "snippets": [
     {
@@ -2159,7 +2159,7 @@
         "resultType": "BackendServiceIterator",
         "shortName": "ListUsable"
       },
-      "description": "ListUsable retrieves a list of all usable backend services in the specified project.",
+      "description": "ListUsable retrieves a list of all usable backend services for Application Load\nBalancers and Proxy Network Load Balancers in the specified project.\nBackend services for external and internal passthrough Network Load\nBalancers are not included in the response.",
       "file": "BackendServicesClient/ListUsable/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -8432,6 +8432,144 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1beta.HostsClient",
+          "shortName": "HostsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.HostsClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Hosts.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Hosts",
+            "shortName": "Hosts"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetHostRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.Host",
+        "shortName": "Get"
+      },
+      "description": "Get retrieves information about the specified host.",
+      "file": "HostsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Hosts_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.HostsClient",
+          "shortName": "HostsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.HostsClient.GetVersion",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Hosts.GetVersion",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Hosts",
+            "shortName": "Hosts"
+          },
+          "shortName": "GetVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetVersionHostRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "GetVersion"
+      },
+      "description": "GetVersion allows customers to get SBOM versions of a host.",
+      "file": "HostsClient/GetVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Hosts_GetVersion_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute GetVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.HostsClient",
+          "shortName": "HostsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.HostsClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Hosts.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Hosts",
+            "shortName": "Hosts"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListHostsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "HostIterator",
+        "shortName": "List"
+      },
+      "description": "List retrieves a list of hosts.",
+      "file": "HostsClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Hosts_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1beta.ImageFamilyViewsClient",
           "shortName": "ImageFamilyViewsClient"
         },
@@ -8466,6 +8604,52 @@
       "language": "GO",
       "origin": "API_DEFINITION",
       "regionTag": "compute_v1beta_generated_ImageFamilyViews_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.ImageViewsClient",
+          "shortName": "ImageViewsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.ImageViewsClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.ImageViews.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.ImageViews",
+            "shortName": "ImageViews"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetImageViewRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.ImageView",
+        "shortName": "Get"
+      },
+      "description": "Get returns the specified global ImageView resource, with a regional\ncontext.",
+      "file": "ImageViewsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_ImageViews_Get_sync",
       "segments": [
         {
           "end": 55,
@@ -21680,6 +21864,512 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlansClient",
+          "shortName": "OrganizationRolloutPlansClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlansClient.Delete",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlans.Delete",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlans",
+            "shortName": "OrganizationRolloutPlans"
+          },
+          "shortName": "Delete"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.DeleteOrganizationRolloutPlanRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Delete"
+      },
+      "description": "Delete deletes an OrganizationRolloutPlan.",
+      "file": "OrganizationRolloutPlansClient/Delete/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_OrganizationRolloutPlans_Delete_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Delete Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlansClient",
+          "shortName": "OrganizationRolloutPlansClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlansClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlans.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlans",
+            "shortName": "OrganizationRolloutPlans"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetOrganizationRolloutPlanRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.RolloutPlan",
+        "shortName": "Get"
+      },
+      "description": "Get gets details of a single organization-scoped RolloutPlan.",
+      "file": "OrganizationRolloutPlansClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_OrganizationRolloutPlans_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlansClient",
+          "shortName": "OrganizationRolloutPlansClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlansClient.Insert",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlans.Insert",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlans",
+            "shortName": "OrganizationRolloutPlans"
+          },
+          "shortName": "Insert"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.InsertOrganizationRolloutPlanRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Insert"
+      },
+      "description": "Insert creates a new RolloutPlan in a given organization and location.",
+      "file": "OrganizationRolloutPlansClient/Insert/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_OrganizationRolloutPlans_Insert_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Insert Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlansClient",
+          "shortName": "OrganizationRolloutPlansClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlansClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlans.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.OrganizationRolloutPlans",
+            "shortName": "OrganizationRolloutPlans"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListOrganizationRolloutPlansRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RolloutPlanIterator",
+        "shortName": "List"
+      },
+      "description": "List lists OrganizationRolloutPlans in a given organization and location.",
+      "file": "OrganizationRolloutPlansClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_OrganizationRolloutPlans_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutsClient",
+          "shortName": "OrganizationRolloutsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.OrganizationRolloutsClient.Advance",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRollouts.Advance",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.OrganizationRollouts",
+            "shortName": "OrganizationRollouts"
+          },
+          "shortName": "Advance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.AdvanceOrganizationRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Advance"
+      },
+      "description": "Advance advances a Rollout to the next wave, or completes it if no waves remain.",
+      "file": "OrganizationRolloutsClient/Advance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_OrganizationRollouts_Advance_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Advance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutsClient",
+          "shortName": "OrganizationRolloutsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.OrganizationRolloutsClient.Cancel",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRollouts.Cancel",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.OrganizationRollouts",
+            "shortName": "OrganizationRollouts"
+          },
+          "shortName": "Cancel"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.CancelOrganizationRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Cancel"
+      },
+      "description": "Cancel cancels a Rollout.",
+      "file": "OrganizationRolloutsClient/Cancel/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_OrganizationRollouts_Cancel_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Cancel Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutsClient",
+          "shortName": "OrganizationRolloutsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.OrganizationRolloutsClient.Delete",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRollouts.Delete",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.OrganizationRollouts",
+            "shortName": "OrganizationRollouts"
+          },
+          "shortName": "Delete"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.DeleteOrganizationRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Delete"
+      },
+      "description": "Delete deletes a Rollout.",
+      "file": "OrganizationRolloutsClient/Delete/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_OrganizationRollouts_Delete_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Delete Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutsClient",
+          "shortName": "OrganizationRolloutsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.OrganizationRolloutsClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRollouts.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.OrganizationRollouts",
+            "shortName": "OrganizationRollouts"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetOrganizationRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.Rollout",
+        "shortName": "Get"
+      },
+      "description": "Get gets details of a single organization-scoped Rollout.",
+      "file": "OrganizationRolloutsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_OrganizationRollouts_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutsClient",
+          "shortName": "OrganizationRolloutsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.OrganizationRolloutsClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRollouts.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.OrganizationRollouts",
+            "shortName": "OrganizationRollouts"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListOrganizationRolloutsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RolloutIterator",
+        "shortName": "List"
+      },
+      "description": "List lists Rollouts in a given organization and location.",
+      "file": "OrganizationRolloutsClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_OrganizationRollouts_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutsClient",
+          "shortName": "OrganizationRolloutsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.OrganizationRolloutsClient.Pause",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRollouts.Pause",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.OrganizationRollouts",
+            "shortName": "OrganizationRollouts"
+          },
+          "shortName": "Pause"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.PauseOrganizationRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Pause"
+      },
+      "description": "Pause pauses a Rollout.",
+      "file": "OrganizationRolloutsClient/Pause/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_OrganizationRollouts_Pause_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Pause Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRolloutsClient",
+          "shortName": "OrganizationRolloutsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.OrganizationRolloutsClient.Resume",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationRollouts.Resume",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.OrganizationRollouts",
+            "shortName": "OrganizationRollouts"
+          },
+          "shortName": "Resume"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ResumeOrganizationRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Resume"
+      },
+      "description": "Resume resumes a Rollout.",
+      "file": "OrganizationRolloutsClient/Resume/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_OrganizationRollouts_Resume_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Resume Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1beta.OrganizationSecurityPoliciesClient",
           "shortName": "OrganizationSecurityPoliciesClient"
         },
@@ -22872,6 +23562,52 @@
         }
       ],
       "title": "compute Update Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.ProjectViewsClient",
+          "shortName": "ProjectViewsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.ProjectViewsClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.ProjectViews.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.ProjectViews",
+            "shortName": "ProjectViews"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetProjectViewRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.ProjectView",
+        "shortName": "Get"
+      },
+      "description": "Get returns the specified global ProjectViews resource, with a regional\ncontext.",
+      "file": "ProjectViewsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_ProjectViews_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
     },
     {
       "clientMethod": {
@@ -25297,7 +26033,7 @@
         "resultType": "BackendServiceIterator",
         "shortName": "ListUsable"
       },
-      "description": "ListUsable retrieves a list of all usable backend services in the specified project in\nthe given region.",
+      "description": "ListUsable retrieves a list of all usable backend services for Application Load\nBalancers and Proxy Network Load Balancers in the specified project in the\ngiven region. Backend services for external and internal passthrough\nNetwork Load Balancers are not included in the response.",
       "file": "RegionBackendServicesClient/ListUsable/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -36676,6 +37412,98 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1beta.ReliabilityRisksClient",
+          "shortName": "ReliabilityRisksClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.ReliabilityRisksClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.ReliabilityRisks.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.ReliabilityRisks",
+            "shortName": "ReliabilityRisks"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetReliabilityRiskRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.ReliabilityRisk",
+        "shortName": "Get"
+      },
+      "description": "Get returns the specified ReliabilityRisk resource.",
+      "file": "ReliabilityRisksClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_ReliabilityRisks_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.ReliabilityRisksClient",
+          "shortName": "ReliabilityRisksClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.ReliabilityRisksClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.ReliabilityRisks.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.ReliabilityRisks",
+            "shortName": "ReliabilityRisks"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListReliabilityRisksRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ReliabilityRiskIterator",
+        "shortName": "List"
+      },
+      "description": "List retrieves the list of reliabilityRisks available in the specified project.",
+      "file": "ReliabilityRisksClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_ReliabilityRisks_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1beta.ReservationBlocksClient",
           "shortName": "ReservationBlocksClient"
         },
@@ -38611,6 +39439,52 @@
           "fullName": "google.cloud.compute.v1beta.RolloutsClient",
           "shortName": "RolloutsClient"
         },
+        "fullName": "google.cloud.compute.v1beta.RolloutsClient.Advance",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Rollouts.Advance",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Rollouts",
+            "shortName": "Rollouts"
+          },
+          "shortName": "Advance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.AdvanceRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Advance"
+      },
+      "description": "Advance advances a Rollout to the next wave, or completes it if no waves remain.",
+      "file": "RolloutsClient/Advance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Rollouts_Advance_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Advance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RolloutsClient",
+          "shortName": "RolloutsClient"
+        },
         "fullName": "google.cloud.compute.v1beta.RolloutsClient.Cancel",
         "method": {
           "fullName": "google.cloud.compute.v1beta.Rollouts.Cancel",
@@ -38788,6 +39662,98 @@
         }
       ],
       "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RolloutsClient",
+          "shortName": "RolloutsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.RolloutsClient.Pause",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Rollouts.Pause",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Rollouts",
+            "shortName": "Rollouts"
+          },
+          "shortName": "Pause"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.PauseRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Pause"
+      },
+      "description": "Pause pauses a Rollout.",
+      "file": "RolloutsClient/Pause/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Rollouts_Pause_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Pause Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RolloutsClient",
+          "shortName": "RolloutsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.RolloutsClient.Resume",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Rollouts.Resume",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Rollouts",
+            "shortName": "Rollouts"
+          },
+          "shortName": "Resume"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ResumeRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Resume"
+      },
+      "description": "Resume resumes a Rollout.",
+      "file": "RolloutsClient/Resume/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Rollouts_Resume_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Resume Sample"
     },
     {
       "clientMethod": {

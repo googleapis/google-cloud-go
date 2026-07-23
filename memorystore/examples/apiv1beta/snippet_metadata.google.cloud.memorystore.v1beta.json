@@ -8,9 +8,147 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/memorystore/apiv1beta",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.AddAuthToken",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.AddAuthToken",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "AddAuthToken"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.AddAuthTokenRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AddAuthTokenOperation",
+        "shortName": "AddAuthToken"
+      },
+      "description": "AddAuthToken adds a token for a user of a token based auth enabled instance.",
+      "file": "Client/AddAuthToken/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_AddAuthToken_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore AddAuthToken Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.AddTokenAuthUser",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.AddTokenAuthUser",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "AddTokenAuthUser"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.AddTokenAuthUserRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AddTokenAuthUserOperation",
+        "shortName": "AddTokenAuthUser"
+      },
+      "description": "AddTokenAuthUser adds a token auth user for a token based auth enabled instance.",
+      "file": "Client/AddTokenAuthUser/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_AddTokenAuthUser_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore AddTokenAuthUser Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.BackupInstance",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.BackupInstance",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "BackupInstance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.BackupInstanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BackupInstanceOperation",
+        "shortName": "BackupInstance"
+      },
+      "description": "BackupInstance backup Instance.\nIf this is the first time a backup is being created, a backup collection\nwill be created at the backend, and this backup belongs to this collection.\nBoth collection and backup will have a resource name. Backup will be\nexecuted for each shard. A replica (primary if nonHA) will be selected to\nperform the execution. Backup call will be rejected if there is an ongoing\nbackup or update operation. Be aware that during preview, if the instance's\ninternal software version is too old, critical update will be performed\nbefore actual backup. Once the internal software version is updated to the\nminimum version required by the backup feature, subsequent backups will not\nrequire critical update. After preview, there will be no critical update\nneeded for backup.",
+      "file": "Client/BackupInstance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_BackupInstance_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore BackupInstance Sample"
+    },
     {
       "clientMethod": {
         "client": {
@@ -108,6 +246,98 @@
           "fullName": "google.cloud.memorystore.v1beta.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.memorystore.v1beta.Client.DeleteAuthToken",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.DeleteAuthToken",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "DeleteAuthToken"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.DeleteAuthTokenRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteAuthTokenOperation",
+        "shortName": "DeleteAuthToken"
+      },
+      "description": "DeleteAuthToken deletes a token for a user of a token based auth enabled instance.",
+      "file": "Client/DeleteAuthToken/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_DeleteAuthToken_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore DeleteAuthToken Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.DeleteBackup",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.DeleteBackup",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "DeleteBackup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.DeleteBackupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteBackupOperation",
+        "shortName": "DeleteBackup"
+      },
+      "description": "DeleteBackup deletes a specific backup.",
+      "file": "Client/DeleteBackup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_DeleteBackup_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore DeleteBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.memorystore.v1beta.Client.DeleteInstance",
         "method": {
           "fullName": "google.cloud.memorystore.v1beta.Memorystore.DeleteInstance",
@@ -192,6 +422,282 @@
         }
       ],
       "title": "memorystore DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.DeleteTokenAuthUser",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.DeleteTokenAuthUser",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "DeleteTokenAuthUser"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.DeleteTokenAuthUserRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteTokenAuthUserOperation",
+        "shortName": "DeleteTokenAuthUser"
+      },
+      "description": "DeleteTokenAuthUser deletes a token auth user for a token based auth enabled instance.",
+      "file": "Client/DeleteTokenAuthUser/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_DeleteTokenAuthUser_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore DeleteTokenAuthUser Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.ExportBackup",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.ExportBackup",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "ExportBackup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.ExportBackupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ExportBackupOperation",
+        "shortName": "ExportBackup"
+      },
+      "description": "ExportBackup exports a specific backup to a customer target Cloud Storage URI.",
+      "file": "Client/ExportBackup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_ExportBackup_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore ExportBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.FinishMigration",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.FinishMigration",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "FinishMigration"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.FinishMigrationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "FinishMigrationOperation",
+        "shortName": "FinishMigration"
+      },
+      "description": "FinishMigration finalizes the migration process.\n\nAfter the successful completion of this operation, the target instance\nwill: \n1. Stop replicating from the source instance.\n2. Allow both reads and writes.",
+      "file": "Client/FinishMigration/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_FinishMigration_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore FinishMigration Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.GetAuthToken",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.GetAuthToken",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "GetAuthToken"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.GetAuthTokenRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*memorystorepb.AuthToken",
+        "shortName": "GetAuthToken"
+      },
+      "description": "GetAuthToken gets a token based auth enabled instance's auth token for a given user.",
+      "file": "Client/GetAuthToken/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_GetAuthToken_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore GetAuthToken Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.GetBackup",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.GetBackup",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "GetBackup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.GetBackupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*memorystorepb.Backup",
+        "shortName": "GetBackup"
+      },
+      "description": "GetBackup gets the details of a specific backup.",
+      "file": "Client/GetBackup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_GetBackup_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore GetBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.GetBackupCollection",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.GetBackupCollection",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "GetBackupCollection"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.GetBackupCollectionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*memorystorepb.BackupCollection",
+        "shortName": "GetBackupCollection"
+      },
+      "description": "GetBackupCollection get a backup collection.",
+      "file": "Client/GetBackupCollection/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_GetBackupCollection_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore GetBackupCollection Sample"
     },
     {
       "clientMethod": {
@@ -429,6 +935,190 @@
           "fullName": "google.cloud.memorystore.v1beta.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.memorystore.v1beta.Client.GetTokenAuthUser",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.GetTokenAuthUser",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "GetTokenAuthUser"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.GetTokenAuthUserRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*memorystorepb.TokenAuthUser",
+        "shortName": "GetTokenAuthUser"
+      },
+      "description": "GetTokenAuthUser gets a specific token auth user for a token based auth enabled instance.",
+      "file": "Client/GetTokenAuthUser/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_GetTokenAuthUser_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore GetTokenAuthUser Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.ListAuthTokens",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.ListAuthTokens",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "ListAuthTokens"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.ListAuthTokensRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AuthTokenIterator",
+        "shortName": "ListAuthTokens"
+      },
+      "description": "ListAuthTokens lists all the auth tokens for a specific token auth user.",
+      "file": "Client/ListAuthTokens/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_ListAuthTokens_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore ListAuthTokens Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.ListBackupCollections",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.ListBackupCollections",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "ListBackupCollections"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.ListBackupCollectionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BackupCollectionIterator",
+        "shortName": "ListBackupCollections"
+      },
+      "description": "ListBackupCollections lists all backup collections owned by a consumer project in either the\nspecified location (region) or all locations.\n\nIf `location_id` is specified as `-` (wildcard), then all regions\navailable to the project are queried, and the results are aggregated.",
+      "file": "Client/ListBackupCollections/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_ListBackupCollections_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore ListBackupCollections Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.ListBackups",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.ListBackups",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "ListBackups"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.ListBackupsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BackupIterator",
+        "shortName": "ListBackups"
+      },
+      "description": "ListBackups lists all backups owned by a backup collection.",
+      "file": "Client/ListBackups/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_ListBackups_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore ListBackups Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.memorystore.v1beta.Client.ListInstances",
         "method": {
           "fullName": "google.cloud.memorystore.v1beta.Memorystore.ListInstances",
@@ -501,7 +1191,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -560,6 +1250,144 @@
         }
       ],
       "title": "memorystore ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.ListTokenAuthUsers",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.ListTokenAuthUsers",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "ListTokenAuthUsers"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.ListTokenAuthUsersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "TokenAuthUserIterator",
+        "shortName": "ListTokenAuthUsers"
+      },
+      "description": "ListTokenAuthUsers lists all the token auth users for a token based auth enabled instance.",
+      "file": "Client/ListTokenAuthUsers/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_ListTokenAuthUsers_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore ListTokenAuthUsers Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.RescheduleMaintenance",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.RescheduleMaintenance",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "RescheduleMaintenance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.RescheduleMaintenanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RescheduleMaintenanceOperation",
+        "shortName": "RescheduleMaintenance"
+      },
+      "description": "RescheduleMaintenance reschedules upcoming maintenance event.",
+      "file": "Client/RescheduleMaintenance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_RescheduleMaintenance_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore RescheduleMaintenance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.memorystore.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.memorystore.v1beta.Client.StartMigration",
+        "method": {
+          "fullName": "google.cloud.memorystore.v1beta.Memorystore.StartMigration",
+          "service": {
+            "fullName": "google.cloud.memorystore.v1beta.Memorystore",
+            "shortName": "Memorystore"
+          },
+          "shortName": "StartMigration"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "memorystorepb.StartMigrationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "StartMigrationOperation",
+        "shortName": "StartMigration"
+      },
+      "description": "StartMigration initiates the migration of a source instance to the target Memorystore\ninstance.\n\nAfter the successful completion of this operation, the target instance\nwill: \n1. Set up replication with the source instance and replicate any writes to\nthe source instance.\n2. Only allow reads.",
+      "file": "Client/StartMigration/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "memorystore_v1beta_generated_Memorystore_StartMigration_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "memorystore StartMigration Sample"
     },
     {
       "clientMethod": {
