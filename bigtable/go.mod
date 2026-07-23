@@ -2,8 +2,6 @@ module cloud.google.com/go/bigtable
 
 go 1.25.0
 
-toolchain go1.26.4
-
 require (
 	cloud.google.com/go v0.123.0
 	cloud.google.com/go/compute/metadata v0.9.0
