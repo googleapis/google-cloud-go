@@ -39,7 +39,7 @@ import (
 // symmetrically under a stuck backend.
 const getClientConfigRPCTimeout = 10 * time.Second
 
-// getClientConfigDirectAccessChecker is the session-pool sibling of
+// sessionClientDirectAccessChecker is the session-pool sibling of
 // pingAndWarmDirectAccessChecker: same CheckCompatibility flow (dial →
 // probe → ALTS check → success or investigate), but issues
 // GetClientConfiguration as the probe RPC. Session channel pools do not
@@ -47,7 +47,7 @@ const getClientConfigRPCTimeout = 10 * time.Second
 // so this checker probes with the RPC session pools already talk on the
 // wire, keeping the compatibility check consistent with production
 // traffic.
-type getClientConfigDirectAccessChecker struct {
+type sessionClientDirectAccessChecker struct {
 	dialer          func() (*BigtableConn, error)
 	instanceName    string
 	appProfileID    string
@@ -56,17 +56,17 @@ type getClientConfigDirectAccessChecker struct {
 	logger          *log.Logger
 }
 
-// newGetClientConfigDirectAccessChecker constructs the session-pool checker.
+// newSessionClientDirectAccessChecker constructs the session-pool checker.
 // A nil meterProvider produces a checker that silently skips metric
 // reporting.
-func newGetClientConfigDirectAccessChecker(
+func newSessionClientDirectAccessChecker(
 	dialer func() (*BigtableConn, error),
 	instanceName, appProfileID string,
 	featureFlagsMD metadata.MD,
 	meterProvider metric.MeterProvider,
 	logger *log.Logger,
-) *getClientConfigDirectAccessChecker {
-	return &getClientConfigDirectAccessChecker{
+) *sessionClientDirectAccessChecker {
+	return &sessionClientDirectAccessChecker{
 		dialer:          dialer,
 		instanceName:    instanceName,
 		appProfileID:    appProfileID,
@@ -77,7 +77,7 @@ func newGetClientConfigDirectAccessChecker(
 }
 
 // Dialer returns the configured direct-access dialer.
-func (c *getClientConfigDirectAccessChecker) Dialer() func() (*BigtableConn, error) {
+func (c *sessionClientDirectAccessChecker) Dialer() func() (*BigtableConn, error) {
 	return c.dialer
 }
 
@@ -87,7 +87,7 @@ func (c *getClientConfigDirectAccessChecker) Dialer() func() (*BigtableConn, err
 // the primed connection is returned so the pool can adopt it; on
 // incompatible, any probe connection is closed and the async investigation
 // records a specific failure reason.
-func (c *getClientConfigDirectAccessChecker) CheckCompatibility(ctx context.Context) (*BigtableConn, bool) {
+func (c *sessionClientDirectAccessChecker) CheckCompatibility(ctx context.Context) (*BigtableConn, bool) {
 	conn, err := c.dialer()
 	if err != nil {
 		btopt.Debugf(c.logger, "bigtable_direct_access: dial failed: %v", err)
@@ -122,7 +122,7 @@ func (c *getClientConfigDirectAccessChecker) CheckCompatibility(ctx context.Cont
 // the ALTS handshake and populate the connection's peer info (isALTSConn +
 // remoteAddrType). The response itself is discarded — the checker only cares
 // that the RPC completed and what the transport looked like.
-func (c *getClientConfigDirectAccessChecker) probeGetClientConfig(ctx context.Context, conn *BigtableConn) error {
+func (c *sessionClientDirectAccessChecker) probeGetClientConfig(ctx context.Context, conn *BigtableConn) error {
 	client := bigtablepb.NewBigtableClient(conn.ClientConn)
 	req := &bigtablepb.GetClientConfigurationRequest{
 		InstanceName: c.instanceName,
@@ -144,7 +144,7 @@ func (c *getClientConfigDirectAccessChecker) probeGetClientConfig(ctx context.Co
 }
 
 // reportSuccess records a direct_access/compatible=1 reading.
-func (c *getClientConfigDirectAccessChecker) reportSuccess(ctx context.Context, ipPreference string) {
+func (c *sessionClientDirectAccessChecker) reportSuccess(ctx context.Context, ipPreference string) {
 	if c.daEligibleGauge == nil {
 		return
 	}
@@ -156,7 +156,7 @@ func (c *getClientConfigDirectAccessChecker) reportSuccess(ctx context.Context, 
 
 // reportFailure records a direct_access/compatible=0 reading with the given
 // reason tag.
-func (c *getClientConfigDirectAccessChecker) reportFailure(reason string) {
+func (c *sessionClientDirectAccessChecker) reportFailure(reason string) {
 	if c.daEligibleGauge == nil {
 		return
 	}
@@ -170,14 +170,14 @@ func (c *getClientConfigDirectAccessChecker) reportFailure(reason string) {
 // investigateDirectAccessFailure, plugging in a GetClientConfiguration-based
 // probeSingleEndpoint so the end-to-end check speaks the same RPC verb the
 // session pool uses in production.
-func (c *getClientConfigDirectAccessChecker) investigateFailure(originalErr error) {
+func (c *sessionClientDirectAccessChecker) investigateFailure(originalErr error) {
 	investigateDirectAccessFailure(c.logger, c.reportFailure, c.probeSingleEndpoint, originalErr)
 }
 
 // probeSingleEndpoint dials targetEndpoint over ALTS and issues
 // GetClientConfiguration — the direct-endpoint counterpart to the
 // load-balanced probe in CheckCompatibility.
-func (c *getClientConfigDirectAccessChecker) probeSingleEndpoint(ctx context.Context, targetEndpoint string) error {
+func (c *sessionClientDirectAccessChecker) probeSingleEndpoint(ctx context.Context, targetEndpoint string) error {
 	btopt.Debugf(c.logger, "bigtable_direct_access: investigation: Creating ALTS channel to %s...", targetEndpoint)
 
 	btc, cleanup, err := newAltsProbeChannel(ctx, targetEndpoint)

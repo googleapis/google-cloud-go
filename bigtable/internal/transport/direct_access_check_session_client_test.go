@@ -33,31 +33,31 @@ type fakeAltsAuthInfo struct{ alts.AuthInfo }
 
 func (fakeAltsAuthInfo) AuthType() string { return "alts" }
 
-// TestGetClientConfigDirectAccessChecker_ImplementsInterface is a compile-time
-// guard so *getClientConfigDirectAccessChecker keeps satisfying the
+// TestSessionClientDirectAccessChecker_ImplementsInterface is a compile-time
+// guard so *sessionClientDirectAccessChecker keeps satisfying the
 // DirectAccessChecker interface as either side evolves.
-func TestGetClientConfigDirectAccessChecker_ImplementsInterface(t *testing.T) {
-	var _ DirectAccessChecker = (*getClientConfigDirectAccessChecker)(nil)
+func TestSessionClientDirectAccessChecker_ImplementsInterface(t *testing.T) {
+	var _ DirectAccessChecker = (*sessionClientDirectAccessChecker)(nil)
 }
 
-// TestGetClientConfigDirectAccessChecker_DialerReturnsConfigured verifies
+// TestSessionClientDirectAccessChecker_DialerReturnsConfigured verifies
 // Dialer() hands back the exact func passed at construction — the pool
 // factory relies on this to reuse the dialer for post-probe redials.
-func TestGetClientConfigDirectAccessChecker_DialerReturnsConfigured(t *testing.T) {
+func TestSessionClientDirectAccessChecker_DialerReturnsConfigured(t *testing.T) {
 	want := func() (*BigtableConn, error) { return nil, nil }
-	c := newGetClientConfigDirectAccessChecker(want, "projects/p/instances/i", "profile", nil, nil, nil)
+	c := newSessionClientDirectAccessChecker(want, "projects/p/instances/i", "profile", nil, nil, nil)
 	got := c.Dialer()
 	if fmt.Sprintf("%p", got) != fmt.Sprintf("%p", want) {
 		t.Errorf("Dialer() returned a different function than configured")
 	}
 }
 
-// TestGetClientConfigDirectAccessChecker_DialFailedShortCircuits verifies
+// TestSessionClientDirectAccessChecker_DialFailedShortCircuits verifies
 // CheckCompatibility returns (nil, false) when the dialer fails, without
 // panicking on the nil BigtableConn or trying to close it.
-func TestGetClientConfigDirectAccessChecker_DialFailedShortCircuits(t *testing.T) {
+func TestSessionClientDirectAccessChecker_DialFailedShortCircuits(t *testing.T) {
 	dialer := func() (*BigtableConn, error) { return nil, fmt.Errorf("dial failed") }
-	c := newGetClientConfigDirectAccessChecker(dialer, "projects/p/instances/i", "profile", nil, nil, nil)
+	c := newSessionClientDirectAccessChecker(dialer, "projects/p/instances/i", "profile", nil, nil, nil)
 
 	conn, compatible := c.CheckCompatibility(context.Background())
 	if compatible {
