@@ -18,11 +18,11 @@ import (
 	"testing"
 )
 
-// makeSnapshot builds an afeSnapshot pointing at a fresh afeHandle with
+// makeSnapshot builds an AfeSnapshot pointing at a fresh afeHandle with
 // the given id. Used only in these tests; production callers get
 // snapshots from sessionList.ReadyAfes.
-func makeSnapshot(id afeID, inflight int, e2eCost float64) afeSnapshot {
-	return afeSnapshot{
+func makeSnapshot(id AfeID, inflight int, e2eCost float64) AfeSnapshot {
+	return AfeSnapshot{
 		ID:             id,
 		IdleCount:      1,
 		NumOutstanding: inflight,
@@ -41,12 +41,12 @@ func TestSimpleAfePicker_EmptyReturnsNil(t *testing.T) {
 }
 
 func TestSimpleAfePicker_DistributesRoughly(t *testing.T) {
-	snaps := []afeSnapshot{
+	snaps := []AfeSnapshot{
 		makeSnapshot(1, 0, 0),
 		makeSnapshot(2, 0, 0),
 		makeSnapshot(3, 0, 0),
 	}
-	counts := map[afeID]int{}
+	counts := map[AfeID]int{}
 	p := NewSimpleAfePicker()
 	const N = 3000
 	for i := 0; i < N; i++ {
@@ -72,7 +72,7 @@ func TestLeastInFlightAfePicker_EmptyReturnsNil(t *testing.T) {
 // When randomSubsetSize covers the full ready set, the min NumOutstanding
 // always wins deterministically.
 func TestLeastInFlightAfePicker_PicksMinWhenSubsetCoversAll(t *testing.T) {
-	snaps := []afeSnapshot{
+	snaps := []AfeSnapshot{
 		makeSnapshot(1, 5, 0),
 		makeSnapshot(2, 1, 0), // min
 		makeSnapshot(3, 3, 0),
@@ -89,14 +89,14 @@ func TestLeastInFlightAfePicker_PicksMinWhenSubsetCoversAll(t *testing.T) {
 // K-choice-2 over 4 AFEs where one AFE has drastically lower inflight
 // should still pick that AFE the majority of the time.
 func TestLeastInFlightAfePicker_KChoicePrefersLowInflight(t *testing.T) {
-	snaps := []afeSnapshot{
+	snaps := []AfeSnapshot{
 		makeSnapshot(1, 100, 0),
 		makeSnapshot(2, 100, 0),
 		makeSnapshot(3, 1, 0), // the good one
 		makeSnapshot(4, 100, 0),
 	}
 	p := NewLeastInFlightAfePicker(2)
-	counts := map[afeID]int{}
+	counts := map[AfeID]int{}
 	const N = 4000
 	for i := 0; i < N; i++ {
 		id, _, _ := p.PickAfe(snaps)
@@ -111,7 +111,7 @@ func TestLeastInFlightAfePicker_KChoicePrefersLowInflight(t *testing.T) {
 }
 
 func TestLeastLatencyAfePicker_PicksMinCost(t *testing.T) {
-	snaps := []afeSnapshot{
+	snaps := []AfeSnapshot{
 		makeSnapshot(1, 0, 50.0),
 		makeSnapshot(2, 0, 5.0), // min cost
 		makeSnapshot(3, 0, 30.0),
@@ -139,7 +139,7 @@ func TestLeastLatencyAfePicker_EmptyReturnsNil(t *testing.T) {
 // mutation happens (all K positions get filled with distinct entries)
 // so a future re-introduction of a defensive copy is caught.
 func TestKChoiceMinCost_MutatesInputInPlace(t *testing.T) {
-	snaps := []afeSnapshot{
+	snaps := []AfeSnapshot{
 		makeSnapshot(1, 0, 0),
 		makeSnapshot(2, 0, 0),
 		makeSnapshot(3, 0, 0),
@@ -150,11 +150,11 @@ func TestKChoiceMinCost_MutatesInputInPlace(t *testing.T) {
 	// the first-K elements are exactly the K sampled candidates.
 	NewLeastInFlightAfePicker(3).PickAfe(snaps)
 
-	seen := map[afeID]bool{}
+	seen := map[AfeID]bool{}
 	for _, s := range snaps {
 		seen[s.ID] = true
 	}
-	for _, want := range []afeID{1, 2, 3} {
+	for _, want := range []AfeID{1, 2, 3} {
 		if !seen[want] {
 			t.Errorf("after PickAfe, ID %d missing from mutated slice (%v)", want, seen)
 		}
@@ -165,7 +165,7 @@ func TestKChoiceMinCost_MutatesInputInPlace(t *testing.T) {
 // pickers surface every sampled candidate + the winning reason so
 // loadz can render the decision trace verbatim.
 func TestPickDecision_RecordsCandidatesAndReason(t *testing.T) {
-	snaps := []afeSnapshot{
+	snaps := []AfeSnapshot{
 		makeSnapshot(1, 5, 0),
 		makeSnapshot(2, 1, 0),
 		makeSnapshot(3, 3, 0),

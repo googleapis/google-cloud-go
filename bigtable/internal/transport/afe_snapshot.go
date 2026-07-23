@@ -14,13 +14,13 @@
 
 package internal
 
-// afeID identifies the AFE a session is pinned to. Zero = unknown.
-type afeID int64
+// AfeID identifies the AFE a session is pinned to. Zero = unknown.
+type AfeID int64
 
-// afeSnapshot is a lock-free view of an AFE bucket for the debug surface
+// AfeSnapshot is a lock-free view of an AFE bucket for the debug surface
 // and the picker's input contract.
-type afeSnapshot struct {
-	ID             afeID
+type AfeSnapshot struct {
+	ID             AfeID
 	IdleCount      int
 	NumOutstanding int
 	TransportCost  float64 // PeakEwma nanoseconds

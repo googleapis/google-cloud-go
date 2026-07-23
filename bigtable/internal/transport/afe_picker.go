@@ -24,7 +24,7 @@ import (
 // (int as float) for LeastInFlight, e2e PeakEwma nanos for LeastLatency,
 // 0 for Simple (which ignores cost).
 type PickCandidate struct {
-	AfeID afeID
+	AfeID AfeID
 	Cost  float64
 }
 
@@ -37,7 +37,7 @@ type PickDecision struct {
 	// Fisher-Yates). Empty when no ready AFE existed.
 	Candidates []PickCandidate
 	// Winner is the AFE the picker returned. Zero when ready was empty.
-	Winner afeID
+	Winner AfeID
 	// Reason is a short lower-kebab tag identifying the decision rule
 	// ("uniform-random" / "min-inflight" / "min-latency" /
 	// "no-candidates"). Machine-readable; consumers map to prose.
@@ -56,7 +56,7 @@ type PickDecision struct {
 // Implementations MAY mutate ready in place; callers must pass a
 // throwaway slice.
 type AfePicker interface {
-	PickAfe(ready []afeSnapshot) (winner afeID, picked bool, decision PickDecision)
+	PickAfe(ready []AfeSnapshot) (winner AfeID, picked bool, decision PickDecision)
 	Name() string
 }
 
@@ -70,7 +70,7 @@ func NewSimpleAfePicker() *SimpleAfePicker { return &SimpleAfePicker{} }
 func (SimpleAfePicker) Name() string { return "simple" }
 
 // PickAfe uniformly-at-random picks one bucket from ready.
-func (SimpleAfePicker) PickAfe(ready []afeSnapshot) (afeID, bool, PickDecision) {
+func (SimpleAfePicker) PickAfe(ready []AfeSnapshot) (AfeID, bool, PickDecision) {
 	if len(ready) == 0 {
 		return 0, false, PickDecision{Reason: "no-candidates"}
 	}
@@ -102,8 +102,8 @@ func (LeastInFlightAfePicker) Name() string { return "least-inflight" }
 
 // PickAfe returns the AFE with the fewest NumOutstanding among K
 // randomly-drawn ready candidates.
-func (p LeastInFlightAfePicker) PickAfe(ready []afeSnapshot) (afeID, bool, PickDecision) {
-	winner, picked, cands := kChoiceMinCost(ready, p.RandomSubsetSize, func(s afeSnapshot) float64 {
+func (p LeastInFlightAfePicker) PickAfe(ready []AfeSnapshot) (AfeID, bool, PickDecision) {
+	winner, picked, cands := kChoiceMinCost(ready, p.RandomSubsetSize, func(s AfeSnapshot) float64 {
 		return float64(s.NumOutstanding)
 	})
 	return decisionFor(winner, picked, cands, "min-inflight")
@@ -126,15 +126,15 @@ func (LeastLatencyAfePicker) Name() string { return "least-latency" }
 
 // PickAfe returns the AFE with the smallest E2eCost among K randomly-
 // drawn ready candidates.
-func (p LeastLatencyAfePicker) PickAfe(ready []afeSnapshot) (afeID, bool, PickDecision) {
-	winner, picked, cands := kChoiceMinCost(ready, p.RandomSubsetSize, func(s afeSnapshot) float64 {
+func (p LeastLatencyAfePicker) PickAfe(ready []AfeSnapshot) (AfeID, bool, PickDecision) {
+	winner, picked, cands := kChoiceMinCost(ready, p.RandomSubsetSize, func(s AfeSnapshot) float64 {
 		return s.E2eCost
 	})
 	return decisionFor(winner, picked, cands, "min-latency")
 }
 
 // decisionFor packages kChoiceMinCost's return into a PickDecision.
-func decisionFor(winner afeID, picked bool, cands []PickCandidate, reason string) (afeID, bool, PickDecision) {
+func decisionFor(winner AfeID, picked bool, cands []PickCandidate, reason string) (AfeID, bool, PickDecision) {
 	if !picked {
 		return 0, false, PickDecision{Reason: "no-candidates"}
 	}
@@ -160,7 +160,7 @@ func decisionFor(winner afeID, picked bool, cands []PickCandidate, reason string
 // call; profiling showed it costing ~4µs at the workload's steady-state
 // QPS since the picker runs on every CheckoutSession. Removed because
 // the caller doesn't need ready preserved.
-func kChoiceMinCost(ready []afeSnapshot, k int, cost func(afeSnapshot) float64) (afeID, bool, []PickCandidate) {
+func kChoiceMinCost(ready []AfeSnapshot, k int, cost func(AfeSnapshot) float64) (AfeID, bool, []PickCandidate) {
 	n := len(ready)
 	if n == 0 {
 		return 0, false, nil
@@ -170,7 +170,7 @@ func kChoiceMinCost(ready []afeSnapshot, k int, cost func(afeSnapshot) float64) 
 	}
 
 	sampled := make([]PickCandidate, 0, k)
-	var best afeID
+	var best AfeID
 	haveBest := false
 	bestCost := -1.0
 	for i := 0; i < k; i++ {
