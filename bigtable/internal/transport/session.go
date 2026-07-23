@@ -135,11 +135,12 @@ type Session struct {
 	sessionType SessionType
 
 	// state is the lifecycle position; read via State(), mutate via
-	// transitionTo.
+	// transitionTo. lastStateChangeNano is stamped inside transitionTo on
+	// each successful swap; it lives on the embedded sessionDebug (below)
+	// so the observability field set stays co-located with the rest of the
+	// debug/metric plumbing.
+
 	state atomic.Int32
-	// lastStateChangeNano is stamped by transitionTo on every successful
-	// swap; observability reads it for per-state dwell time.
-	lastStateChangeNano atomic.Int64
 
 	// closingOnce/closeOnce fire hooks.OnClosing/OnClose exactly once each
 	// even when multiple teardown paths race.
@@ -168,6 +169,12 @@ type Session struct {
 	peerInfo atomic.Pointer[spb.PeerInfo]
 	// refreshConfig is set once when the server sends SessionRefreshConfig.
 	refreshConfig atomic.Pointer[spb.SessionRefreshConfig]
+
+	// sessionDebug bundles observability: per-session counters, event
+	// ring, latency histogram, tracer/logger, close-reason attribution.
+	// Embedded so bare field access (s.tracer, s.okRpcs, s.recordEvent,
+	// ...) continues to compile once vRPC / lifecycle land.
+	sessionDebug
 }
 
 // SessionOption configures a Session at construction time.
@@ -184,9 +191,9 @@ func NewSession(logName string, stream Stream, hooks SessionHooks, sessionType S
 		sessionType: sessionType,
 	}
 	s.state.Store(int32(StateNew))
-	s.lastStateChangeNano.Store(time.Now().UnixNano())
 	s.heartbeatIntervalNano.Store(int64(defaultHeartbeatInterval))
 	s.nextHeartbeatDeadlineNano.Store(time.Now().Add(initialHeartbeatGrace).UnixNano())
+	s.sessionDebug.init(newSessionTracer(sessionType))
 	for _, o := range opts {
 		o(s)
 	}
