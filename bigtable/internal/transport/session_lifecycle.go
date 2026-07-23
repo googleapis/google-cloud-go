@@ -174,7 +174,10 @@ func (s *Session) Close(ctx context.Context, req *spb.CloseSessionRequest) error
 		select {
 		case <-s.quiescent:
 		case <-ctx.Done():
-			s.ForceClose(nil)
+			s.ForceClose(&spb.CloseSessionRequest{
+				Reason:      spb.CloseSessionRequest_CLOSE_SESSION_REASON_USER,
+				Description: "close context deadline exceeded during drain",
+			})
 			return ctx.Err()
 		}
 	}
@@ -188,7 +191,10 @@ func (s *Session) Close(ctx context.Context, req *spb.CloseSessionRequest) error
 		Payload: &spb.SessionRequest_CloseSession{CloseSession: req},
 	}
 	if err := s.Send(closeReq); err != nil {
-		s.ForceClose(nil)
+		s.ForceClose(&spb.CloseSessionRequest{
+			Reason:      spb.CloseSessionRequest_CLOSE_SESSION_REASON_ERROR,
+			Description: "failed to send close session request",
+		})
 		return fmt.Errorf("send close session request: %w", err)
 	}
 	// Advance to WaitServerClose so the pool monitor can see we're waiting
