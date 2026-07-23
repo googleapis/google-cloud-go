@@ -829,7 +829,14 @@
       ]
     },
     "datastore": {
-      "component": "datastore"
+      "component": "datastore",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/admin/apiv1/snippet_metadata.google.datastore.admin.v1.json",
+          "type": "json"
+        }
+      ]
     },
     "datastream": {
       "component": "datastream",
