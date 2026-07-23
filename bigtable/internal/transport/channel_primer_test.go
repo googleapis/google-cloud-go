@@ -54,6 +54,46 @@ func TestPingAndWarmChannelPrimer_Prime(t *testing.T) {
 	}
 }
 
+// TestNoOpChannelPrimer_Prime verifies the primer returns nil without
+// dialing or touching the connection — a nil BigtableConn is safe to
+// pass because Prime never dereferences it.
+func TestNoOpChannelPrimer_Prime(t *testing.T) {
+	var p NoOpChannelPrimer
+	if err := p.Prime(context.Background(), nil); err != nil {
+		t.Errorf("Prime returned err = %v, want nil", err)
+	}
+}
+
+// TestNoOpChannelPrimer_ImplementsChannelPrimer is a compile-time guard:
+// NoOpChannelPrimer must satisfy the ChannelPrimer interface so
+// construction sites can pass it wherever a ChannelPrimer is expected.
+func TestNoOpChannelPrimer_ImplementsChannelPrimer(t *testing.T) {
+	var _ ChannelPrimer = NoOpChannelPrimer{}
+}
+
+// TestConnectionFactory_NoOpPrimerSkipsPriming verifies NoOpChannelPrimer
+// composes into the factory the same way a nil primer does — dial, no
+// PingAndWarm, hand the raw connection back.
+func TestConnectionFactory_NoOpPrimerSkipsPriming(t *testing.T) {
+	fake := &fakeService{}
+	addr := setupTestServer(t, fake)
+
+	factory := &connectionFactory{
+		dial:   func() (*BigtableConn, error) { return dialBigtableserver(addr) },
+		primer: NoOpChannelPrimer{},
+	}
+
+	entry, err := factory.newEntry(context.Background())
+	if err != nil {
+		t.Fatalf("newEntry returned error: %v", err)
+	}
+	t.Cleanup(func() { entry.conn.Close() })
+
+	if got := fake.getPingCount(); got != 0 {
+		t.Errorf("PingAndWarm call count with NoOpChannelPrimer = %d, want 0", got)
+	}
+}
+
 // TestConnectionFactory_NilPrimerSkipsPriming verifies the contract that a
 // nil ChannelPrimer turns priming off: newEntry dials the channel and
 // returns it without issuing PingAndWarm.
