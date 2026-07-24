@@ -199,7 +199,7 @@ func (s *Session) noteRetryAttempt(ctx context.Context, method string, attempt i
 // clock. Omitted when ctx has no deadline or the budget is already
 // non-positive (the client-side ctx.Done branch will fire immediately).
 func buildInvokeRequest(ctx context.Context, rpcID int64, reqBytes []byte, attempt int64, startTime time.Time) *spb.SessionRequest {
-	virtRpc := &spb.VirtualRpcRequest{
+	virtRPC := &spb.VirtualRpcRequest{
 		RpcId:   rpcID,
 		Payload: reqBytes,
 		Metadata: &spb.VirtualRpcRequest_Metadata{
@@ -209,11 +209,11 @@ func buildInvokeRequest(ctx context.Context, rpcID int64, reqBytes []byte, attem
 	}
 	if deadline, ok := ctx.Deadline(); ok {
 		if remaining := time.Until(deadline); remaining > 0 {
-			virtRpc.Deadline = durationpb.New(remaining)
+			virtRPC.Deadline = durationpb.New(remaining)
 		}
 	}
 	return &spb.SessionRequest{
-		Payload: &spb.SessionRequest_VirtualRpc{VirtualRpc: virtRpc},
+		Payload: &spb.SessionRequest_VirtualRpc{VirtualRpc: virtRPC},
 	}
 }
 
