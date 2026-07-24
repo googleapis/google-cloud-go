@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/biglake/hive/apiv1beta",
-    "version": "1.2.0"
+    "version": "1.3.0"
   },
   "snippets": [
     {
@@ -420,6 +420,52 @@
         }
       ],
       "title": "biglake DeleteHiveTable Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient",
+          "shortName": "HiveMetastoreClient"
+        },
+        "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreClient.FailoverHiveCatalog",
+        "method": {
+          "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService.FailoverHiveCatalog",
+          "service": {
+            "fullName": "google.cloud.biglake.hive.v1beta.HiveMetastoreService",
+            "shortName": "HiveMetastoreService"
+          },
+          "shortName": "FailoverHiveCatalog"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hivepb.FailoverHiveCatalogRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*hivepb.FailoverHiveCatalogResponse",
+        "shortName": "FailoverHiveCatalog"
+      },
+      "description": "FailoverHiveCatalog failover the catalog to a new primary replica region.",
+      "file": "HiveMetastoreClient/FailoverHiveCatalog/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "biglake_v1beta_generated_HiveMetastoreService_FailoverHiveCatalog_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "biglake FailoverHiveCatalog Sample"
     },
     {
       "clientMethod": {

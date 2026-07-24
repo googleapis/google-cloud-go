@@ -37,6 +37,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	TransportManager_ListRemoteTransportProfiles_FullMethodName = "/google.cloud.networkconnectivity.v1beta.TransportManager/ListRemoteTransportProfiles"
 	TransportManager_GetRemoteTransportProfile_FullMethodName   = "/google.cloud.networkconnectivity.v1beta.TransportManager/GetRemoteTransportProfile"
+	TransportManager_ParseFromActivationKey_FullMethodName      = "/google.cloud.networkconnectivity.v1beta.TransportManager/ParseFromActivationKey"
 	TransportManager_ListTransports_FullMethodName              = "/google.cloud.networkconnectivity.v1beta.TransportManager/ListTransports"
 	TransportManager_GetTransport_FullMethodName                = "/google.cloud.networkconnectivity.v1beta.TransportManager/GetTransport"
 	TransportManager_GetStatus_FullMethodName                   = "/google.cloud.networkconnectivity.v1beta.TransportManager/GetStatus"
@@ -53,6 +54,8 @@ type TransportManagerClient interface {
 	ListRemoteTransportProfiles(ctx context.Context, in *ListRemoteTransportProfilesRequest, opts ...grpc.CallOption) (*ListRemoteTransportProfilesResponse, error)
 	// Gets details of a single RemoteTransportProfile.
 	GetRemoteTransportProfile(ctx context.Context, in *GetRemoteTransportProfileRequest, opts ...grpc.CallOption) (*RemoteTransportProfile, error)
+	// Gets details of a single RemoteTransportProfile given an activation key.
+	ParseFromActivationKey(ctx context.Context, in *ParseFromActivationKeyRequest, opts ...grpc.CallOption) (*ParseFromActivationKeyResponse, error)
 	// Lists Transports in a given project and location.
 	ListTransports(ctx context.Context, in *ListTransportsRequest, opts ...grpc.CallOption) (*ListTransportsResponse, error)
 	// Gets details of a single Transport.
@@ -87,6 +90,15 @@ func (c *transportManagerClient) ListRemoteTransportProfiles(ctx context.Context
 func (c *transportManagerClient) GetRemoteTransportProfile(ctx context.Context, in *GetRemoteTransportProfileRequest, opts ...grpc.CallOption) (*RemoteTransportProfile, error) {
 	out := new(RemoteTransportProfile)
 	err := c.cc.Invoke(ctx, TransportManager_GetRemoteTransportProfile_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *transportManagerClient) ParseFromActivationKey(ctx context.Context, in *ParseFromActivationKeyRequest, opts ...grpc.CallOption) (*ParseFromActivationKeyResponse, error) {
+	out := new(ParseFromActivationKeyResponse)
+	err := c.cc.Invoke(ctx, TransportManager_ParseFromActivationKey_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -155,6 +167,8 @@ type TransportManagerServer interface {
 	ListRemoteTransportProfiles(context.Context, *ListRemoteTransportProfilesRequest) (*ListRemoteTransportProfilesResponse, error)
 	// Gets details of a single RemoteTransportProfile.
 	GetRemoteTransportProfile(context.Context, *GetRemoteTransportProfileRequest) (*RemoteTransportProfile, error)
+	// Gets details of a single RemoteTransportProfile given an activation key.
+	ParseFromActivationKey(context.Context, *ParseFromActivationKeyRequest) (*ParseFromActivationKeyResponse, error)
 	// Lists Transports in a given project and location.
 	ListTransports(context.Context, *ListTransportsRequest) (*ListTransportsResponse, error)
 	// Gets details of a single Transport.
@@ -178,6 +192,9 @@ func (UnimplementedTransportManagerServer) ListRemoteTransportProfiles(context.C
 }
 func (UnimplementedTransportManagerServer) GetRemoteTransportProfile(context.Context, *GetRemoteTransportProfileRequest) (*RemoteTransportProfile, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRemoteTransportProfile not implemented")
+}
+func (UnimplementedTransportManagerServer) ParseFromActivationKey(context.Context, *ParseFromActivationKeyRequest) (*ParseFromActivationKeyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ParseFromActivationKey not implemented")
 }
 func (UnimplementedTransportManagerServer) ListTransports(context.Context, *ListTransportsRequest) (*ListTransportsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTransports not implemented")
@@ -241,6 +258,24 @@ func _TransportManager_GetRemoteTransportProfile_Handler(srv interface{}, ctx co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TransportManagerServer).GetRemoteTransportProfile(ctx, req.(*GetRemoteTransportProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TransportManager_ParseFromActivationKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ParseFromActivationKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TransportManagerServer).ParseFromActivationKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TransportManager_ParseFromActivationKey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TransportManagerServer).ParseFromActivationKey(ctx, req.(*ParseFromActivationKeyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -367,6 +402,10 @@ var TransportManager_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetRemoteTransportProfile",
 			Handler:    _TransportManager_GetRemoteTransportProfile_Handler,
+		},
+		{
+			MethodName: "ParseFromActivationKey",
+			Handler:    _TransportManager_ParseFromActivationKey_Handler,
 		},
 		{
 			MethodName: "ListTransports",

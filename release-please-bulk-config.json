@@ -829,7 +829,14 @@
       ]
     },
     "datastore": {
-      "component": "datastore"
+      "component": "datastore",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/admin/apiv1/snippet_metadata.google.datastore.admin.v1.json",
+          "type": "json"
+        }
+      ]
     },
     "datastream": {
       "component": "datastream",
@@ -2231,6 +2238,21 @@
         {
           "jsonpath": "$.clientLibrary.version",
           "path": "examples/apiv2/snippet_metadata.google.cloud.speech.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "sql": {
+      "component": "sql",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.sql.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta4/snippet_metadata.google.cloud.sql.v1beta4.json",
           "type": "json"
         }
       ]

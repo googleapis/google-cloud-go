@@ -48,6 +48,7 @@ var newTransportManagerClientHook clientHook
 type TransportManagerCallOptions struct {
 	ListRemoteTransportProfiles []gax.CallOption
 	GetRemoteTransportProfile   []gax.CallOption
+	ParseFromActivationKey      []gax.CallOption
 	ListTransports              []gax.CallOption
 	GetTransport                []gax.CallOption
 	GetStatus                   []gax.CallOption
@@ -95,6 +96,18 @@ func defaultTransportManagerCallOptions() *TransportManagerCallOptions {
 			}),
 		},
 		GetRemoteTransportProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ParseFromActivationKey: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -170,6 +183,7 @@ type internalTransportManagerClient interface {
 	Connection() *grpc.ClientConn
 	ListRemoteTransportProfiles(context.Context, *networkconnectivitypb.ListRemoteTransportProfilesRequest, ...gax.CallOption) *RemoteTransportProfileIterator
 	GetRemoteTransportProfile(context.Context, *networkconnectivitypb.GetRemoteTransportProfileRequest, ...gax.CallOption) (*networkconnectivitypb.RemoteTransportProfile, error)
+	ParseFromActivationKey(context.Context, *networkconnectivitypb.ParseFromActivationKeyRequest, ...gax.CallOption) (*networkconnectivitypb.ParseFromActivationKeyResponse, error)
 	ListTransports(context.Context, *networkconnectivitypb.ListTransportsRequest, ...gax.CallOption) *TransportIterator
 	GetTransport(context.Context, *networkconnectivitypb.GetTransportRequest, ...gax.CallOption) (*networkconnectivitypb.Transport, error)
 	GetStatus(context.Context, *networkconnectivitypb.GetStatusRequest, ...gax.CallOption) (*networkconnectivitypb.GetStatusResponse, error)
@@ -240,6 +254,11 @@ func (c *TransportManagerClient) GetRemoteTransportProfile(ctx context.Context, 
 	return c.internalClient.GetRemoteTransportProfile(ctx, req, opts...)
 }
 
+// ParseFromActivationKey gets details of a single RemoteTransportProfile given an activation key.
+func (c *TransportManagerClient) ParseFromActivationKey(ctx context.Context, req *networkconnectivitypb.ParseFromActivationKeyRequest, opts ...gax.CallOption) (*networkconnectivitypb.ParseFromActivationKeyResponse, error) {
+	return c.internalClient.ParseFromActivationKey(ctx, req, opts...)
+}
+
 // ListTransports lists Transports in a given project and location.
 func (c *TransportManagerClient) ListTransports(ctx context.Context, req *networkconnectivitypb.ListTransportsRequest, opts ...gax.CallOption) *TransportIterator {
 	return c.internalClient.ListTransports(ctx, req, opts...)
@@ -294,14 +313,21 @@ func (c *TransportManagerClient) GetLocation(ctx context.Context, req *locationp
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *TransportManagerClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -436,6 +462,7 @@ func NewTransportManagerClient(ctx context.Context, opts ...option.ClientOption)
 
 		client.CallOptions.ListRemoteTransportProfiles = append(client.CallOptions.ListRemoteTransportProfiles, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetRemoteTransportProfile = append(client.CallOptions.GetRemoteTransportProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.ParseFromActivationKey = append(client.CallOptions.ParseFromActivationKey, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListTransports = append(client.CallOptions.ListTransports, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetTransport = append(client.CallOptions.GetTransport, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetStatus = append(client.CallOptions.GetStatus, gax.WithClientMetrics(metrics))
@@ -562,6 +589,30 @@ func (c *transportManagerGRPCClient) GetRemoteTransportProfile(ctx context.Conte
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.transportManagerClient.GetRemoteTransportProfile, req, settings.GRPC, c.logger, "GetRemoteTransportProfile")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *transportManagerGRPCClient) ParseFromActivationKey(ctx context.Context, req *networkconnectivitypb.ParseFromActivationKeyRequest, opts ...gax.CallOption) (*networkconnectivitypb.ParseFromActivationKeyResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1beta.TransportManager/ParseFromActivationKey")
+	}
+	opts = append((*c.CallOptions).ParseFromActivationKey[0:len((*c.CallOptions).ParseFromActivationKey):len((*c.CallOptions).ParseFromActivationKey)], opts...)
+	var resp *networkconnectivitypb.ParseFromActivationKeyResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.transportManagerClient.ParseFromActivationKey, req, settings.GRPC, c.logger, "ParseFromActivationKey")
 		return err
 	}, opts...)
 	if err != nil {

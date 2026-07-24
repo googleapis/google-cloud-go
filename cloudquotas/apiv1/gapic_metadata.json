@@ -78,6 +78,40 @@
           }
         }
       }
+    },
+    "QuotaAdjusterSettingsManager": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "QuotaAdjusterSettingsManagerClient",
+          "rpcs": {
+            "GetQuotaAdjusterSettings": {
+              "methods": [
+                "GetQuotaAdjusterSettings"
+              ]
+            },
+            "UpdateQuotaAdjusterSettings": {
+              "methods": [
+                "UpdateQuotaAdjusterSettings"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "QuotaAdjusterSettingsManagerClient",
+          "rpcs": {
+            "GetQuotaAdjusterSettings": {
+              "methods": [
+                "GetQuotaAdjusterSettings"
+              ]
+            },
+            "UpdateQuotaAdjusterSettings": {
+              "methods": [
+                "UpdateQuotaAdjusterSettings"
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }
