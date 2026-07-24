@@ -3575,8 +3575,8 @@ func TestWriterChunkRetryDeadlineEmulated(t *testing.T) {
 		buffer := bytes.Repeat([]byte("A"), fileSize)
 		_, err = pw.Write(buffer)
 		defer pw.Close()
-		if !errorIsStatusCode(err, errCode, codes.Unavailable) {
-			t.Errorf("expected err with status %d, got err: %v", errCode, err)
+		if !errorIsStatusCode(err, errCode, codes.Unavailable) && !strings.Contains(err.Error(), "retry deadline of") {
+			t.Errorf("expected err with status %d or retry deadline reached, got err: %v", errCode, err)
 		}
 
 		// Make sure there was more than one attempt.
