@@ -241,7 +241,7 @@ type sessionManager struct {
 	multiplexedSessionCreation    *multiplexedSessionCreation
 
 	// locationAwareState is set when the experimental location API is enabled.
-	// It owns the shared routing, lifecycle, and cooldown state for the client.
+	// It owns the shared routing, lifecycle, and endpoint runtime state for the client.
 	locationAwareState *locationAwareState
 
 	// SessionPoolConfig is kept for backward compatibility.
@@ -480,7 +480,7 @@ func (p *sessionManager) getRoundRobinClientLocked() (spannerClient, int) {
 	return p.clientPool[idx], idx
 }
 
-func (p *sessionManager) setLocationAwareState(router *locationRouter, cooldowns *endpointOverloadCooldownTracker) {
+func (p *sessionManager) setLocationAwareState(router *locationRouter) {
 	if p == nil {
 		return
 	}
@@ -492,7 +492,7 @@ func (p *sessionManager) setLocationAwareState(router *locationRouter, cooldowns
 	if router != nil {
 		endpointCache = router.endpointCache
 	}
-	p.locationAwareState = newLocationAwareState(p.clientPool, router, endpointCache, cooldowns)
+	p.locationAwareState = newLocationAwareState(p.clientPool, router, endpointCache)
 }
 
 // errGetSessionTimeout returns error for context timeout during session acquisition.
@@ -595,9 +595,8 @@ func (p *sessionManager) multiplexSessionWorker() {
 		p.mu.Lock()
 		locationAwareState := p.locationAwareState
 		p.mu.Unlock()
-		if locationAwareState != nil && locationAwareState.endpointCooldowns != nil {
-			cooldowns := locationAwareState.endpointCooldowns
-			cooldowns.pruneStaleEntries(2 * cooldowns.resetAfter)
+		if locationAwareState != nil && locationAwareState.endpointCache != nil {
+			locationAwareState.endpointCache.pruneStaleRoutingState(2 * defaultEndpointOverloadResetAfter)
 		}
 
 		// Sleep for a while to avoid burning CPU.

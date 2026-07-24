@@ -31,6 +31,10 @@ type lifecycleTestEndpoint struct {
 	address string
 	conn    *grpc.ClientConn
 	active  atomic.Int64
+
+	lifecycleMu       sync.Mutex
+	lastRealTrafficAt time.Time
+	transientFailures int
 }
 
 func (e *lifecycleTestEndpoint) Address() string {
@@ -65,6 +69,34 @@ func (e *lifecycleTestEndpoint) DecrementActiveRequests() {
 
 func (e *lifecycleTestEndpoint) ActiveRequestCount() int {
 	return int(e.active.Load())
+}
+
+func (e *lifecycleTestEndpoint) recordRealTrafficAt(now time.Time) {
+	e.lifecycleMu.Lock()
+	defer e.lifecycleMu.Unlock()
+	e.lastRealTrafficAt = now
+}
+
+func (e *lifecycleTestEndpoint) resetLifecycleTransientFailures() {
+	e.lifecycleMu.Lock()
+	defer e.lifecycleMu.Unlock()
+	e.transientFailures = 0
+}
+
+func (e *lifecycleTestEndpoint) incrementLifecycleTransientFailures() int {
+	e.lifecycleMu.Lock()
+	defer e.lifecycleMu.Unlock()
+	e.transientFailures++
+	return e.transientFailures
+}
+
+func (e *lifecycleTestEndpoint) lifecycleStateSnapshot() endpointLifecycleState {
+	e.lifecycleMu.Lock()
+	defer e.lifecycleMu.Unlock()
+	return endpointLifecycleState{
+		lastRealTrafficAt:            e.lastRealTrafficAt,
+		consecutiveTransientFailures: e.transientFailures,
+	}
 }
 
 type lifecycleTestCache struct {
@@ -137,6 +169,27 @@ func (c *lifecycleTestCache) Evict(address string) {
 func (c *lifecycleTestCache) DefaultChannel() channelEndpoint       { return c.defaultEndpoint }
 func (*lifecycleTestCache) ClientFor(channelEndpoint) spannerClient { return nil }
 func (*lifecycleTestCache) Close() error                            { return nil }
+
+func (c *lifecycleTestCache) addresses() []string {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	addresses := make([]string, 0, len(c.endpoints))
+	for address := range c.endpoints {
+		addresses = append(addresses, address)
+	}
+	return addresses
+}
+
+func (*lifecycleTestCache) isCoolingDown(string) bool              { return false }
+func (*lifecycleTestCache) remainingCooldown(string) time.Duration { return 0 }
+func (*lifecycleTestCache) recordFailure(string)                   {}
+func (*lifecycleTestCache) selectionCost(uint64, bool, channelEndpoint, string) float64 {
+	return float64(endpointLatencyDefaultRTT) / 1e3
+}
+func (*lifecycleTestCache) recordLatency(uint64, bool, string, time.Duration) {}
+func (*lifecycleTestCache) recordError(uint64, bool, string)                  {}
+func (*lifecycleTestCache) hasScore(uint64, bool, string) bool                { return false }
+func (*lifecycleTestCache) pruneStaleRoutingState(time.Duration)              {}
 
 func (c *lifecycleTestCache) getCallCount(address string) int {
 	c.mu.Lock()
