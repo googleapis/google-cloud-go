@@ -347,8 +347,7 @@ func (c *Client) pingerWithMetadata(ctx context.Context) (err error) {
 }
 
 func (c *Client) newBuiltinMetricsTracer(ctx context.Context, table string, isStreaming bool) *metrics.Tracer {
-	mt := c.metricsTracerFactory.CreateTracer(ctx, table, isStreaming)
-	return &mt
+	return c.metricsTracerFactory.CreateTracer(ctx, table, isStreaming)
 }
 
 func isDirectAccessEnabled(config ClientConfig) bool {

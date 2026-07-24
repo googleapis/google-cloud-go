@@ -1,5 +1,20 @@
 # Changes
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.25.0...datastore/v1.26.0) (2026-07-23)
+
+
+### Features
+
+* Update API sources and regenerate ([#20159](https://github.com/googleapis/google-cloud-go/issues/20159)) ([6395ba5](https://github.com/googleapis/google-cloud-go/commit/6395ba5d059d7e0d6ccfbf57b15d8d5ffcd70d0e))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.24.0...datastore/v1.25.0) (2026-07-14)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+* Update API sources and regenerate ([#20109](https://github.com/googleapis/google-cloud-go/issues/20109)) ([4314d30](https://github.com/googleapis/google-cloud-go/commit/4314d305008d9a4b2d9f464d07519f8081b2277d))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/datastore%2Fv1.24.0) (2026-05-19)
 
 ### Bug Fixes

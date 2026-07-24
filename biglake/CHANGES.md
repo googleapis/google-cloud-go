@@ -1,5 +1,12 @@
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/biglake%2Fv1.0.0) (2026-05-08)
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/biglake/v1.2.0...biglake/v1.3.0) (2026-07-23)
+
+
+### Features
+
+* Update API sources and regenerate ([#20188](https://github.com/googleapis/google-cloud-go/issues/20188)) ([104e0de](https://github.com/googleapis/google-cloud-go/commit/104e0de4fb40e0008232a9a01f100f089ec18d8b))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/biglake/v1.1.0...biglake/v1.2.0) (2026-07-13)
 
 

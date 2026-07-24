@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/servicecontrol/apiv1",
-    "version": "1.18.0"
+    "version": "1.19.0"
   },
   "snippets": [
     {
@@ -89,7 +89,7 @@
         "resultType": "*servicecontrolpb.CheckResponse",
         "shortName": "Check"
       },
-      "description": "Check checks whether an operation on a service should be allowed to proceed\nbased on the configuration of the service and related policies. It must be\ncalled before the operation is executed.\n\nIf feasible, the client should cache the check results and reuse them for\n60 seconds. In case of any server errors, the client should rely on the\ncached results for much longer time to avoid outage.\nWARNING: There is general 60s delay for the configuration and policy\npropagation, therefore callers MUST NOT depend on the `Check` method having\nthe latest policy information.\n\nNOTE: the [CheckRequest][google.api.servicecontrol.v1.CheckRequest] has\nthe size limit (wire-format byte size) of 1MB.\n\nThis method requires the `servicemanagement.services.check` permission\non the specified service. For more information, see\n[Cloud IAM](https: //cloud.google.com/iam).",
+      "description": "Check checks whether an operation on a service should be allowed to proceed\nbased on the configuration of the service and related policies. It must be\ncalled before the operation is executed.\n\nIf feasible, the client should cache the check results and reuse them for\n60 seconds. In case of any server errors, the client should rely on the\ncached results for much longer time to avoid outage.\nWARNING: There is general 60s delay for the configuration and policy\npropagation, therefore callers MUST NOT depend on the `Check` method having\nthe latest policy information.\n\nNOTE: the [CheckRequest][google.api.servicecontrol.v1.CheckRequest] has the\nsize limit (wire-format byte size) of 1MB.\n\nThis method requires the `servicemanagement.services.check` permission\non the specified service. For more information, see\n[Cloud IAM](https: //cloud.google.com/iam).",
       "file": "ServiceControllerClient/Check/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

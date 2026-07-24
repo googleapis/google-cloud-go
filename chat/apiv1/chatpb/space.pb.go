@@ -1323,6 +1323,24 @@ type UpdateSpaceRequest struct {
 	// users](https://developers.google.com/workspace/chat/space-target-audience).
 	// `access_settings.audience` is not supported with `useAdminAccess`.
 	//
+	// `access_settings.access_permission_settings`: Updates the [access
+	// permission
+	// settings](https://support.google.com/chat/answer/11971020) of who can
+	// discover and join the space where `spaceType` field is `SPACE`. Principals
+	// allowed to join the space must also be allowed to discover it. To update
+	// access permission settings for a space, the authenticating user must be a
+	// space manager or assistant manager and omit all other field masks in the
+	// request. You can't update this field if the space is in [import
+	// mode](https://developers.google.com/workspace/chat/import-data-overview).
+	// To learn more, see [Make a space discoverable to specific
+	// users](https://developers.google.com/workspace/chat/space-target-audience).
+	// `access_settings.access_permission_settings` is not supported with
+	// `useAdminAccess`.
+	// The supported field masks include:
+	//
+	// - `access_settings.access_permission_settings.discoverSpaceSetting`
+	// - `access_settings.access_permission_settings.joinSpaceSetting`
+	//
 	// `permission_settings`: Supports changing the
 	// [permission settings](https://support.google.com/chat/answer/13340792)
 	// of a space.
@@ -1978,9 +1996,14 @@ type Space_AccessSettings struct {
 	//
 	// Setting the target audience requires [user
 	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
-	Audience      string `protobuf:"bytes,3,opt,name=audience,proto3" json:"audience,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Audience string `protobuf:"bytes,3,opt,name=audience,proto3" json:"audience,omitempty"`
+	// Optional. Access permission settings for the space.
+	//
+	// To set the target audience when creating a space, specify the
+	// `accessSettings.audience` field in your request.
+	AccessPermissionSettings *Space_AccessPermissionSettings `protobuf:"bytes,5,opt,name=access_permission_settings,json=accessPermissionSettings,proto3" json:"access_permission_settings,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *Space_AccessSettings) Reset() {
@@ -2027,6 +2050,184 @@ func (x *Space_AccessSettings) GetAudience() string {
 	return ""
 }
 
+func (x *Space_AccessSettings) GetAccessPermissionSettings() *Space_AccessPermissionSettings {
+	if x != nil {
+		return x.AccessPermissionSettings
+	}
+	return nil
+}
+
+// Access permission settings for a space.
+type Space_AccessPermissionSettings struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Access permission setting for discovering the space.
+	DiscoverSpaceSetting *Space_AccessPermissionSetting `protobuf:"bytes,1,opt,name=discover_space_setting,json=discoverSpaceSetting,proto3" json:"discover_space_setting,omitempty"`
+	// Optional. Access permission setting for joining the space.
+	JoinSpaceSetting *Space_AccessPermissionSetting `protobuf:"bytes,2,opt,name=join_space_setting,json=joinSpaceSetting,proto3" json:"join_space_setting,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *Space_AccessPermissionSettings) Reset() {
+	*x = Space_AccessPermissionSettings{}
+	mi := &file_google_chat_v1_space_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Space_AccessPermissionSettings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Space_AccessPermissionSettings) ProtoMessage() {}
+
+func (x *Space_AccessPermissionSettings) ProtoReflect() protoreflect.Message {
+	mi := &file_google_chat_v1_space_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Space_AccessPermissionSettings.ProtoReflect.Descriptor instead.
+func (*Space_AccessPermissionSettings) Descriptor() ([]byte, []int) {
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{0, 3}
+}
+
+func (x *Space_AccessPermissionSettings) GetDiscoverSpaceSetting() *Space_AccessPermissionSetting {
+	if x != nil {
+		return x.DiscoverSpaceSetting
+	}
+	return nil
+}
+
+func (x *Space_AccessPermissionSettings) GetJoinSpaceSetting() *Space_AccessPermissionSetting {
+	if x != nil {
+		return x.JoinSpaceSetting
+	}
+	return nil
+}
+
+// An access permission setting.
+type Space_AccessPermissionSetting struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Unordered list. Allowed principals for this permission.
+	Principals    []*Space_Principal `protobuf:"bytes,1,rep,name=principals,proto3" json:"principals,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Space_AccessPermissionSetting) Reset() {
+	*x = Space_AccessPermissionSetting{}
+	mi := &file_google_chat_v1_space_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Space_AccessPermissionSetting) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Space_AccessPermissionSetting) ProtoMessage() {}
+
+func (x *Space_AccessPermissionSetting) ProtoReflect() protoreflect.Message {
+	mi := &file_google_chat_v1_space_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Space_AccessPermissionSetting.ProtoReflect.Descriptor instead.
+func (*Space_AccessPermissionSetting) Descriptor() ([]byte, []int) {
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{0, 4}
+}
+
+func (x *Space_AccessPermissionSetting) GetPrincipals() []*Space_Principal {
+	if x != nil {
+		return x.Principals
+	}
+	return nil
+}
+
+// A principal representing an entity granted access.
+type Space_Principal struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The type of principal.
+	//
+	// Types that are valid to be assigned to PrincipalType:
+	//
+	//	*Space_Principal_Audience
+	PrincipalType isSpace_Principal_PrincipalType `protobuf_oneof:"principal_type"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Space_Principal) Reset() {
+	*x = Space_Principal{}
+	mi := &file_google_chat_v1_space_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Space_Principal) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Space_Principal) ProtoMessage() {}
+
+func (x *Space_Principal) ProtoReflect() protoreflect.Message {
+	mi := &file_google_chat_v1_space_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Space_Principal.ProtoReflect.Descriptor instead.
+func (*Space_Principal) Descriptor() ([]byte, []int) {
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{0, 5}
+}
+
+func (x *Space_Principal) GetPrincipalType() isSpace_Principal_PrincipalType {
+	if x != nil {
+		return x.PrincipalType
+	}
+	return nil
+}
+
+func (x *Space_Principal) GetAudience() *Audience {
+	if x != nil {
+		if x, ok := x.PrincipalType.(*Space_Principal_Audience); ok {
+			return x.Audience
+		}
+	}
+	return nil
+}
+
+type isSpace_Principal_PrincipalType interface {
+	isSpace_Principal_PrincipalType()
+}
+
+type Space_Principal_Audience struct {
+	// An audience.
+	Audience *Audience `protobuf:"bytes,1,opt,name=audience,proto3,oneof"`
+}
+
+func (*Space_Principal_Audience) isSpace_Principal_PrincipalType() {}
+
 // [Permission settings](https://support.google.com/chat/answer/13340792)
 // that you can specify when updating an existing named space.
 //
@@ -2057,7 +2258,7 @@ type Space_PermissionSettings struct {
 
 func (x *Space_PermissionSettings) Reset() {
 	*x = Space_PermissionSettings{}
-	mi := &file_google_chat_v1_space_proto_msgTypes[17]
+	mi := &file_google_chat_v1_space_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2069,7 +2270,7 @@ func (x *Space_PermissionSettings) String() string {
 func (*Space_PermissionSettings) ProtoMessage() {}
 
 func (x *Space_PermissionSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_space_proto_msgTypes[17]
+	mi := &file_google_chat_v1_space_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2082,7 +2283,7 @@ func (x *Space_PermissionSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Space_PermissionSettings.ProtoReflect.Descriptor instead.
 func (*Space_PermissionSettings) Descriptor() ([]byte, []int) {
-	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{0, 3}
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{0, 6}
 }
 
 func (x *Space_PermissionSettings) GetManageMembersAndGroups() *Space_PermissionSetting {
@@ -2162,7 +2363,7 @@ type Space_PermissionSetting struct {
 
 func (x *Space_PermissionSetting) Reset() {
 	*x = Space_PermissionSetting{}
-	mi := &file_google_chat_v1_space_proto_msgTypes[18]
+	mi := &file_google_chat_v1_space_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2174,7 +2375,7 @@ func (x *Space_PermissionSetting) String() string {
 func (*Space_PermissionSetting) ProtoMessage() {}
 
 func (x *Space_PermissionSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_space_proto_msgTypes[18]
+	mi := &file_google_chat_v1_space_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2187,7 +2388,7 @@ func (x *Space_PermissionSetting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Space_PermissionSetting.ProtoReflect.Descriptor instead.
 func (*Space_PermissionSetting) Descriptor() ([]byte, []int) {
-	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{0, 4}
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{0, 7}
 }
 
 func (x *Space_PermissionSetting) GetManagersAllowed() bool {
@@ -2215,7 +2416,7 @@ var File_google_chat_v1_space_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_space_proto_rawDesc = "" +
 	"\n" +
-	"\x1agoogle/chat/v1/space.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\"google/chat/v1/history_state.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\x1b\n" +
+	"\x1agoogle/chat/v1/space.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1dgoogle/chat/v1/audience.proto\x1a\"google/chat/v1/history_state.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\x1f\n" +
 	"\x05Space\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x125\n" +
 	"\x04type\x18\x02 \x01(\x0e2\x1a.google.chat.v1.Space.TypeB\x05\xe0A\x03\x18\x01R\x04type\x12C\n" +
@@ -2249,14 +2450,25 @@ const file_google_chat_v1_space_proto_rawDesc = "" +
 	"guidelines\x1a\x8d\x01\n" +
 	"\x0fMembershipCount\x12G\n" +
 	"\x1ejoined_direct_human_user_count\x18\x04 \x01(\x05B\x03\xe0A\x03R\x1ajoinedDirectHumanUserCount\x121\n" +
-	"\x12joined_group_count\x18\x05 \x01(\x05B\x03\xe0A\x03R\x10joinedGroupCount\x1a\xd7\x01\n" +
+	"\x12joined_group_count\x18\x05 \x01(\x05B\x03\xe0A\x03R\x10joinedGroupCount\x1a\xca\x02\n" +
 	"\x0eAccessSettings\x12X\n" +
 	"\faccess_state\x18\x01 \x01(\x0e20.google.chat.v1.Space.AccessSettings.AccessStateB\x03\xe0A\x03R\vaccessState\x12\x1f\n" +
-	"\baudience\x18\x03 \x01(\tB\x03\xe0A\x01R\baudience\"J\n" +
+	"\baudience\x18\x03 \x01(\tB\x03\xe0A\x01R\baudience\x12q\n" +
+	"\x1aaccess_permission_settings\x18\x05 \x01(\v2..google.chat.v1.Space.AccessPermissionSettingsB\x03\xe0A\x01R\x18accessPermissionSettings\"J\n" +
 	"\vAccessState\x12\x1c\n" +
 	"\x18ACCESS_STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPRIVATE\x10\x01\x12\x10\n" +
-	"\fDISCOVERABLE\x10\x02\x1a\xad\a\n" +
+	"\fDISCOVERABLE\x10\x02\x1a\xe6\x01\n" +
+	"\x18AccessPermissionSettings\x12h\n" +
+	"\x16discover_space_setting\x18\x01 \x01(\v2-.google.chat.v1.Space.AccessPermissionSettingB\x03\xe0A\x01R\x14discoverSpaceSetting\x12`\n" +
+	"\x12join_space_setting\x18\x02 \x01(\v2-.google.chat.v1.Space.AccessPermissionSettingB\x03\xe0A\x01R\x10joinSpaceSetting\x1ab\n" +
+	"\x17AccessPermissionSetting\x12G\n" +
+	"\n" +
+	"principals\x18\x01 \x03(\v2\x1f.google.chat.v1.Space.PrincipalB\x06\xe0A\x01\xe0A\x06R\n" +
+	"principals\x1aU\n" +
+	"\tPrincipal\x126\n" +
+	"\baudience\x18\x01 \x01(\v2\x18.google.chat.v1.AudienceH\x00R\baudienceB\x10\n" +
+	"\x0eprincipal_type\x1a\xad\a\n" +
 	"\x12PermissionSettings\x12l\n" +
 	"\x19manage_members_and_groups\x18\x01 \x01(\v2'.google.chat.v1.Space.PermissionSettingB\x03\xe0A\x01H\x00R\x16manageMembersAndGroups\x88\x01\x01\x12c\n" +
 	"\x14modify_space_details\x18\x02 \x01(\v2'.google.chat.v1.Space.PermissionSettingB\x03\xe0A\x01H\x01R\x12modifySpaceDetails\x88\x01\x01\x12X\n" +
@@ -2376,7 +2588,7 @@ func file_google_chat_v1_space_proto_rawDescGZIP() []byte {
 }
 
 var file_google_chat_v1_space_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_google_chat_v1_space_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_google_chat_v1_space_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_google_chat_v1_space_proto_goTypes = []any{
 	(SpaceView)(0),                          // 0: google.chat.v1.SpaceView
 	(Space_Type)(0),                         // 1: google.chat.v1.Space.Type
@@ -2401,47 +2613,56 @@ var file_google_chat_v1_space_proto_goTypes = []any{
 	(*Space_SpaceDetails)(nil),              // 20: google.chat.v1.Space.SpaceDetails
 	(*Space_MembershipCount)(nil),           // 21: google.chat.v1.Space.MembershipCount
 	(*Space_AccessSettings)(nil),            // 22: google.chat.v1.Space.AccessSettings
-	(*Space_PermissionSettings)(nil),        // 23: google.chat.v1.Space.PermissionSettings
-	(*Space_PermissionSetting)(nil),         // 24: google.chat.v1.Space.PermissionSetting
-	(HistoryState)(0),                       // 25: google.chat.v1.HistoryState
-	(*timestamppb.Timestamp)(nil),           // 26: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),           // 27: google.protobuf.FieldMask
+	(*Space_AccessPermissionSettings)(nil),  // 23: google.chat.v1.Space.AccessPermissionSettings
+	(*Space_AccessPermissionSetting)(nil),   // 24: google.chat.v1.Space.AccessPermissionSetting
+	(*Space_Principal)(nil),                 // 25: google.chat.v1.Space.Principal
+	(*Space_PermissionSettings)(nil),        // 26: google.chat.v1.Space.PermissionSettings
+	(*Space_PermissionSetting)(nil),         // 27: google.chat.v1.Space.PermissionSetting
+	(HistoryState)(0),                       // 28: google.chat.v1.HistoryState
+	(*timestamppb.Timestamp)(nil),           // 29: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),           // 30: google.protobuf.FieldMask
+	(*Audience)(nil),                        // 31: google.chat.v1.Audience
 }
 var file_google_chat_v1_space_proto_depIdxs = []int32{
 	1,  // 0: google.chat.v1.Space.type:type_name -> google.chat.v1.Space.Type
 	2,  // 1: google.chat.v1.Space.space_type:type_name -> google.chat.v1.Space.SpaceType
 	3,  // 2: google.chat.v1.Space.space_threading_state:type_name -> google.chat.v1.Space.SpaceThreadingState
 	20, // 3: google.chat.v1.Space.space_details:type_name -> google.chat.v1.Space.SpaceDetails
-	25, // 4: google.chat.v1.Space.space_history_state:type_name -> google.chat.v1.HistoryState
-	26, // 5: google.chat.v1.Space.create_time:type_name -> google.protobuf.Timestamp
-	26, // 6: google.chat.v1.Space.last_active_time:type_name -> google.protobuf.Timestamp
+	28, // 4: google.chat.v1.Space.space_history_state:type_name -> google.chat.v1.HistoryState
+	29, // 5: google.chat.v1.Space.create_time:type_name -> google.protobuf.Timestamp
+	29, // 6: google.chat.v1.Space.last_active_time:type_name -> google.protobuf.Timestamp
 	21, // 7: google.chat.v1.Space.membership_count:type_name -> google.chat.v1.Space.MembershipCount
 	22, // 8: google.chat.v1.Space.access_settings:type_name -> google.chat.v1.Space.AccessSettings
 	4,  // 9: google.chat.v1.Space.predefined_permission_settings:type_name -> google.chat.v1.Space.PredefinedPermissionSettings
-	23, // 10: google.chat.v1.Space.permission_settings:type_name -> google.chat.v1.Space.PermissionSettings
-	26, // 11: google.chat.v1.Space.import_mode_expire_time:type_name -> google.protobuf.Timestamp
+	26, // 10: google.chat.v1.Space.permission_settings:type_name -> google.chat.v1.Space.PermissionSettings
+	29, // 11: google.chat.v1.Space.import_mode_expire_time:type_name -> google.protobuf.Timestamp
 	6,  // 12: google.chat.v1.CreateSpaceRequest.space:type_name -> google.chat.v1.Space
 	6,  // 13: google.chat.v1.ListSpacesResponse.spaces:type_name -> google.chat.v1.Space
 	0,  // 14: google.chat.v1.FindGroupChatsRequest.space_view:type_name -> google.chat.v1.SpaceView
 	6,  // 15: google.chat.v1.FindGroupChatsResponse.spaces:type_name -> google.chat.v1.Space
 	6,  // 16: google.chat.v1.UpdateSpaceRequest.space:type_name -> google.chat.v1.Space
-	27, // 17: google.chat.v1.UpdateSpaceRequest.update_mask:type_name -> google.protobuf.FieldMask
+	30, // 17: google.chat.v1.UpdateSpaceRequest.update_mask:type_name -> google.protobuf.FieldMask
 	6,  // 18: google.chat.v1.SearchSpacesResponse.spaces:type_name -> google.chat.v1.Space
 	6,  // 19: google.chat.v1.CompleteImportSpaceResponse.space:type_name -> google.chat.v1.Space
 	5,  // 20: google.chat.v1.Space.AccessSettings.access_state:type_name -> google.chat.v1.Space.AccessSettings.AccessState
-	24, // 21: google.chat.v1.Space.PermissionSettings.manage_members_and_groups:type_name -> google.chat.v1.Space.PermissionSetting
-	24, // 22: google.chat.v1.Space.PermissionSettings.modify_space_details:type_name -> google.chat.v1.Space.PermissionSetting
-	24, // 23: google.chat.v1.Space.PermissionSettings.toggle_history:type_name -> google.chat.v1.Space.PermissionSetting
-	24, // 24: google.chat.v1.Space.PermissionSettings.use_at_mention_all:type_name -> google.chat.v1.Space.PermissionSetting
-	24, // 25: google.chat.v1.Space.PermissionSettings.manage_apps:type_name -> google.chat.v1.Space.PermissionSetting
-	24, // 26: google.chat.v1.Space.PermissionSettings.manage_webhooks:type_name -> google.chat.v1.Space.PermissionSetting
-	24, // 27: google.chat.v1.Space.PermissionSettings.post_messages:type_name -> google.chat.v1.Space.PermissionSetting
-	24, // 28: google.chat.v1.Space.PermissionSettings.reply_messages:type_name -> google.chat.v1.Space.PermissionSetting
-	29, // [29:29] is the sub-list for method output_type
-	29, // [29:29] is the sub-list for method input_type
-	29, // [29:29] is the sub-list for extension type_name
-	29, // [29:29] is the sub-list for extension extendee
-	0,  // [0:29] is the sub-list for field type_name
+	23, // 21: google.chat.v1.Space.AccessSettings.access_permission_settings:type_name -> google.chat.v1.Space.AccessPermissionSettings
+	24, // 22: google.chat.v1.Space.AccessPermissionSettings.discover_space_setting:type_name -> google.chat.v1.Space.AccessPermissionSetting
+	24, // 23: google.chat.v1.Space.AccessPermissionSettings.join_space_setting:type_name -> google.chat.v1.Space.AccessPermissionSetting
+	25, // 24: google.chat.v1.Space.AccessPermissionSetting.principals:type_name -> google.chat.v1.Space.Principal
+	31, // 25: google.chat.v1.Space.Principal.audience:type_name -> google.chat.v1.Audience
+	27, // 26: google.chat.v1.Space.PermissionSettings.manage_members_and_groups:type_name -> google.chat.v1.Space.PermissionSetting
+	27, // 27: google.chat.v1.Space.PermissionSettings.modify_space_details:type_name -> google.chat.v1.Space.PermissionSetting
+	27, // 28: google.chat.v1.Space.PermissionSettings.toggle_history:type_name -> google.chat.v1.Space.PermissionSetting
+	27, // 29: google.chat.v1.Space.PermissionSettings.use_at_mention_all:type_name -> google.chat.v1.Space.PermissionSetting
+	27, // 30: google.chat.v1.Space.PermissionSettings.manage_apps:type_name -> google.chat.v1.Space.PermissionSetting
+	27, // 31: google.chat.v1.Space.PermissionSettings.manage_webhooks:type_name -> google.chat.v1.Space.PermissionSetting
+	27, // 32: google.chat.v1.Space.PermissionSettings.post_messages:type_name -> google.chat.v1.Space.PermissionSetting
+	27, // 33: google.chat.v1.Space.PermissionSettings.reply_messages:type_name -> google.chat.v1.Space.PermissionSetting
+	34, // [34:34] is the sub-list for method output_type
+	34, // [34:34] is the sub-list for method input_type
+	34, // [34:34] is the sub-list for extension type_name
+	34, // [34:34] is the sub-list for extension extendee
+	0,  // [0:34] is the sub-list for field type_name
 }
 
 func init() { file_google_chat_v1_space_proto_init() }
@@ -2449,20 +2670,24 @@ func file_google_chat_v1_space_proto_init() {
 	if File_google_chat_v1_space_proto != nil {
 		return
 	}
+	file_google_chat_v1_audience_proto_init()
 	file_google_chat_v1_history_state_proto_init()
 	file_google_chat_v1_space_proto_msgTypes[0].OneofWrappers = []any{
 		(*Space_PredefinedPermissionSettings_)(nil),
 		(*Space_PermissionSettings_)(nil),
 	}
-	file_google_chat_v1_space_proto_msgTypes[17].OneofWrappers = []any{}
-	file_google_chat_v1_space_proto_msgTypes[18].OneofWrappers = []any{}
+	file_google_chat_v1_space_proto_msgTypes[19].OneofWrappers = []any{
+		(*Space_Principal_Audience)(nil),
+	}
+	file_google_chat_v1_space_proto_msgTypes[20].OneofWrappers = []any{}
+	file_google_chat_v1_space_proto_msgTypes[21].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_chat_v1_space_proto_rawDesc), len(file_google_chat_v1_space_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   19,
+			NumMessages:   22,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -38,6 +38,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
+	"github.com/google/uuid"
 )
 
 type database struct {
@@ -1136,6 +1137,19 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 				return nil, fmt.Errorf("bad TIMESTAMP string %q: %w", s, err)
 			}
 			return t, nil
+		}
+	case spansql.UUID:
+		sv, ok := v.Kind.(*structpb.Value_StringValue)
+		if ok {
+			s := sv.StringValue
+			if len(s) != 36 {
+				return nil, fmt.Errorf("invalid UUID %q", s)
+			}
+			id, err := uuid.Parse(s)
+			if err != nil {
+				return nil, fmt.Errorf("invalid UUID %q: %w", s, err)
+			}
+			return id.String(), nil
 		}
 	}
 	return nil, fmt.Errorf("unsupported inserting value kind %T into column of type %s", v.Kind, t.SQL())

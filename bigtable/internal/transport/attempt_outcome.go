@@ -31,9 +31,7 @@ const (
 	// path that hasn't yet adopted tagErr (or an error introduced by a
 	// non-vRPC layer) classifies here. Under the strict Java-parity
 	// default (see shouldRetryDefault in retrying.go) StateServerResult
-	// does NOT retry unless the server explicitly attached RetryInfo or
-	// the caller set RetryingOptions.ShouldRetry to override the whole
-	// classifier. Callers that need a permissive fallback must opt in.
+	// does NOT retry unless the server explicitly attached RetryInfo.
 	StateServerResult AttemptState = iota
 	// StateUncommitted means the attempt never reached the wire — encode
 	// failed, session was Closing, etc. Retry is safe regardless of

@@ -37,6 +37,9 @@ type internalWriter interface {
 	// CloseWithError terminates the write operation and sets its status.
 	// Note that CloseWithError always returns nil.
 	CloseWithError(error) error
+	// Set final object checksum for appendable objects after write
+	// and before finalization.
+	setAppendFinalCRC32C(sendAppendFinalCRC32C bool, c uint32)
 }
 
 // A Writer writes a Cloud Storage object.
@@ -203,6 +206,28 @@ type Writer struct {
 	// **Note:** This feature is currently experimental and its API surface may change
 	// in future releases. It is not yet recommended for production use.
 	ParallelUploadConfig ParallelUploadConfig
+
+	// SendAppendFinalCRC32C indicates that AppendFinalCRC32C should be sent as the
+	// full-object checksum when finalizing an appendable object.
+	//
+	// This field is only supported for gRPC clients and appendable objects.
+	SendAppendFinalCRC32C bool
+
+	// AppendFinalCRC32C is the expected full-object CRC32C checksum to be validated
+	// by the server when finalizing an appendable object.
+	//
+	// This field must be set on the Writer, along with SendAppendFinalCRC32C = true,
+	// before calling Close(). It allows callers to defer providing the checksum
+	// until the final write is complete.
+	//
+	// If SendAppendFinalCRC32C is false, checksum validation for the full object will
+	// fall back to using ObjectAttrs.CRC32C if Writer.SendCRC32C is true. If both are
+	// configured, AppendFinalCRC32C takes precedence.
+	//
+	// This field is ignored if Writer.Append is false or if using the JSON API.
+	// Chunk-level validation will still be performed for all chunks during upload if
+	// Writer.DisableAutoChecksum is false.
+	AppendFinalCRC32C uint32
 
 	ctx context.Context
 	o   *ObjectHandle
@@ -389,6 +414,10 @@ func (w *Writer) Close() error {
 		if err := w.openWriter(); err != nil {
 			return w.markClosed(err)
 		}
+	}
+
+	if w.Append {
+		w.iw.setAppendFinalCRC32C(w.SendAppendFinalCRC32C, w.AppendFinalCRC32C)
 	}
 
 	if err := w.iw.Close(); err != nil {
