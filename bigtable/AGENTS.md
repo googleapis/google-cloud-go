@@ -8,9 +8,9 @@ Copilot, Gemini Code Assist, Cursor, Aider, etc.) editing files under
 
 Before editing ANY file under:
 
-- `bigtable/internal/transport/session*.go`
-- `bigtable/internal/transport/afe_picker.go`
-- `bigtable/internal/transport/diverter.go`
+- `bigtable/internal/transport/**` (all transport-layer code — session,
+  channel pool, direct-access checker, primer, AFE picker, diverter,
+  the connection factory, everything that speaks to the wire)
 - `bigtable/internal/session/**`
 - `bigtable/table_shim.go`
 - `bigtable/debugview/**`

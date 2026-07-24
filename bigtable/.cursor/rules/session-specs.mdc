@@ -1,9 +1,7 @@
 ---
 description: Bigtable Session subsystem specs
 globs:
-  - internal/transport/session*.go
-  - internal/transport/afe_picker.go
-  - internal/transport/diverter.go
+  - internal/transport/**
   - internal/session/**
   - table_shim.go
   - debugview/**
