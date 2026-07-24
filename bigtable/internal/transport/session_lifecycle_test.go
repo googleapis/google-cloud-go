@@ -191,7 +191,10 @@ func TestHandleSessionParameters_UpdatesIntervalAndDeadline(t *testing.T) {
 	if gotInterval != 2*time.Second {
 		t.Errorf("heartbeatInterval = %v, want 2s", gotInterval)
 	}
-	wantMin := before.Add(5 * time.Second)
+	// Deadline should be about before+interval (1x, matching
+	// resetHeartbeatDeadline). Below-interval floor tolerates the
+	// scheduling gap between capturing `before` and the atomic store.
+	wantMin := before.Add(time.Second)
 	if gotDeadline.Before(wantMin) {
 		t.Errorf("nextHeartbeatDeadline = %v, want >= %v", gotDeadline, wantMin)
 	}
@@ -432,7 +435,7 @@ func TestHeartBeatLoop_ForceClosesOnMissedHeartbeat(t *testing.T) {
 func TestHeartBeatLoop_HeartbeatsKeepInflightVRPCAlive(t *testing.T) {
 	s, _ := makeActive(t, SessionHooks{})
 	s.heartbeatIntervalNano.Store(int64(30 * time.Millisecond))
-	s.nextHeartbeatDeadlineNano.Store(time.Now().Add(90 * time.Millisecond).UnixNano()) // 3 * interval
+	s.nextHeartbeatDeadlineNano.Store(time.Now().Add(30 * time.Millisecond).UnixNano()) // 1 * interval
 	s.setSlotForTest(&vrpcImpl{id: 1, resultChan: make(chan vrpcResult, 1)})
 
 	ctx, cancel := context.WithCancel(context.Background())
