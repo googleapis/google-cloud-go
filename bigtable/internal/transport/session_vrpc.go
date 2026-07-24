@@ -390,25 +390,6 @@ func errorResponseToErr(errResp *spb.ErrorResponse) error {
 	return st.Err()
 }
 
-// ForceClose transitions the session straight to StateClosed and cancels
-// any in-flight vRPC with a TransportFailure-tagged error. Minimal port
-// from the sessionz-debug lifecycle body — the full teardown (setCloseReason,
-// notifyClosing/Closed, stream shutdown) lands in the follow-up lifecycle
-// PR. This surface exists so slot-lifecycle tests can drive the
-// "session torn down under an in-flight vRPC" path.
-func (s *Session) ForceClose(req *spb.CloseSessionRequest) {
-	_, ok := s.transitionTo(StateClosed, notState(StateClosed))
-	if !ok {
-		return
-	}
-	desc := "session force closed"
-	if req != nil && req.Description != "" {
-		desc = "session force closed: " + req.Description
-	}
-	s.cancelActiveRPCs(unavailable(ErrSessionNotActive, "%s", desc))
-	s.signalQuiescent()
-}
-
 // cancelActiveRPCs cancels the in-flight vRPC (if any) with the given
 // error. With multiPlexingLimit=1 there is at most one such vRPC.
 // Called from session teardown paths (Close, ForceClose, handleGoAway,
