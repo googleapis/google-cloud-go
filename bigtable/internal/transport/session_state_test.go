@@ -68,7 +68,7 @@ func TestState_OrdinalsPinned(t *testing.T) {
 // mirror the real transition sites; ensures each hop applies and stamps
 // lastStateChangeNano.
 func TestSession_TransitionTo_Happy(t *testing.T) {
-	s := newTestSession(t)
+	s := newDefaultTestSession(t)
 	before := s.lastStateChangeNano.Load()
 	// Ensure at least a ns of clock movement so the stamp is observably later.
 	time.Sleep(time.Millisecond)
@@ -93,7 +93,7 @@ func TestSession_TransitionTo_Happy(t *testing.T) {
 // TestSession_TransitionTo_PredicateRejects confirms a false predicate leaves
 // state alone and returns (currentState, false).
 func TestSession_TransitionTo_PredicateRejects(t *testing.T) {
-	s := newTestSession(t)
+	s := newDefaultTestSession(t)
 	// New → Ready is illegal unless the predicate permits it; use one that
 	// explicitly excludes New.
 	prev, ok := s.transitionTo(StateReady, isState(StateStarting))
@@ -111,7 +111,7 @@ func TestSession_TransitionTo_PredicateRejects(t *testing.T) {
 // TestSession_TransitionTo_Concurrent stress-tests the CAS-plus-predicate loop
 // under -race. Two goroutines both try New→Starting; exactly one must succeed.
 func TestSession_TransitionTo_Concurrent(t *testing.T) {
-	s := newTestSession(t)
+	s := newDefaultTestSession(t)
 	var wg sync.WaitGroup
 	var applied [2]bool
 	wg.Add(2)

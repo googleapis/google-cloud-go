@@ -100,6 +100,12 @@ const (
 	tagSessionVRPCIDMismatch         = "session_vrpc_id_mismatch"
 	tagSessionVRPCResponseWrongState = "session_vrpc_response_wrong_state"
 	tagSessionVRPCDuplicateResult    = "session_vrpc_duplicate_result"
+	// tagSessionVRPCCancelledDrained fires when a server response finally
+	// arrives for an rpc whose caller already returned via ctx.Done: the
+	// drain succeeds, currentCancel != nil, and no one is waiting on
+	// resultChan. Bookkeeping-only — the drain still fires OnSlotDrained
+	// so the pool re-enqueues the session.
+	tagSessionVRPCCancelledDrained = "session_vrpc_cancelled_drained"
 
 	// Pool-scoped anomalies.
 	tagSessionPoolStuckSessionSwept = "session_pool_stuck_session_swept"
