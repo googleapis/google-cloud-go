@@ -34,6 +34,7 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/optional"
 	"github.com/google/uuid"
+	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -1207,21 +1208,40 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			} else if s.retry != nil && s.retry.policy == RetryAlways {
 				useRetry = true
 			}
+			attempts := 1
+			var maxAttemptsReached bool
 			if useRetry {
+				var bo *gax.Backoff
 				if s.retry != nil {
-					// Wrap shouldRetry to adapt to the googleapi WithRetry signature.
-					var retryFunc func(error) bool
-					if s.retry.shouldRetry != nil {
-						retryFunc = func(err error) bool {
-							return s.retry.shouldRetry(err, nil)
-						}
-					}
-					call.WithRetry(s.retry.backoff, retryFunc)
-				} else {
-					call.WithRetry(nil, nil)
+					bo = s.retry.backoff
 				}
+
+				// Wrap shouldRetry to adapt to the googleapi WithRetry signature.
+				retryFunc := func(err error) bool {
+					if s.retry != nil && s.retry.maxAttempts != nil && attempts >= *s.retry.maxAttempts {
+						maxAttemptsReached = true
+						return false
+					}
+
+					var retryable bool
+					if s.retry != nil && s.retry.shouldRetry != nil {
+						retryable = s.retry.shouldRetry(err, nil)
+					} else {
+						retryable = ShouldRetry(err)
+					}
+					if retryable {
+						attempts++
+					}
+					return retryable
+				}
+				call.WithRetry(bo, retryFunc)
 			}
 			resp, err = call.Do()
+			if err != nil && s.retry != nil {
+				if maxAttemptsReached && s.retry.maxAttempts != nil {
+					err = fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *s.retry.maxAttempts, err)
+				}
+			}
 		}
 		if err != nil {
 			errorf(err)
