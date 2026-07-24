@@ -281,14 +281,13 @@ func (s *Session) Send(req *spb.SessionRequest) error {
 	return err
 }
 
-// resetHeartbeatDeadline pushes out the watchdog to (3 * heartbeatInterval)
-// from now. The 3x multiplier follows the protocol guidance of tolerating two
-// missed heartbeats. Two atomic loads + one atomic store on the hot path,
-// plus a non-blocking wake to the heartbeat loop so its Timer picks up the
-// new deadline immediately (otherwise the initial bootstrap arm keeps the
-// loop sleeping past atomic shortenings — SESSION_SPEC.md #7).
+// resetHeartbeatDeadline pushes out the watchdog to (now + heartbeatInterval).
+// One atomic load + one atomic store on the hot path, plus a non-blocking
+// wake to the heartbeat loop so its Timer picks up the new deadline
+// immediately (otherwise the initial bootstrap arm keeps the loop sleeping
+// past atomic shortenings — SESSION_SPEC.md #7).
 func (s *Session) resetHeartbeatDeadline() {
-	s.nextHeartbeatDeadlineNano.Store(time.Now().Add(3 * time.Duration(s.heartbeatIntervalNano.Load())).UnixNano())
+	s.nextHeartbeatDeadlineNano.Store(time.Now().Add(time.Duration(s.heartbeatIntervalNano.Load())).UnixNano())
 	s.wakeHeartbeatLoop()
 }
 
