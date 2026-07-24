@@ -18,7 +18,9 @@ import (
 	"context"
 	"testing"
 
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 // TestPingAndWarmChannelPrimer_Prime verifies the primer delegates to
@@ -51,6 +53,29 @@ func TestPingAndWarmChannelPrimer_Prime(t *testing.T) {
 	}
 	if got := gotMD.Get("x-goog-request-params"); len(got) != 1 {
 		t.Errorf("x-goog-request-params on PingAndWarm = %v, want one entry derived from instance/profile", got)
+	}
+}
+
+// TestPingAndWarmChannelPrimer_Prime_NotFoundIsBenign verifies that a
+// PingAndWarm NotFound response (server's answer for a valid instance
+// with zero tables) is swallowed so client creation succeeds — see
+// Prime's docstring for the rationale.
+func TestPingAndWarmChannelPrimer_Prime_NotFoundIsBenign(t *testing.T) {
+	fake := &fakeService{}
+	fake.setPingErr(status.Error(codes.NotFound, "No tables found for instance projects/p/instances/i"))
+	addr := setupTestServer(t, fake)
+	conn, err := dialBigtableserver(addr)
+	if err != nil {
+		t.Fatalf("dial: %v", err)
+	}
+	t.Cleanup(func() { conn.Close() })
+
+	primer := newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil)
+	if err := primer.Prime(context.Background(), conn); err != nil {
+		t.Fatalf("Prime returned error on NotFound; want nil: %v", err)
+	}
+	if got := fake.getPingCount(); got != 1 {
+		t.Errorf("PingAndWarm call count = %d, want 1", got)
 	}
 }
 
