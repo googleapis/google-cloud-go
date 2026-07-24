@@ -335,11 +335,11 @@ func (s *Session) handleSessionParameters(params *spb.SessionParametersResponse)
 		return
 	}
 	s.heartbeatIntervalNano.Store(int64(interval))
-	s.nextHeartbeatDeadlineNano.Store(time.Now().Add(3 * interval).UnixNano())
+	s.nextHeartbeatDeadlineNano.Store(time.Now().Add(interval).UnixNano())
 	// Wake the watchdog: this is the sole path that changes the interval
 	// itself (not just the deadline), so the Timer must re-evaluate
-	// against 3×interval instead of the initialHeartbeatGrace bootstrap
-	// it was armed to at NewSession.
+	// against the new interval instead of the initialHeartbeatGrace
+	// bootstrap it was armed to at NewSession.
 	s.wakeHeartbeatLoop()
 }
 
@@ -551,20 +551,20 @@ func (s *Session) heartBeatLoop(ctx context.Context) {
 			timer.Reset(interval)
 			continue
 		}
-		active := 1 // multiplex=1; kept as %d so a future >1 stays greppable.
 		remaining := time.Until(time.Unix(0, s.nextHeartbeatDeadlineNano.Load()))
-		// last-frame age = (deadline - now) inverted into "how long
-		// since the last frame extended us" = 3*interval - remaining.
-		lastFrameAge := 3*interval - remaining
+		// last-frame age = interval - remaining (deadline is set to
+		// now+interval on every inbound/outbound frame via
+		// resetHeartbeatDeadline).
+		lastFrameAge := interval - remaining
 
 		if remaining > 0 {
 			// Deadline was pushed out while we were sleeping; re-arm.
 			// Only record when last_frame_age has crossed one interval —
 			// otherwise every healthy session would spam the UI ring
-			// buffer ~3x/second and drown out close/missed events.
+			// buffer and drown out close/missed events.
 			if lastFrameAge >= interval {
-				s.recordEvent("hb-alive", "in_flight=%d last_frame_age=%v remaining=%v interval=%v",
-					active, lastFrameAge, remaining, interval)
+				s.recordEvent("hb-alive", "last_frame_age=%v remaining=%v interval=%v",
+					lastFrameAge, remaining, interval)
 			}
 			timer.Reset(remaining)
 			continue
@@ -574,10 +574,10 @@ func (s *Session) heartBeatLoop(ctx context.Context) {
 		// ForceClose so we have a definitive marker even if downstream
 		// cancel races.
 		recordDebugTag(tagSessionHeartbeatMissed)
-		s.debugf("heartbeat MISSED — forcing close in_flight=%d last_frame_age=%v interval=%v",
-			active, lastFrameAge, interval)
-		s.recordEvent("hb-missed", "in_flight=%d last_frame_age=%v interval=%v",
-			active, lastFrameAge, interval)
+		s.debugf("heartbeat MISSED — forcing close last_frame_age=%v interval=%v",
+			lastFrameAge, interval)
+		s.recordEvent("hb-missed", "last_frame_age=%v interval=%v",
+			lastFrameAge, interval)
 		s.ForceClose(&spb.CloseSessionRequest{
 			Reason:      spb.CloseSessionRequest_CLOSE_SESSION_REASON_MISSED_HEARTBEAT,
 			Description: "client terminated session due to missed server heartbeats",
