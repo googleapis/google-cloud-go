@@ -34,7 +34,7 @@ import (
 // VirtualRpcResponse, then returns the *VirtualRpcRequest that was sent on the
 // wire. All inspection of the deadline / metadata plumbing is done against
 // this snapshot.
-func runVRpcCapture(t *testing.T, ctx context.Context) *spb.VirtualRpcRequest {
+func runVRpcCapture(ctx context.Context, t *testing.T) *spb.VirtualRpcRequest {
 	t.Helper()
 	s, stream := makeActive(t, SessionHooks{})
 	desc := newRoundTripDesc()
@@ -64,7 +64,7 @@ func TestInvoke_DeadlineCarriedInRequest(t *testing.T) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(500*time.Millisecond))
 	defer cancel()
 
-	sent := runVRpcCapture(t, ctx)
+	sent := runVRpcCapture(ctx, t)
 	if sent.Deadline == nil {
 		t.Fatal("VirtualRpc.Deadline = nil, want non-nil when ctx carries a deadline")
 	}
@@ -80,7 +80,7 @@ func TestInvoke_DeadlineCarriedInRequest(t *testing.T) {
 }
 
 func TestInvoke_NoDeadlineWhenCtxHasNone(t *testing.T) {
-	sent := runVRpcCapture(t, context.Background())
+	sent := runVRpcCapture(context.Background(), t)
 	if sent.Deadline != nil {
 		t.Errorf("VirtualRpc.Deadline = %v, want nil when ctx has no deadline", sent.Deadline.AsDuration())
 	}
@@ -93,7 +93,7 @@ func TestInvoke_AttemptNumberFromCtx(t *testing.T) {
 	// updates via WithAttempt on each retry).
 	ctx := WithVRpcMetadata(context.Background(), "ReadRow", 1)
 	ctx = WithAttempt(ctx, 7)
-	sent := runVRpcCapture(t, ctx)
+	sent := runVRpcCapture(ctx, t)
 	if sent.Metadata == nil {
 		t.Fatal("VirtualRpc.Metadata = nil")
 	}
@@ -103,7 +103,7 @@ func TestInvoke_AttemptNumberFromCtx(t *testing.T) {
 }
 
 func TestInvoke_AttemptNumberDefault(t *testing.T) {
-	sent := runVRpcCapture(t, context.Background())
+	sent := runVRpcCapture(context.Background(), t)
 	if sent.Metadata == nil {
 		t.Fatal("VirtualRpc.Metadata = nil")
 	}
@@ -114,7 +114,7 @@ func TestInvoke_AttemptNumberDefault(t *testing.T) {
 
 func TestInvoke_AttemptStartIsRecent(t *testing.T) {
 	before := time.Now()
-	sent := runVRpcCapture(t, context.Background())
+	sent := runVRpcCapture(context.Background(), t)
 	after := time.Now()
 
 	if sent.Metadata == nil || sent.Metadata.AttemptStart == nil {
@@ -135,7 +135,7 @@ func TestInvoke_AttemptStartIsRecent(t *testing.T) {
 // returning the populated InvokeResult + err. It mirrors runVRpcCapture but
 // returns the full InvokeResult so tests can assert on Stats / SentAt /
 // ClusterInfo without the back-compat triple stripping them.
-func runInvoke(t *testing.T, ctx context.Context, deliver func(s *Session, sent *spb.VirtualRpcRequest)) (InvokeResult, error) {
+func runInvoke(ctx context.Context, t *testing.T, deliver func(s *Session, sent *spb.VirtualRpcRequest)) (InvokeResult, error) {
 	t.Helper()
 	s, stream := makeActive(t, SessionHooks{})
 	desc := newRoundTripDesc()
@@ -169,7 +169,7 @@ func TestInvoke_StatsExtractedFromResponse(t *testing.T) {
 	const wantBackend = 123 * time.Millisecond
 
 	before := time.Now()
-	res, err := runInvoke(t, context.Background(), func(s *Session, sent *spb.VirtualRpcRequest) {
+	res, err := runInvoke(context.Background(), t, func(s *Session, sent *spb.VirtualRpcRequest) {
 		s.handleVRPCResponse(&spb.VirtualRpcResponse{
 			RpcId:   sent.RpcId,
 			Payload: []byte("ok"),
@@ -194,7 +194,7 @@ func TestInvoke_StatsExtractedFromResponse(t *testing.T) {
 }
 
 func TestInvoke_StatsNilWhenServerOmits(t *testing.T) {
-	res, err := runInvoke(t, context.Background(), func(s *Session, sent *spb.VirtualRpcRequest) {
+	res, err := runInvoke(context.Background(), t, func(s *Session, sent *spb.VirtualRpcRequest) {
 		s.handleVRPCResponse(&spb.VirtualRpcResponse{
 			RpcId:   sent.RpcId,
 			Payload: []byte("ok"),
@@ -211,7 +211,7 @@ func TestInvoke_StatsNilWhenServerOmits(t *testing.T) {
 
 func TestInvoke_SentAtIsNonZero(t *testing.T) {
 	before := time.Now()
-	res, err := runInvoke(t, context.Background(), func(s *Session, sent *spb.VirtualRpcRequest) {
+	res, err := runInvoke(context.Background(), t, func(s *Session, sent *spb.VirtualRpcRequest) {
 		s.handleVRPCResponse(&spb.VirtualRpcResponse{
 			RpcId:   sent.RpcId,
 			Payload: []byte("ok"),
@@ -261,7 +261,7 @@ func TestInvoke_SentAtIsSetEvenOnSendFailure(t *testing.T) {
 }
 
 func TestInvoke_ClusterInfoOnErrorPath(t *testing.T) {
-	res, err := runInvoke(t, context.Background(), func(s *Session, sent *spb.VirtualRpcRequest) {
+	res, err := runInvoke(context.Background(), t, func(s *Session, sent *spb.VirtualRpcRequest) {
 		s.handleVRPCErrorResponse(&spb.ErrorResponse{
 			RpcId:       sent.RpcId,
 			Status:      &rpcstatus.Status{Code: int32(codes.FailedPrecondition), Message: "boom"},
@@ -289,7 +289,7 @@ func TestInvoke_RetryInfoPackedIntoStatus(t *testing.T) {
 	// status.FromError(err).Details(). RetryingVRpc reads it from there.
 	const wantDelay = 250 * time.Millisecond
 
-	_, err := runInvoke(t, context.Background(), func(s *Session, sent *spb.VirtualRpcRequest) {
+	_, err := runInvoke(context.Background(), t, func(s *Session, sent *spb.VirtualRpcRequest) {
 		s.handleVRPCErrorResponse(&spb.ErrorResponse{
 			RpcId:     sent.RpcId,
 			Status:    &rpcstatus.Status{Code: int32(codes.Unavailable), Message: "boom"},
