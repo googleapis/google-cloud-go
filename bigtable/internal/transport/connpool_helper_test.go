@@ -16,9 +16,12 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net"
+	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -28,6 +31,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	testpb "google.golang.org/grpc/interop/grpc_testing"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/test/bufconn"
 )
 
 // fakeService is a mock gRPC server that implements both BenchmarkService and BigtableServer.
@@ -215,12 +219,25 @@ func (s *fakeService) setPingCount(count int) {
 	s.pingCount = count
 }
 
+// bufconnListeners maps a synthetic "bufnet://…" address to its
+// in-memory bufconn.Listener. Lets setupTestServer keep its `string`
+// return type — dialBigtableserver detects the prefix and dials the
+// in-memory listener instead of a real TCP loopback. Skips the
+// per-connection TCP + kernel-stack overhead.
+var (
+	bufconnListenersMu sync.Mutex
+	bufconnListeners   = map[string]*bufconn.Listener{}
+	bufconnCounter     atomic.Uint64
+)
+
 func setupTestServer(t testing.TB, service *fakeService) string {
 	t.Helper()
-	lis, err := net.Listen("tcp", "localhost:0")
-	if err != nil {
-		t.Fatalf("Failed to listen: %v", err)
-	}
+	lis := bufconn.Listen(1 << 20) // 1MB buffer per connection
+	addr := fmt.Sprintf("bufnet://%d", bufconnCounter.Add(1))
+	bufconnListenersMu.Lock()
+	bufconnListeners[addr] = lis
+	bufconnListenersMu.Unlock()
+
 	srv := grpc.NewServer()
 	testpb.RegisterBenchmarkServiceServer(srv, service)
 	btpb.RegisterBigtableServer(srv, service)
@@ -231,11 +248,33 @@ func setupTestServer(t testing.TB, service *fakeService) string {
 	t.Cleanup(func() {
 		srv.Stop()
 		lis.Close()
+		bufconnListenersMu.Lock()
+		delete(bufconnListeners, addr)
+		bufconnListenersMu.Unlock()
 	})
-	return lis.Addr().String()
+	return addr
 }
 
 func dialBigtableserver(addr string) (*BigtableConn, error) {
+	if strings.HasPrefix(addr, "bufnet://") {
+		bufconnListenersMu.Lock()
+		lis := bufconnListeners[addr]
+		bufconnListenersMu.Unlock()
+		if lis == nil {
+			return nil, fmt.Errorf("bufconn listener %q not registered", addr)
+		}
+		conn, err := grpc.NewClient("passthrough:bufnet",
+			grpc.WithContextDialer(func(ctx context.Context, _ string) (net.Conn, error) {
+				return lis.DialContext(ctx)
+			}),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		)
+		if err != nil {
+			return nil, err
+		}
+		return NewBigtableConn(conn), nil
+	}
+	// Fallback for any caller that supplies a real TCP address.
 	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, err
