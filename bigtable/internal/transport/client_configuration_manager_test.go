@@ -78,9 +78,12 @@ func TestManagerPoll_Success(t *testing.T) {
 
 func TestManagerPoll_FailureKeepsOldConfig(t *testing.T) {
 	// Wrapped in synctest.Test so fetchClientConfiguration's exponential
-	// backoff (time.After up to 5s per retry across ~3 retries) uses the
-	// bubble's fake clock — finishes in milliseconds instead of ~16s of
-	// real sleep.
+	// backoff (time.After up to maxBackoffSeconds per retry × default
+	// MaxRpcRetryCount=5) uses the bubble's fake clock — finishes in
+	// milliseconds instead of tens of seconds of real sleep. Callers of
+	// manager.Start(ctx) inside a synctest bubble would deadlock; this
+	// test only calls manager.poll synchronously so no goroutine
+	// escapes the bubble.
 	synctest.Test(t, func(t *testing.T) {
 		client := &mockBigtableClient{}
 		manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
