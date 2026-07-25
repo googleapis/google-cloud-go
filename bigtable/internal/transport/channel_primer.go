@@ -17,7 +17,10 @@ package internal
 import (
 	"context"
 
+	btopt "cloud.google.com/go/bigtable/internal/option"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 // ChannelPrimer warms a freshly-dialed Bigtable channel before it is put
@@ -58,6 +61,18 @@ func newPingAndWarmChannelPrimer(instanceName, appProfile string, featureFlagsMD
 
 // Prime delegates to BigtableConn.Prime, which sends PingAndWarm and
 // records the ALTS / IP-protocol observations on conn as a side effect.
+//
+// A NotFound response is treated as a successful prime: the server
+// returns NotFound for a valid but empty instance ("No tables found for
+// instance ..."), and blocking client creation in that case would
+// prevent admin flows (create the first table, migrations). Typo'd
+// instance names also produce NotFound but surface on the first real
+// RPC, so nothing is silently masked here.
 func (p *pingAndWarmChannelPrimer) Prime(ctx context.Context, conn *BigtableConn) error {
-	return conn.Prime(ctx, p.instanceName, p.appProfile, p.featureFlagsMD)
+	err := conn.Prime(ctx, p.instanceName, p.appProfile, p.featureFlagsMD)
+	if err != nil && status.Code(err) == codes.NotFound {
+		btopt.Debugf(nil, "bigtable_connpool: PingAndWarm returned NotFound (instance likely empty); treating as primed: %v", err)
+		return nil
+	}
+	return err
 }
