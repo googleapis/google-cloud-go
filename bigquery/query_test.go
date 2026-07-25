@@ -633,3 +633,27 @@ func TestQueryLegacySQL(t *testing.T) {
 		t.Error("Parameters and UseLegacySQL: got nil, want error")
 	}
 }
+
+func TestQueryReadStorageMetadata(t *testing.T) {
+	minimalJob := &Job{
+		projectID: "test-proj",
+		location:  "US",
+		jobID:     "test-job-123",
+	}
+	queryID := "test-query-456"
+
+	it := &RowIterator{}
+	if minimalJob != nil || queryID != "" {
+		it.src = &rowSource{
+			j:       minimalJob,
+			queryID: queryID,
+		}
+	}
+
+	if got, want := it.SourceJob().ID(), "test-job-123"; got != want {
+		t.Errorf("job.ID() = %q, want %q", got, want)
+	}
+	if got, want := it.QueryID(), "test-query-456"; got != want {
+		t.Errorf("it.QueryID() = %q, want %q", got, want)
+	}
+}
