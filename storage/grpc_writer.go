@@ -352,7 +352,8 @@ func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []b
 
 func (w *gRPCWriter) isActive() bool {
 	hasUnackedData := w.bufUnsentIdx > 0 && w.bufUnsentIdx > w.bufFlushedIdx
-	return w.currentCommand != nil || hasUnackedData || len(w.writesChan) > 0
+	hasReadyData := len(w.buf) >= w.writeQuantum
+	return w.currentCommand != nil || hasUnackedData || hasReadyData || len(w.writesChan) > 0
 }
 
 func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {

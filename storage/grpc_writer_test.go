@@ -537,7 +537,7 @@ func TestGRPCWriter_ChunkRetryDeadline_TimeoutPausedOnIdle(t *testing.T) {
 		settings:           &settings{},
 		bufUnsentIdx:       0, // Makes isActive() == false.
 		bufFlushedIdx:      0,
-		buf:                make([]byte, 100),
+		buf:                make([]byte, 0, 100),
 		sendableUnits:      1,
 		writeQuantum:       100,
 		chunkSize:          100,
