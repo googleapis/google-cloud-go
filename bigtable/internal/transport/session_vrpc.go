@@ -145,19 +145,20 @@ func (s *Session) Invoke(ctx context.Context, desc VRpcDescriptor, req interface
 	result.SentAt = time.Now()
 	if sendErr := s.Send(sessionReq); sendErr != nil {
 		// Synchronous Send failed: no server response is ever coming,
-		// so this call must free the slot itself here on the Invoke path.
-		// drainSlot returns ok=false when concurrent teardown
-		// (cancelActiveRPCs / ForceClose) beat us to freeing the slot.
-		// In that case, the teardown path is responsible for pool
-		// notification via OnClosing/OnClose and quiescence signalling —
-		// firing onSlotDrained here would violate the SessionHooks
-		// contract that reserves it for the drain-succeeded path
-		// (SESSION_SPEC #5/#10). Only fire when we actually did the drain.
-		if _, _, ok := s.drainSlot(rpc); ok {
-			s.hooks.onSlotDrained()
-			if State(s.state.Load()) == StateClosing {
-				s.signalQuiescent()
-			}
+		// so this call must free the slot itself. Other paths don't need
+		// this branch — sendMessage there is async and failures come
+		// back through the response observer — but Go's Send is
+		// synchronous, so an early drain is on the Invoke path.
+		s.drainSlot(rpc)
+		// Drain is the sole "session became free" signal. Fire the pool
+		// wake here as well — ReleaseToPool's inExpectedCount guard
+		// (session_list.go) drops the re-enqueue when OnSessionClosing
+		// already dropped this handle in the teardown that the Send
+		// failure typically kicks off, so an unguarded emit here is safe
+		// against the concurrent-teardown race gemini flagged.
+		s.hooks.onSlotDrained()
+		if State(s.state.Load()) == StateClosing {
+			s.signalQuiescent()
 		}
 		return result, tagErr(StateTransportFailure, fmt.Errorf("send vRPC request: %w", sendErr))
 	}
