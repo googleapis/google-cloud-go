@@ -59,6 +59,14 @@ type clientMetrics struct {
 	responseBodySize          metric.Int64Histogram
 	ttfb                      metric.Float64Histogram
 	errors                    metric.Int64Counter
+
+	bidiStreamOpenLatency           metric.Float64Histogram
+	bidiNetworkHandshakeLatency     metric.Float64Histogram
+	bidiServerMetadataLatency       metric.Float64Histogram
+	bidiEndToEndRangeReadLatency    metric.Float64Histogram
+	bidiServerNetworkTransitLatency metric.Float64Histogram
+	bidiSDKProcessingOverhead       metric.Float64Histogram
+	bidiClientHandoffDelay          metric.Float64Histogram
 }
 
 func formatMetricWithPrefix(m metricdata.Metrics, prefix string) string {
@@ -162,6 +170,34 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 					sdkmetric.Instrument{Name: "gcp.storage.client.response.body.size", Kind: sdkmetric.InstrumentKindHistogram},
 					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: sizeHistogramBoundaries()}},
 				),
+				sdkmetric.NewView(
+					sdkmetric.Instrument{Name: "gcp.storage.client.bidi.stream_open_latency_us", Kind: sdkmetric.InstrumentKindHistogram},
+					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyMicrosecondsHistogramBoundaries()}},
+				),
+				sdkmetric.NewView(
+					sdkmetric.Instrument{Name: "gcp.storage.client.bidi.network_handshake_latency_us", Kind: sdkmetric.InstrumentKindHistogram},
+					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyMicrosecondsHistogramBoundaries()}},
+				),
+				sdkmetric.NewView(
+					sdkmetric.Instrument{Name: "gcp.storage.client.bidi.server_metadata_latency_us", Kind: sdkmetric.InstrumentKindHistogram},
+					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyMicrosecondsHistogramBoundaries()}},
+				),
+				sdkmetric.NewView(
+					sdkmetric.Instrument{Name: "gcp.storage.client.bidi.end_to_end_range_read_latency_us", Kind: sdkmetric.InstrumentKindHistogram},
+					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyMicrosecondsHistogramBoundaries()}},
+				),
+				sdkmetric.NewView(
+					sdkmetric.Instrument{Name: "gcp.storage.client.bidi.server_network_transit_latency_us", Kind: sdkmetric.InstrumentKindHistogram},
+					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyMicrosecondsHistogramBoundaries()}},
+				),
+				sdkmetric.NewView(
+					sdkmetric.Instrument{Name: "gcp.storage.client.bidi.sdk_processing_overhead_us", Kind: sdkmetric.InstrumentKindHistogram},
+					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyMicrosecondsHistogramBoundaries()}},
+				),
+				sdkmetric.NewView(
+					sdkmetric.Instrument{Name: "gcp.storage.client.bidi.client_handoff_delay_us", Kind: sdkmetric.InstrumentKindHistogram},
+					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyMicrosecondsHistogramBoundaries()}},
+				),
 			),
 		)
 		ownProvider = true
@@ -241,6 +277,35 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
+	bidiStreamOpenLatency, err := meter.Float64Histogram("gcp.storage.client.bidi.stream_open_latency_us", metric.WithDescription("Total perceived time for connection, handshake, and metadata"), metric.WithUnit("us"))
+	if err != nil {
+		return nil, nil, err
+	}
+	bidiNetworkHandshakeLatency, err := meter.Float64Histogram("gcp.storage.client.bidi.network_handshake_latency_us", metric.WithDescription("Perceived time to establish the connection"), metric.WithUnit("us"))
+	if err != nil {
+		return nil, nil, err
+	}
+	bidiServerMetadataLatency, err := meter.Float64Histogram("gcp.storage.client.bidi.server_metadata_latency_us", metric.WithDescription("Time Fastpusher takes to process initial spec and look up metadata"), metric.WithUnit("us"))
+	if err != nil {
+		return nil, nil, err
+	}
+	bidiEndToEndRangeReadLatency, err := meter.Float64Histogram("gcp.storage.client.bidi.end_to_end_range_read_latency_us", metric.WithDescription("Total perceived latency from request to application readiness"), metric.WithUnit("us"))
+	if err != nil {
+		return nil, nil, err
+	}
+	bidiServerNetworkTransitLatency, err := meter.Float64Histogram("gcp.storage.client.bidi.server_network_transit_latency_us", metric.WithDescription("Time from range registration to data arrival at the VM"), metric.WithUnit("us"))
+	if err != nil {
+		return nil, nil, err
+	}
+	bidiSDKProcessingOverhead, err := meter.Float64Histogram("gcp.storage.client.bidi.sdk_processing_overhead_us", metric.WithDescription("Time spent in proto parsing and CRC32C verification"), metric.WithUnit("us"))
+	if err != nil {
+		return nil, nil, err
+	}
+	bidiClientHandoffDelay, err := meter.Float64Histogram("gcp.storage.client.bidi.client_handoff_delay_us", metric.WithDescription("Delay between SDK completion and user application receiving the data callback"), metric.WithUnit("us"))
+	if err != nil {
+		return nil, nil, err
+	}
+
 	errors, err := meter.Int64Counter(
 		"gcp.storage.client.errors",
 		metric.WithDescription("Number of GCS client errors"),
@@ -251,16 +316,23 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	}
 
 	cm := &clientMetrics{
-		provider:                  provider,
-		rpcClientCallDuration:     rpcDuration,
-		httpClientRequestDuration: httpDuration,
-		duration:                  duration,
-		operations:                operations,
-		attempts:                  attempts,
-		requestBodySize:           requestBodySize,
-		responseBodySize:          responseBodySize,
-		ttfb:                      ttfb,
-		errors:                    errors,
+		provider:                        provider,
+		rpcClientCallDuration:           rpcDuration,
+		httpClientRequestDuration:       httpDuration,
+		duration:                        duration,
+		operations:                      operations,
+		attempts:                        attempts,
+		requestBodySize:                 requestBodySize,
+		responseBodySize:                responseBodySize,
+		ttfb:                            ttfb,
+		errors:                          errors,
+		bidiStreamOpenLatency:           bidiStreamOpenLatency,
+		bidiNetworkHandshakeLatency:     bidiNetworkHandshakeLatency,
+		bidiServerMetadataLatency:       bidiServerMetadataLatency,
+		bidiEndToEndRangeReadLatency:    bidiEndToEndRangeReadLatency,
+		bidiServerNetworkTransitLatency: bidiServerNetworkTransitLatency,
+		bidiSDKProcessingOverhead:       bidiSDKProcessingOverhead,
+		bidiClientHandoffDelay:          bidiClientHandoffDelay,
 	}
 
 	var cleanup func()
