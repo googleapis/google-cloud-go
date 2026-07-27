@@ -52,11 +52,9 @@ func traceAttributesFromContext(ctx context.Context) ([]attribute.KeyValue, bool
 }
 
 const (
-	storageOtelTracingDevVar         = "GO_STORAGE_DEV_OTEL_TRACING"
-	defaultTracerName                = "cloud.google.com/go/storage"
-	gcpClientRepo                    = "googleapis/google-cloud-go"
-	gcpClientArtifact                = "cloud.google.com/go/storage"
-	storageBucketMetadataDisabledVar = "GO_OTEL_BUCKETMETADATA_DISABLED"
+	defaultTracerName = "cloud.google.com/go/storage"
+	gcpClientRepo     = "googleapis/google-cloud-go"
+	gcpClientArtifact = "cloud.google.com/go/storage"
 )
 
 // isOTelTracingDevEnabled checks the development flag until experimental feature is launched.
