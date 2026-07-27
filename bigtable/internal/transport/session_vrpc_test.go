@@ -662,6 +662,105 @@ func TestInvoke_SendFailure_FiresSlotDrainedCallback(t *testing.T) {
 	}
 }
 
+// TestHandleVRPCResponse_IDMismatch_TearsDownSession pins the
+// mutianf-review fix on #20213: an rpc_id in a server response that
+// doesn't match the active vRPC's id is a genuine protocol desync —
+// silently dropping the frame leaves the caller waiting on a session
+// the server has already decided is done with the prior call.
+// routeVRPCFrame must escalate: cancelActiveRPCs delivers a terminal
+// error to the current caller so the retry oracle picks another
+// session/AFE instead of blocking on ctx timeout.
+func TestHandleVRPCResponse_IDMismatch_TearsDownSession(t *testing.T) {
+	s, stream := makeActive(t, SessionHooks{})
+	desc := newRoundTripDesc()
+
+	done := make(chan error, 1)
+	go func() {
+		_, err := s.Invoke(context.Background(), desc, "req")
+		done <- err
+	}()
+
+	waitFor(t, time.Second, func() bool { return len(stream.snapshotSent()) > 0 }, "Send called")
+	sent := stream.snapshotSent()[0].GetVirtualRpc()
+	if sent == nil {
+		t.Fatal("sent frame was not a VirtualRpcRequest")
+	}
+
+	// Server responds with a DIFFERENT rpc_id — the mismatch scenario.
+	s.handleVRPCResponse(&spb.VirtualRpcResponse{
+		RpcId:   sent.RpcId + 99, // deliberate mismatch
+		Payload: []byte("ok"),
+	})
+
+	select {
+	case err := <-done:
+		if err == nil {
+			t.Fatal("Invoke returned nil; id-mismatch must escalate to caller error")
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("Invoke did not return after id-mismatch — caller left hanging (bug this test pins)")
+	}
+}
+
+// TestHandleVRPCResponse_WrongState_TearsDownSession pins the same
+// mutianf-review scenario for frames that arrive when the session is
+// not in Ready / Closing / WaitServerClose. That combination means the
+// readLoop is running in a state it shouldn't be (client state
+// tracking bug or server retransmit long after Closed). Escalate
+// rather than drop.
+func TestHandleVRPCResponse_WrongState_TearsDownSession(t *testing.T) {
+	s, stream := makeActive(t, SessionHooks{})
+	desc := newRoundTripDesc()
+
+	done := make(chan error, 1)
+	go func() {
+		_, err := s.Invoke(context.Background(), desc, "req")
+		done <- err
+	}()
+
+	waitFor(t, time.Second, func() bool { return len(stream.snapshotSent()) > 0 }, "Send called")
+	sent := stream.snapshotSent()[0].GetVirtualRpc()
+
+	// Force state to Closed (a state routeVRPCFrame does NOT accept).
+	s.state.Store(int32(StateClosed))
+
+	// Server response arrives in the wrong state.
+	s.handleVRPCResponse(&spb.VirtualRpcResponse{
+		RpcId:   sent.RpcId,
+		Payload: []byte("ok"),
+	})
+
+	select {
+	case err := <-done:
+		if err == nil {
+			t.Fatal("Invoke returned nil; wrong-state frame must escalate to caller error")
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("Invoke did not return after wrong-state — caller left hanging")
+	}
+}
+
+// TestHandleVRPCResponse_NilRPC_DoesNotTearDown pins the third scenario
+// mutianf raised: a frame arriving while activeVRPC is nil is a legit
+// race (caller ctx.Done'd and cancelled the slot; server response
+// arrived after). This must NOT tear down a healthy session — the next
+// caller can still use it. Only the frame is dropped.
+func TestHandleVRPCResponse_NilRPC_DoesNotTearDown(t *testing.T) {
+	s, _ := makeActive(t, SessionHooks{})
+
+	// No active vRPC — activeVRPC() will return nil.
+	s.handleVRPCResponse(&spb.VirtualRpcResponse{
+		RpcId:   42,
+		Payload: []byte("ok"),
+	})
+
+	// Session must still be Ready — nil-active-vRPC is a legit race,
+	// not a protocol violation.
+	if got := State(s.state.Load()); got != StateReady {
+		t.Errorf("session state after nil-rpc drop = %s, want Ready (should not tear down)", got)
+	}
+}
+
 // TestInvoke_ForceCloseRace_BoundedReturnUnderCtx pins the race between
 // Invoke's initial state check (session_vrpc.go:87) and its activeVRPC
 // CAS (session_vrpc.go:107). If ForceClose lands in that window the CAS

@@ -271,7 +271,11 @@ func (s *Session) processResult(desc VRpcDescriptor, result *InvokeResult, res v
 	}
 	respMsg, decodeErr := desc.Decode(res.resp.Payload)
 	if decodeErr != nil {
-		return tagErr(StateServerResult, fmt.Errorf("decode vRPC response: %w", decodeErr))
+		// StateTransportFailure — we couldn't consume the wire bytes, so
+		// there is no server-application-level result to reason about. A
+		// retry (potentially on another session/AFE) may succeed if the
+		// bad payload was a one-off from a specific backend.
+		return tagErr(StateTransportFailure, fmt.Errorf("decode vRPC response: %w", decodeErr))
 	}
 	result.Response = respMsg
 	result.Stats = res.resp.Stats
@@ -318,9 +322,24 @@ func (s *Session) handleVRPCErrorResponse(errResp *spb.ErrorResponse) {
 // on every drain, quiescence signalling in Closing) lives here so the
 // two call sites can't drift.
 //
-// A vRPC frame is only expected while the session is Ready or Closing
-// (drain window). Any other state means either a bug in state tracking
-// or a server retransmit after teardown — drop.
+// Frame gating (per-scenario handling, per mutianf review on #20213 —
+// silent drops are dangerous; escalate genuine protocol violations to
+// a session teardown so the pool minutes a replacement and the caller
+// isn't left waiting on a session the server has desynced from):
+//
+//   - State ∈ {Ready, Closing, WaitServerClose}: expected. The drain
+//     window keeps accepting frames until the server's EOF.
+//   - State ∈ {New, Starting, Closed}: unrecoverable — the reader
+//     shouldn't be running in these states. Emit a protocol-error
+//     event + tear down.
+//   - Nil active vRPC: legit race — caller ctx.Done'd and cancelled
+//     the slot, but the server's response arrived before our cancel
+//     landed. Log as protocol-error at info-level for observability,
+//     but do NOT tear down.
+//   - RPC id mismatch: server sent a response for a different id than
+//     our active vRPC. Real protocol desync (server bug, corrupted
+//     stream). Emit + tear down; cancelActiveRPCs delivers a terminal
+//     error to the current caller.
 //
 // The two call sites differ only in:
 //   - frameName / nilTag / counter — labels + which atomic bumps
@@ -331,19 +350,30 @@ func (s *Session) handleVRPCErrorResponse(errResp *spb.ErrorResponse) {
 // deliver already fired the terminal error; nothing to do.
 func (s *Session) routeVRPCFrame(rpcID int64, frameName, nilTag string, counter *atomic.Int64, result vrpcResult) {
 	st := s.State()
-	if !assertDebugTagf(st == StateReady || st == StateClosing, tagSessionVRPCResponseWrongState,
-		"%s for rpc_id=%d arrived in state %s", frameName, rpcID, st) {
+	if st != StateReady && st != StateClosing && st != StateWaitServerClose {
+		recordDebugTagAt(lvl.Error, tagSessionVRPCResponseWrongState)
+		s.recordEvent(SessionEventProtocolError,
+			"%s for rpc_id=%d arrived in state %s — tearing down",
+			frameName, rpcID, st)
+		s.cancelActiveRPCs(unavailable(nil,
+			"protocol error: %s for rpc_id=%d in state %s", frameName, rpcID, st))
 		return
 	}
 	rpc := s.activeVRPC()
 	if rpc == nil {
 		recordDebugTag(nilTag)
-		s.debugf("dropping %s for rpc_id=%d — no in-flight RPC tracked", frameName, rpcID)
+		s.recordEvent(SessionEventProtocolError,
+			"%s for rpc_id=%d dropped — no in-flight RPC tracked (likely late frame after ctx.Done cancel)",
+			frameName, rpcID)
 		return
 	}
 	if rpc.id != rpcID {
 		recordDebugTag(tagSessionVRPCIDMismatch)
-		s.debugf("dropping %s rpc_id=%d != in-flight rpc_id=%d", frameName, rpcID, rpc.id)
+		s.recordEvent(SessionEventProtocolError,
+			"%s rpc_id=%d != in-flight rpc_id=%d — server desync, tearing down",
+			frameName, rpcID, rpc.id)
+		s.cancelActiveRPCs(unavailable(nil,
+			"protocol error: %s rpc_id=%d != active rpc_id=%d", frameName, rpcID, rpc.id))
 		return
 	}
 	drained, cancel, ok := s.drainSlot(rpc)

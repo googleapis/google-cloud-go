@@ -150,6 +150,15 @@ const (
 	// prior attempt's gRPC code + err (if the retry interceptor stashed
 	// one on ctx).
 	SessionEventRetry SessionEventKind = "retry"
+	// SessionEventProtocolError fires when routeVRPCFrame observes a
+	// state/frame combination that violates the client-server contract
+	// (frame arrived in a state we shouldn't be reading in, or the
+	// server's rpc_id doesn't match our active vRPC). Message carries
+	// the frame name, rpc_id, and observed state so operators can
+	// distinguish "stray late frame after cancel" (recoverable) from
+	// "server desynced from client" (unrecoverable). Escalated to
+	// session teardown for id-mismatch and truly-wrong states.
+	SessionEventProtocolError SessionEventKind = "protocol-error"
 )
 
 // SessionEvent is one entry in a session's per-session debug ring buffer.
