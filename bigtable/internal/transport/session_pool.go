@@ -209,15 +209,21 @@ func NewSessionPoolImpl(id uint64, poolName string, min, max int, streamFactory 
 	pool.minSessions.Store(int32(min))
 	pool.maxSessions.Store(int32(max))
 
+	// Bootstrap sizer/picker/budget/threshold from the default
+	// ClientConfiguration proto (default_client_config.go). Fallback
+	// values live in one place instead of as literals scattered here.
+	// Every real caller registers via ClientConfigurationManager, which
+	// fires UpdateConfig synchronously and replaces these with
+	// server-driven values before the pool serves traffic.
+	defaultCfg := defaultPoolConfig()
 	fetcher := func() *PoolStats { return pool.Stats() }
-	pool.sizer = NewPoolSizer(fetcher, min, max, 0.10)
-	// Bootstrap picker/budget/threshold with fallbacks. Every real
-	// caller registers via ClientConfigurationManager, which fires
-	// UpdateConfig synchronously and replaces these with server-driven
-	// values before the pool serves traffic.
-	pool.picker = pickerFromLoadBalancing(nil)
-	pool.budget = NewAdaptiveSessionThrottler(10, 10*time.Second)
-	pool.consecutiveFailureThreshold.Store(10)
+	pool.sizer = NewPoolSizer(fetcher, min, max, float64(defaultCfg.GetHeadroom()))
+	pool.picker = pickerFromLoadBalancing(defaultCfg.GetLoadBalancingOptions())
+	pool.budget = NewAdaptiveSessionThrottler(
+		int(defaultCfg.GetNewSessionCreationBudget()),
+		defaultCfg.GetNewSessionCreationPenalty().AsDuration(),
+	)
+	pool.consecutiveFailureThreshold.Store(defaultCfg.GetConsecutiveSessionFailureThreshold())
 
 	return pool
 }
