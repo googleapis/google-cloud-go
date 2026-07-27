@@ -97,11 +97,16 @@ func (p *SessionPoolImpl) sweepStuckSessions() {
 
 // bumpCloseReason atomically increments the close-reason counter; the map
 // is keyed by label so the set of reasons can grow without struct churn.
+// Load-first, LoadOrStore only on miss — avoids allocating a fresh
+// atomic.Int64 on every hit-path call (close-reason bumps are frequent).
 func (p *SessionPoolImpl) bumpCloseReason(label string) {
 	if label == "" {
 		label = "Unspecified"
 	}
-	c, _ := p.m.closesByReason.LoadOrStore(label, new(atomic.Int64))
+	c, ok := p.m.closesByReason.Load(label)
+	if !ok {
+		c, _ = p.m.closesByReason.LoadOrStore(label, new(atomic.Int64))
+	}
 	c.(*atomic.Int64).Add(1)
 }
 

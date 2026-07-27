@@ -252,10 +252,10 @@ func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, 
 		// then sessionList dequeues one idle session in that AFE.
 		ready := p.sl.ReadyAfes()
 		pickerName := picker.Name()
-		AfeID, picked, decision := picker.PickAfe(ready)
+		afeID, picked, decision := picker.PickAfe(ready)
 		p.recordPickDecision(decision, pickerName)
 		if picked {
-			if idle := p.sl.Checkout(AfeID); idle != nil {
+			if idle := p.sl.Checkout(afeID); idle != nil {
 				idle.IncOutstanding()
 				idle.IncPicks()
 				return idle, nil
