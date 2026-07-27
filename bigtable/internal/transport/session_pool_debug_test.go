@@ -220,9 +220,9 @@ func TestRecordSlowVRpc_RingCaps(t *testing.T) {
 
 type fakeVRpcDesc struct{ method string }
 
-func (f fakeVRpcDesc) Method() string                            { return f.method }
-func (f fakeVRpcDesc) Encode(interface{}) ([]byte, error)        { return nil, nil }
-func (f fakeVRpcDesc) Decode([]byte) (interface{}, error)        { return nil, nil }
+func (f fakeVRpcDesc) Method() string                     { return f.method }
+func (f fakeVRpcDesc) Encode(interface{}) ([]byte, error) { return nil, nil }
+func (f fakeVRpcDesc) Decode([]byte) (interface{}, error) { return nil, nil }
 
 func TestRecordCheckoutFailure_SkipsUnderThreshold(t *testing.T) {
 	p := newTestPool(t, 1, 10)
