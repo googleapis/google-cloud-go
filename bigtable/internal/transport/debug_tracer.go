@@ -93,6 +93,11 @@ const (
 	tagSessionHeartbeatMissed        = "session_heartbeat_missed"
 	tagSessionForceCloseNeverStarted = "session_force_close_never_started"
 	tagSessionCloseNoReason          = "session_close_no_reason"
+	// tagSessionReadLoopPanic fires when readLoop's deferred recover
+	// catches a panic from handleSessionResponse (or any downstream
+	// handler). Session is force-closed with REASON_ERROR carrying the
+	// panic value in the description.
+	tagSessionReadLoopPanic = "session_read_loop_panic"
 
 	// vRPC dispatch observations.
 	tagSessionVRPCNil                = "session_vrpc_nil"
@@ -100,6 +105,12 @@ const (
 	tagSessionVRPCIDMismatch         = "session_vrpc_id_mismatch"
 	tagSessionVRPCResponseWrongState = "session_vrpc_response_wrong_state"
 	tagSessionVRPCDuplicateResult    = "session_vrpc_duplicate_result"
+	// tagSessionVRPCCancelledDrained fires when a server response finally
+	// arrives for an rpc whose caller already returned via ctx.Done: the
+	// drain succeeds, currentCancel != nil, and no one is waiting on
+	// resultChan. Bookkeeping-only — the drain still fires OnSlotDrained
+	// so the pool re-enqueues the session.
+	tagSessionVRPCCancelledDrained = "session_vrpc_cancelled_drained"
 
 	// Pool-scoped anomalies.
 	tagSessionPoolStuckSessionSwept = "session_pool_stuck_session_swept"

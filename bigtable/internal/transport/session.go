@@ -61,11 +61,19 @@ type Stream interface {
 
 // SessionHooks holds optional lifecycle callbacks. Nil fields are skipped.
 // Hooks must not block.
+//
+// OnSlotDrained fires on every successful drainSlot on the wire (normal
+// deliver, cancelled-drain, Send-failure Invoke branch). It is the sole
+// "session became free" signal — consumers use it to re-enqueue the
+// session in its AFE idle queue and wake one parked Checkout waiter.
+// cancelActiveRPCs (session teardown) intentionally does NOT fire it —
+// OnClosing/OnClose handle removal from routing structures on that path.
 type SessionHooks struct {
-	OnStart   func(ctx context.Context)
-	OnActive  func(s *Session)
-	OnClosing func(s *Session)
-	OnClose   func(s *Session, err error)
+	OnStart       func(ctx context.Context)
+	OnActive      func(s *Session)
+	OnSlotDrained func()
+	OnClosing     func(s *Session)
+	OnClose       func(s *Session, err error)
 }
 
 func (h SessionHooks) onStart(ctx context.Context) {
@@ -77,6 +85,12 @@ func (h SessionHooks) onStart(ctx context.Context) {
 func (h SessionHooks) onActive(s *Session) {
 	if h.OnActive != nil {
 		h.OnActive(s)
+	}
+}
+
+func (h SessionHooks) onSlotDrained() {
+	if h.OnSlotDrained != nil {
+		h.OnSlotDrained()
 	}
 }
 
@@ -159,6 +173,12 @@ type Session struct {
 	heartbeatIntervalNano     atomic.Int64
 	nextHeartbeatDeadlineNano atomic.Int64
 
+	// heartbeatWake nudges the heartbeat loop to re-evaluate its Timer
+	// after the atomic deadline moves. Cap-1 non-blocking channel so a
+	// burst of resets coalesces into a single wake and hot-path frame
+	// handling stays allocation-free.
+	heartbeatWake chan struct{}
+
 	// quiescent closes when the in-flight vRPC drains after StateClosing,
 	// or when ForceClose runs.
 	quiescent     chan struct{}
@@ -184,11 +204,12 @@ type SessionOption func(*Session)
 // valid.
 func NewSession(logName string, stream Stream, hooks SessionHooks, sessionType SessionType, opts ...SessionOption) *Session {
 	s := &Session{
-		logName:     logName,
-		stream:      stream,
-		hooks:       hooks,
-		quiescent:   make(chan struct{}),
-		sessionType: sessionType,
+		logName:       logName,
+		stream:        stream,
+		hooks:         hooks,
+		quiescent:     make(chan struct{}),
+		sessionType:   sessionType,
+		heartbeatWake: make(chan struct{}, 1),
 	}
 	s.state.Store(int32(StateNew))
 	s.heartbeatIntervalNano.Store(int64(defaultHeartbeatInterval))
@@ -243,5 +264,40 @@ func unavailable(cause error, format string, args ...interface{}) error {
 	return &sessionErr{
 		st:    status.Newf(codes.Unavailable, format, args...),
 		cause: cause,
+	}
+}
+
+// Send writes a SessionRequest under sendMu so concurrent producers don't
+// corrupt the underlying stream. grpc.ClientStream.Send is not safe for
+// concurrent use; sendMu is the only serialization point.
+func (s *Session) Send(req *spb.SessionRequest) error {
+	s.sendMu.Lock()
+	err := s.stream.Send(req)
+	s.sendMu.Unlock()
+	if err == nil {
+		s.msgsSent.Add(1)
+		s.msgsSentByType[classifyReq(req)].Add(1)
+	}
+	return err
+}
+
+// resetHeartbeatDeadline pushes out the watchdog to (now + heartbeatInterval).
+// One atomic load + one atomic store on the hot path, plus a non-blocking
+// wake to the heartbeat loop so its Timer picks up the new deadline
+// immediately (otherwise the initial bootstrap arm keeps the loop sleeping
+// past atomic shortenings — SESSION_SPEC.md #7).
+func (s *Session) resetHeartbeatDeadline() {
+	s.nextHeartbeatDeadlineNano.Store(time.Now().Add(time.Duration(s.heartbeatIntervalNano.Load())).UnixNano())
+	s.wakeHeartbeatLoop()
+}
+
+// wakeHeartbeatLoop signals the heartbeat loop to re-evaluate its Timer.
+// Non-blocking send on a cap-1 channel: bursts coalesce into a single
+// pending wake, so hot-path frame handlers stay allocation-free and
+// contention-free even under high frame arrival rates.
+func (s *Session) wakeHeartbeatLoop() {
+	select {
+	case s.heartbeatWake <- struct{}{}:
+	default:
 	}
 }
