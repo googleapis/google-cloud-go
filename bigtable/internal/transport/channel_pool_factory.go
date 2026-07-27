@@ -184,7 +184,7 @@ func CreateBigtableChannelPool(
 			}
 			return NewBigtableConn(grpcConn), nil
 		}
-		checker := newPingAndWarmDirectAccessChecker(
+		checker := NewPingAndWarmDirectAccessChecker(
 			directAccessDialer,
 			primer,
 			otelMeterProvider,

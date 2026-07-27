@@ -229,6 +229,81 @@ func (p *BigtableChannelPool) connPoolStatsSupplier() []connPoolStats {
 	return stats
 }
 
+// ChannelSnapshot is one row in a ChannelPoolSnapshot. All numeric fields are
+// read non-destructively, so the debug UI can poll without disturbing the
+// metrics exporter (which itself swaps errorCount to 0 on each report).
+type ChannelSnapshot struct {
+	Index                int
+	OutstandingUnary     int32
+	OutstandingStreaming int32
+	ErrorCount           int64
+	IsALTSUsed           bool
+	IsDraining           bool
+	CreatedAt            time.Time
+	IPProtocol           string
+	TargetState          string
+	PenaltyExpiresAt     time.Time
+	// Picks and LastActivity are placeholders reserved for a follow-up
+	// change that wires per-entry counters into the pick path — the
+	// debug UI already renders them and treating them as zero here
+	// keeps the wire shape stable.
+	Picks        int64
+	LastActivity time.Time
+}
+
+// ChannelPoolSnapshot is what bigtable/channelz renders. It captures pool-wide
+// metadata (LB policy, instance name, app profile) plus one ChannelSnapshot
+// per live connection.
+type ChannelPoolSnapshot struct {
+	LBPolicy     string
+	InstanceName string
+	AppProfile   string
+	TotalConns   int
+	Channels     []ChannelSnapshot
+	CapturedAt   time.Time
+}
+
+// ChannelPoolSnapshot returns a non-destructive snapshot of every connection
+// in the pool, plus pool-wide identity (LB policy, instance, app profile).
+// Safe to call concurrently with traffic; reads use the same atomics the hot
+// path uses.
+func (p *BigtableChannelPool) ChannelPoolSnapshot() ChannelPoolSnapshot {
+	conns := p.getConns()
+	snap := ChannelPoolSnapshot{
+		LBPolicy:     p.strategy.String(),
+		InstanceName: p.instanceName,
+		AppProfile:   p.appProfile,
+		TotalConns:   len(conns),
+		Channels:     make([]ChannelSnapshot, 0, len(conns)),
+		CapturedAt:   time.Now(),
+	}
+	for i, entry := range conns {
+		if entry == nil {
+			continue
+		}
+		cs := ChannelSnapshot{
+			Index:                i,
+			OutstandingUnary:     entry.unaryLoad.Load(),
+			OutstandingStreaming: entry.streamingLoad.Load(),
+			ErrorCount:           entry.errorCount.Load(),
+			IsALTSUsed:           entry.isALTSUsed(),
+			IsDraining:           entry.isDraining(),
+		}
+		if entry.conn != nil {
+			cs.IPProtocol = entry.conn.ipProtocol()
+			cs.TargetState = entry.conn.GetState().String()
+			if created := entry.createdAt(); created > 0 {
+				cs.CreatedAt = time.UnixMilli(created)
+			}
+		}
+		if expiry := entry.penaltyExpiry.Load(); expiry > 0 {
+			cs.PenaltyExpiresAt = time.Unix(0, expiry)
+		}
+		snap.Channels = append(snap.Channels, cs)
+	}
+	return snap
+}
+
 // NewBigtableConn creates a wrapped grpc Client Conn
 func NewBigtableConn(conn *grpc.ClientConn) *BigtableConn {
 	bc := &BigtableConn{
@@ -386,8 +461,30 @@ type BigtableChannelPool struct {
 	// future session-pool factory may skip it.
 	channelPrimer ChannelPrimer
 
+	// instanceName / appProfile are display-only identity, surfaced by
+	// ChannelPoolSnapshot so channelz can label the pool. Set at
+	// construction via WithInstanceName / WithAppProfile.
+	instanceName string
+	appProfile   string
+
 	// background monitors
 	monitors []Monitor
+}
+
+// WithInstanceName tags the pool with the fully-qualified Bigtable instance
+// name (e.g. "projects/{proj}/instances/{inst}") for display in channelz.
+func WithInstanceName(instanceName string) BigtableChannelPoolOption {
+	return func(p *BigtableChannelPool) {
+		p.instanceName = instanceName
+	}
+}
+
+// WithAppProfile tags the pool with the app profile ID for display in
+// channelz.
+func WithAppProfile(appProfile string) BigtableChannelPoolOption {
+	return func(p *BigtableChannelPool) {
+		p.appProfile = appProfile
+	}
 }
 
 // WithMetricsReporterConfig attaches the relevant config for exporting the metrics

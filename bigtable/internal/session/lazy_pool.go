@@ -18,6 +18,7 @@ import (
 	"context"
 	"sync"
 
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 )
 
@@ -29,6 +30,36 @@ import (
 // standing up a real pool.
 type Invoker interface {
 	Invoke(ctx context.Context, desc btransport.VRpcDescriptor, req interface{}) (btransport.InvokeResult, error)
+}
+
+// SessionPool is the surface sessionClient needs from a per-resource
+// pool: lifecycle control, server-driven config updates, background-
+// loop starters, and the snapshot accessors that feed the debug pages.
+// Satisfied by *btransport.SessionPoolImpl; declaring the interface
+// here lets sessionClient depend on behavior instead of the concrete
+// pool struct and lets tests substitute a fake.
+//
+// Embeds Invoker so any SessionPool is also an Invoker — the lazyPool
+// factory can hand back a SessionPool and callers that only need
+// Invoke() still get a Go-conformant narrower type.
+type SessionPool interface {
+	Invoker
+
+	// Lifecycle.
+	Close() error
+
+	// Start brings the pool up: seeds min-sessions synchronously, then
+	// spawns the periodic Tick watchdog + AFE prune loops. Idempotent
+	// per-pool (call once from getOrCreatePool); loops run until the
+	// ctx passed here is cancelled.
+	Start(ctx context.Context)
+
+	// Server-driven configuration.
+	UpdateConfig(config *btpb.SessionClientConfiguration_SessionPoolConfiguration)
+
+	// Debug surfaces — cheap snapshot reads, safe on the hot path.
+	PoolSnapshot() btransport.PoolSnapshot
+	LoadBalancingSnapshot() btransport.LoadBalancingSnapshot
 }
 
 // lazyPool wraps an Invoker (typically *btransport.SessionPoolImpl)
