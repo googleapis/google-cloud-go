@@ -118,6 +118,36 @@ const (
 	tagSessionPoolCreateFailed      = "session_pool_create_failed"
 	tagSessionPoolPickLostRace      = "session_pool_pick_lost_race"
 
+	// sessionList bookkeeping violations.
+	//
+	// tagSessionListRefcountUnderflow fires when OnSessionClosed would
+	// decrement an afeHandle's refCount below zero. Under I4/I6 this is
+	// unreachable — every decrement is preceded by an OnSessionStarted
+	// increment and the handleToAfe map delete guards against a
+	// double-close reaching the decrement. A non-zero count here means
+	// bookkeeping drifted (missed OnSessionStarted, mis-paired hook
+	// ordering, or a force-close bypass) and should be investigated.
+	tagSessionListRefcountUnderflow = "session_list_refcount_underflow"
+
+	// tagSessionListReadyCountUnderflow fires when dropMembershipLocked
+	// would drive sl.readyCount below zero. Under I2 this is unreachable —
+	// inExpectedCount flips true exactly once (in OnSessionStarted) and
+	// dropMembershipLocked is idempotent via the inExpectedCount guard.
+	// A non-zero count here means bookkeeping drifted (an inExpectedCount
+	// increment without the paired OnSessionStarted, or a decrement path
+	// bypassing the guard) and should be investigated before it corrupts
+	// scale-up decisions gated on ReadyCount().
+	tagSessionListReadyCountUnderflow = "session_list_ready_count_underflow"
+
+	// tagSessionListStartedNilSession fires when OnSessionStarted is
+	// called with a SessionHandle whose session pointer is nil.
+	// Unreachable in production (createSession populates sh.session
+	// synchronously before the hook fires) — the assertion exists so
+	// that a future caller who accidentally wires a nil-session handle
+	// (e.g. a test double promoted to production) shows up in the
+	// debug counter instead of no-op'ing silently.
+	tagSessionListStartedNilSession = "session_list_started_nil_session"
+
 	// Client configuration polling.
 	tagClientConfigPollFailed     = "client_config_poll_failed"
 	tagClientConfigPollCtxExpired = "client_config_poll_ctx_expired"
