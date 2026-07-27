@@ -37,8 +37,6 @@ Client-side metrics (attribute labels on `attempt_latencies`, `attempt_latencies
 **Consequences worth calling out:**
 
 - **A classic-path retry may hop clusters.** The `cluster_id` on attempt N-1 and attempt N may differ (routing cookie updates between attempts). Dashboards MUST NOT assume `cluster_id` is invariant across an operation.
-- **A session-path retry within the same session cannot hop backends.** All attempts on session S have identical `transport_*` labels. Retries that need a different backend must be checked out onto a different session by `RetryingVRpc` — an observable, dashboard-visible event.
-- **`ClusterInfo` may be nil on a session response.** Server MAY omit it on some responses (typically errors); the metric stamp gracefully skips (`session/table.go:238` guards `if result.ClusterInfo != nil`). Classic path has the same nil-guard on `ResponseParams` unmarshal.
 - **BOTH paths MUST NOT leak session-only sources into classic tracers, or vice versa.** The metrics tracer is a shared type (`internal/metrics/tracer.go`) but the *stamp sites* live in path-specific code — classic stamps from headers/trailers in the unary interceptor; session stamps from `InvokeResult` in `sessionTable.ReadRow`/`MutateRow`. Do not add a "grab ClusterInfo from wherever" utility that both call; it would collapse the source distinction and hide protocol bugs.
 
 Ownership matrix additions live in `SESSION_COMPONENT_SPEC.md` Part C.
