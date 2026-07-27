@@ -29,25 +29,28 @@ import (
 )
 
 // stampCloseReason sets a Session's close reason directly. Bypasses
-// handleClose so tests can drive the noteAbnormalCloseIfAny gate
-// without wiring a fake stream teardown.
+// handleClose so tests can drive the reason-recorded path without
+// wiring a fake stream teardown. (No longer required by the trip
+// gate — kept for close-reason-histogram tests.)
 func stampCloseReason(s *Session, reason string) {
 	s.setCloseReason(reason)
 }
 
-// abnormalOnCloseFor injects a fresh Session into the pool, stamps a
-// close reason, then invokes p.onClose(sh, nil) so the abnormal-close
-// counter path runs. abnormal picks a reason isAbnormalCloseReason
-// classifies as abnormal ("StreamEnd:Unavailable"); a false argument
-// picks a clean reason ("StreamEnd:EOF").
+// abnormalOnCloseFor drives one iteration of the abnormal-close counter
+// path. The trip gate is now state-based: sh.activated == false is the
+// exact "session never reached StateReady" signal. `abnormal=true`
+// injects a starting-set handle (never activated, mirrors a
+// createSession that died before onActive fires); `abnormal=false`
+// injects an activated handle, which the state-based gate correctly
+// treats as a healthy open regardless of the close reason.
 func abnormalOnCloseFor(t testing.TB, p *SessionPoolImpl, abnormal bool) {
 	t.Helper()
-	sh := injectActiveSession(t, p, "sess", time.Now())
-	reason := "StreamEnd:EOF"
 	if abnormal {
-		reason = "StreamEnd:Unavailable"
+		sh := injectStartingSession(t, p, "starting")
+		p.onClose(sh, nil)
+		return
 	}
-	stampCloseReason(sh.session, reason)
+	sh := injectActiveSession(t, p, "active", time.Now())
 	p.onClose(sh, nil)
 }
 
@@ -77,12 +80,13 @@ func TestConsecutiveFailures_CleanCloseDoesNotIncrement(t *testing.T) {
 
 // TestConsecutiveFailures_UserReasonNotAbnormal pins the fix that keeps
 // pool-driven teardown from tripping the consecutive-failure circuit
-// breaker. Pool.Close's Phase-2 fires s.Close with
-// CLOSE_SESSION_REASON_USER on every session; closeReasonLabel maps that
-// to "User". Without the whitelist entry, isAbnormalCloseReason would
-// classify each close as abnormal and a 100-session Pool.Close would trip
-// the breaker AND drain any late-arriving waiters with
-// ErrConsecutiveFailures instead of ErrPoolClosed.
+// breaker. Pool.Close's Phase-2 fires s.Close on already-activated
+// sessions; state-based classification treats sh.activated=true as a
+// healthy open regardless of close reason, so a 100-session Pool.Close
+// cannot trip the breaker. Without the state-based gate a leaked
+// reason-string classification would fire on every teardown and drain
+// any late-arriving waiters with ErrConsecutiveFailures instead of
+// ErrPoolClosed.
 func TestConsecutiveFailures_UserReasonNotAbnormal(t *testing.T) {
 	p := newTestPool(t, 1, 10)
 
@@ -90,8 +94,9 @@ func TestConsecutiveFailures_UserReasonNotAbnormal(t *testing.T) {
 	// the second close instead of needing 10.
 	p.consecutiveFailureThreshold.Store(2)
 
-	// Fire "User" close-reason twice — the label Pool.Close's Phase-2
-	// stamps on every session.
+	// Fire "User" close-reason twice on ACTIVATED sessions — the
+	// closest fixture to Pool.Close's Phase-2 (activated sessions
+	// closed with REASON_USER). State-based gate must NOT count them.
 	for i := 0; i < 2; i++ {
 		sh := injectActiveSession(t, p, "user-close", time.Now())
 		stampCloseReason(sh.session, "User")
@@ -99,7 +104,7 @@ func TestConsecutiveFailures_UserReasonNotAbnormal(t *testing.T) {
 	}
 
 	if got := p.consecutiveFailures.Load(); got != 0 {
-		t.Fatalf("consecutiveFailures after 2 User closes = %d, want 0 (User must be whitelisted; Pool.Close would otherwise trip the breaker on every teardown)", got)
+		t.Fatalf("consecutiveFailures after 2 User closes = %d, want 0 (state-based gate must skip activated sessions; Pool.Close would otherwise trip the breaker on every teardown)", got)
 	}
 }
 
@@ -300,15 +305,14 @@ func TestConsecutiveFailures_TripCarriesLastCauseAndGRPCStatus(t *testing.T) {
 		done <- w.err
 	}()
 
-	// First bump: benign cause, doesn't trip.
-	sh1 := injectActiveSession(t, p, "s1", time.Now())
-	stampCloseReason(sh1.session, "StreamEnd:Unavailable")
+	// First bump: benign cause, doesn't trip. Starting-set handle
+	// (never activated) so the state-based gate counts it as abnormal.
+	sh1 := injectStartingSession(t, p, "s1")
 	sh1.session.setCloseErr(errors.New("transient"))
 	p.onClose(sh1, nil)
 
 	// Second bump: the cause we want propagated to the waiter.
-	sh2 := injectActiveSession(t, p, "s2", time.Now())
-	stampCloseReason(sh2.session, "StreamEnd:FailedPrecondition")
+	sh2 := injectStartingSession(t, p, "s2")
 	sh2.session.setCloseErr(serverErr)
 	p.onClose(sh2, nil)
 

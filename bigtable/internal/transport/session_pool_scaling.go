@@ -179,16 +179,23 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 	}()
 
 	if err := p.budget.Acquire(dialCtx); err != nil {
+		// Distinct debug tag from create_failed so ops can grep the
+		// throttled path (budget ceiling exhausted / poolCtx cancel /
+		// penalty window elapsed) apart from stream-open errors.
+		recordDebugTag(tagSessionPoolNoBudget)
 		return fmt.Errorf("failed to acquire session creation budget: %w", err)
 	}
 
-	success := false
+	// budgetReleased is the sole gate: the success path calls
+	// budget.Release(true) explicitly and sets budgetReleased=true, so
+	// any deferred fallback only fires on failure — no need for a
+	// separate `success` local. Passing false is correct because the
+	// only way we reach the defer with budgetReleased=false is when
+	// streamFactory / cap-gate / Session.Start returned an error.
 	budgetReleased := false
 	defer func() {
-		// Success path releases early so budget isn't held for the
-		// Session's lifetime; this fallback covers failure paths.
 		if !budgetReleased {
-			p.budget.Release(success)
+			p.budget.Release(false)
 		}
 	}()
 
@@ -207,7 +214,7 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 		p.mu.Unlock()
 		return fmt.Errorf("session pool is closed")
 	}
-	if p.sl.ReadyCount() >= int(p.maxSessions.Load()) {
+	if p.sl.ReadyCount() >= p.sizer.MaxSessions() {
 		p.mu.Unlock()
 		return fmt.Errorf("session pool limit reached")
 	}
@@ -257,10 +264,8 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 		return fmt.Errorf("failed to start session: %w", err)
 	}
 
-	success = true
-
 	// Release budget now so the next scale-up isn't blocked by this
-	// session's lifetime (the deferred Release would otherwise fire
+	// session's lifetime (the deferred fallback would otherwise fire
 	// only after WaitGoroutines returns, i.e. after the session dies).
 	p.budget.Release(true)
 	budgetReleased = true

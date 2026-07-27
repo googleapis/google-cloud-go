@@ -121,15 +121,9 @@ type SessionPoolImpl struct {
 	// spawns tracks pool-spawned goroutines (today: createSession
 	// workers) so Close can wait them out. Session-owned goroutines
 	// are tracked separately on Session.loops.
-	spawns            sync.WaitGroup
-	closed            bool
-	scalingInProgress bool
-	// minSessions / maxSessions are the server-driven pool bounds.
-	// Writes go under p.mu so PoolSnapshot reads a consistent pair;
-	// hot-path readers Load() without the lock (no cross-field invariant
-	// with picker/budget/threshold).
-	minSessions        atomic.Int32
-	maxSessions        atomic.Int32
+	spawns             sync.WaitGroup
+	closed             bool
+	scalingInProgress  bool
 	streamFactory      func(ctx context.Context) (Stream, error)
 	openSessionRequest *spb.OpenSessionRequest
 	metadata           metadata.MD
@@ -206,8 +200,6 @@ func NewSessionPoolImpl(id uint64, poolName string, min, max int, streamFactory 
 		sl:                 newSessionList(),
 	}
 	pool.m.afePickCounts = make(map[AfeID]int64)
-	pool.minSessions.Store(int32(min))
-	pool.maxSessions.Store(int32(max))
 
 	// Bootstrap sizer/picker/budget/threshold from the default
 	// ClientConfiguration proto (default_client_config.go). Fallback
@@ -216,6 +208,16 @@ func NewSessionPoolImpl(id uint64, poolName string, min, max int, streamFactory 
 	// fires UpdateConfig synchronously and replaces these with
 	// server-driven values before the pool serves traffic.
 	defaultCfg := defaultPoolConfig()
+	// min/max <= 0 fall back to the same proto defaults the rest of the
+	// bootstrap reads from — otherwise a caller that instantiated the
+	// pool with zero bounds would see the sizer clamp DesiredCapacity to
+	// 0 and never open a session before UpdateConfig arrives.
+	if min <= 0 {
+		min = int(defaultCfg.GetMinSessionCount())
+	}
+	if max <= 0 {
+		max = int(defaultCfg.GetMaxSessionCount())
+	}
 	fetcher := func() *PoolStats { return pool.Stats() }
 	pool.sizer = NewPoolSizer(fetcher, min, max, float64(defaultCfg.GetHeadroom()))
 	pool.picker = pickerFromLoadBalancing(defaultCfg.GetLoadBalancingOptions())
@@ -272,11 +274,11 @@ func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, 
 			recordDebugTag(tagSessionPoolPickLostRace)
 		}
 
-		// Slow path: picker returned nil. Dying sessions leave sl.readyCount
+		// Slow path: picker returned nil or 2 checkoutSession raced and returned the same AFE id. Dying sessions leave sl.readyCount
 		// the instant they transition out of Ready (OnClosing), so the
 		// maxSessions gate reflects only live-or-starting sessions —
 		// a miss just means all live sessions are busy.
-		if p.sl.ReadyCount() < int(p.maxSessions.Load()) {
+		if p.sl.ReadyCount() < p.sizer.MaxSessions() {
 			p.spawnTickOnce(p.poolCtx)
 		}
 
@@ -342,29 +344,36 @@ func (p *SessionPoolImpl) signalFree() {
 func (p *SessionPoolImpl) drainWaitersWithErr(err error) int {
 	p.waitersMu.Lock()
 	defer p.waitersMu.Unlock()
-	n := 0
+	woken := 0
 	for {
 		e := p.waiters.Front()
 		if e == nil {
-			return n
+			return woken
 		}
 		w := e.Value.(*waiter)
 		p.waiters.Remove(e)
 		w.elem = nil
 		w.err = err
 		close(w.ready)
-		n++
+		woken++
 	}
 }
 
 // Stats snapshots ready/inUse/starting/pending counts.
+//
+// The AllHandles walk and the startingSessions read now happen under
+// disjoint locks, so a handle can transition starting → ready between
+// the two reads and be missed by both — StartingCount + ReadyCount is
+// therefore a best-effort snapshot, not a coherent sum. Sizer.Decide
+// is the sole consumer and self-corrects on the next Tick.
 func (p *SessionPoolImpl) Stats() *PoolStats {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-
+	// AllHandles takes its own snapshot under sl.mu — walk it OUTSIDE
+	// p.mu so per-session Load()s can't back up under the pool lock and
+	// stall CheckoutSession. State/outstanding reads are all atomic.
+	handles := p.sl.AllHandles()
 	ready := 0
 	inUse := 0
-	for _, sh := range p.sl.AllHandles() {
+	for _, sh := range handles {
 		// Same nil-guard shape as sampleActiveUptimes and sweepStuckSessions
 		// in session_pool_lifecycle.go — sl.AllHandles is a snapshot and
 		// the underlying handle can be torn down mid-iteration by a
@@ -380,6 +389,13 @@ func (p *SessionPoolImpl) Stats() *PoolStats {
 		}
 	}
 
+	// p.mu bracket is now just around the startingSessions map read +
+	// pendingStarts int read — both plain non-atomic fields the pool
+	// mutates from Tick / createSession under p.mu.
+	p.mu.Lock()
+	startingCount := len(p.startingSessions) + p.pendingStarts
+	p.mu.Unlock()
+
 	return &PoolStats{
 		ReadyCount: ready,
 		InUseCount: inUse,
@@ -387,7 +403,7 @@ func (p *SessionPoolImpl) Stats() *PoolStats {
 		// PLUS goroutines Tick has spawned but that haven't yet reached
 		// the transfer point. Both count as "in-flight scale-up capacity"
 		// so the sizer doesn't request duplicate delta in a burst.
-		StartingCount: len(p.startingSessions) + p.pendingStarts,
+		StartingCount: startingCount,
 		// PendingCount is the true pool-boundary queue depth —
 		// callers parked inside CheckoutSession waiting on
 		// freeSignal. The pending-rpc count is the input
@@ -401,17 +417,21 @@ func (p *SessionPoolImpl) Stats() *PoolStats {
 // bracket min/max as an atomic pair here.
 func (p *SessionPoolImpl) UpdateConfig(config *spb.SessionClientConfiguration_SessionPoolConfiguration) {
 	p.m.listenerFires.Add(1)
+	// p.mu only brackets the picker swap — it's the sole non-atomic
+	// field UpdateConfig mutates that a concurrent CheckoutSession
+	// reads. sizer.UpdateConfig / budget.UpdateConfig each take their
+	// own internal lock; the consecutive-failure threshold is a raw
+	// atomic. Keeping them out of p.mu means UpdateConfig can't stall
+	// a hot-path CheckoutSession behind the sizer/budget config writes.
 	p.mu.Lock()
-	// Stores stay under p.mu so PoolSnapshot (also under p.mu) reads a
-	// consistent min/max pair. Hot-path readers still Load() without
-	// the lock — atomic makes both directions safe.
-	p.minSessions.Store(int32(config.MinSessionCount))
-	p.maxSessions.Store(int32(config.MaxSessionCount))
 	if config.LoadBalancingOptions != nil {
 		p.picker = pickerFromLoadBalancing(config.LoadBalancingOptions)
 	}
 	p.mu.Unlock()
 
+	// sizer.UpdateConfig re-stores min/max/headroom/qlen atomically
+	// under the sizer's own mu — pool no longer duplicates min/max into
+	// its own atomics.
 	p.sizer.UpdateConfig(config)
 
 	// Budget was bootstrapped with a placeholder; UpdateConfig on
@@ -476,6 +496,12 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 		recordDebugTag(tagSessionPoolCheckoutFailedCINil)
 		return InvokeResult{}, err
 	}
+	// poolWait is the queue-time spent inside CheckoutSession waiting
+	// for an idle session — the Go-side observation of what OTel /
+	// Cloud Monitoring surfaces as `client_blocking_latencies` (Java
+	// internal name: throttling latencies). Wire it into the OTel
+	// per-attempt path when the metric plumbing lands; right now it
+	// only feeds the sessionz slow-vRPC row below.
 	poolWait := time.Since(checkoutStart)
 	// Anchor Latency at checkoutStart so recorded latency includes queue
 	// wait (user-visible time).

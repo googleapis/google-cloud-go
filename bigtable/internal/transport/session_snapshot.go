@@ -450,10 +450,13 @@ func (h *SessionHandle) Snapshot() SessionHandleSnapshot {
 // snapshots are taken after the pool lock is released so per-session locks
 // cannot back up under p.mu.
 func (p *SessionPoolImpl) PoolSnapshot() PoolSnapshot {
+	// min/max are now sizer-owned and served via atomic accessors,
+	// so read them outside p.mu — no p.mu bracket needed.
+	min := p.sizer.MinSessions()
+	max := p.sizer.MaxSessions()
+
 	p.mu.Lock()
 	name := p.poolName
-	min := int(p.minSessions.Load())
-	max := int(p.maxSessions.Load())
 	sessionType := p.sessionType
 	startingCount := len(p.startingSessions)
 	pickerType := "unknown"

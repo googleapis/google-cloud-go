@@ -323,7 +323,7 @@ func (p *SessionPoolImpl) onClosing(sh *SessionHandle) {
 
 	p.sl.OnSessionClosing(sh)
 
-	if p.sl.ReadyCount() < int(p.maxSessions.Load()) {
+	if p.sl.ReadyCount() < p.sizer.MaxSessions() {
 		p.spawnTickOnce(p.poolCtx)
 	}
 }
@@ -339,7 +339,7 @@ func (p *SessionPoolImpl) onClose(sh *SessionHandle, err error) {
 		delete(p.startingSessions, sh)
 		p.mu.Unlock()
 		p.bumpStartingClose(sh.session)
-		p.noteAbnormalCloseIfAny(sh.session)
+		p.noteAbnormalCloseIfAny(sh)
 		return
 	}
 	p.mu.Unlock()
@@ -348,22 +348,43 @@ func (p *SessionPoolImpl) onClose(sh *SessionHandle, err error) {
 		// Pool.Close Phase 1 already recorded. Still safe to bump the
 		// consecutive-failure counter — Session.OnClose is once-guarded,
 		// so this method fires at most once per session.
-		p.noteAbnormalCloseIfAny(sh.session)
+		p.noteAbnormalCloseIfAny(sh)
 		return
 	}
 	p.sl.OnSessionClosed(sh)
 	p.recordSessionClose(sh.session, "")
-	p.noteAbnormalCloseIfAny(sh.session)
+	p.noteAbnormalCloseIfAny(sh)
 }
 
 // noteAbnormalCloseIfAny bumps the consecutive-failure counter when the
-// session's close reason classifies as abnormal. Crossing the threshold
-// drains every parked waiter with ErrConsecutiveFailures and resets.
-// CAS on reset guards against two goroutines double-draining.
-func (p *SessionPoolImpl) noteAbnormalCloseIfAny(s *Session) {
-	if !isAbnormalCloseReason(s.CloseReason()) {
+// session died before it ever became usable. Classification is
+// state-based via sh.activated: onActive is the sole writer of that
+// flag, so `!sh.activated.Load()` is the exact "never reached
+// StateReady" signal — no reason-string whitelist to keep in lockstep
+// with new close reasons, no accidental mis-classification when the
+// server invents a new REASON. A session that activated (even briefly)
+// is treated as a healthy open regardless of how it later died: the
+// counter is reset on every onActive so a churn pattern of activate →
+// server-side GoAway → replace converges to zero. Crossing the
+// threshold drains every parked waiter with ErrConsecutiveFailures and
+// resets. CAS on reset guards against two goroutines double-draining.
+func (p *SessionPoolImpl) noteAbnormalCloseIfAny(sh *SessionHandle) {
+	// Defensive nil-guard: production callers always pass a live sh
+	// with sh.session backfilled (createSession sets it before wiring
+	// the hook closures at session_pool_scaling.go:248). Kept so a
+	// future test double / injection path can't NPE the whole close
+	// path — the counter simply doesn't advance on a nil handle.
+	if sh == nil || sh.session == nil {
 		return
 	}
+	// State-based gate: activated=true means the session reached
+	// StateReady at least once (onActive fired). Skip the trip counter —
+	// server-initiated GoAway / heartbeat missed / stream errors on an
+	// already-Ready session are transport hiccups, not open failures.
+	if sh.activated.Load() {
+		return
+	}
+	s := sh.session
 	if e := s.closeError(); e != nil {
 		p.lastAbnormalCloseErr.Store(&e)
 	}
@@ -388,6 +409,13 @@ func (p *SessionPoolImpl) noteAbnormalCloseIfAny(s *Session) {
 	woken := p.drainWaitersWithErr(tripErr)
 	if woken > 0 {
 		recordDebugTag(tagSessionPoolConsecutiveFailuresTripped)
+		// TODO(mutianf): if consecutive trips are driven by Unimplemented
+		// (server-side session RPC not supported — the classic-path
+		// fallback signal), transition the client back to unary Bigtable
+		// RPCs instead of continuing to trip and drain. Routing flip is
+		// SessionClient / Diverter's decision, not the pool's — the pool
+		// only surfaces the trip cause; the layer above owns the choice
+		// to divert future opens to the classic (unary) path.
 	}
 }
 

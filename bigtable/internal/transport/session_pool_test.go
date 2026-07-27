@@ -68,6 +68,11 @@ func newStubStreamFactory() (factory func(context.Context) (Stream, error), clos
 // minimum required state: build sh, wire hook closures, register into
 // sl. PeerInfo stays nil, so the handle lands in the AfeID=0 bucket —
 // fine for pool-level tests that don't care about AFE fanout.
+//
+// sh.activated is stamped true to match production's onActive path,
+// which is the "session reached StateReady" signal noteAbnormalCloseIfAny
+// keys off of. Tests that want a "never activated" (FailedToStart-style)
+// handle should use injectStartingSession instead.
 func injectActiveSession(t testing.TB, p *SessionPoolImpl, name string, createdAt time.Time) *SessionHandle {
 	t.Helper()
 	stream := newFakeStream()
@@ -80,8 +85,35 @@ func injectActiveSession(t testing.TB, p *SessionPoolImpl, name string, createdA
 	}, SessionTypeTable)
 	s.state.Store(int32(StateReady))
 	sh.session = s
+	sh.activated.Store(true)
 
 	p.sl.OnSessionStarted(sh)
+	return sh
+}
+
+// injectStartingSession builds a fakeStream-backed Session that has NOT
+// yet reached StateReady (StateStarting), registers it in the pool's
+// startingSessions set, and returns the handle. Used by consecutive-
+// failure tests to drive the state-based abnormal-close classification
+// (`sh.activated == false` → abnormal). Does NOT register the handle
+// with sl — mirrors production's createSession failure window between
+// startingSessions insert and onActive.
+func injectStartingSession(t testing.TB, p *SessionPoolImpl, name string) *SessionHandle {
+	t.Helper()
+	stream := newFakeStream()
+	sh := newSessionHandle(nil, time.Now())
+	s := NewSession(name, stream, SessionHooks{
+		OnStart:   p.onStart,
+		OnActive:  func(_ *Session) { p.onActive(sh) },
+		OnClosing: func(_ *Session) { p.onClosing(sh) },
+		OnClose:   func(_ *Session, err error) { p.onClose(sh, err) },
+	}, SessionTypeTable)
+	s.state.Store(int32(StateStarting))
+	sh.session = s
+
+	p.mu.Lock()
+	p.startingSessions[sh] = struct{}{}
+	p.mu.Unlock()
 	return sh
 }
 
@@ -598,8 +630,8 @@ func TestUpdateConfig_SwapsPickerAndBounds(t *testing.T) {
 	if got := p.picker.Name(); got != "simple" {
 		t.Errorf("after Random swap, picker = %q, want simple", got)
 	}
-	if p.minSessions.Load() != 4 || p.maxSessions.Load() != 40 {
-		t.Errorf("min/max = %d/%d, want 4/40", p.minSessions.Load(), p.maxSessions.Load())
+	if p.sizer.MinSessions() != 4 || p.sizer.MaxSessions() != 40 {
+		t.Errorf("min/max = %d/%d, want 4/40", p.sizer.MinSessions(), p.sizer.MaxSessions())
 	}
 
 	// Switch to PeakEwma with an explicit subset size.
