@@ -662,14 +662,28 @@ func TestInvoke_SendFailure_FiresSlotDrainedCallback(t *testing.T) {
 	}
 }
 
+// containsEventOfKind reports whether the session's per-session event
+// ring contains at least one entry matching kind. Used by the
+// protocol-error/late-frame tests to assert the event was recorded
+// alongside the observable Invoke outcome.
+func containsEventOfKind(events []SessionEvent, kind SessionEventKind) bool {
+	for _, e := range events {
+		if e.Kind == kind {
+			return true
+		}
+	}
+	return false
+}
+
 // TestHandleVRPCResponse_IDMismatch_TearsDownSession pins the
 // mutianf-review fix on #20213: an rpc_id in a server response that
 // doesn't match the active vRPC's id is a genuine protocol desync —
 // silently dropping the frame leaves the caller waiting on a session
 // the server has already decided is done with the prior call.
-// routeVRPCFrame must escalate: cancelActiveRPCs delivers a terminal
-// error to the current caller so the retry oracle picks another
-// session/AFE instead of blocking on ctx timeout.
+// routeVRPCFrame must escalate via ForceClose so the caller gets a
+// terminal error, the pool's OnClosing/OnClose hooks fire, and the
+// session leaves the AFE routing set (cancelActiveRPCs alone would
+// leave a Ready session orphaned from the AFE queue).
 func TestHandleVRPCResponse_IDMismatch_TearsDownSession(t *testing.T) {
 	s, stream := makeActive(t, SessionHooks{})
 	desc := newRoundTripDesc()
@@ -692,13 +706,23 @@ func TestHandleVRPCResponse_IDMismatch_TearsDownSession(t *testing.T) {
 		Payload: []byte("ok"),
 	})
 
+	var invokeErr error
 	select {
-	case err := <-done:
-		if err == nil {
+	case invokeErr = <-done:
+		if invokeErr == nil {
 			t.Fatal("Invoke returned nil; id-mismatch must escalate to caller error")
 		}
 	case <-time.After(2 * time.Second):
 		t.Fatal("Invoke did not return after id-mismatch — caller left hanging (bug this test pins)")
+	}
+	if code := status.Code(invokeErr); code != codes.Unavailable {
+		t.Errorf("Invoke err status.Code = %s, want Unavailable (id-mismatch tear-down surfaces via cancelActiveRPCs → unavailable)", code)
+	}
+	if got := State(s.state.Load()); got != StateClosed {
+		t.Errorf("session state after id-mismatch = %s, want Closed (ForceClose must fire so pool removes session from routing)", got)
+	}
+	if !containsEventOfKind(s.snapshotEvents(), SessionEventProtocolError) {
+		t.Error("session event ring missing SessionEventProtocolError entry — observability regression")
 	}
 }
 
@@ -706,8 +730,8 @@ func TestHandleVRPCResponse_IDMismatch_TearsDownSession(t *testing.T) {
 // mutianf-review scenario for frames that arrive when the session is
 // not in Ready / Closing / WaitServerClose. That combination means the
 // readLoop is running in a state it shouldn't be (client state
-// tracking bug or server retransmit long after Closed). Escalate
-// rather than drop.
+// tracking bug). Escalate via ForceClose so the OnClosing hook fires
+// and the pool removes the session from routing.
 func TestHandleVRPCResponse_WrongState_TearsDownSession(t *testing.T) {
 	s, stream := makeActive(t, SessionHooks{})
 	desc := newRoundTripDesc()
@@ -721,8 +745,12 @@ func TestHandleVRPCResponse_WrongState_TearsDownSession(t *testing.T) {
 	waitFor(t, time.Second, func() bool { return len(stream.snapshotSent()) > 0 }, "Send called")
 	sent := stream.snapshotSent()[0].GetVirtualRpc()
 
-	// Force state to Closed (a state routeVRPCFrame does NOT accept).
-	s.state.Store(int32(StateClosed))
+	// Force state to Starting — a state routeVRPCFrame does NOT accept,
+	// and one ForceClose CAN transition from (unlike Closed, which
+	// early-returns; a stray frame in Closed is a real edge case but
+	// its caller is by definition already unblocked by the prior
+	// teardown that put us in Closed).
+	s.state.Store(int32(StateStarting))
 
 	// Server response arrives in the wrong state.
 	s.handleVRPCResponse(&spb.VirtualRpcResponse{
@@ -730,13 +758,23 @@ func TestHandleVRPCResponse_WrongState_TearsDownSession(t *testing.T) {
 		Payload: []byte("ok"),
 	})
 
+	var invokeErr error
 	select {
-	case err := <-done:
-		if err == nil {
+	case invokeErr = <-done:
+		if invokeErr == nil {
 			t.Fatal("Invoke returned nil; wrong-state frame must escalate to caller error")
 		}
 	case <-time.After(2 * time.Second):
 		t.Fatal("Invoke did not return after wrong-state — caller left hanging")
+	}
+	if code := status.Code(invokeErr); code != codes.Unavailable {
+		t.Errorf("Invoke err status.Code = %s, want Unavailable", code)
+	}
+	if got := State(s.state.Load()); got != StateClosed {
+		t.Errorf("session state after wrong-state escalation = %s, want Closed (ForceClose must run)", got)
+	}
+	if !containsEventOfKind(s.snapshotEvents(), SessionEventProtocolError) {
+		t.Error("session event ring missing SessionEventProtocolError entry — observability regression")
 	}
 }
 
@@ -744,7 +782,10 @@ func TestHandleVRPCResponse_WrongState_TearsDownSession(t *testing.T) {
 // mutianf raised: a frame arriving while activeVRPC is nil is a legit
 // race (caller ctx.Done'd and cancelled the slot; server response
 // arrived after). This must NOT tear down a healthy session — the next
-// caller can still use it. Only the frame is dropped.
+// caller can still use it. Only the frame is dropped, and the event is
+// tagged SessionEventLateFrame (NOT SessionEventProtocolError — Igor's
+// review nit: mixing the two would swamp desync alerts with benign
+// races).
 func TestHandleVRPCResponse_NilRPC_DoesNotTearDown(t *testing.T) {
 	s, _ := makeActive(t, SessionHooks{})
 
@@ -758,6 +799,92 @@ func TestHandleVRPCResponse_NilRPC_DoesNotTearDown(t *testing.T) {
 	// not a protocol violation.
 	if got := State(s.state.Load()); got != StateReady {
 		t.Errorf("session state after nil-rpc drop = %s, want Ready (should not tear down)", got)
+	}
+	events := s.snapshotEvents()
+	if !containsEventOfKind(events, SessionEventLateFrame) {
+		t.Error("session event ring missing SessionEventLateFrame entry — observability regression")
+	}
+	if containsEventOfKind(events, SessionEventProtocolError) {
+		t.Error("nil-rpc drop must NOT emit SessionEventProtocolError — kind split preserves signal:noise for desync grep")
+	}
+}
+
+// TestHandleVRPCResponse_ClosingState_AcceptsMatchingFrame pins the
+// state-whitelist widening — the addition of Closing + WaitServerClose
+// to the accept-set needs coverage, otherwise a future tightening of
+// the whitelist reverts silently. In Closing, in-flight vRPCs must
+// still be able to receive their response so the drain completes
+// gracefully.
+func TestHandleVRPCResponse_ClosingState_AcceptsMatchingFrame(t *testing.T) {
+	s, stream := makeActive(t, SessionHooks{})
+	desc := newRoundTripDesc()
+
+	done := make(chan error, 1)
+	go func() {
+		_, err := s.Invoke(context.Background(), desc, "req")
+		done <- err
+	}()
+
+	waitFor(t, time.Second, func() bool { return len(stream.snapshotSent()) > 0 }, "Send called")
+	sent := stream.snapshotSent()[0].GetVirtualRpc()
+
+	// Simulate the graceful-close drain window: state is Closing but
+	// active vRPC still exists and the server's response is inbound.
+	s.state.Store(int32(StateClosing))
+
+	s.handleVRPCResponse(&spb.VirtualRpcResponse{
+		RpcId:   sent.RpcId,
+		Payload: []byte("ok"),
+	})
+
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Fatalf("Invoke err = %v, want nil (Closing must accept matching frames during drain)", err)
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("Invoke did not return after matching-id delivery in Closing")
+	}
+	if containsEventOfKind(s.snapshotEvents(), SessionEventProtocolError) {
+		t.Error("Closing must not classify matching frames as protocol errors")
+	}
+}
+
+// TestHandleVRPCResponse_WaitServerCloseState_AcceptsMatchingFrame is
+// the WaitServerClose sibling of the Closing test. WSC is the drain
+// window between our CloseSession send and the server's EOF; late
+// responses for in-flight vRPCs land here legitimately.
+func TestHandleVRPCResponse_WaitServerCloseState_AcceptsMatchingFrame(t *testing.T) {
+	s, stream := makeActive(t, SessionHooks{})
+	desc := newRoundTripDesc()
+
+	done := make(chan error, 1)
+	go func() {
+		_, err := s.Invoke(context.Background(), desc, "req")
+		done <- err
+	}()
+
+	waitFor(t, time.Second, func() bool { return len(stream.snapshotSent()) > 0 }, "Send called")
+	sent := stream.snapshotSent()[0].GetVirtualRpc()
+
+	// Force state to WaitServerClose (post-CloseSession-send drain).
+	s.state.Store(int32(StateWaitServerClose))
+
+	s.handleVRPCResponse(&spb.VirtualRpcResponse{
+		RpcId:   sent.RpcId,
+		Payload: []byte("ok"),
+	})
+
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Fatalf("Invoke err = %v, want nil (WaitServerClose must accept matching frames during drain)", err)
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("Invoke did not return after matching-id delivery in WaitServerClose")
+	}
+	if containsEventOfKind(s.snapshotEvents(), SessionEventProtocolError) {
+		t.Error("WaitServerClose must not classify matching frames as protocol errors")
 	}
 }
 
