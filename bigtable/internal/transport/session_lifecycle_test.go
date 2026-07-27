@@ -404,7 +404,7 @@ func TestClose_IdempotentAcrossNCalls(t *testing.T) {
 
 // --- heartbeat ---------------------------------------------------------------
 
-func TestHeartBeatLoop_ForceClosesOnMissedHeartbeat(t *testing.T) {
+func TestHeartbeatLoop_ForceClosesOnMissedHeartbeat(t *testing.T) {
 	s, _ := makeActive(t, SessionHooks{})
 	rpc := &vrpcImpl{id: 1, resultChan: make(chan vrpcResult, 1)}
 	s.setSlotForTest(rpc)
@@ -429,10 +429,10 @@ func TestHeartBeatLoop_ForceClosesOnMissedHeartbeat(t *testing.T) {
 	}
 }
 
-// TestHeartBeatLoop_HeartbeatsKeepInflightVRPCAlive: while a vRPC is in flight
+// TestHeartbeatLoop_HeartbeatsKeepInflightVRPCAlive: while a vRPC is in flight
 // and the server is sending Heartbeats, the watchdog must NOT fire — every
 // recognized inbound frame resets the deadline via handleSessionResponse.
-func TestHeartBeatLoop_HeartbeatsKeepInflightVRPCAlive(t *testing.T) {
+func TestHeartbeatLoop_HeartbeatsKeepInflightVRPCAlive(t *testing.T) {
 	s, _ := makeActive(t, SessionHooks{})
 	s.heartbeatIntervalNano.Store(int64(30 * time.Millisecond))
 	s.nextHeartbeatDeadlineNano.Store(time.Now().Add(30 * time.Millisecond).UnixNano()) // 1 * interval
@@ -454,10 +454,10 @@ func TestHeartBeatLoop_HeartbeatsKeepInflightVRPCAlive(t *testing.T) {
 	}
 }
 
-// TestHeartBeatLoop_IdleSessionIsNotTornDown: server sends Heartbeats only
+// TestHeartbeatLoop_IdleSessionIsNotTornDown: server sends Heartbeats only
 // during in-flight vRPCs. An idle session with an elapsed deadline must NOT be
 // force-closed.
-func TestHeartBeatLoop_IdleSessionIsNotTornDown(t *testing.T) {
+func TestHeartbeatLoop_IdleSessionIsNotTornDown(t *testing.T) {
 	s, _ := makeActive(t, SessionHooks{})
 	s.heartbeatIntervalNano.Store(int64(20 * time.Millisecond))
 	s.nextHeartbeatDeadlineNano.Store(time.Now().Add(-time.Hour).UnixNano())
@@ -482,7 +482,7 @@ func TestHeartBeatLoop_IdleSessionIsNotTornDown(t *testing.T) {
 	}
 }
 
-func TestHeartBeatLoop_ExitsOnCtxCancel(t *testing.T) {
+func TestHeartbeatLoop_ExitsOnCtxCancel(t *testing.T) {
 	s, _ := makeActive(t, SessionHooks{})
 	s.nextHeartbeatDeadlineNano.Store(time.Now().Add(time.Hour).UnixNano()) // never expires
 

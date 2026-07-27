@@ -265,8 +265,13 @@ func (s *Session) readLoop(ctx context.Context) {
 
 // handleSessionResponse dispatches every SessionResponse oneof variant.
 // Receiving any recognized frame resets the heartbeat watchdog; unknown
-// frames do NOT, so a misbehaving server cannot keep the watchdog satisfied
-// with junk payloads.
+// frames do NOT, so a misbehaving server cannot keep the watchdog
+// satisfied with junk payloads and a rogue future oneof variant can't
+// mask a broken stream. Java parity: `SessionImpl.handleUnknownResponseMessage`
+// also does not reset the heartbeat. The watchdog is only armed while
+// a vRPC is in-flight anyway — during that window the server MUST be
+// sending heartbeats, so a new-variant frame arriving instead of a
+// heartbeat within the interval is itself a signal worth surfacing.
 func (s *Session) handleSessionResponse(resp *spb.SessionResponse) {
 	switch p := resp.GetPayload().(type) {
 	case *spb.SessionResponse_OpenSession:
@@ -514,6 +519,16 @@ func streamEndReason(err error) string {
 // tagged with a transport-failure code, or the bare "StreamEnd" that
 // indicates Recv returned nil (which shouldn't happen) — is abnormal
 // and worth flagging.
+//
+// TODO(sushanb): move to a state-based classifier per mutianf's review
+// on #20215. Current reason-string scheme encodes state indirectly (via
+// CAS-once CloseReason stamped at each transition site) and gives finer
+// per-reason attribution for sessionz's close-reasons breakdown, but a
+// state-transition source of truth ("did we go New→Ready→Closing→
+// WaitServerClose→Closed cleanly?") is more robust — the whitelist
+// here has to be kept in lockstep with every new closeReasonLabel case.
+// Refactor when we add a new close-reason (or when a downstream
+// consumer wants the state-transition history directly).
 func isAbnormalCloseReason(reason string) bool {
 	switch reason {
 	case "StreamEnd:EOF", "StreamEnd:Canceled",
