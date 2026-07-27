@@ -118,9 +118,9 @@ type afeHandle struct {
 // pool drives the wake-up centrally from Invoke's defer.
 type SessionHandle struct {
 	session      *Session
-	outstanding  int64
-	lastActivity int64 // UnixNano timestamp of the last completed call
-	picks        int64 // Number of times the picker has picked this handle.
+	outstanding  atomic.Int64
+	lastActivity atomic.Int64 // UnixNano timestamp of the last completed call
+	picks        atomic.Int64 // Number of times the picker has picked this handle.
 	// createdAt is the wall-clock time this handle joined the pool
 	// (stamped in createSession after the handle is minted). Read by
 	// recordLifetime and Pool.Close to bucket per-session lifetimes
@@ -153,27 +153,27 @@ type SessionHandle struct {
 
 // IncOutstanding increments outstanding calls.
 func (h *SessionHandle) IncOutstanding() {
-	atomic.AddInt64(&h.outstanding, 1)
+	h.outstanding.Add(1)
 }
 
 // IncPicks increments the cumulative pick counter. Called from
 // CheckoutSession on every successful pick so pool callers don't reach
 // into the handle's atomic field directly (same shape as IncOutstanding).
 func (h *SessionHandle) IncPicks() {
-	atomic.AddInt64(&h.picks, 1)
+	h.picks.Add(1)
 }
 
 // DecOutstanding decrements outstanding calls and stamps lastActivity.
 // The pool wakes waiters and returns the session to its AFE queue from
 // Invoke's defer, so this method no longer signals directly.
 func (h *SessionHandle) DecOutstanding() {
-	atomic.AddInt64(&h.outstanding, -1)
-	atomic.StoreInt64(&h.lastActivity, time.Now().UnixNano())
+	h.outstanding.Add(-1)
+	h.lastActivity.Store(time.Now().UnixNano())
 }
 
 // GetLastActivity returns the time of the last activity.
 func (h *SessionHandle) GetLastActivity() time.Time {
-	nano := atomic.LoadInt64(&h.lastActivity)
+	nano := h.lastActivity.Load()
 	if nano == 0 {
 		return time.Time{}
 	}
@@ -606,4 +606,3 @@ func (a *afeHandle) removeIfPresentLocked(sh *SessionHandle) (removed, nowEmpty 
 	}
 	return false, false
 }
-
