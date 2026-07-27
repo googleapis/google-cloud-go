@@ -116,7 +116,24 @@ const (
 	tagSessionPoolStuckSessionSwept = "session_pool_stuck_session_swept"
 	tagSessionPoolDrainTimeout      = "session_pool_drain_timeout"
 	tagSessionPoolCreateFailed      = "session_pool_create_failed"
-	tagSessionPoolPickLostRace      = "session_pool_pick_lost_race"
+	// tagSessionPoolCreatePanic distinguishes a recovered panic inside
+	// Tick's createSession fanout (streamFactory / NewSession / hook
+	// wiring) from a plain error return (tagSessionPoolCreateFailed).
+	// The two paths have very different root causes — a panic indicates
+	// a client-side bug, an error is typically transient — so ops
+	// should be able to grep them apart in the debug-tag counters.
+	tagSessionPoolCreatePanic                = "session_pool_create_panic"
+	tagSessionPoolPickLostRace               = "session_pool_pick_lost_race"
+	tagSessionPoolConsecutiveFailuresTripped = "session_pool_consecutive_failures_tripped"
+
+	// tagSessionPoolCheckoutFailedCINil fires on SessionPoolImpl.Invoke's
+	// early return when CheckoutSession failed — pool returns
+	// InvokeResult{} with nil ClusterInfo, so stampAttempt downstream
+	// records TagSessionAttemptNilClusterInfo without any session ever
+	// being picked. Empirically dominates the nil-ClusterInfo population
+	// during pool cold-start (waiters ctx.Done before first session
+	// reaches Ready) and pool-close bursts (drainWaitersWithErr).
+	tagSessionPoolCheckoutFailedCINil = "session_pool_checkout_failed_ci_nil"
 
 	// sessionList bookkeeping violations.
 	//

@@ -1066,3 +1066,22 @@ func (m multiError) Error() string {
 	}
 	return fmt.Sprintf("%s (and %d other errors)", s, n-1)
 }
+
+// channelPickHintKey identifies the *atomic.Int32 destination the caller
+// wants BigtableChannelPool to publish the picked connEntry index into.
+type channelPickHintKey struct{}
+
+// ChannelPickHintInto returns a context that BigtableChannelPool will use to
+// publish the picked connEntry index into the supplied *atomic.Int32. The
+// caller can then read the value once the stream/invoke has returned.
+//
+// Used by Session creation to link sessions back to the channel they ride
+// on — surfaced in the sessionz / channelz debug UIs. Untouched by callers
+// that don't care: stampChannelPickHint short-circuits when the context
+// lacks the key. Passing dst == nil returns ctx unchanged.
+func ChannelPickHintInto(ctx context.Context, dst *atomic.Int32) context.Context {
+	if dst == nil {
+		return ctx
+	}
+	return context.WithValue(ctx, channelPickHintKey{}, dst)
+}

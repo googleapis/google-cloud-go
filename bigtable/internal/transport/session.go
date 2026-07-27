@@ -195,6 +195,18 @@ type Session struct {
 	// Embedded so bare field access (s.tracer, s.okRpcs, s.recordEvent,
 	// ...) continues to compile once vRPC / lifecycle land.
 	sessionDebug
+
+	// loops tracks readLoop + heartbeatLoop so a supervising owner
+	// (SessionPoolImpl.Close) can wait for them to fully unwind — through
+	// their notifyClosing / notifyClosed callback chains — before it
+	// returns. Prevents readLoop's recordClose from racing package-level
+	// metric var writes across test boundaries.
+	loops sync.WaitGroup
+
+	// closeErr preserves the raw Recv error handed to handleClose. The
+	// pool surfaces this on consecutive-failure breaker trips so operators
+	// see the underlying server rejection instead of only the sentinel.
+	closeErr atomic.Pointer[error]
 }
 
 // SessionOption configures a Session at construction time.

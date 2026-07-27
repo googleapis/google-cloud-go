@@ -18,6 +18,12 @@ import (
 	"math/rand/v2"
 )
 
+// defaultAfeRandomSubsetSize is the default K for K-choice random draws
+// in LeastInFlightAfePicker / LeastLatencyAfePicker when the caller
+// doesn't specify one. Two candidates ("power of two choices") is the
+// standard K-choice draw size.
+const defaultAfeRandomSubsetSize = 2
+
 // PickCandidate is one AFE the picker considered during a K-choice draw,
 // with the cost value the picker's decision rule used to score it.
 // Cost's interpretation depends on the picker in play: NumOutstanding

@@ -1,0 +1,553 @@
+// Copyright 2026 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// SessionPoolImpl core: struct, ctor, CheckoutSession/Invoke hot path,
+// Stats, UpdateConfig. Observability ring buffers → session_pool_debug.go;
+// hooks + Close + heartbeat → session_pool_lifecycle.go; scaling driver
+// + createSession → session_pool_scaling.go.
+
+package internal
+
+import (
+	"container/list"
+	"context"
+	"errors"
+	"fmt"
+	"sync"
+	"sync/atomic"
+	"time"
+
+	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	btopt "cloud.google.com/go/bigtable/internal/option"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
+)
+
+// ErrNoSessionsAvailable is returned by CheckoutSession when a parked
+// waiter is unblocked by ctx cancellation or deadline. Wraps ctx.Err()
+// so errors.Is against either the sentinel or the ctx cause holds.
+var ErrNoSessionsAvailable = errors.New("bigtable: no sessions available")
+
+// ErrConsecutiveFailures is returned by CheckoutSession when the pool's
+// consecutive-abnormal-close circuit breaker trips. All parked waiters
+// at trip time are woken with an error that either equals this sentinel
+// or wraps it via *consecutiveFailureError (which also carries the last
+// abnormal-close cause and its gRPC status code).
+var ErrConsecutiveFailures = errors.New("bigtable: session pool tripped consecutive-failure threshold")
+
+// consecutiveFailureError decorates ErrConsecutiveFailures with the last
+// abnormal-close error captured by the pool. It preserves both:
+//   - errors.Is(err, ErrConsecutiveFailures) — so retry/observability
+//     paths that already match the sentinel keep working.
+//   - status.Code(err) — inherited from the last abnormal-close error
+//     when that error is a gRPC status (e.g. FailedPrecondition when
+//     the server rejected OpenSession because the resource is still
+//     being created). Falls back to codes.Unknown otherwise.
+//
+// Only constructed via SessionPoolImpl.consecutiveFailureErr, which
+// guarantees inner != nil.
+type consecutiveFailureError struct {
+	inner error
+}
+
+func (e *consecutiveFailureError) Error() string {
+	return fmt.Sprintf("%s (last error: %v)", ErrConsecutiveFailures.Error(), e.inner)
+}
+
+func (e *consecutiveFailureError) Is(target error) bool {
+	return target == ErrConsecutiveFailures
+}
+
+func (e *consecutiveFailureError) Unwrap() error { return e.inner }
+
+// GRPCStatus lets status.Code / status.FromError extract the gRPC code
+// from the underlying cause. Without this shim, callers doing
+// status.Code(err) == codes.FailedPrecondition would see Unknown.
+// status.FromError always returns a non-nil *Status (Unknown on ok=false),
+// so no fallback needed.
+func (e *consecutiveFailureError) GRPCStatus() *status.Status {
+	st, _ := status.FromError(e.inner)
+	return st
+}
+
+// ErrPoolClosed is returned to any CheckoutSession caller parked on
+// the waiter queue when Close() runs. Distinct from
+// ErrNoSessionsAvailable (ctx-cancel during cold-start) and
+// ErrConsecutiveFailures (circuit trip) so operators can distinguish
+// "pool is going away" from "your ctx expired while waiting."
+var ErrPoolClosed = errors.New("bigtable: session pool is closed")
+
+// waiter is one parked CheckoutSession caller. Close-exactly-once is
+// guarded by waitersMu + w.elem: enqueued while elem != nil; both wake
+// paths hold waitersMu when they nil elem out.
+type waiter struct {
+	ready chan struct{}
+	elem  *list.Element // non-nil while enqueued; nil after dequeue
+	// err, when set before close(ready), fails the waiter with a
+	// specific error instead of prompting a re-pick (used by the
+	// consecutive-failure trip).
+	err error
+}
+
+// SessionPoolImpl implements a thread-safe session pool.
+type SessionPoolImpl struct {
+	mu     sync.Mutex
+	sizer  *PoolSizer
+	picker AfePicker
+	// sl owns the AFE-aware idle-session queues, per-AFE PeakEwma
+	// trackers, and the canonical set of active SessionHandles. sl has
+	// its own lock; sl methods never call back into SessionPoolImpl, so
+	// "never take p.mu while holding sl.mu" holds by construction.
+	sl     *sessionList
+	budget SessionThrottler
+	// startingSessions holds handles dialed via createSession that have
+	// not yet reached onActive; cleared on promotion or failed-start.
+	startingSessions map[*SessionHandle]struct{}
+	// pendingStarts counts createSession goroutines that haven't yet
+	// reached streamFactory success. Prevents back-to-back Ticks in
+	// the streamFactory window from re-requesting the same delta.
+	pendingStarts int
+	// spawns tracks pool-spawned goroutines (today: createSession
+	// workers) so Close can wait them out. Session-owned goroutines
+	// are tracked separately on Session.loops.
+	spawns            sync.WaitGroup
+	closed            bool
+	scalingInProgress bool
+	// minSessions / maxSessions are the server-driven pool bounds.
+	// Writes go under p.mu so PoolSnapshot reads a consistent pair;
+	// hot-path readers Load() without the lock (no cross-field invariant
+	// with picker/budget/threshold).
+	minSessions        atomic.Int32
+	maxSessions        atomic.Int32
+	streamFactory      func(ctx context.Context) (Stream, error)
+	openSessionRequest *spb.OpenSessionRequest
+	metadata           metadata.MD
+	sessionType        SessionType
+	poolName           string
+	startOnce          sync.Once
+	// tickPending debounces tickOnce so a burst of empty-pool kicks
+	// coalesces to at most one active Tick.
+	tickPending atomic.Bool
+	// poolID is baked into every session log name for the
+	// channelz → sessionz reverse link.
+	poolID uint64
+
+	// waitersCount is the live count of CheckoutSession callers parked
+	// at the pool boundary — the "pending vRPCs" signal for the sizer.
+	waitersCount atomic.Int32
+
+	// consecutiveFailures counts abnormal session closes since the last
+	// successful session-open (cleared in onActive). Crossing the
+	// threshold trips the pool: parked waiters are woken with
+	// ErrConsecutiveFailures.
+	consecutiveFailures         atomic.Int32
+	consecutiveFailureThreshold atomic.Int32
+
+	// lastAbnormalCloseErr holds the most recent abnormal-close raw error,
+	// captured in noteAbnormalCloseIfAny. When the breaker trips we wrap
+	// this into the ErrConsecutiveFailures poison so waiters see WHY
+	// (e.g. FailedPrecondition ... still being created) instead of only
+	// the generic sentinel.
+	lastAbnormalCloseErr atomic.Pointer[error]
+
+	// m holds observability-only state (counters, ring buffers,
+	// histograms) — see poolMetrics in session_pool_debug.go.
+	m poolMetrics
+
+	// waiters is a FIFO queue of parked CheckoutSession callers. Each
+	// free-session event wakes exactly one waiter, in insertion order.
+	// Cancellation removes the waiter so no wake-up token is dropped.
+	waitersMu sync.Mutex
+	waiters   *list.List // *waiter
+
+	// poolCtx scopes the pool's lifetime; wrapped (deadline stripped,
+	// cancellation preserved) into streamFactory, budget.Acquire, and
+	// Session.Start so teardown propagates.
+	poolCtx    context.Context
+	poolCancel context.CancelFunc
+}
+
+// noteVRpcOutcome forwards the outcome to the AFE's PeakEwma trackers
+// (OK-gated). The consecutive-failure counter is NOT reset here —
+// only a successful session-open (onActive) clears it. Resetting on
+// per-vRPC OK would let one long-lived healthy session mask a run
+// of failed opens and keep the breaker from tripping.
+func (p *SessionPoolImpl) noteVRpcOutcome(sh *SessionHandle, e2e, backend time.Duration, ok bool) {
+	p.sl.RecordVRpcOutcome(sh, e2e, backend, ok)
+}
+
+// NewSessionPoolImpl creates a new SessionPoolImpl. id is baked into
+// every session log name so channelz/sessionz can reverse-link back to
+// the pool that owns each session.
+func NewSessionPoolImpl(id uint64, poolName string, min, max int, streamFactory func(ctx context.Context) (Stream, error), openSessionRequest *spb.OpenSessionRequest, md metadata.MD, sessionType SessionType) *SessionPoolImpl {
+	poolCtx, poolCancel := context.WithCancel(context.Background())
+	pool := &SessionPoolImpl{
+		poolName:           poolName,
+		poolID:             id,
+		streamFactory:      streamFactory,
+		openSessionRequest: openSessionRequest,
+		metadata:           md,
+		startingSessions:   make(map[*SessionHandle]struct{}),
+		sessionType:        sessionType,
+		waiters:            list.New(),
+		poolCtx:            poolCtx,
+		poolCancel:         poolCancel,
+		sl:                 newSessionList(),
+	}
+	pool.m.afePickCounts = make(map[AfeID]int64)
+	pool.minSessions.Store(int32(min))
+	pool.maxSessions.Store(int32(max))
+
+	fetcher := func() *PoolStats { return pool.Stats() }
+	pool.sizer = NewPoolSizer(fetcher, min, max, 0.10)
+	// Bootstrap picker/budget/threshold with fallbacks. Every real
+	// caller registers via ClientConfigurationManager, which fires
+	// UpdateConfig synchronously and replaces these with server-driven
+	// values before the pool serves traffic.
+	pool.picker = pickerFromLoadBalancing(nil)
+	pool.budget = NewAdaptiveSessionThrottler(10, 10*time.Second)
+	pool.consecutiveFailureThreshold.Store(10)
+
+	return pool
+}
+
+// CheckoutSession returns a session ready to serve one vRPC. With
+// multiPlexingLimit=1 the pool only hands out a session whose outstanding
+// count is 0; if all are busy, the caller parks on the FIFO waiter queue
+// until a drainSlot wake fires.
+func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, error) {
+	// One-shot kick if the pool is empty. Cheap check; Tick
+	// gates on its own in-progress flag so a duplicate goroutine here
+	// exits immediately.
+	p.mu.Lock()
+	closed := p.closed
+	p.mu.Unlock()
+	if !closed && p.sl.ReadyCount() == 0 {
+		p.spawnTickOnce(p.poolCtx)
+	}
+
+	for {
+		// Snapshot closed + picker under p.mu; everything after runs
+		// outside the lock so concurrent CheckoutSession calls parallelize.
+		p.mu.Lock()
+		if p.closed {
+			p.mu.Unlock()
+			return nil, ErrPoolClosed
+		}
+		picker := p.picker
+		p.mu.Unlock()
+
+		// Two-tier pick: picker chooses an AFE from the ready snapshot,
+		// then sessionList dequeues one idle session in that AFE.
+		ready := p.sl.ReadyAfes()
+		pickerName := picker.Name()
+		AfeID, picked, decision := picker.PickAfe(ready)
+		p.recordPickDecision(decision, pickerName)
+		if picked {
+			if idle := p.sl.Checkout(AfeID); idle != nil {
+				idle.IncOutstanding()
+				idle.IncPicks()
+				return idle, nil
+			}
+			// Picker chose this AFE but its ready session was taken
+			// (concurrent Checkout / OnClosing eviction). Counter tells
+			// us how often it's actually hurting throughput.
+			recordDebugTag(tagSessionPoolPickLostRace)
+		}
+
+		// Slow path: picker returned nil. Dying sessions leave sl.readyCount
+		// the instant they transition out of Ready (OnClosing), so the
+		// maxSessions gate reflects only live-or-starting sessions —
+		// a miss just means all live sessions are busy.
+		if p.sl.ReadyCount() < int(p.maxSessions.Load()) {
+			p.spawnTickOnce(p.poolCtx)
+		}
+
+		// Park in the FIFO waiter queue. Each free-session event wakes
+		// exactly one waiter (queue head). Bracket with waitersCount so
+		// the sizer (via Stats()) sees real queue depth.
+		w := &waiter{ready: make(chan struct{})}
+		p.waitersMu.Lock()
+		w.elem = p.waiters.PushBack(w)
+		p.waitersMu.Unlock()
+
+		p.waitersCount.Add(1)
+		select {
+		case <-ctx.Done():
+			p.waitersCount.Add(-1)
+			// Remove from queue so a subsequent free-session wake
+			// doesn't burn on a caller that's already given up.
+			p.removeWaiter(w)
+			return nil, fmt.Errorf("%w: %w", ErrNoSessionsAvailable, ctx.Err())
+		case <-w.ready:
+			p.waitersCount.Add(-1)
+			// A poisoned wake (drainWaitersWithErr) sets w.err before
+			// closing w.ready. Normal signalFree leaves it nil so the
+			// caller loops back to re-pick.
+			if w.err != nil {
+				return nil, w.err
+			}
+			// Woken by signalFree. Loop back to re-pick.
+		}
+	}
+}
+
+// removeWaiter pulls w out of the waiter queue if still present. Safe
+// to call from the ctx-cancel path even when signalFree has already
+// removed the waiter (checks w.elem — nil means already dequeued by
+// signalFree, which will have closed w.ready).
+func (p *SessionPoolImpl) removeWaiter(w *waiter) {
+	p.waitersMu.Lock()
+	if w.elem != nil {
+		p.waiters.Remove(w.elem)
+		w.elem = nil
+	}
+	p.waitersMu.Unlock()
+}
+
+// signalFree wakes exactly one parked CheckoutSession waiter (the FIFO
+// queue head). No-op when the queue is empty. Called from OnActive and
+// from every drainSlot success via SessionHandle.onSlotDrained
+// (SESSION_SPEC.md #2). Never blocks: wake channel is per-waiter.
+func (p *SessionPoolImpl) signalFree() {
+	p.waitersMu.Lock()
+	if e := p.waiters.Front(); e != nil {
+		w := e.Value.(*waiter)
+		p.waiters.Remove(e)
+		w.elem = nil
+		close(w.ready)
+	}
+	p.waitersMu.Unlock()
+}
+
+// drainWaitersWithErr wakes every parked CheckoutSession caller with
+// the given error. Returns the number of waiters woken. Safe on empty.
+func (p *SessionPoolImpl) drainWaitersWithErr(err error) int {
+	p.waitersMu.Lock()
+	defer p.waitersMu.Unlock()
+	n := 0
+	for {
+		e := p.waiters.Front()
+		if e == nil {
+			return n
+		}
+		w := e.Value.(*waiter)
+		p.waiters.Remove(e)
+		w.elem = nil
+		w.err = err
+		close(w.ready)
+		n++
+	}
+}
+
+// Stats snapshots ready/inUse/starting/pending counts.
+func (p *SessionPoolImpl) Stats() *PoolStats {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	ready := 0
+	inUse := 0
+	for _, sh := range p.sl.AllHandles() {
+		// Same nil-guard shape as sampleActiveUptimes and sweepStuckSessions
+		// in session_pool_lifecycle.go — sl.AllHandles is a snapshot and
+		// the underlying handle can be torn down mid-iteration by a
+		// concurrent teardown that beat this walk to sl.mu.
+		if sh == nil || sh.session == nil {
+			continue
+		}
+		if sh.session.State() == StateReady {
+			ready++
+		}
+		if sh.outstanding.Load() > 0 {
+			inUse++
+		}
+	}
+
+	return &PoolStats{
+		ReadyCount: ready,
+		InUseCount: inUse,
+		// StartingCount = sessions past streamFactory (in startingSessions)
+		// PLUS goroutines Tick has spawned but that haven't yet reached
+		// the transfer point. Both count as "in-flight scale-up capacity"
+		// so the sizer doesn't request duplicate delta in a burst.
+		StartingCount: len(p.startingSessions) + p.pendingStarts,
+		// PendingCount is the true pool-boundary queue depth —
+		// callers parked inside CheckoutSession waiting on
+		// freeSignal. The pending-rpc count is the input
+		// to the sizer.
+		PendingCount: int(p.waitersCount.Load()),
+	}
+}
+
+// UpdateConfig dynamically adjusts the pool size constraints and budget governor limits at runtime.
+// Callers are serialized by ClientConfigurationManager, so we don't
+// bracket min/max as an atomic pair here.
+func (p *SessionPoolImpl) UpdateConfig(config *spb.SessionClientConfiguration_SessionPoolConfiguration) {
+	p.m.listenerFires.Add(1)
+	p.mu.Lock()
+	// Stores stay under p.mu so PoolSnapshot (also under p.mu) reads a
+	// consistent min/max pair. Hot-path readers still Load() without
+	// the lock — atomic makes both directions safe.
+	p.minSessions.Store(int32(config.MinSessionCount))
+	p.maxSessions.Store(int32(config.MaxSessionCount))
+	if config.LoadBalancingOptions != nil {
+		p.picker = pickerFromLoadBalancing(config.LoadBalancingOptions)
+	}
+	p.mu.Unlock()
+
+	p.sizer.UpdateConfig(config)
+
+	// Budget was bootstrapped with a placeholder; UpdateConfig on
+	// registration replaces it with the server-driven ceiling + penalty.
+	if budget := int(config.GetNewSessionCreationBudget()); budget > 0 {
+		penalty := config.GetNewSessionCreationPenalty().AsDuration()
+		p.budget.UpdateConfig(budget, penalty)
+	}
+
+	// Consecutive-failure threshold: server-driven cap on how many
+	// back-to-back abnormal session closes the pool tolerates before
+	// failing all parked waiters. Zero/negative preserves the bootstrap
+	// default.
+	if thr := config.GetConsecutiveSessionFailureThreshold(); thr > 0 {
+		p.consecutiveFailureThreshold.Store(thr)
+	}
+}
+
+// pickerFromLoadBalancing builds an AfePicker from server-driven
+// LoadBalancingOptions. A nil lbo (or unknown strategy) returns the
+// default LeastInFlight picker with K=defaultAfeRandomSubsetSize, so
+// bootstrap paths and tests that skip the config wiring still work.
+// Sole LBO → picker mapping; every picker with a K knob reads its
+// RandomSubsetSize from the corresponding oneof.
+func pickerFromLoadBalancing(lbo *spb.LoadBalancingOptions) AfePicker {
+	if lbo == nil {
+		return NewLeastInFlightAfePicker(defaultAfeRandomSubsetSize)
+	}
+	switch opt := lbo.LoadBalancingStrategy.(type) {
+	case *spb.LoadBalancingOptions_Random_:
+		return NewSimpleAfePicker()
+	case *spb.LoadBalancingOptions_LeastInFlight_:
+		k := defaultAfeRandomSubsetSize
+		if opt.LeastInFlight != nil && opt.LeastInFlight.RandomSubsetSize > 0 {
+			k = int(opt.LeastInFlight.RandomSubsetSize)
+		}
+		return NewLeastInFlightAfePicker(k)
+	case *spb.LoadBalancingOptions_PeakEwma_:
+		k := defaultAfeRandomSubsetSize
+		if opt.PeakEwma != nil && opt.PeakEwma.RandomSubsetSize > 0 {
+			k = int(opt.PeakEwma.RandomSubsetSize)
+		}
+		return NewLeastLatencyAfePicker(k)
+	default:
+		return NewLeastInFlightAfePicker(defaultAfeRandomSubsetSize)
+	}
+}
+
+// Invoke runs one vRPC on a checked-out session. Server RetryInfo
+// travels via gRPC status details on the returned error.
+func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req interface{}) (InvokeResult, error) {
+	checkoutStart := time.Now()
+	sh, err := p.CheckoutSession(ctx)
+	if err != nil {
+		// Record checkout failure so pool-exhaustion incidents show up
+		// in sessionz's slow-vRPC table and latency histograms.
+		p.recordCheckoutFailure(checkoutStart, desc, err)
+		// Attributes the resulting downstream TagSessionAttemptNilClusterInfo
+		// to the pool checkout-failure exit — otherwise the nil at
+		// stampAttempt is indistinguishable from "session picked but
+		// returned nil". Dominates during pool cold-start warmup.
+		recordDebugTag(tagSessionPoolCheckoutFailedCINil)
+		return InvokeResult{}, err
+	}
+	poolWait := time.Since(checkoutStart)
+	// Anchor Latency at checkoutStart so recorded latency includes queue
+	// wait (user-visible time).
+	start := checkoutStart
+	// Session release is driven by the session's OnSlotDrained hook
+	// (installed at createSession); this defer only decrements the caller's
+	// in-flight counter and feeds the per-AFE PeakEwma with the outcome.
+	// The AFE-wake fires from the response handler BEFORE this defer runs,
+	// so pickers may see pre-update EWMAs for one tick — accepted lag.
+	var (
+		invokeErr  error
+		backendDur time.Duration
+		latency    time.Duration
+	)
+	defer func() {
+		sh.DecOutstanding()
+		p.noteVRpcOutcome(sh, latency, backendDur, invokeErr == nil)
+	}()
+
+	var result InvokeResult
+	result, invokeErr = sh.session.Invoke(ctx, desc, req)
+	// PeerInfo is set once at session-open and never mutated; a shared
+	// read here lets callers stamp per-attempt transport labels without
+	// reaching back through the pool.
+	result.PeerInfo = sh.session.PeerInfo()
+	latency = time.Since(start)
+	// Pool-level histograms feed the debug UI (per-session ring buffers
+	// are too small). BackendLatency only records when the server
+	// populated Stats; TotalLatency records for every call.
+	p.m.totalLatencyHist.record(latency)
+	if result.Stats != nil && result.Stats.BackendLatency != nil {
+		backendDur = result.Stats.BackendLatency.AsDuration()
+		p.m.backendLatencyHist.record(backendDur)
+	}
+	// TransportLatency (wire + AFE + client-decode overhead) is now
+	// computed at the source in Session.processResult as
+	// WireLatency − BackendLatency (guarded > 0). Zero here means the
+	// server didn't populate Stats, the call errored pre-Recv, or the
+	// subtraction was non-positive (clock skew) — all cases we skip
+	// from the per-AFE transport-overhead histograms so p50 isn't
+	// dragged toward 0.
+	if result.TransportLatency > 0 {
+		p.m.transportLatencyHist.record(result.TransportLatency)
+		sh.session.RecordTransportOverhead(ctx, desc.Method(), result.TransportLatency)
+	}
+	if latency > defaultSlowThreshold {
+		ev := SlowVRpcEvent{
+			At:               start,
+			Method:           desc.Method(),
+			Latency:          latency,
+			Session:          sh.session.LogName(),
+			Success:          invokeErr == nil,
+			PoolWait:         poolWait,
+			BackendLatency:   backendDur,
+			TransportLatency: result.TransportLatency,
+			RPCIDOnSession:   result.RPCIDOnSession,
+		}
+		ev.SessionAge = start.Sub(sh.session.StartedAt())
+		// PeerInfo on the row makes cohort patterns (e.g. failures
+		// clustered on one AFE) visible without a per-session cross-ref.
+		ev.Peer = peerInfoToSnapshot(sh.session.PeerInfo())
+		ev.RemoteAddr = sh.session.RemoteAddr()
+		if invokeErr != nil {
+			// stdlib context errors don't implement GRPCStatus, so
+			// status.Code returns Unknown — classify explicitly so
+			// deadline/cancel rows label correctly.
+			switch {
+			case errors.Is(invokeErr, context.DeadlineExceeded):
+				ev.ErrCode = "DeadlineExceeded"
+			case errors.Is(invokeErr, context.Canceled):
+				ev.ErrCode = "Canceled"
+			default:
+				ev.ErrCode = status.Code(invokeErr).String()
+			}
+			btopt.Debugf(nil, "POOL %s slow vRPC failed method=%s session=%s rpc_id=%d code=%s latency=%v session_age=%v backend=%v raw_err=%v",
+				p.poolName, ev.Method, ev.Session, ev.RPCIDOnSession, ev.ErrCode, ev.Latency, ev.SessionAge, ev.BackendLatency, invokeErr)
+		}
+		p.recordSlowVRpc(ev)
+	}
+	return result, invokeErr
+}
