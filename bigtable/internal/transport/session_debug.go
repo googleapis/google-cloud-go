@@ -181,7 +181,7 @@ type SessionEvent struct {
 const maxSessionEvents = 64
 
 // recordEvent appends a SessionEvent to the per-session ring buffer.
-// Safe to call from any goroutine (readLoop, heartBeatLoop, etc.). Uses
+// Safe to call from any goroutine (readLoop, heartbeatLoop, etc.). Uses
 // the same wrap-index scheme as latencySamples so an at-cap append is
 // O(1), not an O(N) shift.
 func (s *Session) recordEvent(kind SessionEventKind, format string, args ...interface{}) {

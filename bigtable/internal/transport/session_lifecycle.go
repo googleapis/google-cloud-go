@@ -54,10 +54,19 @@ func (s *Session) Start(ctx context.Context, req *spb.OpenSessionRequest) error 
 		// failures) treats a failed OpenSession send the same as any
 		// other transport-side loss. errors.Is still resolves the
 		// underlying send error via sessionErr.Unwrap.
+		//
+		// TODO(sushanb): distinguish Unimplemented from generic
+		// transport failure so the client can fall back to the unary
+		// (non-session) path when the server rejects OpenSession
+		// with codes.Unimplemented. Today every Send failure — network
+		// drop, backpressure, Unimplemented — is folded into
+		// Unavailable, which retries indefinitely against a server
+		// that will never accept the RPC. Follow-up when the fallback
+		// path lands.
 		return unavailable(err, "session OpenSession request failed: %v", err)
 	}
 
-	// Fire onStart BEFORE spawning readLoop/heartBeatLoop so hook
+	// Fire onStart BEFORE spawning readLoop/heartbeatLoop so hook
 	// ordering (SESSION_SPEC #4) is enforced by construction: on a fast
 	// handshake, readLoop can Recv the OpenSessionResponse and fire
 	// onActive before Start returns; if we spawned the loops first, the
@@ -67,7 +76,7 @@ func (s *Session) Start(ctx context.Context, req *spb.OpenSessionRequest) error 
 	s.hooks.onStart(ctx)
 
 	go s.readLoop(ctx)
-	go s.heartBeatLoop(ctx)
+	go s.heartbeatLoop(ctx)
 	return nil
 }
 
@@ -183,7 +192,7 @@ func (s *Session) Close(ctx context.Context, req *spb.CloseSessionRequest) error
 		case <-ctx.Done():
 			s.ForceClose(&spb.CloseSessionRequest{
 				Reason:      spb.CloseSessionRequest_CLOSE_SESSION_REASON_USER,
-				Description: "close context deadline exceeded during drain",
+				Description: fmt.Sprintf("close context done during drain: %v", ctx.Err()),
 			})
 			return ctx.Err()
 		}
@@ -410,7 +419,7 @@ func (s *Session) handleGoAway(goAway *spb.GoAwayResponse) {
 		defer cancel()
 		_ = s.Close(ctx, &spb.CloseSessionRequest{
 			Reason:      spb.CloseSessionRequest_CLOSE_SESSION_REASON_GOAWAY,
-			Description: "client teardown after server GOAWAY",
+			Description: "session closing after server GOAWAY",
 		})
 	}()
 }
@@ -501,7 +510,7 @@ func streamEndReason(err error) string {
 // looks like something we did NOT initiate cleanly. Clean paths:
 // EOF (server graceful), Canceled (client teardown / ctx cancel), and
 // the explicit client-initiated reasons stamped by handleGoAway /
-// heartBeatLoop / handleErrorResponse. Anything else — a StreamEnd
+// heartbeatLoop / handleErrorResponse. Anything else — a StreamEnd
 // tagged with a transport-failure code, or the bare "StreamEnd" that
 // indicates Recv returned nil (which shouldn't happen) — is abnormal
 // and worth flagging.
@@ -514,12 +523,12 @@ func isAbnormalCloseReason(reason string) bool {
 	return strings.HasPrefix(reason, "StreamEnd")
 }
 
-// heartBeatLoop watches the session's heartbeat deadline using a single Timer
+// heartbeatLoop watches the session's heartbeat deadline using a single Timer
 // that re-arms itself when a frame extends the deadline. The watchdog is
 // only enforced while at least one VRPC is in flight: the server emits
 // Heartbeats during long-running VRPCs, so an idle session legitimately
 // receives no heartbeats and must not be torn down.
-func (s *Session) heartBeatLoop(ctx context.Context) {
+func (s *Session) heartbeatLoop(ctx context.Context) {
 	timer := time.NewTimer(time.Until(time.Unix(0, s.nextHeartbeatDeadlineNano.Load())))
 	defer timer.Stop()
 

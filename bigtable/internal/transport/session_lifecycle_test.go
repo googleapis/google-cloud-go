@@ -412,7 +412,7 @@ func TestHeartBeatLoop_ForceClosesOnMissedHeartbeat(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	go s.heartBeatLoop(ctx)
+	go s.heartbeatLoop(ctx)
 
 	waitFor(t, time.Second, func() bool { return s.State() == StateClosed }, "ForceClose from missed heartbeat")
 
@@ -440,7 +440,7 @@ func TestHeartBeatLoop_HeartbeatsKeepInflightVRPCAlive(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	go s.heartBeatLoop(ctx)
+	go s.heartbeatLoop(ctx)
 
 	for i := 0; i < 8; i++ {
 		time.Sleep(25 * time.Millisecond)
@@ -466,7 +466,7 @@ func TestHeartBeatLoop_IdleSessionIsNotTornDown(t *testing.T) {
 	defer cancel()
 	done := make(chan struct{})
 	go func() {
-		s.heartBeatLoop(ctx)
+		s.heartbeatLoop(ctx)
 		close(done)
 	}()
 
@@ -478,7 +478,7 @@ func TestHeartBeatLoop_IdleSessionIsNotTornDown(t *testing.T) {
 	select {
 	case <-done:
 	case <-time.After(time.Second):
-		t.Fatal("heartBeatLoop did not exit on ctx cancel")
+		t.Fatal("heartbeatLoop did not exit on ctx cancel")
 	}
 }
 
@@ -489,14 +489,14 @@ func TestHeartBeatLoop_ExitsOnCtxCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	done := make(chan struct{})
 	go func() {
-		s.heartBeatLoop(ctx)
+		s.heartbeatLoop(ctx)
 		close(done)
 	}()
 	cancel()
 	select {
 	case <-done:
 	case <-time.After(time.Second):
-		t.Fatal("heartBeatLoop did not exit on ctx cancel")
+		t.Fatal("heartbeatLoop did not exit on ctx cancel")
 	}
 	if s.State() != StateReady {
 		t.Errorf("state = %v, want StateReady (no force-close on ctx exit)", s.State())
