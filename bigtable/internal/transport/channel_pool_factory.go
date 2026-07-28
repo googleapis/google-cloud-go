@@ -194,8 +194,6 @@ func CreateBigtableChannelPool(
 			}
 			return NewBigtableConn(grpcConn), nil
 		}
-		// primer==nil (SkipChannelPrimer) makes the DAC skip its Prime
-		// step and rely on the ALTS handshake outcome alone.
 		checker := NewPingAndWarmDirectAccessChecker(
 			directAccessDialer,
 			primer,
