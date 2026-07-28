@@ -31,6 +31,7 @@ import (
 	"google.golang.org/grpc/credentials/oauth"
 	"google.golang.org/grpc/status"
 
+	bigtablepb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal/directaccess"
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	gcpmetadata "cloud.google.com/go/compute/metadata"
@@ -62,6 +63,16 @@ type DirectAccessChecker interface {
 	// after CheckCompatibility has reported compatibility. Only consulted
 	// when CheckCompatibility returned true.
 	Dialer() func() (*BigtableConn, error)
+
+	// LastProbeConfig returns the ClientConfiguration returned by the
+	// most recent CheckCompatibility probe, or nil if the probe never
+	// returned a body. Only the session-flavored checker
+	// (getClientConfigDirectAccessChecker) produces a non-nil value —
+	// pingAndWarm probes a warm-only RPC with no ClientConfiguration
+	// body, and the disabled stub never probes. Callers use it to seed
+	// downstream state (e.g., ClientConfigurationManager) without an
+	// extra RPC on client construction.
+	LastProbeConfig() *bigtablepb.ClientConfiguration
 }
 
 // newDirectAccessEligibleGauge constructs the direct_access/compatible gauge
@@ -122,6 +133,13 @@ func newPingAndWarmDirectAccessChecker(
 // Dialer returns the configured direct-access dialer.
 func (c *pingAndWarmDirectAccessChecker) Dialer() func() (*BigtableConn, error) {
 	return c.dialer
+}
+
+// LastProbeConfig always returns nil for the pingAndWarm variant —
+// PingAndWarm's response carries no ClientConfiguration body, so
+// there's nothing to reuse.
+func (c *pingAndWarmDirectAccessChecker) LastProbeConfig() *bigtablepb.ClientConfiguration {
+	return nil
 }
 
 // CheckCompatibility opens a single probe connection, primes it, and decides
@@ -395,6 +413,12 @@ func (c *disabledDirectAccessChecker) CheckCompatibility(ctx context.Context) (*
 // Dialer returns nil; never consulted by the pool because CheckCompatibility
 // returns false.
 func (c *disabledDirectAccessChecker) Dialer() func() (*BigtableConn, error) {
+	return nil
+}
+
+// LastProbeConfig always returns nil — the disabled checker never
+// probes, so there's no response body to hand back.
+func (c *disabledDirectAccessChecker) LastProbeConfig() *bigtablepb.ClientConfiguration {
 	return nil
 }
 
