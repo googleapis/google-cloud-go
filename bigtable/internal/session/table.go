@@ -274,9 +274,10 @@ func stampAttempt(ctx context.Context, result btransport.InvokeResult) {
 	if !result.SentAt.IsZero() && !att.StartTime().IsZero() {
 		att.SetClientBlockingLatency(metrics.ConvertToMs(result.SentAt.Sub(att.StartTime())))
 	}
-	if result.Stats != nil && result.Stats.BackendLatency != nil {
-		att.SetServerLatency(metrics.ConvertToMs(result.Stats.GetBackendLatency().AsDuration()))
-	}
+	// Session-path ServerLatency is 0 by design; see
+	// CLIENT_SIDE_METRICS_SPEC.md #2 ("server_latencies" + connectivity
+	// interlock) for why.
+	att.SetServerLatency(0)
 	if result.PeerInfo != nil {
 		att.SetTransportType(btransport.TransportTypeName(result.PeerInfo.GetTransportType()))
 		att.SetTransportRegion(result.PeerInfo.GetApplicationFrontendRegion())
