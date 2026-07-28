@@ -17,7 +17,9 @@ package internal
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
+	"io"
 	"strings"
 	"time"
 
@@ -467,7 +469,16 @@ func (s *Session) handleClose(err error) {
 	// sessionz's "Unspecified" bucket. setCloseReason is CAS-once, so
 	// upstream stampers (GoAway, MissedHeartbeat, Error, User) still win.
 	if err != nil {
-		s.setCloseReason("StreamEnd:" + status.Code(err).String())
+		// Special-case io.EOF (graceful server-side shutdown): status.Code(io.EOF)
+		// returns codes.Unknown, which would render as "StreamEnd:Unknown" and
+		// hide a distinct-and-common signal. Ctx errors (Canceled,
+		// DeadlineExceeded) are already mapped by grpc-go's status helpers so
+		// the default branch covers them correctly.
+		if errors.Is(err, io.EOF) {
+			s.setCloseReason("StreamEnd:EOF")
+		} else {
+			s.setCloseReason("StreamEnd:" + status.Code(err).String())
+		}
 	}
 	s.setCloseErr(err)
 	inFlight := 0
