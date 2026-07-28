@@ -29,13 +29,22 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
+	btopt "cloud.google.com/go/bigtable/internal/option"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	otelmetric "go.opentelemetry.io/otel/metric"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
+
+// defaultSessionChannelPoolSize matches the classic pool default in
+// internal/transport/channel_pool_factory.go. Kept as a local const so
+// session.NewClient can honour option.WithGRPCConnectionPool(N) or fall
+// back to the same 10-channel default without importing an unexported
+// symbol from transport.
+const defaultSessionChannelPoolSize = 10
 
 // Standard gRPC routing headers — duplicated from the bigtable package
 // constants (package boundary means we can't import them). Keep the
@@ -214,37 +223,65 @@ func NewClient(
 		requestParamsHeader, fmt.Sprintf("name=%s", url.QueryEscape(fullInstance)),
 	), directAccessMD)
 
-	// Delegate pool wiring (dial + Prime + BigtableChannelPool +
-	// MetricsReporter + DSM + ConnectionRecycler) to the shared factory
-	// in internal/transport. Session-specific bits: always-on monitors,
-	// direct-access opts layered as a separate slice (helper appends
-	// AllowHardBoundTokens("ALTS") on the probe dialer), and
-	// enableBigtableConnPool=true — session client always wants the
-	// managed pool, never falls through to a plain gtransport.DialPool.
-	directAccessOpts := []option.ClientOption{
+	// Session pool bypasses CreateAndStartManagedChannelPool so we can
+	// plug in the session-flavored primer + direct-access checker
+	// directly instead of adding config knobs to the classic helper.
+	// NoOpChannelPrimer skips PingAndWarm on every sub-channel —
+	// session channels warm on-demand via OpenSession bidi streams.
+	// NewSessionClientDirectAccessChecker probes with
+	// GetClientConfiguration (the same RPC ClientConfigurationManager
+	// polls) instead of PingAndWarm, matching the actual on-wire RPC
+	// mix a session pool serves.
+	poolSize := defaultSessionChannelPoolSize
+	if uResolver, resErr := internaloption.NewUnsafeResolver(opts...); resErr == nil {
+		if n := uResolver.ResolvedGRPCConnPoolSize(); n != 0 {
+			poolSize = n
+		}
+	}
+	dial := func() (*btransport.BigtableConn, error) {
+		grpcConn, dialErr := gtransport.Dial(ctx, opts...)
+		if dialErr != nil {
+			return nil, dialErr
+		}
+		return btransport.NewBigtableConn(grpcConn), nil
+	}
+	daDialOpts := append(append([]option.ClientOption{}, opts...),
 		internaloption.EnableDirectPath(true),
 		internaloption.EnableDirectPathXds(),
+		internaloption.AllowHardBoundTokens("ALTS"))
+	daDial := func() (*btransport.BigtableConn, error) {
+		grpcConn, dialErr := gtransport.Dial(ctx, daDialOpts...)
+		if dialErr != nil {
+			return nil, dialErr
+		}
+		return btransport.NewBigtableConn(grpcConn), nil
 	}
-	managed, err := btransport.CreateAndStartManagedChannelPool(
-		ctx, project, instance,
-		btransport.ChannelPoolConfig{
-			AppProfile: appProfile,
-			// Session channels warm on-demand via OpenSession bidi
-			// streams — no need for an eager PingAndWarm on every
-			// sub-channel. This also nils out the DAC's primer so its
-			// startup probe skips Prime and relies on the ALTS
-			// handshake alone.
-			SkipChannelPrimer: true,
-		},
-		factory.OtelMeterProvider,
-		opts, directAccessOpts, directAccessMD,
+
+	if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), poolSize); err != nil {
+		return nil, fmt.Errorf("session.NewClient: invalid DynamicChannelPoolConfig: %w", err)
+	}
+	pool, err := btransport.NewBigtableChannelPool(
+		ctx,
+		poolSize,
+		btopt.BigtableLoadBalancingStrategy(),
+		dial,
 		time.Now(),
-		true, // enableBigtableConnPool
+		btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
+		btransport.WithMeterProvider(factory.OtelMeterProvider),
+		btransport.WithChannelPrimer(btransport.NoOpChannelPrimer{}),
+		btransport.WithDirectAccessChecker(btransport.NewSessionClientDirectAccessChecker(
+			daDial, fullInstance, appProfile, directAccessMD,
+			factory.OtelMeterProvider, nil,
+		)),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("session.NewClient: %w", err)
+		return nil, fmt.Errorf("session.NewClient: NewBigtableChannelPool: %w", err)
 	}
-	pool := managed.Pool
+	dsm := btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), pool)
+	dsm.Start(ctx)
+	connRecycler := btransport.NewConnectionRecycler(btopt.DefaultConnectionRecycleConfig(), pool)
+	connRecycler.Start(ctx)
+	managed := btransport.NewManagedChannelPool(pool, dsm, connRecycler)
 	stub := btpb.NewBigtableClient(pool)
 
 	backgroundCtx, cancel := context.WithCancel(context.Background())

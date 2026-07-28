@@ -45,12 +45,6 @@ type ChannelPoolConfig struct {
 	DisableDynamicChannelPool bool
 	DisableConnectionRecycler bool
 	DisableDirectAccess       bool
-	// SkipChannelPrimer disables PingAndWarm priming on the pool AND on
-	// the direct-access compatibility probe. Session-based clients set
-	// this true because their channels warm on-demand via OpenSession
-	// bidi streams — an eager PingAndWarm on every session sub-channel
-	// is redundant work.
-	SkipChannelPrimer bool
 }
 
 // ManagedChannelPool encapsulates a connection pool along with its lifecycle monitors.
@@ -58,6 +52,14 @@ type ManagedChannelPool struct {
 	Pool         gtransport.ConnPool
 	Dsm          *DynamicScaleMonitor
 	ConnRecycler *ConnectionRecycler
+}
+
+// NewManagedChannelPool bundles a pool with its lifecycle monitors so callers
+// that hand-roll pool construction (e.g., the session client) get the same
+// "these three ship together" invariant as CreateAndStartManagedChannelPool
+// enforces for the classic path. Either monitor may be nil.
+func NewManagedChannelPool(pool gtransport.ConnPool, dsm *DynamicScaleMonitor, connRecycler *ConnectionRecycler) ManagedChannelPool {
+	return ManagedChannelPool{Pool: pool, Dsm: dsm, ConnRecycler: connRecycler}
 }
 
 // Close stops all associated monitors/recyclers and closes the underlying pool.
@@ -163,19 +165,15 @@ func CreateBigtableChannelPool(
 	// connection factory (via WithChannelPrimer) and the direct-access
 	// compatibility checker. Keeping the (instanceName, appProfile,
 	// featureFlagsMD) tuple in one place avoids the three-arg drift between
-	// the two consumers. Session-based clients skip both wire-ups via
-	// SkipChannelPrimer — their channels warm on-demand via OpenSession.
-	var primer ChannelPrimer
-	if !config.SkipChannelPrimer {
-		primer = newPingAndWarmChannelPrimer(fullInstanceName, config.AppProfile, directAccessMD)
-	}
+	// the two consumers. Session-flavored pools bypass this helper
+	// entirely — they construct NewBigtableChannelPool directly with
+	// NoOpChannelPrimer + NewSessionClientDirectAccessChecker.
+	primer := newPingAndWarmChannelPrimer(fullInstanceName, config.AppProfile, directAccessMD)
 
 	poolOpts := []BigtableChannelPoolOption{
 		WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
 		WithMeterProvider(otelMeterProvider),
-	}
-	if primer != nil {
-		poolOpts = append(poolOpts, WithChannelPrimer(primer))
+		WithChannelPrimer(primer),
 	}
 
 	// Pluggable Direct Access strategy: the classic channel pool factory uses
