@@ -413,3 +413,43 @@ func TestSessionClient_DebugAccessors(t *testing.T) {
 		t.Errorf("LoadBalancingSnapshots() on fresh client = %v, want empty", snaps)
 	}
 }
+
+// TestPoolKey_DisplayName pins the "<resource-id>-<PERM>" contract for
+// the session_name OTel metric label + sessionz UI. If this test
+// changes, coordinate with dashboard owners — session_name is a public
+// metric label.
+func TestPoolKey_DisplayName(t *testing.T) {
+	tests := []struct {
+		name string
+		key  poolKey
+		want string
+	}{
+		{"table read", poolKey{"table:my-table", permissionRead}, "my-table-READ"},
+		{"table write", poolKey{"table:my-table", permissionWrite}, "my-table-WRITE"},
+		{"authorized view read", poolKey{"av:my-table:my-view", permissionRead}, "my-table/my-view-READ"},
+		{"authorized view write", poolKey{"av:my-table:my-view", permissionWrite}, "my-table/my-view-WRITE"},
+		{"authorized view — same view id, different tables must not collide",
+			poolKey{"av:other-table:my-view", permissionRead}, "other-table/my-view-READ"},
+		{"materialized view read", poolKey{"mv:my-mat-view", permissionRead}, "my-mat-view-READ"},
+		{"table id with dashes and dots", poolKey{"table:tbl-1.foo", permissionRead}, "tbl-1.foo-READ"},
+		// Unknown prefix falls through to the raw resource string so
+		// operators still get a legible label even if a future resource
+		// kind hasn't been wired into displayResource yet.
+		{"unknown prefix falls through", poolKey{"future-kind:xyz", permissionRead}, "future-kind:xyz-READ"},
+		// Malformed inputs: pin current fallback behavior so nobody
+		// silently changes to a panic. In practice these can't be
+		// produced by any of the Open* call sites; the assertions are
+		// defensive-programming contracts on displayResource.
+		{"empty resource", poolKey{"", permissionRead}, "-READ"},
+		{"empty table id after prefix", poolKey{"table:", permissionRead}, "-READ"},
+		{"empty view id after av prefix", poolKey{"av:t:", permissionRead}, "t/-READ"},
+		{"empty view id after mv prefix", poolKey{"mv:", permissionRead}, "-READ"},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := tc.key.displayName(); got != tc.want {
+				t.Errorf("displayName() = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
