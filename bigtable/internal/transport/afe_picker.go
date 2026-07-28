@@ -18,6 +18,12 @@ import (
 	"math/rand/v2"
 )
 
+// defaultAfeRandomSubsetSize is the default K for K-choice random draws
+// in LeastInFlightAfePicker / LeastLatencyAfePicker when the caller
+// doesn't specify one. Two candidates ("power of two choices") is the
+// standard K-choice draw size.
+const defaultAfeRandomSubsetSize = 2
+
 // PickCandidate is one AFE the picker considered during a K-choice draw,
 // with the cost value the picker's decision rule used to score it.
 // Cost's interpretation depends on the picker in play: NumOutstanding
@@ -61,25 +67,34 @@ type AfePicker interface {
 }
 
 // SimpleAfePicker chooses an AFE uniformly at random from the ready set.
-type SimpleAfePicker struct{}
+type SimpleAfePicker struct {
+	// recordCandidates gates PickDecision.Candidates construction.
+	// Owned by SessionPoolImpl at construction; matches
+	// SessionPoolImpl.debugEnabled. When false, PickDecision returns
+	// Winner+Reason only — Candidates stays nil so the per-pick slice
+	// allocation is skipped.
+	recordCandidates bool
+}
 
 // NewSimpleAfePicker constructs a SimpleAfePicker.
-func NewSimpleAfePicker() *SimpleAfePicker { return &SimpleAfePicker{} }
+func NewSimpleAfePicker(recordCandidates bool) *SimpleAfePicker {
+	return &SimpleAfePicker{recordCandidates: recordCandidates}
+}
 
 // Name returns "simple".
 func (SimpleAfePicker) Name() string { return "simple" }
 
 // PickAfe uniformly-at-random picks one bucket from ready.
-func (SimpleAfePicker) PickAfe(ready []AfeSnapshot) (AfeID, bool, PickDecision) {
+func (p SimpleAfePicker) PickAfe(ready []AfeSnapshot) (AfeID, bool, PickDecision) {
 	if len(ready) == 0 {
 		return 0, false, PickDecision{Reason: "no-candidates"}
 	}
 	winner := ready[rand.IntN(len(ready))]
-	return winner.ID, true, PickDecision{
-		Candidates: []PickCandidate{{AfeID: winner.ID, Cost: 0}},
-		Winner:     winner.ID,
-		Reason:     "uniform-random",
+	d := PickDecision{Winner: winner.ID, Reason: "uniform-random"}
+	if p.recordCandidates {
+		d.Candidates = []PickCandidate{{AfeID: winner.ID, Cost: 0}}
 	}
+	return winner.ID, true, d
 }
 
 // LeastInFlightAfePicker picks the AFE with the smallest in-flight count.
@@ -90,11 +105,13 @@ type LeastInFlightAfePicker struct {
 	// RandomSubsetSize caps the K-choice draw. 0 or negative means
 	// "consider all candidates".
 	RandomSubsetSize int
+	// recordCandidates: see SimpleAfePicker.recordCandidates.
+	recordCandidates bool
 }
 
 // NewLeastInFlightAfePicker constructs a LeastInFlightAfePicker.
-func NewLeastInFlightAfePicker(randomSubsetSize int) *LeastInFlightAfePicker {
-	return &LeastInFlightAfePicker{RandomSubsetSize: randomSubsetSize}
+func NewLeastInFlightAfePicker(randomSubsetSize int, recordCandidates bool) *LeastInFlightAfePicker {
+	return &LeastInFlightAfePicker{RandomSubsetSize: randomSubsetSize, recordCandidates: recordCandidates}
 }
 
 // Name returns "least-inflight".
@@ -103,7 +120,7 @@ func (LeastInFlightAfePicker) Name() string { return "least-inflight" }
 // PickAfe returns the AFE with the fewest NumOutstanding among K
 // randomly-drawn ready candidates.
 func (p LeastInFlightAfePicker) PickAfe(ready []AfeSnapshot) (AfeID, bool, PickDecision) {
-	winner, picked, cands := kChoiceMinCost(ready, p.RandomSubsetSize, func(s AfeSnapshot) float64 {
+	winner, picked, cands := kChoiceMinCost(ready, p.RandomSubsetSize, p.recordCandidates, func(s AfeSnapshot) float64 {
 		return float64(s.NumOutstanding)
 	})
 	return decisionFor(winner, picked, cands, "min-inflight")
@@ -114,11 +131,13 @@ func (p LeastInFlightAfePicker) PickAfe(ready []AfeSnapshot) (AfeID, bool, PickD
 // LeastInFlightAfePicker.
 type LeastLatencyAfePicker struct {
 	RandomSubsetSize int
+	// recordCandidates: see SimpleAfePicker.recordCandidates.
+	recordCandidates bool
 }
 
 // NewLeastLatencyAfePicker constructs a LeastLatencyAfePicker.
-func NewLeastLatencyAfePicker(randomSubsetSize int) *LeastLatencyAfePicker {
-	return &LeastLatencyAfePicker{RandomSubsetSize: randomSubsetSize}
+func NewLeastLatencyAfePicker(randomSubsetSize int, recordCandidates bool) *LeastLatencyAfePicker {
+	return &LeastLatencyAfePicker{RandomSubsetSize: randomSubsetSize, recordCandidates: recordCandidates}
 }
 
 // Name returns "least-latency".
@@ -127,7 +146,7 @@ func (LeastLatencyAfePicker) Name() string { return "least-latency" }
 // PickAfe returns the AFE with the smallest E2eCost among K randomly-
 // drawn ready candidates.
 func (p LeastLatencyAfePicker) PickAfe(ready []AfeSnapshot) (AfeID, bool, PickDecision) {
-	winner, picked, cands := kChoiceMinCost(ready, p.RandomSubsetSize, func(s AfeSnapshot) float64 {
+	winner, picked, cands := kChoiceMinCost(ready, p.RandomSubsetSize, p.recordCandidates, func(s AfeSnapshot) float64 {
 		return s.E2eCost
 	})
 	return decisionFor(winner, picked, cands, "min-latency")
@@ -160,7 +179,7 @@ func decisionFor(winner AfeID, picked bool, cands []PickCandidate, reason string
 // call; profiling showed it costing ~4µs at the workload's steady-state
 // QPS since the picker runs on every CheckoutSession. Removed because
 // the caller doesn't need ready preserved.
-func kChoiceMinCost(ready []AfeSnapshot, k int, cost func(AfeSnapshot) float64) (AfeID, bool, []PickCandidate) {
+func kChoiceMinCost(ready []AfeSnapshot, k int, recordCandidates bool, cost func(AfeSnapshot) float64) (AfeID, bool, []PickCandidate) {
 	n := len(ready)
 	if n == 0 {
 		return 0, false, nil
@@ -169,7 +188,14 @@ func kChoiceMinCost(ready []AfeSnapshot, k int, cost func(AfeSnapshot) float64) 
 		k = n
 	}
 
-	sampled := make([]PickCandidate, 0, k)
+	// Only allocate the sampled slice when the caller (via
+	// recordCandidates) will actually keep it. When debug is off this
+	// per-pick allocation is the biggest single win — pickAfe runs on
+	// every CheckoutSession.
+	var sampled []PickCandidate
+	if recordCandidates {
+		sampled = make([]PickCandidate, 0, k)
+	}
 	var best AfeID
 	haveBest := false
 	bestCost := -1.0
@@ -177,7 +203,9 @@ func kChoiceMinCost(ready []AfeSnapshot, k int, cost func(AfeSnapshot) float64) 
 		j := i + rand.IntN(n-i)
 		s := ready[j]
 		c := cost(s)
-		sampled = append(sampled, PickCandidate{AfeID: s.ID, Cost: c})
+		if recordCandidates {
+			sampled = append(sampled, PickCandidate{AfeID: s.ID, Cost: c})
+		}
 		if !haveBest || c < bestCost {
 			bestCost = c
 			best = s.ID

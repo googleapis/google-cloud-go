@@ -185,6 +185,9 @@ const maxSessionEvents = 64
 // the same wrap-index scheme as latencySamples so an at-cap append is
 // O(1), not an O(N) shift.
 func (s *Session) recordEvent(kind SessionEventKind, format string, args ...interface{}) {
+	if !s.debugEnabled {
+		return
+	}
 	ev := SessionEvent{
 		At:      time.Now(),
 		Kind:    kind,
@@ -236,6 +239,9 @@ const latencyWindow = 256
 // recordLatency appends a server-reported BackendLatency sample to the
 // ring buffer. Called from Invoke whenever the response includes Stats.
 func (s *Session) recordLatency(d time.Duration) {
+	if !s.debugEnabled {
+		return
+	}
 	if d <= 0 {
 		return
 	}
@@ -279,6 +285,9 @@ func percentile(sorted []time.Duration, p float64) time.Duration {
 
 // recordCluster increments the per-cluster response counter.
 func (s *Session) recordCluster(id string) {
+	if !s.debugEnabled {
+		return
+	}
 	if id == "" {
 		return
 	}
@@ -404,4 +413,24 @@ func WithSessionLogger(logger *log.Logger) SessionOption {
 // bounded by the number of pools per process, not per session.
 func WithSessionPoolName(name string) SessionOption {
 	return func(s *Session) { s.tracer.setPoolName(name) }
+}
+
+// setCloseErr records the raw error that ended the stream. First writer
+// wins so a follow-up close path (e.g. cancelActiveRPCs) can't overwrite
+// the original cause. Nil is treated as "no error" and ignored.
+func (s *Session) setCloseErr(err error) {
+	if err == nil {
+		return
+	}
+	s.closeErr.CompareAndSwap(nil, &err)
+}
+
+// closeError returns the raw error that ended the stream, or nil if
+// none was recorded. Consulted by the pool to surface the underlying
+// server rejection on consecutive-failure trips.
+func (s *Session) closeError() error {
+	if p := s.closeErr.Load(); p != nil {
+		return *p
+	}
+	return nil
 }
