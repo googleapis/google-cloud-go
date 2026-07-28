@@ -183,16 +183,11 @@ func dispatch[Args any, R any, Resp interface {
 		defer mt.RecordOperationCompletion()
 	}
 
-	// RetryingOptions on PR-2 base is server-driven only — no client-side
-	// backoff knobs. MaxAttempts caps non-server-directed retries;
+	// RetryingOptions is server-driven only — no client-side backoff
+	// knobs. MaxAttempts caps non-server-directed retries;
 	// server-attached RetryInfo bypasses the cap.
-	//
-	// TODO(sushanb): reconcile with Java parity — Java's RetryingVRpc uses
-	// MaxAttempts=3 (RetryingVRpc.java:305). Sessionz punch list
-	// `project_bigtable_sessionz_review_todos` tracks the 10-vs-3
-	// divergence for a follow-up alignment.
 	retryInterceptor := btransport.RetryingVRpc(btransport.RetryingOptions{
-		MaxAttempts: 10,
+		MaxAttempts: 3,
 		Idempotent:  spec.idempotent,
 	})
 
@@ -263,11 +258,6 @@ func (t *sessionTable) ensureTracer(ctx context.Context, method string) (context
 // reported attempt_latencies2 / connectivity_error_count mismatch,
 // before landing a behavior-changing fix.
 func stampAttempt(ctx context.Context, result btransport.InvokeResult) {
-	if result.ClusterInfo == nil {
-		btransport.RecordDebugTag(btransport.TagSessionAttemptNilClusterInfo)
-	} else if result.ClusterInfo.GetClusterId() == "" {
-		btransport.RecordDebugTag(btransport.TagSessionAttemptEmptyClusterID)
-	}
 	att := metrics.FromContext(ctx).CurrAttempt()
 	if att == nil {
 		return
@@ -276,6 +266,11 @@ func stampAttempt(ctx context.Context, result btransport.InvokeResult) {
 		att.SetClusterID(result.ClusterInfo.ClusterId)
 		att.SetZoneID(result.ClusterInfo.ZoneId)
 	}
+	// ClientBlockingLatency = SentAt - AttemptStartTime: elapsed time
+	// from attempt-start to when the request was Sent on the bidi
+	// stream. Analogous to gax's per-attempt blocking latency on the
+	// classic unary path, but measured across the vRPC dispatch instead
+	// of the gRPC unary call.
 	if !result.SentAt.IsZero() && !att.StartTime().IsZero() {
 		att.SetClientBlockingLatency(metrics.ConvertToMs(result.SentAt.Sub(att.StartTime())))
 	}

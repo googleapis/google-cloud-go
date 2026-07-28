@@ -53,6 +53,12 @@ const (
 	defaultMaxSessions = 100
 )
 
+// sessionProtocolVersion is the wire-protocol version stamped on every
+// OpenSessionRequest envelope. Bump when we introduce a
+// non-backwards-compatible change to the request/response shape or the
+// vRPC descriptor set.
+const sessionProtocolVersion = 1
+
 // defaultChannelPoolSize matches bigtable.defaultBigtableConnPoolSize
 // (10) — the fallback used when neither the caller-supplied
 // option.WithGRPCConnectionPool nor an internaloption resolver produces
@@ -592,7 +598,7 @@ func (sc *sessionClient) createPoolForPayload(
 		return nil, fmt.Errorf("proto.Marshal session payload: %w", err)
 	}
 	handshake := &btpb.OpenSessionRequest{
-		ProtocolVersion: 1,
+		ProtocolVersion: sessionProtocolVersion,
 		Payload:         payloadBytes,
 		Flags:           sc.featureFlags(),
 	}
