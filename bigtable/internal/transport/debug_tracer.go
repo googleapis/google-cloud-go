@@ -134,15 +134,6 @@ const (
 	// the penalty window.
 	tagSessionPoolNoBudget = "session_pool_no_budget"
 
-	// tagSessionPoolCheckoutFailedCINil fires on SessionPoolImpl.Invoke's
-	// early return when CheckoutSession failed — pool returns
-	// InvokeResult{} with nil ClusterInfo, so stampAttempt downstream
-	// records TagSessionAttemptNilClusterInfo without any session ever
-	// being picked. Empirically dominates the nil-ClusterInfo population
-	// during pool cold-start (waiters ctx.Done before first session
-	// reaches Ready) and pool-close bursts (drainWaitersWithErr).
-	tagSessionPoolCheckoutFailedCINil = "session_pool_checkout_failed_ci_nil"
-
 	// sessionList bookkeeping violations.
 	//
 	// tagSessionListRefcountUnderflow fires when OnSessionClosed would
@@ -240,41 +231,6 @@ func registerDebugTagCounter(meter metric.Meter) error {
 // wiring from TelemetryConfiguration.debug_tag_level.
 func setDebugTagLevelFloor(l debugLevel) {
 	debugTagLevelFloor.Store(int32(l))
-}
-
-// DebugTag is the typed form for tag names exposed across package
-// boundaries. Callers must pass a catalog constant (e.g.,
-// TagSessionAttemptNilClusterInfo below) rather than a raw string —
-// the type prevents arbitrary literals from drifting off the catalog.
-type DebugTag string
-
-const (
-	// TagSessionAttemptNilClusterInfo fires when a session-path attempt
-	// completes with no ClusterInformation on the InvokeResult — either
-	// the attempt failed with a transport error (no server response) or
-	// the server response omitted ClusterInformation. Downstream, the
-	// attempt's cluster_id label defaults to <unspecified> because
-	// stampAttempt has nothing to stamp AND session path has no per-vRPC
-	// gRPC headers for ExtractLocation to fall back on.
-	TagSessionAttemptNilClusterInfo DebugTag = "session_attempt_nil_cluster_info"
-
-	// TagSessionAttemptEmptyClusterID fires when ClusterInformation is
-	// present on the InvokeResult but ClusterId is empty — a server
-	// contract violation (server should always populate ClusterId on
-	// vRPC responses per CLIENT_SIDE_METRICS_SPEC #1). Companion to
-	// TagSessionAttemptNilClusterInfo; distinct so ops can tell
-	// "server didn't respond" from "server responded without cluster".
-	TagSessionAttemptEmptyClusterID DebugTag = "session_attempt_empty_cluster_id"
-)
-
-// RecordDebugTag is the exported form for other packages under
-// bigtable/internal that need to fire tags from their own layer
-// (e.g., internal/session's stampAttempt observing missing
-// ClusterInformation on session-path attempts). Same semantics as
-// recordDebugTag; the DebugTag typing forces callers to use a catalog
-// constant rather than an ad-hoc string.
-func RecordDebugTag(t DebugTag) {
-	recordDebugTag(string(t))
 }
 
 // recordDebugTag increments the debug_tags counter for `name` at Warn.

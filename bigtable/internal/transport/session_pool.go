@@ -499,11 +499,6 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 		// Record checkout failure so pool-exhaustion incidents show up
 		// in sessionz's slow-vRPC table and latency histograms.
 		p.recordCheckoutFailure(checkoutStart, desc, err)
-		// Attributes the resulting downstream TagSessionAttemptNilClusterInfo
-		// to the pool checkout-failure exit — otherwise the nil at
-		// stampAttempt is indistinguishable from "session picked but
-		// returned nil". Dominates during pool cold-start warmup.
-		recordDebugTag(tagSessionPoolCheckoutFailedCINil)
 		return InvokeResult{}, err
 	}
 	// poolWait is the queue-time spent inside CheckoutSession waiting
