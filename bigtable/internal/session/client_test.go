@@ -363,7 +363,7 @@ func TestSessionClient_ChannelPool_ReturnsNilForFake(t *testing.T) {
 
 // TestSessionClient_OpenMaterializedView_MutateRowNotSupported drives
 // OpenMaterializedView end-to-end and asserts the returned
-// SessionTableAPI's MutateRow returns ErrWriteNotSupported. This
+// TableAPI's MutateRow returns ErrWriteNotSupported. This
 // complements TestSessionTable_MatView_MutateRowReturnsErrWriteNotSupported
 // (table_test.go) — that test constructs sessionTable directly; this
 // one exercises client.go's OpenMaterializedView wiring (openWrite=nil
@@ -374,7 +374,7 @@ func TestSessionClient_OpenMaterializedView_MutateRowNotSupported(t *testing.T) 
 
 	api := sc.OpenMaterializedView("mv")
 	if api == nil {
-		t.Fatal("OpenMaterializedView returned nil SessionTableAPI")
+		t.Fatal("OpenMaterializedView returned nil TableAPI")
 	}
 	_, err := api.MutateRow(context.Background(), &btpb.SessionMutateRowRequest{
 		Key: []byte("k"),
@@ -389,20 +389,20 @@ func TestSessionClient_OpenMaterializedView_MutateRowNotSupported(t *testing.T) 
 	}
 }
 
-// TestSessionClient_OpenTableAndAuthorizedView_ReturnSessionTableAPI
-// asserts the two writable opens return a non-nil SessionTableAPI.
+// TestSessionClient_OpenTableAndAuthorizedView_ReturnTableAPI
+// asserts the two writable opens return a non-nil TableAPI.
 // Only identity is checked — driving the pools open would require a
 // real bidi stream stub; those paths are covered under
 // bigtable/internal/session/table_test.go with fakeInvoker.
-func TestSessionClient_OpenTableAndAuthorizedView_ReturnSessionTableAPI(t *testing.T) {
+func TestSessionClient_OpenTableAndAuthorizedView_ReturnTableAPI(t *testing.T) {
 	sc := newTestClient(t, nil, Config{})
 	defer sc.Close()
 
 	if api := sc.OpenSessionTable("t"); api == nil {
-		t.Error("OpenSessionTable returned nil SessionTableAPI")
+		t.Error("OpenSessionTable returned nil TableAPI")
 	}
 	if api := sc.OpenAuthorizedView("t", "v"); api == nil {
-		t.Error("OpenAuthorizedView returned nil SessionTableAPI")
+		t.Error("OpenAuthorizedView returned nil TableAPI")
 	}
 }
 

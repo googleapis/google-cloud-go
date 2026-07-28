@@ -44,7 +44,7 @@ var ErrSessionClientClosed = errors.New("bigtable/session: SessionClient is clos
 // resource without a read pool or a lazyPool contract broke.
 var errReadPoolNil = errors.New("bigtable/session: read pool is nil (bookkeeping drift — every live resource has a read side)")
 
-// sessionTable implements SessionTableAPI. Read and write session
+// sessionTable implements TableAPI. Read and write session
 // pools open lazily on first call (see lazyPool). No classic
 // fallback — callers that want fallback wrap sessionTable in
 // bigtable.TableShim.
