@@ -29,12 +29,10 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
-	btopt "cloud.google.com/go/bigtable/internal/option"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	otelmetric "go.opentelemetry.io/otel/metric"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
-	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
@@ -52,12 +50,6 @@ const (
 // non-backwards-compatible change to the request/response shape or the
 // vRPC descriptor set.
 const sessionProtocolVersion = 1
-
-// defaultChannelPoolSize matches bigtable.defaultBigtableConnPoolSize
-// (10) — the fallback used when neither the caller-supplied
-// option.WithGRPCConnectionPool nor an internaloption resolver produces
-// a size.
-const defaultChannelPoolSize = 10
 
 // featureFlagsHeaderKey mirrors the bigtable package constant of the
 // same name — duplicated because internal/session can't import
@@ -167,14 +159,12 @@ type sessionClient struct {
 	metricsFactory   *metrics.Factory
 	configManager    *btransport.ClientConfigurationManager
 	backgroundCancel context.CancelFunc // release when Close() runs
-	// dsm + connRecycler are the lifecycle monitors classic clients get
-	// from createAndStartManagedChannelPool. Session client wires them
-	// itself so operators see the same connection_pool/outstanding_rpcs,
-	// per-connection error histograms, dynamic scaling, and periodic
-	// connection replacement they get on the classic path. Nil for the
-	// test factory (newSessionClientFromParts with a fake pool).
-	dsm          *btransport.DynamicScaleMonitor
-	connRecycler *btransport.ConnectionRecycler
+	// managed carries the DynamicScaleMonitor + ConnectionRecycler that
+	// the shared btransport.CreateAndStartManagedChannelPool wires up.
+	// Close() unwinds both by calling managed.Close(). Zero-value for
+	// the test factory (newSessionClientFromParts with a fake pool):
+	// managed.Pool == nil, so Close falls back to sc.channelPool.Close().
+	managedPool btransport.ManagedChannelPool
 
 	poolsMu    sync.Mutex
 	pools      map[poolKey]*managedPool
@@ -214,37 +204,7 @@ func NewSessionClient(
 	// duplicated to avoid an import cycle back into the bigtable package.
 	directAccessMD := buildFeatureFlagsMD(factory.Enabled, false /* disableRetryInfo */, true /* enableDirectAccess */)
 
-	// Resolve pool size from opts. Falls back to the default when the
-	// caller neither set option.WithGRPCConnectionPool nor provided an
-	// internaloption-aware resolver.
-	poolSize := resolveConnPoolSize(opts, defaultChannelPoolSize)
-
 	fullInstance := fmt.Sprintf("projects/%s/instances/%s", project, instance)
-
-	dial := func() (*btransport.BigtableConn, error) {
-		grpcConn, dialErr := gtransport.Dial(ctx, opts...)
-		if dialErr != nil {
-			return nil, dialErr
-		}
-		return btransport.NewBigtableConn(grpcConn), nil
-	}
-
-	// Direct-access dialer for the compatibility checker only — layers
-	// DirectPath enablement + ALTS hard-bound tokens on top of the
-	// caller's opts. The pool itself still uses the plain `dial` above
-	// (standard path); only the DAC's GetClientConfiguration probe uses
-	// this.
-	daDialOpts := append(append([]option.ClientOption{}, opts...),
-		internaloption.EnableDirectPath(true),
-		internaloption.EnableDirectPathXds(),
-		internaloption.AllowHardBoundTokens("ALTS"))
-	daDial := func() (*btransport.BigtableConn, error) {
-		grpcConn, dialErr := gtransport.Dial(ctx, daDialOpts...)
-		if dialErr != nil {
-			return nil, dialErr
-		}
-		return btransport.NewBigtableConn(grpcConn), nil
-	}
 
 	// Instance-scoped headers for GetClientConfiguration — shared by the
 	// DirectAccessChecker's compat probe and ClientConfigurationManager's
@@ -254,63 +214,37 @@ func NewSessionClient(
 		requestParamsHeader, fmt.Sprintf("name=%s", url.QueryEscape(fullInstance)),
 	), directAccessMD)
 
-	// No ChannelPrimer on the pool — session-based clients warm channels
-	// via their own OpenSession bidi streams. The DAC still needs a
-	// primer for its startup probe.
-	//
-	// TODO(sushanb): switch to NewGetClientConfigDirectAccessChecker
-	// once we've validated it end-to-end in the sandbox. The session
-	// path should probe with GetClientConfiguration (the same RPC
-	// ConfigurationManager polls) rather than PingAndWarm — see
-	// project_bigtable_direct_access_checker memory.
-	// Validate before dialing so a bad config fails fast without pool churn.
-	if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), poolSize); err != nil {
-		return nil, fmt.Errorf("session.NewSessionClient: invalid DynamicChannelPoolConfig: %w", err)
+	// Delegate pool wiring (dial + Prime + BigtableChannelPool +
+	// MetricsReporter + DSM + ConnectionRecycler) to the shared factory
+	// in internal/transport. Session-specific bits: always-on monitors,
+	// direct-access opts layered as a separate slice (helper appends
+	// AllowHardBoundTokens("ALTS") on the probe dialer), and
+	// enableBigtableConnPool=true — session client always wants the
+	// managed pool, never falls through to a plain gtransport.DialPool.
+	directAccessOpts := []option.ClientOption{
+		internaloption.EnableDirectPath(true),
+		internaloption.EnableDirectPathXds(),
 	}
-
-	pool, err := btransport.NewBigtableChannelPool(
-		ctx,
-		poolSize,
-		btopt.BigtableLoadBalancingStrategy(),
-		dial,
+	managed, err := btransport.CreateAndStartManagedChannelPool(
+		ctx, project, instance,
+		btransport.ChannelPoolConfig{
+			AppProfile: appProfile,
+			// Session channels warm on-demand via OpenSession bidi
+			// streams — no need for an eager PingAndWarm on every
+			// sub-channel. This also nils out the DAC's primer so its
+			// startup probe skips Prime and relies on the ALTS
+			// handshake alone.
+			SkipChannelPrimer: true,
+		},
+		factory.OtelMeterProvider,
+		opts, directAccessOpts, directAccessMD,
 		time.Now(),
-		btransport.WithInstanceName(fullInstance),
-		btransport.WithAppProfile(appProfile),
-		btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
-		btransport.WithMeterProvider(factory.OtelMeterProvider),
-		btransport.WithDirectAccessChecker(btransport.NewPingAndWarmDirectAccessChecker(
-			daDial,
-			// Primer=nil: session-based clients warm channels on-demand
-			// via OpenSession, not eagerly at pool-init. The DAC skips
-			// its Prime step when the primer is nil.
-			nil,
-			factory.OtelMeterProvider,
-			nil,
-		)),
+		true, // enableBigtableConnPool
 	)
 	if err != nil {
-		return nil, fmt.Errorf("session.NewSessionClient: NewBigtableChannelPool: %w", err)
+		return nil, fmt.Errorf("session.NewSessionClient: %w", err)
 	}
-
-	// Lifecycle monitors that the classic path gets from
-	// bigtable.createAndStartManagedChannelPool. Duplicated here (rather
-	// than sharing the helper) because internal/session can't import
-	// bigtable. Both are opt-out on the classic side via ClientConfig
-	// flags; session client always enables them for now — a future
-	// SessionClientConfig can expose the same DisableDynamicChannelPool /
-	// DisableConnectionRecycler knobs if operators need them.
-	//
-	// Started with the same ctx classic uses, and for the same reason:
-	// every action DSM/ConnectionRecycler take goes through pool methods
-	// (addConnections, replaceConnection, factory.newEntry) that already
-	// observe pool.poolCtx (derived from this ctx). Passing an unrelated
-	// background ctx to Start would create zombie tickers that keep
-	// firing after the pool's own operations have shut down.
-	dsm := btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), pool)
-	dsm.Start(ctx)
-	connRecycler := btransport.NewConnectionRecycler(btopt.DefaultConnectionRecycleConfig(), pool)
-	connRecycler.Start(ctx)
-
+	pool := managed.Pool
 	stub := btpb.NewBigtableClient(pool)
 
 	backgroundCtx, cancel := context.WithCancel(context.Background())
@@ -326,8 +260,7 @@ func NewSessionClient(
 		BackgroundCtx:    backgroundCtx,
 	})
 	sc.backgroundCancel = cancel
-	sc.dsm = dsm
-	sc.connRecycler = connRecycler
+	sc.managedPool = managed
 	return sc, nil
 }
 
@@ -388,20 +321,6 @@ func buildFeatureFlagsMD(clientSideMetricsEnabled, disableRetryInfo, enableDirec
 		val = base64.URLEncoding.EncodeToString(b)
 	}
 	return metadata.Pairs(featureFlagsHeaderKey, val)
-}
-
-// resolveConnPoolSize walks opts for a caller-supplied gRPC connection
-// pool size, falling back to defaultChannelPoolSize when unavailable.
-// Mirrors the same-shaped logic in bigtable/channel_pool_factory.go.
-func resolveConnPoolSize(opts []option.ClientOption, fallback int) int {
-	uResolver, err := internaloption.NewUnsafeResolver(opts...)
-	if err != nil {
-		return fallback
-	}
-	if n := uResolver.ResolvedGRPCConnPoolSize(); n > 0 {
-		return n
-	}
-	return fallback
 }
 
 func (sc *sessionClient) MeterProvider() otelmetric.MeterProvider {
@@ -478,12 +397,12 @@ func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 //  2. Close every session pool (per-pool listeners already detached).
 //  3. Cancel the background ctx we constructed (unwinds heartbeat /
 //     AFE-prune / scaling loops parented on it).
-//  4. Stop DSM + ConnectionRecycler explicitly so no scale-up / recycle
-//     tick races against the pool.Close in the next step. Their internal
-//     Start-ctx is the caller's ctx, not backgroundCtx, so Stop() is the
-//     only mechanism that guarantees teardown independent of caller ctx.
-//  5. Close the underlying channel pool.
-//  6. Shut down the metrics factory (final flush).
+//  4. managed.Close() stops the DynamicScaleMonitor + ConnectionRecycler
+//     wired by btransport.CreateAndStartManagedChannelPool, then closes
+//     the underlying pool — in that order, so no scale-up / recycle tick
+//     races against pool teardown. Test-fake path (managed.Pool == nil)
+//     falls back to sc.channelPool.Close().
+//  5. Shut down the metrics factory (final flush).
 func (sc *sessionClient) Close() error {
 	// Snapshot everything owned under the lock, then release before
 	// running the actual Close/Shutdown/Cancel calls. Any of those can
@@ -496,6 +415,7 @@ func (sc *sessionClient) Close() error {
 	sc.pools = nil // refuse subsequent Opens; getOrCreatePool nil-checks
 	mgr := sc.configManager
 	chp := sc.channelPool
+	managed := sc.managedPool
 	factory := sc.metricsFactory
 	cancel := sc.backgroundCancel
 	sc.poolsMu.Unlock()
@@ -512,20 +432,13 @@ func (sc *sessionClient) Close() error {
 	if cancel != nil {
 		cancel()
 	}
-	// Stop the lifecycle monitors before closing the pool so neither
-	// tries to dial/replace/scale a pool that's mid-teardown. Mirrors
-	// managedChannelPool.Close in bigtable/channel_pool_factory.go.
-	// Safe to call under sc.poolsMu: neither Stop callback reaches back
-	// into sessionClient. If that changes, hoist Stop calls above the
-	// mutex — otherwise a callback that re-acquires poolsMu deadlocks.
-	if sc.dsm != nil {
-		sc.dsm.Stop()
-	}
-	if sc.connRecycler != nil {
-		sc.connRecycler.Stop()
-	}
+	// Prefer managed.Close (stops DSM + Recycler in order then closes
+	// the pool). Test fakes bypass CreateAndStartManagedChannelPool so
+	// managed.Pool is nil — fall back to the fake's own Close.
 	var err error
-	if chp != nil {
+	if managed.Pool != nil {
+		err = managed.Close()
+	} else if chp != nil {
 		err = chp.Close()
 	}
 	if factory != nil && factory.Shutdown != nil {

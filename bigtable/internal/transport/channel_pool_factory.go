@@ -45,6 +45,12 @@ type ChannelPoolConfig struct {
 	DisableDynamicChannelPool bool
 	DisableConnectionRecycler bool
 	DisableDirectAccess       bool
+	// SkipChannelPrimer disables PingAndWarm priming on the pool AND on
+	// the direct-access compatibility probe. Session-based clients set
+	// this true because their channels warm on-demand via OpenSession
+	// bidi streams — an eager PingAndWarm on every session sub-channel
+	// is redundant work.
+	SkipChannelPrimer bool
 }
 
 // ManagedChannelPool encapsulates a connection pool along with its lifecycle monitors.
@@ -157,13 +163,19 @@ func CreateBigtableChannelPool(
 	// connection factory (via WithChannelPrimer) and the direct-access
 	// compatibility checker. Keeping the (instanceName, appProfile,
 	// featureFlagsMD) tuple in one place avoids the three-arg drift between
-	// the two consumers.
-	primer := newPingAndWarmChannelPrimer(fullInstanceName, config.AppProfile, directAccessMD)
+	// the two consumers. Session-based clients skip both wire-ups via
+	// SkipChannelPrimer — their channels warm on-demand via OpenSession.
+	var primer ChannelPrimer
+	if !config.SkipChannelPrimer {
+		primer = newPingAndWarmChannelPrimer(fullInstanceName, config.AppProfile, directAccessMD)
+	}
 
 	poolOpts := []BigtableChannelPoolOption{
 		WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
 		WithMeterProvider(otelMeterProvider),
-		WithChannelPrimer(primer),
+	}
+	if primer != nil {
+		poolOpts = append(poolOpts, WithChannelPrimer(primer))
 	}
 
 	// Pluggable Direct Access strategy: the classic channel pool factory uses
@@ -184,6 +196,8 @@ func CreateBigtableChannelPool(
 			}
 			return NewBigtableConn(grpcConn), nil
 		}
+		// primer==nil (SkipChannelPrimer) makes the DAC skip its Prime
+		// step and rely on the ALTS handshake outcome alone.
 		checker := NewPingAndWarmDirectAccessChecker(
 			directAccessDialer,
 			primer,

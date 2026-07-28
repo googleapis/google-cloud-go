@@ -24,7 +24,6 @@ import (
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
-	"google.golang.org/api/option"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
@@ -143,23 +142,6 @@ func TestBuildFeatureFlagsMD_ReflectsToggles(t *testing.T) {
 				t.Errorf("TrafficDirectorEnabled = %v, want %v (must track DirectAccessRequested)", ff.TrafficDirectorEnabled, tc.wantDirect)
 			}
 		})
-	}
-}
-
-// TestResolveConnPoolSize_FallbackWhenNoOption confirms the fallback
-// applies when the caller supplies no gRPC pool sizing hint.
-func TestResolveConnPoolSize_FallbackWhenNoOption(t *testing.T) {
-	if got := resolveConnPoolSize(nil, 7); got != 7 {
-		t.Errorf("resolveConnPoolSize(nil, 7) = %d, want 7", got)
-	}
-}
-
-// TestResolveConnPoolSize_UsesCallerSize confirms an explicit
-// option.WithGRPCConnectionPool overrides the fallback.
-func TestResolveConnPoolSize_UsesCallerSize(t *testing.T) {
-	opts := []option.ClientOption{option.WithGRPCConnectionPool(4)}
-	if got := resolveConnPoolSize(opts, 10); got != 4 {
-		t.Errorf("resolveConnPoolSize(WithGRPCConnectionPool(4), 10) = %d, want 4", got)
 	}
 }
 
