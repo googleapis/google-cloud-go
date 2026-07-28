@@ -143,15 +143,15 @@ func (p permission) display() string {
 // resource. Struct keys let the map dedup on both axes without string
 // concatenation.
 type poolKey struct {
-	resource string
-	perm     permission
+	resourceName string
+	perm         permission
 }
 
 // less orders poolKeys for stable snapshot rendering (resource first,
 // then permission).
 func (k poolKey) less(other poolKey) bool {
-	if k.resource != other.resource {
-		return k.resource < other.resource
+	if k.resourceName != other.resourceName {
+		return k.resourceName < other.resourceName
 	}
 	return k.perm < other.perm
 }
@@ -183,7 +183,7 @@ func (k poolKey) displayName() string {
 }
 
 func (k poolKey) displayResource() string {
-	r := k.resource
+	r := k.resourceName
 	switch {
 	case strings.HasPrefix(r, "table:"):
 		return strings.TrimPrefix(r, "table:")
