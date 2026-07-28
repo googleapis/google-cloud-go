@@ -46,12 +46,12 @@ import (
 // symbol from transport.
 const defaultSessionChannelPoolSize = 10
 
-// Standard gRPC routing headers — duplicated from the bigtable package
-// constants (package boundary means we can't import them). Keep the
-// values in sync with bigtable/doc.go.
+// Standard gRPC routing headers — aliased to the shared exports in
+// internal/transport so the session package and the top-level bigtable
+// package (which keeps its own copies for back-compat) don't drift.
 const (
-	resourcePrefixHeader = "google-cloud-resource-prefix"
-	requestParamsHeader  = "x-goog-request-params"
+	resourcePrefixHeader = btransport.ResourcePrefixHeader
+	requestParamsHeader  = btransport.RequestParamsHeader
 )
 
 // sessionProtocolVersion is the wire-protocol version stamped on every
@@ -332,9 +332,10 @@ func newSessionClientFromParts(channelPool ChannelPool, stub btpb.BigtableClient
 // (rather than exported+imported) to keep the internal/session package
 // free of a back-reference to the bigtable package.
 func buildFeatureFlagsMD(clientSideMetricsEnabled, disableRetryInfo, enableDirectAccess bool) metadata.MD {
-	// CBT_FORCE_SESSION tri-state — see bigtable.createFeatureFlagsMD for
-	// the semantic (kept in sync intentionally; internal/session can't
-	// import bigtable due to the import-cycle boundary).
+	// CBT_FORCE_SESSION tri-state — Google-internal only, gated
+	// server-side. See bigtable.createFeatureFlagsMD for the semantic
+	// (kept in sync intentionally; internal/session can't import
+	// bigtable due to the import-cycle boundary).
 	sessionsCompatible, sessionsRequired := true, false
 	if v, ok := os.LookupEnv("CBT_FORCE_SESSION"); ok {
 		if b, err := strconv.ParseBool(v); err == nil {

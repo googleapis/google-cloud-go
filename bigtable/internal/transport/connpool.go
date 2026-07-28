@@ -52,7 +52,6 @@ var maxDrainingTimeout = 30 * time.Minute
 const (
 	artificialLoadIfError        = 10
 	artificialLoadPenalizedTimer = 5 * time.Second
-	requestParamsHeader          = "x-goog-request-params"
 	// maxPrimeWorkers caps the goroutines used to prime initial pool
 	// connections in parallel. Pools smaller than this naturally fan out to
 	// connPoolSize workers; larger pools cap here so we don't spawn one
@@ -170,7 +169,7 @@ func (bc *BigtableConn) Prime(ctx context.Context, fullInstanceName, appProfileI
 		AppProfileId: appProfileID,
 	}
 
-	requestParamsMD := metadata.Pairs(requestParamsHeader,
+	requestParamsMD := metadata.Pairs(RequestParamsHeader,
 		fmt.Sprintf("name=%s&app_profile_id=%s", url.QueryEscape(fullInstanceName), url.QueryEscape(appProfileID)))
 
 	originalContextMd, _ := metadata.FromOutgoingContext(ctx)
