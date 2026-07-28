@@ -43,15 +43,15 @@ type TableAPI interface {
 	MutateRow(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error)
 
 	// Close releases this resource's underlying read + write session
-	// pools. Independent from SessionClient.Close — closing an
+	// pools. Independent from Client.Close — closing an
 	// individual resource does not close the shared channel pool.
 	Close() error
 }
 
 // DebugAccess exposes internal snapshots for the sessionz / configz /
-// channelz debug pages. Kept separate from SessionClient to keep the
+// channelz debug pages. Kept separate from Client to keep the
 // primary interface focused on data-plane concerns; consumers type-
-// assert (SessionClient).(DebugAccess) when they need it.
+// assert (Client).(DebugAccess) when they need it.
 type DebugAccess interface {
 	// PoolSnapshots returns one PoolSnapshot per owned pool, ordered
 	// by pool key. Feeds sessionz.
@@ -59,7 +59,7 @@ type DebugAccess interface {
 	// LoadBalancingSnapshots returns per-pool picker + pick-history
 	// snapshots. Feeds loadz.
 	LoadBalancingSnapshots() []btransport.LoadBalancingSnapshot
-	// ChannelPool returns the *BigtableChannelPool the SessionClient
+	// ChannelPool returns the *BigtableChannelPool the Client
 	// was constructed with, or nil.
 	ChannelPool() *btransport.BigtableChannelPool
 	// ConfigManager returns the internal ClientConfigurationManager
@@ -67,11 +67,11 @@ type DebugAccess interface {
 	ConfigManager() *btransport.ClientConfigurationManager
 }
 
-// SessionClient owns the underlying gRPC channel pool + stub and vends
+// Client owns the underlying gRPC channel pool + stub and vends
 // per-resource TableAPI instances. Does NOT cache — callers
 // (bigtable.Client) are responsible for caching per-resource entries
 // so repeat Opens reuse the same underlying pools.
-type SessionClient interface {
+type Client interface {
 	// OpenSessionTable returns a TableAPI for a standard table,
 	// identified by the leaf table name (e.g. "my-table"). Full
 	// resource composition happens inside the implementation.
@@ -86,17 +86,17 @@ type SessionClient interface {
 	OpenMaterializedView(view string) TableAPI
 
 	// MeterProvider exposes the OpenTelemetry meter provider the
-	// SessionClient was constructed with — same instance the
+	// Client was constructed with — same instance the
 	// bigtable client uses for its own metrics, so callers can
 	// register additional instruments against the same provider.
 	MeterProvider() metric.MeterProvider
 
 	// SessionDebug / ChannelDebug / ConfigDebug expose the debug-page
 	// data surfaces. Together they satisfy the same shape
-	// debugview.DebugProviders needs, so a SessionClient (or a public
+	// debugview.DebugProviders needs, so a Client (or a public
 	// wrapper composed of one) can be handed to debugview.Handler
 	// without an adapter. Diverter() on the returned SessionDebugProvider
-	// is empty for standalone SessionClient — the classic/session
+	// is empty for standalone session.Client — the classic/session
 	// split is a mixed-mode concept that only makes sense on a
 	// bigtable.Client that also owns a classic pool.
 	SessionDebug() btransport.SessionDebugProvider
@@ -107,7 +107,7 @@ type SessionClient interface {
 	// the server-driven ClientConfigurationManager reports a new
 	// session-load ratio (0.0 = classic-only, 1.0 = session-only).
 	// Returns an unregister thunk. Used by mixed-mode bigtable.Client
-	// to feed its Diverter; standalone SessionClient callers can
+	// to feed its Diverter; standalone session.Client callers can
 	// ignore this method.
 	AddSessionLoadListener(func(load float64)) func()
 

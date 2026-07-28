@@ -249,7 +249,7 @@ func TestSessionClient_MeterProvider_NilFactorySafe(t *testing.T) {
 // TestSessionClient_MetricsFactory_ReturnsInjected verifies the
 // accessor returns the exact *metrics.Factory the constructor received.
 // Consumers (sessionTable.ensureTracer) rely on identity so tracers
-// share a meter provider with the SessionClient.
+// share a meter provider with the Client.
 func TestSessionClient_MetricsFactory_ReturnsInjected(t *testing.T) {
 	f := newTestFactory(t)
 	sc := newSessionClientFromParts(nil, nil, f, Config{})
@@ -331,7 +331,7 @@ func TestSessionClient_Close_PropagatesChannelPoolError(t *testing.T) {
 // TestSessionClient_ChannelPool_ReturnsNilForFake verifies the debug
 // accessor's type-assert-or-nil behavior: a non-*BigtableChannelPool
 // implementation (our fake, tests) returns nil so channelz doesn't
-// panic when the SessionClient wasn't constructed with a real gRPC
+// panic when the Client wasn't constructed with a real gRPC
 // pool.
 func TestSessionClient_ChannelPool_ReturnsNilForFake(t *testing.T) {
 	pool := &fakeChannelPool{}

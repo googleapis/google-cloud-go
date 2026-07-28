@@ -30,15 +30,15 @@ import (
 // no write pool — e.g. materialized views, which are read-only.
 var ErrWriteNotSupported = errors.New("bigtable/session: write operations not supported on this resource")
 
-// ErrSessionClientClosed is returned when a Read/MutateRow is issued
-// against a SessionClient whose Close() has already run. Distinct from
+// ErrClientClosed is returned when a Read/MutateRow is issued
+// against a Client whose Close() has already run. Distinct from
 // ErrWriteNotSupported (which is a resource-permanent condition) and
 // errReadPoolNil (which flags a bookkeeping bug) so callers can tell a
 // closed-client operation from a mis-configured resource.
-var ErrSessionClientClosed = errors.New("bigtable/session: SessionClient is closed")
+var ErrClientClosed = errors.New("bigtable/session: Client is closed")
 
 // errReadPoolNil is returned when the READ lazy pool resolves to nil
-// with no more specific reason (i.e. the SessionClient isn't closed).
+// with no more specific reason (i.e. the Client isn't closed).
 // Reserved for the bookkeeping-drift case — every live resource has a
 // read side, so a stray occurrence indicates a caller wired up a
 // resource without a read pool or a lazyPool contract broke.
@@ -97,7 +97,7 @@ func newSessionTable(
 // Metrics stamping: if ctx already carries a *metrics.Tracer (e.g.
 // TableShim stashed one on the classic client path), the per-attempt
 // stamps go there. Otherwise sessionTable constructs a new tracer
-// from the SessionClient's factory so standalone SessionClient users
+// from the Client's factory so standalone session.Client users
 // still get metrics.
 func (t *sessionTable) ReadRow(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
 	if req == nil {
@@ -229,8 +229,8 @@ func (t *sessionTable) Close() error {
 
 // ensureTracer returns a Tracer stashed on ctx (via metrics.NewContext
 // upstream, typically by TableShim on the mixed-mode client path), or
-// constructs a fresh one from the SessionClient's factory so
-// standalone-SessionClient callers still get metrics exported.
+// constructs a fresh one from the Client's factory so
+// standalone-Client callers still get metrics exported.
 // The bool signals whether sessionTable owns the tracer lifecycle
 // (i.e. must call RecordOperationCompletion + SetCurrOpStatus itself).
 func (t *sessionTable) ensureTracer(ctx context.Context, method string) (context.Context, *metrics.Tracer, bool) {

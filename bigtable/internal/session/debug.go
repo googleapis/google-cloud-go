@@ -27,7 +27,7 @@ func (sc *sessionClient) SessionDebug() btransport.SessionDebugProvider {
 }
 
 // ChannelDebug returns the channel-pool debug provider covering the one
-// channel pool this SessionClient owns. Role is always "session" here.
+// channel pool this Client owns. Role is always "session" here.
 // The mixed-mode bigtable.Client composes its own ChannelDebugProvider
 // on top of this one, prepending the classic pool.
 func (sc *sessionClient) ChannelDebug() btransport.ChannelDebugProvider {
@@ -65,7 +65,7 @@ func (p sessionDebugProviderImpl) Diverter() btransport.DiverterSnapshot {
 
 // channelDebugProviderImpl is the concrete ChannelDebugProvider returned
 // by *sessionClient.ChannelDebug. Emits exactly one ChannelPoolDebug
-// entry with Role="session" — the ChannelPool this SessionClient owns.
+// entry with Role="session" — the ChannelPool this Client owns.
 // Returns an empty slice when no BigtableChannelPool is available (e.g.
 // a fake pool used in tests).
 type channelDebugProviderImpl struct {
@@ -108,7 +108,7 @@ func sessionsByChannelForPools(pools []btransport.PoolSnapshot) map[int][]btrans
 }
 
 // configDebugProviderImpl wraps a *ClientConfigurationManager so the
-// SessionClient can hand out a ConfigDebugProvider without exposing the
+// Client can hand out a ConfigDebugProvider without exposing the
 // manager directly.
 type configDebugProviderImpl struct {
 	mgr *btransport.ClientConfigurationManager

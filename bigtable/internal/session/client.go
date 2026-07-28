@@ -145,7 +145,7 @@ func (k poolKey) less(other poolKey) bool {
 	return k.perm < other.perm
 }
 
-// sessionClient is the internal implementation of the SessionClient
+// sessionClient is the internal implementation of the Client
 // interface. Owns the channel pool + gRPC stub + configuration
 // manager, and vends per-resource TableAPI instances.
 //
@@ -171,7 +171,7 @@ type sessionClient struct {
 	nextPoolID atomic.Uint64
 }
 
-// NewSessionClient constructs a standalone SessionClient. It owns the
+// NewClient constructs a standalone session.Client. It owns the
 // underlying channel pool, gRPC stub, metrics factory, and background
 // goroutines end-to-end — Close() unwinds all four.
 //
@@ -187,16 +187,16 @@ type sessionClient struct {
 //
 // The load-balancing hook for a mixed-mode setup lives at
 // AddSessionLoadListener — call it after construction if you're
-// composing this SessionClient with a bigtable.Client Diverter.
-func NewSessionClient(
+// composing this Client with a bigtable.Client Diverter.
+func NewClient(
 	ctx context.Context,
 	project, instance, appProfile string,
 	metricsProvider metrics.MetricsProvider,
 	opts ...option.ClientOption,
-) (SessionClient, error) {
+) (Client, error) {
 	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, metricsProvider)
 	if err != nil {
-		return nil, fmt.Errorf("session.NewSessionClient: metrics.NewFactory: %w", err)
+		return nil, fmt.Errorf("session.NewClient: metrics.NewFactory: %w", err)
 	}
 
 	// Feature-flag metadata carried on every Prime + GetClientConfiguration
@@ -242,7 +242,7 @@ func NewSessionClient(
 		true, // enableBigtableConnPool
 	)
 	if err != nil {
-		return nil, fmt.Errorf("session.NewSessionClient: %w", err)
+		return nil, fmt.Errorf("session.NewClient: %w", err)
 	}
 	pool := managed.Pool
 	stub := btpb.NewBigtableClient(pool)
@@ -266,7 +266,7 @@ func NewSessionClient(
 
 // newSessionClientFromParts wires a sessionClient from already-built
 // pool + stub + factory + Config. Extracted from the old public
-// constructor so the new NewSessionClient can share the assembly path.
+// constructor so the new NewClient can share the assembly path.
 // Unexported — no consumer outside this package should reach for it.
 func newSessionClientFromParts(channelPool ChannelPool, stub btpb.BigtableClient, metricsFactory *metrics.Factory, cfg Config) *sessionClient {
 	if cfg.MetricsEnabled && metricsFactory != nil {
@@ -340,7 +340,7 @@ func (sc *sessionClient) AddSessionLoadListener(fn func(load float64)) func() {
 	return sc.configManager.AddSessionLoadListener(fn)
 }
 
-// MetricsFactory returns the *metrics.Factory the SessionClient was
+// MetricsFactory returns the *metrics.Factory the Client was
 // constructed with. Exposed to internal callers (sessionTable) that
 // need to construct tracers lazily when ctx doesn't already carry one.
 func (sc *sessionClient) MetricsFactory() *metrics.Factory {
@@ -472,7 +472,7 @@ func (sc *sessionClient) buildLazyOpener(
 			// callers can tell "client closed" apart from "resource has
 			// no write pool" (ErrWriteNotSupported) or "bookkeeping
 			// drift" (errReadPoolNil).
-			return nil, ErrSessionClientClosed
+			return nil, ErrClientClosed
 		}
 		return pool, nil
 	}
@@ -591,7 +591,7 @@ func (sc *sessionClient) getOrCreatePool(
 // flags. See bigtable.createFeatureFlagsMD for the tri-state semantic.
 //
 // TODO(sushanb): CBT_FORCE_SESSION is re-read here on every pool open
-// but buildFeatureFlagsMD reads it once at NewSessionClient. If the
+// but buildFeatureFlagsMD reads it once at NewClient. If the
 // env flips mid-process the header + proto disagree and the server
 // rejects. Resolve once at construction and stash on Config.
 func (sc *sessionClient) featureFlags() *btpb.FeatureFlags {
@@ -647,7 +647,7 @@ func (sc *sessionClient) fullInstanceName() string {
 }
 
 // Debug accessors exposed for the bigtable/session_debug.go providers.
-// Kept off the SessionClient interface — consumers who need them
+// Kept off the Client interface — consumers who need them
 // type-assert to *sessionClient.
 
 // ConfigManager returns the internal ClientConfigurationManager for
@@ -705,7 +705,7 @@ func (sc *sessionClient) orderedPoolEntries() []poolEntry {
 // ChannelPool returns the *btransport.BigtableChannelPool the
 // sessionClient was constructed with, if any. Used by channelz to
 // surface session-pool channel stats without leaking the interface
-// through the public SessionClient API.
+// through the public Client API.
 func (sc *sessionClient) ChannelPool() *btransport.BigtableChannelPool {
 	if sc.channelPool == nil {
 		return nil

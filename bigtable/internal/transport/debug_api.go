@@ -15,7 +15,7 @@
 package internal
 
 // The debug provider surface lives here (not in the top-level bigtable
-// package) so both bigtable.Client and internal/session.SessionClient can
+// package) so both bigtable.Client and internal/session.Client can
 // implement it without an import cycle. bigtable/session_debug.go
 // re-exports the same names as type aliases so external consumers see
 // unchanged bigtable.SessionDebugProvider / ChannelDebugProvider /
