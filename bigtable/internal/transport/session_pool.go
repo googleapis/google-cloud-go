@@ -24,6 +24,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -423,7 +424,7 @@ func (p *SessionPoolImpl) UpdateConfig(config *spb.SessionClientConfiguration_Se
 	// a broken caller shows up in operator logs the same day it lands,
 	// but a bad configuration source doesn't take down the pool.
 	if config == nil {
-		btopt.Debugf(nil, "bigtable_session_pool: UpdateConfig received nil config; ignoring (ClientConfigurationManager contract violation)")
+		log.Printf("bigtable_session_pool: UpdateConfig received nil config; ignoring (ClientConfigurationManager contract violation)")
 		return
 	}
 	// p.mu only brackets the picker swap — it's the sole non-atomic
