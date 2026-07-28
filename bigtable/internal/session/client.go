@@ -179,24 +179,18 @@ func (k poolKey) less(other poolKey) bool {
 // log names via createSession — `session_name` label cardinality stays
 // bounded by (resource × permission).
 func (k poolKey) displayName() string {
-	return k.displayResource() + "-" + k.perm.display()
-}
-
-func (k poolKey) displayResource() string {
 	r := k.resourceName
 	switch {
 	case strings.HasPrefix(r, "table:"):
-		return strings.TrimPrefix(r, "table:")
+		r = strings.TrimPrefix(r, "table:")
 	case strings.HasPrefix(r, "mv:"):
-		return strings.TrimPrefix(r, "mv:")
+		r = strings.TrimPrefix(r, "mv:")
 	case strings.HasPrefix(r, "av:"):
 		// "av:<table>:<view>" → "<table>/<view>" so the label
 		// disambiguates AVs with the same view id on different tables.
-		rest := strings.TrimPrefix(r, "av:")
-		return strings.Replace(rest, ":", "/", 1)
-	default:
-		return r
+		r = strings.Replace(strings.TrimPrefix(r, "av:"), ":", "/", 1)
 	}
+	return r + "-" + k.perm.display()
 }
 
 // sessionClient is the internal implementation of the Client
