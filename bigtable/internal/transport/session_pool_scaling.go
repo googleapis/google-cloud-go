@@ -188,10 +188,10 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 
 	// budgetReleased is the sole gate: the success path calls
 	// budget.Release(true) explicitly and sets budgetReleased=true, so
-	// any deferred fallback only fires on failure — no need for a
-	// separate `success` local. Passing false is correct because the
-	// only way we reach the defer with budgetReleased=false is when
-	// streamFactory / cap-gate / Session.Start returned an error.
+	// any deferred fallback only fires on failure. Passing false is
+	// correct because the only way we reach the defer with
+	// budgetReleased=false is when streamFactory / cap-gate /
+	// Session.Start returned an error.
 	budgetReleased := false
 	defer func() {
 		if !budgetReleased {
