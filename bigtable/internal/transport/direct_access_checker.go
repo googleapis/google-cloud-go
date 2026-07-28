@@ -124,7 +124,7 @@ func NewPingAndWarmDirectAccessChecker(
 	primer ChannelPrimer,
 	meterProvider metric.MeterProvider,
 	logger *log.Logger,
-) *pingAndWarmDirectAccessChecker {
+) DirectAccessChecker {
 	return &pingAndWarmDirectAccessChecker{
 		dialer:          dialer,
 		primer:          primer,
