@@ -24,6 +24,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -417,6 +418,15 @@ func (p *SessionPoolImpl) Stats() *PoolStats {
 // bracket min/max as an atomic pair here.
 func (p *SessionPoolImpl) UpdateConfig(config *spb.SessionClientConfiguration_SessionPoolConfiguration) {
 	p.m.listenerFires.Add(1)
+	// Defensive: ClientConfigurationManager only fires listeners on
+	// successful GetClientConfiguration, so config should never be nil
+	// in practice. Log-and-bail (rather than silent-return or panic) so
+	// a broken caller shows up in operator logs the same day it lands,
+	// but a bad configuration source doesn't take down the pool.
+	if config == nil {
+		log.Printf("bigtable_session_pool: UpdateConfig received nil config; ignoring (ClientConfigurationManager contract violation)")
+		return
+	}
 	// p.mu only brackets the picker swap — it's the sole non-atomic
 	// field UpdateConfig mutates that a concurrent CheckoutSession
 	// reads. sizer.UpdateConfig / budget.UpdateConfig each take their
@@ -489,11 +499,6 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 		// Record checkout failure so pool-exhaustion incidents show up
 		// in sessionz's slow-vRPC table and latency histograms.
 		p.recordCheckoutFailure(checkoutStart, desc, err)
-		// Attributes the resulting downstream TagSessionAttemptNilClusterInfo
-		// to the pool checkout-failure exit — otherwise the nil at
-		// stampAttempt is indistinguishable from "session picked but
-		// returned nil". Dominates during pool cold-start warmup.
-		recordDebugTag(tagSessionPoolCheckoutFailedCINil)
 		return InvokeResult{}, err
 	}
 	// poolWait is the queue-time spent inside CheckoutSession waiting
