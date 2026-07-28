@@ -17,16 +17,13 @@ package internal
 import (
 	"context"
 	"encoding/base64"
-	"errors"
 	"fmt"
-	"io"
 	"strings"
 	"time"
 
 	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	btmetrics "cloud.google.com/go/bigtable/internal/metrics"
 	"google.golang.org/grpc/peer"
-	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -100,6 +97,7 @@ func (s *Session) ForceClose(req *spb.CloseSessionRequest) {
 	if !ok {
 		return
 	}
+	s.prevStateAtClose.Store(int32(prev))
 	if prev == StateNew {
 		// Force-closing a NEW session means the pool decided to tear us
 		// down before Start ran — a bookkeeping oddity worth flagging.
@@ -226,7 +224,9 @@ func (s *Session) Close(ctx context.Context, req *spb.CloseSessionRequest) error
 		return fmt.Errorf("send close session request: %w", err)
 	}
 	// Advance to WaitServerClose so the pool monitor can see we're waiting
-	// on the server. handleClose accepts StateWaitServerClose → Closed.
+	// on the server. handleClose accepts StateWaitServerClose → Closed
+	// and will capture WSC as prevStateAtClose — that's the signal
+	// noteAbnormalCloseIfAny reads to skip the abnormal-close counter.
 	s.transitionTo(StateWaitServerClose, isState(StateClosing))
 	return nil
 }
@@ -446,30 +446,22 @@ func (s *Session) handleGoAway(goAway *spb.GoAwayResponse) {
 // when the server's EOF arrives after a CloseSession we sent) and cancels
 // every remaining in-flight RPC.
 //
-// The close reason is derived from the Recv error if no more-specific
-// reason was recorded earlier — see streamEndReason. setCloseReason is
-// CompareAndSwap-once, so a GoAway / MissedHeartbeat / Error stamp from
-// upstream always wins; the categorized StreamEnd label only sticks when
-// the stream ended without any other path classifying it first.
+// The close reason is stamped by upstream paths (Close / ForceClose /
+// handleGoAway / heartbeat trip / handleErrorResponse) before handleClose
+// runs, and setCloseReason is CompareAndSwap-once — so no reason
+// classification is needed here.
 func (s *Session) handleClose(err error) {
-	if _, ok := s.transitionTo(StateClosed, notState(StateClosed)); !ok {
+	prev, ok := s.transitionTo(StateClosed, notState(StateClosed))
+	if !ok {
 		return
 	}
+	s.prevStateAtClose.Store(int32(prev))
 	// Ready → Closed can happen directly here (server EOFed without a
 	// prior GoAway or CloseSession). Guarantee onClosing fires before the
 	// notifyClosed below drives onClose. closingOnce makes this a no-op
 	// when handleGoAway or Close already fired earlier.
 	s.notifyClosing()
-	reason := streamEndReason(err)
-	s.setCloseReason(reason)
 	s.setCloseErr(err)
-	// After setCloseReason (CompareAndSwap-once), the *final* reason may
-	// be an earlier stamp (GoAway / MissedHeartbeat / Error) or the
-	// streamEndReason we just computed. Only flag as abnormal when the
-	// final reason is a StreamEnd category that isn't a clean shutdown.
-	if isAbnormalCloseReason(s.CloseReason()) {
-		recordDebugTag(tagSessionAbnormalClose)
-	}
 	inFlight := 0
 	if s.activeVRPC() != nil {
 		inFlight = 1
@@ -477,78 +469,11 @@ func (s *Session) handleClose(err error) {
 	age := time.Since(s.StartedAt())
 	lastRPC := s.nextRPCID.Load()
 	peer := s.peerInfoSummary()
-	s.recordEvent("close", "reason=%s age=%v in_flight=%d last_rpc_id=%d %s raw_err=%v",
-		reason, age, inFlight, lastRPC, peer, err)
+	s.recordEvent(SessionEventClose, "age=%v in_flight=%d last_rpc_id=%d %s raw_err=%v",
+		age, inFlight, lastRPC, peer, err)
 	s.cancelActiveRPCs(unavailable(err, "session closed: %v", err))
 	s.signalQuiescent()
 	s.notifyClosed(err)
-}
-
-// streamEndReason classifies the Recv error that ended the stream. The
-// returned label is what shows up in sessionz's Close-reasons breakdown
-// when no upstream path stamped a more specific reason (GoAway,
-// MissedHeartbeat, Error, etc.).
-//
-// Categories the operator typically cares about:
-//
-//	StreamEnd:EOF              — server closed the stream cleanly with
-//	                              io.EOF (graceful shutdown from server's
-//	                              side that didn't go through GoAway)
-//	StreamEnd:Canceled         — local ctx cancel (pool teardown,
-//	                              client app exit) or grpc CANCELED
-//	StreamEnd:DeadlineExceeded — ctx deadline or grpc DEADLINE_EXCEEDED
-//	StreamEnd:Unavailable      — transport-level break (TCP drop,
-//	                              connection recycler killed the channel,
-//	                              load balancer evicted the backend)
-//	StreamEnd:Internal         — server INTERNAL error
-//	StreamEnd:{Code}           — any other gRPC status code (verbatim)
-//	StreamEnd:Other            — no recognizable category (extremely rare)
-//	StreamEnd                  — err was nil (shouldn't happen since Recv
-//	                              only returns on error)
-func streamEndReason(err error) string {
-	if err == nil {
-		return "StreamEnd"
-	}
-	if errors.Is(err, io.EOF) {
-		return "StreamEnd:EOF"
-	}
-	if errors.Is(err, context.Canceled) {
-		return "StreamEnd:Canceled"
-	}
-	if errors.Is(err, context.DeadlineExceeded) {
-		return "StreamEnd:DeadlineExceeded"
-	}
-	if st, ok := status.FromError(err); ok {
-		return "StreamEnd:" + st.Code().String()
-	}
-	return "StreamEnd:Other"
-}
-
-// isAbnormalCloseReason returns true when the recorded close reason
-// looks like something we did NOT initiate cleanly. Clean paths:
-// EOF (server graceful), Canceled (client teardown / ctx cancel), and
-// the explicit client-initiated reasons stamped by handleGoAway /
-// heartbeatLoop / handleErrorResponse. Anything else — a StreamEnd
-// tagged with a transport-failure code, or the bare "StreamEnd" that
-// indicates Recv returned nil (which shouldn't happen) — is abnormal
-// and worth flagging.
-//
-// TODO(sushanb): move to a state-based classifier per mutianf's review
-// on #20215. Current reason-string scheme encodes state indirectly (via
-// CAS-once CloseReason stamped at each transition site) and gives finer
-// per-reason attribution for sessionz's close-reasons breakdown, but a
-// state-transition source of truth ("did we go New→Ready→Closing→
-// WaitServerClose→Closed cleanly?") is more robust — the whitelist
-// here has to be kept in lockstep with every new closeReasonLabel case.
-// Refactor when we add a new close-reason (or when a downstream
-// consumer wants the state-transition history directly).
-func isAbnormalCloseReason(reason string) bool {
-	switch reason {
-	case "StreamEnd:EOF", "StreamEnd:Canceled",
-		"GoAway", "MissedHeartbeat", "Error", "":
-		return false
-	}
-	return strings.HasPrefix(reason, "StreamEnd")
 }
 
 // heartbeatLoop watches the session's heartbeat deadline using a single Timer

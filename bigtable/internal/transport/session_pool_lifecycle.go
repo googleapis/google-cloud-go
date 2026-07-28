@@ -356,18 +356,20 @@ func (p *SessionPoolImpl) onClose(sh *SessionHandle, err error) {
 	p.noteAbnormalCloseIfAny(sh)
 }
 
-// noteAbnormalCloseIfAny bumps the consecutive-failure counter when the
-// session died before it ever became usable. Classification is
-// state-based via sh.activated: onActive is the sole writer of that
-// flag, so `!sh.activated.Load()` is the exact "never reached
-// StateReady" signal — no reason-string whitelist to keep in lockstep
-// with new close reasons, no accidental mis-classification when the
-// server invents a new REASON. A session that activated (even briefly)
-// is treated as a healthy open regardless of how it later died: the
-// counter is reset on every onActive so a churn pattern of activate →
-// server-side GoAway → replace converges to zero. Crossing the
-// threshold drains every parked waiter with ErrConsecutiveFailures and
-// resets. CAS on reset guards against two goroutines double-draining.
+// noteAbnormalCloseIfAny bumps the consecutive-failure counter when a
+// session's terminal transition did NOT come through StateWaitServerClose.
+// Classification is state-based via Session.prevStateAtClose, captured at
+// the two transitionTo(StateClosed, …) call sites (Java parity —
+// SessionPoolImpl.java checks `prevState != WAIT_SERVER_CLOSE`). No
+// reason-string whitelist to keep in lockstep with new close reasons; the
+// state-transition history is the source of truth. A clean shutdown
+// (Close() → WSC → server ack → Closed) skips the counter; a
+// server-initiated GoAway / heartbeat trip / stream error on a Ready
+// session counts. Also emits `tagSessionAbnormalClose` on the counted
+// path so operators can see per-abnormal-close volume in debug-tag
+// counters. Crossing the threshold drains every parked waiter with
+// ErrConsecutiveFailures and resets. CAS on reset guards against two
+// goroutines double-draining.
 func (p *SessionPoolImpl) noteAbnormalCloseIfAny(sh *SessionHandle) {
 	// Defensive nil-guard: production callers always pass a live sh
 	// with sh.session backfilled (createSession sets it before wiring
@@ -377,13 +379,21 @@ func (p *SessionPoolImpl) noteAbnormalCloseIfAny(sh *SessionHandle) {
 	if sh == nil || sh.session == nil {
 		return
 	}
-	// State-based gate: activated=true means the session reached
-	// StateReady at least once (onActive fired). Skip the trip counter —
-	// server-initiated GoAway / heartbeat missed / stream errors on an
-	// already-Ready session are transport hiccups, not open failures.
-	if sh.activated.Load() {
+	// State-history gate (Java parity — SessionPoolImpl.java checks
+	// `prevState != WAIT_SERVER_CLOSE`): skip the trip counter only
+	// when the session's state immediately before Closed was
+	// StateWaitServerClose — i.e., the client-initiated clean-close
+	// path (Close() sent CloseSession, server acked, handleClose
+	// completed WSC → Closed). Every other terminal transition counts:
+	//   - never activated → open failure (prev = Starting)
+	//   - activated then server GoAway / heartbeat miss / stream error
+	//     → prev = Closing (transport failure worth surfacing)
+	//   - sweep of stuck WSC session via ForceClose → prev = WSC
+	//     already, so those stay exempt.
+	if State(sh.session.prevStateAtClose.Load()) == StateWaitServerClose {
 		return
 	}
+	recordDebugTag(tagSessionAbnormalClose)
 	s := sh.session
 	if e := s.closeError(); e != nil {
 		p.lastAbnormalCloseErr.Store(&e)
