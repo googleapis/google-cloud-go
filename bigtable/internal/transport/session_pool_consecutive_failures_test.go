@@ -51,6 +51,12 @@ func abnormalOnCloseFor(t testing.TB, p *SessionPoolImpl, abnormal bool) {
 		return
 	}
 	sh := injectActiveSession(t, p, "active", time.Now())
+	// Simulate the state history that real session.Close() → handleClose
+	// produces: Ready → Closing → WSC → Closed, so prevStateAtClose = WSC.
+	// The fixture bypasses that path (calls onClose directly), so stamp
+	// prevStateAtClose here to match what noteAbnormalCloseIfAny expects
+	// on a client-initiated clean close.
+	sh.session.prevStateAtClose.Store(int32(StateWaitServerClose))
 	p.onClose(sh, nil)
 }
 
@@ -94,11 +100,15 @@ func TestConsecutiveFailures_UserReasonNotAbnormal(t *testing.T) {
 	// the second close instead of needing 10.
 	p.consecutiveFailureThreshold.Store(2)
 
-	// Fire "User" close-reason twice on ACTIVATED sessions — the
-	// closest fixture to Pool.Close's Phase-2 (activated sessions
-	// closed with REASON_USER). State-based gate must NOT count them.
+	// Fire "User" close-reason twice on ACTIVATED sessions that also
+	// went through WSC — the closest fixture to Pool.Close's Phase-2
+	// (session.Close() transitions through WSC, then onClose fires).
+	// State-history gate must NOT count them.
 	for i := 0; i < 2; i++ {
 		sh := injectActiveSession(t, p, "user-close", time.Now())
+		// Matches the state history real session.Close() → handleClose
+		// produces: prevStateAtClose = WSC when the WSC → Closed step ran.
+		sh.session.prevStateAtClose.Store(int32(StateWaitServerClose))
 		stampCloseReason(sh.session, "User")
 		p.onClose(sh, nil)
 	}

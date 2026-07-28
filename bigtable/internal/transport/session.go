@@ -156,8 +156,20 @@ type Session struct {
 
 	state atomic.Int32
 
-	// closingOnce/closeOnce fire hooks.OnClosing/OnClose exactly once each
-	// even when multiple teardown paths race.
+	// prevStateAtClose is the state the session was in immediately
+	// before its final transition to StateClosed — captured as the
+	// prev return of transitionTo(StateClosed, ...) at the two
+	// transition sites (ForceClose, handleClose). Set-once by
+	// construction (transitionTo(StateClosed) applies at most once),
+	// then read from hooks.OnClose consumers. Lets the pool
+	// distinguish a client-initiated clean-close (prev == WSC) from a
+	// server-initiated / transport-error close without carrying a
+	// side-channel bool.
+	prevStateAtClose atomic.Int32
+
+	// closingOnce serializes hooks.OnClosing so it fires exactly once
+	// across the four transition sites that can drive a session out of
+	// Ready (Close, ForceClose, handleGoAway, handleClose).
 	closingOnce sync.Once
 	closeOnce   sync.Once
 
