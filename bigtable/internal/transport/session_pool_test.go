@@ -128,7 +128,7 @@ func newTestPool(t testing.TB, min, max int) *SessionPoolImpl {
 		factory,
 		&spb.OpenSessionRequest{ProtocolVersion: 1},
 		nil,
-		SessionTypeTable,
+		SessionTypeTable, true,
 	)
 	// Close streams before closing the pool: the pool's Close waits for
 	// per-session teardown, which requires the readLoop goroutines to
@@ -246,7 +246,7 @@ func TestSessionPool_Invoke_RecordsSlowCheckoutFailure(t *testing.T) {
 		neverDialing,
 		&spb.OpenSessionRequest{ProtocolVersion: 1},
 		nil,
-		SessionTypeTable,
+		SessionTypeTable, true,
 	)
 	defer p.Close()
 
@@ -307,7 +307,7 @@ func TestCheckoutSession_ParkedWaiter_DeadlineExceeded(t *testing.T) {
 		neverDialing,
 		&spb.OpenSessionRequest{ProtocolVersion: 1},
 		nil,
-		SessionTypeTable,
+		SessionTypeTable, true,
 	)
 	defer p.Close()
 
@@ -447,7 +447,7 @@ func TestNewSessionPoolImpl_Identity(t *testing.T) {
 
 	p := NewSessionPoolImpl(
 		uint64(42),
-		"test-pool", 1, 10, factory, &spb.OpenSessionRequest{ProtocolVersion: 1}, nil, SessionTypeTable,
+		"test-pool", 1, 10, factory, &spb.OpenSessionRequest{ProtocolVersion: 1}, nil, SessionTypeTable, true,
 	)
 	if p.poolID != 42 {
 		t.Errorf("poolID = %d, want 42", p.poolID)
@@ -719,7 +719,7 @@ func TestUpdateConfig_HonorsRandomSubsetSize(t *testing.T) {
 // bootstrap path — a nil LoadBalancingOptions gives the default
 // (LeastInFlight with K=defaultAfeRandomSubsetSize).
 func TestPickerFromLoadBalancing_NilFallback(t *testing.T) {
-	picker := pickerFromLoadBalancing(nil)
+	picker := pickerFromLoadBalancing(nil, true)
 	li, ok := picker.(*LeastInFlightAfePicker)
 	if !ok {
 		t.Fatalf("nil LBO → %T, want *LeastInFlightAfePicker", picker)

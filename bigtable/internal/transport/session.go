@@ -148,6 +148,14 @@ type Session struct {
 	hooks       SessionHooks
 	sessionType SessionType
 
+	// debugEnabled mirrors the owning SessionPoolImpl.debugEnabled. Set
+	// once at construction via WithSessionDebugEnabled, immutable
+	// thereafter. When false, session-scope recorders in session_debug.go
+	// (recordEvent / recordLatency / recordCluster) short-circuit before
+	// touching any ring buffer or map. See session.Config.EnableDebug
+	// for the top-of-thread contract.
+	debugEnabled bool
+
 	// state is the lifecycle position; read via State(), mutate via
 	// transitionTo. lastStateChangeNano is stamped inside transitionTo on
 	// each successful swap; it lives on the embedded sessionDebug (below)
@@ -223,6 +231,24 @@ type Session struct {
 
 // SessionOption configures a Session at construction time.
 type SessionOption func(*Session)
+
+// WithSessionDebugEnabled toggles the session's debug-recorder gate.
+// When false (the zero-value default when the option is omitted),
+// session-scope recorders in session_debug.go short-circuit before
+// allocating any ring-buffer or map entry.
+//
+// Every production caller MUST pass this option — the owning
+// SessionPoolImpl wires it from its own debugEnabled at createSession
+// time (session_pool_scaling.go), so the flag is uniform across every
+// session in a pool. Tests that construct a Session directly and then
+// assert on the session's debug ring buffers (events, latencies,
+// clusters) also MUST pass WithSessionDebugEnabled(true) — omitting
+// it silently disables recorders and leaves the assertions puzzling.
+// The test helper newTestSession in session_test.go enables debug by
+// default for exactly this reason.
+func WithSessionDebugEnabled(enabled bool) SessionOption {
+	return func(s *Session) { s.debugEnabled = enabled }
+}
 
 // NewSession constructs a Session bound to stream. Zero-value SessionHooks is
 // valid.

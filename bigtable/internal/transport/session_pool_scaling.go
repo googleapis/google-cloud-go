@@ -56,6 +56,9 @@ const maxScalingHistory = 1024
 // recordScaling appends an event to the ring buffer, dropping the oldest
 // entry when full.
 func (p *SessionPoolImpl) recordScaling(ev ScalingEvent) {
+	if !p.debugEnabled {
+		return
+	}
 	p.m.scalingHistoryMu.Lock()
 	defer p.m.scalingHistoryMu.Unlock()
 	if len(p.m.scalingHistory) >= maxScalingHistory {
@@ -240,7 +243,8 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 		OnClose:   func(_ *Session, err error) { p.onClose(sh, err) },
 	}
 	s := NewSession(sessionName, stream, hooks, p.sessionType,
-		WithSessionPoolName(p.poolName), WithSessionLogger(log.Default()))
+		WithSessionPoolName(p.poolName), WithSessionLogger(log.Default()),
+		WithSessionDebugEnabled(p.debugEnabled))
 	if hint := pickedChannel.Load(); hint >= 0 {
 		s.setChannelIndex(hint)
 	}

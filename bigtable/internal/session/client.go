@@ -107,6 +107,23 @@ type Config struct {
 	// Start(ctx) call. Cancelled by Client teardown so every pool's
 	// Tick + AFE prune loops unwind together.
 	BackgroundCtx context.Context
+
+	// EnableDebug controls whether the pools this Client mints will
+	// collect per-pool snapshot state (sessionz / afez / flightz /
+	// loadz). Default false. When false, every allocating debug
+	// recorder in the pool is skipped for zero hot-path overhead —
+	// no per-session events ring, no latency-sample buffers, no
+	// per-pick candidate slices, no pool-wide histogram inserts, no
+	// slow-vRPC log entries. SessionDebug() also returns nil so the
+	// debugview handler renders a "not enabled" panel.
+	//
+	// Callers that plan to serve /debug/ from bigtable/debugview or
+	// scrape session snapshots programmatically should set this true;
+	// production workloads that only care about the OTel metrics
+	// (attempt_latencies / operation_latencies / etc.) can leave it
+	// off. The debug surface is otherwise unchanged; flipping the
+	// flag on or off requires rebuilding the client.
+	EnableDebug bool
 }
 
 // managedSessionPool bundles a pool with its config-listener unregister
@@ -182,6 +199,12 @@ type sessionClient struct {
 	// the test factory (newSessionClientFromParts with a fake pool):
 	// managed.Pool == nil, so Close falls back to sc.channelPool.Close().
 	managedChannelPool btransport.ManagedChannelPool
+
+	// enableDebug mirrors Config.EnableDebug. When false, pools this
+	// client mints short-circuit every allocating debug recorder and
+	// SessionDebug() returns nil so /debug/ renders a "not enabled"
+	// panel. Immutable after construction — no atomic needed.
+	enableDebug bool
 
 	sessionPoolsMu sync.Mutex
 	sessionPools   map[poolKey]*managedSessionPool
@@ -298,6 +321,11 @@ func NewClient(
 		MetricsEnabled:   factory.Enabled,
 		DisableRetryInfo: false,
 		BackgroundCtx:    backgroundCtx,
+		// EnableDebug intentionally left at zero (false): NewClient has
+		// no external caller upstream today, so exposing a positional
+		// bool on the constructor would ship a dead knob. When the
+		// top-level bigtable.Client wiring lands, that PR can plumb
+		// EnableClientDebug into this Config field directly.
 	})
 	sc.backgroundCancel = cancel
 	sc.managedChannelPool = managed
@@ -317,6 +345,7 @@ func newSessionClientFromParts(channelPool ChannelPool, stub btpb.BigtableClient
 		channelPool:    channelPool,
 		stub:           stub,
 		metricsFactory: metricsFactory,
+		enableDebug:    cfg.EnableDebug,
 		sessionPools:   make(map[poolKey]*managedSessionPool),
 	}
 	// stub == nil only happens on the test-only newSessionClientFromParts
@@ -602,6 +631,7 @@ func (sc *sessionClient) getOrCreateSessionPool(
 	pool := btransport.NewSessionPoolImpl(
 		id,
 		poolName, 0, 0, streamFactory, openSessionRequest, md, sessionType,
+		sc.enableDebug,
 	)
 	mp := &managedSessionPool{pool: pool}
 	sc.sessionPools[key] = mp

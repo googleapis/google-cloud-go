@@ -131,6 +131,9 @@ var LifetimeBuckets = []struct {
 // Called from each pool removal site that has a known createdAt for the
 // session being retired.
 func (p *SessionPoolImpl) recordLifetime(d time.Duration) {
+	if !p.debugEnabled {
+		return
+	}
 	if d <= 0 {
 		return
 	}
@@ -240,6 +243,9 @@ type TimeSeriesSample struct {
 }
 
 func (p *SessionPoolImpl) recordTimeSeries() {
+	if !p.debugEnabled {
+		return
+	}
 	handles := p.sl.AllHandles()
 	totalSessions := len(handles)
 	inUse := 0
@@ -299,6 +305,9 @@ func (p *SessionPoolImpl) snapshotTimeSeries() []TimeSeriesSample {
 // recordSlowVRpc appends to the slow-vRPC ring buffer. Only called from
 // SessionPoolImpl.Invoke after a call exceeds the threshold.
 func (p *SessionPoolImpl) recordSlowVRpc(ev SlowVRpcEvent) {
+	if !p.debugEnabled {
+		return
+	}
 	p.m.slowVRpcsMu.Lock()
 	defer p.m.slowVRpcsMu.Unlock()
 	if len(p.m.slowVRpcs) >= maxSlowVRpcs {
@@ -364,6 +373,9 @@ type PickHistoryEvent struct {
 // avoid a re-entrant p.mu acquisition (CheckoutSession already holds
 // p.mu when it reads p.picker.Name()).
 func (p *SessionPoolImpl) recordPickDecision(d PickDecision, pickerName string) {
+	if !p.debugEnabled {
+		return
+	}
 	ev := PickHistoryEvent{
 		At:         time.Now(),
 		Decision:   d,
