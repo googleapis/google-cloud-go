@@ -1022,12 +1022,21 @@ type wrappedClientStream struct {
 	serverStreams bool
 	clientStreams bool
 	recordedTTFB  atomic.Bool
+
+	msgMu         sync.Mutex
+	reqStartTime  time.Time
+	lastRecvTime  time.Time
 }
 
 func (w *wrappedClientStream) RecvMsg(m interface{}) error {
 	err := w.ClientStream.RecvMsg(m)
 	if err == nil {
 		w.recordTTFB(m)
+		if w.serverStreams && w.clientStreams {
+			w.msgMu.Lock()
+			w.lastRecvTime = time.Now()
+			w.msgMu.Unlock()
+		}
 	}
 	// For client-streaming streams (like WriteObject), the single successful RecvMsg call
 	// returns the response and nil error, which marks the completion of the stream.
@@ -1039,6 +1048,19 @@ func (w *wrappedClientStream) RecvMsg(m interface{}) error {
 }
 
 func (w *wrappedClientStream) SendMsg(m interface{}) error {
+	isBidiStreaming := w.serverStreams && w.clientStreams
+	if isBidiStreaming {
+		w.msgMu.Lock()
+		if !w.reqStartTime.IsZero() && !w.lastRecvTime.IsZero() {
+			// Record the previous request-response cycle.
+			duration := w.lastRecvTime.Sub(w.reqStartTime).Seconds()
+			w.metrics.recordRPC(w.ctx, w.method, w.target, duration, nil)
+		}
+		w.reqStartTime = time.Now()
+		w.lastRecvTime = time.Time{}
+		w.msgMu.Unlock()
+	}
+
 	err := w.ClientStream.SendMsg(m)
 	if err != nil {
 		w.record(err)
@@ -1049,6 +1071,19 @@ func (w *wrappedClientStream) SendMsg(m interface{}) error {
 func (w *wrappedClientStream) record(err error) {
 	if w.recorded.CompareAndSwap(false, true) {
 		duration := time.Since(w.startTime).Seconds()
+		isBidiStreaming := w.serverStreams && w.clientStreams
+		if isBidiStreaming {
+			w.msgMu.Lock()
+			if !w.reqStartTime.IsZero() {
+				if !w.lastRecvTime.IsZero() {
+					duration = w.lastRecvTime.Sub(w.reqStartTime).Seconds()
+				} else {
+					duration = time.Since(w.reqStartTime).Seconds()
+				}
+			}
+			w.msgMu.Unlock()
+		}
+
 		w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err)
 
 		logicalMethod := w.method
