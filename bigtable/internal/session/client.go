@@ -39,12 +39,14 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// defaultSessionChannelPoolSize matches the classic pool default in
-// internal/transport/channel_pool_factory.go. Kept as a local const so
-// session.NewClient can honour option.WithGRPCConnectionPool(N) or fall
-// back to the same 10-channel default without importing an unexported
-// symbol from transport.
-const defaultSessionChannelPoolSize = 10
+// defaultSessionChannelPoolSize seeds the session channel pool with a
+// small footprint. The server-driven ClientConfigurationManager
+// reshapes this at runtime via SessionClientConfiguration polls, so
+// the initial size only has to carry traffic long enough for the
+// first poll to return. Session pools intentionally IGNORE
+// option.WithGRPCConnectionPool(N) — pool shape is server-driven
+// end-to-end.
+const defaultSessionChannelPoolSize = 4
 
 // Standard gRPC routing headers — aliased to the shared exports in
 // internal/transport so the session package and the top-level bigtable
@@ -239,11 +241,6 @@ func NewClient(
 	// polls) instead of PingAndWarm, matching the actual on-wire RPC
 	// mix a session pool serves.
 	poolSize := defaultSessionChannelPoolSize
-	if uResolver, resErr := internaloption.NewUnsafeResolver(opts...); resErr == nil {
-		if n := uResolver.ResolvedGRPCConnPoolSize(); n != 0 {
-			poolSize = n
-		}
-	}
 	dial := func() (*btransport.BigtableConn, error) {
 		grpcConn, dialErr := gtransport.Dial(ctx, opts...)
 		if dialErr != nil {
