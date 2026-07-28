@@ -111,17 +111,20 @@ type pingAndWarmDirectAccessChecker struct {
 	logger          *log.Logger
 }
 
-// newPingAndWarmDirectAccessChecker constructs the today-default checker.
+// NewPingAndWarmDirectAccessChecker constructs the today-default checker.
 // A nil meterProvider produces a checker that silently skips metric
-// reporting. The primer must be non-nil; the channel pool factory
-// constructs a single ChannelPrimer and shares it with both the pool (via
-// WithChannelPrimer) and this checker.
-func newPingAndWarmDirectAccessChecker(
+// reporting. A nil primer produces a checker that skips the Prime step
+// during CheckCompatibility — that's the mode session-based clients use,
+// since they warm channels on-demand via OpenSession streams rather than
+// eagerly at pool-init. The classic (pingAndWarm) channel pool factory
+// constructs a single ChannelPrimer and shares it with both the pool
+// (via WithChannelPrimer) and this checker.
+func NewPingAndWarmDirectAccessChecker(
 	dialer func() (*BigtableConn, error),
 	primer ChannelPrimer,
 	meterProvider metric.MeterProvider,
 	logger *log.Logger,
-) *pingAndWarmDirectAccessChecker {
+) DirectAccessChecker {
 	return &pingAndWarmDirectAccessChecker{
 		dialer:          dialer,
 		primer:          primer,
@@ -154,18 +157,25 @@ func (c *pingAndWarmDirectAccessChecker) CheckCompatibility(ctx context.Context)
 		return nil, false
 	}
 
-	err = c.primer.Prime(ctx, conn)
-	if err != nil {
-		// PermissionDenied is expected on probes that are otherwise healthy
-		// (the bootstrap credentials may lack PingAndWarm), so fall through
-		// to the ALTS check rather than failing fast.
-		if status.Code(err) != codes.PermissionDenied {
-			btopt.Debugf(c.logger, "bigtable_direct_access: Prime() failed during compatibility check: %v", err)
-			conn.Close()
-			go c.investigateFailure(err)
-			return nil, false
+	// TODO(sushanb): replace this nil-guard with a NoopChannelPrimer
+	// (channel_primer.go). Nullable-field pattern here is the sharp
+	// edge — passing a Noop impl at the session-client construction
+	// site kills the branch and keeps the invariant "primer is always
+	// non-nil". Deferred out of this PR per the PR-4 port scope.
+	if c.primer != nil {
+		err = c.primer.Prime(ctx, conn)
+		if err != nil {
+			// PermissionDenied is expected on probes that are otherwise healthy
+			// (the bootstrap credentials may lack PingAndWarm), so fall through
+			// to the ALTS check rather than failing fast.
+			if status.Code(err) != codes.PermissionDenied {
+				btopt.Debugf(c.logger, "bigtable_direct_access: Prime() failed during compatibility check: %v", err)
+				conn.Close()
+				go c.investigateFailure(err)
+				return nil, false
+			}
+			btopt.Debugf(c.logger, "bigtable_direct_access: Prime() failed with PermissionDenied, continuing to ALTS check: %v", err)
 		}
-		btopt.Debugf(c.logger, "bigtable_direct_access: Prime() failed with PermissionDenied, continuing to ALTS check: %v", err)
 	}
 
 	if conn.isALTSConn.Load() {

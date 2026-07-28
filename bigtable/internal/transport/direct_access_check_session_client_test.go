@@ -45,7 +45,7 @@ func TestSessionClientDirectAccessChecker_ImplementsInterface(t *testing.T) {
 // factory relies on this to reuse the dialer for post-probe redials.
 func TestSessionClientDirectAccessChecker_DialerReturnsConfigured(t *testing.T) {
 	want := func() (*BigtableConn, error) { return nil, nil }
-	c := newSessionClientDirectAccessChecker(want, "projects/p/instances/i", "profile", nil, nil, nil)
+	c := NewSessionClientDirectAccessChecker(want, "projects/p/instances/i", "profile", nil, nil, nil)
 	got := c.Dialer()
 	if fmt.Sprintf("%p", got) != fmt.Sprintf("%p", want) {
 		t.Errorf("Dialer() returned a different function than configured")
@@ -57,7 +57,7 @@ func TestSessionClientDirectAccessChecker_DialerReturnsConfigured(t *testing.T) 
 // panicking on the nil BigtableConn or trying to close it.
 func TestSessionClientDirectAccessChecker_DialFailedShortCircuits(t *testing.T) {
 	dialer := func() (*BigtableConn, error) { return nil, fmt.Errorf("dial failed") }
-	c := newSessionClientDirectAccessChecker(dialer, "projects/p/instances/i", "profile", nil, nil, nil)
+	c := NewSessionClientDirectAccessChecker(dialer, "projects/p/instances/i", "profile", nil, nil, nil)
 
 	conn, compatible := c.CheckCompatibility(context.Background())
 	if compatible {

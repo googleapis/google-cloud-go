@@ -64,16 +64,19 @@ type sessionClientDirectAccessChecker struct {
 	lastProbeConfig atomic.Pointer[bigtablepb.ClientConfiguration]
 }
 
-// newSessionClientDirectAccessChecker constructs the session-pool checker.
-// A nil meterProvider produces a checker that silently skips metric
-// reporting.
-func newSessionClientDirectAccessChecker(
+// NewSessionClientDirectAccessChecker constructs the session-pool
+// direct-access compatibility checker (GetClientConfiguration-based
+// probe). A nil meterProvider produces a checker that silently skips
+// metric reporting. Exported so session-client callers under
+// internal/session can plug it into their NewBigtableChannelPool
+// construction directly.
+func NewSessionClientDirectAccessChecker(
 	dialer func() (*BigtableConn, error),
 	instanceName, appProfileID string,
 	featureFlagsMD metadata.MD,
 	meterProvider metric.MeterProvider,
 	logger *log.Logger,
-) *sessionClientDirectAccessChecker {
+) DirectAccessChecker {
 	return &sessionClientDirectAccessChecker{
 		dialer:          dialer,
 		instanceName:    instanceName,

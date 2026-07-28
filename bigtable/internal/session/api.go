@@ -12,51 +12,73 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package session hosts the vRPC-over-session data-plane API surface
-// for the bigtable Go client. The interfaces defined here describe a
-// proto-native alternative to the classic gRPC TableAPI: methods take
-// and return *SessionReadRow{Request,Response} /
-// *SessionMutateRow{Request,Response} instead of bigtable.Row.
+// Package session hosts the vRPC-over-session data-plane API that the
+// public bigtable package composes with the classic gRPC data-plane
+// via TableShim.
 //
-// This file establishes the shape only; implementations land in
-// follow-up changes. Nothing in this package imports the top-level
-// bigtable package.
+// The split exists because a proto-native surface — one that takes and
+// returns *SessionReadRowRequest / *SessionReadRowResponse instead of
+// bigtable.Row — is a materially different concern from the classic
+// TableAPI. The two live behind TableShim, which routes between them
+// via a Diverter and owns proto ↔ bigtable.Row conversion. Nothing in
+// this package imports the top-level bigtable package.
 package session
 
 import (
 	"context"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"go.opentelemetry.io/otel/metric"
 )
 
-// TableAPI is the per-resource, proto-native data-plane API.
-// Implementations route ReadRow over a read session pool and MutateRow
-// over a separate write session pool; callers do not see the
-// distinction. Pools open lazily on first call, so a resource that
-// only ever reads never pays for a write pool.
+// TableAPI is the per-resource, proto-native API exposed to
+// TableShim. The concrete implementation routes ReadRow over a READ
+// session pool and MutateRow over a separate WRITE session pool —
+// callers do not see the distinction. Pools open lazily on first
+// call (see lazyPool) so read-only resources never pay for a write
+// pool, and construction of a TableAPI never dials.
 type TableAPI interface {
 	ReadRow(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error)
 	MutateRow(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error)
 
 	// Close releases this resource's underlying read + write session
-	// pools. Independent from Client.Close — closing a single
-	// resource does not close the shared channel pool.
+	// pools. Independent from Client.Close — closing an
+	// individual resource does not close the shared channel pool.
 	Close() error
 }
 
+// DebugAccess exposes internal snapshots for the sessionz / configz /
+// channelz debug pages. Kept separate from Client to keep the
+// primary interface focused on data-plane concerns; consumers type-
+// assert (Client).(DebugAccess) when they need it.
+type DebugAccess interface {
+	// PoolSnapshots returns one PoolSnapshot per owned pool, ordered
+	// by pool key. Feeds sessionz.
+	PoolSnapshots() []btransport.PoolSnapshot
+	// LoadBalancingSnapshots returns per-pool picker + pick-history
+	// snapshots. Feeds loadz.
+	LoadBalancingSnapshots() []btransport.LoadBalancingSnapshot
+	// ChannelPool returns the *BigtableChannelPool the Client
+	// was constructed with, or nil.
+	ChannelPool() *btransport.BigtableChannelPool
+	// ConfigManager returns the internal ClientConfigurationManager
+	// for configz. Nil when no stub was provided at construction.
+	ConfigManager() *btransport.ClientConfigurationManager
+}
+
 // Client owns the underlying gRPC channel pool + stub and vends
-// per-resource TableAPI instances. Does NOT cache — callers are
-// responsible for caching per-resource entries so repeat Opens reuse
-// the same underlying pools.
+// per-resource TableAPI instances. Does NOT cache — callers
+// (bigtable.Client) are responsible for caching per-resource entries
+// so repeat Opens reuse the same underlying pools.
 type Client interface {
-	// OpenSessionTable returns a TableAPI for a standard table,
+	// OpenTable returns a TableAPI for a standard table,
 	// identified by the leaf table name (e.g. "my-table"). Full
 	// resource composition happens inside the implementation.
-	OpenSessionTable(tableName string) TableAPI
+	OpenTable(tableID string) TableAPI
 
 	// OpenAuthorizedView returns a TableAPI for a specific
-	// authorized view under table.
+	// authorized view under `table`.
 	OpenAuthorizedView(table, view string) TableAPI
 
 	// OpenMaterializedView returns a read-only TableAPI for a
@@ -64,23 +86,32 @@ type Client interface {
 	OpenMaterializedView(view string) TableAPI
 
 	// MeterProvider exposes the OpenTelemetry meter provider the
-	// Client was constructed with — same instance the bigtable
-	// client uses for its own metrics, so callers can register
-	// additional instruments against the same provider.
+	// Client was constructed with — same instance the
+	// bigtable client uses for its own metrics, so callers can
+	// register additional instruments against the same provider.
 	MeterProvider() metric.MeterProvider
 
+	// SessionDebug / ChannelDebug / ConfigDebug expose the debug-page
+	// data surfaces. Together they satisfy the same shape
+	// debugview.DebugProviders needs, so a Client (or a public
+	// wrapper composed of one) can be handed to debugview.Handler
+	// without an adapter. Diverter() on the returned SessionDebugProvider
+	// is empty for standalone session.Client — the classic/session
+	// split is a mixed-mode concept that only makes sense on a
+	// bigtable.Client that also owns a classic pool.
+	SessionDebug() btransport.SessionDebugProvider
+	ChannelDebug() btransport.ChannelDebugProvider
+	ConfigDebug() btransport.ConfigDebugProvider
+
 	// AddSessionLoadListener registers a listener invoked every time
-	// the server-driven client configuration reports a new
+	// the server-driven ClientConfigurationManager reports a new
 	// session-load ratio (0.0 = classic-only, 1.0 = session-only).
-	// Returns an unregister thunk.
+	// Returns an unregister thunk. Used by mixed-mode bigtable.Client
+	// to feed its Diverter; standalone session.Client callers can
+	// ignore this method.
 	AddSessionLoadListener(func(load float64)) func()
 
-	// Close closes the underlying channel pool.
-	//
-	// Callers should close every vended TableAPI first — this
-	// tears down the shared channel pool, and vended tables can no
-	// longer issue cleanup RPCs (e.g., session deletion) once the pool
-	// is gone. Any TableAPI still open at the time of this call
-	// becomes unusable.
+	// Close closes the underlying channel pool. TableAPI
+	// instances previously vended become unusable.
 	Close() error
 }

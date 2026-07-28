@@ -54,6 +54,14 @@ type ManagedChannelPool struct {
 	ConnRecycler *ConnectionRecycler
 }
 
+// NewManagedChannelPool bundles a pool with its lifecycle monitors so callers
+// that hand-roll pool construction (e.g., the session client) get the same
+// "these three ship together" invariant as CreateAndStartManagedChannelPool
+// enforces for the classic path. Either monitor may be nil.
+func NewManagedChannelPool(pool gtransport.ConnPool, dsm *DynamicScaleMonitor, connRecycler *ConnectionRecycler) ManagedChannelPool {
+	return ManagedChannelPool{Pool: pool, Dsm: dsm, ConnRecycler: connRecycler}
+}
+
 // Close stops all associated monitors/recyclers and closes the underlying pool.
 func (m ManagedChannelPool) Close() error {
 	if m.Dsm != nil {
@@ -157,7 +165,9 @@ func CreateBigtableChannelPool(
 	// connection factory (via WithChannelPrimer) and the direct-access
 	// compatibility checker. Keeping the (instanceName, appProfile,
 	// featureFlagsMD) tuple in one place avoids the three-arg drift between
-	// the two consumers.
+	// the two consumers. Session-flavored pools bypass this helper
+	// entirely — they construct NewBigtableChannelPool directly with
+	// NoOpChannelPrimer + NewSessionClientDirectAccessChecker.
 	primer := newPingAndWarmChannelPrimer(fullInstanceName, config.AppProfile, directAccessMD)
 
 	poolOpts := []BigtableChannelPoolOption{
@@ -184,7 +194,7 @@ func CreateBigtableChannelPool(
 			}
 			return NewBigtableConn(grpcConn), nil
 		}
-		checker := newPingAndWarmDirectAccessChecker(
+		checker := NewPingAndWarmDirectAccessChecker(
 			directAccessDialer,
 			primer,
 			otelMeterProvider,
