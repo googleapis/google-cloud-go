@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"sync/atomic"
 	"time"
 
 	"go.opentelemetry.io/otel/attribute"
@@ -54,6 +55,13 @@ type sessionClientDirectAccessChecker struct {
 	featureFlagsMD  metadata.MD
 	daEligibleGauge metric.Int64Gauge
 	logger          *log.Logger
+
+	// lastProbeConfig captures the ClientConfiguration returned by the
+	// startup GetClientConfiguration probe (populated by CheckCompatibility
+	// on the compatible + PermissionDenied paths). Exposed via
+	// LastProbeConfig() so a downstream ClientConfigurationManager can
+	// seed its state from the probe response and skip its own first poll.
+	lastProbeConfig atomic.Pointer[bigtablepb.ClientConfiguration]
 }
 
 // newSessionClientDirectAccessChecker constructs the session-pool checker.
@@ -94,7 +102,13 @@ func (c *sessionClientDirectAccessChecker) CheckCompatibility(ctx context.Contex
 		return nil, false
 	}
 
-	err = c.probeGetClientConfig(ctx, conn)
+	resp, err := c.probeGetClientConfig(ctx, conn)
+	if resp != nil {
+		// Even on PermissionDenied (which we fall through to the ALTS
+		// check below) the server may not respond with a body — only
+		// store when we actually got one.
+		c.lastProbeConfig.Store(resp)
+	}
 	if err != nil {
 		// PermissionDenied is expected on probes that are otherwise healthy
 		// (bootstrap credentials may lack GetClientConfiguration), so fall
@@ -120,9 +134,10 @@ func (c *sessionClientDirectAccessChecker) CheckCompatibility(ctx context.Contex
 
 // probeGetClientConfig issues a single GetClientConfiguration RPC to trigger
 // the ALTS handshake and populate the connection's peer info (isALTSConn +
-// remoteAddrType). The response itself is discarded — the checker only cares
-// that the RPC completed and what the transport looked like.
-func (c *sessionClientDirectAccessChecker) probeGetClientConfig(ctx context.Context, conn *BigtableConn) error {
+// remoteAddrType). Returns the response body so callers can stash it for
+// reuse (e.g., seeding ClientConfigurationManager on start to skip its
+// initial poll).
+func (c *sessionClientDirectAccessChecker) probeGetClientConfig(ctx context.Context, conn *BigtableConn) (*bigtablepb.ClientConfiguration, error) {
 	client := bigtablepb.NewBigtableClient(conn.ClientConn)
 	req := &bigtablepb.GetClientConfigurationRequest{
 		InstanceName: c.instanceName,
@@ -138,9 +153,18 @@ func (c *sessionClientDirectAccessChecker) probeGetClientConfig(ctx context.Cont
 	defer cancel()
 
 	var p peer.Peer
-	_, err := client.GetClientConfiguration(probeCtx, req, grpc.Peer(&p))
+	resp, err := client.GetClientConfiguration(probeCtx, req, grpc.Peer(&p))
 	recordProbePeer(conn, &p)
-	return err
+	return resp, err
+}
+
+// LastProbeConfig returns the ClientConfiguration returned by the most
+// recent CheckCompatibility probe, or nil if the probe never returned a
+// body (never ran, or the server responded without one). Provided so a
+// downstream ClientConfigurationManager can seed its initial state from
+// the probe response and skip its own eager first poll.
+func (c *sessionClientDirectAccessChecker) LastProbeConfig() *bigtablepb.ClientConfiguration {
+	return c.lastProbeConfig.Load()
 }
 
 // reportSuccess records a direct_access/compatible=1 reading.
@@ -190,7 +214,10 @@ func (c *sessionClientDirectAccessChecker) probeSingleEndpoint(ctx context.Conte
 	defer cancel()
 
 	btopt.Debugf(c.logger, "bigtable_direct_access: investigation: Executing GetClientConfiguration() on %s...", targetEndpoint)
-	if err := c.probeGetClientConfig(probeCtx, btc); err != nil {
+	// Investigation probe response is discarded — this endpoint-isolated
+	// re-probe is diagnostic only; the caller cares about the error, not
+	// the config body.
+	if _, err := c.probeGetClientConfig(probeCtx, btc); err != nil {
 		return fmt.Errorf("GetClientConfiguration() failed: %w", err)
 	}
 
