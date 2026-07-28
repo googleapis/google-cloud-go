@@ -192,7 +192,10 @@ func waitFor(t *testing.T, timeout time.Duration, cond func() bool, msg string) 
 // callers that don't care about the stream.
 func newTestSession(t *testing.T, stream Stream, hooks SessionHooks) *Session {
 	t.Helper()
-	return NewSession("test-session", stream, hooks, SessionTypeTable)
+	// Tests exercise debug ring-buffer state (events, latencies) so enable
+	// the debug recorder gate. Production callers set this from
+	// session.Config.EnableDebug.
+	return NewSession("test-session", stream, hooks, SessionTypeTable, WithSessionDebugEnabled(true))
 }
 
 // newDefaultTestSession is a shortcut for tests that don't drive the stream.

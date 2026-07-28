@@ -107,7 +107,7 @@ func TestPool_LeastLatency_PrefersLowCostAFE(t *testing.T) {
 	defer p.Close()
 
 	// Switch picker to LeastLatency (subset-size = 2 = both AFEs).
-	p.picker = NewLeastLatencyAfePicker(2)
+	p.picker = NewLeastLatencyAfePicker(2, true)
 
 	slow := injectActiveOnAfe(t, p, "slow", 1)
 	fast := injectActiveOnAfe(t, p, "fast", 2)
@@ -144,7 +144,7 @@ func TestPool_LeastLatency_IgnoresFailingAFELatency(t *testing.T) {
 	p := newTestPool(t, 1, 20)
 	defer p.Close()
 
-	p.picker = NewLeastLatencyAfePicker(2)
+	p.picker = NewLeastLatencyAfePicker(2, true)
 
 	failing := injectActiveOnAfe(t, p, "failing", 1)
 	healthy := injectActiveOnAfe(t, p, "healthy", 2)

@@ -130,7 +130,7 @@ func TestSessionHandle_Snapshot(t *testing.T) {
 func TestPoolSnapshot_AggregatesSessions(t *testing.T) {
 	pool := NewSessionPoolImpl(
 		uint64(1),
-		"test:read", 1, 5, nil, nil, nil, SessionTypeTable,
+		"test:read", 1, 5, nil, nil, nil, SessionTypeTable, true,
 	)
 
 	// Two active sessions, one with traffic.

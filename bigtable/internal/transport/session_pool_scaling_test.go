@@ -229,7 +229,7 @@ func TestTick_CreateSessionPanic_PoolSurvives(t *testing.T) {
 	}
 	p := NewSessionPoolImpl(
 		uint64(1), "test-panic-pool", 1, 10, panicFactory,
-		&spb.OpenSessionRequest{ProtocolVersion: 1}, nil, SessionTypeTable,
+		&spb.OpenSessionRequest{ProtocolVersion: 1}, nil, SessionTypeTable, true,
 	)
 	t.Cleanup(func() { _ = p.Close() })
 

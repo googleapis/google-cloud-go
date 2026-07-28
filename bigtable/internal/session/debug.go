@@ -22,7 +22,15 @@ import (
 // empty here — the classic/session split is a mixed-mode concept that
 // only exists on bigtable.Client, which composes its own
 // SessionDebugProvider over this one and layers the diverter in.
+//
+// Returns nil when the client was constructed with EnableDebug false;
+// pools in that mode skip every allocating debug recorder so there is
+// no snapshot state to surface. Callers should treat nil as
+// "no debug data available".
 func (sc *sessionClient) SessionDebug() btransport.SessionDebugProvider {
+	if !sc.enableDebug {
+		return nil
+	}
 	return sessionDebugProviderImpl{sc: sc}
 }
 
