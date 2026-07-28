@@ -47,12 +47,6 @@ const (
 	requestParamsHeader  = "x-goog-request-params"
 )
 
-// Default pool sizing — same as SessionManager's fallback (10/100).
-const (
-	defaultMinSessions = 10
-	defaultMaxSessions = 100
-)
-
 // sessionProtocolVersion is the wire-protocol version stamped on every
 // OpenSessionRequest envelope. Bump when we introduce a
 // non-backwards-compatible change to the request/response shape or the
@@ -100,11 +94,6 @@ type Config struct {
 	MetricsEnabled   bool
 	DisableRetryInfo bool
 
-	// MinSessions / MaxSessions are per-pool bounds. Zero uses
-	// defaults (10/100).
-	MinSessions int
-	MaxSessions int
-
 	// SessionLoadListener is invoked whenever the server-driven
 	// ClientConfigurationManager reports a new session-load ratio. The
 	// bigtable Client wires this to Diverter.SetSessionLoad so the
@@ -120,7 +109,7 @@ type Config struct {
 // managedPool bundles a pool with its config-listener unregister
 // thunk so the listener can be detached before pool teardown.
 type managedPool struct {
-	pool       SessionPool
+	pool       *btransport.SessionPoolImpl
 	unregister func()
 }
 
@@ -202,10 +191,9 @@ type sessionClient struct {
 // gtransport.Dial — endpoint, credentials, gRPC connection pool size,
 // etc.
 //
-// Pool sizing (MinSessions/MaxSessions) uses internal defaults (10/100);
-// override at runtime by responding to the server-driven
-// SessionClientConfiguration polls, which reshape live pools via
-// SessionPoolImpl.UpdateConfig.
+// Pool sizing bootstraps from btransport.defaultPoolConfig() and is
+// overridden at runtime by the server-driven SessionClientConfiguration
+// polls, which reshape live pools via SessionPoolImpl.UpdateConfig.
 //
 // The load-balancing hook for a mixed-mode setup lives at
 // AddSessionLoadListener — call it after construction if you're
@@ -335,8 +323,6 @@ func NewSessionClient(
 		ConfigMD:         configMD,
 		MetricsEnabled:   factory.Enabled,
 		DisableRetryInfo: false,
-		MinSessions:      defaultMinSessions,
-		MaxSessions:      defaultMaxSessions,
 		BackgroundCtx:    backgroundCtx,
 	})
 	sc.backgroundCancel = cancel
@@ -589,7 +575,7 @@ func (sc *sessionClient) createPoolForPayload(
 	streamFactory func(ctx context.Context) (btransport.Stream, error),
 	payload proto.Message,
 	key poolKey,
-) (SessionPool, error) {
+) (*btransport.SessionPoolImpl, error) {
 	if payload == nil {
 		return nil, nil
 	}
@@ -620,15 +606,7 @@ func (sc *sessionClient) createPoolForPayload(
 		requestParamsHeader, paramsVal,
 	), sc.cfg.FeatureFlagsMD)
 
-	min := sc.cfg.MinSessions
-	if min <= 0 {
-		min = defaultMinSessions
-	}
-	max := sc.cfg.MaxSessions
-	if max <= 0 {
-		max = defaultMaxSessions
-	}
-	return sc.getOrCreatePool(key, min, max, streamFactory, handshake, md, sessionDesc.Type), nil
+	return sc.getOrCreatePool(key, streamFactory, handshake, md, sessionDesc.Type), nil
 }
 
 // getOrCreatePool ports SessionManager.GetOrCreateSessionPool:
@@ -636,12 +614,11 @@ func (sc *sessionClient) createPoolForPayload(
 // the config listener + background loops.
 func (sc *sessionClient) getOrCreatePool(
 	key poolKey,
-	min, max int,
 	streamFactory func(ctx context.Context) (btransport.Stream, error),
 	openSessionRequest *btpb.OpenSessionRequest,
 	md metadata.MD,
 	sessionType btransport.SessionType,
-) SessionPool {
+) *btransport.SessionPoolImpl {
 	sc.poolsMu.Lock()
 	// Close() sets pools=nil to refuse subsequent Opens; a nil map here
 	// means teardown has already snapshotted the pool set.
@@ -658,9 +635,12 @@ func (sc *sessionClient) getOrCreatePool(
 	if label := key.perm.display(); label != "" {
 		poolName += " [" + label + "]"
 	}
+	// Pool bounds start at 0; NewSessionPoolImpl falls back to
+	// defaultPoolConfig() and ClientConfigurationManager overrides on
+	// first UpdateConfig with server-driven values.
 	pool := btransport.NewSessionPoolImpl(
 		id,
-		poolName, min, max, streamFactory, openSessionRequest, md, sessionType,
+		poolName, 0, 0, streamFactory, openSessionRequest, md, sessionType,
 	)
 	mp := &managedPool{pool: pool}
 	sc.pools[key] = mp
@@ -790,7 +770,7 @@ func (sc *sessionClient) LoadBalancingSnapshots() []btransport.LoadBalancingSnap
 // so they can sort by poolKey without duplicating the collection loop.
 type poolEntry struct {
 	key  poolKey
-	pool SessionPool
+	pool *btransport.SessionPoolImpl
 }
 
 // orderedPoolEntries snapshots the pools map under lock and returns
