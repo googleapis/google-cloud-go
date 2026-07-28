@@ -72,10 +72,10 @@ type DebugAccess interface {
 // (bigtable.Client) are responsible for caching per-resource entries
 // so repeat Opens reuse the same underlying pools.
 type Client interface {
-	// OpenSessionTable returns a TableAPI for a standard table,
+	// OpenTable returns a TableAPI for a standard table,
 	// identified by the leaf table name (e.g. "my-table"). Full
 	// resource composition happens inside the implementation.
-	OpenSessionTable(tableID string) TableAPI
+	OpenTable(tableID string) TableAPI
 
 	// OpenAuthorizedView returns a TableAPI for a specific
 	// authorized view under `table`.

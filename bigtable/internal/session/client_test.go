@@ -380,8 +380,8 @@ func TestSessionClient_OpenTableAndAuthorizedView_ReturnTableAPI(t *testing.T) {
 	sc := newTestClient(t, nil, Config{})
 	defer sc.Close()
 
-	if api := sc.OpenSessionTable("t"); api == nil {
-		t.Error("OpenSessionTable returned nil TableAPI")
+	if api := sc.OpenTable("t"); api == nil {
+		t.Error("OpenTable returned nil TableAPI")
 	}
 	if api := sc.OpenAuthorizedView("t", "v"); api == nil {
 		t.Error("OpenAuthorizedView returned nil TableAPI")

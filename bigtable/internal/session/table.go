@@ -274,10 +274,11 @@ func stampAttempt(ctx context.Context, result btransport.InvokeResult) {
 	if !result.SentAt.IsZero() && !att.StartTime().IsZero() {
 		att.SetClientBlockingLatency(metrics.ConvertToMs(result.SentAt.Sub(att.StartTime())))
 	}
-	// Session-path ServerLatency is 0 by design; see
-	// CLIENT_SIDE_METRICS_SPEC.md #2 ("server_latencies" + connectivity
-	// interlock) for why.
-	att.SetServerLatency(0)
+	// Session path leaves ServerLatency at its zero value; tracer.go still
+	// emits the histogram sample because serverLatencyErr is nil. Follow-up:
+	// gate emission on a serverLatencySet flag so session attempts truly
+	// don't contribute to server_latencies. See CLIENT_SIDE_METRICS_SPEC.md
+	// #2 ("server_latencies" + connectivity interlock).
 	if result.PeerInfo != nil {
 		att.SetTransportType(btransport.TransportTypeName(result.PeerInfo.GetTransportType()))
 		att.SetTransportRegion(result.PeerInfo.GetApplicationFrontendRegion())
@@ -300,14 +301,22 @@ func attachOutgoingMetadata(ctx context.Context, md metadata.MD) context.Context
 	return metadata.NewOutgoingContext(ctx, md)
 }
 
-// mutationsAreRetryable mirrors bigtable.mutationsAreRetryable. A
-// mutation is idempotent iff every SetCell carries an explicit
-// timestamp (not ServerTime = -1). Duplicated here to avoid an
-// import cycle; keep in sync with the classic-side helper.
+// mutationsAreRetryable determines whether a mutation set is safe to
+// replay. A mutation is idempotent iff:
+//   - every SetCell carries an explicit timestamp (not ServerTime = -1), and
+//   - no AddToCell / MergeToCell operations are present (both are
+//     inherently non-idempotent — replaying them changes the result).
+//
+// Based on bigtable.mutationsAreRetryable (duplicated to avoid an
+// import cycle); session enforces the AddToCell / MergeToCell check
+// that the classic helper is missing today.
 func mutationsAreRetryable(muts []*btpb.Mutation) bool {
 	const serverTime int64 = -1
 	for _, mut := range muts {
 		if setCell := mut.GetSetCell(); setCell != nil && setCell.TimestampMicros == serverTime {
+			return false
+		}
+		if mut.GetAddToCell() != nil || mut.GetMergeToCell() != nil {
 			return false
 		}
 	}
