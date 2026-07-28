@@ -34,6 +34,7 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/storage/internal"
 	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
+	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
@@ -117,7 +118,22 @@ func newMetricsGCMExporter(ctx context.Context, projectID string) (sdkmetric.Exp
 		mexporter.WithMetricDescriptorTypeFormatter(func(m metricdata.Metrics) string {
 			return formatMetricWithPrefix(m, customMetricPrefix)
 		}),
-		mexporter.WithCreateServiceTimeSeries(),
+		// The OTel GCP exporter drops any resource attributes that don't map to the
+		// target MonitoredResource (currently generic_node).
+		// We use WithFilteredResourceAttributes returning true to ensure that ANY
+		// resource attributes not in the MonitoredResource schema (like gcp.client.*,
+		// or gcp detector attributes not supported by generic_node) are preserved
+		// as metric labels instead of being dropped.
+		//
+		// TODO: When storage_client node is allowlisted in Monarch
+		// (google3/configs/monitoring/cloud_pulse_monarch/storage/storage_client.proto),
+		// we should uncomment the following options to export to the custom resource:
+		// mexporter.WithCreateServiceTimeSeries(),
+		// mexporter.WithMonitoredResourceDescription("storage.googleapis.com/Client", []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"}),
+		mexporter.WithFilteredResourceAttributes(func(kv attribute.KeyValue) bool {
+			// Keep all unmapped resource attributes as metric labels
+			return true
+		}),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("storage: creating GCM exporter: %w", err)
@@ -153,6 +169,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 		// Static common attributes are defined as Resource Attributes.
 		res, err := resource.New(ctx,
+			resource.WithDetectors(gcp.NewDetector()),
 			resource.WithAttributes(
 				attribute.String("gcp.client.version", internal.Version),
 				attribute.String("gcp.client.service", "storage"),
