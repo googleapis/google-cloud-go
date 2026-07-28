@@ -96,48 +96,36 @@ func TestNoOpChannelPrimer_ImplementsChannelPrimer(t *testing.T) {
 	var _ ChannelPrimer = NoOpChannelPrimer{}
 }
 
-// TestConnectionFactory_NoOpPrimerSkipsPriming verifies NoOpChannelPrimer
-// composes into the factory the same way a nil primer does — dial, no
-// PingAndWarm, hand the raw connection back.
-func TestConnectionFactory_NoOpPrimerSkipsPriming(t *testing.T) {
-	fake := &fakeService{}
-	addr := setupTestServer(t, fake)
-
-	factory := &connectionFactory{
-		dial:   func() (*BigtableConn, error) { return dialBigtableserver(addr) },
-		primer: NoOpChannelPrimer{},
+// TestConnectionFactory_NoPrimingVariants verifies both no-prime primer
+// shapes turn PingAndWarm off: an untyped nil primer AND the explicit
+// NoOpChannelPrimer sentinel. newEntry dials the channel and returns
+// it without issuing PingAndWarm in either case.
+func TestConnectionFactory_NoPrimingVariants(t *testing.T) {
+	cases := []struct {
+		name   string
+		primer ChannelPrimer
+	}{
+		{"nil-primer", nil},
+		{"no-op-primer", NoOpChannelPrimer{}},
 	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			fake := &fakeService{}
+			addr := setupTestServer(t, fake)
+			factory := &connectionFactory{
+				dial:   func() (*BigtableConn, error) { return dialBigtableserver(addr) },
+				primer: tc.primer,
+			}
 
-	entry, err := factory.newEntry(context.Background())
-	if err != nil {
-		t.Fatalf("newEntry returned error: %v", err)
-	}
-	t.Cleanup(func() { entry.conn.Close() })
+			entry, err := factory.newEntry(context.Background())
+			if err != nil {
+				t.Fatalf("newEntry returned error: %v", err)
+			}
+			t.Cleanup(func() { entry.conn.Close() })
 
-	if got := fake.getPingCount(); got != 0 {
-		t.Errorf("PingAndWarm call count with NoOpChannelPrimer = %d, want 0", got)
-	}
-}
-
-// TestConnectionFactory_NilPrimerSkipsPriming verifies the contract that a
-// nil ChannelPrimer turns priming off: newEntry dials the channel and
-// returns it without issuing PingAndWarm.
-func TestConnectionFactory_NilPrimerSkipsPriming(t *testing.T) {
-	fake := &fakeService{}
-	addr := setupTestServer(t, fake)
-
-	factory := &connectionFactory{
-		dial:   func() (*BigtableConn, error) { return dialBigtableserver(addr) },
-		primer: nil,
-	}
-
-	entry, err := factory.newEntry(context.Background())
-	if err != nil {
-		t.Fatalf("newEntry returned error: %v", err)
-	}
-	t.Cleanup(func() { entry.conn.Close() })
-
-	if got := fake.getPingCount(); got != 0 {
-		t.Errorf("PingAndWarm call count with nil primer = %d, want 0", got)
+			if got := fake.getPingCount(); got != 0 {
+				t.Errorf("PingAndWarm call count = %d, want 0", got)
+			}
+		})
 	}
 }
