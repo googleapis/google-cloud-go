@@ -358,10 +358,9 @@ func (p *SessionPoolImpl) onClose(sh *SessionHandle, err error) {
 
 // noteAbnormalCloseIfAny bumps the consecutive-failure counter when a
 // session's terminal transition did NOT come through StateWaitServerClose.
-// Classification is state-based via Session.prevStateAtClose, captured at
-// the two transitionTo(StateClosed, …) call sites (Java parity —
-// SessionPoolImpl.java checks `prevState != WAIT_SERVER_CLOSE`). No
-// reason-string whitelist to keep in lockstep with new close reasons; the
+// Classification is state-based via Session.prevStateAtClose, captured
+// at the two transitionTo(StateClosed, …) call sites — no reason-string
+// whitelist to keep in lockstep with new close reasons; the
 // state-transition history is the source of truth. A clean shutdown
 // (Close() → WSC → server ack → Closed) skips the counter; a
 // server-initiated GoAway / heartbeat trip / stream error on a Ready
@@ -379,12 +378,11 @@ func (p *SessionPoolImpl) noteAbnormalCloseIfAny(sh *SessionHandle) {
 	if sh == nil || sh.session == nil {
 		return
 	}
-	// State-history gate (Java parity — SessionPoolImpl.java checks
-	// `prevState != WAIT_SERVER_CLOSE`): skip the trip counter only
-	// when the session's state immediately before Closed was
-	// StateWaitServerClose — i.e., the client-initiated clean-close
-	// path (Close() sent CloseSession, server acked, handleClose
-	// completed WSC → Closed). Every other terminal transition counts:
+	// State-history gate: skip the trip counter only when the session's
+	// state immediately before Closed was StateWaitServerClose — i.e.,
+	// the client-initiated clean-close path (Close() sent CloseSession,
+	// server acked, handleClose completed WSC → Closed). Every other
+	// terminal transition counts:
 	//   - never activated → open failure (prev = Starting)
 	//   - activated then server GoAway / heartbeat miss / stream error
 	//     → prev = Closing (transport failure worth surfacing)

@@ -161,9 +161,8 @@ type Session struct {
 	// prev return of transitionTo(StateClosed, ...) at the two
 	// transition sites (ForceClose, handleClose). Set-once by
 	// construction (transitionTo(StateClosed) applies at most once),
-	// then read from hooks.OnClose consumers. Matches the Java pattern
-	// (SessionPoolImpl checks `prevState != WAIT_SERVER_CLOSE`) so the
-	// pool can distinguish a client-initiated clean-close from a
+	// then read from hooks.OnClose consumers. Lets the pool
+	// distinguish a client-initiated clean-close (prev == WSC) from a
 	// server-initiated / transport-error close without carrying a
 	// side-channel bool.
 	prevStateAtClose atomic.Int32

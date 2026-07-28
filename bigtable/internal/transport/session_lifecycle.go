@@ -24,6 +24,7 @@ import (
 	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	btmetrics "cloud.google.com/go/bigtable/internal/metrics"
 	"google.golang.org/grpc/peer"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -279,11 +280,10 @@ func (s *Session) readLoop(ctx context.Context) {
 // Receiving any recognized frame resets the heartbeat watchdog; unknown
 // frames do NOT, so a misbehaving server cannot keep the watchdog
 // satisfied with junk payloads and a rogue future oneof variant can't
-// mask a broken stream. Java parity: `SessionImpl.handleUnknownResponseMessage`
-// also does not reset the heartbeat. The watchdog is only armed while
-// a vRPC is in-flight anyway — during that window the server MUST be
-// sending heartbeats, so a new-variant frame arriving instead of a
-// heartbeat within the interval is itself a signal worth surfacing.
+// mask a broken stream. The watchdog is only armed while a vRPC is
+// in-flight anyway — during that window the server MUST be sending
+// heartbeats, so a new-variant frame arriving instead of a heartbeat
+// within the interval is itself a signal worth surfacing.
 func (s *Session) handleSessionResponse(resp *spb.SessionResponse) {
 	switch p := resp.GetPayload().(type) {
 	case *spb.SessionResponse_OpenSession:
@@ -461,6 +461,14 @@ func (s *Session) handleClose(err error) {
 	// notifyClosed below drives onClose. closingOnce makes this a no-op
 	// when handleGoAway or Close already fired earlier.
 	s.notifyClosing()
+	// Fallback close-reason stamp for observability: paths that reach
+	// handleClose with no prior stamp (transport-level EOF/Unavailable
+	// without a GoAway or client Close) would otherwise fall into
+	// sessionz's "Unspecified" bucket. setCloseReason is CAS-once, so
+	// upstream stampers (GoAway, MissedHeartbeat, Error, User) still win.
+	if err != nil {
+		s.setCloseReason("StreamEnd:" + status.Code(err).String())
+	}
 	s.setCloseErr(err)
 	inFlight := 0
 	if s.activeVRPC() != nil {
