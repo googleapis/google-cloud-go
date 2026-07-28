@@ -75,9 +75,21 @@ func (s *Session) Start(ctx context.Context, req *spb.OpenSessionRequest) error 
 	// is safe.
 	s.hooks.onStart(ctx)
 
-	go s.readLoop(ctx)
-	go s.heartbeatLoop(ctx)
+	// Track readLoop + heartbeatLoop so WaitGoroutines can block until
+	// their callback chains (notifyClosed → recordClose, etc.) have
+	// unwound. Owners (SessionPoolImpl.Close) call WaitGoroutines during
+	// teardown so no session-owned goroutine outlives the pool.
+	s.loops.Add(2)
+	go func() { defer s.loops.Done(); s.readLoop(ctx) }()
+	go func() { defer s.loops.Done(); s.heartbeatLoop(ctx) }()
 	return nil
+}
+
+// WaitGoroutines blocks until readLoop and heartbeatLoop have fully
+// returned (including their notifyClosed / recordClose callback
+// chains). No-op if Start was never called.
+func (s *Session) WaitGoroutines() {
+	s.loops.Wait()
 }
 
 // ForceClose immediately transitions the session to StateClosed and cancels
@@ -450,6 +462,7 @@ func (s *Session) handleClose(err error) {
 	s.notifyClosing()
 	reason := streamEndReason(err)
 	s.setCloseReason(reason)
+	s.setCloseErr(err)
 	// After setCloseReason (CompareAndSwap-once), the *final* reason may
 	// be an earlier stamp (GoAway / MissedHeartbeat / Error) or the
 	// streamEndReason we just computed. Only flag as abnormal when the

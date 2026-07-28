@@ -405,3 +405,23 @@ func WithSessionLogger(logger *log.Logger) SessionOption {
 func WithSessionPoolName(name string) SessionOption {
 	return func(s *Session) { s.tracer.setPoolName(name) }
 }
+
+// setCloseErr records the raw error that ended the stream. First writer
+// wins so a follow-up close path (e.g. cancelActiveRPCs) can't overwrite
+// the original cause. Nil is treated as "no error" and ignored.
+func (s *Session) setCloseErr(err error) {
+	if err == nil {
+		return
+	}
+	s.closeErr.CompareAndSwap(nil, &err)
+}
+
+// closeError returns the raw error that ended the stream, or nil if
+// none was recorded. Consulted by the pool to surface the underlying
+// server rejection on consecutive-failure trips.
+func (s *Session) closeError() error {
+	if p := s.closeErr.Load(); p != nil {
+		return *p
+	}
+	return nil
+}
