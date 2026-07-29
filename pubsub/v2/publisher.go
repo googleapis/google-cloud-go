@@ -36,6 +36,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/protobuf/proto"
 )
@@ -120,6 +121,8 @@ type hedgedRequest struct {
 	ctx       context.Context
 	pbMsgs    []*pb.PubsubMessage
 	gaxOpts   []gax.CallOption
+	bmsgs     []*bundledMessage
+	retryer   gax.Retryer
 }
 
 func (req *hedgedRequest) isDone() bool {
@@ -621,6 +624,8 @@ func (t *Publisher) fireHedgedAttempt(req *hedgedRequest) {
 			ctx:       req.ctx,
 			pbMsgs:    req.pbMsgs,
 			gaxOpts:   req.gaxOpts,
+			bmsgs:     req.bmsgs,
+			retryer:   req.retryer,
 		})
 	}
 
@@ -630,12 +635,44 @@ func (t *Publisher) fireHedgedAttempt(req *hedgedRequest) {
 		return
 	}
 
+	timeout := t.PublishSettings.Timeout - (time.Duration(req.attemptID) * t.hedgingDelay)
+	if timeout <= 0 {
+		return
+	}
+	if timeout > 10*time.Second {
+		timeout = 10 * time.Second
+	}
+
+	// Hedged attempts should not be retried. Transient errors should not
+	// win the attempt, but permanent errors should.
+	opts := append([]gax.CallOption(nil), req.gaxOpts...)
+	opts = append(opts,
+		gax.WithRetry(func() gax.Retryer { return gax.OnCodes([]codes.Code{}, gax.Backoff{}) }),
+		gax.WithTimeout(timeout),
+	)
+
+	if t.enableTracing {
+		for _, m := range req.bmsgs {
+			m.createSpan.AddEvent(eventHedgedPublishStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(req.bmsgs))))
+		}
+	}
+
 	r, e := t.c.TopicAdminClient.Publish(hedgedCtx, &pb.PublishRequest{
 		Topic:    t.name,
 		Messages: req.pbMsgs,
-	}, req.gaxOpts...)
+	}, opts...)
 
-	if e == nil {
+	if t.enableTracing {
+		for _, m := range req.bmsgs {
+			m.createSpan.AddEvent(eventHedgedPublishEnd)
+		}
+	}
+
+	var shouldRetry bool
+	if e != nil && req.retryer != nil {
+		_, shouldRetry = req.retryer.Retry(e)
+	}
+	if e == nil || !shouldRetry {
 		select {
 		case req.resCh <- attemptResult{res: r, err: e, id: id}:
 			req.cs.win(id)
@@ -773,6 +810,8 @@ func (t *Publisher) publishMessageBundle(ctx context.Context, bms []*bundledMess
 				ctx:       ctx,
 				pbMsgs:    pbMsgs,
 				gaxOpts:   gaxOpts,
+				bmsgs:     bms,
+				retryer:   &publishRetryer{defaultRetryer: settings.Retry()},
 			}
 			t.enqueueHedgedRequest(initialHedge)
 
