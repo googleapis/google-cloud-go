@@ -93,6 +93,11 @@ const (
 	tagSessionHeartbeatMissed        = "session_heartbeat_missed"
 	tagSessionForceCloseNeverStarted = "session_force_close_never_started"
 	tagSessionCloseNoReason          = "session_close_no_reason"
+	// tagSessionReadLoopPanic fires when readLoop's deferred recover
+	// catches a panic from handleSessionResponse (or any downstream
+	// handler). Session is force-closed with REASON_ERROR carrying the
+	// panic value in the description.
+	tagSessionReadLoopPanic = "session_read_loop_panic"
 
 	// vRPC dispatch observations.
 	tagSessionVRPCNil                = "session_vrpc_nil"
@@ -100,12 +105,64 @@ const (
 	tagSessionVRPCIDMismatch         = "session_vrpc_id_mismatch"
 	tagSessionVRPCResponseWrongState = "session_vrpc_response_wrong_state"
 	tagSessionVRPCDuplicateResult    = "session_vrpc_duplicate_result"
+	// tagSessionVRPCCancelledDrained fires when a server response finally
+	// arrives for an rpc whose caller already returned via ctx.Done: the
+	// drain succeeds, currentCancel != nil, and no one is waiting on
+	// resultChan. Bookkeeping-only — the drain still fires OnSlotDrained
+	// so the pool re-enqueues the session.
+	tagSessionVRPCCancelledDrained = "session_vrpc_cancelled_drained"
 
 	// Pool-scoped anomalies.
 	tagSessionPoolStuckSessionSwept = "session_pool_stuck_session_swept"
 	tagSessionPoolDrainTimeout      = "session_pool_drain_timeout"
 	tagSessionPoolCreateFailed      = "session_pool_create_failed"
-	tagSessionPoolPickLostRace      = "session_pool_pick_lost_race"
+	// tagSessionPoolCreatePanic distinguishes a recovered panic inside
+	// Tick's createSession fanout (streamFactory / NewSession / hook
+	// wiring) from a plain error return (tagSessionPoolCreateFailed).
+	// The two paths have very different root causes — a panic indicates
+	// a client-side bug, an error is typically transient — so ops
+	// should be able to grep them apart in the debug-tag counters.
+	tagSessionPoolCreatePanic                = "session_pool_create_panic"
+	tagSessionPoolPickLostRace               = "session_pool_pick_lost_race"
+	tagSessionPoolConsecutiveFailuresTripped = "session_pool_consecutive_failures_tripped"
+	// tagSessionPoolNoBudget fires when createSession's budget.Acquire
+	// returns an error — either poolCtx cancel (teardown) or the
+	// throttler's NewSessionCreationPenalty window expired without an
+	// existing reservation being released. The count is the pool's
+	// "opens throttled" signal; sustained emission means the budget
+	// ceiling is too low for the offered load OR opens are hanging past
+	// the penalty window.
+	tagSessionPoolNoBudget = "session_pool_no_budget"
+
+	// sessionList bookkeeping violations.
+	//
+	// tagSessionListRefcountUnderflow fires when OnSessionClosed would
+	// decrement an afeHandle's refCount below zero. Under I4/I6 this is
+	// unreachable — every decrement is preceded by an OnSessionStarted
+	// increment and the handleToAfe map delete guards against a
+	// double-close reaching the decrement. A non-zero count here means
+	// bookkeeping drifted (missed OnSessionStarted, mis-paired hook
+	// ordering, or a force-close bypass) and should be investigated.
+	tagSessionListRefcountUnderflow = "session_list_refcount_underflow"
+
+	// tagSessionListReadyCountUnderflow fires when dropMembershipLocked
+	// would drive sl.readyCount below zero. Under I2 this is unreachable —
+	// inExpectedCount flips true exactly once (in OnSessionStarted) and
+	// dropMembershipLocked is idempotent via the inExpectedCount guard.
+	// A non-zero count here means bookkeeping drifted (an inExpectedCount
+	// increment without the paired OnSessionStarted, or a decrement path
+	// bypassing the guard) and should be investigated before it corrupts
+	// scale-up decisions gated on ReadyCount().
+	tagSessionListReadyCountUnderflow = "session_list_ready_count_underflow"
+
+	// tagSessionListStartedNilSession fires when OnSessionStarted is
+	// called with a SessionHandle whose session pointer is nil.
+	// Unreachable in production (createSession populates sh.session
+	// synchronously before the hook fires) — the assertion exists so
+	// that a future caller who accidentally wires a nil-session handle
+	// (e.g. a test double promoted to production) shows up in the
+	// debug counter instead of no-op'ing silently.
+	tagSessionListStartedNilSession = "session_list_started_nil_session"
 
 	// Client configuration polling.
 	tagClientConfigPollFailed     = "client_config_poll_failed"

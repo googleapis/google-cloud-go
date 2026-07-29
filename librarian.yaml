@@ -12,15 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.28.0
+version: v0.31.0
 repo: googleapis/google-cloud-go
 sources:
   discovery:
     commit: 1c6496fb0cf9fa04a35e24e8af871c58298ae37e
     sha256: c3cd1ca564a28485970bdf348cac9bcde65d45792a5c2df1c179654d3ad8b877
   googleapis:
-    commit: a15a5b7adf695d1b6b17359ff64bfb4a83d0750b
-    sha256: 81eaaf6868fac6e67798c0809125b8b4821dcdd8d84916852a4a33681f3c901b
+    commit: b8486a2f44f15dc578a9dc1e17b144253079d5c1
+    sha256: 12411ca5cb6c70d7c873d7058c5182a8d23fa88af8d984b0e73b1c3ad1d83766
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
@@ -508,6 +508,10 @@ libraries:
     copyright_year: "2026"
   - name: compute
     version: 1.65.0
+    preview:
+      version: 1.66.0-preview.1
+      apis:
+        - path: google/cloud/compute/v1
     apis:
       - path: google/cloud/compute/v1
         go:
@@ -918,6 +922,7 @@ libraries:
       - path: google/maps/routeoptimization/v1
       - path: google/maps/solar/v1
       - path: google/maps/isochrones/v1
+      - path: google/maps/navconnect/v1
       - path: google/maps/fleetengine/delivery/v1
         go:
           no_snippets: true
@@ -1304,7 +1309,7 @@ libraries:
           import_path: shopping/type
           proto_only: true
   - name: spanner
-    version: 1.93.0
+    version: 1.94.0
     apis:
       - path: google/spanner/v1
         go:

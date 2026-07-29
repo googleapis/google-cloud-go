@@ -17,6 +17,7 @@ package internal
 import (
 	"math"
 	"sync"
+	"sync/atomic"
 
 	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 )
@@ -53,10 +54,15 @@ type StatsFetcher func() *PoolStats
 // outside any peak-window cannot trigger a mass prune followed by a
 // cold-start scale-up on the next crest.
 type PoolSizer struct {
-	mu              sync.Mutex
-	fetcher         StatsFetcher
-	minSessions     int
-	maxSessions     int
+	mu      sync.Mutex
+	fetcher StatsFetcher
+	// minSessions / maxSessions are the authoritative pool-size bounds.
+	// Stored as atomics so hot-path readers (CheckoutSession gate,
+	// onClosing replace-check, createSession cap) can Load without
+	// taking s.mu — pool.go used to duplicate these into its own
+	// atomics; that duplication is now gone.
+	minSessions     atomic.Int32
+	maxSessions     atomic.Int32
 	headroomPct     float64 // Idle headroom as a fraction of sessions in use (e.g., 0.10 = 10%)
 	newSessionQLen  int     // server-driven per-session pending queue length; divides PendingCount
 	minIdleSessions int     // floor on the idle cushion so headroom never collapses to 0
@@ -87,15 +93,25 @@ func NewPoolSizer(fetcher StatsFetcher, minSessions, maxSessions int, headroomPc
 	if headroomPct <= 0 {
 		headroomPct = float64(defaultPoolConfig().GetHeadroom())
 	}
-	return &PoolSizer{
+	s := &PoolSizer{
 		fetcher:         fetcher,
-		minSessions:     minSessions,
-		maxSessions:     maxSessions,
 		headroomPct:     headroomPct,
 		newSessionQLen:  int(defaultPoolConfig().GetNewSessionQueueLength()),
 		minIdleSessions: defaultMinIdleSessions,
 	}
+	s.minSessions.Store(int32(minSessions))
+	s.maxSessions.Store(int32(maxSessions))
+	return s
 }
+
+// MinSessions returns the current pool-floor session count. Atomic load;
+// safe from any goroutine without taking the sizer lock. Callers that
+// need min/max/headroom as a consistent triple should use Decide instead.
+func (s *PoolSizer) MinSessions() int { return int(s.minSessions.Load()) }
+
+// MaxSessions returns the current pool-ceiling session count. Atomic
+// load; same non-locking contract as MinSessions.
+func (s *PoolSizer) MaxSessions() int { return int(s.maxSessions.Load()) }
 
 // UpdateConfig dynamically adjusts the sizer's capacity bounds,
 // headroom cushion, and per-session queue length at runtime. Called
@@ -110,8 +126,12 @@ func (s *PoolSizer) UpdateConfig(config *spb.SessionClientConfiguration_SessionP
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.minSessions = int(config.MinSessionCount)
-	s.maxSessions = int(config.MaxSessionCount)
+	// min/max are atomic so hot-path readers (pool gate + snapshot) see
+	// the new bound the moment UpdateConfig returns; s.mu still brackets
+	// the write with headroom/qlen so a Decide walking the sizer sees a
+	// coherent config triple.
+	s.minSessions.Store(config.MinSessionCount)
+	s.maxSessions.Store(config.MaxSessionCount)
 	// Mirror the constructor guard: a zero or negative headroom from
 	// the server would render as HeadroomPct=0 on the loadz trace and
 	// collapse IdleHeadroom to the MinIdleSessions floor — the pool
@@ -196,8 +216,8 @@ func (s *PoolSizer) Decide() ScaleDecision {
 	defer s.mu.Unlock()
 
 	d := ScaleDecision{
-		MinSessions:     s.minSessions,
-		MaxSessions:     s.maxSessions,
+		MinSessions:     int(s.minSessions.Load()),
+		MaxSessions:     int(s.maxSessions.Load()),
 		HeadroomPct:     s.headroomPct,
 		NewSessionQLen:  s.newSessionQLen,
 		MinIdleSessions: s.minIdleSessions,
@@ -233,7 +253,7 @@ func (s *PoolSizer) Decide() ScaleDecision {
 		d.IdleHeadroom = s.minIdleSessions
 	}
 	d.DesiredRaw = d.SessionsInUse + d.IdleHeadroom
-	d.DesiredCapacity = clamp(d.DesiredRaw, s.minSessions, s.maxSessions)
+	d.DesiredCapacity = clamp(d.DesiredRaw, d.MinSessions, d.MaxSessions)
 
 	d.ImmediateCapacity = stats.ReadyCount
 	d.EventualCapacity = stats.ReadyCount + stats.StartingCount

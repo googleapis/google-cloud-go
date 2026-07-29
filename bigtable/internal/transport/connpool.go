@@ -52,7 +52,6 @@ var maxDrainingTimeout = 30 * time.Minute
 const (
 	artificialLoadIfError        = 10
 	artificialLoadPenalizedTimer = 5 * time.Second
-	requestParamsHeader          = "x-goog-request-params"
 	// maxPrimeWorkers caps the goroutines used to prime initial pool
 	// connections in parallel. Pools smaller than this naturally fan out to
 	// connPoolSize workers; larger pools cap here so we don't spawn one
@@ -170,7 +169,7 @@ func (bc *BigtableConn) Prime(ctx context.Context, fullInstanceName, appProfileI
 		AppProfileId: appProfileID,
 	}
 
-	requestParamsMD := metadata.Pairs(requestParamsHeader,
+	requestParamsMD := metadata.Pairs(RequestParamsHeader,
 		fmt.Sprintf("name=%s&app_profile_id=%s", url.QueryEscape(fullInstanceName), url.QueryEscape(appProfileID)))
 
 	originalContextMd, _ := metadata.FromOutgoingContext(ctx)
@@ -227,6 +226,76 @@ func (p *BigtableChannelPool) connPoolStatsSupplier() []connPoolStats {
 		}
 	}
 	return stats
+}
+
+// ChannelSnapshot is one row in a ChannelPoolSnapshot. All numeric fields are
+// read non-destructively, so the debug UI can poll without disturbing the
+// metrics exporter (which itself swaps errorCount to 0 on each report).
+type ChannelSnapshot struct {
+	Index                int
+	OutstandingUnary     int32
+	OutstandingStreaming int32
+	ErrorCount           int64
+	IsALTSUsed           bool
+	IsDraining           bool
+	CreatedAt            time.Time
+	IPProtocol           string
+	TargetState          string
+	PenaltyExpiresAt     time.Time
+	// Picks and LastActivity are placeholders reserved for a follow-up
+	// change that wires per-entry counters into the pick path — the
+	// debug UI already renders them and treating them as zero here
+	// keeps the wire shape stable.
+	Picks        int64
+	LastActivity time.Time
+}
+
+// ChannelPoolSnapshot is what bigtable/channelz renders. It captures pool-wide
+// metadata (LB policy, connection count) plus one ChannelSnapshot per live
+// connection.
+type ChannelPoolSnapshot struct {
+	LBPolicy   string
+	TotalConns int
+	Channels   []ChannelSnapshot
+	CapturedAt time.Time
+}
+
+// ChannelPoolSnapshot returns a non-destructive snapshot of every connection
+// in the pool, plus pool-wide LB policy. Safe to call concurrently with
+// traffic; reads use the same atomics the hot path uses.
+func (p *BigtableChannelPool) ChannelPoolSnapshot() ChannelPoolSnapshot {
+	conns := p.getConns()
+	snap := ChannelPoolSnapshot{
+		LBPolicy:   p.strategy.String(),
+		TotalConns: len(conns),
+		Channels:   make([]ChannelSnapshot, 0, len(conns)),
+		CapturedAt: time.Now(),
+	}
+	for i, entry := range conns {
+		if entry == nil {
+			continue
+		}
+		cs := ChannelSnapshot{
+			Index:                i,
+			OutstandingUnary:     entry.unaryLoad.Load(),
+			OutstandingStreaming: entry.streamingLoad.Load(),
+			ErrorCount:           entry.errorCount.Load(),
+			IsALTSUsed:           entry.isALTSUsed(),
+			IsDraining:           entry.isDraining(),
+		}
+		if entry.conn != nil {
+			cs.IPProtocol = entry.conn.ipProtocol()
+			cs.TargetState = entry.conn.GetState().String()
+			if created := entry.createdAt(); created > 0 {
+				cs.CreatedAt = time.UnixMilli(created)
+			}
+		}
+		if expiry := entry.penaltyExpiry.Load(); expiry > 0 {
+			cs.PenaltyExpiresAt = time.Unix(0, expiry)
+		}
+		snap.Channels = append(snap.Channels, cs)
+	}
+	return snap
 }
 
 // NewBigtableConn creates a wrapped grpc Client Conn
@@ -1065,4 +1134,23 @@ func (m multiError) Error() string {
 		return s + " (and 1 other error)"
 	}
 	return fmt.Sprintf("%s (and %d other errors)", s, n-1)
+}
+
+// channelPickHintKey identifies the *atomic.Int32 destination the caller
+// wants BigtableChannelPool to publish the picked connEntry index into.
+type channelPickHintKey struct{}
+
+// ChannelPickHintInto returns a context that BigtableChannelPool will use to
+// publish the picked connEntry index into the supplied *atomic.Int32. The
+// caller can then read the value once the stream/invoke has returned.
+//
+// Used by Session creation to link sessions back to the channel they ride
+// on — surfaced in the sessionz / channelz debug UIs. Untouched by callers
+// that don't care: stampChannelPickHint short-circuits when the context
+// lacks the key. Passing dst == nil returns ctx unchanged.
+func ChannelPickHintInto(ctx context.Context, dst *atomic.Int32) context.Context {
+	if dst == nil {
+		return ctx
+	}
+	return context.WithValue(ctx, channelPickHintKey{}, dst)
 }

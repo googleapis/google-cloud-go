@@ -1322,9 +1322,35 @@ type PrivateOffer_Term struct {
 	ScheduledStartTime *datetime.DateTime `protobuf:"bytes,2,opt,name=scheduled_start_time,json=scheduledStartTime,proto3" json:"scheduled_start_time,omitempty"`
 	// Optional. Defines when an offer should end.
 	// Must be set when publishing the offer.
-	EndPolicy     PrivateOffer_Term_EndPolicy `protobuf:"varint,3,opt,name=end_policy,json=endPolicy,proto3,enum=google.cloud.commerceproducer.v1beta.PrivateOffer_Term_EndPolicy" json:"end_policy,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	EndPolicy PrivateOffer_Term_EndPolicy `protobuf:"varint,3,opt,name=end_policy,json=endPolicy,proto3,enum=google.cloud.commerceproducer.v1beta.PrivateOffer_Term_EndPolicy" json:"end_policy,omitempty"`
+	// Output only. The expected end time of the current offer term.
+	//
+	// At the end of each offer term, an offer associated with an active
+	// order will either renew or end. When an offer renews, a new term begins
+	// and this value changes to reflect the end time of the new term.
+	// When an offer ends this value is no longer set and instead `end_time` is
+	// set.
+	//
+	// When the term of an offer ends and the offer does not renew, the
+	// associated order also ends if the base standard offer has a
+	// subscription price model. Otherwise, the associated order does not end
+	// and remains active.
+	//
+	// Not included for PRIVATE_OFFER_VIEW_BASIC.
+	// Included for PRIVATE_OFFER_VIEW_FULL when the offer has not ended and
+	// either the offer has started or the value can be derived from other
+	// fields.
+	//
+	// For offers that have not started, this field is set when one of the
+	// following conditions is true.
+	//
+	//   - The offer sets `term.scheduled_end_time`.
+	//   - The offer sets `term.scheduled_start_time` and `term.duration_months`,
+	//     the offer's `term.end_policy` is not `MATCH_AMENDED_OFFER`, and the
+	//     offer does not have standard_interval set to `MONTHLY_POSTPAY`.
+	EffectiveTermEndTime *datetime.DateTime `protobuf:"bytes,8,opt,name=effective_term_end_time,json=effectiveTermEndTime,proto3" json:"effective_term_end_time,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *PrivateOffer_Term) Reset() {
@@ -1427,6 +1453,13 @@ func (x *PrivateOffer_Term) GetEndPolicy() PrivateOffer_Term_EndPolicy {
 		return x.EndPolicy
 	}
 	return PrivateOffer_Term_END_POLICY_UNSPECIFIED
+}
+
+func (x *PrivateOffer_Term) GetEffectiveTermEndTime() *datetime.DateTime {
+	if x != nil {
+		return x.EffectiveTermEndTime
+	}
+	return nil
 }
 
 type isPrivateOffer_Term_EndPolicyData interface {
@@ -2697,7 +2730,7 @@ var File_google_cloud_commerceproducer_v1beta_private_offer_proto protoreflect.F
 
 const file_google_cloud_commerceproducer_v1beta_private_offer_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/commerceproducer/v1beta/private_offer.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\x1a\x19google/type/decimal.proto\x1a\x17google/type/money.proto\"\x847\n" +
+	"8google/cloud/commerceproducer/v1beta/private_offer.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\x1a\x19google/type/decimal.proto\x1a\x17google/type/money.proto\"\xd77\n" +
 	"\fPrivateOffer\x12~\n" +
 	"\x14single_product_offer\x18\f \x01(\v2E.google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOfferB\x03\xe0A\x01H\x00R\x12singleProductOffer\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12S\n" +
@@ -2738,7 +2771,7 @@ const file_google_cloud_commerceproducer_v1beta_private_offer_proto_rawDesc = ""
 	"\x05email\x18\x03 \x01(\tB\x03\xe0A\x01R\x05email\x12\x1f\n" +
 	"\aaddress\x18\x04 \x01(\tB\x05\xe0A\x03\x18\x01R\aaddress\x12h\n" +
 	"\x16target_billing_account\x18\x05 \x01(\tB2\xe0A\x01\xfaA,\n" +
-	"*cloudbilling.googleapis.com/BillingAccountR\x14targetBillingAccount\x1a\xef\x05\n" +
+	"*cloudbilling.googleapis.com/BillingAccountR\x14targetBillingAccount\x1a\xc2\x06\n" +
 	"\x04Term\x12.\n" +
 	"\x0fduration_months\x18\x04 \x01(\x05B\x03\xe0A\x01H\x00R\x0edurationMonths\x12J\n" +
 	"\x12scheduled_end_time\x18\x05 \x01(\v2\x15.google.type.DateTimeB\x03\xe0A\x01H\x00R\x10scheduledEndTime\x121\n" +
@@ -2747,7 +2780,8 @@ const file_google_cloud_commerceproducer_v1beta_private_offer_proto_rawDesc = ""
 	"\fstart_policy\x18\x01 \x01(\x0e2C.google.cloud.commerceproducer.v1beta.PrivateOffer.Term.StartPolicyB\x03\xe0A\x01R\vstartPolicy\x12L\n" +
 	"\x14scheduled_start_time\x18\x02 \x01(\v2\x15.google.type.DateTimeB\x03\xe0A\x01R\x12scheduledStartTime\x12e\n" +
 	"\n" +
-	"end_policy\x18\x03 \x01(\x0e2A.google.cloud.commerceproducer.v1beta.PrivateOffer.Term.EndPolicyB\x03\xe0A\x01R\tendPolicy\"T\n" +
+	"end_policy\x18\x03 \x01(\x0e2A.google.cloud.commerceproducer.v1beta.PrivateOffer.Term.EndPolicyB\x03\xe0A\x01R\tendPolicy\x12Q\n" +
+	"\x17effective_term_end_time\x18\b \x01(\v2\x15.google.type.DateTimeB\x03\xe0A\x03R\x14effectiveTermEndTime\"T\n" +
 	"\vStartPolicy\x12\x1c\n" +
 	"\x18START_POLICY_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tIMMEDIATE\x10\x01\x12\x18\n" +
@@ -2936,35 +2970,36 @@ var file_google_cloud_commerceproducer_v1beta_private_offer_proto_depIdxs = []in
 	2,  // 20: google.cloud.commerceproducer.v1beta.PrivateOffer.Term.start_policy:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.Term.StartPolicy
 	26, // 21: google.cloud.commerceproducer.v1beta.PrivateOffer.Term.scheduled_start_time:type_name -> google.type.DateTime
 	3,  // 22: google.cloud.commerceproducer.v1beta.PrivateOffer.Term.end_policy:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.Term.EndPolicy
-	16, // 23: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.standard_interval_price:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.StandardIntervalPrice
-	18, // 24: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.custom_interval_price:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.CustomIntervalPrice
-	14, // 25: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.features:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.Feature
-	17, // 26: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.effective_installment_timeline:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.Installment
-	19, // 27: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.contract_value:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.ContractValue
-	20, // 28: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.revenue_share:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.RevenueShare
-	23, // 29: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.flat_fee:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.FlatFee
-	24, // 30: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.commitment:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.Commitment
-	22, // 31: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.usage:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.Usage
-	4,  // 32: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.StandardIntervalPrice.standard_interval:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.StandardIntervalPrice.StandardInterval
-	15, // 33: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.StandardIntervalPrice.price_model:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel
-	26, // 34: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.Installment.start_time:type_name -> google.type.DateTime
-	15, // 35: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.Installment.price_model:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel
-	17, // 36: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.CustomIntervalPrice.installments:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.Installment
-	27, // 37: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.ContractValue.total_contract_value:type_name -> google.type.Money
-	28, // 38: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.RevenueShare.current_term_vendor_net_revenue_percent:type_name -> google.type.Decimal
-	28, // 39: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.RevenueShare.renewal_term_vendor_net_revenue_percent:type_name -> google.type.Decimal
-	28, // 40: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.SkuDiscount.discount_percent:type_name -> google.type.Decimal
-	28, // 41: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.Usage.default_discount_percent:type_name -> google.type.Decimal
-	21, // 42: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.Usage.sku_discounts:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.SkuDiscount
-	27, // 43: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.FlatFee.flat_fee_override:type_name -> google.type.Money
-	27, // 44: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.Commitment.commitment_amount:type_name -> google.type.Money
-	28, // 45: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.Commitment.discount_percent:type_name -> google.type.Decimal
-	27, // 46: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.Commitment.additional_credit:type_name -> google.type.Money
-	47, // [47:47] is the sub-list for method output_type
-	47, // [47:47] is the sub-list for method input_type
-	47, // [47:47] is the sub-list for extension type_name
-	47, // [47:47] is the sub-list for extension extendee
-	0,  // [0:47] is the sub-list for field type_name
+	26, // 23: google.cloud.commerceproducer.v1beta.PrivateOffer.Term.effective_term_end_time:type_name -> google.type.DateTime
+	16, // 24: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.standard_interval_price:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.StandardIntervalPrice
+	18, // 25: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.custom_interval_price:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.CustomIntervalPrice
+	14, // 26: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.features:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.Feature
+	17, // 27: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.effective_installment_timeline:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.Installment
+	19, // 28: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.contract_value:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.ContractValue
+	20, // 29: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.revenue_share:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.RevenueShare
+	23, // 30: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.flat_fee:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.FlatFee
+	24, // 31: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.commitment:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.Commitment
+	22, // 32: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.usage:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.Usage
+	4,  // 33: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.StandardIntervalPrice.standard_interval:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.StandardIntervalPrice.StandardInterval
+	15, // 34: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.StandardIntervalPrice.price_model:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel
+	26, // 35: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.Installment.start_time:type_name -> google.type.DateTime
+	15, // 36: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.Installment.price_model:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel
+	17, // 37: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.CustomIntervalPrice.installments:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.Installment
+	27, // 38: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.ContractValue.total_contract_value:type_name -> google.type.Money
+	28, // 39: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.RevenueShare.current_term_vendor_net_revenue_percent:type_name -> google.type.Decimal
+	28, // 40: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.RevenueShare.renewal_term_vendor_net_revenue_percent:type_name -> google.type.Decimal
+	28, // 41: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.SkuDiscount.discount_percent:type_name -> google.type.Decimal
+	28, // 42: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.Usage.default_discount_percent:type_name -> google.type.Decimal
+	21, // 43: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.Usage.sku_discounts:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.SkuDiscount
+	27, // 44: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.FlatFee.flat_fee_override:type_name -> google.type.Money
+	27, // 45: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.Commitment.commitment_amount:type_name -> google.type.Money
+	28, // 46: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.Commitment.discount_percent:type_name -> google.type.Decimal
+	27, // 47: google.cloud.commerceproducer.v1beta.PrivateOffer.SingleProductOffer.PriceModel.Commitment.additional_credit:type_name -> google.type.Money
+	48, // [48:48] is the sub-list for method output_type
+	48, // [48:48] is the sub-list for method input_type
+	48, // [48:48] is the sub-list for extension type_name
+	48, // [48:48] is the sub-list for extension extendee
+	0,  // [0:48] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_commerceproducer_v1beta_private_offer_proto_init() }

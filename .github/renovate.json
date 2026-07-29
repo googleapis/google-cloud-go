@@ -47,9 +47,5 @@
         "constraints": {
             "go": "1.25"
         }
-    },
-    "baseBranchPatterns": [
-        "main",
-        "preview"
-    ]
+    }
 }

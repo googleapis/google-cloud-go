@@ -24,7 +24,6 @@ import (
 
 	bigtablepb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	btopt "cloud.google.com/go/bigtable/internal/option"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
@@ -479,12 +478,6 @@ func (m *ClientConfigurationManager) pollingLoop() {
 // ctx.Err() immediately so the caller can distinguish a shutdown from a
 // real RPC failure and skip any fallback-to-default work.
 func (m *ClientConfigurationManager) fetchClientConfiguration(ctx context.Context) (*bigtablepb.ClientConfiguration, error) {
-	req := &bigtablepb.GetClientConfigurationRequest{
-		InstanceName: m.instanceName,
-		AppProfileId: m.appProfileID,
-	}
-	ctx = metadata.NewOutgoingContext(ctx, m.metadata)
-
 	m.mu.RLock()
 	maxRetries := maxRPCRetryCount(m.currentConfig)
 	m.mu.RUnlock()
@@ -492,9 +485,8 @@ func (m *ClientConfigurationManager) fetchClientConfiguration(ctx context.Contex
 	var resp *bigtablepb.ClientConfiguration
 	var err error
 	for i := 0; i <= maxRetries; i++ {
-		var header, trailer metadata.MD
 		rpcStart := time.Now()
-		resp, err = m.client.GetClientConfiguration(ctx, req, grpc.Header(&header), grpc.Trailer(&trailer))
+		resp, _, _, err = FetchClientConfigurationOnce(ctx, m.client, m.instanceName, m.appProfileID, m.metadata)
 		rpcDuration := time.Since(rpcStart)
 		if err == nil {
 			btopt.Debugf(m.logger, "bigtable: GetClientConfiguration RPC attempt %d completed successfully in %v", i, rpcDuration)
