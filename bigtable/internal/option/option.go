@@ -260,7 +260,7 @@ type DynamicChannelPoolConfig struct {
 func DefaultDynamicChannelPoolConfig() DynamicChannelPoolConfig {
 	return DynamicChannelPoolConfig{
 		Enabled:                          false,
-		MinConns:                         10,
+		MinConns:                         4,
 		MaxConns:                         200,
 		AvgLoadHighThreshold:             50,
 		AvgLoadLowThreshold:              5,
