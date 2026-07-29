@@ -20,14 +20,19 @@ import (
 	internal "cloud.google.com/go/bigtable/internal/transport"
 )
 
-// TableShim wraps a classic and a session-based TableAPI and diverts traffic between them.
+// TableShim wraps a classic and a session-based TableAPI and diverts
+// traffic between them via the Diverter. The session TableAPI may be nil
+// when the session data path isn't wired yet — pickSession only returns
+// true when both the diverter says so AND a non-nil session backend is
+// available, so nil-session is safe under any diverter ratio.
 type TableShim struct {
 	classic  TableAPI
 	session  TableAPI
 	diverter *internal.Diverter
 }
 
-// NewTableShim creates a new TableShim.
+// NewTableShim creates a new TableShim. Pass nil for session to run
+// classic-only (with the diverter's UseSession outcome ignored).
 func NewTableShim(classic, session TableAPI, diverter *internal.Diverter) TableAPI {
 	return &TableShim{
 		classic:  classic,
@@ -36,9 +41,22 @@ func NewTableShim(classic, session TableAPI, diverter *internal.Diverter) TableA
 	}
 }
 
+// pickSession returns true only when a session backend is wired AND the
+// diverter says to route this call to it. Consulting the diverter is
+// side-effectful (it updates the per-outcome pick counters used by the
+// debug UI), so the nil-session short-circuit runs FIRST — otherwise
+// the pick-count histogram would show session picks that were
+// silently downgraded to classic here.
+func (t *TableShim) pickSession() bool {
+	if t.session == nil {
+		return false
+	}
+	return t.diverter.UseSession()
+}
+
 // ReadRow implements TableAPI.
 func (t *TableShim) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
-	if t.diverter.UseSession() {
+	if t.pickSession() {
 		return t.session.ReadRow(ctx, row, opts...)
 	}
 	return t.classic.ReadRow(ctx, row, opts...)
@@ -46,7 +64,7 @@ func (t *TableShim) ReadRow(ctx context.Context, row string, opts ...ReadOption)
 
 // Apply implements TableAPI.
 func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
-	if t.diverter.UseSession() {
+	if t.pickSession() {
 		return t.session.Apply(ctx, row, m, opts...)
 	}
 	return t.classic.Apply(ctx, row, m, opts...)
