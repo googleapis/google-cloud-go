@@ -187,6 +187,158 @@ func TestTrace_PublishSpan(t *testing.T) {
 	compareSpans(t, got, expectedSpans)
 }
 
+func TestTrace_PublishHedgedSpan(t *testing.T) {
+	ctx := context.Background()
+
+	e := tracetest.NewInMemoryExporter()
+	g := &incrementIDGenerator{}
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e), sdktrace.WithIDGenerator(g))
+	defer tp.Shutdown(ctx)
+	otel.SetTracerProvider(tp)
+
+	srv := pstest.NewServer()
+	defer srv.Close()
+
+	var rpcAttempts int64
+	c, err := NewClientWithConfig(ctx, projName,
+		&ClientConfig{EnableOpenTelemetryTracing: true},
+		option.WithEndpoint(srv.Addr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+			if method == "/google.pubsub.v1.Publisher/Publish" {
+				attempt := atomic.AddInt64(&rpcAttempts, 1)
+				if attempt == 1 {
+					time.Sleep(50 * time.Millisecond) // force hedge
+				}
+			}
+			return invoker(ctx, method, req, reply, cc, opts...)
+		})),
+		option.WithTelemetryDisabled(),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Close()
+
+	m := &Message{
+		Data: []byte("test"),
+	}
+
+	topicID := "t"
+	topicName := fmt.Sprintf("projects/%s/topics/%s", testutil.ProjID(), topicID)
+
+	expectedSpans := tracetest.SpanStubs{
+		tracetest.SpanStub{
+			Name:     fmt.Sprintf("%s %s", topicID, createSpanName),
+			SpanKind: trace.SpanKindProducer,
+			Attributes: []attribute.KeyValue{
+				semconv.CodeFunction("Publish"),
+				semconv.MessagingDestinationName(topicID),
+				semconv.MessagingGCPPubsubMessageOrderingKey(m.OrderingKey),
+				semconv.MessagingMessageIDKey.String("m0"),
+				semconv.MessagingSystemGCPPubsub,
+				semconv.MessagingMessageBodySize(len(m.Data)),
+				attribute.String(gcpProjectID, projName),
+				attribute.String(gcpResourceName, topicName),
+			},
+			Events: []sdktrace.Event{
+				{
+					Name: eventPublishStart,
+					Attributes: []attribute.KeyValue{
+						semconv.MessagingBatchMessageCount(1),
+					},
+				},
+				{
+					Name: eventHedgedPublishStart,
+					Attributes: []attribute.KeyValue{
+						semconv.MessagingBatchMessageCount(1),
+					},
+				},
+				{
+					Name: eventHedgedPublishEnd,
+				},
+				{
+					Name: eventPublishEnd,
+				},
+			},
+			Links: []sdktrace.Link{
+				{
+					SpanContext: trace.NewSpanContext(trace.SpanContextConfig{
+						TraceID:    [16]byte{(byte(2))},
+						SpanID:     [8]byte{(byte(4))},
+						TraceFlags: 1,
+					}),
+				},
+			},
+			ChildSpanCount: 2,
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub/v2",
+				Version: internal.Version,
+			},
+		},
+		tracetest.SpanStub{
+			Name: publishFCSpanName,
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub/v2",
+				Version: internal.Version,
+			},
+		},
+		tracetest.SpanStub{
+			Name: batcherSpanName,
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub/v2",
+				Version: internal.Version,
+			},
+		},
+		tracetest.SpanStub{
+			Name: fmt.Sprintf("%s %s", topicID, publishRPCSpanName),
+			Attributes: []attribute.KeyValue{
+				semconv.MessagingSystemGCPPubsub,
+				semconv.MessagingDestinationName(topicID),
+				semconv.CodeFunction("publishMessageBundle"),
+				semconv.MessagingBatchMessageCount(1),
+				attribute.String(gcpProjectID, projName),
+				attribute.String(gcpResourceName, topicName),
+			},
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub/v2",
+				Version: internal.Version,
+			},
+			Links: []sdktrace.Link{
+				{
+					SpanContext: trace.NewSpanContext(trace.SpanContextConfig{
+						TraceID:    [16]byte{(byte(1))},
+						SpanID:     [8]byte{(byte(1))},
+						TraceFlags: 1,
+					}),
+				},
+			},
+		},
+	}
+	publisher := mustCreateTopic(t, c, topicName)
+	defer publisher.Stop()
+
+	publisher.PublishSettings.HedgingSettings = &HedgingSettings{
+		MaxHedgedAttempts: 1,
+		Delay:             10 * time.Millisecond,
+		MaxTokens:         50,
+		TokenRatio:        0.1,
+	}
+
+	r := publisher.Publish(ctx, m)
+	_, err = r.Get(ctx)
+	if err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+
+	got := getSpans(e)
+	slices.SortFunc(expectedSpans, func(a, b tracetest.SpanStub) int {
+		return sortSpanStub(a, b)
+	})
+	compareSpans(t, got, expectedSpans)
+}
+
 func TestTrace_PublishSpanError(t *testing.T) {
 	ctx := context.Background()
 	c, srv := newFakeWithTracing(t)

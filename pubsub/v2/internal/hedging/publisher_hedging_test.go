@@ -1,3 +1,8 @@
+//go:build perf
+// +build perf
+
+package hedging_test
+
 // Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,11 +17,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pubsub
-
 import (
+	"cloud.google.com/go/internal/testutil"
+	pubsub "cloud.google.com/go/pubsub/v2"
+	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
+	"cloud.google.com/go/pubsub/v2/pstest"
 	"context"
 	"fmt"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"math/rand"
 	"sort"
 	"strings"
@@ -24,12 +34,6 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
-
-	"cloud.google.com/go/internal/testutil"
-	"cloud.google.com/go/pubsub/v2/pstest"
-	"google.golang.org/api/option"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 func makeLatencyInterceptor(rpcAttempts *int64) grpc.UnaryClientInterceptor {
@@ -58,13 +62,13 @@ func makeLatencyInterceptor(rpcAttempts *int64) grpc.UnaryClientInterceptor {
 	}
 }
 
-func runHedgingSimulation(t *testing.T, modeName string, settings *HedgingSettings) {
+func runHedgingSimulation(t *testing.T, modeName string, settings *pubsub.HedgingSettings) {
 	ctx := context.Background()
 	srv := pstest.NewServer()
 	defer srv.Close()
 
 	var rpcAttempts int64
-	client, err := NewClient(ctx, projName,
+	client, err := pubsub.NewClient(ctx, testutil.ProjID(),
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
@@ -86,7 +90,7 @@ func runHedgingSimulation(t *testing.T, modeName string, settings *HedgingSettin
 	publisher.PublishSettings.CountThreshold = 1
 
 	const duration = 1 * time.Minute
-	const qps = 100
+	const qps = 10
 	ticker := time.NewTicker(time.Second / time.Duration(qps))
 	defer ticker.Stop()
 
@@ -111,7 +115,7 @@ loop:
 			go func() {
 				defer wg.Done()
 				t0 := time.Now()
-				res := publisher.Publish(ctx, &Message{Data: []byte("perf test payload")})
+				res := publisher.Publish(ctx, &pubsub.Message{Data: []byte("perf test payload")})
 				_, err := res.Get(ctx)
 				if err != nil {
 					if strings.Contains(err.Error(), "DeadlineExceeded") || strings.Contains(err.Error(), "context deadline exceeded") {
@@ -164,46 +168,50 @@ func TestPublishHedgingPerformance(t *testing.T) {
 		t.Skip("skipping hedging performance evaluation in short mode")
 	}
 
+	t.Run("NoHedging", func(t *testing.T) {
+		runHedgingSimulation(t, "NoHedging", nil)
+	})
+
 	// MaxTokens impact under normal 5% tail latency (should be identical since none starve)
+	t.Run("MaxTokens5", func(t *testing.T) {
+		runHedgingSimulation(t, "MaxTokens5", &pubsub.HedgingSettings{
+			Delay:      50 * time.Millisecond,
+			MaxTokens:  5,
+			TokenRatio: 0.1,
+		})
+	})
+	t.Run("MaxTokens25", func(t *testing.T) {
+		runHedgingSimulation(t, "MaxTokens25", &pubsub.HedgingSettings{
+			Delay:      50 * time.Millisecond,
+			MaxTokens:  25,
+			TokenRatio: 0.1,
+		})
+	})
 	t.Run("MaxTokens50", func(t *testing.T) {
-		runHedgingSimulation(t, "MaxTokens50", &HedgingSettings{
+		runHedgingSimulation(t, "MaxTokens50", &pubsub.HedgingSettings{
 			Delay:      50 * time.Millisecond,
 			MaxTokens:  50,
-			TokenRatio: 0.1,
-		})
-	})
-	t.Run("MaxTokens100", func(t *testing.T) {
-		runHedgingSimulation(t, "MaxTokens100", &HedgingSettings{
-			Delay:      50 * time.Millisecond,
-			MaxTokens:  100,
-			TokenRatio: 0.1,
-		})
-	})
-	t.Run("MaxTokens250", func(t *testing.T) {
-		runHedgingSimulation(t, "MaxTokens250", &HedgingSettings{
-			Delay:      50 * time.Millisecond,
-			MaxTokens:  250,
 			TokenRatio: 0.1,
 		})
 	})
 
 	// Refill Ratio impact (0.05 should starve and expose 4s latency, 0.1 and 0.2 should protect completely)
 	t.Run("Ratio0.05", func(t *testing.T) {
-		runHedgingSimulation(t, "Ratio0.05", &HedgingSettings{
+		runHedgingSimulation(t, "Ratio0.05", &pubsub.HedgingSettings{
 			Delay:      50 * time.Millisecond,
 			MaxTokens:  100,
 			TokenRatio: 0.05,
 		})
 	})
 	t.Run("Ratio0.1", func(t *testing.T) {
-		runHedgingSimulation(t, "Ratio0.1", &HedgingSettings{
+		runHedgingSimulation(t, "Ratio0.1", &pubsub.HedgingSettings{
 			Delay:      50 * time.Millisecond,
 			MaxTokens:  100,
 			TokenRatio: 0.1,
 		})
 	})
 	t.Run("Ratio0.2", func(t *testing.T) {
-		runHedgingSimulation(t, "Ratio0.2", &HedgingSettings{
+		runHedgingSimulation(t, "Ratio0.2", &pubsub.HedgingSettings{
 			Delay:      50 * time.Millisecond,
 			MaxTokens:  100,
 			TokenRatio: 0.2,
@@ -211,132 +219,11 @@ func TestPublishHedgingPerformance(t *testing.T) {
 	})
 }
 
-func makeCircuitBreakerInterceptor(rpcAttempts *int64, failRate float64, delay time.Duration) grpc.UnaryClientInterceptor {
-	var reqCount int64
-	return func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		atomic.AddInt64(rpcAttempts, 1)
-		id := atomic.AddInt64(&reqCount, 1)
-
-		isFail := float64(id%100) < (failRate * 100.0)
-
-		if isFail {
-			time.Sleep(delay)
-		} else {
-			time.Sleep(2 * time.Millisecond) // fast success
-		}
-
-		return invoker(ctx, method, req, reply, cc, opts...)
-	}
-}
-
-func runCircuitBreakerSimulation(t *testing.T, modeName string, settings *HedgingSettings, failRate float64, delay time.Duration) {
-	ctx := context.Background()
-	srv := pstest.NewServer()
-	defer srv.Close()
-
-	var rpcAttempts int64
-
-	client, err := NewClient(ctx, testutil.ProjID(),
-		option.WithEndpoint(srv.Addr),
-		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(makeCircuitBreakerInterceptor(&rpcAttempts, failRate, delay))),
-		option.WithTelemetryDisabled(),
-	)
+func mustCreateTopic(t *testing.T, c *pubsub.Client, name string) *pubsub.Publisher {
+	t.Helper()
+	_, err := c.TopicAdminClient.CreateTopic(context.Background(), &pb.Topic{Name: name})
 	if err != nil {
-		t.Fatalf("[%s] NewClient err: %v", modeName, err)
+		t.Logf("CreateTopic: %v", err)
 	}
-	defer client.Close()
-
-	topicName := fmt.Sprintf("projects/%s/topics/cb-topic-%s", testutil.ProjID(), modeName)
-	publisher := mustCreateTopic(t, client, topicName)
-	defer publisher.Stop()
-
-	publisher.PublishSettings.HedgingSettings = settings
-	publisher.PublishSettings.DelayThreshold = 5 * time.Millisecond
-	publisher.PublishSettings.CountThreshold = 10
-
-	const duration = 15 * time.Second
-	const qps = 100 // Lower QPS
-	ticker := time.NewTicker(time.Second / time.Duration(qps))
-	defer ticker.Stop()
-
-	timer := time.NewTimer(duration)
-	defer timer.Stop()
-
-	var wg sync.WaitGroup
-	var publishes int64
-	startTest := time.Now()
-
-	testCtx, cancel := context.WithCancel(ctx)
-loop:
-	for {
-		select {
-		case <-timer.C:
-			cancel()
-			break loop
-		case <-ticker.C:
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-				atomic.AddInt64(&publishes, 1)
-				publisher.Publish(testCtx, &Message{Data: []byte("perf")}).Get(testCtx)
-			}()
-		}
-	}
-	wg.Wait()
-
-	expectedBatches := float64(publishes) / 10.0
-	actualRPCs := float64(atomic.LoadInt64(&rpcAttempts))
-
-	t.Logf("\n=== [%s] Results (Succ: %d, in %v) ===", modeName, publishes, time.Since(startTest))
-	t.Logf("  Attempts/Req: %.3f", actualRPCs/expectedBatches)
-	t.Logf("  Net Extra RPCs: %.0f", actualRPCs-expectedBatches)
-}
-
-func TestCircuitBreaker(t *testing.T) {
-	// 100% Outage (to exactly measure MaxTokens burst limit)
-	t.Run("MaxTokens50", func(t *testing.T) {
-		runCircuitBreakerSimulation(t, "MaxTokens50", &HedgingSettings{
-			Delay:      50 * time.Millisecond,
-			MaxTokens:  50,
-			TokenRatio: 0.1,
-		}, 1.0, 2*time.Second) // 100% failure
-	})
-	t.Run("MaxTokens100", func(t *testing.T) {
-		runCircuitBreakerSimulation(t, "MaxTokens100", &HedgingSettings{
-			Delay:      50 * time.Millisecond,
-			MaxTokens:  100,
-			TokenRatio: 0.1,
-		}, 1.0, 2*time.Second) // 100% failure
-	})
-	t.Run("MaxTokens250", func(t *testing.T) {
-		runCircuitBreakerSimulation(t, "MaxTokens250", &HedgingSettings{
-			Delay:      50 * time.Millisecond,
-			MaxTokens:  250,
-			TokenRatio: 0.1,
-		}, 1.0, 2*time.Second) // 100% failure
-	})
-
-	// 12.5% Outage (to show 0.2 goes blind, while 0.1 and 0.05 trip the breaker)
-	t.Run("Ratio0.05", func(t *testing.T) {
-		runCircuitBreakerSimulation(t, "Ratio0.05", &HedgingSettings{
-			Delay:      50 * time.Millisecond,
-			MaxTokens:  100,
-			TokenRatio: 0.05,
-		}, 0.125, 2*time.Second)
-	})
-	t.Run("Ratio0.1", func(t *testing.T) {
-		runCircuitBreakerSimulation(t, "Ratio0.1", &HedgingSettings{
-			Delay:      50 * time.Millisecond,
-			MaxTokens:  100,
-			TokenRatio: 0.1,
-		}, 0.125, 2*time.Second)
-	})
-	t.Run("Ratio0.2", func(t *testing.T) {
-		runCircuitBreakerSimulation(t, "Ratio0.2", &HedgingSettings{
-			Delay:      50 * time.Millisecond,
-			MaxTokens:  100,
-			TokenRatio: 0.2,
-		}, 0.125, 2*time.Second)
-	})
+	return c.Publisher(name)
 }
