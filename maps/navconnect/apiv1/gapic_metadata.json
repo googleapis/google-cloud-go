@@ -1,0 +1,43 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.maps.navconnect.v1",
+  "libraryPackage": "cloud.google.com/go/maps/navconnect/apiv1",
+  "services": {
+    "NavConnectService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateTrip": {
+              "methods": [
+                "CreateTrip"
+              ]
+            },
+            "GetTrip": {
+              "methods": [
+                "GetTrip"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateTrip": {
+              "methods": [
+                "CreateTrip"
+              ]
+            },
+            "GetTrip": {
+              "methods": [
+                "GetTrip"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
