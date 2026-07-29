@@ -237,11 +237,12 @@ func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
 }
 
 type mockSender struct {
-	mu         sync.Mutex
-	requests   []gRPCBidiWriteRequest
-	errResult  error
-	wg         sync.WaitGroup // Waits for all async operations to complete.
-	failOnData bool
+	mu               sync.Mutex
+	requests         []gRPCBidiWriteRequest
+	errResult        error
+	wg               sync.WaitGroup // Waits for all async operations to complete.
+	failOnData       bool
+	respondToAllData bool
 }
 
 func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
@@ -274,7 +275,7 @@ func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ..
 				return
 			}
 
-			if req.flush {
+			if req.flush || m.respondToAllData {
 				completionWg.Add(1)
 				// Send completions asynchronously to avoid blocking the request loop.
 				go func(offset int64) {
@@ -618,5 +619,239 @@ func TestGRPCWriter_ChunkRetryDeadline_TimerStartsOnlyWhenBufferFills(t *testing
 	}
 	if w.abandonRetriesTime.IsZero() {
 		t.Fatalf("expected timer to be started when buffer fills and triggers send, but it was zero")
+	}
+}
+
+func TestGRPCWriter_ChunkRetryDeadline_StaleTimerOnPartialBuffer(t *testing.T) {
+	ctx := context.Background()
+	deadline := 100 * time.Millisecond
+	sender := &mockSender{errResult: errors.New("transient network error"), failOnData: false, respondToAllData: true}
+
+	w := &gRPCWriter{
+		chunkRetryDeadline: deadline,
+		streamSender:       sender,
+		settings:           &settings{},
+		bufUnsentIdx:       0,
+		bufFlushedIdx:      -1,
+		buf:                make([]byte, 0, 1000),
+		sendableUnits:      1,
+		writeQuantum:       100,
+		chunkSize:          1000,
+		writesChan:         make(chan gRPCWriterCommand, 3),
+		setSize:            func(int64) {},
+		progress:           func(int64) {},
+		setObj:             func(*ObjectAttrs) {},
+	}
+
+	errCh := make(chan error, 1)
+	go func() {
+		errCh <- w.writeLoop(ctx)
+	}()
+
+	// Write 150 bytes (writeQuantum is 100).
+	// 100 bytes will be sent and ACKed, 50 bytes will remain unsent in buf.
+	done := make(chan struct{})
+	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 150), done: done}
+	<-done
+
+	// Wait a bit to ensure completion for the 100 bytes is processed.
+	time.Sleep(50 * time.Millisecond)
+
+	// Assert that timer is cleared when remaining unsent bytes (50) < writeQuantum (100).
+	timerCh := make(chan time.Time)
+	w.writesChan <- &checkTimerCmd{timerCh: timerCh}
+	abandonRetriesTime := <-timerCh
+
+	if !abandonRetriesTime.IsZero() {
+		t.Fatalf("expected timer to be cleared when remaining unsent bytes < writeQuantum, but got: %v", abandonRetriesTime)
+	}
+
+	// Wait for old timer duration to pass.
+	time.Sleep(150 * time.Millisecond)
+
+	// Now fail on data requests.
+	sender.mu.Lock()
+	sender.failOnData = true
+	sender.mu.Unlock()
+
+	// Write 50 more bytes to complete the next quantum (100 total unsent bytes).
+	done2 := make(chan struct{})
+	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 50), done: done2}
+
+	err := <-errCh
+	if err == nil || !strings.Contains(err.Error(), "transient network error") {
+		t.Fatalf("expected transient network error, got: %v", err)
+	}
+
+	// Retry writeLoop. It should NOT instantly fail with retry deadline error due to a stale timer.
+	err = w.writeLoop(ctx)
+	if err != nil && strings.Contains(err.Error(), "retry deadline") {
+		t.Fatalf("retry failed instantly due to stale timer: %v", err)
+	}
+}
+
+// TestGRPCWriter_ChunkRetryDeadline_OversizedWriteStaleTimerOnClose tests that an oversized write (len(p) > chunkSize)
+// that leaves unsent leftover bytes (< writeQuantum) in w.buf properly clears abandonRetriesTime when idle,
+// so that a subsequent Close() operation after an idle delay does not fail with a stale retry deadline error.
+func TestGRPCWriter_ChunkRetryDeadline_OversizedWriteStaleTimerOnClose(t *testing.T) {
+	ctx := context.Background()
+	deadline := 100 * time.Millisecond
+	sender := &mockSender{errResult: errors.New("transient network error"), failOnData: false, respondToAllData: true}
+
+	// chunkSize = 1000, writeQuantum = 350 (350 is NOT a factor of 1000; 1000 / 350 = 2 with remainder 300)
+	w := &gRPCWriter{
+		chunkRetryDeadline: deadline,
+		streamSender:       sender,
+		settings:           &settings{},
+		bufUnsentIdx:       0,
+		bufFlushedIdx:      -1,
+		buf:                make([]byte, 0, 1000),
+		sendableUnits:      3,
+		writeQuantum:       350,
+		chunkSize:          1000,
+		lastSegmentStart:   700,
+		writesChan:         make(chan gRPCWriterCommand, 3),
+		setSize:            func(int64) {},
+		progress:           func(int64) {},
+		setObj:             func(*ObjectAttrs) {},
+	}
+	errCh := make(chan error, 1)
+	go func() {
+		errCh <- w.writeLoop(ctx)
+	}()
+
+	// 1. Write 1500 bytes (exceeds chunkSize of 1000: sends 350, 350, 300 tail chunk + 350 in buf; 150 unsent in buf).
+	done := make(chan struct{})
+	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 1500), done: done}
+	<-done
+	time.Sleep(50 * time.Millisecond)
+
+	timerCh := make(chan time.Time)
+	w.writesChan <- &checkTimerCmd{timerCh: timerCh}
+	if t1 := <-timerCh; !t1.IsZero() {
+		t.Fatalf("expected timer to be zero after sending large write with 150 unsent bytes < 350 quantum, got: %v", t1)
+	}
+
+	// 2. Sleep past deadline while idle with 150 unsent bytes.
+	time.Sleep(150 * time.Millisecond)
+
+	// 3. Fail on data requests now.
+	sender.mu.Lock()
+	sender.failOnData = true
+	sender.mu.Unlock()
+
+	// 4. Send Close command (triggers tail send of remaining 150 bytes with finishWrite: true).
+	w.writesChan <- &gRPCWriterCommandClose{err: nil}
+
+	err := <-errCh
+	if err == nil || !strings.Contains(err.Error(), "transient network error") {
+		t.Fatalf("expected transient network error on Close, got: %v", err)
+	}
+
+	// 5. Retry writeLoop — must NOT fail with stale retry deadline error!
+	err = w.writeLoop(ctx)
+	if err == nil || !strings.Contains(err.Error(), "transient network error") {
+		t.Fatalf("expected retry to fail with transient network error, got: %v", err)
+	}
+}
+
+func TestGRPCWriter_ChunkRetryDeadline_SingleShotCloseError(t *testing.T) {
+	ctx := context.Background()
+	deadline := 100 * time.Millisecond
+	sender := &mockSender{errResult: errors.New("transient network error"), failOnData: true}
+
+	w := &gRPCWriter{
+		chunkRetryDeadline: deadline,
+		streamSender:       sender,
+		settings:           &settings{},
+		bufUnsentIdx:       0,
+		bufFlushedIdx:      -1,
+		buf:                make([]byte, 0, 1000),
+		sendableUnits:      1,
+		writeQuantum:       1000,
+		chunkSize:          1000,
+		writesChan:         make(chan gRPCWriterCommand, 3),
+		setSize:            func(int64) {},
+		progress:           func(int64) {},
+		setObj:             func(*ObjectAttrs) {},
+	}
+
+	errCh := make(chan error, 1)
+	go func() {
+		errCh <- w.writeLoop(ctx)
+	}()
+
+	// Write 50 bytes (fits in buffer, staged locally).
+	done := make(chan struct{})
+	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 50), done: done}
+	<-done
+
+	// Send Close command.
+	w.writesChan <- &gRPCWriterCommandClose{err: nil}
+
+	err := <-errCh
+	if err == nil || !strings.Contains(err.Error(), "transient network error") {
+		t.Fatalf("expected transient network error on Close, got: %v", err)
+	}
+
+	// Retry writeLoop while failOnData is true. It must return transient network error, NOT a stale retry deadline error.
+	err = w.writeLoop(ctx)
+	if err == nil || !strings.Contains(err.Error(), "transient network error") {
+		t.Fatalf("expected retry to fail with transient network error, got: %v", err)
+	}
+}
+
+func TestGRPCWriter_ChunkRetryDeadline_PartialQuantumCloseStaleTimer(t *testing.T) {
+	ctx := context.Background()
+	deadline := 100 * time.Millisecond
+	sender := &mockSender{errResult: errors.New("transient network error"), failOnData: false, respondToAllData: true}
+
+	w := &gRPCWriter{
+		chunkRetryDeadline: deadline,
+		streamSender:       sender,
+		settings:           &settings{},
+		bufUnsentIdx:       0,
+		bufFlushedIdx:      -1,
+		buf:                make([]byte, 0, 1000),
+		sendableUnits:      10,
+		writeQuantum:       100,
+		chunkSize:          1000,
+		writesChan:         make(chan gRPCWriterCommand, 3),
+		setSize:            func(int64) {},
+		progress:           func(int64) {},
+		setObj:             func(*ObjectAttrs) {},
+	}
+
+	errCh := make(chan error, 1)
+	go func() {
+		errCh <- w.writeLoop(ctx)
+	}()
+
+	// 1. Write 150 bytes: 100 sent/ACKed, 50 unsent in buf.
+	done := make(chan struct{})
+	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 150), done: done}
+	<-done
+	time.Sleep(50 * time.Millisecond)
+
+	// Wait past deadline while idle with 50 unsent bytes.
+	time.Sleep(120 * time.Millisecond)
+
+	// Fail on data requests now.
+	sender.mu.Lock()
+	sender.failOnData = true
+	sender.mu.Unlock()
+
+	// 2. Send Close command (triggers tail send of remaining 50 bytes with finishWrite: true).
+	w.writesChan <- &gRPCWriterCommandClose{err: nil}
+
+	err := <-errCh
+	if err == nil || !strings.Contains(err.Error(), "transient network error") {
+		t.Fatalf("expected transient network error on Close tail, got: %v", err)
+	}
+
+	// 3. Retry writeLoop while failOnData is true. Must return transient network error, NOT a stale retry deadline error.
+	err = w.writeLoop(ctx)
+	if err == nil || !strings.Contains(err.Error(), "transient network error") {
+		t.Fatalf("expected retry on Close tail to fail with transient network error, got: %v", err)
 	}
 }
