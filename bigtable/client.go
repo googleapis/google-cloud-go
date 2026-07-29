@@ -58,11 +58,14 @@ type Client struct {
 	// stays on the classic path until the session backend's
 	// ConfigurationManager bumps the ratio via AddSessionLoadListener.
 	diverter *btransport.Diverter
-	// sessionImpl is the session data-plane client. Constructed by
-	// NewClientWithConfig only when ClientConfig.EnableSessionPool is
-	// true; nil otherwise. When nil the shim's session TableAPI is
-	// nil and every routing decision falls through to classic — see
-	// getOrCreateSession* in open.go and TableShim.useSession.
+	// sessionImpl is the session data-plane client. Always constructed
+	// by NewClientWithConfig so a control-plane session-load bump can
+	// route traffic to it without a client restart. No RPCs actually
+	// travel to the session backend until the diverter's SessionLoad
+	// > 0 — the initial value is 0.0 and only the server-driven
+	// ClientConfigurationManager writes to it. Session pools + streams
+	// are lazily materialized on first use, so an idle client pays
+	// only for one channel pool and one config-poll goroutine.
 	sessionImpl session.Client
 	// sessionTables caches per-resource session.TableAPI handles so
 	// repeat Open* calls return the same handle (and by extension the
@@ -98,25 +101,6 @@ type ClientConfig struct {
 
 	// DisableDirectAccess disables direct access by default.
 	DisableDirectAccess bool
-
-	// EnableSessionPool opts the Client into the session data-plane
-	// backend. When true, NewClientWithConfig constructs an
-	// internal/session.Client alongside the classic gRPC channel pool,
-	// wires its server-driven SessionLoad into the Diverter, and every
-	// OpenTable / OpenAuthorizedView / OpenMaterializedView produces
-	// a TableShim with a real session TableAPI.
-	//
-	// When false (the default), no session client is constructed.
-	// Open* still returns a TableShim, but with a nil session — every
-	// call routes to classic regardless of the diverter. The classic
-	// data path is entirely unaffected.
-	//
-	// Opt-in because session-client construction dials a second gRPC
-	// channel pool and starts a background ClientConfigurationManager
-	// poll — cheap on production paths but noisy against fake
-	// backends (emulator, conformance test proxy) that don't speak
-	// GetClientConfiguration.
-	EnableSessionPool bool
 }
 
 // MetricsProvider is a wrapper for the built-in metrics meter provider.
@@ -268,32 +252,28 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		diverter:                btransport.NewDiverter(0.0),
 	}
 
-	// Session data-plane backend is opt-in via ClientConfig.EnableSessionPool.
-	// Constructed here (dials a second gRPC channel pool + starts a
-	// ClientConfigurationManager background poll goroutine) only when
-	// the caller opts in. AddSessionLoadListener wires the server-driven
-	// SessionLoad from ClientConfigurationManager into this Client's
-	// Diverter, so a control-plane update immediately shifts traffic
-	// across every open TableShim.
-	//
-	// When opt-in is off, sessionImpl stays nil — Open* still returns
-	// a TableShim but with a nil session, so every routing decision
-	// falls through to classic. The classic data path is entirely
-	// unaffected regardless of this flag.
-	if config.EnableSessionPool {
-		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
-		if sessionErr != nil {
-			// Best-effort cleanup of the classic pool since we won't
-			// return c to the caller. Go through the ManagedChannelPool
-			// wrapper so any wrapper-owned cleanup — metrics reporter,
-			// connection recycler, dynamic scale monitor — winds down
-			// too. Matches (*Client).Close.
-			_ = mPool.Close()
-			return nil, fmt.Errorf("bigtable: EnableSessionPool: session.NewClient: %w", sessionErr)
-		}
-		sc.AddSessionLoadListener(c.diverter.SetSessionLoad)
-		c.sessionImpl = sc
+	// Session data-plane backend is constructed unconditionally so a
+	// control-plane SessionLoad bump can route traffic to it without a
+	// client restart. Session pools + streams are lazily materialized
+	// on first use — an idle client pays only for the session channel
+	// pool + one config-poll goroutine. Shares the same
+	// *option.ClientOption set as the classic pool so endpoint /
+	// credentials / dial hooks match. AddSessionLoadListener wires the
+	// server-driven SessionLoad from ClientConfigurationManager into
+	// this Client's Diverter, so a control-plane update immediately
+	// shifts traffic across every open TableShim.
+	sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
+	if sessionErr != nil {
+		// Best-effort cleanup of the classic pool since we won't return
+		// c to the caller. Go through the ManagedChannelPool wrapper so
+		// any wrapper-owned cleanup — metrics reporter, connection
+		// recycler, dynamic scale monitor — winds down too. Matches
+		// (*Client).Close.
+		_ = mPool.Close()
+		return nil, fmt.Errorf("bigtable: session.NewClient: %w", sessionErr)
 	}
+	sc.AddSessionLoadListener(c.diverter.SetSessionLoad)
+	c.sessionImpl = sc
 
 	// Per-resource TableAPI cache with TTL-on-idle eviction. The cache
 	// is opener-agnostic — each getOrCreateSession* helper in open.go
