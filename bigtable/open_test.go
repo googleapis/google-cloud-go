@@ -16,7 +16,10 @@ package bigtable
 
 import (
 	"context"
+	"strings"
+	"sync/atomic"
 	"testing"
+	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal/session"
@@ -271,15 +274,50 @@ func (n *noopSessionTable) Close() error { return nil }
 
 func newSessionWiredClient(t *testing.T, fsc *fakeSessionClient) *Client {
 	t.Helper()
-	return &Client{
+	c := &Client{
 		project:        "p",
 		instance:       "i",
 		appProfile:     "ap",
 		featureFlagsMD: metadata.MD{},
 		diverter:       btransport.NewDiverter(0.0),
 		sessionImpl:    fsc,
-		sessionTables:  map[string]session.TableAPI{},
 	}
+	// Cache with a huge TTL and huge sweep interval so eviction never
+	// fires during these tests. Cache-behavior tests build their own
+	// cache with tight timings.
+	c.sessionTables = newSessionTableCache(func(key string) session.TableAPI {
+		if strings.HasPrefix(key, "tbl:") {
+			return fsc.OpenTable(strings.TrimPrefix(key, "tbl:"))
+		}
+		if strings.HasPrefix(key, "mv:") {
+			return fsc.OpenMaterializedView(strings.TrimPrefix(key, "mv:"))
+		}
+		if strings.HasPrefix(key, "av:") {
+			rest := strings.TrimPrefix(key, "av:")
+			if i := strings.IndexByte(rest, ':'); i > 0 {
+				return fsc.OpenAuthorizedView(rest[:i], rest[i+1:])
+			}
+		}
+		return nil
+	}, 24*time.Hour, 24*time.Hour, nil)
+	t.Cleanup(c.sessionTables.close)
+	return c
+}
+
+// unwrap peels the sessionTableHandle wrapper off a shim's session so
+// tests can inspect the underlying fakeSessionClient-vended
+// noopSessionTable directly.
+func unwrapSession(t *testing.T, api session.TableAPI) *noopSessionTable {
+	t.Helper()
+	h, ok := api.(*sessionTableHandle)
+	if !ok {
+		t.Fatalf("session = %T, want *sessionTableHandle (cache wrapper)", api)
+	}
+	nst, ok := h.api.(*noopSessionTable)
+	if !ok {
+		t.Fatalf("handle.api = %T, want *noopSessionTable (from fakeSessionClient)", h.api)
+	}
+	return nst
 }
 
 // TestOpenTable_WithSessionBackend_WiresSessionTableAPI pins that
@@ -294,10 +332,7 @@ func TestOpenTable_WithSessionBackend_WiresSessionTableAPI(t *testing.T) {
 	if shim.session == nil {
 		t.Fatal("OpenTable→TableShim.session = nil, want non-nil (session backend is wired)")
 	}
-	nst, ok := shim.session.(*noopSessionTable)
-	if !ok {
-		t.Fatalf("session = %T, want *noopSessionTable (from fakeSessionClient)", shim.session)
-	}
+	nst := unwrapSession(t, shim.session)
 	if nst.key != "tbl:my-table" {
 		t.Errorf("session key = %q, want %q", nst.key, "tbl:my-table")
 	}
@@ -382,4 +417,213 @@ func TestGetOrCreateSession_NilSessionImplReturnsNil(t *testing.T) {
 	if got := c.getOrCreateSessionMaterializedView("v"); got != nil {
 		t.Errorf("getOrCreateSessionMaterializedView(nil sessionImpl) = %v, want nil", got)
 	}
+}
+
+// ─── sessionTableCache tests ──────────────────────────────────────────
+
+// newTestSessionTableCache builds a cache whose openFn always returns
+// a fresh *noopSessionTable stamped with the key, plus an
+// injectable clock. Sweep interval is tiny (1ms) so the sweeper
+// preempts predictably in the eviction test. TTL is set per test.
+func newTestSessionTableCache(t *testing.T, ttl time.Duration, clock *fakeClock) *sessionTableCache {
+	t.Helper()
+	c := newSessionTableCache(func(key string) session.TableAPI {
+		return &noopSessionTable{key: key}
+	}, ttl, 1*time.Millisecond, clock.now)
+	t.Cleanup(c.close)
+	return c
+}
+
+// fakeClock is a monotonic clock that only advances on explicit
+// advance() calls. Concurrency: single writer via advance(), many
+// readers via now() — protected by an atomic.
+type fakeClock struct{ nano atomic.Int64 }
+
+func newFakeClock(start time.Time) *fakeClock {
+	c := &fakeClock{}
+	c.nano.Store(start.UnixNano())
+	return c
+}
+func (c *fakeClock) now() time.Time          { return time.Unix(0, c.nano.Load()) }
+func (c *fakeClock) advance(d time.Duration) { c.nano.Add(int64(d)) }
+
+// TestSessionTableCache_HandleIsCacheEntry pins that the returned
+// handle satisfies session.TableAPI, wraps the underlying api, and
+// is the same value the cache holds (identity check on repeat Open).
+func TestSessionTableCache_HandleIsCacheEntry(t *testing.T) {
+	clock := newFakeClock(time.Unix(1_700_000_000, 0))
+	c := newTestSessionTableCache(t, 1*time.Hour, clock)
+
+	h1 := c.getOrOpen("tbl:t").(*sessionTableHandle)
+	h2 := c.getOrOpen("tbl:t").(*sessionTableHandle)
+	if h1 != h2 {
+		t.Errorf("repeat getOrOpen on same key = distinct handles: h1=%p h2=%p", h1, h2)
+	}
+	if _, ok := h1.api.(*noopSessionTable); !ok {
+		t.Errorf("handle.api = %T, want *noopSessionTable", h1.api)
+	}
+}
+
+// TestSessionTableCache_ReadRowTouchesLastAccess pins that the
+// wrapper's ReadRow updates lastAccess so a caller polling every
+// ReadRow keeps the entry alive.
+func TestSessionTableCache_ReadRowTouchesLastAccess(t *testing.T) {
+	clock := newFakeClock(time.Unix(1_700_000_000, 0))
+	c := newTestSessionTableCache(t, 1*time.Hour, clock)
+
+	h := c.getOrOpen("tbl:t").(*sessionTableHandle)
+	before := h.lastAccessNano.Load()
+
+	clock.advance(30 * time.Minute)
+	_, _ = h.ReadRow(context.Background(), &btpb.SessionReadRowRequest{Key: []byte("r")})
+
+	after := h.lastAccessNano.Load()
+	if after <= before {
+		t.Errorf("ReadRow did not bump lastAccess: before=%d after=%d", before, after)
+	}
+}
+
+// TestSessionTableCache_CloseEvictsAndFires pins that handle.Close
+// removes the entry from the cache map AND calls the underlying
+// api.Close, and that a subsequent getOrOpen mints a fresh handle
+// (the closed one is not resurrected).
+func TestSessionTableCache_CloseEvictsAndFires(t *testing.T) {
+	clock := newFakeClock(time.Unix(1_700_000_000, 0))
+	closeCount := 0
+	closingOpen := func(key string) session.TableAPI {
+		return &closeCountingTable{noopSessionTable{key: key}, &closeCount}
+	}
+	c := newSessionTableCache(closingOpen, 1*time.Hour, 1*time.Second, clock.now)
+	t.Cleanup(c.close)
+
+	h1 := c.getOrOpen("tbl:t").(*sessionTableHandle)
+	if err := h1.Close(); err != nil {
+		t.Fatalf("h1.Close: %v", err)
+	}
+	if closeCount != 1 {
+		t.Errorf("underlying Close called %d times, want 1", closeCount)
+	}
+	// Map should no longer contain the key.
+	c.mu.Lock()
+	_, still := c.entries["tbl:t"]
+	c.mu.Unlock()
+	if still {
+		t.Error("entry still present after handle.Close()")
+	}
+	// Second Open mints a fresh handle.
+	h2 := c.getOrOpen("tbl:t").(*sessionTableHandle)
+	if h2 == h1 {
+		t.Error("getOrOpen after Close returned the evicted handle")
+	}
+	// Double-Close on h1 is safe.
+	if err := h1.Close(); err != nil {
+		t.Errorf("h1.Close (idempotent) err = %v, want nil", err)
+	}
+	if closeCount != 2 {
+		// h1.Close still calls api.Close a second time — that's the
+		// underlying api's contract, not the cache's. closeOnce
+		// guards the cache eviction, not the api.Close call.
+		t.Errorf("underlying Close called %d times after double-Close, want 2", closeCount)
+	}
+}
+
+// TestSessionTableCache_TTLSweepEvictsIdle pins that the background
+// sweeper evicts entries whose lastAccess is older than TTL, and
+// calls the underlying Close on eviction.
+func TestSessionTableCache_TTLSweepEvictsIdle(t *testing.T) {
+	clock := newFakeClock(time.Unix(1_700_000_000, 0))
+	closeCount := 0
+	closingOpen := func(key string) session.TableAPI {
+		return &closeCountingTable{noopSessionTable{key: key}, &closeCount}
+	}
+	c := newSessionTableCache(closingOpen, 1*time.Hour, 1*time.Millisecond, clock.now)
+	t.Cleanup(c.close)
+
+	// Open two handles, touch neither.
+	_ = c.getOrOpen("tbl:a")
+	_ = c.getOrOpen("tbl:b")
+
+	// Advance past TTL and let the 1ms sweeper fire.
+	clock.advance(2 * time.Hour)
+	// The 1ms sweep ticker will fire; give it a few sweeps' worth of
+	// wall-clock to definitely run.
+	deadline := time.Now().Add(500 * time.Millisecond)
+	for time.Now().Before(deadline) {
+		c.mu.Lock()
+		n := len(c.entries)
+		c.mu.Unlock()
+		if n == 0 {
+			break
+		}
+		time.Sleep(2 * time.Millisecond)
+	}
+	c.mu.Lock()
+	n := len(c.entries)
+	c.mu.Unlock()
+	if n != 0 {
+		t.Errorf("entries remaining after TTL sweep = %d, want 0", n)
+	}
+	if closeCount != 2 {
+		t.Errorf("underlying Close called %d times on TTL evict, want 2", closeCount)
+	}
+}
+
+// TestSessionTableCache_TouchDefersEviction pins that a ReadRow
+// touch resets the idle timer — an entry touched every half-TTL
+// stays alive indefinitely.
+func TestSessionTableCache_TouchDefersEviction(t *testing.T) {
+	clock := newFakeClock(time.Unix(1_700_000_000, 0))
+	c := newTestSessionTableCache(t, 1*time.Hour, clock)
+
+	h := c.getOrOpen("tbl:t").(*sessionTableHandle)
+	// Every half-TTL, touch and step past a full TTL from the LAST
+	// touch. Each touch resets the clock reference so eviction never
+	// triggers.
+	for i := 0; i < 4; i++ {
+		clock.advance(30 * time.Minute)
+		_, _ = h.ReadRow(context.Background(), &btpb.SessionReadRowRequest{Key: []byte("r")})
+	}
+	// Give the sweeper a chance to run; it should NOT evict.
+	time.Sleep(20 * time.Millisecond)
+	c.mu.Lock()
+	_, present := c.entries["tbl:t"]
+	c.mu.Unlock()
+	if !present {
+		t.Error("touched entry got evicted; touch is not deferring eviction")
+	}
+}
+
+// TestSessionTableCache_CloseEvictsAll pins that closing the cache
+// itself stops the sweeper and closes every remaining entry.
+func TestSessionTableCache_CloseEvictsAll(t *testing.T) {
+	clock := newFakeClock(time.Unix(1_700_000_000, 0))
+	closeCount := 0
+	closingOpen := func(key string) session.TableAPI {
+		return &closeCountingTable{noopSessionTable{key: key}, &closeCount}
+	}
+	c := newSessionTableCache(closingOpen, 1*time.Hour, 1*time.Hour, clock.now)
+
+	_ = c.getOrOpen("tbl:a")
+	_ = c.getOrOpen("tbl:b")
+	_ = c.getOrOpen("mv:v")
+
+	c.close()
+
+	if closeCount != 3 {
+		t.Errorf("close(): underlying Close called %d times, want 3", closeCount)
+	}
+	// close() is idempotent.
+	c.close()
+}
+
+// closeCountingTable is a noopSessionTable that increments a counter
+// on Close so tests can assert eviction actually called Close.
+type closeCountingTable struct {
+	noopSessionTable
+	counter *int
+}
+
+func (c *closeCountingTable) Close() error {
+	*c.counter++
+	return nil
 }

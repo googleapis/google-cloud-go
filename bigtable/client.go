@@ -21,7 +21,7 @@ import (
 	"os"
 	"reflect"
 	"strconv"
-	"sync"
+	"strings"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
@@ -68,12 +68,13 @@ type Client struct {
 	// are lazily materialized on first use, so an idle client pays
 	// only for one channel pool and one config-poll goroutine.
 	sessionImpl session.Client
-	// sessionTables caches per-resource TableAPI instances so repeat
-	// Open* calls return the same handle (and by extension the same
-	// underlying session pools). session.Client does not cache; the
-	// consumer (this Client) is responsible.
-	sessionTablesMu sync.Mutex
-	sessionTables   map[string]session.TableAPI
+	// sessionTables caches per-resource session.TableAPI handles so
+	// repeat Open* calls return the same handle (and by extension the
+	// same underlying session pools). session.Client does not cache;
+	// this Client is responsible. Entries evict on TTL-idle (default
+	// 1 h) via a background sweeper, or immediately when the caller
+	// calls Close() on the returned handle. See session_table_cache.go.
+	sessionTables *sessionTableCache
 }
 
 // ClientConfig has configurations for the client.
@@ -250,7 +251,6 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		featureFlagsMD:          directAccessMD,
 		mPool:                   mPool,
 		diverter:                btransport.NewDiverter(0.0),
-		sessionTables:           make(map[string]session.TableAPI),
 	}
 
 	// Session data-plane backend is constructed unconditionally so a
@@ -276,6 +276,31 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	sc.AddSessionLoadListener(c.diverter.SetSessionLoad)
 	c.sessionImpl = sc
 
+	// Per-resource TableAPI cache with TTL-on-idle eviction. openFn
+	// dispatches on the key prefix set by getOrCreateSession* helpers
+	// in open.go — "tbl:<t>" / "av:<t>:<v>" / "mv:<v>" — so cache
+	// lookups are agnostic to the resource kind but the underlying
+	// session.Client Open call is not.
+	c.sessionTables = newSessionTableCache(func(key string) session.TableAPI {
+		if strings.HasPrefix(key, "tbl:") {
+			return sc.OpenTable(strings.TrimPrefix(key, "tbl:"))
+		}
+		if strings.HasPrefix(key, "mv:") {
+			return sc.OpenMaterializedView(strings.TrimPrefix(key, "mv:"))
+		}
+		if strings.HasPrefix(key, "av:") {
+			rest := strings.TrimPrefix(key, "av:")
+			// Cache key is "av:<table>:<view>". Split on the FIRST
+			// colon (table names contain no colons; view names may).
+			if i := strings.IndexByte(rest, ':'); i > 0 {
+				return sc.OpenAuthorizedView(rest[:i], rest[i+1:])
+			}
+		}
+		// Unknown prefix should never happen — callers only go
+		// through the three getOrCreateSession* helpers below.
+		return nil
+	}, sessionTableCacheTTL, sessionTableCacheSweepInt, nil /* time.Now */)
+
 	return c, nil
 }
 
@@ -284,10 +309,16 @@ func (c *Client) Close() error {
 	if c.metricsTracerFactory != nil {
 		c.metricsTracerFactory.Shutdown()
 	}
-	// Close the session backend first — its pools ride shared gRPC
-	// channels but its own bookkeeping (session pools, ConfigurationManager
-	// poller) should wind down before we drop the classic pool. Any
-	// error is aggregated with the classic pool's Close error.
+	// Close the per-resource cache first so its sweeper goroutine
+	// stops and every cached handle sees Close() before we tear down
+	// the session client that owns their pools. sessionTables is nil
+	// on hand-built Clients that skipped session-backend wiring; the
+	// cache's own close() nil-checks for that.
+	c.sessionTables.close()
+	// Then the session backend — its bookkeeping (session pools,
+	// ConfigurationManager poller) winds down before we drop the
+	// shared gRPC channels. Any error is aggregated with the classic
+	// pool's Close error.
 	var sessionErr error
 	if c.sessionImpl != nil {
 		sessionErr = c.sessionImpl.Close()

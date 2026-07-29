@@ -16,6 +16,7 @@ package bigtable
 
 import (
 	"cloud.google.com/go/bigtable/internal/session"
+
 	"google.golang.org/grpc/metadata"
 )
 
@@ -82,30 +83,22 @@ func (c *Client) OpenMaterializedView(materializedView string) TableAPI {
 	return NewTableShim(classic, c.getOrCreateSessionMaterializedView(materializedView), c.diverter)
 }
 
-// getOrCreateSessionTable returns a cached session TableAPI for this
-// table, opening a fresh one on cache miss. Returns nil when the
-// session backend isn't wired (hand-built or emulator-only Clients
-// where sessionImpl is nil); TableShim treats a nil session as
+// getOrCreateSessionTable returns a cached session TableAPI handle
+// for this table. Returns nil when the session backend isn't wired
+// (hand-built or emulator-only Clients where sessionImpl is nil, or
+// sessionTables is nil); TableShim treats a nil session as
 // classic-only. Cache key is "tbl:<table>".
 //
 // The cache exists because session.Client does not: each
 // session.Client.OpenTable call would otherwise open a new pair of
-// read/write session pools for the same resource. Bounded by the
-// caller's Open* call pattern — for a fixed set of tables the map is
-// finite and long-lived.
+// read/write session pools for the same resource. Handles evict
+// after sessionTableCacheTTL of idle (default 1 h) or when the
+// caller Close()s them explicitly. See session_table_cache.go.
 func (c *Client) getOrCreateSessionTable(table string) session.TableAPI {
 	if c.sessionImpl == nil {
 		return nil
 	}
-	c.sessionTablesMu.Lock()
-	defer c.sessionTablesMu.Unlock()
-	key := "tbl:" + table
-	if st, ok := c.sessionTables[key]; ok {
-		return st
-	}
-	st := c.sessionImpl.OpenTable(table)
-	c.sessionTables[key] = st
-	return st
+	return c.sessionTables.getOrOpen("tbl:" + table)
 }
 
 // getOrCreateSessionAuthorizedView is the cache lookup for authorized
@@ -116,15 +109,7 @@ func (c *Client) getOrCreateSessionAuthorizedView(table, view string) session.Ta
 	if c.sessionImpl == nil {
 		return nil
 	}
-	c.sessionTablesMu.Lock()
-	defer c.sessionTablesMu.Unlock()
-	key := "av:" + table + ":" + view
-	if st, ok := c.sessionTables[key]; ok {
-		return st
-	}
-	st := c.sessionImpl.OpenAuthorizedView(table, view)
-	c.sessionTables[key] = st
-	return st
+	return c.sessionTables.getOrOpen("av:" + table + ":" + view)
 }
 
 // getOrCreateSessionMaterializedView is the cache lookup for
@@ -133,13 +118,5 @@ func (c *Client) getOrCreateSessionMaterializedView(view string) session.TableAP
 	if c.sessionImpl == nil {
 		return nil
 	}
-	c.sessionTablesMu.Lock()
-	defer c.sessionTablesMu.Unlock()
-	key := "mv:" + view
-	if st, ok := c.sessionTables[key]; ok {
-		return st
-	}
-	st := c.sessionImpl.OpenMaterializedView(view)
-	c.sessionTables[key] = st
-	return st
+	return c.sessionTables.getOrOpen("mv:" + view)
 }
