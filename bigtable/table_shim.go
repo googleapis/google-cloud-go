@@ -58,8 +58,21 @@ func (t *TableShim) ReadRow(ctx context.Context, row string, opts ...ReadOption)
 	if !t.useSession() {
 		return t.classic.ReadRow(ctx, row, opts...)
 	}
-	// Parse opts using the classic settings shape so filter + full-read
-	// stats callback plumbing stays in one place.
+	// Parse opts through the classic settings shape so every existing
+	// ReadOption (RowFilter, WithFullReadStats, etc.) works on the
+	// session path without per-option branching here.
+	//
+	// How tmpReq.Filter gets populated:
+	//   readSettings.req is a *pointer* to tmpReq (see makeReadSettings),
+	//   so when a rowFilter option runs `settings.req.Filter = f.proto()`
+	//   the write lands in tmpReq. We then copy that value into the
+	//   session request below.
+	//
+	// Options that mutate fields absent from SessionReadRowRequest
+	// (e.g. LimitRows → RowsLimit) are silently ignored on the session
+	// path. That's fine for ReadRow since it's single-row by construction,
+	// but a future option specific to session reads would need to be
+	// read straight off `settings` rather than tmpReq.
 	tmpReq := &btpb.ReadRowsRequest{}
 	settings := makeReadSettings(tmpReq, 0)
 	for _, opt := range opts {
