@@ -17,6 +17,7 @@ package bigtable
 import (
 	"context"
 
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	internal "cloud.google.com/go/bigtable/internal/transport"
 )
 
@@ -70,4 +71,52 @@ func (t *TableShim) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mut
 // ApplyReadModifyWrite implements TableAPI. It delegates to classic.
 func (t *TableShim) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
 	return t.classic.ApplyReadModifyWrite(ctx, row, m)
+}
+
+// protoRowToRow converts a proto Row (the wire shape returned by a
+// proto-native session backend's SessionReadRowResponse) into the
+// classic bigtable.Row map shape that TableAPI.ReadRow callers expect.
+//
+// Staged here so the follow-up change that swaps TableShim.session for a
+// proto-native backend can call this without also introducing the
+// conversion contract; the test suite pins every branch of that
+// contract today (see TestProtoRowToRow).
+//
+// Contract: preserves wire order for cells within a column and columns
+// within a family; a row with no cells (or nil input) returns nil to
+// match classic Table.ReadRow's row-not-found signal — callers check
+// `row == nil`. Same-named families that appear twice in Families are
+// appended, not deduped, matching the server's wire format.
+func protoRowToRow(pr *btpb.Row) Row {
+	if pr == nil {
+		return nil
+	}
+	rowMap := make(Row)
+	rowKey := string(pr.Key)
+	for _, fam := range pr.Families {
+		familyName := fam.Name
+		for _, col := range fam.Columns {
+			columnName := familyName + ":" + string(col.Qualifier)
+			var items []ReadItem
+			for _, cell := range col.Cells {
+				items = append(items, ReadItem{
+					Row:       rowKey,
+					Column:    columnName,
+					Timestamp: Timestamp(cell.TimestampMicros),
+					Value:     cell.Value,
+					Labels:    cell.Labels,
+				})
+			}
+			if len(items) > 0 {
+				rowMap[familyName] = append(rowMap[familyName], items...)
+			}
+		}
+	}
+	// Match classic Table.ReadRow: a row with no cells is a not-found
+	// signal; callers check `row == nil`. Server should send pr=nil for
+	// not-found, but defensively collapse the empty-but-non-nil case too.
+	if len(rowMap) == 0 {
+		return nil
+	}
+	return rowMap
 }
