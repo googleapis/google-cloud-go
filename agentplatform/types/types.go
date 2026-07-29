@@ -137,6 +137,42 @@ const (
 	SandboxStateDeleted SandboxState = "STATE_DELETED"
 )
 
+// Protocol for port. Defaults to TCP if not specified.
+type Protocol string
+
+const (
+	// Unspecified protocol. Defaults to TCP.
+	ProtocolUnspecified Protocol = "PROTOCOL_UNSPECIFIED"
+	// TCP protocol.
+	ProtocolTcp Protocol = "TCP"
+	// UDP protocol.
+	ProtocolUdp Protocol = "UDP"
+)
+
+// The category of the default container image.
+type DefaultContainerCategory string
+
+const (
+	// The default value. This value is unused.
+	DefaultContainerCategoryUnspecified DefaultContainerCategory = "DEFAULT_CONTAINER_CATEGORY_UNSPECIFIED"
+	// The default container image for Computer Use.
+	DefaultContainerCategoryComputerUse DefaultContainerCategory = "DEFAULT_CONTAINER_CATEGORY_COMPUTER_USE"
+)
+
+// Input only. Action to take on the source SandboxEnvironment after the snapshot is
+// taken. This field is only used in CreateSandboxEnvironmentSnapshotRequest and it
+// is not stored in the resource.
+type PostSnapshotAction string
+
+const (
+	// The default value. This value is unused.
+	PostSnapshotActionUnspecified PostSnapshotAction = "POST_SNAPSHOT_ACTION_UNSPECIFIED"
+	// Sandbox environment will continue to run after snapshot is taken.
+	PostSnapshotActionRunning PostSnapshotAction = "RUNNING"
+	// Sandbox environment will be paused after snapshot is taken.
+	PostSnapshotActionPause PostSnapshotAction = "PAUSE"
+)
+
 // Framework used to build the application.
 type Framework string
 
@@ -2677,6 +2713,440 @@ type ListAgentEngineSandboxesResponse struct {
 	SandboxEnvironments []*SandboxEnvironment `json:"sandboxEnvironments,omitempty"`
 }
 
+// Specification for deploying from a custom container image.
+type SandboxEnvironmentTemplateCustomContainerSpec struct {
+	// Required. The Artifact Registry Docker image URI (e.g., us-central1-docker.pkg.dev/my-project/my-repo/my-image:tag)
+	// of the container image that is to be run on each worker replica.
+	ImageURI string `json:"imageUri,omitempty"`
+}
+
+// Represents a network port in a container.
+type SandboxEnvironmentTemplateNetworkPort struct {
+	// Optional. Port number to expose. This must be a valid port number, between 1 and
+	// 65535.
+	Port *int32 `json:"port,omitempty"`
+	// Optional. Protocol for port. Defaults to TCP if not specified.
+	Protocol Protocol `json:"protocol,omitempty"`
+}
+
+// Message to define resource requests and limits (mirroring Kubernetes) for each sandbox
+// instance created from this template.
+type SandboxEnvironmentTemplateResourceRequirements struct {
+	// Optional. The maximum amounts of compute resources allowed. Keys are resource names
+	// (e.g., "cpu", "memory"). Values are quantities (e.g., "500m", "1Gi").
+	Limits map[string]string `json:"limits,omitempty"`
+	// Optional. The requested amounts of compute resources. Keys are resource names (e.g.,
+	// "cpu", "memory"). Values are quantities (e.g., "250m", "512Mi").
+	Requests map[string]string `json:"requests,omitempty"`
+}
+
+// The customized sandbox runtime environment for BYOC.
+type SandboxEnvironmentTemplateCustomContainerEnvironment struct {
+	// The specification of the custom container environment.
+	CustomContainerSpec *SandboxEnvironmentTemplateCustomContainerSpec `json:"customContainerSpec,omitempty"`
+	// Ports to expose from the container.
+	Ports []*SandboxEnvironmentTemplateNetworkPort `json:"ports,omitempty"`
+	// Resource requests and limits for the container.
+	Resources *SandboxEnvironmentTemplateResourceRequirements `json:"resources,omitempty"`
+}
+
+// The default sandbox runtime environment for default container workloads.
+type SandboxEnvironmentTemplateDefaultContainerEnvironment struct {
+	// Required. The category of the default container image.
+	DefaultContainerCategory DefaultContainerCategory `json:"defaultContainerCategory,omitempty"`
+	// Optional. Resource requests and limits for the default container.
+	Resources *SandboxEnvironmentTemplateResourceRequirements `json:"resources,omitempty"`
+}
+
+// Configuration for egress control of sandbox instances.
+type SandboxEnvironmentTemplateEgressControlConfig struct {
+	// Optional. Whether to allow internet access.
+	InternetAccess *bool `json:"internetAccess,omitempty"`
+}
+
+// Config for creating a Sandbox Template.
+type CreateSandboxEnvironmentTemplateConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. The custom container environment for the sandbox template.
+	CustomContainerEnvironment *SandboxEnvironmentTemplateCustomContainerEnvironment `json:"customContainerEnvironment,omitempty"`
+	// Optional. The default container environment for the sandbox template.
+	DefaultContainerEnvironment *SandboxEnvironmentTemplateDefaultContainerEnvironment `json:"defaultContainerEnvironment,omitempty"`
+	// Optional. The egress control config for the sandbox template.
+	EgressControlConfig *SandboxEnvironmentTemplateEgressControlConfig `json:"egressControlConfig,omitempty"`
+	// Optional. Waits for the operation to complete before returning.
+	WaitForCompletion *bool `json:"waitForCompletion,omitempty"`
+}
+
+// A sandbox environment template.
+type SandboxEnvironmentTemplate struct {
+	// Output only. The timestamp when this SandboxEnvironmentTemplate was created.
+	CreateTime time.Time `json:"createTime,omitempty"`
+	// The sandbox environment for custom container workloads.
+	CustomContainerEnvironment *SandboxEnvironmentTemplateCustomContainerEnvironment `json:"customContainerEnvironment,omitempty"`
+	// The sandbox environment for default container workloads.
+	DefaultContainerEnvironment *SandboxEnvironmentTemplateDefaultContainerEnvironment `json:"defaultContainerEnvironment,omitempty"`
+	// Required. The display name of the SandboxEnvironmentTemplate.
+	DisplayName string `json:"displayName,omitempty"`
+	// Optional. The configuration for egress control of this template.
+	EgressControlConfig *SandboxEnvironmentTemplateEgressControlConfig `json:"egressControlConfig,omitempty"`
+	// Identifier. The resource name of the SandboxEnvironmentTemplate. Format: `projects/{project}/locations/{location}/reasoningEngines/{reasoning_engine}/sandboxEnvironmentTemplates/{sandbox_environment_template}`
+	Name string `json:"name,omitempty"`
+	// Output only. The state of the sandbox environment template.
+	State string `json:"state,omitempty"`
+	// Output only. The timestamp when this SandboxEnvironmentTemplate was most recently
+	// updated.
+	UpdateTime time.Time `json:"updateTime,omitempty"`
+}
+
+func (s *SandboxEnvironmentTemplate) UnmarshalJSON(data []byte) error {
+	type Alias SandboxEnvironmentTemplate
+	aux := &struct {
+		CreateTime *time.Time `json:"createTime,omitempty"`
+		UpdateTime *time.Time `json:"updateTime,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(s),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if !reflect.ValueOf(aux.CreateTime).IsZero() {
+		s.CreateTime = time.Time(*aux.CreateTime)
+	}
+
+	if !reflect.ValueOf(aux.UpdateTime).IsZero() {
+		s.UpdateTime = time.Time(*aux.UpdateTime)
+	}
+
+	return nil
+}
+
+func (s *SandboxEnvironmentTemplate) MarshalJSON() ([]byte, error) {
+	type Alias SandboxEnvironmentTemplate
+	aux := &struct {
+		CreateTime *time.Time `json:"createTime,omitempty"`
+		UpdateTime *time.Time `json:"updateTime,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(s),
+	}
+
+	if !reflect.ValueOf(s.CreateTime).IsZero() {
+		aux.CreateTime = (*time.Time)(&s.CreateTime)
+	}
+
+	if !reflect.ValueOf(s.UpdateTime).IsZero() {
+		aux.UpdateTime = (*time.Time)(&s.UpdateTime)
+	}
+
+	return json.Marshal(aux)
+}
+
+// Operation that has an agent engine sandbox as a response.
+type SandboxEnvironmentTemplateOperation struct {
+	// The server-assigned name, which is only unique within the same service that originally
+	// returns it. If you use the default HTTP mapping, the `name` should be a resource
+	// name ending with `operations/{unique_id}`.
+	Name string `json:"name,omitempty"`
+	// Optional. Service-specific metadata associated with the operation. It typically contains
+	// progress information and common metadata such as create time. Some services might
+	// not provide such metadata. Any method that returns a long-running operation should
+	// document the metadata type, if any.
+	Metadata map[string]any `json:"metadata,omitempty"`
+	// If the value is `false`, it means the operation is still in progress. If `true`,
+	// the operation is completed, and either `error` or `response` is available.
+	Done bool `json:"done,omitempty"`
+	// Optional. The error result of the operation in case of failure or cancellation.
+	Error map[string]any `json:"error,omitempty"`
+	// Optional. The Agent Engine Sandbox Template.
+	Response *SandboxEnvironmentTemplate `json:"response,omitempty"`
+}
+
+// Config for deleting a Sandbox Template.
+type DeleteSandboxEnvironmentTemplateConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+}
+
+// Operation for deleting sandbox templates.
+type DeleteSandboxEnvironmentTemplateOperation struct {
+	// The server-assigned name, which is only unique within the same service that originally
+	// returns it. If you use the default HTTP mapping, the `name` should be a resource
+	// name ending with `operations/{unique_id}`.
+	Name string `json:"name,omitempty"`
+	// Optional. Service-specific metadata associated with the operation. It typically contains
+	// progress information and common metadata such as create time. Some services might
+	// not provide such metadata. Any method that returns a long-running operation should
+	// document the metadata type, if any.
+	Metadata map[string]any `json:"metadata,omitempty"`
+	// If the value is `false`, it means the operation is still in progress. If `true`,
+	// the operation is completed, and either `error` or `response` is available.
+	Done bool `json:"done,omitempty"`
+	// Optional. The error result of the operation in case of failure or cancellation.
+	Error map[string]any `json:"error,omitempty"`
+}
+
+// Config for getting a Sandbox Template.
+type GetSandboxEnvironmentTemplateConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+}
+
+// Config for listing sandbox templates.
+type ListSandboxEnvironmentTemplatesConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. PageSize specifies the maximum number of cached contents to return per
+	// API call. If zero, the server will use a default value.
+	PageSize int32 `json:"pageSize,omitempty"`
+	// Optional. PageToken represents a token used for pagination in API responses. It's
+	// an opaque string that should be passed to subsequent requests to retrieve the next
+	// page of results. An empty PageToken typically indicates that there are no further
+	// pages available.
+	PageToken string `json:"pageToken,omitempty"`
+	// Optional. An expression for filtering the results of the request.
+	Filter string `json:"filter,omitempty"`
+}
+
+// Response for listing sandbox templates.
+type ListSandboxEnvironmentTemplatesResponse struct {
+	// Optional. Used to retain the full HTTP response.
+	SDKHTTPResponse *genai_types.HTTPResponse `json:"sdkHttpResponse,omitempty"`
+
+	NextPageToken string `json:"nextPageToken,omitempty"`
+	// List of sandbox templates.
+	SandboxEnvironmentTemplates []*SandboxEnvironmentTemplate `json:"sandboxEnvironmentTemplates,omitempty"`
+}
+
+// Config for creating a Sandbox Environment Snapshot.
+type CreateAgentEngineSandboxSnapshotConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. The display name of the sandbox snapshot.
+	DisplayName string `json:"displayName,omitempty"`
+	// Optional. The owner of the sandbox snapshot.
+	Owner string `json:"owner,omitempty"`
+	// Optional. The TTL for this resource. The expiration time is computed: now + TTL.
+	TTL time.Duration `json:"ttl,omitempty"`
+	// Optional. Waits for the operation to complete before returning.
+	WaitForCompletion *bool `json:"waitForCompletion,omitempty"`
+}
+
+func (c *CreateAgentEngineSandboxSnapshotConfig) UnmarshalJSON(data []byte) error {
+	type Alias CreateAgentEngineSandboxSnapshotConfig
+	aux := &struct {
+		TTL *genai_types.InternalDurationJSON `json:"ttl,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(c),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if !reflect.ValueOf(aux.TTL).IsZero() {
+		c.TTL = time.Duration(*aux.TTL)
+	}
+
+	return nil
+}
+
+func (c *CreateAgentEngineSandboxSnapshotConfig) MarshalJSON() ([]byte, error) {
+	type Alias CreateAgentEngineSandboxSnapshotConfig
+	aux := &struct {
+		TTL *genai_types.InternalDurationJSON `json:"ttl,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(c),
+	}
+
+	if !reflect.ValueOf(c.TTL).IsZero() {
+		aux.TTL = (*genai_types.InternalDurationJSON)(&c.TTL)
+	}
+
+	return json.Marshal(aux)
+}
+
+// A sandbox environment snapshot.
+type SandboxEnvironmentSnapshot struct {
+	// The display name of the sandbox environment snapshot.
+	DisplayName string `json:"displayName,omitempty"`
+	// Optional. Expiration time of the sandbox environment snapshot.
+	ExpireTime time.Time `json:"expireTime,omitempty"`
+	// Output only. The timestamp when this SandboxEnvironmentSnapshot was created.
+	CreateTime time.Time `json:"createTime,omitempty"`
+	// Identifier. The resource name of the SandboxEnvironmentSnapshot. Format: `projects/{project}/locations/{location}/reasoningEngines/{reasoning_engine}/sandboxEnvironmentSnapshots/{sandbox_environment_snapshot}`
+	Name string `json:"name,omitempty"`
+	// Optional. Owner information for this sandbox snapshot. Different owners will have
+	// isolations on snapshot storage and identity. If not set, snapshot will be created
+	// as the default owner.
+	Owner string `json:"owner,omitempty"`
+	// Output only. The resource name of the parent SandboxEnvironmentSnapshot. Empty if
+	// this is a root Snapshot (the first snapshot from a newly created sandbox). Can be
+	// used to reconstruct the whole ancestry tree of snapshots.
+	ParentSnapshot string `json:"parentSnapshot,omitempty"`
+	// Optional. Input only. Action to take on the source SandboxEnvironment after the snapshot
+	// is taken. This field is only used in CreateSandboxEnvironmentSnapshotRequest and
+	// it is not stored in the resource.
+	PostSnapshotAction PostSnapshotAction `json:"postSnapshotAction,omitempty"`
+	// Optional. Output only. Size of the snapshot data in bytes.
+	SizeBytes int64 `json:"sizeBytes,omitempty,string"`
+	// Required. The resource name of the source SandboxEnvironment this snapshot was taken
+	// from.
+	SourceSandboxEnvironment string `json:"sourceSandboxEnvironment,omitempty"`
+	// Optional. Input only. The TTL for the sandbox environment snapshot. The expiration
+	// time is computed: now + TTL.
+	TTL time.Duration `json:"ttl,omitempty"`
+	// Output only. The timestamp when this SandboxEnvironment was most recently updated.
+	UpdateTime time.Time `json:"updateTime,omitempty"`
+}
+
+func (s *SandboxEnvironmentSnapshot) UnmarshalJSON(data []byte) error {
+	type Alias SandboxEnvironmentSnapshot
+	aux := &struct {
+		ExpireTime *time.Time                        `json:"expireTime,omitempty"`
+		CreateTime *time.Time                        `json:"createTime,omitempty"`
+		TTL        *genai_types.InternalDurationJSON `json:"ttl,omitempty"`
+		UpdateTime *time.Time                        `json:"updateTime,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(s),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if !reflect.ValueOf(aux.ExpireTime).IsZero() {
+		s.ExpireTime = time.Time(*aux.ExpireTime)
+	}
+
+	if !reflect.ValueOf(aux.CreateTime).IsZero() {
+		s.CreateTime = time.Time(*aux.CreateTime)
+	}
+
+	if !reflect.ValueOf(aux.TTL).IsZero() {
+		s.TTL = time.Duration(*aux.TTL)
+	}
+
+	if !reflect.ValueOf(aux.UpdateTime).IsZero() {
+		s.UpdateTime = time.Time(*aux.UpdateTime)
+	}
+
+	return nil
+}
+
+func (s *SandboxEnvironmentSnapshot) MarshalJSON() ([]byte, error) {
+	type Alias SandboxEnvironmentSnapshot
+	aux := &struct {
+		ExpireTime *time.Time                        `json:"expireTime,omitempty"`
+		CreateTime *time.Time                        `json:"createTime,omitempty"`
+		TTL        *genai_types.InternalDurationJSON `json:"ttl,omitempty"`
+		UpdateTime *time.Time                        `json:"updateTime,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(s),
+	}
+
+	if !reflect.ValueOf(s.ExpireTime).IsZero() {
+		aux.ExpireTime = (*time.Time)(&s.ExpireTime)
+	}
+
+	if !reflect.ValueOf(s.CreateTime).IsZero() {
+		aux.CreateTime = (*time.Time)(&s.CreateTime)
+	}
+
+	if !reflect.ValueOf(s.TTL).IsZero() {
+		aux.TTL = (*genai_types.InternalDurationJSON)(&s.TTL)
+	}
+
+	if !reflect.ValueOf(s.UpdateTime).IsZero() {
+		aux.UpdateTime = (*time.Time)(&s.UpdateTime)
+	}
+
+	return json.Marshal(aux)
+}
+
+// Operation that has an agent engine sandbox snapshot as a response.
+type AgentEngineSandboxSnapshotOperation struct {
+	// The server-assigned name, which is only unique within the same service that originally
+	// returns it. If you use the default HTTP mapping, the `name` should be a resource
+	// name ending with `operations/{unique_id}`.
+	Name string `json:"name,omitempty"`
+	// Optional. Service-specific metadata associated with the operation. It typically contains
+	// progress information and common metadata such as create time. Some services might
+	// not provide such metadata. Any method that returns a long-running operation should
+	// document the metadata type, if any.
+	Metadata map[string]any `json:"metadata,omitempty"`
+	// If the value is `false`, it means the operation is still in progress. If `true`,
+	// the operation is completed, and either `error` or `response` is available.
+	Done bool `json:"done,omitempty"`
+	// Optional. The error result of the operation in case of failure or cancellation.
+	Error map[string]any `json:"error,omitempty"`
+	// Optional. The Agent Engine Sandbox Snapshot.
+	Response *SandboxEnvironmentSnapshot `json:"response,omitempty"`
+}
+
+// Config for deleting a Sandbox Environment Snapshot.
+type DeleteSandboxEnvironmentSnapshotConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+}
+
+// Operation for deleting sandbox environment snapshots.
+type DeleteSandboxEnvironmentSnapshotOperation struct {
+	// The server-assigned name, which is only unique within the same service that originally
+	// returns it. If you use the default HTTP mapping, the `name` should be a resource
+	// name ending with `operations/{unique_id}`.
+	Name string `json:"name,omitempty"`
+	// Optional. Service-specific metadata associated with the operation. It typically contains
+	// progress information and common metadata such as create time. Some services might
+	// not provide such metadata. Any method that returns a long-running operation should
+	// document the metadata type, if any.
+	Metadata map[string]any `json:"metadata,omitempty"`
+	// If the value is `false`, it means the operation is still in progress. If `true`,
+	// the operation is completed, and either `error` or `response` is available.
+	Done bool `json:"done,omitempty"`
+	// Optional. The error result of the operation in case of failure or cancellation.
+	Error map[string]any `json:"error,omitempty"`
+}
+
+// Config for getting a Sandbox Environment Snapshot.
+type GetSandboxEnvironmentSnapshotConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+}
+
+// Config for listing sandbox environment snapshots.
+type ListSandboxEnvironmentSnapshotsConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. PageSize specifies the maximum number of cached contents to return per
+	// API call. If zero, the server will use a default value.
+	PageSize int32 `json:"pageSize,omitempty"`
+	// Optional. PageToken represents a token used for pagination in API responses. It's
+	// an opaque string that should be passed to subsequent requests to retrieve the next
+	// page of results. An empty PageToken typically indicates that there are no further
+	// pages available.
+	PageToken string `json:"pageToken,omitempty"`
+	// Optional. An expression for filtering the results of the request.
+	Filter string `json:"filter,omitempty"`
+}
+
+// Response for listing sandbox environment snapshots.
+type ListSandboxEnvironmentSnapshotsResponse struct {
+	// Optional. Used to retain the full HTTP response.
+	SDKHTTPResponse *genai_types.HTTPResponse `json:"sdkHttpResponse,omitempty"`
+
+	NextPageToken string `json:"nextPageToken,omitempty"`
+	// List of sandbox environment snapshots.
+	SandboxEnvironmentSnapshots []*SandboxEnvironmentSnapshot `json:"sandboxEnvironmentSnapshots,omitempty"`
+}
+
 // Config for creating a Session.
 type CreateAgentEngineSessionConfig struct {
 	// Optional. Used to override HTTP request options.
@@ -3446,15 +3916,34 @@ type listPublisherModelDeployOptionsConfig struct {
 
 // Config for listing custom model deploy options.
 type listCustomModelDeployOptionsConfig struct {
-	// Optional. Whether to check per-region machine availability. When true (the
-	// default), the API returns per-region recommendations that include the
-	// machine spec, region and user quota state. When false, the API returns a
-	// flat list of specs without per-region or quota information (and
-	// FilterByUserQuota has no effect).
+	// Optional. Whether to check per-region machine availability.
+	// When True (the default), the API returns per-region recommendations
+	// that include the machine spec, region and user quota state. When
+	// False, the API returns a flat list of specs without per-region or
+	// quota information (and ``filter_by_user_quota`` has no effect).
 	CheckMachineAvailability bool `json:"checkMachineAvailability,omitempty"`
 	// Optional. Whether to filter recommendations to regions with user quota.
-	// Only takes effect when CheckMachineAvailability is true.
+	// Only takes effect when ``check_machine_availability=True``; the specs
+	// fallback returned when ``check_machine_availability=False`` carries no
+	// per-region quota information, so this flag is ignored in that mode.
 	FilterByUserQuota bool `json:"filterByUserQuota,omitempty"`
+}
+
+// Config for ``export_open_model``.
+type exportOpenModelConfig struct {
+	// Whether to block on the export long-running operation. When
+	// ``True`` (default), returns the destination URI on completion. When
+	// ``False``, returns the ``ExportModelOperation`` for the caller to
+	// poll.
+	WaitForCompletion bool `json:"waitForCompletion,omitempty"`
+	// Optional. Seconds between LRO polls when ``wait_for_completion=True``.
+	// Defaults to 30. Ignored when ``wait_for_completion=False``.
+	PollIntervalSeconds float32 `json:"pollIntervalSeconds,omitempty"`
+	// Optional. Total wall-clock seconds to wait for the export to complete
+	// when ``wait_for_completion=True``. Defaults to 2 hours to
+	// accommodate large model weights. Ignored when
+	// ``wait_for_completion=False``.
+	TimeoutSeconds float32 `json:"timeoutSeconds,omitempty"`
 }
 
 // A verified deploy option for a model.
