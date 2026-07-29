@@ -21,11 +21,13 @@ import (
 	"os"
 	"reflect"
 	"strconv"
+	"sync"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	btopt "cloud.google.com/go/bigtable/internal/option"
+	"cloud.google.com/go/bigtable/internal/session"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
@@ -52,11 +54,22 @@ type Client struct {
 	executeQueryRetryOption gax.CallOption
 	featureFlagsMD          metadata.MD // Pre-computed feature flags metadata to be sent with each request.
 	mPool                   btransport.ManagedChannelPool
-	// diverter picks between the classic and (future) session data path
-	// on every Open* return. Initialized with sessionLoad=0.0 so all
-	// traffic stays on the classic path until a follow-up change enables
-	// the session backend and bumps the ratio.
+	// diverter picks between the classic and session data path on every
+	// Open* return. Initialized with sessionLoad=0.0 so all traffic
+	// stays on the classic path until the session backend's
+	// ConfigurationManager bumps the ratio via AddSessionLoadListener.
 	diverter *btransport.Diverter
+	// sessionImpl is the session data-plane client (nil unless
+	// ClientConfig.EnableSessionPool). TableShim treats a nil session
+	// TableAPI as classic-only, so an off sessionImpl means every
+	// Open*-returned shim routes to classic regardless of the diverter.
+	sessionImpl session.Client
+	// sessionTables caches per-resource TableAPI instances so repeat
+	// Open* calls return the same handle (and by extension the same
+	// underlying session pools). session.Client does not cache; the
+	// consumer (this Client) is responsible.
+	sessionTablesMu sync.Mutex
+	sessionTables   map[string]session.TableAPI
 }
 
 // ClientConfig has configurations for the client.
@@ -84,6 +97,23 @@ type ClientConfig struct {
 
 	// DisableDirectAccess disables direct access by default.
 	DisableDirectAccess bool
+
+	// EnableSessionPool opts the Client into the session data-plane
+	// backend. When true, NewClientWithConfig constructs an
+	// internal/session.Client alongside the classic gRPC channel pool.
+	// OpenTable / OpenAuthorizedView / OpenMaterializedView then
+	// produce a TableShim wired with a real session TableAPI (instead
+	// of nil), and traffic is diverted between the two data planes by
+	// the Diverter under a ratio controlled at runtime by the session
+	// backend's ClientConfigurationManager.
+	//
+	// When false (the default), no session client is constructed and
+	// every shim's session TableAPI is nil — all calls route to
+	// classic. Enabling this is a required precondition for
+	// server-driven traffic shaping; it does not by itself send any
+	// traffic to the session backend (the initial SessionLoad is
+	// 0.0).
+	EnableSessionPool bool
 }
 
 // MetricsProvider is a wrapper for the built-in metrics meter provider.
@@ -220,7 +250,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		return nil, err
 	}
 
-	return &Client{
+	c := &Client{
 		connPool:                mPool.Pool,
 		client:                  btpb.NewBigtableClient(mPool.Pool),
 		project:                 project,
@@ -233,7 +263,29 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		featureFlagsMD:          directAccessMD,
 		mPool:                   mPool,
 		diverter:                btransport.NewDiverter(0.0),
-	}, nil
+		sessionTables:           make(map[string]session.TableAPI),
+	}
+
+	// Session data-plane backend is opt-in. Constructed with its own
+	// metrics factory (session.NewClient re-creates one internally) but
+	// shares the same *option.ClientOption set as the classic pool, so
+	// endpoint / credentials / dial hooks match. AddSessionLoadListener
+	// wires the server-driven SessionLoad from
+	// ClientConfigurationManager → Client's Diverter, so a control-plane
+	// update immediately shifts traffic across every open TableShim.
+	if config.EnableSessionPool {
+		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
+		if sessionErr != nil {
+			// Best-effort cleanup of the classic pool since we won't
+			// return c to the caller.
+			_ = mPool.Pool.Close()
+			return nil, fmt.Errorf("bigtable: EnableSessionPool: session.NewClient: %w", sessionErr)
+		}
+		sc.AddSessionLoadListener(c.diverter.SetSessionLoad)
+		c.sessionImpl = sc
+	}
+
+	return c, nil
 }
 
 // Close closes the Client.
@@ -241,7 +293,21 @@ func (c *Client) Close() error {
 	if c.metricsTracerFactory != nil {
 		c.metricsTracerFactory.Shutdown()
 	}
-	return c.mPool.Close()
+	// Close the session backend first — its pools ride shared gRPC
+	// channels but its own bookkeeping (session pools, ConfigurationManager
+	// poller) should wind down before we drop the classic pool. Any
+	// error is aggregated with the classic pool's Close error.
+	var sessionErr error
+	if c.sessionImpl != nil {
+		sessionErr = c.sessionImpl.Close()
+	}
+	if err := c.mPool.Close(); err != nil {
+		if sessionErr != nil {
+			return fmt.Errorf("bigtable.Client.Close: classic pool: %w; session: %v", err, sessionErr)
+		}
+		return err
+	}
+	return sessionErr
 }
 
 func (c *Client) fullInstanceName() string {
