@@ -252,28 +252,47 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		diverter:                btransport.NewDiverter(0.0),
 	}
 
-	// Session data-plane backend is constructed unconditionally so a
-	// control-plane SessionLoad bump can route traffic to it without a
-	// client restart. Session pools + streams are lazily materialized
-	// on first use — an idle client pays only for the session channel
-	// pool + one config-poll goroutine. Shares the same
-	// *option.ClientOption set as the classic pool so endpoint /
-	// credentials / dial hooks match. AddSessionLoadListener wires the
-	// server-driven SessionLoad from ClientConfigurationManager into
-	// this Client's Diverter, so a control-plane update immediately
-	// shifts traffic across every open TableShim.
-	sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
-	if sessionErr != nil {
-		// Best-effort cleanup of the classic pool since we won't return
-		// c to the caller. Go through the ManagedChannelPool wrapper so
-		// any wrapper-owned cleanup — metrics reporter, connection
-		// recycler, dynamic scale monitor — winds down too. Matches
-		// (*Client).Close.
-		_ = mPool.Close()
-		return nil, fmt.Errorf("bigtable: session.NewClient: %w", sessionErr)
+	// Session data-plane backend construction has two guardrails so it
+	// can't interfere with the classic path in test / emulator setups:
+	//
+	//  1. If the caller passed option.WithGRPCConn(conn) — i.e. handed
+	//     us one pre-dialed *grpc.ClientConn to use for everything —
+	//     skip session entirely. Two independent backends can't
+	//     reasonably share one physical conn; running the session
+	//     dialer against a pre-dialed conn either gets both backends
+	//     entangled on the same underlying transport (so a
+	//     session-side teardown propagates a "connection is closing"
+	//     error to classic RPCs — the conformance test-proxy failure
+	//     mode) or double-dials the same fake server. Same guard
+	//     covers BIGTABLE_EMULATOR_HOST since DefaultClientOptions
+	//     sets WithGRPCConn internally in that mode.
+	//
+	//  2. On session.NewClient failure, tear down the classic pool
+	//     since we won't return c to the caller.
+	//
+	// When both guardrails pass, wire AddSessionLoadListener so the
+	// server-driven SessionLoad from ClientConfigurationManager retargets
+	// traffic through this Client's Diverter — a control-plane update
+	// then shifts traffic across every open TableShim without a client
+	// restart.
+	preDialed := false
+	if uResolver, resErr := internaloption.NewUnsafeResolver(opts...); resErr == nil {
+		preDialed = uResolver.ResolvedGRPCConnIsCustom()
 	}
-	sc.AddSessionLoadListener(c.diverter.SetSessionLoad)
-	c.sessionImpl = sc
+	if !preDialed {
+		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
+		if sessionErr != nil {
+			// Best-effort cleanup of the classic pool since we won't
+			// return c to the caller. Go through the ManagedChannelPool
+			// wrapper so any wrapper-owned cleanup — metrics reporter,
+			// connection recycler, dynamic scale monitor — winds down
+			// too. Matches (*Client).Close.
+			_ = mPool.Close()
+			return nil, fmt.Errorf("bigtable: session.NewClient: %w", sessionErr)
+		}
+		sc.AddSessionLoadListener(c.diverter.SetSessionLoad)
+		c.sessionImpl = sc
+	}
 
 	// Per-resource TableAPI cache with TTL-on-idle eviction. The cache
 	// is opener-agnostic — each getOrCreateSession* helper in open.go
