@@ -37,9 +37,10 @@ func (c *Client) Open(table string) *Table {
 
 // OpenTable opens a table. Returns a TableShim that routes each RPC via
 // the Client's Diverter — with sessionLoad=0.0 every call lands on the
-// classic path. When ClientConfig.EnableSessionPool is set, the shim
-// carries a real session TableAPI; otherwise the session side is nil
-// and every call unconditionally routes to classic.
+// classic path. The session TableAPI is wired from the Client's
+// sessionImpl (always constructed by NewClientWithConfig); server-driven
+// SessionLoad updates from ClientConfigurationManager retarget traffic
+// without re-opening the table.
 func (c *Client) OpenTable(table string) TableAPI {
 	classic := &tableImpl{Table{
 		c:     c,
@@ -83,8 +84,9 @@ func (c *Client) OpenMaterializedView(materializedView string) TableAPI {
 
 // getOrCreateSessionTable returns a cached session TableAPI for this
 // table, opening a fresh one on cache miss. Returns nil when the
-// session backend isn't wired (EnableSessionPool=false); TableShim
-// treats a nil session as classic-only. Cache key is "tbl:<table>".
+// session backend isn't wired (hand-built or emulator-only Clients
+// where sessionImpl is nil); TableShim treats a nil session as
+// classic-only. Cache key is "tbl:<table>".
 //
 // The cache exists because session.Client does not: each
 // session.Client.OpenTable call would otherwise open a new pair of

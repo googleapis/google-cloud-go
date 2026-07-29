@@ -191,7 +191,16 @@ func TestOpenFactories_ShareOneClientDiverter(t *testing.T) {
 	}
 }
 
-// ─── Session-backend-wired tests (EnableSessionPool=true) ─────────────
+// ─── Session-backend-wired tests ──────────────────────────────────────
+//
+// Every NewClientWithConfig-produced Client now carries a real
+// session.Client (it's always constructed), so the tests below
+// substitute a lightweight fakeSessionClient to keep them dial-free
+// and deterministic. The nil-sessionImpl case (below in
+// TestGetOrCreateSession_NilSessionImplReturnsNil) is still a valid
+// programmatic construction — internal helpers guard for it so
+// hand-built or emulator-only Clients don't panic — even though the
+// public factory path always wires one.
 
 // fakeSessionClient is a minimal session.Client used by the tests
 // below. Records which Open* helpers were called and returns a shared
@@ -273,9 +282,10 @@ func newSessionWiredClient(t *testing.T, fsc *fakeSessionClient) *Client {
 	}
 }
 
-// TestOpenTable_WithSessionBackend_WiresSessionTableAPI pins that when
-// EnableSessionPool is on, OpenTable's returned shim carries a non-nil
-// session TableAPI produced by sessionImpl.OpenTable(table).
+// TestOpenTable_WithSessionBackend_WiresSessionTableAPI pins that
+// OpenTable's returned shim carries a non-nil session TableAPI produced
+// by sessionImpl.OpenTable(table) — the default state now that
+// NewClientWithConfig always wires a session.Client.
 func TestOpenTable_WithSessionBackend_WiresSessionTableAPI(t *testing.T) {
 	fsc := newFakeSessionClient()
 	c := newSessionWiredClient(t, fsc)
@@ -356,9 +366,10 @@ func TestOpenMaterializedView_WithSessionBackend_WiresSessionTableAPI(t *testing
 }
 
 // TestGetOrCreateSession_NilSessionImplReturnsNil pins that with
-// sessionImpl == nil (EnableSessionPool=false), every getOrCreateSession*
-// short-circuits to nil BEFORE touching the map — so the classic-only
-// path pays zero lock cost per Open call.
+// sessionImpl == nil, every getOrCreateSession* short-circuits to nil
+// BEFORE touching the map. NewClientWithConfig always sets sessionImpl,
+// but a hand-built Client (used here and in tests / emulator setups)
+// can leave it nil — the guard exists so those paths don't panic.
 func TestGetOrCreateSession_NilSessionImplReturnsNil(t *testing.T) {
 	c := newBareClientForOpenTests(t, 0.0) // sessionImpl unset
 
