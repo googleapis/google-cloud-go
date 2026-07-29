@@ -268,7 +268,6 @@ func (c *Client) reqParamsHeaderValInstance() string {
 	return fmt.Sprintf("name=%s&app_profile_id=%s", url.QueryEscape(c.fullInstanceName()), url.QueryEscape(c.appProfile))
 }
 
-
 // PingAndWarm pings the server and warms up the connection.
 func (c *Client) PingAndWarm(ctx context.Context) (err error) {
 	md := metadata.Join(metadata.Pairs(
