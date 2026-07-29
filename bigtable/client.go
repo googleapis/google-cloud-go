@@ -292,13 +292,15 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		}
 		sc.AddSessionLoadListener(c.diverter.SetSessionLoad)
 		c.sessionImpl = sc
-	}
 
-	// Per-resource TableAPI cache with TTL-on-idle eviction. The cache
-	// is opener-agnostic — each getOrCreateSession* helper in open.go
-	// passes its own openFn per call, using the fully-qualified
-	// resource name as the cache key. No prefix parsing, no dispatch.
-	c.sessionTables = newSessionTableCache(sessionTableCacheTTL, sessionTableCacheSweepInt, nil /* time.Now */)
+		// Per-resource TableAPI cache with TTL-on-idle eviction. The
+		// cache is opener-agnostic — each getOrCreateSession* helper
+		// in open.go passes its own openFn per call, using the fully-
+		// qualified resource name as the cache key. Only constructed
+		// when the session backend is actually wired — a sweeper
+		// goroutine over an always-empty map would be dead weight.
+		c.sessionTables = newSessionTableCache(sessionTableCacheTTL, sessionTableCacheSweepInt, nil /* time.Now */)
+	}
 
 	return c, nil
 }
