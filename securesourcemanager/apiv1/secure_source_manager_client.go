@@ -33,6 +33,7 @@ import (
 	securesourcemanagerpb "cloud.google.com/go/securesourcemanager/apiv1/securesourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -973,14 +974,13 @@ func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationReq
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -1500,8 +1500,12 @@ func (c *gRPCClient) CreateInstance(ctx context.Context, req *securesourcemanage
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1526,8 +1530,12 @@ func (c *gRPCClient) DeleteInstance(ctx context.Context, req *securesourcemanage
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1628,8 +1636,12 @@ func (c *gRPCClient) CreateRepository(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1651,8 +1663,12 @@ func (c *gRPCClient) UpdateRepository(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1677,8 +1693,12 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1779,8 +1799,12 @@ func (c *gRPCClient) CreateHook(ctx context.Context, req *securesourcemanagerpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateHookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateHookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1802,8 +1826,12 @@ func (c *gRPCClient) UpdateHook(ctx context.Context, req *securesourcemanagerpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateHookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateHookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1828,8 +1856,12 @@ func (c *gRPCClient) DeleteHook(ctx context.Context, req *securesourcemanagerpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteHookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteHookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1926,8 +1958,12 @@ func (c *gRPCClient) CreateBranchRule(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateBranchRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBranchRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2025,8 +2061,12 @@ func (c *gRPCClient) UpdateBranchRule(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateBranchRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBranchRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2051,8 +2091,12 @@ func (c *gRPCClient) DeleteBranchRule(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteBranchRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBranchRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2077,8 +2121,12 @@ func (c *gRPCClient) CreatePullRequest(ctx context.Context, req *securesourceman
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreatePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2176,8 +2224,12 @@ func (c *gRPCClient) UpdatePullRequest(ctx context.Context, req *securesourceman
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdatePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2202,8 +2254,12 @@ func (c *gRPCClient) MergePullRequest(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.MergePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MergePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2228,8 +2284,12 @@ func (c *gRPCClient) OpenPullRequest(ctx context.Context, req *securesourcemanag
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.OpenPullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &OpenPullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2254,8 +2314,12 @@ func (c *gRPCClient) ClosePullRequest(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.ClosePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ClosePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2408,8 +2472,12 @@ func (c *gRPCClient) CreateIssue(ctx context.Context, req *securesourcemanagerpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2507,8 +2575,12 @@ func (c *gRPCClient) UpdateIssue(ctx context.Context, req *securesourcemanagerpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2533,8 +2605,12 @@ func (c *gRPCClient) DeleteIssue(ctx context.Context, req *securesourcemanagerpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2559,8 +2635,12 @@ func (c *gRPCClient) OpenIssue(ctx context.Context, req *securesourcemanagerpb.O
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.OpenIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &OpenIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2585,8 +2665,12 @@ func (c *gRPCClient) CloseIssue(ctx context.Context, req *securesourcemanagerpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CloseIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CloseIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2687,8 +2771,12 @@ func (c *gRPCClient) CreatePullRequestComment(ctx context.Context, req *secureso
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreatePullRequestCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePullRequestCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2710,8 +2798,12 @@ func (c *gRPCClient) UpdatePullRequestComment(ctx context.Context, req *secureso
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdatePullRequestCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePullRequestCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2736,8 +2828,12 @@ func (c *gRPCClient) DeletePullRequestComment(ctx context.Context, req *secureso
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeletePullRequestCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePullRequestCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2762,8 +2858,12 @@ func (c *gRPCClient) BatchCreatePullRequestComments(ctx context.Context, req *se
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.BatchCreatePullRequestCommentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchCreatePullRequestCommentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2788,8 +2888,12 @@ func (c *gRPCClient) ResolvePullRequestComments(ctx context.Context, req *secure
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.ResolvePullRequestCommentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResolvePullRequestCommentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2814,8 +2918,12 @@ func (c *gRPCClient) UnresolvePullRequestComments(ctx context.Context, req *secu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UnresolvePullRequestCommentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UnresolvePullRequestCommentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2840,8 +2948,12 @@ func (c *gRPCClient) CreateIssueComment(ctx context.Context, req *securesourcema
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateIssueCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIssueCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2939,8 +3051,12 @@ func (c *gRPCClient) UpdateIssueComment(ctx context.Context, req *securesourcema
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateIssueCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateIssueCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2965,8 +3081,12 @@ func (c *gRPCClient) DeleteIssueComment(ctx context.Context, req *securesourcema
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteIssueCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIssueCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3422,8 +3542,12 @@ func (c *restClient) CreateInstance(ctx context.Context, req *securesourcemanage
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3488,8 +3612,12 @@ func (c *restClient) DeleteInstance(ctx context.Context, req *securesourcemanage
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3703,8 +3831,12 @@ func (c *restClient) CreateRepository(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3777,8 +3909,12 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3840,8 +3976,12 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4043,8 +4183,12 @@ func (c *restClient) CreateHook(ctx context.Context, req *securesourcemanagerpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateHookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateHookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4114,8 +4258,12 @@ func (c *restClient) UpdateHook(ctx context.Context, req *securesourcemanagerpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateHookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateHookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4174,8 +4322,12 @@ func (c *restClient) DeleteHook(ctx context.Context, req *securesourcemanagerpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteHookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteHookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4429,8 +4581,12 @@ func (c *restClient) CreateBranchRule(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateBranchRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBranchRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4638,8 +4794,12 @@ func (c *restClient) UpdateBranchRule(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateBranchRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBranchRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4701,8 +4861,12 @@ func (c *restClient) DeleteBranchRule(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteBranchRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBranchRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4768,8 +4932,12 @@ func (c *restClient) CreatePullRequest(ctx context.Context, req *securesourceman
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreatePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4974,8 +5142,12 @@ func (c *restClient) UpdatePullRequest(ctx context.Context, req *securesourceman
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdatePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5040,8 +5212,12 @@ func (c *restClient) MergePullRequest(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.MergePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MergePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5106,8 +5282,12 @@ func (c *restClient) OpenPullRequest(ctx context.Context, req *securesourcemanag
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.OpenPullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &OpenPullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5172,8 +5352,12 @@ func (c *restClient) ClosePullRequest(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.ClosePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ClosePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5459,8 +5643,12 @@ func (c *restClient) CreateIssue(ctx context.Context, req *securesourcemanagerpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5668,8 +5856,12 @@ func (c *restClient) UpdateIssue(ctx context.Context, req *securesourcemanagerpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5731,8 +5923,12 @@ func (c *restClient) DeleteIssue(ctx context.Context, req *securesourcemanagerpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5797,8 +5993,12 @@ func (c *restClient) OpenIssue(ctx context.Context, req *securesourcemanagerpb.O
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.OpenIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &OpenIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5863,8 +6063,12 @@ func (c *restClient) CloseIssue(ctx context.Context, req *securesourcemanagerpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CloseIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CloseIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6069,8 +6273,12 @@ func (c *restClient) CreatePullRequestComment(ctx context.Context, req *secureso
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreatePullRequestCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePullRequestCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6140,8 +6348,12 @@ func (c *restClient) UpdatePullRequestComment(ctx context.Context, req *secureso
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdatePullRequestCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePullRequestCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6200,8 +6412,12 @@ func (c *restClient) DeletePullRequestComment(ctx context.Context, req *secureso
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeletePullRequestCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePullRequestCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6270,8 +6486,12 @@ func (c *restClient) BatchCreatePullRequestComments(ctx context.Context, req *se
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.BatchCreatePullRequestCommentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchCreatePullRequestCommentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6339,8 +6559,12 @@ func (c *restClient) ResolvePullRequestComments(ctx context.Context, req *secure
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.ResolvePullRequestCommentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResolvePullRequestCommentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6408,8 +6632,12 @@ func (c *restClient) UnresolvePullRequestComments(ctx context.Context, req *secu
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UnresolvePullRequestCommentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UnresolvePullRequestCommentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6475,8 +6703,12 @@ func (c *restClient) CreateIssueComment(ctx context.Context, req *securesourcema
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateIssueCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIssueCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6681,8 +6913,12 @@ func (c *restClient) UpdateIssueComment(ctx context.Context, req *securesourcema
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateIssueCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateIssueCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6741,8 +6977,12 @@ func (c *restClient) DeleteIssueComment(ctx context.Context, req *securesourcema
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteIssueCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIssueCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6804,14 +7044,13 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -7321,7 +7560,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created BatchCreatePullRequestCommentsOperation, possibly from a different process.
 func (c *gRPCClient) BatchCreatePullRequestCommentsOperation(name string) *BatchCreatePullRequestCommentsOperation {
 	return &BatchCreatePullRequestCommentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.BatchCreatePullRequestCommentsOperation"),
 	}
 }
 
@@ -7330,7 +7569,7 @@ func (c *gRPCClient) BatchCreatePullRequestCommentsOperation(name string) *Batch
 func (c *restClient) BatchCreatePullRequestCommentsOperation(name string) *BatchCreatePullRequestCommentsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BatchCreatePullRequestCommentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.BatchCreatePullRequestCommentsOperation"),
 		pollPath: override,
 	}
 }
@@ -7339,7 +7578,7 @@ func (c *restClient) BatchCreatePullRequestCommentsOperation(name string) *Batch
 // The name must be that of a previously created CloseIssueOperation, possibly from a different process.
 func (c *gRPCClient) CloseIssueOperation(name string) *CloseIssueOperation {
 	return &CloseIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CloseIssueOperation"),
 	}
 }
 
@@ -7348,7 +7587,7 @@ func (c *gRPCClient) CloseIssueOperation(name string) *CloseIssueOperation {
 func (c *restClient) CloseIssueOperation(name string) *CloseIssueOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CloseIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CloseIssueOperation"),
 		pollPath: override,
 	}
 }
@@ -7357,7 +7596,7 @@ func (c *restClient) CloseIssueOperation(name string) *CloseIssueOperation {
 // The name must be that of a previously created ClosePullRequestOperation, possibly from a different process.
 func (c *gRPCClient) ClosePullRequestOperation(name string) *ClosePullRequestOperation {
 	return &ClosePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.ClosePullRequestOperation"),
 	}
 }
 
@@ -7366,7 +7605,7 @@ func (c *gRPCClient) ClosePullRequestOperation(name string) *ClosePullRequestOpe
 func (c *restClient) ClosePullRequestOperation(name string) *ClosePullRequestOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ClosePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.ClosePullRequestOperation"),
 		pollPath: override,
 	}
 }
@@ -7375,7 +7614,7 @@ func (c *restClient) ClosePullRequestOperation(name string) *ClosePullRequestOpe
 // The name must be that of a previously created CreateBranchRuleOperation, possibly from a different process.
 func (c *gRPCClient) CreateBranchRuleOperation(name string) *CreateBranchRuleOperation {
 	return &CreateBranchRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateBranchRuleOperation"),
 	}
 }
 
@@ -7384,7 +7623,7 @@ func (c *gRPCClient) CreateBranchRuleOperation(name string) *CreateBranchRuleOpe
 func (c *restClient) CreateBranchRuleOperation(name string) *CreateBranchRuleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBranchRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateBranchRuleOperation"),
 		pollPath: override,
 	}
 }
@@ -7393,7 +7632,7 @@ func (c *restClient) CreateBranchRuleOperation(name string) *CreateBranchRuleOpe
 // The name must be that of a previously created CreateHookOperation, possibly from a different process.
 func (c *gRPCClient) CreateHookOperation(name string) *CreateHookOperation {
 	return &CreateHookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateHookOperation"),
 	}
 }
 
@@ -7402,7 +7641,7 @@ func (c *gRPCClient) CreateHookOperation(name string) *CreateHookOperation {
 func (c *restClient) CreateHookOperation(name string) *CreateHookOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateHookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateHookOperation"),
 		pollPath: override,
 	}
 }
@@ -7411,7 +7650,7 @@ func (c *restClient) CreateHookOperation(name string) *CreateHookOperation {
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *gRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateInstanceOperation"),
 	}
 }
 
@@ -7420,7 +7659,7 @@ func (c *gRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperati
 func (c *restClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -7429,7 +7668,7 @@ func (c *restClient) CreateInstanceOperation(name string) *CreateInstanceOperati
 // The name must be that of a previously created CreateIssueOperation, possibly from a different process.
 func (c *gRPCClient) CreateIssueOperation(name string) *CreateIssueOperation {
 	return &CreateIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateIssueOperation"),
 	}
 }
 
@@ -7438,7 +7677,7 @@ func (c *gRPCClient) CreateIssueOperation(name string) *CreateIssueOperation {
 func (c *restClient) CreateIssueOperation(name string) *CreateIssueOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateIssueOperation"),
 		pollPath: override,
 	}
 }
@@ -7447,7 +7686,7 @@ func (c *restClient) CreateIssueOperation(name string) *CreateIssueOperation {
 // The name must be that of a previously created CreateIssueCommentOperation, possibly from a different process.
 func (c *gRPCClient) CreateIssueCommentOperation(name string) *CreateIssueCommentOperation {
 	return &CreateIssueCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateIssueCommentOperation"),
 	}
 }
 
@@ -7456,7 +7695,7 @@ func (c *gRPCClient) CreateIssueCommentOperation(name string) *CreateIssueCommen
 func (c *restClient) CreateIssueCommentOperation(name string) *CreateIssueCommentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateIssueCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateIssueCommentOperation"),
 		pollPath: override,
 	}
 }
@@ -7465,7 +7704,7 @@ func (c *restClient) CreateIssueCommentOperation(name string) *CreateIssueCommen
 // The name must be that of a previously created CreatePullRequestOperation, possibly from a different process.
 func (c *gRPCClient) CreatePullRequestOperation(name string) *CreatePullRequestOperation {
 	return &CreatePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreatePullRequestOperation"),
 	}
 }
 
@@ -7474,7 +7713,7 @@ func (c *gRPCClient) CreatePullRequestOperation(name string) *CreatePullRequestO
 func (c *restClient) CreatePullRequestOperation(name string) *CreatePullRequestOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreatePullRequestOperation"),
 		pollPath: override,
 	}
 }
@@ -7483,7 +7722,7 @@ func (c *restClient) CreatePullRequestOperation(name string) *CreatePullRequestO
 // The name must be that of a previously created CreatePullRequestCommentOperation, possibly from a different process.
 func (c *gRPCClient) CreatePullRequestCommentOperation(name string) *CreatePullRequestCommentOperation {
 	return &CreatePullRequestCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreatePullRequestCommentOperation"),
 	}
 }
 
@@ -7492,7 +7731,7 @@ func (c *gRPCClient) CreatePullRequestCommentOperation(name string) *CreatePullR
 func (c *restClient) CreatePullRequestCommentOperation(name string) *CreatePullRequestCommentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePullRequestCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreatePullRequestCommentOperation"),
 		pollPath: override,
 	}
 }
@@ -7501,7 +7740,7 @@ func (c *restClient) CreatePullRequestCommentOperation(name string) *CreatePullR
 // The name must be that of a previously created CreateRepositoryOperation, possibly from a different process.
 func (c *gRPCClient) CreateRepositoryOperation(name string) *CreateRepositoryOperation {
 	return &CreateRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateRepositoryOperation"),
 	}
 }
 
@@ -7510,7 +7749,7 @@ func (c *gRPCClient) CreateRepositoryOperation(name string) *CreateRepositoryOpe
 func (c *restClient) CreateRepositoryOperation(name string) *CreateRepositoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateRepositoryOperation"),
 		pollPath: override,
 	}
 }
@@ -7519,7 +7758,7 @@ func (c *restClient) CreateRepositoryOperation(name string) *CreateRepositoryOpe
 // The name must be that of a previously created DeleteBranchRuleOperation, possibly from a different process.
 func (c *gRPCClient) DeleteBranchRuleOperation(name string) *DeleteBranchRuleOperation {
 	return &DeleteBranchRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteBranchRuleOperation"),
 	}
 }
 
@@ -7528,7 +7767,7 @@ func (c *gRPCClient) DeleteBranchRuleOperation(name string) *DeleteBranchRuleOpe
 func (c *restClient) DeleteBranchRuleOperation(name string) *DeleteBranchRuleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBranchRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteBranchRuleOperation"),
 		pollPath: override,
 	}
 }
@@ -7537,7 +7776,7 @@ func (c *restClient) DeleteBranchRuleOperation(name string) *DeleteBranchRuleOpe
 // The name must be that of a previously created DeleteHookOperation, possibly from a different process.
 func (c *gRPCClient) DeleteHookOperation(name string) *DeleteHookOperation {
 	return &DeleteHookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteHookOperation"),
 	}
 }
 
@@ -7546,7 +7785,7 @@ func (c *gRPCClient) DeleteHookOperation(name string) *DeleteHookOperation {
 func (c *restClient) DeleteHookOperation(name string) *DeleteHookOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteHookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteHookOperation"),
 		pollPath: override,
 	}
 }
@@ -7555,7 +7794,7 @@ func (c *restClient) DeleteHookOperation(name string) *DeleteHookOperation {
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *gRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteInstanceOperation"),
 	}
 }
 
@@ -7564,7 +7803,7 @@ func (c *gRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperati
 func (c *restClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -7573,7 +7812,7 @@ func (c *restClient) DeleteInstanceOperation(name string) *DeleteInstanceOperati
 // The name must be that of a previously created DeleteIssueOperation, possibly from a different process.
 func (c *gRPCClient) DeleteIssueOperation(name string) *DeleteIssueOperation {
 	return &DeleteIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteIssueOperation"),
 	}
 }
 
@@ -7582,7 +7821,7 @@ func (c *gRPCClient) DeleteIssueOperation(name string) *DeleteIssueOperation {
 func (c *restClient) DeleteIssueOperation(name string) *DeleteIssueOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteIssueOperation"),
 		pollPath: override,
 	}
 }
@@ -7591,7 +7830,7 @@ func (c *restClient) DeleteIssueOperation(name string) *DeleteIssueOperation {
 // The name must be that of a previously created DeleteIssueCommentOperation, possibly from a different process.
 func (c *gRPCClient) DeleteIssueCommentOperation(name string) *DeleteIssueCommentOperation {
 	return &DeleteIssueCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteIssueCommentOperation"),
 	}
 }
 
@@ -7600,7 +7839,7 @@ func (c *gRPCClient) DeleteIssueCommentOperation(name string) *DeleteIssueCommen
 func (c *restClient) DeleteIssueCommentOperation(name string) *DeleteIssueCommentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteIssueCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteIssueCommentOperation"),
 		pollPath: override,
 	}
 }
@@ -7609,7 +7848,7 @@ func (c *restClient) DeleteIssueCommentOperation(name string) *DeleteIssueCommen
 // The name must be that of a previously created DeletePullRequestCommentOperation, possibly from a different process.
 func (c *gRPCClient) DeletePullRequestCommentOperation(name string) *DeletePullRequestCommentOperation {
 	return &DeletePullRequestCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeletePullRequestCommentOperation"),
 	}
 }
 
@@ -7618,7 +7857,7 @@ func (c *gRPCClient) DeletePullRequestCommentOperation(name string) *DeletePullR
 func (c *restClient) DeletePullRequestCommentOperation(name string) *DeletePullRequestCommentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePullRequestCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeletePullRequestCommentOperation"),
 		pollPath: override,
 	}
 }
@@ -7627,7 +7866,7 @@ func (c *restClient) DeletePullRequestCommentOperation(name string) *DeletePullR
 // The name must be that of a previously created DeleteRepositoryOperation, possibly from a different process.
 func (c *gRPCClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOperation {
 	return &DeleteRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteRepositoryOperation"),
 	}
 }
 
@@ -7636,7 +7875,7 @@ func (c *gRPCClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOpe
 func (c *restClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteRepositoryOperation"),
 		pollPath: override,
 	}
 }
@@ -7645,7 +7884,7 @@ func (c *restClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOpe
 // The name must be that of a previously created MergePullRequestOperation, possibly from a different process.
 func (c *gRPCClient) MergePullRequestOperation(name string) *MergePullRequestOperation {
 	return &MergePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.MergePullRequestOperation"),
 	}
 }
 
@@ -7654,7 +7893,7 @@ func (c *gRPCClient) MergePullRequestOperation(name string) *MergePullRequestOpe
 func (c *restClient) MergePullRequestOperation(name string) *MergePullRequestOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &MergePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.MergePullRequestOperation"),
 		pollPath: override,
 	}
 }
@@ -7663,7 +7902,7 @@ func (c *restClient) MergePullRequestOperation(name string) *MergePullRequestOpe
 // The name must be that of a previously created OpenIssueOperation, possibly from a different process.
 func (c *gRPCClient) OpenIssueOperation(name string) *OpenIssueOperation {
 	return &OpenIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.OpenIssueOperation"),
 	}
 }
 
@@ -7672,7 +7911,7 @@ func (c *gRPCClient) OpenIssueOperation(name string) *OpenIssueOperation {
 func (c *restClient) OpenIssueOperation(name string) *OpenIssueOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &OpenIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.OpenIssueOperation"),
 		pollPath: override,
 	}
 }
@@ -7681,7 +7920,7 @@ func (c *restClient) OpenIssueOperation(name string) *OpenIssueOperation {
 // The name must be that of a previously created OpenPullRequestOperation, possibly from a different process.
 func (c *gRPCClient) OpenPullRequestOperation(name string) *OpenPullRequestOperation {
 	return &OpenPullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.OpenPullRequestOperation"),
 	}
 }
 
@@ -7690,7 +7929,7 @@ func (c *gRPCClient) OpenPullRequestOperation(name string) *OpenPullRequestOpera
 func (c *restClient) OpenPullRequestOperation(name string) *OpenPullRequestOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &OpenPullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.OpenPullRequestOperation"),
 		pollPath: override,
 	}
 }
@@ -7699,7 +7938,7 @@ func (c *restClient) OpenPullRequestOperation(name string) *OpenPullRequestOpera
 // The name must be that of a previously created ResolvePullRequestCommentsOperation, possibly from a different process.
 func (c *gRPCClient) ResolvePullRequestCommentsOperation(name string) *ResolvePullRequestCommentsOperation {
 	return &ResolvePullRequestCommentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.ResolvePullRequestCommentsOperation"),
 	}
 }
 
@@ -7708,7 +7947,7 @@ func (c *gRPCClient) ResolvePullRequestCommentsOperation(name string) *ResolvePu
 func (c *restClient) ResolvePullRequestCommentsOperation(name string) *ResolvePullRequestCommentsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ResolvePullRequestCommentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.ResolvePullRequestCommentsOperation"),
 		pollPath: override,
 	}
 }
@@ -7717,7 +7956,7 @@ func (c *restClient) ResolvePullRequestCommentsOperation(name string) *ResolvePu
 // The name must be that of a previously created UnresolvePullRequestCommentsOperation, possibly from a different process.
 func (c *gRPCClient) UnresolvePullRequestCommentsOperation(name string) *UnresolvePullRequestCommentsOperation {
 	return &UnresolvePullRequestCommentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UnresolvePullRequestCommentsOperation"),
 	}
 }
 
@@ -7726,7 +7965,7 @@ func (c *gRPCClient) UnresolvePullRequestCommentsOperation(name string) *Unresol
 func (c *restClient) UnresolvePullRequestCommentsOperation(name string) *UnresolvePullRequestCommentsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UnresolvePullRequestCommentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UnresolvePullRequestCommentsOperation"),
 		pollPath: override,
 	}
 }
@@ -7735,7 +7974,7 @@ func (c *restClient) UnresolvePullRequestCommentsOperation(name string) *Unresol
 // The name must be that of a previously created UpdateBranchRuleOperation, possibly from a different process.
 func (c *gRPCClient) UpdateBranchRuleOperation(name string) *UpdateBranchRuleOperation {
 	return &UpdateBranchRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateBranchRuleOperation"),
 	}
 }
 
@@ -7744,7 +7983,7 @@ func (c *gRPCClient) UpdateBranchRuleOperation(name string) *UpdateBranchRuleOpe
 func (c *restClient) UpdateBranchRuleOperation(name string) *UpdateBranchRuleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBranchRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateBranchRuleOperation"),
 		pollPath: override,
 	}
 }
@@ -7753,7 +7992,7 @@ func (c *restClient) UpdateBranchRuleOperation(name string) *UpdateBranchRuleOpe
 // The name must be that of a previously created UpdateHookOperation, possibly from a different process.
 func (c *gRPCClient) UpdateHookOperation(name string) *UpdateHookOperation {
 	return &UpdateHookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateHookOperation"),
 	}
 }
 
@@ -7762,7 +8001,7 @@ func (c *gRPCClient) UpdateHookOperation(name string) *UpdateHookOperation {
 func (c *restClient) UpdateHookOperation(name string) *UpdateHookOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateHookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateHookOperation"),
 		pollPath: override,
 	}
 }
@@ -7771,7 +8010,7 @@ func (c *restClient) UpdateHookOperation(name string) *UpdateHookOperation {
 // The name must be that of a previously created UpdateIssueOperation, possibly from a different process.
 func (c *gRPCClient) UpdateIssueOperation(name string) *UpdateIssueOperation {
 	return &UpdateIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateIssueOperation"),
 	}
 }
 
@@ -7780,7 +8019,7 @@ func (c *gRPCClient) UpdateIssueOperation(name string) *UpdateIssueOperation {
 func (c *restClient) UpdateIssueOperation(name string) *UpdateIssueOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateIssueOperation"),
 		pollPath: override,
 	}
 }
@@ -7789,7 +8028,7 @@ func (c *restClient) UpdateIssueOperation(name string) *UpdateIssueOperation {
 // The name must be that of a previously created UpdateIssueCommentOperation, possibly from a different process.
 func (c *gRPCClient) UpdateIssueCommentOperation(name string) *UpdateIssueCommentOperation {
 	return &UpdateIssueCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateIssueCommentOperation"),
 	}
 }
 
@@ -7798,7 +8037,7 @@ func (c *gRPCClient) UpdateIssueCommentOperation(name string) *UpdateIssueCommen
 func (c *restClient) UpdateIssueCommentOperation(name string) *UpdateIssueCommentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateIssueCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateIssueCommentOperation"),
 		pollPath: override,
 	}
 }
@@ -7807,7 +8046,7 @@ func (c *restClient) UpdateIssueCommentOperation(name string) *UpdateIssueCommen
 // The name must be that of a previously created UpdatePullRequestOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePullRequestOperation(name string) *UpdatePullRequestOperation {
 	return &UpdatePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdatePullRequestOperation"),
 	}
 }
 
@@ -7816,7 +8055,7 @@ func (c *gRPCClient) UpdatePullRequestOperation(name string) *UpdatePullRequestO
 func (c *restClient) UpdatePullRequestOperation(name string) *UpdatePullRequestOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdatePullRequestOperation"),
 		pollPath: override,
 	}
 }
@@ -7825,7 +8064,7 @@ func (c *restClient) UpdatePullRequestOperation(name string) *UpdatePullRequestO
 // The name must be that of a previously created UpdatePullRequestCommentOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePullRequestCommentOperation(name string) *UpdatePullRequestCommentOperation {
 	return &UpdatePullRequestCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdatePullRequestCommentOperation"),
 	}
 }
 
@@ -7834,7 +8073,7 @@ func (c *gRPCClient) UpdatePullRequestCommentOperation(name string) *UpdatePullR
 func (c *restClient) UpdatePullRequestCommentOperation(name string) *UpdatePullRequestCommentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePullRequestCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdatePullRequestCommentOperation"),
 		pollPath: override,
 	}
 }
@@ -7843,7 +8082,7 @@ func (c *restClient) UpdatePullRequestCommentOperation(name string) *UpdatePullR
 // The name must be that of a previously created UpdateRepositoryOperation, possibly from a different process.
 func (c *gRPCClient) UpdateRepositoryOperation(name string) *UpdateRepositoryOperation {
 	return &UpdateRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateRepositoryOperation"),
 	}
 }
 
@@ -7852,7 +8091,7 @@ func (c *gRPCClient) UpdateRepositoryOperation(name string) *UpdateRepositoryOpe
 func (c *restClient) UpdateRepositoryOperation(name string) *UpdateRepositoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateRepositoryOperation"),
 		pollPath: override,
 	}
 }

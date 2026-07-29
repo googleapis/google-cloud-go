@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -840,8 +841,12 @@ func (c *entityTypesGRPCClient) ExportEntityTypes(ctx context.Context, req *cxpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ExportEntityTypesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportEntityTypesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -866,8 +871,12 @@ func (c *entityTypesGRPCClient) ImportEntityTypes(ctx context.Context, req *cxpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ImportEntityTypesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportEntityTypesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1420,8 +1429,12 @@ func (c *entityTypesRESTClient) ExportEntityTypes(ctx context.Context, req *cxpb
 	}
 
 	override := fmt.Sprintf("/v3beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ExportEntityTypesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportEntityTypesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1486,8 +1499,12 @@ func (c *entityTypesRESTClient) ImportEntityTypes(ctx context.Context, req *cxpb
 	}
 
 	override := fmt.Sprintf("/v3beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ImportEntityTypesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportEntityTypesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1823,7 +1840,7 @@ func (c *entityTypesRESTClient) ListOperations(ctx context.Context, req *longrun
 // The name must be that of a previously created ExportEntityTypesOperation, possibly from a different process.
 func (c *entityTypesGRPCClient) ExportEntityTypesOperation(name string) *ExportEntityTypesOperation {
 	return &ExportEntityTypesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ExportEntityTypesOperation"),
 	}
 }
 
@@ -1832,7 +1849,7 @@ func (c *entityTypesGRPCClient) ExportEntityTypesOperation(name string) *ExportE
 func (c *entityTypesRESTClient) ExportEntityTypesOperation(name string) *ExportEntityTypesOperation {
 	override := fmt.Sprintf("/v3beta1/%s", name)
 	return &ExportEntityTypesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ExportEntityTypesOperation"),
 		pollPath: override,
 	}
 }
@@ -1841,7 +1858,7 @@ func (c *entityTypesRESTClient) ExportEntityTypesOperation(name string) *ExportE
 // The name must be that of a previously created ImportEntityTypesOperation, possibly from a different process.
 func (c *entityTypesGRPCClient) ImportEntityTypesOperation(name string) *ImportEntityTypesOperation {
 	return &ImportEntityTypesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ImportEntityTypesOperation"),
 	}
 }
 
@@ -1850,7 +1867,7 @@ func (c *entityTypesGRPCClient) ImportEntityTypesOperation(name string) *ImportE
 func (c *entityTypesRESTClient) ImportEntityTypesOperation(name string) *ImportEntityTypesOperation {
 	override := fmt.Sprintf("/v3beta1/%s", name)
 	return &ImportEntityTypesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ImportEntityTypesOperation"),
 		pollPath: override,
 	}
 }

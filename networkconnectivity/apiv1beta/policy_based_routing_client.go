@@ -31,6 +31,7 @@ import (
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1beta/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -220,14 +221,21 @@ func (c *PolicyBasedRoutingClient) GetLocation(ctx context.Context, req *locatio
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *PolicyBasedRoutingClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -514,8 +522,12 @@ func (c *policyBasedRoutingGRPCClient) CreatePolicyBasedRoute(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreatePolicyBasedRouteOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePolicyBasedRouteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -540,8 +552,12 @@ func (c *policyBasedRoutingGRPCClient) DeletePolicyBasedRoute(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeletePolicyBasedRouteOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePolicyBasedRouteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -795,7 +811,7 @@ func (c *policyBasedRoutingGRPCClient) ListOperations(ctx context.Context, req *
 // The name must be that of a previously created CreatePolicyBasedRouteOperation, possibly from a different process.
 func (c *policyBasedRoutingGRPCClient) CreatePolicyBasedRouteOperation(name string) *CreatePolicyBasedRouteOperation {
 	return &CreatePolicyBasedRouteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreatePolicyBasedRouteOperation"),
 	}
 }
 
@@ -803,6 +819,6 @@ func (c *policyBasedRoutingGRPCClient) CreatePolicyBasedRouteOperation(name stri
 // The name must be that of a previously created DeletePolicyBasedRouteOperation, possibly from a different process.
 func (c *policyBasedRoutingGRPCClient) DeletePolicyBasedRouteOperation(name string) *DeletePolicyBasedRouteOperation {
 	return &DeletePolicyBasedRouteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeletePolicyBasedRouteOperation"),
 	}
 }

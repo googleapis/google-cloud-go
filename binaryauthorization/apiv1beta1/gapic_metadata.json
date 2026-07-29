@@ -25,6 +25,11 @@
                 "GetAttestor"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetPolicy": {
               "methods": [
                 "GetPolicy"
@@ -33,6 +38,16 @@
             "ListAttestors": {
               "methods": [
                 "ListAttestors"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateAttestor": {
@@ -65,6 +80,11 @@
                 "GetAttestor"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetPolicy": {
               "methods": [
                 "GetPolicy"
@@ -73,6 +93,16 @@
             "ListAttestors": {
               "methods": [
                 "ListAttestors"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateAttestor": {
@@ -94,9 +124,24 @@
         "grpc": {
           "libraryClient": "SystemPolicyV1Beta1Client",
           "rpcs": {
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetSystemPolicy": {
               "methods": [
                 "GetSystemPolicy"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }
@@ -104,9 +149,24 @@
         "rest": {
           "libraryClient": "SystemPolicyV1Beta1Client",
           "rpcs": {
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetSystemPolicy": {
               "methods": [
                 "GetSystemPolicy"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }

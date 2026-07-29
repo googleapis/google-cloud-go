@@ -46,23 +46,25 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListSecrets          []gax.CallOption
-	CreateSecret         []gax.CallOption
-	AddSecretVersion     []gax.CallOption
-	GetSecret            []gax.CallOption
-	UpdateSecret         []gax.CallOption
-	DeleteSecret         []gax.CallOption
-	ListSecretVersions   []gax.CallOption
-	GetSecretVersion     []gax.CallOption
-	AccessSecretVersion  []gax.CallOption
-	DisableSecretVersion []gax.CallOption
-	EnableSecretVersion  []gax.CallOption
-	DestroySecretVersion []gax.CallOption
-	SetIamPolicy         []gax.CallOption
-	GetIamPolicy         []gax.CallOption
-	TestIamPermissions   []gax.CallOption
-	GetLocation          []gax.CallOption
-	ListLocations        []gax.CallOption
+	ListSecrets           []gax.CallOption
+	CreateSecret          []gax.CallOption
+	AddSecretVersion      []gax.CallOption
+	GetSecret             []gax.CallOption
+	UpdateSecret          []gax.CallOption
+	DeleteSecret          []gax.CallOption
+	ListSecretVersions    []gax.CallOption
+	GetSecretVersion      []gax.CallOption
+	AccessSecretVersion   []gax.CallOption
+	DisableSecretVersion  []gax.CallOption
+	EnableSecretVersion   []gax.CallOption
+	DestroySecretVersion  []gax.CallOption
+	SetIamPolicy          []gax.CallOption
+	GetIamPolicy          []gax.CallOption
+	TestIamPermissions    []gax.CallOption
+	EnableManagedRotation []gax.CallOption
+	RotateSecret          []gax.CallOption
+	GetLocation           []gax.CallOption
+	ListLocations         []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -138,8 +140,10 @@ func defaultCallOptions() *CallOptions {
 		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		GetLocation:   []gax.CallOption{},
-		ListLocations: []gax.CallOption{},
+		EnableManagedRotation: []gax.CallOption{},
+		RotateSecret:          []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
 	}
 }
 
@@ -199,8 +203,10 @@ func defaultRESTCallOptions() *CallOptions {
 		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		GetLocation:   []gax.CallOption{},
-		ListLocations: []gax.CallOption{},
+		EnableManagedRotation: []gax.CallOption{},
+		RotateSecret:          []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
 	}
 }
 
@@ -224,6 +230,8 @@ type internalClient interface {
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	EnableManagedRotation(context.Context, *secretmanagerpb.EnableManagedRotationRequest, ...gax.CallOption) (*secretmanagerpb.SecretVersion, error)
+	RotateSecret(context.Context, *secretmanagerpb.RotateSecretRequest, ...gax.CallOption) (*secretmanagerpb.SecretVersion, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
@@ -384,6 +392,22 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// EnableManagedRotation enables the managed rotation feature for a
+// Secret. This method can only be
+// triggered once for a secret. In order to do further rotations, RotateSecret
+// should be used. This method will add a secret version and update the
+// password in Cloud SQL.
+func (c *Client) EnableManagedRotation(ctx context.Context, req *secretmanagerpb.EnableManagedRotationRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
+	return c.internalClient.EnableManagedRotation(ctx, req, opts...)
+}
+
+// RotateSecret do a managed rotation for a Secret.
+// This can only be triggered after Managed rotation has been enabled.
+// This method will add a secret version and update the password in Cloud SQL.
+func (c *Client) RotateSecret(ctx context.Context, req *secretmanagerpb.RotateSecretRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
+	return c.internalClient.RotateSecret(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -487,6 +511,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.EnableManagedRotation = append(client.CallOptions.EnableManagedRotation, gax.WithClientMetrics(metrics))
+		client.CallOptions.RotateSecret = append(client.CallOptions.RotateSecret, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 	}
@@ -601,6 +627,8 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.EnableManagedRotation = append(callOpts.EnableManagedRotation, gax.WithClientMetrics(metrics))
+		callOpts.RotateSecret = append(callOpts.RotateSecret, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 	}
@@ -1046,6 +1074,54 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.client.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) EnableManagedRotation(ctx context.Context, req *secretmanagerpb.EnableManagedRotationRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//secretmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.secretmanager.v1.SecretManagerService/EnableManagedRotation")
+	}
+	opts = append((*c.CallOptions).EnableManagedRotation[0:len((*c.CallOptions).EnableManagedRotation):len((*c.CallOptions).EnableManagedRotation)], opts...)
+	var resp *secretmanagerpb.SecretVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.EnableManagedRotation, req, settings.GRPC, c.logger, "EnableManagedRotation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) RotateSecret(ctx context.Context, req *secretmanagerpb.RotateSecretRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//secretmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.secretmanager.v1.SecretManagerService/RotateSecret")
+	}
+	opts = append((*c.CallOptions).RotateSecret[0:len((*c.CallOptions).RotateSecret):len((*c.CallOptions).RotateSecret)], opts...)
+	var resp *secretmanagerpb.SecretVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.RotateSecret, req, settings.GRPC, c.logger, "RotateSecret")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2096,6 +2172,138 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// EnableManagedRotation enables the managed rotation feature for a
+// Secret. This method can only be
+// triggered once for a secret. In order to do further rotations, RotateSecret
+// should be used. This method will add a secret version and update the
+// password in Cloud SQL.
+func (c *restClient) EnableManagedRotation(ctx context.Context, req *secretmanagerpb.EnableManagedRotationRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:enableManagedRotation", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//secretmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.secretmanager.v1.SecretManagerService/EnableManagedRotation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/secrets/*}:enableManagedRotation")
+	}
+	opts = append((*c.CallOptions).EnableManagedRotation[0:len((*c.CallOptions).EnableManagedRotation):len((*c.CallOptions).EnableManagedRotation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &secretmanagerpb.SecretVersion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EnableManagedRotation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// RotateSecret do a managed rotation for a Secret.
+// This can only be triggered after Managed rotation has been enabled.
+// This method will add a secret version and update the password in Cloud SQL.
+func (c *restClient) RotateSecret(ctx context.Context, req *secretmanagerpb.RotateSecretRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:rotateSecret", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//secretmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.secretmanager.v1.SecretManagerService/RotateSecret")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/secrets/*}:rotateSecret")
+	}
+	opts = append((*c.CallOptions).RotateSecret[0:len((*c.CallOptions).RotateSecret):len((*c.CallOptions).RotateSecret)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &secretmanagerpb.SecretVersion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RotateSecret")
 		if err != nil {
 			return err
 		}

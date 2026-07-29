@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1679,8 +1680,12 @@ func (c *gRPCClient) CreateCertificate(ctx context.Context, req *certificatemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1702,8 +1707,12 @@ func (c *gRPCClient) UpdateCertificate(ctx context.Context, req *certificatemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateCertificateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1728,8 +1737,12 @@ func (c *gRPCClient) DeleteCertificate(ctx context.Context, req *certificatemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1830,8 +1843,12 @@ func (c *gRPCClient) CreateCertificateMap(ctx context.Context, req *certificatem
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateMapOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateMapOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1853,8 +1870,12 @@ func (c *gRPCClient) UpdateCertificateMap(ctx context.Context, req *certificatem
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateCertificateMapOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateMapOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1879,8 +1900,12 @@ func (c *gRPCClient) DeleteCertificateMap(ctx context.Context, req *certificatem
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateMapOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateMapOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1981,8 +2006,12 @@ func (c *gRPCClient) CreateCertificateMapEntry(ctx context.Context, req *certifi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateMapEntryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateMapEntryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2004,8 +2033,12 @@ func (c *gRPCClient) UpdateCertificateMapEntry(ctx context.Context, req *certifi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateCertificateMapEntryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateMapEntryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2030,8 +2063,12 @@ func (c *gRPCClient) DeleteCertificateMapEntry(ctx context.Context, req *certifi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateMapEntryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateMapEntryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2132,8 +2169,12 @@ func (c *gRPCClient) CreateDnsAuthorization(ctx context.Context, req *certificat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateDnsAuthorizationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDnsAuthorizationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2155,8 +2196,12 @@ func (c *gRPCClient) UpdateDnsAuthorization(ctx context.Context, req *certificat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateDnsAuthorizationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDnsAuthorizationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2181,8 +2226,12 @@ func (c *gRPCClient) DeleteDnsAuthorization(ctx context.Context, req *certificat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteDnsAuthorizationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDnsAuthorizationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2283,8 +2332,12 @@ func (c *gRPCClient) CreateCertificateIssuanceConfig(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateIssuanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateIssuanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2309,8 +2362,12 @@ func (c *gRPCClient) DeleteCertificateIssuanceConfig(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateIssuanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateIssuanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2411,8 +2468,12 @@ func (c *gRPCClient) CreateTrustConfig(ctx context.Context, req *certificatemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateTrustConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTrustConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2434,8 +2495,12 @@ func (c *gRPCClient) UpdateTrustConfig(ctx context.Context, req *certificatemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateTrustConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateTrustConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2460,8 +2525,12 @@ func (c *gRPCClient) DeleteTrustConfig(ctx context.Context, req *certificatemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteTrustConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTrustConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2842,8 +2911,12 @@ func (c *restClient) CreateCertificate(ctx context.Context, req *certificatemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2913,8 +2986,12 @@ func (c *restClient) UpdateCertificate(ctx context.Context, req *certificatemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateCertificateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2973,8 +3050,12 @@ func (c *restClient) DeleteCertificate(ctx context.Context, req *certificatemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3182,8 +3263,12 @@ func (c *restClient) CreateCertificateMap(ctx context.Context, req *certificatem
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateMapOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateMapOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3253,8 +3338,12 @@ func (c *restClient) UpdateCertificateMap(ctx context.Context, req *certificatem
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateCertificateMapOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateMapOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3315,8 +3404,12 @@ func (c *restClient) DeleteCertificateMap(ctx context.Context, req *certificatem
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateMapOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateMapOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3524,8 +3617,12 @@ func (c *restClient) CreateCertificateMapEntry(ctx context.Context, req *certifi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateMapEntryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateMapEntryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3595,8 +3692,12 @@ func (c *restClient) UpdateCertificateMapEntry(ctx context.Context, req *certifi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateCertificateMapEntryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateMapEntryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3655,8 +3756,12 @@ func (c *restClient) DeleteCertificateMapEntry(ctx context.Context, req *certifi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateMapEntryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateMapEntryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3864,8 +3969,12 @@ func (c *restClient) CreateDnsAuthorization(ctx context.Context, req *certificat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateDnsAuthorizationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDnsAuthorizationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3935,8 +4044,12 @@ func (c *restClient) UpdateDnsAuthorization(ctx context.Context, req *certificat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateDnsAuthorizationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDnsAuthorizationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3995,8 +4108,12 @@ func (c *restClient) DeleteDnsAuthorization(ctx context.Context, req *certificat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteDnsAuthorizationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDnsAuthorizationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4204,8 +4321,12 @@ func (c *restClient) CreateCertificateIssuanceConfig(ctx context.Context, req *c
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateIssuanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateIssuanceConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4264,8 +4385,12 @@ func (c *restClient) DeleteCertificateIssuanceConfig(ctx context.Context, req *c
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateIssuanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateIssuanceConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4473,8 +4598,12 @@ func (c *restClient) CreateTrustConfig(ctx context.Context, req *certificatemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateTrustConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTrustConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4544,8 +4673,12 @@ func (c *restClient) UpdateTrustConfig(ctx context.Context, req *certificatemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateTrustConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateTrustConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4607,8 +4740,12 @@ func (c *restClient) DeleteTrustConfig(ctx context.Context, req *certificatemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteTrustConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTrustConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4974,7 +5111,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateCertificateOperation, possibly from a different process.
 func (c *gRPCClient) CreateCertificateOperation(name string) *CreateCertificateOperation {
 	return &CreateCertificateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateOperation"),
 	}
 }
 
@@ -4983,7 +5120,7 @@ func (c *gRPCClient) CreateCertificateOperation(name string) *CreateCertificateO
 func (c *restClient) CreateCertificateOperation(name string) *CreateCertificateOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCertificateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateOperation"),
 		pollPath: override,
 	}
 }
@@ -4992,7 +5129,7 @@ func (c *restClient) CreateCertificateOperation(name string) *CreateCertificateO
 // The name must be that of a previously created CreateCertificateIssuanceConfigOperation, possibly from a different process.
 func (c *gRPCClient) CreateCertificateIssuanceConfigOperation(name string) *CreateCertificateIssuanceConfigOperation {
 	return &CreateCertificateIssuanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateIssuanceConfigOperation"),
 	}
 }
 
@@ -5001,7 +5138,7 @@ func (c *gRPCClient) CreateCertificateIssuanceConfigOperation(name string) *Crea
 func (c *restClient) CreateCertificateIssuanceConfigOperation(name string) *CreateCertificateIssuanceConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCertificateIssuanceConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateIssuanceConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -5010,7 +5147,7 @@ func (c *restClient) CreateCertificateIssuanceConfigOperation(name string) *Crea
 // The name must be that of a previously created CreateCertificateMapOperation, possibly from a different process.
 func (c *gRPCClient) CreateCertificateMapOperation(name string) *CreateCertificateMapOperation {
 	return &CreateCertificateMapOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateMapOperation"),
 	}
 }
 
@@ -5019,7 +5156,7 @@ func (c *gRPCClient) CreateCertificateMapOperation(name string) *CreateCertifica
 func (c *restClient) CreateCertificateMapOperation(name string) *CreateCertificateMapOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCertificateMapOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateMapOperation"),
 		pollPath: override,
 	}
 }
@@ -5028,7 +5165,7 @@ func (c *restClient) CreateCertificateMapOperation(name string) *CreateCertifica
 // The name must be that of a previously created CreateCertificateMapEntryOperation, possibly from a different process.
 func (c *gRPCClient) CreateCertificateMapEntryOperation(name string) *CreateCertificateMapEntryOperation {
 	return &CreateCertificateMapEntryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateMapEntryOperation"),
 	}
 }
 
@@ -5037,7 +5174,7 @@ func (c *gRPCClient) CreateCertificateMapEntryOperation(name string) *CreateCert
 func (c *restClient) CreateCertificateMapEntryOperation(name string) *CreateCertificateMapEntryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCertificateMapEntryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateMapEntryOperation"),
 		pollPath: override,
 	}
 }
@@ -5046,7 +5183,7 @@ func (c *restClient) CreateCertificateMapEntryOperation(name string) *CreateCert
 // The name must be that of a previously created CreateDnsAuthorizationOperation, possibly from a different process.
 func (c *gRPCClient) CreateDnsAuthorizationOperation(name string) *CreateDnsAuthorizationOperation {
 	return &CreateDnsAuthorizationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateDnsAuthorizationOperation"),
 	}
 }
 
@@ -5055,7 +5192,7 @@ func (c *gRPCClient) CreateDnsAuthorizationOperation(name string) *CreateDnsAuth
 func (c *restClient) CreateDnsAuthorizationOperation(name string) *CreateDnsAuthorizationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDnsAuthorizationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateDnsAuthorizationOperation"),
 		pollPath: override,
 	}
 }
@@ -5064,7 +5201,7 @@ func (c *restClient) CreateDnsAuthorizationOperation(name string) *CreateDnsAuth
 // The name must be that of a previously created CreateTrustConfigOperation, possibly from a different process.
 func (c *gRPCClient) CreateTrustConfigOperation(name string) *CreateTrustConfigOperation {
 	return &CreateTrustConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateTrustConfigOperation"),
 	}
 }
 
@@ -5073,7 +5210,7 @@ func (c *gRPCClient) CreateTrustConfigOperation(name string) *CreateTrustConfigO
 func (c *restClient) CreateTrustConfigOperation(name string) *CreateTrustConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateTrustConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateTrustConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -5082,7 +5219,7 @@ func (c *restClient) CreateTrustConfigOperation(name string) *CreateTrustConfigO
 // The name must be that of a previously created DeleteCertificateOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCertificateOperation(name string) *DeleteCertificateOperation {
 	return &DeleteCertificateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateOperation"),
 	}
 }
 
@@ -5091,7 +5228,7 @@ func (c *gRPCClient) DeleteCertificateOperation(name string) *DeleteCertificateO
 func (c *restClient) DeleteCertificateOperation(name string) *DeleteCertificateOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCertificateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateOperation"),
 		pollPath: override,
 	}
 }
@@ -5100,7 +5237,7 @@ func (c *restClient) DeleteCertificateOperation(name string) *DeleteCertificateO
 // The name must be that of a previously created DeleteCertificateIssuanceConfigOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCertificateIssuanceConfigOperation(name string) *DeleteCertificateIssuanceConfigOperation {
 	return &DeleteCertificateIssuanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateIssuanceConfigOperation"),
 	}
 }
 
@@ -5109,7 +5246,7 @@ func (c *gRPCClient) DeleteCertificateIssuanceConfigOperation(name string) *Dele
 func (c *restClient) DeleteCertificateIssuanceConfigOperation(name string) *DeleteCertificateIssuanceConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCertificateIssuanceConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateIssuanceConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -5118,7 +5255,7 @@ func (c *restClient) DeleteCertificateIssuanceConfigOperation(name string) *Dele
 // The name must be that of a previously created DeleteCertificateMapOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCertificateMapOperation(name string) *DeleteCertificateMapOperation {
 	return &DeleteCertificateMapOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateMapOperation"),
 	}
 }
 
@@ -5127,7 +5264,7 @@ func (c *gRPCClient) DeleteCertificateMapOperation(name string) *DeleteCertifica
 func (c *restClient) DeleteCertificateMapOperation(name string) *DeleteCertificateMapOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCertificateMapOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateMapOperation"),
 		pollPath: override,
 	}
 }
@@ -5136,7 +5273,7 @@ func (c *restClient) DeleteCertificateMapOperation(name string) *DeleteCertifica
 // The name must be that of a previously created DeleteCertificateMapEntryOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCertificateMapEntryOperation(name string) *DeleteCertificateMapEntryOperation {
 	return &DeleteCertificateMapEntryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateMapEntryOperation"),
 	}
 }
 
@@ -5145,7 +5282,7 @@ func (c *gRPCClient) DeleteCertificateMapEntryOperation(name string) *DeleteCert
 func (c *restClient) DeleteCertificateMapEntryOperation(name string) *DeleteCertificateMapEntryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCertificateMapEntryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateMapEntryOperation"),
 		pollPath: override,
 	}
 }
@@ -5154,7 +5291,7 @@ func (c *restClient) DeleteCertificateMapEntryOperation(name string) *DeleteCert
 // The name must be that of a previously created DeleteDnsAuthorizationOperation, possibly from a different process.
 func (c *gRPCClient) DeleteDnsAuthorizationOperation(name string) *DeleteDnsAuthorizationOperation {
 	return &DeleteDnsAuthorizationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteDnsAuthorizationOperation"),
 	}
 }
 
@@ -5163,7 +5300,7 @@ func (c *gRPCClient) DeleteDnsAuthorizationOperation(name string) *DeleteDnsAuth
 func (c *restClient) DeleteDnsAuthorizationOperation(name string) *DeleteDnsAuthorizationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDnsAuthorizationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteDnsAuthorizationOperation"),
 		pollPath: override,
 	}
 }
@@ -5172,7 +5309,7 @@ func (c *restClient) DeleteDnsAuthorizationOperation(name string) *DeleteDnsAuth
 // The name must be that of a previously created DeleteTrustConfigOperation, possibly from a different process.
 func (c *gRPCClient) DeleteTrustConfigOperation(name string) *DeleteTrustConfigOperation {
 	return &DeleteTrustConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteTrustConfigOperation"),
 	}
 }
 
@@ -5181,7 +5318,7 @@ func (c *gRPCClient) DeleteTrustConfigOperation(name string) *DeleteTrustConfigO
 func (c *restClient) DeleteTrustConfigOperation(name string) *DeleteTrustConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteTrustConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteTrustConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -5190,7 +5327,7 @@ func (c *restClient) DeleteTrustConfigOperation(name string) *DeleteTrustConfigO
 // The name must be that of a previously created UpdateCertificateOperation, possibly from a different process.
 func (c *gRPCClient) UpdateCertificateOperation(name string) *UpdateCertificateOperation {
 	return &UpdateCertificateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateOperation"),
 	}
 }
 
@@ -5199,7 +5336,7 @@ func (c *gRPCClient) UpdateCertificateOperation(name string) *UpdateCertificateO
 func (c *restClient) UpdateCertificateOperation(name string) *UpdateCertificateOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCertificateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateOperation"),
 		pollPath: override,
 	}
 }
@@ -5208,7 +5345,7 @@ func (c *restClient) UpdateCertificateOperation(name string) *UpdateCertificateO
 // The name must be that of a previously created UpdateCertificateMapOperation, possibly from a different process.
 func (c *gRPCClient) UpdateCertificateMapOperation(name string) *UpdateCertificateMapOperation {
 	return &UpdateCertificateMapOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateMapOperation"),
 	}
 }
 
@@ -5217,7 +5354,7 @@ func (c *gRPCClient) UpdateCertificateMapOperation(name string) *UpdateCertifica
 func (c *restClient) UpdateCertificateMapOperation(name string) *UpdateCertificateMapOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCertificateMapOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateMapOperation"),
 		pollPath: override,
 	}
 }
@@ -5226,7 +5363,7 @@ func (c *restClient) UpdateCertificateMapOperation(name string) *UpdateCertifica
 // The name must be that of a previously created UpdateCertificateMapEntryOperation, possibly from a different process.
 func (c *gRPCClient) UpdateCertificateMapEntryOperation(name string) *UpdateCertificateMapEntryOperation {
 	return &UpdateCertificateMapEntryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateMapEntryOperation"),
 	}
 }
 
@@ -5235,7 +5372,7 @@ func (c *gRPCClient) UpdateCertificateMapEntryOperation(name string) *UpdateCert
 func (c *restClient) UpdateCertificateMapEntryOperation(name string) *UpdateCertificateMapEntryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCertificateMapEntryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateMapEntryOperation"),
 		pollPath: override,
 	}
 }
@@ -5244,7 +5381,7 @@ func (c *restClient) UpdateCertificateMapEntryOperation(name string) *UpdateCert
 // The name must be that of a previously created UpdateDnsAuthorizationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateDnsAuthorizationOperation(name string) *UpdateDnsAuthorizationOperation {
 	return &UpdateDnsAuthorizationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateDnsAuthorizationOperation"),
 	}
 }
 
@@ -5253,7 +5390,7 @@ func (c *gRPCClient) UpdateDnsAuthorizationOperation(name string) *UpdateDnsAuth
 func (c *restClient) UpdateDnsAuthorizationOperation(name string) *UpdateDnsAuthorizationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDnsAuthorizationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateDnsAuthorizationOperation"),
 		pollPath: override,
 	}
 }
@@ -5262,7 +5399,7 @@ func (c *restClient) UpdateDnsAuthorizationOperation(name string) *UpdateDnsAuth
 // The name must be that of a previously created UpdateTrustConfigOperation, possibly from a different process.
 func (c *gRPCClient) UpdateTrustConfigOperation(name string) *UpdateTrustConfigOperation {
 	return &UpdateTrustConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateTrustConfigOperation"),
 	}
 }
 
@@ -5271,7 +5408,7 @@ func (c *gRPCClient) UpdateTrustConfigOperation(name string) *UpdateTrustConfigO
 func (c *restClient) UpdateTrustConfigOperation(name string) *UpdateTrustConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateTrustConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateTrustConfigOperation"),
 		pollPath: override,
 	}
 }

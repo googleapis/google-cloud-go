@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/support/apiv2beta",
-    "version": "1.11.0"
+    "version": "1.12.0"
   },
   "snippets": [
     {
@@ -365,7 +365,7 @@
         "resultType": "CaseClassificationIterator",
         "shortName": "SearchCaseClassifications"
       },
-      "description": "SearchCaseClassifications retrieve valid classifications to use when creating a support case.\n\nClassifications are hierarchical. Each classification is a string\ncontaining all levels of the hierarchy separated by `\" \u003e \"`. For example,\n`\"Technical Issue \u003e Compute \u003e Compute Engine\"`.\n\nClassification IDs returned by this endpoint are valid for at least six\nmonths. When a classification is deactivated, this endpoint immediately\nstops returning it. After six months, `case.create` requests using the\nclassification will fail.",
+      "description": "SearchCaseClassifications retrieve valid classifications to use when creating a support case.\n\nClassifications are hierarchical. Each classification is a string\ncontaining all levels of the hierarchy separated by `\" > \"`. For example,\n`\"Technical Issue > Compute > Compute Engine\"`.\n\nClassification IDs returned by this endpoint are valid for at least six\nmonths. When a classification is deactivated, this endpoint immediately\nstops returning it. After six months, `case.create` requests using the\nclassification will fail.",
       "file": "CaseClient/SearchCaseClassifications/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -654,6 +654,282 @@
         }
       ],
       "title": "cloudsupport ShowFeed Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionClient",
+          "shortName": "SupportEventSubscriptionClient"
+        },
+        "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionClient.CreateSupportEventSubscription",
+        "method": {
+          "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionService.CreateSupportEventSubscription",
+          "service": {
+            "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionService",
+            "shortName": "SupportEventSubscriptionService"
+          },
+          "shortName": "CreateSupportEventSubscription"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "supportpb.CreateSupportEventSubscriptionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*supportpb.SupportEventSubscription",
+        "shortName": "CreateSupportEventSubscription"
+      },
+      "description": "CreateSupportEventSubscription creates a support event subscription for an organization.",
+      "file": "SupportEventSubscriptionClient/CreateSupportEventSubscription/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2beta_generated_SupportEventSubscriptionService_CreateSupportEventSubscription_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudsupport CreateSupportEventSubscription Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionClient",
+          "shortName": "SupportEventSubscriptionClient"
+        },
+        "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionClient.DeleteSupportEventSubscription",
+        "method": {
+          "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionService.DeleteSupportEventSubscription",
+          "service": {
+            "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionService",
+            "shortName": "SupportEventSubscriptionService"
+          },
+          "shortName": "DeleteSupportEventSubscription"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "supportpb.DeleteSupportEventSubscriptionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*supportpb.SupportEventSubscription",
+        "shortName": "DeleteSupportEventSubscription"
+      },
+      "description": "DeleteSupportEventSubscription soft deletes a support event subscription.",
+      "file": "SupportEventSubscriptionClient/DeleteSupportEventSubscription/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2beta_generated_SupportEventSubscriptionService_DeleteSupportEventSubscription_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudsupport DeleteSupportEventSubscription Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionClient",
+          "shortName": "SupportEventSubscriptionClient"
+        },
+        "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionClient.GetSupportEventSubscription",
+        "method": {
+          "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionService.GetSupportEventSubscription",
+          "service": {
+            "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionService",
+            "shortName": "SupportEventSubscriptionService"
+          },
+          "shortName": "GetSupportEventSubscription"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "supportpb.GetSupportEventSubscriptionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*supportpb.SupportEventSubscription",
+        "shortName": "GetSupportEventSubscription"
+      },
+      "description": "GetSupportEventSubscription gets a support event subscription.",
+      "file": "SupportEventSubscriptionClient/GetSupportEventSubscription/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2beta_generated_SupportEventSubscriptionService_GetSupportEventSubscription_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudsupport GetSupportEventSubscription Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionClient",
+          "shortName": "SupportEventSubscriptionClient"
+        },
+        "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionClient.ListSupportEventSubscriptions",
+        "method": {
+          "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionService.ListSupportEventSubscriptions",
+          "service": {
+            "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionService",
+            "shortName": "SupportEventSubscriptionService"
+          },
+          "shortName": "ListSupportEventSubscriptions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "supportpb.ListSupportEventSubscriptionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SupportEventSubscriptionIterator",
+        "shortName": "ListSupportEventSubscriptions"
+      },
+      "description": "ListSupportEventSubscriptions lists support event subscriptions.",
+      "file": "SupportEventSubscriptionClient/ListSupportEventSubscriptions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2beta_generated_SupportEventSubscriptionService_ListSupportEventSubscriptions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudsupport ListSupportEventSubscriptions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionClient",
+          "shortName": "SupportEventSubscriptionClient"
+        },
+        "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionClient.UndeleteSupportEventSubscription",
+        "method": {
+          "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionService.UndeleteSupportEventSubscription",
+          "service": {
+            "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionService",
+            "shortName": "SupportEventSubscriptionService"
+          },
+          "shortName": "UndeleteSupportEventSubscription"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "supportpb.UndeleteSupportEventSubscriptionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*supportpb.SupportEventSubscription",
+        "shortName": "UndeleteSupportEventSubscription"
+      },
+      "description": "UndeleteSupportEventSubscription undeletes a support event subscription.",
+      "file": "SupportEventSubscriptionClient/UndeleteSupportEventSubscription/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2beta_generated_SupportEventSubscriptionService_UndeleteSupportEventSubscription_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudsupport UndeleteSupportEventSubscription Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionClient",
+          "shortName": "SupportEventSubscriptionClient"
+        },
+        "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionClient.UpdateSupportEventSubscription",
+        "method": {
+          "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionService.UpdateSupportEventSubscription",
+          "service": {
+            "fullName": "google.cloud.support.v2beta.SupportEventSubscriptionService",
+            "shortName": "SupportEventSubscriptionService"
+          },
+          "shortName": "UpdateSupportEventSubscription"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "supportpb.UpdateSupportEventSubscriptionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*supportpb.SupportEventSubscription",
+        "shortName": "UpdateSupportEventSubscription"
+      },
+      "description": "UpdateSupportEventSubscription updates a support event subscription.",
+      "file": "SupportEventSubscriptionClient/UpdateSupportEventSubscription/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2beta_generated_SupportEventSubscriptionService_UpdateSupportEventSubscription_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudsupport UpdateSupportEventSubscription Sample"
     }
   ]
 }

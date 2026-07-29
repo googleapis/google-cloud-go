@@ -56,11 +56,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &memorystorepb.CreateInstanceRequest{
+//	req := &memorystorepb.AddAuthTokenRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/memorystore/apiv1beta/memorystorepb#CreateInstanceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/memorystore/apiv1beta/memorystorepb#AddAuthTokenRequest.
 //	}
-//	op, err := c.CreateInstance(ctx, req)
+//	op, err := c.AddAuthToken(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

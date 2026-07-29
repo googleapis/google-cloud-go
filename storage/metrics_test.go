@@ -15,12 +15,17 @@
 package storage
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+	"time"
+
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 
 	"go.opentelemetry.io/otel/attribute"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
@@ -28,6 +33,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -89,6 +95,50 @@ func TestIsOtelMetricsEnabled(t *testing.T) {
 	}
 
 	os.Unsetenv("GCP_STORAGE_GO_ENABLE_OTEL_METRICS")
+}
+
+func TestIsOtelDebugMetricsEnabled(t *testing.T) {
+	// Test config option only (env var not set).
+	cfg := storageConfig{enableOtelDebugMetrics: true}
+	os.Unsetenv("GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS")
+	if !isOtelDebugMetricsEnabled(&cfg) {
+		t.Errorf("expected Otel debug metrics to be enabled via config option")
+	}
+
+	cfg = storageConfig{enableOtelDebugMetrics: false}
+	if isOtelDebugMetricsEnabled(&cfg) {
+		t.Errorf("expected Otel debug metrics to be disabled when config option is false")
+	}
+
+	// Test env var override (option is false, env var is true).
+	cfg = storageConfig{enableOtelDebugMetrics: false}
+	os.Setenv("GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS", "true")
+	if !isOtelDebugMetricsEnabled(&cfg) {
+		t.Errorf("expected Otel debug metrics to be enabled via env var override (option=false)")
+	}
+
+	// Test env var override (option is true, env var is false).
+	cfg = storageConfig{enableOtelDebugMetrics: true}
+	os.Setenv("GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS", "false")
+	if isOtelDebugMetricsEnabled(&cfg) {
+		t.Errorf("expected Otel debug metrics to be disabled via env var override (option=true)")
+	}
+
+	// Test env var override with truthy "1".
+	cfg = storageConfig{enableOtelDebugMetrics: false}
+	os.Setenv("GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS", "1")
+	if !isOtelDebugMetricsEnabled(&cfg) {
+		t.Errorf("expected Otel debug metrics to be enabled via env var override set to 1")
+	}
+
+	// Test env var override with falsy "0".
+	cfg = storageConfig{enableOtelDebugMetrics: true}
+	os.Setenv("GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS", "0")
+	if isOtelDebugMetricsEnabled(&cfg) {
+		t.Errorf("expected Otel debug metrics to be disabled via env var override set to 0")
+	}
+
+	os.Unsetenv("GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS")
 }
 
 func TestComputeURLTemplate(t *testing.T) {
@@ -192,8 +242,9 @@ func TestHTTPMetricsRecording(t *testing.T) {
 	defer provider.Shutdown(ctx)
 
 	cfg := storageConfig{
-		enableOtelMetrics: true,
-		meterProvider:     provider,
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
 	}
 
 	cm, _, err := initMetrics(ctx, "project-id", &cfg)
@@ -203,6 +254,7 @@ func TestHTTPMetricsRecording(t *testing.T) {
 
 	// Create a mock HTTP server to respond to requests.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Goog-Gfe-Service-Time", "150")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("hello world"))
 	}))
@@ -278,6 +330,17 @@ func TestHTTPMetricsRecording(t *testing.T) {
 					t.Errorf("expected error.type OK, got %q", attrMap["error.type"])
 				}
 			}
+
+			if m.Name == "gcp.storage.client.gfe.duration" {
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if ok && len(hist.DataPoints) > 0 {
+					if hist.DataPoints[0].Sum != 0.15 {
+						t.Errorf("expected gfe.duration 0.15s, got %v", hist.DataPoints[0].Sum)
+					}
+				} else {
+					t.Errorf("expected gfe.duration datapoints")
+				}
+			}
 		}
 	}
 
@@ -295,6 +358,14 @@ func (m *mockClientStream) RecvMsg(msg interface{}) error {
 	return m.recvErr
 }
 
+func (m *mockClientStream) Header() (metadata.MD, error) {
+	return metadata.Pairs("x-goog-gfe-service-time", "120"), nil
+}
+
+func (m *mockClientStream) Trailer() metadata.MD {
+	return nil
+}
+
 func TestGRPCMetricsRecording(t *testing.T) {
 	ctx := context.Background()
 	mr := sdkmetric.NewManualReader()
@@ -302,8 +373,9 @@ func TestGRPCMetricsRecording(t *testing.T) {
 	defer provider.Shutdown(ctx)
 
 	cfg := storageConfig{
-		enableOtelMetrics: true,
-		meterProvider:     provider,
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
 	}
 
 	cm, _, err := initMetrics(ctx, "project-id", &cfg)
@@ -311,7 +383,6 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		t.Fatalf("initMetrics: %v", err)
 	}
 
-	// 1. Test Unary call.
 	unaryInt, streamInt := metricsInterceptors(cm)
 
 	invoker := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
@@ -323,7 +394,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		t.Errorf("unexpected unary error: %v", err)
 	}
 
-	// 2. Test Server-Streaming call (ReadObject).
+	// Test Server-Streaming call (ReadObject).
 	streamer := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 		return &mockClientStream{recvErr: io.EOF}, nil
 	}
@@ -342,7 +413,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		t.Errorf("expected io.EOF, got %v", err)
 	}
 
-	// 3. Test Client-Streaming call (WriteObject).
+	// Test Client-Streaming call (WriteObject).
 	streamerWrite := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 		return &mockClientStream{recvErr: nil}, nil
 	}
@@ -389,6 +460,23 @@ func TestGRPCMetricsRecording(t *testing.T) {
 					} else if attrs["rpc.method"] == "WriteObject" {
 						writeDp = &dpCopy
 					}
+				}
+			}
+
+			if m.Name == "gcp.storage.client.gfe.duration" {
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if ok && len(hist.DataPoints) > 0 {
+					foundGfeDuration := false
+					for _, dp := range hist.DataPoints {
+						if dp.Sum == 0.12 {
+							foundGfeDuration = true
+						}
+					}
+					if !foundGfeDuration {
+						t.Errorf("expected gfe.duration 0.12s from stream")
+					}
+				} else {
+					t.Errorf("expected gfe.duration datapoints")
 				}
 			}
 		}
@@ -454,6 +542,273 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		}
 		if attrs["error.type"] != "OK" {
 			t.Errorf("expected error.type OK, got %q", attrs["error.type"])
+		}
+	}
+}
+
+type mockStorageClient struct {
+	storageClient
+	getObjectFn  func(ctx context.Context, params *getObjectParams, opts ...storageOption) (*ObjectAttrs, error)
+	newReaderFn  func(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (*Reader, error)
+	openWriterFn func(params *openWriterParams, opts ...storageOption) (internalWriter, error)
+}
+
+func (m *mockStorageClient) GetObject(ctx context.Context, params *getObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
+	if m.getObjectFn != nil {
+		return m.getObjectFn(ctx, params, opts...)
+	}
+	return nil, nil
+}
+
+func (m *mockStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (*Reader, error) {
+	if m.newReaderFn != nil {
+		return m.newReaderFn(ctx, params, opts...)
+	}
+	return nil, nil
+}
+
+func (m *mockStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (internalWriter, error) {
+	if m.openWriterFn != nil {
+		return m.openWriterFn(params, opts...)
+	}
+	return nil, nil
+}
+
+type mockInternalWriter struct {
+	internalWriter
+	writeFn func([]byte) (int, error)
+	closeFn func() error
+}
+
+func (m *mockInternalWriter) Write(p []byte) (n int, err error) {
+	if m.writeFn != nil {
+		return m.writeFn(p)
+	}
+	return len(p), nil
+}
+
+func (m *mockInternalWriter) Close() error {
+	if m.closeFn != nil {
+		return m.closeFn()
+	}
+	return nil
+}
+
+func TestStandardMetricsRecording(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cfg := storageConfig{
+		enableOtelMetrics: true,
+		meterProvider:     provider,
+	}
+
+	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	// Create mock storageClient.
+	mock := &mockStorageClient{}
+	wrapped := &metricsStorageClient{
+		storageClient: mock,
+		metrics:       cm,
+		isHTTP:        false,
+	}
+
+	client := &Client{
+		tc: wrapped,
+	}
+
+	// Test GetObject (unary).
+	mock.getObjectFn = func(ctx context.Context, params *getObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
+		return &ObjectAttrs{Name: params.object}, nil
+	}
+	_, err = client.Bucket("my-bucket").Object("my-object").Attrs(ctx)
+	if err != nil {
+		t.Fatalf("Attrs: %v", err)
+	}
+
+	// Test Reader (ReadObject).
+	mock.newReaderFn = func(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (*Reader, error) {
+		return &Reader{
+			reader: io.NopCloser(bytes.NewReader([]byte("hello"))),
+			ctx:    ctx,
+		}, nil
+	}
+	r, err := client.Bucket("my-bucket").Object("my-object").NewReader(ctx)
+	if err != nil {
+		t.Fatalf("NewReader: %v", err)
+	}
+	buf := make([]byte, 5)
+	n, err := r.Read(buf)
+	if err != nil && err != io.EOF {
+		t.Fatalf("Read: %v", err)
+	}
+	if n != 5 || string(buf) != "hello" {
+		t.Errorf("got %q, want %q", string(buf), "hello")
+	}
+	r.Close()
+
+	// Test Writer (WriteObject).
+	donec := make(chan struct{})
+	close(donec) // pre-close it so Close doesn't block
+	mock.openWriterFn = func(params *openWriterParams, opts ...storageOption) (internalWriter, error) {
+		params.setObj(&ObjectAttrs{Name: "my-object", Size: 11})
+		return &mockInternalWriter{
+			writeFn: func(p []byte) (int, error) {
+				return len(p), nil
+			},
+			closeFn: func() error {
+				return nil
+			},
+		}, nil
+	}
+	w := client.Bucket("my-bucket").Object("my-object").NewWriter(ctx)
+	w.ChunkSize = 0
+	w.donec = donec
+	n, err = w.Write([]byte("hello world"))
+	if err != nil {
+		t.Fatalf("Write: %v", err)
+	}
+	if n != 11 {
+		t.Errorf("got write size %d, want 11", n)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+
+	// Collect metrics.
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+
+	// Verify the metrics.
+	metricsMap := make(map[string]metricdata.Metrics)
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			metricsMap[m.Name] = m
+		}
+	}
+
+	// Check gcp.client.request.duration.
+	if m, ok := metricsMap["gcp.client.request.duration"]; !ok {
+		t.Errorf("metric gcp.client.request.duration not found")
+	} else {
+		hist := m.Data.(metricdata.Histogram[float64])
+		if len(hist.DataPoints) != 3 {
+			t.Errorf("expected 3 datapoints for gcp.client.request.duration, got %d", len(hist.DataPoints))
+		}
+		methods := make(map[string]bool)
+		for _, dp := range hist.DataPoints {
+			for _, kv := range dp.Attributes.ToSlice() {
+				if kv.Key == "rpc.method" {
+					methods[kv.Value.AsString()] = true
+				}
+			}
+		}
+		if !methods["GetObject"] || !methods["ReadObject"] || !methods["WriteObject"] {
+			t.Errorf("expected GetObject, ReadObject, WriteObject, got %v", methods)
+		}
+	}
+
+	// Check gcp.storage.client.operations.
+	if m, ok := metricsMap["gcp.storage.client.operations"]; !ok {
+		t.Errorf("metric gcp.storage.client.operations not found")
+	} else {
+		sum := m.Data.(metricdata.Sum[int64])
+		if len(sum.DataPoints) != 3 {
+			t.Errorf("expected 3 datapoints for gcp.storage.client.operations, got %d", len(sum.DataPoints))
+		}
+	}
+
+	// Check gcp.storage.client.response.body.size.
+	if m, ok := metricsMap["gcp.storage.client.response.body.size"]; !ok {
+		t.Errorf("metric gcp.storage.client.response.body.size not found")
+	} else {
+		hist := m.Data.(metricdata.Histogram[int64])
+		if len(hist.DataPoints) != 1 {
+			t.Fatalf("expected 1 datapoint for response body size, got %d", len(hist.DataPoints))
+		}
+		dp := hist.DataPoints[0]
+		if dp.Sum != 5 {
+			t.Errorf("expected sum 5, got %d", dp.Sum)
+		}
+	}
+
+	// Check gcp.storage.client.request.body.size.
+	if m, ok := metricsMap["gcp.storage.client.request.body.size"]; !ok {
+		t.Errorf("metric gcp.storage.client.request.body.size not found")
+	} else {
+		hist := m.Data.(metricdata.Histogram[int64])
+		if len(hist.DataPoints) != 1 {
+			t.Fatalf("expected 1 datapoint for request body size, got %d", len(hist.DataPoints))
+		}
+		dp := hist.DataPoints[0]
+		if dp.Sum != 11 {
+			t.Errorf("expected sum 11, got %d", dp.Sum)
+		}
+	}
+}
+
+func TestRecordTTFB_MetadataOnly(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cfg := storageConfig{
+		enableOtelMetrics: true,
+		meterProvider:     provider,
+	}
+
+	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	w := &wrappedClientStream{
+		metrics:   cm,
+		ctx:       ctx,
+		method:    "/google.storage.v2.Storage/ReadObject",
+		startTime: time.Now(),
+	}
+
+	// First response with only metadata should trigger TTFB.
+	resp := &storagepb.ReadObjectResponse{
+		Metadata: &storagepb.Object{Name: "test-object"},
+	}
+	w.recordTTFB(resp)
+
+	if !w.recordedTTFB.Load() {
+		t.Errorf("recordTTFB did not trigger TTFB for metadata-only ReadObjectResponse")
+	}
+}
+
+func TestComputeErrorType(t *testing.T) {
+	tests := []struct {
+		err        error
+		isHTTP     bool
+		statusCode int64
+		want       string
+	}{
+		{err: errors.New("dial tcp: no such host"), want: "DNS_FAILURE"},
+		{err: errors.New("connection refused"), want: "CONNECTION_ERROR"},
+		{err: errors.New("connection reset by peer"), want: "CONNECTION_ERROR"},
+		{err: errors.New("tls: bad certificate"), want: "TLS_FAILURE"},
+		{err: errors.New("unexpected eof"), want: "CONNECTION_ERROR"},
+		{err: context.DeadlineExceeded, want: "TIMEOUT"},
+		{err: context.Canceled, want: "CANCELLED"},
+		{err: status.Error(codes.NotFound, "not found"), want: "NOT_FOUND"},
+	}
+
+	for _, tc := range tests {
+		got := computeErrorType(tc.err, tc.isHTTP, tc.statusCode)
+		if got != tc.want {
+			t.Errorf("computeErrorType(%v, %v, %v) = %v, want %v", tc.err, tc.isHTTP, tc.statusCode, got, tc.want)
 		}
 	}
 }

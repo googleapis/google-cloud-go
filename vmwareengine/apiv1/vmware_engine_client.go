@@ -33,6 +33,7 @@ import (
 	vmwareenginepb "cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -2642,8 +2643,12 @@ func (c *gRPCClient) CreatePrivateCloud(ctx context.Context, req *vmwareenginepb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreatePrivateCloudOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePrivateCloudOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2665,8 +2670,12 @@ func (c *gRPCClient) UpdatePrivateCloud(ctx context.Context, req *vmwareenginepb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdatePrivateCloudOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePrivateCloudOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2691,8 +2700,12 @@ func (c *gRPCClient) DeletePrivateCloud(ctx context.Context, req *vmwareenginepb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeletePrivateCloudOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePrivateCloudOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2717,8 +2730,12 @@ func (c *gRPCClient) UndeletePrivateCloud(ctx context.Context, req *vmwareengine
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UndeletePrivateCloudOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeletePrivateCloudOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2819,8 +2836,12 @@ func (c *gRPCClient) CreateCluster(ctx context.Context, req *vmwareenginepb.Crea
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2842,8 +2863,12 @@ func (c *gRPCClient) UpdateCluster(ctx context.Context, req *vmwareenginepb.Upda
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2868,8 +2893,12 @@ func (c *gRPCClient) DeleteCluster(ctx context.Context, req *vmwareenginepb.Dele
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3098,8 +3127,12 @@ func (c *gRPCClient) CreateExternalAddress(ctx context.Context, req *vmwareengin
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateExternalAddressOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateExternalAddressOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3121,8 +3154,12 @@ func (c *gRPCClient) UpdateExternalAddress(ctx context.Context, req *vmwareengin
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateExternalAddressOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateExternalAddressOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3147,8 +3184,12 @@ func (c *gRPCClient) DeleteExternalAddress(ctx context.Context, req *vmwareengin
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteExternalAddressOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteExternalAddressOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3246,8 +3287,12 @@ func (c *gRPCClient) UpdateSubnet(ctx context.Context, req *vmwareenginepb.Updat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateSubnetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSubnetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3348,8 +3393,12 @@ func (c *gRPCClient) CreateExternalAccessRule(ctx context.Context, req *vmwareen
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateExternalAccessRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateExternalAccessRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3371,8 +3420,12 @@ func (c *gRPCClient) UpdateExternalAccessRule(ctx context.Context, req *vmwareen
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateExternalAccessRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateExternalAccessRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3397,8 +3450,12 @@ func (c *gRPCClient) DeleteExternalAccessRule(ctx context.Context, req *vmwareen
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteExternalAccessRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteExternalAccessRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3499,8 +3556,12 @@ func (c *gRPCClient) CreateLoggingServer(ctx context.Context, req *vmwareenginep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateLoggingServerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateLoggingServerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3522,8 +3583,12 @@ func (c *gRPCClient) UpdateLoggingServer(ctx context.Context, req *vmwareenginep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateLoggingServerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateLoggingServerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3548,8 +3613,12 @@ func (c *gRPCClient) DeleteLoggingServer(ctx context.Context, req *vmwareenginep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteLoggingServerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteLoggingServerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3698,8 +3767,12 @@ func (c *gRPCClient) ResetNsxCredentials(ctx context.Context, req *vmwareenginep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.ResetNsxCredentialsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResetNsxCredentialsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3724,8 +3797,12 @@ func (c *gRPCClient) ResetVcenterCredentials(ctx context.Context, req *vmwareeng
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.ResetVcenterCredentialsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResetVcenterCredentialsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3771,8 +3848,12 @@ func (c *gRPCClient) UpdateDnsForwarding(ctx context.Context, req *vmwareenginep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateDnsForwardingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDnsForwardingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3873,8 +3954,12 @@ func (c *gRPCClient) CreateNetworkPeering(ctx context.Context, req *vmwareengine
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateNetworkPeeringOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateNetworkPeeringOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3899,8 +3984,12 @@ func (c *gRPCClient) DeleteNetworkPeering(ctx context.Context, req *vmwareengine
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteNetworkPeeringOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteNetworkPeeringOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3922,8 +4011,12 @@ func (c *gRPCClient) UpdateNetworkPeering(ctx context.Context, req *vmwareengine
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateNetworkPeeringOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateNetworkPeeringOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4000,8 +4093,12 @@ func (c *gRPCClient) CreateHcxActivationKey(ctx context.Context, req *vmwareengi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateHcxActivationKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateHcxActivationKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4178,8 +4275,12 @@ func (c *gRPCClient) CreateNetworkPolicy(ctx context.Context, req *vmwareenginep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateNetworkPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateNetworkPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4201,8 +4302,12 @@ func (c *gRPCClient) UpdateNetworkPolicy(ctx context.Context, req *vmwareenginep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateNetworkPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateNetworkPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4227,8 +4332,12 @@ func (c *gRPCClient) DeleteNetworkPolicy(ctx context.Context, req *vmwareenginep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteNetworkPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteNetworkPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4329,8 +4438,12 @@ func (c *gRPCClient) CreateManagementDnsZoneBinding(ctx context.Context, req *vm
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateManagementDnsZoneBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateManagementDnsZoneBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4352,8 +4465,12 @@ func (c *gRPCClient) UpdateManagementDnsZoneBinding(ctx context.Context, req *vm
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateManagementDnsZoneBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateManagementDnsZoneBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4378,8 +4495,12 @@ func (c *gRPCClient) DeleteManagementDnsZoneBinding(ctx context.Context, req *vm
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteManagementDnsZoneBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteManagementDnsZoneBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4404,8 +4525,12 @@ func (c *gRPCClient) RepairManagementDnsZoneBinding(ctx context.Context, req *vm
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.RepairManagementDnsZoneBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RepairManagementDnsZoneBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4430,8 +4555,12 @@ func (c *gRPCClient) CreateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateVmwareEngineNetworkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVmwareEngineNetworkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4453,8 +4582,12 @@ func (c *gRPCClient) UpdateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateVmwareEngineNetworkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVmwareEngineNetworkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4479,8 +4612,12 @@ func (c *gRPCClient) DeleteVmwareEngineNetwork(ctx context.Context, req *vmwaree
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteVmwareEngineNetworkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVmwareEngineNetworkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4581,8 +4718,12 @@ func (c *gRPCClient) CreatePrivateConnection(ctx context.Context, req *vmwareeng
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreatePrivateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4680,8 +4821,12 @@ func (c *gRPCClient) UpdatePrivateConnection(ctx context.Context, req *vmwareeng
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdatePrivateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4706,8 +4851,12 @@ func (c *gRPCClient) DeletePrivateConnection(ctx context.Context, req *vmwareeng
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeletePrivateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4784,8 +4933,12 @@ func (c *gRPCClient) GrantDnsBindPermission(ctx context.Context, req *vmwareengi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.GrantDnsBindPermissionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &GrantDnsBindPermissionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4834,8 +4987,12 @@ func (c *gRPCClient) RevokeDnsBindPermission(ctx context.Context, req *vmwareeng
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.RevokeDnsBindPermissionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RevokeDnsBindPermissionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -5283,8 +5440,12 @@ func (c *restClient) CreatePrivateCloud(ctx context.Context, req *vmwareenginepb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreatePrivateCloudOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePrivateCloudOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5364,8 +5525,12 @@ func (c *restClient) UpdatePrivateCloud(ctx context.Context, req *vmwareenginepb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdatePrivateCloudOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePrivateCloudOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5447,8 +5612,12 @@ func (c *restClient) DeletePrivateCloud(ctx context.Context, req *vmwareenginepb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeletePrivateCloudOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePrivateCloudOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5516,8 +5685,12 @@ func (c *restClient) UndeletePrivateCloud(ctx context.Context, req *vmwareengine
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UndeletePrivateCloudOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeletePrivateCloudOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5734,8 +5907,12 @@ func (c *restClient) CreateCluster(ctx context.Context, req *vmwareenginepb.Crea
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5817,8 +5994,12 @@ func (c *restClient) UpdateCluster(ctx context.Context, req *vmwareenginepb.Upda
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5883,8 +6064,12 @@ func (c *restClient) DeleteCluster(ctx context.Context, req *vmwareenginepb.Dele
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6312,8 +6497,12 @@ func (c *restClient) CreateExternalAddress(ctx context.Context, req *vmwareengin
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateExternalAddressOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateExternalAddressOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6392,8 +6581,12 @@ func (c *restClient) UpdateExternalAddress(ctx context.Context, req *vmwareengin
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateExternalAddressOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateExternalAddressOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6457,8 +6650,12 @@ func (c *restClient) DeleteExternalAddress(ctx context.Context, req *vmwareengin
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteExternalAddressOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteExternalAddressOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6668,8 +6865,12 @@ func (c *restClient) UpdateSubnet(ctx context.Context, req *vmwareenginepb.Updat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateSubnetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSubnetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6880,8 +7081,12 @@ func (c *restClient) CreateExternalAccessRule(ctx context.Context, req *vmwareen
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateExternalAccessRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateExternalAccessRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6955,8 +7160,12 @@ func (c *restClient) UpdateExternalAccessRule(ctx context.Context, req *vmwareen
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateExternalAccessRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateExternalAccessRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -7018,8 +7227,12 @@ func (c *restClient) DeleteExternalAccessRule(ctx context.Context, req *vmwareen
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteExternalAccessRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteExternalAccessRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -7231,8 +7444,12 @@ func (c *restClient) CreateLoggingServer(ctx context.Context, req *vmwareenginep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateLoggingServerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateLoggingServerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -7306,8 +7523,12 @@ func (c *restClient) UpdateLoggingServer(ctx context.Context, req *vmwareenginep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateLoggingServerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateLoggingServerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -7369,8 +7590,12 @@ func (c *restClient) DeleteLoggingServer(ctx context.Context, req *vmwareenginep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteLoggingServerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteLoggingServerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -7690,8 +7915,12 @@ func (c *restClient) ResetNsxCredentials(ctx context.Context, req *vmwareenginep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.ResetNsxCredentialsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResetNsxCredentialsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -7756,8 +7985,12 @@ func (c *restClient) ResetVcenterCredentials(ctx context.Context, req *vmwareeng
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.ResetVcenterCredentialsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResetVcenterCredentialsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -7888,8 +8121,12 @@ func (c *restClient) UpdateDnsForwarding(ctx context.Context, req *vmwareenginep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateDnsForwardingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDnsForwardingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8106,8 +8343,12 @@ func (c *restClient) CreateNetworkPeering(ctx context.Context, req *vmwareengine
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateNetworkPeeringOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateNetworkPeeringOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8172,8 +8413,12 @@ func (c *restClient) DeleteNetworkPeering(ctx context.Context, req *vmwareengine
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteNetworkPeeringOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteNetworkPeeringOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8248,8 +8493,12 @@ func (c *restClient) UpdateNetworkPeering(ctx context.Context, req *vmwareengine
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateNetworkPeeringOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateNetworkPeeringOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8401,8 +8650,12 @@ func (c *restClient) CreateHcxActivationKey(ctx context.Context, req *vmwareengi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateHcxActivationKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateHcxActivationKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8750,8 +9003,12 @@ func (c *restClient) CreateNetworkPolicy(ctx context.Context, req *vmwareenginep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateNetworkPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateNetworkPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8835,8 +9092,12 @@ func (c *restClient) UpdateNetworkPolicy(ctx context.Context, req *vmwareenginep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateNetworkPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateNetworkPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8900,8 +9161,12 @@ func (c *restClient) DeleteNetworkPolicy(ctx context.Context, req *vmwareenginep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteNetworkPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteNetworkPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -9118,8 +9383,12 @@ func (c *restClient) CreateManagementDnsZoneBinding(ctx context.Context, req *vm
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateManagementDnsZoneBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateManagementDnsZoneBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -9193,8 +9462,12 @@ func (c *restClient) UpdateManagementDnsZoneBinding(ctx context.Context, req *vm
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateManagementDnsZoneBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateManagementDnsZoneBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -9258,8 +9531,12 @@ func (c *restClient) DeleteManagementDnsZoneBinding(ctx context.Context, req *vm
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteManagementDnsZoneBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteManagementDnsZoneBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -9325,8 +9602,12 @@ func (c *restClient) RepairManagementDnsZoneBinding(ctx context.Context, req *vm
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.RepairManagementDnsZoneBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RepairManagementDnsZoneBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -9396,8 +9677,12 @@ func (c *restClient) CreateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreateVmwareEngineNetworkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVmwareEngineNetworkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -9472,8 +9757,12 @@ func (c *restClient) UpdateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdateVmwareEngineNetworkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVmwareEngineNetworkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -9541,8 +9830,12 @@ func (c *restClient) DeleteVmwareEngineNetwork(ctx context.Context, req *vmwaree
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeleteVmwareEngineNetworkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVmwareEngineNetworkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -9757,8 +10050,12 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *vmwareeng
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.CreatePrivateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePrivateConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -9976,8 +10273,12 @@ func (c *restClient) UpdatePrivateConnection(ctx context.Context, req *vmwareeng
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.UpdatePrivateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePrivateConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -10041,8 +10342,12 @@ func (c *restClient) DeletePrivateConnection(ctx context.Context, req *vmwareeng
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.DeletePrivateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePrivateConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -10188,8 +10493,12 @@ func (c *restClient) GrantDnsBindPermission(ctx context.Context, req *vmwareengi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.GrantDnsBindPermissionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &GrantDnsBindPermissionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -10315,8 +10624,12 @@ func (c *restClient) RevokeDnsBindPermission(ctx context.Context, req *vmwareeng
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vmwareengine.RevokeDnsBindPermissionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RevokeDnsBindPermissionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -10834,7 +11147,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
 func (c *gRPCClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateClusterOperation"),
 	}
 }
 
@@ -10843,7 +11156,7 @@ func (c *gRPCClient) CreateClusterOperation(name string) *CreateClusterOperation
 func (c *restClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -10852,7 +11165,7 @@ func (c *restClient) CreateClusterOperation(name string) *CreateClusterOperation
 // The name must be that of a previously created CreateExternalAccessRuleOperation, possibly from a different process.
 func (c *gRPCClient) CreateExternalAccessRuleOperation(name string) *CreateExternalAccessRuleOperation {
 	return &CreateExternalAccessRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateExternalAccessRuleOperation"),
 	}
 }
 
@@ -10861,7 +11174,7 @@ func (c *gRPCClient) CreateExternalAccessRuleOperation(name string) *CreateExter
 func (c *restClient) CreateExternalAccessRuleOperation(name string) *CreateExternalAccessRuleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateExternalAccessRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateExternalAccessRuleOperation"),
 		pollPath: override,
 	}
 }
@@ -10870,7 +11183,7 @@ func (c *restClient) CreateExternalAccessRuleOperation(name string) *CreateExter
 // The name must be that of a previously created CreateExternalAddressOperation, possibly from a different process.
 func (c *gRPCClient) CreateExternalAddressOperation(name string) *CreateExternalAddressOperation {
 	return &CreateExternalAddressOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateExternalAddressOperation"),
 	}
 }
 
@@ -10879,7 +11192,7 @@ func (c *gRPCClient) CreateExternalAddressOperation(name string) *CreateExternal
 func (c *restClient) CreateExternalAddressOperation(name string) *CreateExternalAddressOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateExternalAddressOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateExternalAddressOperation"),
 		pollPath: override,
 	}
 }
@@ -10888,7 +11201,7 @@ func (c *restClient) CreateExternalAddressOperation(name string) *CreateExternal
 // The name must be that of a previously created CreateHcxActivationKeyOperation, possibly from a different process.
 func (c *gRPCClient) CreateHcxActivationKeyOperation(name string) *CreateHcxActivationKeyOperation {
 	return &CreateHcxActivationKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateHcxActivationKeyOperation"),
 	}
 }
 
@@ -10897,7 +11210,7 @@ func (c *gRPCClient) CreateHcxActivationKeyOperation(name string) *CreateHcxActi
 func (c *restClient) CreateHcxActivationKeyOperation(name string) *CreateHcxActivationKeyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateHcxActivationKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateHcxActivationKeyOperation"),
 		pollPath: override,
 	}
 }
@@ -10906,7 +11219,7 @@ func (c *restClient) CreateHcxActivationKeyOperation(name string) *CreateHcxActi
 // The name must be that of a previously created CreateLoggingServerOperation, possibly from a different process.
 func (c *gRPCClient) CreateLoggingServerOperation(name string) *CreateLoggingServerOperation {
 	return &CreateLoggingServerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateLoggingServerOperation"),
 	}
 }
 
@@ -10915,7 +11228,7 @@ func (c *gRPCClient) CreateLoggingServerOperation(name string) *CreateLoggingSer
 func (c *restClient) CreateLoggingServerOperation(name string) *CreateLoggingServerOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateLoggingServerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateLoggingServerOperation"),
 		pollPath: override,
 	}
 }
@@ -10924,7 +11237,7 @@ func (c *restClient) CreateLoggingServerOperation(name string) *CreateLoggingSer
 // The name must be that of a previously created CreateManagementDnsZoneBindingOperation, possibly from a different process.
 func (c *gRPCClient) CreateManagementDnsZoneBindingOperation(name string) *CreateManagementDnsZoneBindingOperation {
 	return &CreateManagementDnsZoneBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateManagementDnsZoneBindingOperation"),
 	}
 }
 
@@ -10933,7 +11246,7 @@ func (c *gRPCClient) CreateManagementDnsZoneBindingOperation(name string) *Creat
 func (c *restClient) CreateManagementDnsZoneBindingOperation(name string) *CreateManagementDnsZoneBindingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateManagementDnsZoneBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateManagementDnsZoneBindingOperation"),
 		pollPath: override,
 	}
 }
@@ -10942,7 +11255,7 @@ func (c *restClient) CreateManagementDnsZoneBindingOperation(name string) *Creat
 // The name must be that of a previously created CreateNetworkPeeringOperation, possibly from a different process.
 func (c *gRPCClient) CreateNetworkPeeringOperation(name string) *CreateNetworkPeeringOperation {
 	return &CreateNetworkPeeringOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateNetworkPeeringOperation"),
 	}
 }
 
@@ -10951,7 +11264,7 @@ func (c *gRPCClient) CreateNetworkPeeringOperation(name string) *CreateNetworkPe
 func (c *restClient) CreateNetworkPeeringOperation(name string) *CreateNetworkPeeringOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateNetworkPeeringOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateNetworkPeeringOperation"),
 		pollPath: override,
 	}
 }
@@ -10960,7 +11273,7 @@ func (c *restClient) CreateNetworkPeeringOperation(name string) *CreateNetworkPe
 // The name must be that of a previously created CreateNetworkPolicyOperation, possibly from a different process.
 func (c *gRPCClient) CreateNetworkPolicyOperation(name string) *CreateNetworkPolicyOperation {
 	return &CreateNetworkPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateNetworkPolicyOperation"),
 	}
 }
 
@@ -10969,7 +11282,7 @@ func (c *gRPCClient) CreateNetworkPolicyOperation(name string) *CreateNetworkPol
 func (c *restClient) CreateNetworkPolicyOperation(name string) *CreateNetworkPolicyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateNetworkPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateNetworkPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -10978,7 +11291,7 @@ func (c *restClient) CreateNetworkPolicyOperation(name string) *CreateNetworkPol
 // The name must be that of a previously created CreatePrivateCloudOperation, possibly from a different process.
 func (c *gRPCClient) CreatePrivateCloudOperation(name string) *CreatePrivateCloudOperation {
 	return &CreatePrivateCloudOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreatePrivateCloudOperation"),
 	}
 }
 
@@ -10987,7 +11300,7 @@ func (c *gRPCClient) CreatePrivateCloudOperation(name string) *CreatePrivateClou
 func (c *restClient) CreatePrivateCloudOperation(name string) *CreatePrivateCloudOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePrivateCloudOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreatePrivateCloudOperation"),
 		pollPath: override,
 	}
 }
@@ -10996,7 +11309,7 @@ func (c *restClient) CreatePrivateCloudOperation(name string) *CreatePrivateClou
 // The name must be that of a previously created CreatePrivateConnectionOperation, possibly from a different process.
 func (c *gRPCClient) CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation {
 	return &CreatePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreatePrivateConnectionOperation"),
 	}
 }
 
@@ -11005,7 +11318,7 @@ func (c *gRPCClient) CreatePrivateConnectionOperation(name string) *CreatePrivat
 func (c *restClient) CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePrivateConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreatePrivateConnectionOperation"),
 		pollPath: override,
 	}
 }
@@ -11014,7 +11327,7 @@ func (c *restClient) CreatePrivateConnectionOperation(name string) *CreatePrivat
 // The name must be that of a previously created CreateVmwareEngineNetworkOperation, possibly from a different process.
 func (c *gRPCClient) CreateVmwareEngineNetworkOperation(name string) *CreateVmwareEngineNetworkOperation {
 	return &CreateVmwareEngineNetworkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateVmwareEngineNetworkOperation"),
 	}
 }
 
@@ -11023,7 +11336,7 @@ func (c *gRPCClient) CreateVmwareEngineNetworkOperation(name string) *CreateVmwa
 func (c *restClient) CreateVmwareEngineNetworkOperation(name string) *CreateVmwareEngineNetworkOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateVmwareEngineNetworkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.CreateVmwareEngineNetworkOperation"),
 		pollPath: override,
 	}
 }
@@ -11032,7 +11345,7 @@ func (c *restClient) CreateVmwareEngineNetworkOperation(name string) *CreateVmwa
 // The name must be that of a previously created DeleteClusterOperation, possibly from a different process.
 func (c *gRPCClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteClusterOperation"),
 	}
 }
 
@@ -11041,7 +11354,7 @@ func (c *gRPCClient) DeleteClusterOperation(name string) *DeleteClusterOperation
 func (c *restClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -11050,7 +11363,7 @@ func (c *restClient) DeleteClusterOperation(name string) *DeleteClusterOperation
 // The name must be that of a previously created DeleteExternalAccessRuleOperation, possibly from a different process.
 func (c *gRPCClient) DeleteExternalAccessRuleOperation(name string) *DeleteExternalAccessRuleOperation {
 	return &DeleteExternalAccessRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteExternalAccessRuleOperation"),
 	}
 }
 
@@ -11059,7 +11372,7 @@ func (c *gRPCClient) DeleteExternalAccessRuleOperation(name string) *DeleteExter
 func (c *restClient) DeleteExternalAccessRuleOperation(name string) *DeleteExternalAccessRuleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteExternalAccessRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteExternalAccessRuleOperation"),
 		pollPath: override,
 	}
 }
@@ -11068,7 +11381,7 @@ func (c *restClient) DeleteExternalAccessRuleOperation(name string) *DeleteExter
 // The name must be that of a previously created DeleteExternalAddressOperation, possibly from a different process.
 func (c *gRPCClient) DeleteExternalAddressOperation(name string) *DeleteExternalAddressOperation {
 	return &DeleteExternalAddressOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteExternalAddressOperation"),
 	}
 }
 
@@ -11077,7 +11390,7 @@ func (c *gRPCClient) DeleteExternalAddressOperation(name string) *DeleteExternal
 func (c *restClient) DeleteExternalAddressOperation(name string) *DeleteExternalAddressOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteExternalAddressOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteExternalAddressOperation"),
 		pollPath: override,
 	}
 }
@@ -11086,7 +11399,7 @@ func (c *restClient) DeleteExternalAddressOperation(name string) *DeleteExternal
 // The name must be that of a previously created DeleteLoggingServerOperation, possibly from a different process.
 func (c *gRPCClient) DeleteLoggingServerOperation(name string) *DeleteLoggingServerOperation {
 	return &DeleteLoggingServerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteLoggingServerOperation"),
 	}
 }
 
@@ -11095,7 +11408,7 @@ func (c *gRPCClient) DeleteLoggingServerOperation(name string) *DeleteLoggingSer
 func (c *restClient) DeleteLoggingServerOperation(name string) *DeleteLoggingServerOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteLoggingServerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteLoggingServerOperation"),
 		pollPath: override,
 	}
 }
@@ -11104,7 +11417,7 @@ func (c *restClient) DeleteLoggingServerOperation(name string) *DeleteLoggingSer
 // The name must be that of a previously created DeleteManagementDnsZoneBindingOperation, possibly from a different process.
 func (c *gRPCClient) DeleteManagementDnsZoneBindingOperation(name string) *DeleteManagementDnsZoneBindingOperation {
 	return &DeleteManagementDnsZoneBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteManagementDnsZoneBindingOperation"),
 	}
 }
 
@@ -11113,7 +11426,7 @@ func (c *gRPCClient) DeleteManagementDnsZoneBindingOperation(name string) *Delet
 func (c *restClient) DeleteManagementDnsZoneBindingOperation(name string) *DeleteManagementDnsZoneBindingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteManagementDnsZoneBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteManagementDnsZoneBindingOperation"),
 		pollPath: override,
 	}
 }
@@ -11122,7 +11435,7 @@ func (c *restClient) DeleteManagementDnsZoneBindingOperation(name string) *Delet
 // The name must be that of a previously created DeleteNetworkPeeringOperation, possibly from a different process.
 func (c *gRPCClient) DeleteNetworkPeeringOperation(name string) *DeleteNetworkPeeringOperation {
 	return &DeleteNetworkPeeringOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteNetworkPeeringOperation"),
 	}
 }
 
@@ -11131,7 +11444,7 @@ func (c *gRPCClient) DeleteNetworkPeeringOperation(name string) *DeleteNetworkPe
 func (c *restClient) DeleteNetworkPeeringOperation(name string) *DeleteNetworkPeeringOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteNetworkPeeringOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteNetworkPeeringOperation"),
 		pollPath: override,
 	}
 }
@@ -11140,7 +11453,7 @@ func (c *restClient) DeleteNetworkPeeringOperation(name string) *DeleteNetworkPe
 // The name must be that of a previously created DeleteNetworkPolicyOperation, possibly from a different process.
 func (c *gRPCClient) DeleteNetworkPolicyOperation(name string) *DeleteNetworkPolicyOperation {
 	return &DeleteNetworkPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteNetworkPolicyOperation"),
 	}
 }
 
@@ -11149,7 +11462,7 @@ func (c *gRPCClient) DeleteNetworkPolicyOperation(name string) *DeleteNetworkPol
 func (c *restClient) DeleteNetworkPolicyOperation(name string) *DeleteNetworkPolicyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteNetworkPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteNetworkPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -11158,7 +11471,7 @@ func (c *restClient) DeleteNetworkPolicyOperation(name string) *DeleteNetworkPol
 // The name must be that of a previously created DeletePrivateCloudOperation, possibly from a different process.
 func (c *gRPCClient) DeletePrivateCloudOperation(name string) *DeletePrivateCloudOperation {
 	return &DeletePrivateCloudOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeletePrivateCloudOperation"),
 	}
 }
 
@@ -11167,7 +11480,7 @@ func (c *gRPCClient) DeletePrivateCloudOperation(name string) *DeletePrivateClou
 func (c *restClient) DeletePrivateCloudOperation(name string) *DeletePrivateCloudOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePrivateCloudOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeletePrivateCloudOperation"),
 		pollPath: override,
 	}
 }
@@ -11176,7 +11489,7 @@ func (c *restClient) DeletePrivateCloudOperation(name string) *DeletePrivateClou
 // The name must be that of a previously created DeletePrivateConnectionOperation, possibly from a different process.
 func (c *gRPCClient) DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation {
 	return &DeletePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeletePrivateConnectionOperation"),
 	}
 }
 
@@ -11185,7 +11498,7 @@ func (c *gRPCClient) DeletePrivateConnectionOperation(name string) *DeletePrivat
 func (c *restClient) DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePrivateConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeletePrivateConnectionOperation"),
 		pollPath: override,
 	}
 }
@@ -11194,7 +11507,7 @@ func (c *restClient) DeletePrivateConnectionOperation(name string) *DeletePrivat
 // The name must be that of a previously created DeleteVmwareEngineNetworkOperation, possibly from a different process.
 func (c *gRPCClient) DeleteVmwareEngineNetworkOperation(name string) *DeleteVmwareEngineNetworkOperation {
 	return &DeleteVmwareEngineNetworkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteVmwareEngineNetworkOperation"),
 	}
 }
 
@@ -11203,7 +11516,7 @@ func (c *gRPCClient) DeleteVmwareEngineNetworkOperation(name string) *DeleteVmwa
 func (c *restClient) DeleteVmwareEngineNetworkOperation(name string) *DeleteVmwareEngineNetworkOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteVmwareEngineNetworkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.DeleteVmwareEngineNetworkOperation"),
 		pollPath: override,
 	}
 }
@@ -11212,7 +11525,7 @@ func (c *restClient) DeleteVmwareEngineNetworkOperation(name string) *DeleteVmwa
 // The name must be that of a previously created GrantDnsBindPermissionOperation, possibly from a different process.
 func (c *gRPCClient) GrantDnsBindPermissionOperation(name string) *GrantDnsBindPermissionOperation {
 	return &GrantDnsBindPermissionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.GrantDnsBindPermissionOperation"),
 	}
 }
 
@@ -11221,7 +11534,7 @@ func (c *gRPCClient) GrantDnsBindPermissionOperation(name string) *GrantDnsBindP
 func (c *restClient) GrantDnsBindPermissionOperation(name string) *GrantDnsBindPermissionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &GrantDnsBindPermissionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.GrantDnsBindPermissionOperation"),
 		pollPath: override,
 	}
 }
@@ -11230,7 +11543,7 @@ func (c *restClient) GrantDnsBindPermissionOperation(name string) *GrantDnsBindP
 // The name must be that of a previously created RepairManagementDnsZoneBindingOperation, possibly from a different process.
 func (c *gRPCClient) RepairManagementDnsZoneBindingOperation(name string) *RepairManagementDnsZoneBindingOperation {
 	return &RepairManagementDnsZoneBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.RepairManagementDnsZoneBindingOperation"),
 	}
 }
 
@@ -11239,7 +11552,7 @@ func (c *gRPCClient) RepairManagementDnsZoneBindingOperation(name string) *Repai
 func (c *restClient) RepairManagementDnsZoneBindingOperation(name string) *RepairManagementDnsZoneBindingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RepairManagementDnsZoneBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.RepairManagementDnsZoneBindingOperation"),
 		pollPath: override,
 	}
 }
@@ -11248,7 +11561,7 @@ func (c *restClient) RepairManagementDnsZoneBindingOperation(name string) *Repai
 // The name must be that of a previously created ResetNsxCredentialsOperation, possibly from a different process.
 func (c *gRPCClient) ResetNsxCredentialsOperation(name string) *ResetNsxCredentialsOperation {
 	return &ResetNsxCredentialsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.ResetNsxCredentialsOperation"),
 	}
 }
 
@@ -11257,7 +11570,7 @@ func (c *gRPCClient) ResetNsxCredentialsOperation(name string) *ResetNsxCredenti
 func (c *restClient) ResetNsxCredentialsOperation(name string) *ResetNsxCredentialsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ResetNsxCredentialsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.ResetNsxCredentialsOperation"),
 		pollPath: override,
 	}
 }
@@ -11266,7 +11579,7 @@ func (c *restClient) ResetNsxCredentialsOperation(name string) *ResetNsxCredenti
 // The name must be that of a previously created ResetVcenterCredentialsOperation, possibly from a different process.
 func (c *gRPCClient) ResetVcenterCredentialsOperation(name string) *ResetVcenterCredentialsOperation {
 	return &ResetVcenterCredentialsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.ResetVcenterCredentialsOperation"),
 	}
 }
 
@@ -11275,7 +11588,7 @@ func (c *gRPCClient) ResetVcenterCredentialsOperation(name string) *ResetVcenter
 func (c *restClient) ResetVcenterCredentialsOperation(name string) *ResetVcenterCredentialsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ResetVcenterCredentialsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.ResetVcenterCredentialsOperation"),
 		pollPath: override,
 	}
 }
@@ -11284,7 +11597,7 @@ func (c *restClient) ResetVcenterCredentialsOperation(name string) *ResetVcenter
 // The name must be that of a previously created RevokeDnsBindPermissionOperation, possibly from a different process.
 func (c *gRPCClient) RevokeDnsBindPermissionOperation(name string) *RevokeDnsBindPermissionOperation {
 	return &RevokeDnsBindPermissionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.RevokeDnsBindPermissionOperation"),
 	}
 }
 
@@ -11293,7 +11606,7 @@ func (c *gRPCClient) RevokeDnsBindPermissionOperation(name string) *RevokeDnsBin
 func (c *restClient) RevokeDnsBindPermissionOperation(name string) *RevokeDnsBindPermissionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RevokeDnsBindPermissionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.RevokeDnsBindPermissionOperation"),
 		pollPath: override,
 	}
 }
@@ -11302,7 +11615,7 @@ func (c *restClient) RevokeDnsBindPermissionOperation(name string) *RevokeDnsBin
 // The name must be that of a previously created UndeletePrivateCloudOperation, possibly from a different process.
 func (c *gRPCClient) UndeletePrivateCloudOperation(name string) *UndeletePrivateCloudOperation {
 	return &UndeletePrivateCloudOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UndeletePrivateCloudOperation"),
 	}
 }
 
@@ -11311,7 +11624,7 @@ func (c *gRPCClient) UndeletePrivateCloudOperation(name string) *UndeletePrivate
 func (c *restClient) UndeletePrivateCloudOperation(name string) *UndeletePrivateCloudOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UndeletePrivateCloudOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UndeletePrivateCloudOperation"),
 		pollPath: override,
 	}
 }
@@ -11320,7 +11633,7 @@ func (c *restClient) UndeletePrivateCloudOperation(name string) *UndeletePrivate
 // The name must be that of a previously created UpdateClusterOperation, possibly from a different process.
 func (c *gRPCClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateClusterOperation"),
 	}
 }
 
@@ -11329,7 +11642,7 @@ func (c *gRPCClient) UpdateClusterOperation(name string) *UpdateClusterOperation
 func (c *restClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -11338,7 +11651,7 @@ func (c *restClient) UpdateClusterOperation(name string) *UpdateClusterOperation
 // The name must be that of a previously created UpdateDnsForwardingOperation, possibly from a different process.
 func (c *gRPCClient) UpdateDnsForwardingOperation(name string) *UpdateDnsForwardingOperation {
 	return &UpdateDnsForwardingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateDnsForwardingOperation"),
 	}
 }
 
@@ -11347,7 +11660,7 @@ func (c *gRPCClient) UpdateDnsForwardingOperation(name string) *UpdateDnsForward
 func (c *restClient) UpdateDnsForwardingOperation(name string) *UpdateDnsForwardingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDnsForwardingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateDnsForwardingOperation"),
 		pollPath: override,
 	}
 }
@@ -11356,7 +11669,7 @@ func (c *restClient) UpdateDnsForwardingOperation(name string) *UpdateDnsForward
 // The name must be that of a previously created UpdateExternalAccessRuleOperation, possibly from a different process.
 func (c *gRPCClient) UpdateExternalAccessRuleOperation(name string) *UpdateExternalAccessRuleOperation {
 	return &UpdateExternalAccessRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateExternalAccessRuleOperation"),
 	}
 }
 
@@ -11365,7 +11678,7 @@ func (c *gRPCClient) UpdateExternalAccessRuleOperation(name string) *UpdateExter
 func (c *restClient) UpdateExternalAccessRuleOperation(name string) *UpdateExternalAccessRuleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateExternalAccessRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateExternalAccessRuleOperation"),
 		pollPath: override,
 	}
 }
@@ -11374,7 +11687,7 @@ func (c *restClient) UpdateExternalAccessRuleOperation(name string) *UpdateExter
 // The name must be that of a previously created UpdateExternalAddressOperation, possibly from a different process.
 func (c *gRPCClient) UpdateExternalAddressOperation(name string) *UpdateExternalAddressOperation {
 	return &UpdateExternalAddressOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateExternalAddressOperation"),
 	}
 }
 
@@ -11383,7 +11696,7 @@ func (c *gRPCClient) UpdateExternalAddressOperation(name string) *UpdateExternal
 func (c *restClient) UpdateExternalAddressOperation(name string) *UpdateExternalAddressOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateExternalAddressOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateExternalAddressOperation"),
 		pollPath: override,
 	}
 }
@@ -11392,7 +11705,7 @@ func (c *restClient) UpdateExternalAddressOperation(name string) *UpdateExternal
 // The name must be that of a previously created UpdateLoggingServerOperation, possibly from a different process.
 func (c *gRPCClient) UpdateLoggingServerOperation(name string) *UpdateLoggingServerOperation {
 	return &UpdateLoggingServerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateLoggingServerOperation"),
 	}
 }
 
@@ -11401,7 +11714,7 @@ func (c *gRPCClient) UpdateLoggingServerOperation(name string) *UpdateLoggingSer
 func (c *restClient) UpdateLoggingServerOperation(name string) *UpdateLoggingServerOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateLoggingServerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateLoggingServerOperation"),
 		pollPath: override,
 	}
 }
@@ -11410,7 +11723,7 @@ func (c *restClient) UpdateLoggingServerOperation(name string) *UpdateLoggingSer
 // The name must be that of a previously created UpdateManagementDnsZoneBindingOperation, possibly from a different process.
 func (c *gRPCClient) UpdateManagementDnsZoneBindingOperation(name string) *UpdateManagementDnsZoneBindingOperation {
 	return &UpdateManagementDnsZoneBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateManagementDnsZoneBindingOperation"),
 	}
 }
 
@@ -11419,7 +11732,7 @@ func (c *gRPCClient) UpdateManagementDnsZoneBindingOperation(name string) *Updat
 func (c *restClient) UpdateManagementDnsZoneBindingOperation(name string) *UpdateManagementDnsZoneBindingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateManagementDnsZoneBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateManagementDnsZoneBindingOperation"),
 		pollPath: override,
 	}
 }
@@ -11428,7 +11741,7 @@ func (c *restClient) UpdateManagementDnsZoneBindingOperation(name string) *Updat
 // The name must be that of a previously created UpdateNetworkPeeringOperation, possibly from a different process.
 func (c *gRPCClient) UpdateNetworkPeeringOperation(name string) *UpdateNetworkPeeringOperation {
 	return &UpdateNetworkPeeringOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateNetworkPeeringOperation"),
 	}
 }
 
@@ -11437,7 +11750,7 @@ func (c *gRPCClient) UpdateNetworkPeeringOperation(name string) *UpdateNetworkPe
 func (c *restClient) UpdateNetworkPeeringOperation(name string) *UpdateNetworkPeeringOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateNetworkPeeringOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateNetworkPeeringOperation"),
 		pollPath: override,
 	}
 }
@@ -11446,7 +11759,7 @@ func (c *restClient) UpdateNetworkPeeringOperation(name string) *UpdateNetworkPe
 // The name must be that of a previously created UpdateNetworkPolicyOperation, possibly from a different process.
 func (c *gRPCClient) UpdateNetworkPolicyOperation(name string) *UpdateNetworkPolicyOperation {
 	return &UpdateNetworkPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateNetworkPolicyOperation"),
 	}
 }
 
@@ -11455,7 +11768,7 @@ func (c *gRPCClient) UpdateNetworkPolicyOperation(name string) *UpdateNetworkPol
 func (c *restClient) UpdateNetworkPolicyOperation(name string) *UpdateNetworkPolicyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateNetworkPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateNetworkPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -11464,7 +11777,7 @@ func (c *restClient) UpdateNetworkPolicyOperation(name string) *UpdateNetworkPol
 // The name must be that of a previously created UpdatePrivateCloudOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePrivateCloudOperation(name string) *UpdatePrivateCloudOperation {
 	return &UpdatePrivateCloudOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdatePrivateCloudOperation"),
 	}
 }
 
@@ -11473,7 +11786,7 @@ func (c *gRPCClient) UpdatePrivateCloudOperation(name string) *UpdatePrivateClou
 func (c *restClient) UpdatePrivateCloudOperation(name string) *UpdatePrivateCloudOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePrivateCloudOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdatePrivateCloudOperation"),
 		pollPath: override,
 	}
 }
@@ -11482,7 +11795,7 @@ func (c *restClient) UpdatePrivateCloudOperation(name string) *UpdatePrivateClou
 // The name must be that of a previously created UpdatePrivateConnectionOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePrivateConnectionOperation(name string) *UpdatePrivateConnectionOperation {
 	return &UpdatePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdatePrivateConnectionOperation"),
 	}
 }
 
@@ -11491,7 +11804,7 @@ func (c *gRPCClient) UpdatePrivateConnectionOperation(name string) *UpdatePrivat
 func (c *restClient) UpdatePrivateConnectionOperation(name string) *UpdatePrivateConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePrivateConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdatePrivateConnectionOperation"),
 		pollPath: override,
 	}
 }
@@ -11500,7 +11813,7 @@ func (c *restClient) UpdatePrivateConnectionOperation(name string) *UpdatePrivat
 // The name must be that of a previously created UpdateSubnetOperation, possibly from a different process.
 func (c *gRPCClient) UpdateSubnetOperation(name string) *UpdateSubnetOperation {
 	return &UpdateSubnetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateSubnetOperation"),
 	}
 }
 
@@ -11509,7 +11822,7 @@ func (c *gRPCClient) UpdateSubnetOperation(name string) *UpdateSubnetOperation {
 func (c *restClient) UpdateSubnetOperation(name string) *UpdateSubnetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateSubnetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateSubnetOperation"),
 		pollPath: override,
 	}
 }
@@ -11518,7 +11831,7 @@ func (c *restClient) UpdateSubnetOperation(name string) *UpdateSubnetOperation {
 // The name must be that of a previously created UpdateVmwareEngineNetworkOperation, possibly from a different process.
 func (c *gRPCClient) UpdateVmwareEngineNetworkOperation(name string) *UpdateVmwareEngineNetworkOperation {
 	return &UpdateVmwareEngineNetworkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateVmwareEngineNetworkOperation"),
 	}
 }
 
@@ -11527,7 +11840,7 @@ func (c *gRPCClient) UpdateVmwareEngineNetworkOperation(name string) *UpdateVmwa
 func (c *restClient) UpdateVmwareEngineNetworkOperation(name string) *UpdateVmwareEngineNetworkOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateVmwareEngineNetworkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vmwareengine.UpdateVmwareEngineNetworkOperation"),
 		pollPath: override,
 	}
 }

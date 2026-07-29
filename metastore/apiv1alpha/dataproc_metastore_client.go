@@ -33,6 +33,7 @@ import (
 	metastorepb "cloud.google.com/go/metastore/apiv1alpha/metastorepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1170,8 +1171,12 @@ func (c *dataprocMetastoreGRPCClient) CreateService(ctx context.Context, req *me
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.CreateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1193,8 +1198,12 @@ func (c *dataprocMetastoreGRPCClient) UpdateService(ctx context.Context, req *me
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.UpdateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1219,8 +1228,12 @@ func (c *dataprocMetastoreGRPCClient) DeleteService(ctx context.Context, req *me
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.DeleteServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1321,8 +1334,12 @@ func (c *dataprocMetastoreGRPCClient) CreateMetadataImport(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.CreateMetadataImportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMetadataImportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1344,8 +1361,12 @@ func (c *dataprocMetastoreGRPCClient) UpdateMetadataImport(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.UpdateMetadataImportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateMetadataImportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1370,8 +1391,12 @@ func (c *dataprocMetastoreGRPCClient) ExportMetadata(ctx context.Context, req *m
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.ExportMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1396,8 +1421,12 @@ func (c *dataprocMetastoreGRPCClient) RestoreService(ctx context.Context, req *m
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.RestoreServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1498,8 +1527,12 @@ func (c *dataprocMetastoreGRPCClient) CreateBackup(ctx context.Context, req *met
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1524,8 +1557,12 @@ func (c *dataprocMetastoreGRPCClient) DeleteBackup(ctx context.Context, req *met
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1574,8 +1611,12 @@ func (c *dataprocMetastoreGRPCClient) QueryMetadata(ctx context.Context, req *me
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.QueryMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &QueryMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1600,8 +1641,12 @@ func (c *dataprocMetastoreGRPCClient) MoveTableToDatabase(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.MoveTableToDatabaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveTableToDatabaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1626,8 +1671,12 @@ func (c *dataprocMetastoreGRPCClient) AlterMetadataResourceLocation(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.AlterMetadataResourceLocationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AlterMetadataResourceLocationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2083,8 +2132,12 @@ func (c *dataprocMetastoreRESTClient) CreateService(ctx context.Context, req *me
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.CreateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2157,8 +2210,12 @@ func (c *dataprocMetastoreRESTClient) UpdateService(ctx context.Context, req *me
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.UpdateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2220,8 +2277,12 @@ func (c *dataprocMetastoreRESTClient) DeleteService(ctx context.Context, req *me
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.DeleteServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2432,8 +2493,12 @@ func (c *dataprocMetastoreRESTClient) CreateMetadataImport(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.CreateMetadataImportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMetadataImportOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2507,8 +2572,12 @@ func (c *dataprocMetastoreRESTClient) UpdateMetadataImport(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.UpdateMetadataImportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateMetadataImportOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2573,8 +2642,12 @@ func (c *dataprocMetastoreRESTClient) ExportMetadata(ctx context.Context, req *m
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.ExportMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2639,8 +2712,12 @@ func (c *dataprocMetastoreRESTClient) RestoreService(ctx context.Context, req *m
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.RestoreServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2851,8 +2928,12 @@ func (c *dataprocMetastoreRESTClient) CreateBackup(ctx context.Context, req *met
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2914,8 +2995,12 @@ func (c *dataprocMetastoreRESTClient) DeleteBackup(ctx context.Context, req *met
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3043,8 +3128,12 @@ func (c *dataprocMetastoreRESTClient) QueryMetadata(ctx context.Context, req *me
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.QueryMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &QueryMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3109,8 +3198,12 @@ func (c *dataprocMetastoreRESTClient) MoveTableToDatabase(ctx context.Context, r
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.MoveTableToDatabaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveTableToDatabaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3178,8 +3271,12 @@ func (c *dataprocMetastoreRESTClient) AlterMetadataResourceLocation(ctx context.
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.AlterMetadataResourceLocationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AlterMetadataResourceLocationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3742,7 +3839,7 @@ func (c *dataprocMetastoreRESTClient) ListOperations(ctx context.Context, req *l
 // The name must be that of a previously created AlterMetadataResourceLocationOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) AlterMetadataResourceLocationOperation(name string) *AlterMetadataResourceLocationOperation {
 	return &AlterMetadataResourceLocationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.AlterMetadataResourceLocationOperation"),
 	}
 }
 
@@ -3751,7 +3848,7 @@ func (c *dataprocMetastoreGRPCClient) AlterMetadataResourceLocationOperation(nam
 func (c *dataprocMetastoreRESTClient) AlterMetadataResourceLocationOperation(name string) *AlterMetadataResourceLocationOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &AlterMetadataResourceLocationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.AlterMetadataResourceLocationOperation"),
 		pollPath: override,
 	}
 }
@@ -3760,7 +3857,7 @@ func (c *dataprocMetastoreRESTClient) AlterMetadataResourceLocationOperation(nam
 // The name must be that of a previously created CreateBackupOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.CreateBackupOperation"),
 	}
 }
 
@@ -3769,7 +3866,7 @@ func (c *dataprocMetastoreGRPCClient) CreateBackupOperation(name string) *Create
 func (c *dataprocMetastoreRESTClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.CreateBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -3778,7 +3875,7 @@ func (c *dataprocMetastoreRESTClient) CreateBackupOperation(name string) *Create
 // The name must be that of a previously created CreateMetadataImportOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) CreateMetadataImportOperation(name string) *CreateMetadataImportOperation {
 	return &CreateMetadataImportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.CreateMetadataImportOperation"),
 	}
 }
 
@@ -3787,7 +3884,7 @@ func (c *dataprocMetastoreGRPCClient) CreateMetadataImportOperation(name string)
 func (c *dataprocMetastoreRESTClient) CreateMetadataImportOperation(name string) *CreateMetadataImportOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &CreateMetadataImportOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.CreateMetadataImportOperation"),
 		pollPath: override,
 	}
 }
@@ -3796,7 +3893,7 @@ func (c *dataprocMetastoreRESTClient) CreateMetadataImportOperation(name string)
 // The name must be that of a previously created CreateServiceOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) CreateServiceOperation(name string) *CreateServiceOperation {
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.CreateServiceOperation"),
 	}
 }
 
@@ -3805,7 +3902,7 @@ func (c *dataprocMetastoreGRPCClient) CreateServiceOperation(name string) *Creat
 func (c *dataprocMetastoreRESTClient) CreateServiceOperation(name string) *CreateServiceOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &CreateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.CreateServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -3814,7 +3911,7 @@ func (c *dataprocMetastoreRESTClient) CreateServiceOperation(name string) *Creat
 // The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.DeleteBackupOperation"),
 	}
 }
 
@@ -3823,7 +3920,7 @@ func (c *dataprocMetastoreGRPCClient) DeleteBackupOperation(name string) *Delete
 func (c *dataprocMetastoreRESTClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.DeleteBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -3832,7 +3929,7 @@ func (c *dataprocMetastoreRESTClient) DeleteBackupOperation(name string) *Delete
 // The name must be that of a previously created DeleteServiceOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.DeleteServiceOperation"),
 	}
 }
 
@@ -3841,7 +3938,7 @@ func (c *dataprocMetastoreGRPCClient) DeleteServiceOperation(name string) *Delet
 func (c *dataprocMetastoreRESTClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &DeleteServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.DeleteServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -3850,7 +3947,7 @@ func (c *dataprocMetastoreRESTClient) DeleteServiceOperation(name string) *Delet
 // The name must be that of a previously created ExportMetadataOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) ExportMetadataOperation(name string) *ExportMetadataOperation {
 	return &ExportMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.ExportMetadataOperation"),
 	}
 }
 
@@ -3859,7 +3956,7 @@ func (c *dataprocMetastoreGRPCClient) ExportMetadataOperation(name string) *Expo
 func (c *dataprocMetastoreRESTClient) ExportMetadataOperation(name string) *ExportMetadataOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &ExportMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.ExportMetadataOperation"),
 		pollPath: override,
 	}
 }
@@ -3868,7 +3965,7 @@ func (c *dataprocMetastoreRESTClient) ExportMetadataOperation(name string) *Expo
 // The name must be that of a previously created MoveTableToDatabaseOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) MoveTableToDatabaseOperation(name string) *MoveTableToDatabaseOperation {
 	return &MoveTableToDatabaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.MoveTableToDatabaseOperation"),
 	}
 }
 
@@ -3877,7 +3974,7 @@ func (c *dataprocMetastoreGRPCClient) MoveTableToDatabaseOperation(name string) 
 func (c *dataprocMetastoreRESTClient) MoveTableToDatabaseOperation(name string) *MoveTableToDatabaseOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &MoveTableToDatabaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.MoveTableToDatabaseOperation"),
 		pollPath: override,
 	}
 }
@@ -3886,7 +3983,7 @@ func (c *dataprocMetastoreRESTClient) MoveTableToDatabaseOperation(name string) 
 // The name must be that of a previously created QueryMetadataOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) QueryMetadataOperation(name string) *QueryMetadataOperation {
 	return &QueryMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.QueryMetadataOperation"),
 	}
 }
 
@@ -3895,7 +3992,7 @@ func (c *dataprocMetastoreGRPCClient) QueryMetadataOperation(name string) *Query
 func (c *dataprocMetastoreRESTClient) QueryMetadataOperation(name string) *QueryMetadataOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &QueryMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.QueryMetadataOperation"),
 		pollPath: override,
 	}
 }
@@ -3904,7 +4001,7 @@ func (c *dataprocMetastoreRESTClient) QueryMetadataOperation(name string) *Query
 // The name must be that of a previously created RestoreServiceOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) RestoreServiceOperation(name string) *RestoreServiceOperation {
 	return &RestoreServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.RestoreServiceOperation"),
 	}
 }
 
@@ -3913,7 +4010,7 @@ func (c *dataprocMetastoreGRPCClient) RestoreServiceOperation(name string) *Rest
 func (c *dataprocMetastoreRESTClient) RestoreServiceOperation(name string) *RestoreServiceOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &RestoreServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.RestoreServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -3922,7 +4019,7 @@ func (c *dataprocMetastoreRESTClient) RestoreServiceOperation(name string) *Rest
 // The name must be that of a previously created UpdateMetadataImportOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) UpdateMetadataImportOperation(name string) *UpdateMetadataImportOperation {
 	return &UpdateMetadataImportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.UpdateMetadataImportOperation"),
 	}
 }
 
@@ -3931,7 +4028,7 @@ func (c *dataprocMetastoreGRPCClient) UpdateMetadataImportOperation(name string)
 func (c *dataprocMetastoreRESTClient) UpdateMetadataImportOperation(name string) *UpdateMetadataImportOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &UpdateMetadataImportOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.UpdateMetadataImportOperation"),
 		pollPath: override,
 	}
 }
@@ -3940,7 +4037,7 @@ func (c *dataprocMetastoreRESTClient) UpdateMetadataImportOperation(name string)
 // The name must be that of a previously created UpdateServiceOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) UpdateServiceOperation(name string) *UpdateServiceOperation {
 	return &UpdateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.UpdateServiceOperation"),
 	}
 }
 
@@ -3949,7 +4046,7 @@ func (c *dataprocMetastoreGRPCClient) UpdateServiceOperation(name string) *Updat
 func (c *dataprocMetastoreRESTClient) UpdateServiceOperation(name string) *UpdateServiceOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &UpdateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.UpdateServiceOperation"),
 		pollPath: override,
 	}
 }

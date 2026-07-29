@@ -122,6 +122,14 @@ const (
 	// a message with PARTIAL_DTMF_DIGITS may be sent with DTMF digits collected
 	// up to the time of sending, which represents an intermediate result.
 	StreamingRecognitionResult_PARTIAL_DTMF_DIGITS StreamingRecognitionResult_MessageType = 4
+	// This event indicates that the server has detected the beginning of human
+	// voice activity in the stream. This event can be returned multiple times
+	// if speech starts and stops repeatedly throughout the stream.
+	StreamingRecognitionResult_SPEECH_ACTIVITY_BEGIN StreamingRecognitionResult_MessageType = 5
+	// This event indicates that the server has detected the end of human voice
+	// activity in the stream. This event can be returned multiple times if
+	// speech starts and stops repeatedly throughout the stream.
+	StreamingRecognitionResult_SPEECH_ACTIVITY_END StreamingRecognitionResult_MessageType = 6
 )
 
 // Enum value maps for StreamingRecognitionResult_MessageType.
@@ -132,6 +140,8 @@ var (
 		2: "END_OF_SINGLE_UTTERANCE",
 		3: "DTMF_DIGITS",
 		4: "PARTIAL_DTMF_DIGITS",
+		5: "SPEECH_ACTIVITY_BEGIN",
+		6: "SPEECH_ACTIVITY_END",
 	}
 	StreamingRecognitionResult_MessageType_value = map[string]int32{
 		"MESSAGE_TYPE_UNSPECIFIED": 0,
@@ -139,6 +149,8 @@ var (
 		"END_OF_SINGLE_UTTERANCE":  2,
 		"DTMF_DIGITS":              3,
 		"PARTIAL_DTMF_DIGITS":      4,
+		"SPEECH_ACTIVITY_BEGIN":    5,
+		"SPEECH_ACTIVITY_END":      6,
 	}
 )
 
@@ -2271,7 +2283,7 @@ const file_google_cloud_dialogflow_v2beta1_session_proto_rawDesc = "" +
 	"\x0ewebhook_status\x18\x04 \x01(\v2\x12.google.rpc.StatusR\rwebhookStatus\x12!\n" +
 	"\foutput_audio\x18\x05 \x01(\fR\voutputAudio\x12b\n" +
 	"\x13output_audio_config\x18\x06 \x01(\v22.google.cloud.dialogflow.v2beta1.OutputAudioConfigR\x11outputAudioConfig\x12f\n" +
-	"\x0edebugging_info\x18\b \x01(\v2?.google.cloud.dialogflow.v2beta1.CloudConversationDebuggingInfoR\rdebuggingInfo\"\xa4\x05\n" +
+	"\x0edebugging_info\x18\b \x01(\v2?.google.cloud.dialogflow.v2beta1.CloudConversationDebuggingInfoR\rdebuggingInfo\"\xd8\x05\n" +
 	"\x1aStreamingRecognitionResult\x12j\n" +
 	"\fmessage_type\x18\x01 \x01(\x0e2G.google.cloud.dialogflow.v2beta1.StreamingRecognitionResult.MessageTypeR\vmessageType\x12\x1e\n" +
 	"\n" +
@@ -2287,14 +2299,16 @@ const file_google_cloud_dialogflow_v2beta1_session_proto_rawDesc = "" +
 	"\rlanguage_code\x18\n" +
 	" \x01(\tR\flanguageCode\x12U\n" +
 	"\vdtmf_digits\x18\x05 \x01(\v24.google.cloud.dialogflow.v2beta1.TelephonyDtmfEventsR\n" +
-	"dtmfDigits\"\x82\x01\n" +
+	"dtmfDigits\"\xb6\x01\n" +
 	"\vMessageType\x12\x1c\n" +
 	"\x18MESSAGE_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"TRANSCRIPT\x10\x01\x12\x1b\n" +
 	"\x17END_OF_SINGLE_UTTERANCE\x10\x02\x12\x0f\n" +
 	"\vDTMF_DIGITS\x10\x03\x12\x17\n" +
-	"\x13PARTIAL_DTMF_DIGITS\x10\x04\"D\n" +
+	"\x13PARTIAL_DTMF_DIGITS\x10\x04\x12\x19\n" +
+	"\x15SPEECH_ACTIVITY_BEGIN\x10\x05\x12\x17\n" +
+	"\x13SPEECH_ACTIVITY_END\x10\x06\"D\n" +
 	"\tTextInput\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\x12#\n" +
 	"\rlanguage_code\x18\x02 \x01(\tR\flanguageCode\"~\n" +

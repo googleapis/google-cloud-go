@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "BatchCreateTasks": {
+              "methods": [
+                "BatchCreateTasks"
+              ]
+            },
+            "BatchDeleteTasks": {
+              "methods": [
+                "BatchDeleteTasks"
+              ]
+            },
             "CreateQueue": {
               "methods": [
                 "CreateQueue"
@@ -30,6 +40,11 @@
                 "DeleteTask"
               ]
             },
+            "GetCmekConfig": {
+              "methods": [
+                "GetCmekConfig"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -38,6 +53,11 @@
             "GetLocation": {
               "methods": [
                 "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetQueue": {
@@ -93,6 +113,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateCmekConfig": {
+              "methods": [
+                "UpdateCmekConfig"
               ]
             },
             "UpdateQueue": {
@@ -105,6 +130,16 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "BatchCreateTasks": {
+              "methods": [
+                "BatchCreateTasks"
+              ]
+            },
+            "BatchDeleteTasks": {
+              "methods": [
+                "BatchDeleteTasks"
+              ]
+            },
             "CreateQueue": {
               "methods": [
                 "CreateQueue"
@@ -125,6 +160,11 @@
                 "DeleteTask"
               ]
             },
+            "GetCmekConfig": {
+              "methods": [
+                "GetCmekConfig"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -133,6 +173,11 @@
             "GetLocation": {
               "methods": [
                 "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetQueue": {
@@ -188,6 +233,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateCmekConfig": {
+              "methods": [
+                "UpdateCmekConfig"
               ]
             },
             "UpdateQueue": {

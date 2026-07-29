@@ -1295,6 +1295,7 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			var client *Client
 			opts := []option.ClientOption{
 				experimental.WithOtelMetrics(),
+				experimental.WithOtelDebugMetrics(),
 				experimental.WithMeterProvider(provider),
 			}
 
@@ -1324,49 +1325,112 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 				t.Fatalf("ManualReader.Collect: %v", err)
 			}
 
-			expectedMetricName := "rpc.client.call.duration"
-			if transportType == "http" {
-				expectedMetricName = "http.client.request.duration"
+			// Validate resource attributes.
+			resAttrs := make(map[string]string)
+			for _, attr := range rm.Resource.Attributes() {
+				resAttrs[string(attr.Key)] = attr.Value.Emit()
+			}
+			if resAttrs["gcp.client.service"] != "storage" {
+				t.Errorf("expected gcp.client.service = storage, got %q", resAttrs["gcp.client.service"])
+			}
+			if resAttrs["gcp.client.repo"] != "googleapis/google-cloud-go" {
+				t.Errorf("expected gcp.client.repo = googleapis/google-cloud-go, got %q", resAttrs["gcp.client.repo"])
 			}
 
-			found := false
+			// Group metrics by name.
+			metricsMap := make(map[string]metricdata.Metrics)
 			for _, sm := range rm.ScopeMetrics {
 				for _, m := range sm.Metrics {
-					if m.Name == expectedMetricName {
-						found = true
-						hist, ok := m.Data.(metricdata.Histogram[float64])
-						if !ok {
-							t.Fatalf("expected Histogram data, got %T", m.Data)
-						}
-						if len(hist.DataPoints) == 0 {
-							t.Fatalf("expected at least 1 datapoint, got 0")
-						}
-						dp := hist.DataPoints[0]
-
-						resAttrs := make(map[string]string)
-						for _, attr := range rm.Resource.Attributes() {
-							resAttrs[string(attr.Key)] = attr.Value.Emit()
-						}
-						if resAttrs["gcp.client.service"] != "storage" {
-							t.Errorf("expected gcp.client.service = storage, got %q", resAttrs["gcp.client.service"])
-						}
-						if resAttrs["gcp.client.repo"] != "googleapis/google-cloud-go" {
-							t.Errorf("expected gcp.client.repo = googleapis/google-cloud-go, got %q", resAttrs["gcp.client.repo"])
-						}
-
-						attrs := make(map[string]string)
-						for _, kv := range dp.Attributes.ToSlice() {
-							attrs[string(kv.Key)] = kv.Value.Emit()
-						}
-						if attrs["server.address"] == "" {
-							t.Errorf("expected non-empty server.address")
-						}
-					}
+					metricsMap[m.Name] = m
 				}
 			}
 
-			if !found {
-				t.Errorf("expected metric %q not found", expectedMetricName)
+			// Check transport-level duration metric.
+			expectedTransportMetric := "rpc.client.call.duration"
+			if transportType == "http" {
+				expectedTransportMetric = "http.client.request.duration"
+			}
+
+			expectedHistograms := []string{
+				expectedTransportMetric,
+				"gcp.client.request.duration",
+			}
+			expectedSums := []string{
+				"gcp.storage.client.operations",
+				"gcp.storage.client.active_requests",
+			}
+			expectedNetworkMetrics := []string{
+				"gcp.storage.client.network.tcp.connect.duration",
+				"gcp.storage.client.network.tls.handshake.duration",
+			}
+			if transportType == "http" {
+				expectedNetworkMetrics = append(expectedNetworkMetrics, "gcp.storage.client.network.dns.lookup.duration")
+			}
+
+			// gfe.duration might not be strictly populated locally, but check it if present.
+			if m, ok := metricsMap["gcp.storage.client.gfe.duration"]; ok {
+				if hist, ok := m.Data.(metricdata.Histogram[float64]); !ok {
+					t.Errorf("expected Histogram data for gfe.duration, got %T", m.Data)
+				} else if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for gcp.storage.client.gfe.duration")
+				}
+			}
+
+			for _, name := range expectedHistograms {
+				m, ok := metricsMap[name]
+				if !ok {
+					t.Errorf("expected metric %q not found", name)
+					continue
+				}
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok {
+					t.Errorf("expected Histogram data for %q, got %T", name, m.Data)
+					continue
+				}
+				if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for %q", name)
+				}
+			}
+
+			for _, name := range expectedSums {
+				m, ok := metricsMap[name]
+				if !ok {
+					t.Errorf("expected metric %q not found", name)
+					continue
+				}
+				_, ok = m.Data.(metricdata.Sum[int64])
+				if !ok {
+					t.Errorf("expected Sum data for %q, got %T", name, m.Data)
+				}
+			}
+
+			for _, name := range expectedNetworkMetrics {
+				m, ok := metricsMap[name]
+				if !ok {
+					t.Errorf("expected metric %q not found", name)
+					continue
+				}
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok {
+					t.Errorf("expected Histogram data for %q, got %T", name, m.Data)
+					continue
+				}
+				if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for %q", name)
+					continue
+				}
+
+				dp := hist.DataPoints[0]
+				attrs := make(map[string]string)
+				for _, kv := range dp.Attributes.ToSlice() {
+					attrs[string(kv.Key)] = kv.Value.Emit()
+				}
+				if attrs["server.address"] == "" {
+					t.Errorf("expected non-empty server.address for %q", name)
+				}
+				if attrs["rpc.system.name"] != transportType {
+					t.Errorf("expected rpc.system.name = %q for %q, got %q", transportType, name, attrs["rpc.system.name"])
+				}
 			}
 		})
 	}
@@ -2532,6 +2596,150 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 					} else {
 						t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
 					}
+				}
+			})
+		}
+	})
+}
+
+func TestIntegration_AppendWriterCRC32CValidation(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Test for appendable writes"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+		testCases := []struct {
+			name               string
+			content            []byte
+			finalizeOnClose    bool
+			sendCRC32C         bool
+			incorrectSendCRC   bool
+			setAppendFinalCRC  bool
+			incorrectAppendCRC bool
+			wantErr            bool
+		}{
+			{
+				name:              "append with correct final CRC. Finalize",
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
+				setAppendFinalCRC: true,
+				finalizeOnClose:   true,
+			},
+			{
+				name:               "append with incorrect AppendFinalCRC32C. Finalize",
+				content:            bytes.Repeat([]byte("a"), 1*MiB),
+				setAppendFinalCRC:  true,
+				incorrectAppendCRC: true,
+				finalizeOnClose:    true,
+				wantErr:            true,
+			},
+			{
+				name:               "append with incorrect AppendFinalCRC32C. Don't finalize",
+				content:            bytes.Repeat([]byte("a"), 1*MiB),
+				setAppendFinalCRC:  true,
+				incorrectAppendCRC: true,
+				finalizeOnClose:    false,
+			},
+			{
+				name:              "append with both SendCRC32C and AppendFinalCRC32C correct. Finalize",
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:        true,
+				setAppendFinalCRC: true,
+				finalizeOnClose:   true,
+			},
+			{
+				name:               "append with correct SendCRC32C but incorrect AppendFinalCRC32C. Finalize",
+				content:            bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:         true,
+				setAppendFinalCRC:  true,
+				incorrectAppendCRC: true,
+				wantErr:            true,
+				finalizeOnClose:    true,
+			},
+			{
+				name:              "append with incorrect SendCRC32C but correct AppendFinalCRC32C. Finalize",
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:        true,
+				incorrectSendCRC:  true,
+				setAppendFinalCRC: true,
+				wantErr:           false,
+				finalizeOnClose:   true,
+			},
+			{
+				name:            "append with correct SendCRC32C but no AppendFinalCRC32C. Finalize",
+				content:         bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:      true,
+				finalizeOnClose: true,
+			},
+			{
+				name:             "append with incorrect SendCRC32C but no AppendFinalCRC32C. Finalize",
+				content:          bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:       true,
+				incorrectSendCRC: true,
+				finalizeOnClose:  true,
+				wantErr:          true,
+			},
+			{
+				name:             "append with incorrect SendCRC32C but no AppendFinalCRC32C. Don't finalize",
+				content:          bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:       true,
+				incorrectSendCRC: true,
+				finalizeOnClose:  false,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				correctCRC32C := crc32.Checksum(tc.content, crc32cTable)
+				obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
+				t.Cleanup(func() {
+					h.mustDeleteObject(obj)
+				})
+
+				w := obj.NewWriter(ctx)
+				w.Append = true
+				w.FinalizeOnClose = tc.finalizeOnClose
+				if tc.sendCRC32C {
+					w.SendCRC32C = true
+					if tc.incorrectSendCRC {
+						w.CRC32C = correctCRC32C + 1
+					} else {
+						w.CRC32C = correctCRC32C
+					}
+				}
+
+				if _, err := w.Write(tc.content); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+				// Provide CRC after write, before close.
+				if tc.setAppendFinalCRC {
+					w.SendAppendFinalCRC32C = true
+					if tc.incorrectAppendCRC {
+						w.AppendFinalCRC32C = correctCRC32C + 1
+					} else {
+						w.AppendFinalCRC32C = correctCRC32C
+					}
+				}
+				err := w.Close()
+
+				if tc.wantErr {
+					if !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
+					}
+					return
+				}
+				if err != nil {
+					t.Fatalf("Writer.Close: %v", err)
+				}
+
+				// Verify content.
+				r, err := obj.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("NewReader failed: %v", err)
+				}
+				defer r.Close()
+				gotContent, err := io.ReadAll(r)
+				if err != nil {
+					t.Fatalf("ReadAll failed: %v", err)
+				}
+				if !bytes.Equal(gotContent, tc.content) {
+					t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
 				}
 			})
 		}
@@ -4330,6 +4538,9 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 			takeoverFlushOffset  int64
 			opts                 *AppendableWriterOpts
 			checkProgressOffsets []int64
+			sendFinalAppendCRC   bool
+			incorrectAppendCRC   bool
+			wantErr              bool
 		}{
 			{
 				name:           "first message takeover w/large flush",
@@ -4406,6 +4617,53 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					FinalizeOnClose: true,
 				},
 			},
+			{
+				name:           "takeover and finalize with incorrect initial CRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+					SendCRC32C:      true,
+					CRC32C:          1234,
+				},
+				wantErr: true,
+			},
+			{
+				name:           "takeover and finalize with incorrect FinalAppendCRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+				},
+				sendFinalAppendCRC: true,
+				incorrectAppendCRC: true,
+				wantErr:            true,
+			},
+			{
+				name:           "takeover and finalize with correct FinalAppendCRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+				},
+				sendFinalAppendCRC: true,
+				wantErr:            false,
+			},
+			{
+				name:           "takeover and finalize with incorrect inital CRC but correct FinalAppendCRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+					CRC32C:          1234,
+				},
+				sendFinalAppendCRC: true,
+				wantErr:            false,
+			},
 		}
 		for _, tc := range testCases {
 			t.Run(tc.name, func(t *testing.T) {
@@ -4473,7 +4731,28 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				}
 
 				// Write remainder of the content and close.
-				h.mustWrite(w2, tc.content[remainingOffset:])
+				if _, err := w2.Write(tc.content[remainingOffset:]); err != nil && !tc.wantErr {
+					t.Fatalf("w2.Write: %v", err)
+				}
+				actualCRC := crc32.Checksum(tc.content, crc32cTable)
+				if tc.sendFinalAppendCRC {
+					w2.SendAppendFinalCRC32C = true
+					if tc.incorrectAppendCRC {
+						w2.AppendFinalCRC32C = actualCRC + 1
+					} else {
+						w2.AppendFinalCRC32C = actualCRC
+					}
+				}
+				err = w2.Close()
+				if tc.wantErr {
+					if err == nil || !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						t.Fatalf("expected an InvalidArgument error for incorrect CRC, but got %v", err)
+					}
+					return
+				}
+				if err != nil {
+					t.Fatalf("w2.Close: %v", err)
+				}
 
 				// Download content again and validate.
 				// Disabled due to b/395944605; unskip after this is resolved.

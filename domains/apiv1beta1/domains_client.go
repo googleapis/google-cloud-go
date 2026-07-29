@@ -31,6 +31,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -723,8 +724,12 @@ func (c *gRPCClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.RegisterDomainOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RegisterDomainOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -773,8 +778,12 @@ func (c *gRPCClient) TransferDomain(ctx context.Context, req *domainspb.Transfer
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.TransferDomainOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &TransferDomainOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -872,8 +881,12 @@ func (c *gRPCClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.UpdateRegistrationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRegistrationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -898,8 +911,12 @@ func (c *gRPCClient) ConfigureManagementSettings(ctx context.Context, req *domai
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.ConfigureManagementSettingsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ConfigureManagementSettingsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -924,8 +941,12 @@ func (c *gRPCClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.Co
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.ConfigureDnsSettingsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ConfigureDnsSettingsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -950,8 +971,12 @@ func (c *gRPCClient) ConfigureContactSettings(ctx context.Context, req *domainsp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.ConfigureContactSettingsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ConfigureContactSettingsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -976,8 +1001,12 @@ func (c *gRPCClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.ExportRegistrationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportRegistrationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1002,8 +1031,12 @@ func (c *gRPCClient) DeleteRegistration(ctx context.Context, req *domainspb.Dele
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.DeleteRegistrationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRegistrationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1248,8 +1281,12 @@ func (c *restClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.RegisterDomainOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RegisterDomainOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1395,8 +1432,12 @@ func (c *restClient) TransferDomain(ctx context.Context, req *domainspb.Transfer
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.TransferDomainOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &TransferDomainOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1611,8 +1652,12 @@ func (c *restClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.UpdateRegistrationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRegistrationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1677,8 +1722,12 @@ func (c *restClient) ConfigureManagementSettings(ctx context.Context, req *domai
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.ConfigureManagementSettingsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ConfigureManagementSettingsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1743,8 +1792,12 @@ func (c *restClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.Co
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.ConfigureDnsSettingsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ConfigureDnsSettingsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1810,8 +1863,12 @@ func (c *restClient) ConfigureContactSettings(ctx context.Context, req *domainsp
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.ConfigureContactSettingsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ConfigureContactSettingsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1884,8 +1941,12 @@ func (c *restClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.ExportRegistrationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportRegistrationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1964,8 +2025,12 @@ func (c *restClient) DeleteRegistration(ctx context.Context, req *domainspb.Dele
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*domains.DeleteRegistrationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRegistrationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2101,7 +2166,7 @@ func (c *restClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.
 // The name must be that of a previously created ConfigureContactSettingsOperation, possibly from a different process.
 func (c *gRPCClient) ConfigureContactSettingsOperation(name string) *ConfigureContactSettingsOperation {
 	return &ConfigureContactSettingsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.ConfigureContactSettingsOperation"),
 	}
 }
 
@@ -2110,7 +2175,7 @@ func (c *gRPCClient) ConfigureContactSettingsOperation(name string) *ConfigureCo
 func (c *restClient) ConfigureContactSettingsOperation(name string) *ConfigureContactSettingsOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &ConfigureContactSettingsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.ConfigureContactSettingsOperation"),
 		pollPath: override,
 	}
 }
@@ -2119,7 +2184,7 @@ func (c *restClient) ConfigureContactSettingsOperation(name string) *ConfigureCo
 // The name must be that of a previously created ConfigureDnsSettingsOperation, possibly from a different process.
 func (c *gRPCClient) ConfigureDnsSettingsOperation(name string) *ConfigureDnsSettingsOperation {
 	return &ConfigureDnsSettingsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.ConfigureDnsSettingsOperation"),
 	}
 }
 
@@ -2128,7 +2193,7 @@ func (c *gRPCClient) ConfigureDnsSettingsOperation(name string) *ConfigureDnsSet
 func (c *restClient) ConfigureDnsSettingsOperation(name string) *ConfigureDnsSettingsOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &ConfigureDnsSettingsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.ConfigureDnsSettingsOperation"),
 		pollPath: override,
 	}
 }
@@ -2137,7 +2202,7 @@ func (c *restClient) ConfigureDnsSettingsOperation(name string) *ConfigureDnsSet
 // The name must be that of a previously created ConfigureManagementSettingsOperation, possibly from a different process.
 func (c *gRPCClient) ConfigureManagementSettingsOperation(name string) *ConfigureManagementSettingsOperation {
 	return &ConfigureManagementSettingsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.ConfigureManagementSettingsOperation"),
 	}
 }
 
@@ -2146,7 +2211,7 @@ func (c *gRPCClient) ConfigureManagementSettingsOperation(name string) *Configur
 func (c *restClient) ConfigureManagementSettingsOperation(name string) *ConfigureManagementSettingsOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &ConfigureManagementSettingsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.ConfigureManagementSettingsOperation"),
 		pollPath: override,
 	}
 }
@@ -2155,7 +2220,7 @@ func (c *restClient) ConfigureManagementSettingsOperation(name string) *Configur
 // The name must be that of a previously created DeleteRegistrationOperation, possibly from a different process.
 func (c *gRPCClient) DeleteRegistrationOperation(name string) *DeleteRegistrationOperation {
 	return &DeleteRegistrationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.DeleteRegistrationOperation"),
 	}
 }
 
@@ -2164,7 +2229,7 @@ func (c *gRPCClient) DeleteRegistrationOperation(name string) *DeleteRegistratio
 func (c *restClient) DeleteRegistrationOperation(name string) *DeleteRegistrationOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &DeleteRegistrationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.DeleteRegistrationOperation"),
 		pollPath: override,
 	}
 }
@@ -2173,7 +2238,7 @@ func (c *restClient) DeleteRegistrationOperation(name string) *DeleteRegistratio
 // The name must be that of a previously created ExportRegistrationOperation, possibly from a different process.
 func (c *gRPCClient) ExportRegistrationOperation(name string) *ExportRegistrationOperation {
 	return &ExportRegistrationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.ExportRegistrationOperation"),
 	}
 }
 
@@ -2182,7 +2247,7 @@ func (c *gRPCClient) ExportRegistrationOperation(name string) *ExportRegistratio
 func (c *restClient) ExportRegistrationOperation(name string) *ExportRegistrationOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &ExportRegistrationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.ExportRegistrationOperation"),
 		pollPath: override,
 	}
 }
@@ -2191,7 +2256,7 @@ func (c *restClient) ExportRegistrationOperation(name string) *ExportRegistratio
 // The name must be that of a previously created RegisterDomainOperation, possibly from a different process.
 func (c *gRPCClient) RegisterDomainOperation(name string) *RegisterDomainOperation {
 	return &RegisterDomainOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.RegisterDomainOperation"),
 	}
 }
 
@@ -2200,7 +2265,7 @@ func (c *gRPCClient) RegisterDomainOperation(name string) *RegisterDomainOperati
 func (c *restClient) RegisterDomainOperation(name string) *RegisterDomainOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &RegisterDomainOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.RegisterDomainOperation"),
 		pollPath: override,
 	}
 }
@@ -2209,7 +2274,7 @@ func (c *restClient) RegisterDomainOperation(name string) *RegisterDomainOperati
 // The name must be that of a previously created TransferDomainOperation, possibly from a different process.
 func (c *gRPCClient) TransferDomainOperation(name string) *TransferDomainOperation {
 	return &TransferDomainOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.TransferDomainOperation"),
 	}
 }
 
@@ -2218,7 +2283,7 @@ func (c *gRPCClient) TransferDomainOperation(name string) *TransferDomainOperati
 func (c *restClient) TransferDomainOperation(name string) *TransferDomainOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &TransferDomainOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.TransferDomainOperation"),
 		pollPath: override,
 	}
 }
@@ -2227,7 +2292,7 @@ func (c *restClient) TransferDomainOperation(name string) *TransferDomainOperati
 // The name must be that of a previously created UpdateRegistrationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateRegistrationOperation(name string) *UpdateRegistrationOperation {
 	return &UpdateRegistrationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.UpdateRegistrationOperation"),
 	}
 }
 
@@ -2236,7 +2301,7 @@ func (c *gRPCClient) UpdateRegistrationOperation(name string) *UpdateRegistratio
 func (c *restClient) UpdateRegistrationOperation(name string) *UpdateRegistrationOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &UpdateRegistrationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*domains.UpdateRegistrationOperation"),
 		pollPath: override,
 	}
 }

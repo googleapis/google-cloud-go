@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ type HttpRequest struct {
 	ServerIp string `protobuf:"bytes,13,opt,name=server_ip,json=serverIp,proto3" json:"server_ip,omitempty"`
 	// The referer URL of the request, as defined in
 	// [HTTP/1.1 Header Field
-	// Definitions](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
+	// Definitions](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
 	Referer string `protobuf:"bytes,8,opt,name=referer,proto3" json:"referer,omitempty"`
 	// The request processing latency on the server, from the time the request was
 	// received until the response was sent.

@@ -33,6 +33,7 @@ import (
 	visionaipb "cloud.google.com/go/visionai/apiv1/visionaipb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -2782,8 +2783,12 @@ func (c *warehouseGRPCClient) DeleteAsset(ctx context.Context, req *visionaipb.D
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2808,8 +2813,12 @@ func (c *warehouseGRPCClient) UploadAsset(ctx context.Context, req *visionaipb.U
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UploadAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UploadAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2858,8 +2867,12 @@ func (c *warehouseGRPCClient) AnalyzeAsset(ctx context.Context, req *visionaipb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.AnalyzeAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AnalyzeAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2884,8 +2897,12 @@ func (c *warehouseGRPCClient) IndexAsset(ctx context.Context, req *visionaipb.In
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.IndexAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &IndexAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2910,8 +2927,12 @@ func (c *warehouseGRPCClient) RemoveIndexAsset(ctx context.Context, req *visiona
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.RemoveIndexAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveIndexAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2988,8 +3009,12 @@ func (c *warehouseGRPCClient) CreateIndex(ctx context.Context, req *visionaipb.C
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3011,8 +3036,12 @@ func (c *warehouseGRPCClient) UpdateIndex(ctx context.Context, req *visionaipb.U
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3113,8 +3142,12 @@ func (c *warehouseGRPCClient) DeleteIndex(ctx context.Context, req *visionaipb.D
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3136,8 +3169,12 @@ func (c *warehouseGRPCClient) CreateCorpus(ctx context.Context, req *visionaipb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateCorpusOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCorpusOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3276,8 +3313,12 @@ func (c *warehouseGRPCClient) AnalyzeCorpus(ctx context.Context, req *visionaipb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.AnalyzeCorpusOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AnalyzeCorpusOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3652,8 +3693,12 @@ func (c *warehouseGRPCClient) ImportAssets(ctx context.Context, req *visionaipb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.ImportAssetsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportAssetsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4064,8 +4109,12 @@ func (c *warehouseGRPCClient) CreateIndexEndpoint(ctx context.Context, req *visi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateIndexEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIndexEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4163,8 +4212,12 @@ func (c *warehouseGRPCClient) UpdateIndexEndpoint(ctx context.Context, req *visi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateIndexEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateIndexEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4189,8 +4242,12 @@ func (c *warehouseGRPCClient) DeleteIndexEndpoint(ctx context.Context, req *visi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteIndexEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIndexEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4215,8 +4272,12 @@ func (c *warehouseGRPCClient) DeployIndex(ctx context.Context, req *visionaipb.D
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeployIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeployIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4241,8 +4302,12 @@ func (c *warehouseGRPCClient) UndeployIndex(ctx context.Context, req *visionaipb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UndeployIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeployIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4267,8 +4332,12 @@ func (c *warehouseGRPCClient) CreateCollection(ctx context.Context, req *visiona
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateCollectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCollectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4293,8 +4362,12 @@ func (c *warehouseGRPCClient) DeleteCollection(ctx context.Context, req *visiona
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteCollectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCollectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4990,8 +5063,12 @@ func (c *warehouseRESTClient) DeleteAsset(ctx context.Context, req *visionaipb.D
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5065,8 +5142,12 @@ func (c *warehouseRESTClient) UploadAsset(ctx context.Context, req *visionaipb.U
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UploadAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UploadAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5196,8 +5277,12 @@ func (c *warehouseRESTClient) AnalyzeAsset(ctx context.Context, req *visionaipb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.AnalyzeAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AnalyzeAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5263,8 +5348,12 @@ func (c *warehouseRESTClient) IndexAsset(ctx context.Context, req *visionaipb.In
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.IndexAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &IndexAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5330,8 +5419,12 @@ func (c *warehouseRESTClient) RemoveIndexAsset(ctx context.Context, req *visiona
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.RemoveIndexAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveIndexAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5481,8 +5574,12 @@ func (c *warehouseRESTClient) CreateIndex(ctx context.Context, req *visionaipb.C
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5554,8 +5651,12 @@ func (c *warehouseRESTClient) UpdateIndex(ctx context.Context, req *visionaipb.U
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5750,8 +5851,12 @@ func (c *warehouseRESTClient) DeleteIndex(ctx context.Context, req *visionaipb.D
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5814,8 +5919,12 @@ func (c *warehouseRESTClient) CreateCorpus(ctx context.Context, req *visionaipb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateCorpusOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCorpusOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6129,8 +6238,12 @@ func (c *warehouseRESTClient) AnalyzeCorpus(ctx context.Context, req *visionaipb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.AnalyzeCorpusOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AnalyzeCorpusOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6964,8 +7077,12 @@ func (c *warehouseRESTClient) ImportAssets(ctx context.Context, req *visionaipb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.ImportAssetsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportAssetsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -7854,8 +7971,12 @@ func (c *warehouseRESTClient) CreateIndexEndpoint(ctx context.Context, req *visi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateIndexEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIndexEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8063,8 +8184,12 @@ func (c *warehouseRESTClient) UpdateIndexEndpoint(ctx context.Context, req *visi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateIndexEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateIndexEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8123,8 +8248,12 @@ func (c *warehouseRESTClient) DeleteIndexEndpoint(ctx context.Context, req *visi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteIndexEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIndexEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8189,8 +8318,12 @@ func (c *warehouseRESTClient) DeployIndex(ctx context.Context, req *visionaipb.D
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeployIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeployIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8255,8 +8388,12 @@ func (c *warehouseRESTClient) UndeployIndex(ctx context.Context, req *visionaipb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UndeployIndexOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeployIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8325,8 +8462,12 @@ func (c *warehouseRESTClient) CreateCollection(ctx context.Context, req *visiona
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateCollectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCollectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8385,8 +8526,12 @@ func (c *warehouseRESTClient) DeleteCollection(ctx context.Context, req *visiona
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteCollectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCollectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -9153,7 +9298,7 @@ func (c *warehouseRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created AnalyzeAssetOperation, possibly from a different process.
 func (c *warehouseGRPCClient) AnalyzeAssetOperation(name string) *AnalyzeAssetOperation {
 	return &AnalyzeAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.AnalyzeAssetOperation"),
 	}
 }
 
@@ -9162,7 +9307,7 @@ func (c *warehouseGRPCClient) AnalyzeAssetOperation(name string) *AnalyzeAssetOp
 func (c *warehouseRESTClient) AnalyzeAssetOperation(name string) *AnalyzeAssetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &AnalyzeAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.AnalyzeAssetOperation"),
 		pollPath: override,
 	}
 }
@@ -9171,7 +9316,7 @@ func (c *warehouseRESTClient) AnalyzeAssetOperation(name string) *AnalyzeAssetOp
 // The name must be that of a previously created AnalyzeCorpusOperation, possibly from a different process.
 func (c *warehouseGRPCClient) AnalyzeCorpusOperation(name string) *AnalyzeCorpusOperation {
 	return &AnalyzeCorpusOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.AnalyzeCorpusOperation"),
 	}
 }
 
@@ -9180,7 +9325,7 @@ func (c *warehouseGRPCClient) AnalyzeCorpusOperation(name string) *AnalyzeCorpus
 func (c *warehouseRESTClient) AnalyzeCorpusOperation(name string) *AnalyzeCorpusOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &AnalyzeCorpusOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.AnalyzeCorpusOperation"),
 		pollPath: override,
 	}
 }
@@ -9189,7 +9334,7 @@ func (c *warehouseRESTClient) AnalyzeCorpusOperation(name string) *AnalyzeCorpus
 // The name must be that of a previously created CreateCollectionOperation, possibly from a different process.
 func (c *warehouseGRPCClient) CreateCollectionOperation(name string) *CreateCollectionOperation {
 	return &CreateCollectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateCollectionOperation"),
 	}
 }
 
@@ -9198,7 +9343,7 @@ func (c *warehouseGRPCClient) CreateCollectionOperation(name string) *CreateColl
 func (c *warehouseRESTClient) CreateCollectionOperation(name string) *CreateCollectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCollectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateCollectionOperation"),
 		pollPath: override,
 	}
 }
@@ -9207,7 +9352,7 @@ func (c *warehouseRESTClient) CreateCollectionOperation(name string) *CreateColl
 // The name must be that of a previously created CreateCorpusOperation, possibly from a different process.
 func (c *warehouseGRPCClient) CreateCorpusOperation(name string) *CreateCorpusOperation {
 	return &CreateCorpusOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateCorpusOperation"),
 	}
 }
 
@@ -9216,7 +9361,7 @@ func (c *warehouseGRPCClient) CreateCorpusOperation(name string) *CreateCorpusOp
 func (c *warehouseRESTClient) CreateCorpusOperation(name string) *CreateCorpusOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCorpusOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateCorpusOperation"),
 		pollPath: override,
 	}
 }
@@ -9225,7 +9370,7 @@ func (c *warehouseRESTClient) CreateCorpusOperation(name string) *CreateCorpusOp
 // The name must be that of a previously created CreateIndexOperation, possibly from a different process.
 func (c *warehouseGRPCClient) CreateIndexOperation(name string) *CreateIndexOperation {
 	return &CreateIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateIndexOperation"),
 	}
 }
 
@@ -9234,7 +9379,7 @@ func (c *warehouseGRPCClient) CreateIndexOperation(name string) *CreateIndexOper
 func (c *warehouseRESTClient) CreateIndexOperation(name string) *CreateIndexOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateIndexOperation"),
 		pollPath: override,
 	}
 }
@@ -9243,7 +9388,7 @@ func (c *warehouseRESTClient) CreateIndexOperation(name string) *CreateIndexOper
 // The name must be that of a previously created CreateIndexEndpointOperation, possibly from a different process.
 func (c *warehouseGRPCClient) CreateIndexEndpointOperation(name string) *CreateIndexEndpointOperation {
 	return &CreateIndexEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateIndexEndpointOperation"),
 	}
 }
 
@@ -9252,7 +9397,7 @@ func (c *warehouseGRPCClient) CreateIndexEndpointOperation(name string) *CreateI
 func (c *warehouseRESTClient) CreateIndexEndpointOperation(name string) *CreateIndexEndpointOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateIndexEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateIndexEndpointOperation"),
 		pollPath: override,
 	}
 }
@@ -9261,7 +9406,7 @@ func (c *warehouseRESTClient) CreateIndexEndpointOperation(name string) *CreateI
 // The name must be that of a previously created DeleteAssetOperation, possibly from a different process.
 func (c *warehouseGRPCClient) DeleteAssetOperation(name string) *DeleteAssetOperation {
 	return &DeleteAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteAssetOperation"),
 	}
 }
 
@@ -9270,7 +9415,7 @@ func (c *warehouseGRPCClient) DeleteAssetOperation(name string) *DeleteAssetOper
 func (c *warehouseRESTClient) DeleteAssetOperation(name string) *DeleteAssetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteAssetOperation"),
 		pollPath: override,
 	}
 }
@@ -9279,7 +9424,7 @@ func (c *warehouseRESTClient) DeleteAssetOperation(name string) *DeleteAssetOper
 // The name must be that of a previously created DeleteCollectionOperation, possibly from a different process.
 func (c *warehouseGRPCClient) DeleteCollectionOperation(name string) *DeleteCollectionOperation {
 	return &DeleteCollectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteCollectionOperation"),
 	}
 }
 
@@ -9288,7 +9433,7 @@ func (c *warehouseGRPCClient) DeleteCollectionOperation(name string) *DeleteColl
 func (c *warehouseRESTClient) DeleteCollectionOperation(name string) *DeleteCollectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCollectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteCollectionOperation"),
 		pollPath: override,
 	}
 }
@@ -9297,7 +9442,7 @@ func (c *warehouseRESTClient) DeleteCollectionOperation(name string) *DeleteColl
 // The name must be that of a previously created DeleteIndexOperation, possibly from a different process.
 func (c *warehouseGRPCClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
 	return &DeleteIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteIndexOperation"),
 	}
 }
 
@@ -9306,7 +9451,7 @@ func (c *warehouseGRPCClient) DeleteIndexOperation(name string) *DeleteIndexOper
 func (c *warehouseRESTClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteIndexOperation"),
 		pollPath: override,
 	}
 }
@@ -9315,7 +9460,7 @@ func (c *warehouseRESTClient) DeleteIndexOperation(name string) *DeleteIndexOper
 // The name must be that of a previously created DeleteIndexEndpointOperation, possibly from a different process.
 func (c *warehouseGRPCClient) DeleteIndexEndpointOperation(name string) *DeleteIndexEndpointOperation {
 	return &DeleteIndexEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteIndexEndpointOperation"),
 	}
 }
 
@@ -9324,7 +9469,7 @@ func (c *warehouseGRPCClient) DeleteIndexEndpointOperation(name string) *DeleteI
 func (c *warehouseRESTClient) DeleteIndexEndpointOperation(name string) *DeleteIndexEndpointOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteIndexEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteIndexEndpointOperation"),
 		pollPath: override,
 	}
 }
@@ -9333,7 +9478,7 @@ func (c *warehouseRESTClient) DeleteIndexEndpointOperation(name string) *DeleteI
 // The name must be that of a previously created DeployIndexOperation, possibly from a different process.
 func (c *warehouseGRPCClient) DeployIndexOperation(name string) *DeployIndexOperation {
 	return &DeployIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeployIndexOperation"),
 	}
 }
 
@@ -9342,7 +9487,7 @@ func (c *warehouseGRPCClient) DeployIndexOperation(name string) *DeployIndexOper
 func (c *warehouseRESTClient) DeployIndexOperation(name string) *DeployIndexOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeployIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeployIndexOperation"),
 		pollPath: override,
 	}
 }
@@ -9351,7 +9496,7 @@ func (c *warehouseRESTClient) DeployIndexOperation(name string) *DeployIndexOper
 // The name must be that of a previously created ImportAssetsOperation, possibly from a different process.
 func (c *warehouseGRPCClient) ImportAssetsOperation(name string) *ImportAssetsOperation {
 	return &ImportAssetsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.ImportAssetsOperation"),
 	}
 }
 
@@ -9360,7 +9505,7 @@ func (c *warehouseGRPCClient) ImportAssetsOperation(name string) *ImportAssetsOp
 func (c *warehouseRESTClient) ImportAssetsOperation(name string) *ImportAssetsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportAssetsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.ImportAssetsOperation"),
 		pollPath: override,
 	}
 }
@@ -9369,7 +9514,7 @@ func (c *warehouseRESTClient) ImportAssetsOperation(name string) *ImportAssetsOp
 // The name must be that of a previously created IndexAssetOperation, possibly from a different process.
 func (c *warehouseGRPCClient) IndexAssetOperation(name string) *IndexAssetOperation {
 	return &IndexAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.IndexAssetOperation"),
 	}
 }
 
@@ -9378,7 +9523,7 @@ func (c *warehouseGRPCClient) IndexAssetOperation(name string) *IndexAssetOperat
 func (c *warehouseRESTClient) IndexAssetOperation(name string) *IndexAssetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &IndexAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.IndexAssetOperation"),
 		pollPath: override,
 	}
 }
@@ -9387,7 +9532,7 @@ func (c *warehouseRESTClient) IndexAssetOperation(name string) *IndexAssetOperat
 // The name must be that of a previously created RemoveIndexAssetOperation, possibly from a different process.
 func (c *warehouseGRPCClient) RemoveIndexAssetOperation(name string) *RemoveIndexAssetOperation {
 	return &RemoveIndexAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.RemoveIndexAssetOperation"),
 	}
 }
 
@@ -9396,7 +9541,7 @@ func (c *warehouseGRPCClient) RemoveIndexAssetOperation(name string) *RemoveInde
 func (c *warehouseRESTClient) RemoveIndexAssetOperation(name string) *RemoveIndexAssetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RemoveIndexAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.RemoveIndexAssetOperation"),
 		pollPath: override,
 	}
 }
@@ -9405,7 +9550,7 @@ func (c *warehouseRESTClient) RemoveIndexAssetOperation(name string) *RemoveInde
 // The name must be that of a previously created UndeployIndexOperation, possibly from a different process.
 func (c *warehouseGRPCClient) UndeployIndexOperation(name string) *UndeployIndexOperation {
 	return &UndeployIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UndeployIndexOperation"),
 	}
 }
 
@@ -9414,7 +9559,7 @@ func (c *warehouseGRPCClient) UndeployIndexOperation(name string) *UndeployIndex
 func (c *warehouseRESTClient) UndeployIndexOperation(name string) *UndeployIndexOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UndeployIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UndeployIndexOperation"),
 		pollPath: override,
 	}
 }
@@ -9423,7 +9568,7 @@ func (c *warehouseRESTClient) UndeployIndexOperation(name string) *UndeployIndex
 // The name must be that of a previously created UpdateIndexOperation, possibly from a different process.
 func (c *warehouseGRPCClient) UpdateIndexOperation(name string) *UpdateIndexOperation {
 	return &UpdateIndexOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateIndexOperation"),
 	}
 }
 
@@ -9432,7 +9577,7 @@ func (c *warehouseGRPCClient) UpdateIndexOperation(name string) *UpdateIndexOper
 func (c *warehouseRESTClient) UpdateIndexOperation(name string) *UpdateIndexOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateIndexOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateIndexOperation"),
 		pollPath: override,
 	}
 }
@@ -9441,7 +9586,7 @@ func (c *warehouseRESTClient) UpdateIndexOperation(name string) *UpdateIndexOper
 // The name must be that of a previously created UpdateIndexEndpointOperation, possibly from a different process.
 func (c *warehouseGRPCClient) UpdateIndexEndpointOperation(name string) *UpdateIndexEndpointOperation {
 	return &UpdateIndexEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateIndexEndpointOperation"),
 	}
 }
 
@@ -9450,7 +9595,7 @@ func (c *warehouseGRPCClient) UpdateIndexEndpointOperation(name string) *UpdateI
 func (c *warehouseRESTClient) UpdateIndexEndpointOperation(name string) *UpdateIndexEndpointOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateIndexEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateIndexEndpointOperation"),
 		pollPath: override,
 	}
 }
@@ -9459,7 +9604,7 @@ func (c *warehouseRESTClient) UpdateIndexEndpointOperation(name string) *UpdateI
 // The name must be that of a previously created UploadAssetOperation, possibly from a different process.
 func (c *warehouseGRPCClient) UploadAssetOperation(name string) *UploadAssetOperation {
 	return &UploadAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UploadAssetOperation"),
 	}
 }
 
@@ -9468,7 +9613,7 @@ func (c *warehouseGRPCClient) UploadAssetOperation(name string) *UploadAssetOper
 func (c *warehouseRESTClient) UploadAssetOperation(name string) *UploadAssetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UploadAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UploadAssetOperation"),
 		pollPath: override,
 	}
 }

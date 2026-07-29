@@ -743,6 +743,10 @@ type InputAudioConfig struct {
 	// Note: When specified, InputAudioConfig.single_utterance takes precedence
 	// over StreamingDetectIntentRequest.single_utterance.
 	SingleUtterance bool `protobuf:"varint,8,opt,name=single_utterance,json=singleUtterance,proto3" json:"single_utterance,omitempty"`
+	// Optional. If `true`, responses with voice activity speech events will be
+	// returned as they are detected.
+	// Note: This setting is relevant only for streaming methods.
+	EnableVoiceActivityEvents bool `protobuf:"varint,27,opt,name=enable_voice_activity_events,json=enableVoiceActivityEvents,proto3" json:"enable_voice_activity_events,omitempty"`
 	// Only used in
 	// [Participants.AnalyzeContent][google.cloud.dialogflow.v2.Participants.AnalyzeContent]
 	// and
@@ -853,6 +857,13 @@ func (x *InputAudioConfig) GetModelVariant() SpeechModelVariant {
 func (x *InputAudioConfig) GetSingleUtterance() bool {
 	if x != nil {
 		return x.SingleUtterance
+	}
+	return false
+}
+
+func (x *InputAudioConfig) GetEnableVoiceActivityEvents() bool {
+	if x != nil {
+		return x.EnableVoiceActivityEvents
 	}
 	return false
 }
@@ -1407,7 +1418,7 @@ const file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc = "" +
 	"end_offset\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\tendOffset\x12\x1e\n" +
 	"\n" +
 	"confidence\x18\x04 \x01(\x02R\n" +
-	"confidence\"\x9e\x06\n" +
+	"confidence\"\xe4\x06\n" +
 	"\x10InputAudioConfig\x12U\n" +
 	"\x0eaudio_encoding\x18\x01 \x01(\x0e2).google.cloud.dialogflow.v2.AudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12/\n" +
 	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0fsampleRateHertz\x12(\n" +
@@ -1418,7 +1429,8 @@ const file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc = "" +
 	"\x05model\x18\a \x01(\tR\x05model\x12S\n" +
 	"\rmodel_variant\x18\n" +
 	" \x01(\x0e2..google.cloud.dialogflow.v2.SpeechModelVariantR\fmodelVariant\x12)\n" +
-	"\x10single_utterance\x18\b \x01(\bR\x0fsingleUtterance\x12J\n" +
+	"\x10single_utterance\x18\b \x01(\bR\x0fsingleUtterance\x12D\n" +
+	"\x1cenable_voice_activity_events\x18\x1b \x01(\bB\x03\xe0A\x01R\x19enableVoiceActivityEvents\x12J\n" +
 	"\"disable_no_speech_recognized_event\x18\x0e \x01(\bR\x1edisableNoSpeechRecognizedEvent\x12@\n" +
 	"\x1cenable_automatic_punctuation\x18\x11 \x01(\bR\x1aenableAutomaticPunctuation\x12E\n" +
 	"\vphrase_sets\x18\x14 \x03(\tB$\xfaA!\n" +

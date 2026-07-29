@@ -32,6 +32,7 @@ import (
 	clusterpb "cloud.google.com/go/redis/cluster/apiv1/clusterpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -881,8 +882,12 @@ func (c *cloudRedisClusterGRPCClient) UpdateCluster(ctx context.Context, req *cl
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -907,8 +912,12 @@ func (c *cloudRedisClusterGRPCClient) DeleteCluster(ctx context.Context, req *cl
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -933,8 +942,12 @@ func (c *cloudRedisClusterGRPCClient) CreateCluster(ctx context.Context, req *cl
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1007,8 +1020,12 @@ func (c *cloudRedisClusterGRPCClient) RescheduleClusterMaintenance(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.RescheduleClusterMaintenanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RescheduleClusterMaintenanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1185,8 +1202,12 @@ func (c *cloudRedisClusterGRPCClient) DeleteBackup(ctx context.Context, req *clu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1211,8 +1232,12 @@ func (c *cloudRedisClusterGRPCClient) ExportBackup(ctx context.Context, req *clu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.ExportBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1237,8 +1262,12 @@ func (c *cloudRedisClusterGRPCClient) BackupCluster(ctx context.Context, req *cl
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.BackupClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BackupClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1631,8 +1660,12 @@ func (c *cloudRedisClusterRESTClient) UpdateCluster(ctx context.Context, req *cl
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1695,8 +1728,12 @@ func (c *cloudRedisClusterRESTClient) DeleteCluster(ctx context.Context, req *cl
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1773,8 +1810,12 @@ func (c *cloudRedisClusterRESTClient) CreateCluster(ctx context.Context, req *cl
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1954,8 +1995,12 @@ func (c *cloudRedisClusterRESTClient) RescheduleClusterMaintenance(ctx context.C
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.RescheduleClusterMaintenanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RescheduleClusterMaintenanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2291,8 +2336,12 @@ func (c *cloudRedisClusterRESTClient) DeleteBackup(ctx context.Context, req *clu
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2357,8 +2406,12 @@ func (c *cloudRedisClusterRESTClient) ExportBackup(ctx context.Context, req *clu
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.ExportBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2434,8 +2487,12 @@ func (c *cloudRedisClusterRESTClient) BackupCluster(ctx context.Context, req *cl
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cluster.BackupClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BackupClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2795,7 +2852,7 @@ func (c *cloudRedisClusterRESTClient) ListOperations(ctx context.Context, req *l
 // The name must be that of a previously created BackupClusterOperation, possibly from a different process.
 func (c *cloudRedisClusterGRPCClient) BackupClusterOperation(name string) *BackupClusterOperation {
 	return &BackupClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.BackupClusterOperation"),
 	}
 }
 
@@ -2804,7 +2861,7 @@ func (c *cloudRedisClusterGRPCClient) BackupClusterOperation(name string) *Backu
 func (c *cloudRedisClusterRESTClient) BackupClusterOperation(name string) *BackupClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BackupClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.BackupClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -2813,7 +2870,7 @@ func (c *cloudRedisClusterRESTClient) BackupClusterOperation(name string) *Backu
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
 func (c *cloudRedisClusterGRPCClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.CreateClusterOperation"),
 	}
 }
 
@@ -2822,7 +2879,7 @@ func (c *cloudRedisClusterGRPCClient) CreateClusterOperation(name string) *Creat
 func (c *cloudRedisClusterRESTClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.CreateClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -2831,7 +2888,7 @@ func (c *cloudRedisClusterRESTClient) CreateClusterOperation(name string) *Creat
 // The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
 func (c *cloudRedisClusterGRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.DeleteBackupOperation"),
 	}
 }
 
@@ -2840,7 +2897,7 @@ func (c *cloudRedisClusterGRPCClient) DeleteBackupOperation(name string) *Delete
 func (c *cloudRedisClusterRESTClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.DeleteBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -2849,7 +2906,7 @@ func (c *cloudRedisClusterRESTClient) DeleteBackupOperation(name string) *Delete
 // The name must be that of a previously created DeleteClusterOperation, possibly from a different process.
 func (c *cloudRedisClusterGRPCClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.DeleteClusterOperation"),
 	}
 }
 
@@ -2858,7 +2915,7 @@ func (c *cloudRedisClusterGRPCClient) DeleteClusterOperation(name string) *Delet
 func (c *cloudRedisClusterRESTClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.DeleteClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -2867,7 +2924,7 @@ func (c *cloudRedisClusterRESTClient) DeleteClusterOperation(name string) *Delet
 // The name must be that of a previously created ExportBackupOperation, possibly from a different process.
 func (c *cloudRedisClusterGRPCClient) ExportBackupOperation(name string) *ExportBackupOperation {
 	return &ExportBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.ExportBackupOperation"),
 	}
 }
 
@@ -2876,7 +2933,7 @@ func (c *cloudRedisClusterGRPCClient) ExportBackupOperation(name string) *Export
 func (c *cloudRedisClusterRESTClient) ExportBackupOperation(name string) *ExportBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.ExportBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -2885,7 +2942,7 @@ func (c *cloudRedisClusterRESTClient) ExportBackupOperation(name string) *Export
 // The name must be that of a previously created RescheduleClusterMaintenanceOperation, possibly from a different process.
 func (c *cloudRedisClusterGRPCClient) RescheduleClusterMaintenanceOperation(name string) *RescheduleClusterMaintenanceOperation {
 	return &RescheduleClusterMaintenanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.RescheduleClusterMaintenanceOperation"),
 	}
 }
 
@@ -2894,7 +2951,7 @@ func (c *cloudRedisClusterGRPCClient) RescheduleClusterMaintenanceOperation(name
 func (c *cloudRedisClusterRESTClient) RescheduleClusterMaintenanceOperation(name string) *RescheduleClusterMaintenanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RescheduleClusterMaintenanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.RescheduleClusterMaintenanceOperation"),
 		pollPath: override,
 	}
 }
@@ -2903,7 +2960,7 @@ func (c *cloudRedisClusterRESTClient) RescheduleClusterMaintenanceOperation(name
 // The name must be that of a previously created UpdateClusterOperation, possibly from a different process.
 func (c *cloudRedisClusterGRPCClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.UpdateClusterOperation"),
 	}
 }
 
@@ -2912,7 +2969,7 @@ func (c *cloudRedisClusterGRPCClient) UpdateClusterOperation(name string) *Updat
 func (c *cloudRedisClusterRESTClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cluster.UpdateClusterOperation"),
 		pollPath: override,
 	}
 }

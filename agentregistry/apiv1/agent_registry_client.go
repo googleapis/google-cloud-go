@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1417,8 +1418,12 @@ func (c *gRPCClient) CreateService(ctx context.Context, req *agentregistrypb.Cre
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*agentregistry.CreateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1440,8 +1445,12 @@ func (c *gRPCClient) UpdateService(ctx context.Context, req *agentregistrypb.Upd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*agentregistry.UpdateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1466,8 +1475,12 @@ func (c *gRPCClient) DeleteService(ctx context.Context, req *agentregistrypb.Del
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*agentregistry.DeleteServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1568,8 +1581,12 @@ func (c *gRPCClient) CreateBinding(ctx context.Context, req *agentregistrypb.Cre
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*agentregistry.CreateBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1591,8 +1608,12 @@ func (c *gRPCClient) UpdateBinding(ctx context.Context, req *agentregistrypb.Upd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*agentregistry.UpdateBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1617,8 +1638,12 @@ func (c *gRPCClient) DeleteBinding(ctx context.Context, req *agentregistrypb.Del
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*agentregistry.DeleteBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2627,8 +2652,12 @@ func (c *restClient) CreateService(ctx context.Context, req *agentregistrypb.Cre
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*agentregistry.CreateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2701,8 +2730,12 @@ func (c *restClient) UpdateService(ctx context.Context, req *agentregistrypb.Upd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*agentregistry.UpdateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2764,8 +2797,12 @@ func (c *restClient) DeleteService(ctx context.Context, req *agentregistrypb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*agentregistry.DeleteServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2976,8 +3013,12 @@ func (c *restClient) CreateBinding(ctx context.Context, req *agentregistrypb.Cre
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*agentregistry.CreateBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3050,8 +3091,12 @@ func (c *restClient) UpdateBinding(ctx context.Context, req *agentregistrypb.Upd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*agentregistry.UpdateBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3113,8 +3158,12 @@ func (c *restClient) DeleteBinding(ctx context.Context, req *agentregistrypb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*agentregistry.DeleteBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3579,7 +3628,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateBindingOperation, possibly from a different process.
 func (c *gRPCClient) CreateBindingOperation(name string) *CreateBindingOperation {
 	return &CreateBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*agentregistry.CreateBindingOperation"),
 	}
 }
 
@@ -3588,7 +3637,7 @@ func (c *gRPCClient) CreateBindingOperation(name string) *CreateBindingOperation
 func (c *restClient) CreateBindingOperation(name string) *CreateBindingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*agentregistry.CreateBindingOperation"),
 		pollPath: override,
 	}
 }
@@ -3597,7 +3646,7 @@ func (c *restClient) CreateBindingOperation(name string) *CreateBindingOperation
 // The name must be that of a previously created CreateServiceOperation, possibly from a different process.
 func (c *gRPCClient) CreateServiceOperation(name string) *CreateServiceOperation {
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*agentregistry.CreateServiceOperation"),
 	}
 }
 
@@ -3606,7 +3655,7 @@ func (c *gRPCClient) CreateServiceOperation(name string) *CreateServiceOperation
 func (c *restClient) CreateServiceOperation(name string) *CreateServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*agentregistry.CreateServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -3615,7 +3664,7 @@ func (c *restClient) CreateServiceOperation(name string) *CreateServiceOperation
 // The name must be that of a previously created DeleteBindingOperation, possibly from a different process.
 func (c *gRPCClient) DeleteBindingOperation(name string) *DeleteBindingOperation {
 	return &DeleteBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*agentregistry.DeleteBindingOperation"),
 	}
 }
 
@@ -3624,7 +3673,7 @@ func (c *gRPCClient) DeleteBindingOperation(name string) *DeleteBindingOperation
 func (c *restClient) DeleteBindingOperation(name string) *DeleteBindingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*agentregistry.DeleteBindingOperation"),
 		pollPath: override,
 	}
 }
@@ -3633,7 +3682,7 @@ func (c *restClient) DeleteBindingOperation(name string) *DeleteBindingOperation
 // The name must be that of a previously created DeleteServiceOperation, possibly from a different process.
 func (c *gRPCClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*agentregistry.DeleteServiceOperation"),
 	}
 }
 
@@ -3642,7 +3691,7 @@ func (c *gRPCClient) DeleteServiceOperation(name string) *DeleteServiceOperation
 func (c *restClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*agentregistry.DeleteServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -3651,7 +3700,7 @@ func (c *restClient) DeleteServiceOperation(name string) *DeleteServiceOperation
 // The name must be that of a previously created UpdateBindingOperation, possibly from a different process.
 func (c *gRPCClient) UpdateBindingOperation(name string) *UpdateBindingOperation {
 	return &UpdateBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*agentregistry.UpdateBindingOperation"),
 	}
 }
 
@@ -3660,7 +3709,7 @@ func (c *gRPCClient) UpdateBindingOperation(name string) *UpdateBindingOperation
 func (c *restClient) UpdateBindingOperation(name string) *UpdateBindingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*agentregistry.UpdateBindingOperation"),
 		pollPath: override,
 	}
 }
@@ -3669,7 +3718,7 @@ func (c *restClient) UpdateBindingOperation(name string) *UpdateBindingOperation
 // The name must be that of a previously created UpdateServiceOperation, possibly from a different process.
 func (c *gRPCClient) UpdateServiceOperation(name string) *UpdateServiceOperation {
 	return &UpdateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*agentregistry.UpdateServiceOperation"),
 	}
 }
 
@@ -3678,7 +3727,7 @@ func (c *gRPCClient) UpdateServiceOperation(name string) *UpdateServiceOperation
 func (c *restClient) UpdateServiceOperation(name string) *UpdateServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*agentregistry.UpdateServiceOperation"),
 		pollPath: override,
 	}
 }

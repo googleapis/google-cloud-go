@@ -33,6 +33,7 @@ import (
 	runpb "cloud.google.com/go/run/apiv2/runpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -564,8 +565,12 @@ func (c *revisionsGRPCClient) DeleteRevision(ctx context.Context, req *runpb.Del
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.DeleteRevisionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRevisionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -894,8 +899,12 @@ func (c *revisionsRESTClient) DeleteRevision(ctx context.Context, req *runpb.Del
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.DeleteRevisionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRevisionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1141,7 +1150,7 @@ func (c *revisionsRESTClient) WaitOperation(ctx context.Context, req *longrunnin
 // The name must be that of a previously created DeleteRevisionOperation, possibly from a different process.
 func (c *revisionsGRPCClient) DeleteRevisionOperation(name string) *DeleteRevisionOperation {
 	return &DeleteRevisionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.DeleteRevisionOperation"),
 	}
 }
 
@@ -1150,7 +1159,7 @@ func (c *revisionsGRPCClient) DeleteRevisionOperation(name string) *DeleteRevisi
 func (c *revisionsRESTClient) DeleteRevisionOperation(name string) *DeleteRevisionOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteRevisionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.DeleteRevisionOperation"),
 		pollPath: override,
 	}
 }

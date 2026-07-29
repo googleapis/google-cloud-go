@@ -2087,8 +2087,10 @@ type RunEvaluationRequest struct {
 	GoldenRunMethod GoldenRunMethod `protobuf:"varint,13,opt,name=golden_run_method,json=goldenRunMethod,proto3,enum=google.cloud.ces.v1beta.GoldenRunMethod" json:"golden_run_method,omitempty"`
 	// Optional. Whether to generate a latency report for the evaluation run.
 	GenerateLatencyReport bool `protobuf:"varint,14,opt,name=generate_latency_report,json=generateLatencyReport,proto3" json:"generate_latency_report,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Optional. The caching settings to use for the evaluation run.
+	EvaluationRunCachingSettings *EvaluationRunCachingSettings `protobuf:"bytes,15,opt,name=evaluation_run_caching_settings,json=evaluationRunCachingSettings,proto3" json:"evaluation_run_caching_settings,omitempty"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *RunEvaluationRequest) Reset() {
@@ -2203,6 +2205,13 @@ func (x *RunEvaluationRequest) GetGenerateLatencyReport() bool {
 		return x.GenerateLatencyReport
 	}
 	return false
+}
+
+func (x *RunEvaluationRequest) GetEvaluationRunCachingSettings() *EvaluationRunCachingSettings {
+	if x != nil {
+		return x.EvaluationRunCachingSettings
+	}
+	return nil
 }
 
 // Represents a scheduled evaluation run configuration.
@@ -6417,7 +6426,7 @@ const file_google_cloud_ces_v1beta_evaluation_proto_rawDesc = "" +
 	"\x1aMETRIC_CALCULATION_FAILURE\x10\x03\x12\x1d\n" +
 	"\x19EVALUATION_UPDATE_FAILURE\x10\x04\x12\x13\n" +
 	"\x0fQUOTA_EXHAUSTED\x10\x05\x12\x1b\n" +
-	"\x17USER_SIMULATION_FAILURE\x10\x06\"\xa3\a\n" +
+	"\x17USER_SIMULATION_FAILURE\x10\x06\"\xa7\b\n" +
 	"\x14RunEvaluationRequest\x120\n" +
 	"\x03app\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
 	"\x16ces.googleapis.com/AppR\x03app\x12G\n" +
@@ -6437,7 +6446,8 @@ const file_google_cloud_ces_v1beta_evaluation_proto_rawDesc = "" +
 	"\x18scheduled_evaluation_run\x18\f \x01(\tB1\xe0A\x01\xfaA+\n" +
 	")ces.googleapis.com/ScheduledEvaluationRunR\x16scheduledEvaluationRun\x12Y\n" +
 	"\x11golden_run_method\x18\r \x01(\x0e2(.google.cloud.ces.v1beta.GoldenRunMethodB\x03\xe0A\x01R\x0fgoldenRunMethod\x12;\n" +
-	"\x17generate_latency_report\x18\x0e \x01(\bB\x03\xe0A\x01R\x15generateLatencyReportB\f\n" +
+	"\x17generate_latency_report\x18\x0e \x01(\bB\x03\xe0A\x01R\x15generateLatencyReport\x12\x81\x01\n" +
+	"\x1fevaluation_run_caching_settings\x18\x0f \x01(\v25.google.cloud.ces.v1beta.EvaluationRunCachingSettingsB\x03\xe0A\x01R\x1cevaluationRunCachingSettingsB\f\n" +
 	"\n" +
 	"_run_count\"\xc5\n" +
 	"\n" +
@@ -6584,22 +6594,23 @@ var file_google_cloud_ces_v1beta_evaluation_proto_goTypes = []any{
 	(*InputAudioConfig)(nil),                        // 71: google.cloud.ces.v1beta.InputAudioConfig
 	(*OutputAudioConfig)(nil),                       // 72: google.cloud.ces.v1beta.OutputAudioConfig
 	(EvaluationToolCallBehaviour)(0),                // 73: google.cloud.ces.v1beta.EvaluationToolCallBehaviour
-	(*structpb.Struct)(nil),                         // 74: google.protobuf.Struct
-	(*durationpb.Duration)(nil),                     // 75: google.protobuf.Duration
-	(*ToolCall)(nil),                                // 76: google.cloud.ces.v1beta.ToolCall
-	(*ToolResponse)(nil),                            // 77: google.cloud.ces.v1beta.ToolResponse
-	(*Message)(nil),                                 // 78: google.cloud.ces.v1beta.Message
-	(*AgentTransfer)(nil),                           // 79: google.cloud.ces.v1beta.AgentTransfer
-	(*EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_ExpectationLevelMetricsThresholds)(nil), // 80: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.ExpectationLevelMetricsThresholds
-	(*EvaluationMetricsConfig_SemanticSimilarityMetricsConfig)(nil),                                         // 81: google.cloud.ces.v1beta.EvaluationMetricsConfig.SemanticSimilarityMetricsConfig
-	(*EvaluationMetricsConfig_HallucinationMetricsConfig)(nil),                                              // 82: google.cloud.ces.v1beta.EvaluationMetricsConfig.HallucinationMetricsConfig
-	(EvaluationMetricsConfig_ComparisonType)(0),                                                             // 83: google.cloud.ces.v1beta.EvaluationMetricsConfig.ComparisonType
-	(*SessionInput)(nil), // 84: google.cloud.ces.v1beta.SessionInput
-	(*Span)(nil),         // 85: google.cloud.ces.v1beta.Span
-	(*EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_TurnLevelMetricsThresholds)(nil), // 86: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds
-	(EvaluationMetricsThresholds_HallucinationMetricBehavior)(0),                                     // 87: google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
-	(EvaluationSettings_ScenarioExecutionMode)(0),                                                    // 88: google.cloud.ces.v1beta.EvaluationSettings.ScenarioExecutionMode
-	(*ToolsetTool)(nil), // 89: google.cloud.ces.v1beta.ToolsetTool
+	(*EvaluationRunCachingSettings)(nil),            // 74: google.cloud.ces.v1beta.EvaluationRunCachingSettings
+	(*structpb.Struct)(nil),                         // 75: google.protobuf.Struct
+	(*durationpb.Duration)(nil),                     // 76: google.protobuf.Duration
+	(*ToolCall)(nil),                                // 77: google.cloud.ces.v1beta.ToolCall
+	(*ToolResponse)(nil),                            // 78: google.cloud.ces.v1beta.ToolResponse
+	(*Message)(nil),                                 // 79: google.cloud.ces.v1beta.Message
+	(*AgentTransfer)(nil),                           // 80: google.cloud.ces.v1beta.AgentTransfer
+	(*EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_ExpectationLevelMetricsThresholds)(nil), // 81: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.ExpectationLevelMetricsThresholds
+	(*EvaluationMetricsConfig_SemanticSimilarityMetricsConfig)(nil),                                         // 82: google.cloud.ces.v1beta.EvaluationMetricsConfig.SemanticSimilarityMetricsConfig
+	(*EvaluationMetricsConfig_HallucinationMetricsConfig)(nil),                                              // 83: google.cloud.ces.v1beta.EvaluationMetricsConfig.HallucinationMetricsConfig
+	(EvaluationMetricsConfig_ComparisonType)(0),                                                             // 84: google.cloud.ces.v1beta.EvaluationMetricsConfig.ComparisonType
+	(*SessionInput)(nil), // 85: google.cloud.ces.v1beta.SessionInput
+	(*Span)(nil),         // 86: google.cloud.ces.v1beta.Span
+	(*EvaluationMetricsThresholds_GoldenEvaluationMetricsThresholds_TurnLevelMetricsThresholds)(nil), // 87: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds
+	(EvaluationMetricsThresholds_HallucinationMetricBehavior)(0),                                     // 88: google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
+	(EvaluationSettings_ScenarioExecutionMode)(0),                                                    // 89: google.cloud.ces.v1beta.EvaluationSettings.ScenarioExecutionMode
+	(*ToolsetTool)(nil), // 90: google.cloud.ces.v1beta.ToolsetTool
 }
 var file_google_cloud_ces_v1beta_evaluation_proto_depIdxs = []int32{
 	29,  // 0: google.cloud.ces.v1beta.AggregatedMetrics.metrics_by_app_version:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersion
@@ -6656,116 +6667,117 @@ var file_google_cloud_ces_v1beta_evaluation_proto_depIdxs = []int32{
 	22,  // 51: google.cloud.ces.v1beta.RunEvaluationRequest.persona_run_configs:type_name -> google.cloud.ces.v1beta.PersonaRunConfig
 	23,  // 52: google.cloud.ces.v1beta.RunEvaluationRequest.optimization_config:type_name -> google.cloud.ces.v1beta.OptimizationConfig
 	70,  // 53: google.cloud.ces.v1beta.RunEvaluationRequest.golden_run_method:type_name -> google.cloud.ces.v1beta.GoldenRunMethod
-	20,  // 54: google.cloud.ces.v1beta.ScheduledEvaluationRun.request:type_name -> google.cloud.ces.v1beta.RunEvaluationRequest
-	64,  // 55: google.cloud.ces.v1beta.ScheduledEvaluationRun.scheduling_config:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun.SchedulingConfig
-	65,  // 56: google.cloud.ces.v1beta.ScheduledEvaluationRun.next_scheduled_execution_time:type_name -> google.protobuf.Timestamp
-	65,  // 57: google.cloud.ces.v1beta.ScheduledEvaluationRun.create_time:type_name -> google.protobuf.Timestamp
-	65,  // 58: google.cloud.ces.v1beta.ScheduledEvaluationRun.update_time:type_name -> google.protobuf.Timestamp
-	10,  // 59: google.cloud.ces.v1beta.OptimizationConfig.status:type_name -> google.cloud.ces.v1beta.OptimizationConfig.OptimizationStatus
-	74,  // 60: google.cloud.ces.v1beta.OptimizationConfig.loss_report:type_name -> google.protobuf.Struct
-	75,  // 61: google.cloud.ces.v1beta.AggregatedMetrics.TurnLatencyMetrics.average_latency:type_name -> google.protobuf.Duration
-	75,  // 62: google.cloud.ces.v1beta.AggregatedMetrics.ToolCallLatencyMetrics.average_latency:type_name -> google.protobuf.Duration
-	24,  // 63: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersion.tool_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.ToolMetrics
-	27,  // 64: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersion.semantic_similarity_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.SemanticSimilarityMetrics
-	28,  // 65: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersion.hallucination_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.HallucinationMetrics
-	26,  // 66: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersion.tool_call_latency_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.ToolCallLatencyMetrics
-	25,  // 67: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersion.turn_latency_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.TurnLatencyMetrics
-	30,  // 68: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersion.metrics_by_turn:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.MetricsByTurn
-	24,  // 69: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByTurn.tool_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.ToolMetrics
-	27,  // 70: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByTurn.semantic_similarity_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.SemanticSimilarityMetrics
-	28,  // 71: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByTurn.hallucination_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.HallucinationMetrics
-	26,  // 72: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByTurn.tool_call_latency_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.ToolCallLatencyMetrics
-	25,  // 73: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByTurn.turn_latency_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.TurnLatencyMetrics
-	76,  // 74: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.tool_call:type_name -> google.cloud.ces.v1beta.ToolCall
-	77,  // 75: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.tool_response:type_name -> google.cloud.ces.v1beta.ToolResponse
-	78,  // 76: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.agent_response:type_name -> google.cloud.ces.v1beta.Message
-	79,  // 77: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.agent_transfer:type_name -> google.cloud.ces.v1beta.AgentTransfer
-	74,  // 78: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.updated_variables:type_name -> google.protobuf.Struct
-	77,  // 79: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.mock_tool_response:type_name -> google.cloud.ces.v1beta.ToolResponse
-	80,  // 80: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.expectation_level_metrics_thresholds_override:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.ExpectationLevelMetricsThresholds
-	81,  // 81: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.agent_response_semantic_similarity_metrics_config_override:type_name -> google.cloud.ces.v1beta.EvaluationMetricsConfig.SemanticSimilarityMetricsConfig
-	82,  // 82: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.agent_response_hallucination_metrics_config_override:type_name -> google.cloud.ces.v1beta.EvaluationMetricsConfig.HallucinationMetricsConfig
-	83,  // 83: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.comparison_type:type_name -> google.cloud.ces.v1beta.EvaluationMetricsConfig.ComparisonType
-	84,  // 84: google.cloud.ces.v1beta.Evaluation.Step.user_input:type_name -> google.cloud.ces.v1beta.SessionInput
-	79,  // 85: google.cloud.ces.v1beta.Evaluation.Step.agent_transfer:type_name -> google.cloud.ces.v1beta.AgentTransfer
-	31,  // 86: google.cloud.ces.v1beta.Evaluation.Step.expectation:type_name -> google.cloud.ces.v1beta.Evaluation.GoldenExpectation
-	32,  // 87: google.cloud.ces.v1beta.Evaluation.GoldenTurn.steps:type_name -> google.cloud.ces.v1beta.Evaluation.Step
-	85,  // 88: google.cloud.ces.v1beta.Evaluation.GoldenTurn.root_span:type_name -> google.cloud.ces.v1beta.Span
-	86,  // 89: google.cloud.ces.v1beta.Evaluation.GoldenTurn.turn_level_metrics_thresholds_override:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds
-	87,  // 90: google.cloud.ces.v1beta.Evaluation.GoldenTurn.hallucination_metric_behavior_override:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
-	33,  // 91: google.cloud.ces.v1beta.Evaluation.Golden.turns:type_name -> google.cloud.ces.v1beta.Evaluation.GoldenTurn
-	37,  // 92: google.cloud.ces.v1beta.Evaluation.ScenarioExpectation.tool_expectation:type_name -> google.cloud.ces.v1beta.Evaluation.ScenarioExpectation.ToolExpectation
-	78,  // 93: google.cloud.ces.v1beta.Evaluation.ScenarioExpectation.agent_response:type_name -> google.cloud.ces.v1beta.Message
-	38,  // 94: google.cloud.ces.v1beta.Evaluation.Scenario.user_facts:type_name -> google.cloud.ces.v1beta.Evaluation.Scenario.UserFact
-	35,  // 95: google.cloud.ces.v1beta.Evaluation.Scenario.scenario_expectations:type_name -> google.cloud.ces.v1beta.Evaluation.ScenarioExpectation
-	74,  // 96: google.cloud.ces.v1beta.Evaluation.Scenario.variable_overrides:type_name -> google.protobuf.Struct
-	0,   // 97: google.cloud.ces.v1beta.Evaluation.Scenario.task_completion_behavior:type_name -> google.cloud.ces.v1beta.Evaluation.Scenario.TaskCompletionBehavior
-	1,   // 98: google.cloud.ces.v1beta.Evaluation.Scenario.user_goal_behavior:type_name -> google.cloud.ces.v1beta.Evaluation.Scenario.UserGoalBehavior
-	88,  // 99: google.cloud.ces.v1beta.Evaluation.Scenario.scenario_execution_mode:type_name -> google.cloud.ces.v1beta.EvaluationSettings.ScenarioExecutionMode
-	76,  // 100: google.cloud.ces.v1beta.Evaluation.ScenarioExpectation.ToolExpectation.expected_tool_call:type_name -> google.cloud.ces.v1beta.ToolCall
-	77,  // 101: google.cloud.ces.v1beta.Evaluation.ScenarioExpectation.ToolExpectation.mock_tool_response:type_name -> google.cloud.ces.v1beta.ToolResponse
-	76,  // 102: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.observed_tool_call:type_name -> google.cloud.ces.v1beta.ToolCall
-	77,  // 103: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.observed_tool_response:type_name -> google.cloud.ces.v1beta.ToolResponse
-	78,  // 104: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.observed_agent_response:type_name -> google.cloud.ces.v1beta.Message
-	79,  // 105: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.observed_agent_transfer:type_name -> google.cloud.ces.v1beta.AgentTransfer
-	74,  // 106: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.observed_payload:type_name -> google.protobuf.Struct
-	31,  // 107: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.expectation:type_name -> google.cloud.ces.v1beta.Evaluation.GoldenExpectation
-	2,   // 108: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.outcome:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
-	49,  // 109: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.semantic_similarity_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.SemanticSimilarityResult
-	52,  // 110: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.tool_invocation_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.ToolInvocationResult
-	2,   // 111: google.cloud.ces.v1beta.EvaluationResult.EvaluationExpectationResult.outcome:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
-	53,  // 112: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.turn_replay_results:type_name -> google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult
-	40,  // 113: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.evaluation_expectation_results:type_name -> google.cloud.ces.v1beta.EvaluationResult.EvaluationExpectationResult
-	54,  // 114: google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.observed_tool_call:type_name -> google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.ObservedToolCall
-	78,  // 115: google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.observed_agent_response:type_name -> google.cloud.ces.v1beta.Message
-	35,  // 116: google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.expectation:type_name -> google.cloud.ces.v1beta.Evaluation.ScenarioExpectation
-	2,   // 117: google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.outcome:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
-	38,  // 118: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.user_facts:type_name -> google.cloud.ces.v1beta.Evaluation.Scenario.UserFact
-	43,  // 119: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.expectation_outcomes:type_name -> google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome
-	42,  // 120: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.rubric_outcomes:type_name -> google.cloud.ces.v1beta.EvaluationResult.ScenarioRubricOutcome
-	47,  // 121: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.hallucination_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.HallucinationResult
-	51,  // 122: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.task_completion_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.TaskCompletionResult
-	46,  // 123: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.tool_call_latencies:type_name -> google.cloud.ces.v1beta.EvaluationResult.ToolCallLatency
-	48,  // 124: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.user_goal_satisfaction_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.UserGoalSatisfactionResult
-	45,  // 125: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.span_latencies:type_name -> google.cloud.ces.v1beta.EvaluationResult.SpanLatency
-	40,  // 126: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.evaluation_expectation_results:type_name -> google.cloud.ces.v1beta.EvaluationResult.EvaluationExpectationResult
-	89,  // 127: google.cloud.ces.v1beta.EvaluationResult.SpanLatency.toolset:type_name -> google.cloud.ces.v1beta.ToolsetTool
-	4,   // 128: google.cloud.ces.v1beta.EvaluationResult.SpanLatency.type:type_name -> google.cloud.ces.v1beta.EvaluationResult.SpanLatency.Type
-	65,  // 129: google.cloud.ces.v1beta.EvaluationResult.SpanLatency.start_time:type_name -> google.protobuf.Timestamp
-	65,  // 130: google.cloud.ces.v1beta.EvaluationResult.SpanLatency.end_time:type_name -> google.protobuf.Timestamp
-	75,  // 131: google.cloud.ces.v1beta.EvaluationResult.SpanLatency.execution_latency:type_name -> google.protobuf.Duration
-	65,  // 132: google.cloud.ces.v1beta.EvaluationResult.ToolCallLatency.start_time:type_name -> google.protobuf.Timestamp
-	65,  // 133: google.cloud.ces.v1beta.EvaluationResult.ToolCallLatency.end_time:type_name -> google.protobuf.Timestamp
-	75,  // 134: google.cloud.ces.v1beta.EvaluationResult.ToolCallLatency.execution_latency:type_name -> google.protobuf.Duration
-	2,   // 135: google.cloud.ces.v1beta.EvaluationResult.SemanticSimilarityResult.outcome:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
-	2,   // 136: google.cloud.ces.v1beta.EvaluationResult.OverallToolInvocationResult.outcome:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
-	2,   // 137: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.ToolInvocationResult.outcome:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
-	39,  // 138: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.expectation_outcome:type_name -> google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome
-	47,  // 139: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.hallucination_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.HallucinationResult
-	75,  // 140: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.turn_latency:type_name -> google.protobuf.Duration
-	46,  // 141: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.tool_call_latencies:type_name -> google.cloud.ces.v1beta.EvaluationResult.ToolCallLatency
-	49,  // 142: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.semantic_similarity_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.SemanticSimilarityResult
-	50,  // 143: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.overall_tool_invocation_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.OverallToolInvocationResult
-	19,  // 144: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.error_info:type_name -> google.cloud.ces.v1beta.EvaluationErrorInfo
-	45,  // 145: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.span_latencies:type_name -> google.cloud.ces.v1beta.EvaluationResult.SpanLatency
-	76,  // 146: google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.ObservedToolCall.tool_call:type_name -> google.cloud.ces.v1beta.ToolCall
-	77,  // 147: google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.ObservedToolCall.tool_response:type_name -> google.cloud.ces.v1beta.ToolResponse
-	56,  // 148: google.cloud.ces.v1beta.EvaluationRun.EvaluationRunSummariesEntry.value:type_name -> google.cloud.ces.v1beta.EvaluationRun.EvaluationRunSummary
-	75,  // 149: google.cloud.ces.v1beta.LatencyReport.LatencyMetrics.p50_latency:type_name -> google.protobuf.Duration
-	75,  // 150: google.cloud.ces.v1beta.LatencyReport.LatencyMetrics.p90_latency:type_name -> google.protobuf.Duration
-	75,  // 151: google.cloud.ces.v1beta.LatencyReport.LatencyMetrics.p99_latency:type_name -> google.protobuf.Duration
-	89,  // 152: google.cloud.ces.v1beta.LatencyReport.ToolLatency.toolset_tool:type_name -> google.cloud.ces.v1beta.ToolsetTool
-	58,  // 153: google.cloud.ces.v1beta.LatencyReport.ToolLatency.latency_metrics:type_name -> google.cloud.ces.v1beta.LatencyReport.LatencyMetrics
-	58,  // 154: google.cloud.ces.v1beta.LatencyReport.CallbackLatency.latency_metrics:type_name -> google.cloud.ces.v1beta.LatencyReport.LatencyMetrics
-	58,  // 155: google.cloud.ces.v1beta.LatencyReport.GuardrailLatency.latency_metrics:type_name -> google.cloud.ces.v1beta.LatencyReport.LatencyMetrics
-	58,  // 156: google.cloud.ces.v1beta.LatencyReport.LlmCallLatency.latency_metrics:type_name -> google.cloud.ces.v1beta.LatencyReport.LatencyMetrics
-	9,   // 157: google.cloud.ces.v1beta.ScheduledEvaluationRun.SchedulingConfig.frequency:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun.SchedulingConfig.Frequency
-	65,  // 158: google.cloud.ces.v1beta.ScheduledEvaluationRun.SchedulingConfig.start_time:type_name -> google.protobuf.Timestamp
-	159, // [159:159] is the sub-list for method output_type
-	159, // [159:159] is the sub-list for method input_type
-	159, // [159:159] is the sub-list for extension type_name
-	159, // [159:159] is the sub-list for extension extendee
-	0,   // [0:159] is the sub-list for field type_name
+	74,  // 54: google.cloud.ces.v1beta.RunEvaluationRequest.evaluation_run_caching_settings:type_name -> google.cloud.ces.v1beta.EvaluationRunCachingSettings
+	20,  // 55: google.cloud.ces.v1beta.ScheduledEvaluationRun.request:type_name -> google.cloud.ces.v1beta.RunEvaluationRequest
+	64,  // 56: google.cloud.ces.v1beta.ScheduledEvaluationRun.scheduling_config:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun.SchedulingConfig
+	65,  // 57: google.cloud.ces.v1beta.ScheduledEvaluationRun.next_scheduled_execution_time:type_name -> google.protobuf.Timestamp
+	65,  // 58: google.cloud.ces.v1beta.ScheduledEvaluationRun.create_time:type_name -> google.protobuf.Timestamp
+	65,  // 59: google.cloud.ces.v1beta.ScheduledEvaluationRun.update_time:type_name -> google.protobuf.Timestamp
+	10,  // 60: google.cloud.ces.v1beta.OptimizationConfig.status:type_name -> google.cloud.ces.v1beta.OptimizationConfig.OptimizationStatus
+	75,  // 61: google.cloud.ces.v1beta.OptimizationConfig.loss_report:type_name -> google.protobuf.Struct
+	76,  // 62: google.cloud.ces.v1beta.AggregatedMetrics.TurnLatencyMetrics.average_latency:type_name -> google.protobuf.Duration
+	76,  // 63: google.cloud.ces.v1beta.AggregatedMetrics.ToolCallLatencyMetrics.average_latency:type_name -> google.protobuf.Duration
+	24,  // 64: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersion.tool_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.ToolMetrics
+	27,  // 65: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersion.semantic_similarity_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.SemanticSimilarityMetrics
+	28,  // 66: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersion.hallucination_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.HallucinationMetrics
+	26,  // 67: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersion.tool_call_latency_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.ToolCallLatencyMetrics
+	25,  // 68: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersion.turn_latency_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.TurnLatencyMetrics
+	30,  // 69: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByAppVersion.metrics_by_turn:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.MetricsByTurn
+	24,  // 70: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByTurn.tool_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.ToolMetrics
+	27,  // 71: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByTurn.semantic_similarity_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.SemanticSimilarityMetrics
+	28,  // 72: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByTurn.hallucination_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.HallucinationMetrics
+	26,  // 73: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByTurn.tool_call_latency_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.ToolCallLatencyMetrics
+	25,  // 74: google.cloud.ces.v1beta.AggregatedMetrics.MetricsByTurn.turn_latency_metrics:type_name -> google.cloud.ces.v1beta.AggregatedMetrics.TurnLatencyMetrics
+	77,  // 75: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.tool_call:type_name -> google.cloud.ces.v1beta.ToolCall
+	78,  // 76: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.tool_response:type_name -> google.cloud.ces.v1beta.ToolResponse
+	79,  // 77: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.agent_response:type_name -> google.cloud.ces.v1beta.Message
+	80,  // 78: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.agent_transfer:type_name -> google.cloud.ces.v1beta.AgentTransfer
+	75,  // 79: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.updated_variables:type_name -> google.protobuf.Struct
+	78,  // 80: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.mock_tool_response:type_name -> google.cloud.ces.v1beta.ToolResponse
+	81,  // 81: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.expectation_level_metrics_thresholds_override:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.ExpectationLevelMetricsThresholds
+	82,  // 82: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.agent_response_semantic_similarity_metrics_config_override:type_name -> google.cloud.ces.v1beta.EvaluationMetricsConfig.SemanticSimilarityMetricsConfig
+	83,  // 83: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.agent_response_hallucination_metrics_config_override:type_name -> google.cloud.ces.v1beta.EvaluationMetricsConfig.HallucinationMetricsConfig
+	84,  // 84: google.cloud.ces.v1beta.Evaluation.GoldenExpectation.comparison_type:type_name -> google.cloud.ces.v1beta.EvaluationMetricsConfig.ComparisonType
+	85,  // 85: google.cloud.ces.v1beta.Evaluation.Step.user_input:type_name -> google.cloud.ces.v1beta.SessionInput
+	80,  // 86: google.cloud.ces.v1beta.Evaluation.Step.agent_transfer:type_name -> google.cloud.ces.v1beta.AgentTransfer
+	31,  // 87: google.cloud.ces.v1beta.Evaluation.Step.expectation:type_name -> google.cloud.ces.v1beta.Evaluation.GoldenExpectation
+	32,  // 88: google.cloud.ces.v1beta.Evaluation.GoldenTurn.steps:type_name -> google.cloud.ces.v1beta.Evaluation.Step
+	86,  // 89: google.cloud.ces.v1beta.Evaluation.GoldenTurn.root_span:type_name -> google.cloud.ces.v1beta.Span
+	87,  // 90: google.cloud.ces.v1beta.Evaluation.GoldenTurn.turn_level_metrics_thresholds_override:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds
+	88,  // 91: google.cloud.ces.v1beta.Evaluation.GoldenTurn.hallucination_metric_behavior_override:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
+	33,  // 92: google.cloud.ces.v1beta.Evaluation.Golden.turns:type_name -> google.cloud.ces.v1beta.Evaluation.GoldenTurn
+	37,  // 93: google.cloud.ces.v1beta.Evaluation.ScenarioExpectation.tool_expectation:type_name -> google.cloud.ces.v1beta.Evaluation.ScenarioExpectation.ToolExpectation
+	79,  // 94: google.cloud.ces.v1beta.Evaluation.ScenarioExpectation.agent_response:type_name -> google.cloud.ces.v1beta.Message
+	38,  // 95: google.cloud.ces.v1beta.Evaluation.Scenario.user_facts:type_name -> google.cloud.ces.v1beta.Evaluation.Scenario.UserFact
+	35,  // 96: google.cloud.ces.v1beta.Evaluation.Scenario.scenario_expectations:type_name -> google.cloud.ces.v1beta.Evaluation.ScenarioExpectation
+	75,  // 97: google.cloud.ces.v1beta.Evaluation.Scenario.variable_overrides:type_name -> google.protobuf.Struct
+	0,   // 98: google.cloud.ces.v1beta.Evaluation.Scenario.task_completion_behavior:type_name -> google.cloud.ces.v1beta.Evaluation.Scenario.TaskCompletionBehavior
+	1,   // 99: google.cloud.ces.v1beta.Evaluation.Scenario.user_goal_behavior:type_name -> google.cloud.ces.v1beta.Evaluation.Scenario.UserGoalBehavior
+	89,  // 100: google.cloud.ces.v1beta.Evaluation.Scenario.scenario_execution_mode:type_name -> google.cloud.ces.v1beta.EvaluationSettings.ScenarioExecutionMode
+	77,  // 101: google.cloud.ces.v1beta.Evaluation.ScenarioExpectation.ToolExpectation.expected_tool_call:type_name -> google.cloud.ces.v1beta.ToolCall
+	78,  // 102: google.cloud.ces.v1beta.Evaluation.ScenarioExpectation.ToolExpectation.mock_tool_response:type_name -> google.cloud.ces.v1beta.ToolResponse
+	77,  // 103: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.observed_tool_call:type_name -> google.cloud.ces.v1beta.ToolCall
+	78,  // 104: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.observed_tool_response:type_name -> google.cloud.ces.v1beta.ToolResponse
+	79,  // 105: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.observed_agent_response:type_name -> google.cloud.ces.v1beta.Message
+	80,  // 106: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.observed_agent_transfer:type_name -> google.cloud.ces.v1beta.AgentTransfer
+	75,  // 107: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.observed_payload:type_name -> google.protobuf.Struct
+	31,  // 108: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.expectation:type_name -> google.cloud.ces.v1beta.Evaluation.GoldenExpectation
+	2,   // 109: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.outcome:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
+	49,  // 110: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.semantic_similarity_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.SemanticSimilarityResult
+	52,  // 111: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.tool_invocation_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.ToolInvocationResult
+	2,   // 112: google.cloud.ces.v1beta.EvaluationResult.EvaluationExpectationResult.outcome:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
+	53,  // 113: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.turn_replay_results:type_name -> google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult
+	40,  // 114: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.evaluation_expectation_results:type_name -> google.cloud.ces.v1beta.EvaluationResult.EvaluationExpectationResult
+	54,  // 115: google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.observed_tool_call:type_name -> google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.ObservedToolCall
+	79,  // 116: google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.observed_agent_response:type_name -> google.cloud.ces.v1beta.Message
+	35,  // 117: google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.expectation:type_name -> google.cloud.ces.v1beta.Evaluation.ScenarioExpectation
+	2,   // 118: google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.outcome:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
+	38,  // 119: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.user_facts:type_name -> google.cloud.ces.v1beta.Evaluation.Scenario.UserFact
+	43,  // 120: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.expectation_outcomes:type_name -> google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome
+	42,  // 121: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.rubric_outcomes:type_name -> google.cloud.ces.v1beta.EvaluationResult.ScenarioRubricOutcome
+	47,  // 122: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.hallucination_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.HallucinationResult
+	51,  // 123: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.task_completion_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.TaskCompletionResult
+	46,  // 124: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.tool_call_latencies:type_name -> google.cloud.ces.v1beta.EvaluationResult.ToolCallLatency
+	48,  // 125: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.user_goal_satisfaction_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.UserGoalSatisfactionResult
+	45,  // 126: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.span_latencies:type_name -> google.cloud.ces.v1beta.EvaluationResult.SpanLatency
+	40,  // 127: google.cloud.ces.v1beta.EvaluationResult.ScenarioResult.evaluation_expectation_results:type_name -> google.cloud.ces.v1beta.EvaluationResult.EvaluationExpectationResult
+	90,  // 128: google.cloud.ces.v1beta.EvaluationResult.SpanLatency.toolset:type_name -> google.cloud.ces.v1beta.ToolsetTool
+	4,   // 129: google.cloud.ces.v1beta.EvaluationResult.SpanLatency.type:type_name -> google.cloud.ces.v1beta.EvaluationResult.SpanLatency.Type
+	65,  // 130: google.cloud.ces.v1beta.EvaluationResult.SpanLatency.start_time:type_name -> google.protobuf.Timestamp
+	65,  // 131: google.cloud.ces.v1beta.EvaluationResult.SpanLatency.end_time:type_name -> google.protobuf.Timestamp
+	76,  // 132: google.cloud.ces.v1beta.EvaluationResult.SpanLatency.execution_latency:type_name -> google.protobuf.Duration
+	65,  // 133: google.cloud.ces.v1beta.EvaluationResult.ToolCallLatency.start_time:type_name -> google.protobuf.Timestamp
+	65,  // 134: google.cloud.ces.v1beta.EvaluationResult.ToolCallLatency.end_time:type_name -> google.protobuf.Timestamp
+	76,  // 135: google.cloud.ces.v1beta.EvaluationResult.ToolCallLatency.execution_latency:type_name -> google.protobuf.Duration
+	2,   // 136: google.cloud.ces.v1beta.EvaluationResult.SemanticSimilarityResult.outcome:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
+	2,   // 137: google.cloud.ces.v1beta.EvaluationResult.OverallToolInvocationResult.outcome:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
+	2,   // 138: google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome.ToolInvocationResult.outcome:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
+	39,  // 139: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.expectation_outcome:type_name -> google.cloud.ces.v1beta.EvaluationResult.GoldenExpectationOutcome
+	47,  // 140: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.hallucination_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.HallucinationResult
+	76,  // 141: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.turn_latency:type_name -> google.protobuf.Duration
+	46,  // 142: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.tool_call_latencies:type_name -> google.cloud.ces.v1beta.EvaluationResult.ToolCallLatency
+	49,  // 143: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.semantic_similarity_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.SemanticSimilarityResult
+	50,  // 144: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.overall_tool_invocation_result:type_name -> google.cloud.ces.v1beta.EvaluationResult.OverallToolInvocationResult
+	19,  // 145: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.error_info:type_name -> google.cloud.ces.v1beta.EvaluationErrorInfo
+	45,  // 146: google.cloud.ces.v1beta.EvaluationResult.GoldenResult.TurnReplayResult.span_latencies:type_name -> google.cloud.ces.v1beta.EvaluationResult.SpanLatency
+	77,  // 147: google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.ObservedToolCall.tool_call:type_name -> google.cloud.ces.v1beta.ToolCall
+	78,  // 148: google.cloud.ces.v1beta.EvaluationResult.ScenarioExpectationOutcome.ObservedToolCall.tool_response:type_name -> google.cloud.ces.v1beta.ToolResponse
+	56,  // 149: google.cloud.ces.v1beta.EvaluationRun.EvaluationRunSummariesEntry.value:type_name -> google.cloud.ces.v1beta.EvaluationRun.EvaluationRunSummary
+	76,  // 150: google.cloud.ces.v1beta.LatencyReport.LatencyMetrics.p50_latency:type_name -> google.protobuf.Duration
+	76,  // 151: google.cloud.ces.v1beta.LatencyReport.LatencyMetrics.p90_latency:type_name -> google.protobuf.Duration
+	76,  // 152: google.cloud.ces.v1beta.LatencyReport.LatencyMetrics.p99_latency:type_name -> google.protobuf.Duration
+	90,  // 153: google.cloud.ces.v1beta.LatencyReport.ToolLatency.toolset_tool:type_name -> google.cloud.ces.v1beta.ToolsetTool
+	58,  // 154: google.cloud.ces.v1beta.LatencyReport.ToolLatency.latency_metrics:type_name -> google.cloud.ces.v1beta.LatencyReport.LatencyMetrics
+	58,  // 155: google.cloud.ces.v1beta.LatencyReport.CallbackLatency.latency_metrics:type_name -> google.cloud.ces.v1beta.LatencyReport.LatencyMetrics
+	58,  // 156: google.cloud.ces.v1beta.LatencyReport.GuardrailLatency.latency_metrics:type_name -> google.cloud.ces.v1beta.LatencyReport.LatencyMetrics
+	58,  // 157: google.cloud.ces.v1beta.LatencyReport.LlmCallLatency.latency_metrics:type_name -> google.cloud.ces.v1beta.LatencyReport.LatencyMetrics
+	9,   // 158: google.cloud.ces.v1beta.ScheduledEvaluationRun.SchedulingConfig.frequency:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun.SchedulingConfig.Frequency
+	65,  // 159: google.cloud.ces.v1beta.ScheduledEvaluationRun.SchedulingConfig.start_time:type_name -> google.protobuf.Timestamp
+	160, // [160:160] is the sub-list for method output_type
+	160, // [160:160] is the sub-list for method input_type
+	160, // [160:160] is the sub-list for extension type_name
+	160, // [160:160] is the sub-list for extension extendee
+	0,   // [0:160] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_evaluation_proto_init() }

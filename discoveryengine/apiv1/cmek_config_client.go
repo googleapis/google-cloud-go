@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -531,8 +532,12 @@ func (c *cmekConfigGRPCClient) UpdateCmekConfig(ctx context.Context, req *discov
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.UpdateCmekConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCmekConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -605,8 +610,12 @@ func (c *cmekConfigGRPCClient) DeleteCmekConfig(ctx context.Context, req *discov
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteCmekConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCmekConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -761,8 +770,12 @@ func (c *cmekConfigRESTClient) UpdateCmekConfig(ctx context.Context, req *discov
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.UpdateCmekConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCmekConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -936,8 +949,12 @@ func (c *cmekConfigRESTClient) DeleteCmekConfig(ctx context.Context, req *discov
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteCmekConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCmekConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1129,7 +1146,7 @@ func (c *cmekConfigRESTClient) ListOperations(ctx context.Context, req *longrunn
 // The name must be that of a previously created DeleteCmekConfigOperation, possibly from a different process.
 func (c *cmekConfigGRPCClient) DeleteCmekConfigOperation(name string) *DeleteCmekConfigOperation {
 	return &DeleteCmekConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteCmekConfigOperation"),
 	}
 }
 
@@ -1138,7 +1155,7 @@ func (c *cmekConfigGRPCClient) DeleteCmekConfigOperation(name string) *DeleteCme
 func (c *cmekConfigRESTClient) DeleteCmekConfigOperation(name string) *DeleteCmekConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCmekConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteCmekConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -1147,7 +1164,7 @@ func (c *cmekConfigRESTClient) DeleteCmekConfigOperation(name string) *DeleteCme
 // The name must be that of a previously created UpdateCmekConfigOperation, possibly from a different process.
 func (c *cmekConfigGRPCClient) UpdateCmekConfigOperation(name string) *UpdateCmekConfigOperation {
 	return &UpdateCmekConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.UpdateCmekConfigOperation"),
 	}
 }
 
@@ -1156,7 +1173,7 @@ func (c *cmekConfigGRPCClient) UpdateCmekConfigOperation(name string) *UpdateCme
 func (c *cmekConfigRESTClient) UpdateCmekConfigOperation(name string) *UpdateCmekConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCmekConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.UpdateCmekConfigOperation"),
 		pollPath: override,
 	}
 }

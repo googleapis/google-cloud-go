@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1710,8 +1711,12 @@ func (c *evaluationGRPCClient) RunEvaluation(ctx context.Context, req *cespb.Run
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.RunEvaluationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunEvaluationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1784,8 +1789,12 @@ func (c *evaluationGRPCClient) GenerateEvaluation(ctx context.Context, req *cesp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.GenerateEvaluationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &GenerateEvaluationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1810,8 +1819,12 @@ func (c *evaluationGRPCClient) ImportEvaluations(ctx context.Context, req *cespb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.ImportEvaluationsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportEvaluationsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1962,8 +1975,12 @@ func (c *evaluationGRPCClient) DeleteEvaluationRun(ctx context.Context, req *ces
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.DeleteEvaluationRunOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEvaluationRunOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2598,8 +2615,12 @@ func (c *evaluationGRPCClient) ExportEvaluations(ctx context.Context, req *cespb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.ExportEvaluationsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportEvaluationsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2624,8 +2645,12 @@ func (c *evaluationGRPCClient) ExportEvaluationRuns(ctx context.Context, req *ce
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.ExportEvaluationRunsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportEvaluationRunsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2650,8 +2675,12 @@ func (c *evaluationGRPCClient) ExportEvaluationResults(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.ExportEvaluationResultsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportEvaluationResultsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2676,8 +2705,12 @@ func (c *evaluationGRPCClient) RunEvaluationResultMetrics(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.RunEvaluationResultMetricsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunEvaluationResultMetricsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2915,8 +2948,12 @@ func (c *evaluationRESTClient) RunEvaluation(ctx context.Context, req *cespb.Run
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.RunEvaluationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunEvaluationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3114,8 +3151,12 @@ func (c *evaluationRESTClient) GenerateEvaluation(ctx context.Context, req *cesp
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.GenerateEvaluationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &GenerateEvaluationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3180,8 +3221,12 @@ func (c *evaluationRESTClient) ImportEvaluations(ctx context.Context, req *cespb
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.ImportEvaluationsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportEvaluationsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3578,8 +3623,12 @@ func (c *evaluationRESTClient) DeleteEvaluationRun(ctx context.Context, req *ces
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.DeleteEvaluationRunOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEvaluationRunOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4922,8 +4971,12 @@ func (c *evaluationRESTClient) ExportEvaluations(ctx context.Context, req *cespb
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.ExportEvaluationsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportEvaluationsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4988,8 +5041,12 @@ func (c *evaluationRESTClient) ExportEvaluationRuns(ctx context.Context, req *ce
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.ExportEvaluationRunsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportEvaluationRunsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5054,8 +5111,12 @@ func (c *evaluationRESTClient) ExportEvaluationResults(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.ExportEvaluationResultsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportEvaluationResultsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5120,8 +5181,12 @@ func (c *evaluationRESTClient) RunEvaluationResultMetrics(ctx context.Context, r
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.RunEvaluationResultMetricsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunEvaluationResultMetricsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5502,7 +5567,7 @@ func (c *evaluationRESTClient) ListOperations(ctx context.Context, req *longrunn
 // The name must be that of a previously created DeleteEvaluationRunOperation, possibly from a different process.
 func (c *evaluationGRPCClient) DeleteEvaluationRunOperation(name string) *DeleteEvaluationRunOperation {
 	return &DeleteEvaluationRunOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.DeleteEvaluationRunOperation"),
 	}
 }
 
@@ -5511,7 +5576,7 @@ func (c *evaluationGRPCClient) DeleteEvaluationRunOperation(name string) *Delete
 func (c *evaluationRESTClient) DeleteEvaluationRunOperation(name string) *DeleteEvaluationRunOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteEvaluationRunOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.DeleteEvaluationRunOperation"),
 		pollPath: override,
 	}
 }
@@ -5520,7 +5585,7 @@ func (c *evaluationRESTClient) DeleteEvaluationRunOperation(name string) *Delete
 // The name must be that of a previously created ExportEvaluationResultsOperation, possibly from a different process.
 func (c *evaluationGRPCClient) ExportEvaluationResultsOperation(name string) *ExportEvaluationResultsOperation {
 	return &ExportEvaluationResultsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.ExportEvaluationResultsOperation"),
 	}
 }
 
@@ -5529,7 +5594,7 @@ func (c *evaluationGRPCClient) ExportEvaluationResultsOperation(name string) *Ex
 func (c *evaluationRESTClient) ExportEvaluationResultsOperation(name string) *ExportEvaluationResultsOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ExportEvaluationResultsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.ExportEvaluationResultsOperation"),
 		pollPath: override,
 	}
 }
@@ -5538,7 +5603,7 @@ func (c *evaluationRESTClient) ExportEvaluationResultsOperation(name string) *Ex
 // The name must be that of a previously created ExportEvaluationRunsOperation, possibly from a different process.
 func (c *evaluationGRPCClient) ExportEvaluationRunsOperation(name string) *ExportEvaluationRunsOperation {
 	return &ExportEvaluationRunsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.ExportEvaluationRunsOperation"),
 	}
 }
 
@@ -5547,7 +5612,7 @@ func (c *evaluationGRPCClient) ExportEvaluationRunsOperation(name string) *Expor
 func (c *evaluationRESTClient) ExportEvaluationRunsOperation(name string) *ExportEvaluationRunsOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ExportEvaluationRunsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.ExportEvaluationRunsOperation"),
 		pollPath: override,
 	}
 }
@@ -5556,7 +5621,7 @@ func (c *evaluationRESTClient) ExportEvaluationRunsOperation(name string) *Expor
 // The name must be that of a previously created ExportEvaluationsOperation, possibly from a different process.
 func (c *evaluationGRPCClient) ExportEvaluationsOperation(name string) *ExportEvaluationsOperation {
 	return &ExportEvaluationsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.ExportEvaluationsOperation"),
 	}
 }
 
@@ -5565,7 +5630,7 @@ func (c *evaluationGRPCClient) ExportEvaluationsOperation(name string) *ExportEv
 func (c *evaluationRESTClient) ExportEvaluationsOperation(name string) *ExportEvaluationsOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ExportEvaluationsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.ExportEvaluationsOperation"),
 		pollPath: override,
 	}
 }
@@ -5574,7 +5639,7 @@ func (c *evaluationRESTClient) ExportEvaluationsOperation(name string) *ExportEv
 // The name must be that of a previously created GenerateEvaluationOperation, possibly from a different process.
 func (c *evaluationGRPCClient) GenerateEvaluationOperation(name string) *GenerateEvaluationOperation {
 	return &GenerateEvaluationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.GenerateEvaluationOperation"),
 	}
 }
 
@@ -5583,7 +5648,7 @@ func (c *evaluationGRPCClient) GenerateEvaluationOperation(name string) *Generat
 func (c *evaluationRESTClient) GenerateEvaluationOperation(name string) *GenerateEvaluationOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &GenerateEvaluationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.GenerateEvaluationOperation"),
 		pollPath: override,
 	}
 }
@@ -5592,7 +5657,7 @@ func (c *evaluationRESTClient) GenerateEvaluationOperation(name string) *Generat
 // The name must be that of a previously created ImportEvaluationsOperation, possibly from a different process.
 func (c *evaluationGRPCClient) ImportEvaluationsOperation(name string) *ImportEvaluationsOperation {
 	return &ImportEvaluationsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.ImportEvaluationsOperation"),
 	}
 }
 
@@ -5601,7 +5666,7 @@ func (c *evaluationGRPCClient) ImportEvaluationsOperation(name string) *ImportEv
 func (c *evaluationRESTClient) ImportEvaluationsOperation(name string) *ImportEvaluationsOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ImportEvaluationsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.ImportEvaluationsOperation"),
 		pollPath: override,
 	}
 }
@@ -5610,7 +5675,7 @@ func (c *evaluationRESTClient) ImportEvaluationsOperation(name string) *ImportEv
 // The name must be that of a previously created RunEvaluationOperation, possibly from a different process.
 func (c *evaluationGRPCClient) RunEvaluationOperation(name string) *RunEvaluationOperation {
 	return &RunEvaluationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.RunEvaluationOperation"),
 	}
 }
 
@@ -5619,7 +5684,7 @@ func (c *evaluationGRPCClient) RunEvaluationOperation(name string) *RunEvaluatio
 func (c *evaluationRESTClient) RunEvaluationOperation(name string) *RunEvaluationOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &RunEvaluationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.RunEvaluationOperation"),
 		pollPath: override,
 	}
 }
@@ -5628,7 +5693,7 @@ func (c *evaluationRESTClient) RunEvaluationOperation(name string) *RunEvaluatio
 // The name must be that of a previously created RunEvaluationResultMetricsOperation, possibly from a different process.
 func (c *evaluationGRPCClient) RunEvaluationResultMetricsOperation(name string) *RunEvaluationResultMetricsOperation {
 	return &RunEvaluationResultMetricsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.RunEvaluationResultMetricsOperation"),
 	}
 }
 
@@ -5637,7 +5702,7 @@ func (c *evaluationGRPCClient) RunEvaluationResultMetricsOperation(name string) 
 func (c *evaluationRESTClient) RunEvaluationResultMetricsOperation(name string) *RunEvaluationResultMetricsOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &RunEvaluationResultMetricsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.RunEvaluationResultMetricsOperation"),
 		pollPath: override,
 	}
 }

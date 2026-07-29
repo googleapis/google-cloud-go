@@ -1302,12 +1302,12 @@ func (*AmbientSoundConfig_PrebuiltAmbientSound) isAmbientSoundConfig_Source() {}
 // Configuration for how the user barge-in activities should be handled.
 type BargeInConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. Disables user barge-in while the agent is speaking. If true, user
-	// input during agent response playback will be ignored.
-	//
-	// Deprecated: `disable_barge_in` is deprecated in favor of
+	// Optional. Deprecated: `disable_barge_in` is deprecated in favor of
 	// [`disable_barge_in_control`][google.cloud.ces.v1beta.ChannelProfile.disable_barge_in_control]
 	// in ChannelProfile.
+	//
+	// Disables user barge-in while the agent is speaking. If true, user input
+	// during agent response playback will be ignored.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/ces/v1beta/app.proto.
 	DisableBargeIn bool `protobuf:"varint,1,opt,name=disable_barge_in,json=disableBargeIn,proto3" json:"disable_barge_in,omitempty"`
@@ -1375,11 +1375,26 @@ type SynthesizeSpeechConfig struct {
 	// languages](https://cloud.google.com/text-to-speech/docs/voices) from Cloud
 	// Text-to-Speech.
 	Voice string `protobuf:"bytes,1,opt,name=voice,proto3" json:"voice,omitempty"`
+	// Optional. The Cloud Storage URI to the audio sample for voice cloning. The
+	// audio sample should be a mono-channel, 24kHz WAV file.
+	//
+	// Note: Please make sure the CES service agent
+	// `service-<PROJECT-NUMBER>@gcp-sa-ces.iam.gserviceaccount.com` has
+	// `storage.objects.get` permission to the Cloud Storage object.
+	VoiceSampleGcsUri string `protobuf:"bytes,3,opt,name=voice_sample_gcs_uri,json=voiceSampleGcsUri,proto3" json:"voice_sample_gcs_uri,omitempty"`
 	// Optional. The speaking rate/speed in the range [0.25, 2.0]. 1.0 is the
 	// normal native speed supported by the specific voice. 2.0 is twice as fast,
 	// and 0.5 is half as fast. Values outside of the range [0.25, 2.0] will
 	// return an error.
-	SpeakingRate  float64 `protobuf:"fixed64,2,opt,name=speaking_rate,json=speakingRate,proto3" json:"speaking_rate,omitempty"`
+	SpeakingRate float64 `protobuf:"fixed64,2,opt,name=speaking_rate,json=speakingRate,proto3" json:"speaking_rate,omitempty"`
+	// Optional. The model used to synthesize audio.
+	// Currently supported values:
+	// - "gemini-3.1-flash-tts-preview"
+	// If empty, Chirp3-HD is used.
+	Model string `protobuf:"bytes,4,opt,name=model,proto3" json:"model,omitempty"`
+	// Optional. The instruction used to synthesize speech when using a generative
+	// model.
+	Instruction   string `protobuf:"bytes,5,opt,name=instruction,proto3" json:"instruction,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1421,11 +1436,32 @@ func (x *SynthesizeSpeechConfig) GetVoice() string {
 	return ""
 }
 
+func (x *SynthesizeSpeechConfig) GetVoiceSampleGcsUri() string {
+	if x != nil {
+		return x.VoiceSampleGcsUri
+	}
+	return ""
+}
+
 func (x *SynthesizeSpeechConfig) GetSpeakingRate() float64 {
 	if x != nil {
 		return x.SpeakingRate
 	}
 	return 0
+}
+
+func (x *SynthesizeSpeechConfig) GetModel() string {
+	if x != nil {
+		return x.Model
+	}
+	return ""
+}
+
+func (x *SynthesizeSpeechConfig) GetInstruction() string {
+	if x != nil {
+		return x.Instruction
+	}
+	return ""
 }
 
 // Settings to describe the conversation data collection behaviors for LLM
@@ -1495,6 +1531,10 @@ type LoggingSettings struct {
 	// conversation data is subject to redaction as configured in
 	// [RedactionConfig][google.cloud.ces.v1beta.LoggingSettings.redaction_config].
 	BigqueryExportSettings *BigQueryExportSettings `protobuf:"bytes,3,opt,name=bigquery_export_settings,json=bigqueryExportSettings,proto3" json:"bigquery_export_settings,omitempty"`
+	// Optional. Configures the BigQuery export behaviors for the app.
+	// The unredacted conversation data will be exported to BigQuery tables if it
+	// is enabled.
+	UnredactedBigqueryExportSettings *BigQueryExportSettings `protobuf:"bytes,9,opt,name=unredacted_bigquery_export_settings,json=unredactedBigqueryExportSettings,proto3" json:"unredacted_bigquery_export_settings,omitempty"`
 	// Optional. Settings to describe the Cloud Logging behaviors for the app.
 	CloudLoggingSettings *CloudLoggingSettings `protobuf:"bytes,4,opt,name=cloud_logging_settings,json=cloudLoggingSettings,proto3" json:"cloud_logging_settings,omitempty"`
 	// Optional. Settings to describe the conversation logging behaviors for the
@@ -1565,6 +1605,13 @@ func (x *LoggingSettings) GetUnredactedAudioRecordingConfig() *AudioRecordingCon
 func (x *LoggingSettings) GetBigqueryExportSettings() *BigQueryExportSettings {
 	if x != nil {
 		return x.BigqueryExportSettings
+	}
+	return nil
+}
+
+func (x *LoggingSettings) GetUnredactedBigqueryExportSettings() *BigQueryExportSettings {
+	if x != nil {
+		return x.UnredactedBigqueryExportSettings
 	}
 	return nil
 }
@@ -1758,8 +1805,10 @@ type EvaluationSettings struct {
 	// Optional. The execution mode for scenario evaluations. If not provided,
 	// will default to QUALITY_OPTIMIZED.
 	ScenarioExecutionMode EvaluationSettings_ScenarioExecutionMode `protobuf:"varint,6,opt,name=scenario_execution_mode,json=scenarioExecutionMode,proto3,enum=google.cloud.ces.v1beta.EvaluationSettings_ScenarioExecutionMode" json:"scenario_execution_mode,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Optional. The caching settings to use for the evaluation run.
+	EvaluationRunCachingSettings *EvaluationRunCachingSettings `protobuf:"bytes,7,opt,name=evaluation_run_caching_settings,json=evaluationRunCachingSettings,proto3" json:"evaluation_run_caching_settings,omitempty"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *EvaluationSettings) Reset() {
@@ -1832,6 +1881,13 @@ func (x *EvaluationSettings) GetScenarioExecutionMode() EvaluationSettings_Scena
 		return x.ScenarioExecutionMode
 	}
 	return EvaluationSettings_SCENARIO_EXECUTION_MODE_UNSPECIFIED
+}
+
+func (x *EvaluationSettings) GetEvaluationRunCachingSettings() *EvaluationRunCachingSettings {
+	if x != nil {
+		return x.EvaluationRunCachingSettings
+	}
+	return nil
 }
 
 // Settings for custom client certificates.
@@ -2948,17 +3004,21 @@ const file_google_cloud_ces_v1beta_app_proto_rawDesc = "" +
 	"\x06source\"s\n" +
 	"\rBargeInConfig\x12/\n" +
 	"\x10disable_barge_in\x18\x01 \x01(\bB\x05\xe0A\x01\x18\x01R\x0edisableBargeIn\x121\n" +
-	"\x12barge_in_awareness\x18\x02 \x01(\bB\x03\xe0A\x01R\x10bargeInAwareness\"]\n" +
+	"\x12barge_in_awareness\x18\x02 \x01(\bB\x03\xe0A\x01R\x10bargeInAwareness\"\xd5\x01\n" +
 	"\x16SynthesizeSpeechConfig\x12\x19\n" +
-	"\x05voice\x18\x01 \x01(\tB\x03\xe0A\x01R\x05voice\x12(\n" +
-	"\rspeaking_rate\x18\x02 \x01(\x01B\x03\xe0A\x01R\fspeakingRate\"P\n" +
+	"\x05voice\x18\x01 \x01(\tB\x03\xe0A\x01R\x05voice\x124\n" +
+	"\x14voice_sample_gcs_uri\x18\x03 \x01(\tB\x03\xe0A\x01R\x11voiceSampleGcsUri\x12(\n" +
+	"\rspeaking_rate\x18\x02 \x01(\x01B\x03\xe0A\x01R\fspeakingRate\x12\x19\n" +
+	"\x05model\x18\x04 \x01(\tB\x03\xe0A\x01R\x05model\x12%\n" +
+	"\vinstruction\x18\x05 \x01(\tB\x03\xe0A\x01R\vinstruction\"P\n" +
 	"\x16MetricAnalysisSettings\x126\n" +
-	"\x15llm_metrics_opted_out\x18\x01 \x01(\bB\x03\xe0A\x01R\x12llmMetricsOptedOut\"\x9c\a\n" +
+	"\x15llm_metrics_opted_out\x18\x01 \x01(\bB\x03\xe0A\x01R\x12llmMetricsOptedOut\"\xa2\b\n" +
 	"\x0fLoggingSettings\x12X\n" +
 	"\x10redaction_config\x18\x01 \x01(\v2(.google.cloud.ces.v1beta.RedactionConfigB\x03\xe0A\x01R\x0fredactionConfig\x12h\n" +
 	"\x16audio_recording_config\x18\x02 \x01(\v2-.google.cloud.ces.v1beta.AudioRecordingConfigB\x03\xe0A\x01R\x14audioRecordingConfig\x12}\n" +
 	"!unredacted_audio_recording_config\x18\b \x01(\v2-.google.cloud.ces.v1beta.AudioRecordingConfigB\x03\xe0A\x01R\x1eunredactedAudioRecordingConfig\x12n\n" +
-	"\x18bigquery_export_settings\x18\x03 \x01(\v2/.google.cloud.ces.v1beta.BigQueryExportSettingsB\x03\xe0A\x01R\x16bigqueryExportSettings\x12h\n" +
+	"\x18bigquery_export_settings\x18\x03 \x01(\v2/.google.cloud.ces.v1beta.BigQueryExportSettingsB\x03\xe0A\x01R\x16bigqueryExportSettings\x12\x83\x01\n" +
+	"#unredacted_bigquery_export_settings\x18\t \x01(\v2/.google.cloud.ces.v1beta.BigQueryExportSettingsB\x03\xe0A\x01R unredactedBigqueryExportSettings\x12h\n" +
 	"\x16cloud_logging_settings\x18\x04 \x01(\v2-.google.cloud.ces.v1beta.CloudLoggingSettingsB\x03\xe0A\x01R\x14cloudLoggingSettings\x12}\n" +
 	"\x1dconversation_logging_settings\x18\x05 \x01(\v24.google.cloud.ces.v1beta.ConversationLoggingSettingsB\x03\xe0A\x01R\x1bconversationLoggingSettings\x12}\n" +
 	"!evaluation_audio_recording_config\x18\x06 \x01(\v2-.google.cloud.ces.v1beta.AudioRecordingConfigB\x03\xe0A\x01R\x1eevaluationAudioRecordingConfig\x12n\n" +
@@ -3013,14 +3073,15 @@ const file_google_cloud_ces_v1beta_app_proto_rawDesc = "" +
 	"\x1bHallucinationMetricBehavior\x12-\n" +
 	")HALLUCINATION_METRIC_BEHAVIOR_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\v\n" +
-	"\aENABLED\x10\x02\"\xdb\a\n" +
+	"\aENABLED\x10\x02\"\xdf\b\n" +
 	"\x12EvaluationSettings\x12\x96\x01\n" +
 	"\x1fscenario_conversation_initiator\x18\x01 \x01(\x0e2I.google.cloud.ces.v1beta.EvaluationSettings.ScenarioConversationInitiatorB\x03\xe0A\x01R\x1dscenarioConversationInitiator\x12Y\n" +
 	"\x11golden_run_method\x18\x04 \x01(\x0e2(.google.cloud.ces.v1beta.GoldenRunMethodB\x03\xe0A\x01R\x0fgoldenRunMethod\x12\x8b\x01\n" +
 	"%golden_evaluation_tool_call_behaviour\x18\x02 \x01(\x0e24.google.cloud.ces.v1beta.EvaluationToolCallBehaviourB\x03\xe0A\x01R!goldenEvaluationToolCallBehaviour\x12\x8f\x01\n" +
 	"'scenario_evaluation_tool_call_behaviour\x18\x03 \x01(\x0e24.google.cloud.ces.v1beta.EvaluationToolCallBehaviourB\x03\xe0A\x01R#scenarioEvaluationToolCallBehaviour\x12\\\n" +
 	"\x0emetrics_config\x18\x05 \x01(\v20.google.cloud.ces.v1beta.EvaluationMetricsConfigB\x03\xe0A\x01R\rmetricsConfig\x12~\n" +
-	"\x17scenario_execution_mode\x18\x06 \x01(\x0e2A.google.cloud.ces.v1beta.EvaluationSettings.ScenarioExecutionModeB\x03\xe0A\x01R\x15scenarioExecutionMode\"e\n" +
+	"\x17scenario_execution_mode\x18\x06 \x01(\x0e2A.google.cloud.ces.v1beta.EvaluationSettings.ScenarioExecutionModeB\x03\xe0A\x01R\x15scenarioExecutionMode\x12\x81\x01\n" +
+	"\x1fevaluation_run_caching_settings\x18\a \x01(\v25.google.cloud.ces.v1beta.EvaluationRunCachingSettingsB\x03\xe0A\x01R\x1cevaluationRunCachingSettings\"e\n" +
 	"\x1dScenarioConversationInitiator\x12/\n" +
 	"+SCENARIO_CONVERSATION_INITIATOR_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04USER\x10\x01\x12\t\n" +
@@ -3151,7 +3212,8 @@ var file_google_cloud_ces_v1beta_app_proto_goTypes = []any{
 	(GoldenRunMethod)(0),                                                                                    // 47: google.cloud.ces.v1beta.GoldenRunMethod
 	(EvaluationToolCallBehaviour)(0),                                                                        // 48: google.cloud.ces.v1beta.EvaluationToolCallBehaviour
 	(*EvaluationMetricsConfig)(nil),                                                                         // 49: google.cloud.ces.v1beta.EvaluationMetricsConfig
-	(*Schema)(nil),                                                                                          // 50: google.cloud.ces.v1beta.Schema
+	(*EvaluationRunCachingSettings)(nil),                                                                    // 50: google.cloud.ces.v1beta.EvaluationRunCachingSettings
+	(*Schema)(nil),                                                                                          // 51: google.cloud.ces.v1beta.Schema
 }
 var file_google_cloud_ces_v1beta_app_proto_depIdxs = []int32{
 	12, // 0: google.cloud.ces.v1beta.App.language_settings:type_name -> google.cloud.ces.v1beta.LanguageSettings
@@ -3182,41 +3244,43 @@ var file_google_cloud_ces_v1beta_app_proto_depIdxs = []int32{
 	26, // 25: google.cloud.ces.v1beta.LoggingSettings.audio_recording_config:type_name -> google.cloud.ces.v1beta.AudioRecordingConfig
 	26, // 26: google.cloud.ces.v1beta.LoggingSettings.unredacted_audio_recording_config:type_name -> google.cloud.ces.v1beta.AudioRecordingConfig
 	46, // 27: google.cloud.ces.v1beta.LoggingSettings.bigquery_export_settings:type_name -> google.cloud.ces.v1beta.BigQueryExportSettings
-	25, // 28: google.cloud.ces.v1beta.LoggingSettings.cloud_logging_settings:type_name -> google.cloud.ces.v1beta.CloudLoggingSettings
-	24, // 29: google.cloud.ces.v1beta.LoggingSettings.conversation_logging_settings:type_name -> google.cloud.ces.v1beta.ConversationLoggingSettings
-	26, // 30: google.cloud.ces.v1beta.LoggingSettings.evaluation_audio_recording_config:type_name -> google.cloud.ces.v1beta.AudioRecordingConfig
-	17, // 31: google.cloud.ces.v1beta.LoggingSettings.metric_analysis_settings:type_name -> google.cloud.ces.v1beta.MetricAnalysisSettings
-	2,  // 32: google.cloud.ces.v1beta.ErrorHandlingSettings.error_handling_strategy:type_name -> google.cloud.ces.v1beta.ErrorHandlingSettings.ErrorHandlingStrategy
-	33, // 33: google.cloud.ces.v1beta.ErrorHandlingSettings.fallback_response_config:type_name -> google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfig
-	34, // 34: google.cloud.ces.v1beta.ErrorHandlingSettings.end_session_config:type_name -> google.cloud.ces.v1beta.ErrorHandlingSettings.EndSessionConfig
-	36, // 35: google.cloud.ces.v1beta.EvaluationMetricsThresholds.golden_evaluation_metrics_thresholds:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds
-	3,  // 36: google.cloud.ces.v1beta.EvaluationMetricsThresholds.hallucination_metric_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
-	3,  // 37: google.cloud.ces.v1beta.EvaluationMetricsThresholds.golden_hallucination_metric_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
-	3,  // 38: google.cloud.ces.v1beta.EvaluationMetricsThresholds.scenario_hallucination_metric_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
-	6,  // 39: google.cloud.ces.v1beta.EvaluationSettings.scenario_conversation_initiator:type_name -> google.cloud.ces.v1beta.EvaluationSettings.ScenarioConversationInitiator
-	47, // 40: google.cloud.ces.v1beta.EvaluationSettings.golden_run_method:type_name -> google.cloud.ces.v1beta.GoldenRunMethod
-	48, // 41: google.cloud.ces.v1beta.EvaluationSettings.golden_evaluation_tool_call_behaviour:type_name -> google.cloud.ces.v1beta.EvaluationToolCallBehaviour
-	48, // 42: google.cloud.ces.v1beta.EvaluationSettings.scenario_evaluation_tool_call_behaviour:type_name -> google.cloud.ces.v1beta.EvaluationToolCallBehaviour
-	49, // 43: google.cloud.ces.v1beta.EvaluationSettings.metrics_config:type_name -> google.cloud.ces.v1beta.EvaluationMetricsConfig
-	7,  // 44: google.cloud.ces.v1beta.EvaluationSettings.scenario_execution_mode:type_name -> google.cloud.ces.v1beta.EvaluationSettings.ScenarioExecutionMode
-	45, // 45: google.cloud.ces.v1beta.ConversationLoggingSettings.retention_window:type_name -> google.protobuf.Duration
-	40, // 46: google.cloud.ces.v1beta.DataStoreSettings.engines:type_name -> google.cloud.ces.v1beta.DataStoreSettings.Engine
-	41, // 47: google.cloud.ces.v1beta.EvaluationPersona.speech_config:type_name -> google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig
-	50, // 48: google.cloud.ces.v1beta.App.VariableDeclaration.schema:type_name -> google.cloud.ces.v1beta.Schema
-	16, // 49: google.cloud.ces.v1beta.AudioProcessingConfig.SynthesizeSpeechConfigsEntry.value:type_name -> google.cloud.ces.v1beta.SynthesizeSpeechConfig
-	35, // 50: google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfig.custom_fallback_messages:type_name -> google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfig.CustomFallbackMessagesEntry
-	38, // 51: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.turn_level_metrics_thresholds:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds
-	39, // 52: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.expectation_level_metrics_thresholds:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.ExpectationLevelMetricsThresholds
-	37, // 53: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.tool_matching_settings:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings
-	5,  // 54: google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings.extra_tool_call_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings.ExtraToolCallBehavior
-	4,  // 55: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds.semantic_similarity_channel:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds.SemanticSimilarityChannel
-	8,  // 56: google.cloud.ces.v1beta.DataStoreSettings.Engine.type:type_name -> google.cloud.ces.v1beta.DataStoreSettings.Engine.Type
-	9,  // 57: google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig.environment:type_name -> google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig.BackgroundEnvironment
-	58, // [58:58] is the sub-list for method output_type
-	58, // [58:58] is the sub-list for method input_type
-	58, // [58:58] is the sub-list for extension type_name
-	58, // [58:58] is the sub-list for extension extendee
-	0,  // [0:58] is the sub-list for field type_name
+	46, // 28: google.cloud.ces.v1beta.LoggingSettings.unredacted_bigquery_export_settings:type_name -> google.cloud.ces.v1beta.BigQueryExportSettings
+	25, // 29: google.cloud.ces.v1beta.LoggingSettings.cloud_logging_settings:type_name -> google.cloud.ces.v1beta.CloudLoggingSettings
+	24, // 30: google.cloud.ces.v1beta.LoggingSettings.conversation_logging_settings:type_name -> google.cloud.ces.v1beta.ConversationLoggingSettings
+	26, // 31: google.cloud.ces.v1beta.LoggingSettings.evaluation_audio_recording_config:type_name -> google.cloud.ces.v1beta.AudioRecordingConfig
+	17, // 32: google.cloud.ces.v1beta.LoggingSettings.metric_analysis_settings:type_name -> google.cloud.ces.v1beta.MetricAnalysisSettings
+	2,  // 33: google.cloud.ces.v1beta.ErrorHandlingSettings.error_handling_strategy:type_name -> google.cloud.ces.v1beta.ErrorHandlingSettings.ErrorHandlingStrategy
+	33, // 34: google.cloud.ces.v1beta.ErrorHandlingSettings.fallback_response_config:type_name -> google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfig
+	34, // 35: google.cloud.ces.v1beta.ErrorHandlingSettings.end_session_config:type_name -> google.cloud.ces.v1beta.ErrorHandlingSettings.EndSessionConfig
+	36, // 36: google.cloud.ces.v1beta.EvaluationMetricsThresholds.golden_evaluation_metrics_thresholds:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds
+	3,  // 37: google.cloud.ces.v1beta.EvaluationMetricsThresholds.hallucination_metric_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
+	3,  // 38: google.cloud.ces.v1beta.EvaluationMetricsThresholds.golden_hallucination_metric_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
+	3,  // 39: google.cloud.ces.v1beta.EvaluationMetricsThresholds.scenario_hallucination_metric_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.HallucinationMetricBehavior
+	6,  // 40: google.cloud.ces.v1beta.EvaluationSettings.scenario_conversation_initiator:type_name -> google.cloud.ces.v1beta.EvaluationSettings.ScenarioConversationInitiator
+	47, // 41: google.cloud.ces.v1beta.EvaluationSettings.golden_run_method:type_name -> google.cloud.ces.v1beta.GoldenRunMethod
+	48, // 42: google.cloud.ces.v1beta.EvaluationSettings.golden_evaluation_tool_call_behaviour:type_name -> google.cloud.ces.v1beta.EvaluationToolCallBehaviour
+	48, // 43: google.cloud.ces.v1beta.EvaluationSettings.scenario_evaluation_tool_call_behaviour:type_name -> google.cloud.ces.v1beta.EvaluationToolCallBehaviour
+	49, // 44: google.cloud.ces.v1beta.EvaluationSettings.metrics_config:type_name -> google.cloud.ces.v1beta.EvaluationMetricsConfig
+	7,  // 45: google.cloud.ces.v1beta.EvaluationSettings.scenario_execution_mode:type_name -> google.cloud.ces.v1beta.EvaluationSettings.ScenarioExecutionMode
+	50, // 46: google.cloud.ces.v1beta.EvaluationSettings.evaluation_run_caching_settings:type_name -> google.cloud.ces.v1beta.EvaluationRunCachingSettings
+	45, // 47: google.cloud.ces.v1beta.ConversationLoggingSettings.retention_window:type_name -> google.protobuf.Duration
+	40, // 48: google.cloud.ces.v1beta.DataStoreSettings.engines:type_name -> google.cloud.ces.v1beta.DataStoreSettings.Engine
+	41, // 49: google.cloud.ces.v1beta.EvaluationPersona.speech_config:type_name -> google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig
+	51, // 50: google.cloud.ces.v1beta.App.VariableDeclaration.schema:type_name -> google.cloud.ces.v1beta.Schema
+	16, // 51: google.cloud.ces.v1beta.AudioProcessingConfig.SynthesizeSpeechConfigsEntry.value:type_name -> google.cloud.ces.v1beta.SynthesizeSpeechConfig
+	35, // 52: google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfig.custom_fallback_messages:type_name -> google.cloud.ces.v1beta.ErrorHandlingSettings.FallbackResponseConfig.CustomFallbackMessagesEntry
+	38, // 53: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.turn_level_metrics_thresholds:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds
+	39, // 54: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.expectation_level_metrics_thresholds:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.ExpectationLevelMetricsThresholds
+	37, // 55: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.tool_matching_settings:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings
+	5,  // 56: google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings.extra_tool_call_behavior:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.ToolMatchingSettings.ExtraToolCallBehavior
+	4,  // 57: google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds.semantic_similarity_channel:type_name -> google.cloud.ces.v1beta.EvaluationMetricsThresholds.GoldenEvaluationMetricsThresholds.TurnLevelMetricsThresholds.SemanticSimilarityChannel
+	8,  // 58: google.cloud.ces.v1beta.DataStoreSettings.Engine.type:type_name -> google.cloud.ces.v1beta.DataStoreSettings.Engine.Type
+	9,  // 59: google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig.environment:type_name -> google.cloud.ces.v1beta.EvaluationPersona.SpeechConfig.BackgroundEnvironment
+	60, // [60:60] is the sub-list for method output_type
+	60, // [60:60] is the sub-list for method input_type
+	60, // [60:60] is the sub-list for extension type_name
+	60, // [60:60] is the sub-list for extension extendee
+	0,  // [0:60] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_app_proto_init() }

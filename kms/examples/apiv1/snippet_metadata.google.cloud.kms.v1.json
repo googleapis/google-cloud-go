@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/kms/apiv1",
-    "version": "1.31.0"
+    "version": "1.33.0"
   },
   "snippets": [
     {
@@ -319,7 +319,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "AutokeyClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -641,7 +641,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "AutokeyAdminClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -1193,7 +1193,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "EkmClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -1928,7 +1928,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "HsmManagementClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -2684,6 +2684,52 @@
           "fullName": "google.cloud.kms.v1.KeyManagementClient",
           "shortName": "KeyManagementClient"
         },
+        "fullName": "google.cloud.kms.v1.KeyManagementClient.ExportTrustedKeyWrappedCryptoKeyVersion",
+        "method": {
+          "fullName": "google.cloud.kms.v1.KeyManagementService.ExportTrustedKeyWrappedCryptoKeyVersion",
+          "service": {
+            "fullName": "google.cloud.kms.v1.KeyManagementService",
+            "shortName": "KeyManagementService"
+          },
+          "shortName": "ExportTrustedKeyWrappedCryptoKeyVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "kmspb.ExportTrustedKeyWrappedCryptoKeyVersionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*kmspb.ExportTrustedKeyWrappedCryptoKeyVersionResponse",
+        "shortName": "ExportTrustedKeyWrappedCryptoKeyVersion"
+      },
+      "description": "ExportTrustedKeyWrappedCryptoKeyVersion exports a [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] with a\ntrusted key.\n\nThe [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] must have\ntrusted_wrapping_enabled set to true. The\n[CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] of the\n[wrapping_key] must have the\n[AES_WRAPPING][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.AES_WRAPPING]\npurpose. The [wrapping_key] must have the\n[AES_256_KWP][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionAlgorithm.AES_256_KWP]\nalgorithm.",
+      "file": "KeyManagementClient/ExportTrustedKeyWrappedCryptoKeyVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudkms_v1_generated_KeyManagementService_ExportTrustedKeyWrappedCryptoKeyVersion_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudkms ExportTrustedKeyWrappedCryptoKeyVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.kms.v1.KeyManagementClient",
+          "shortName": "KeyManagementClient"
+        },
         "fullName": "google.cloud.kms.v1.KeyManagementClient.GenerateRandomBytes",
         "method": {
           "fullName": "google.cloud.kms.v1.KeyManagementService.GenerateRandomBytes",
@@ -3190,6 +3236,52 @@
           "fullName": "google.cloud.kms.v1.KeyManagementClient",
           "shortName": "KeyManagementClient"
         },
+        "fullName": "google.cloud.kms.v1.KeyManagementClient.ImportTrustedKeyWrappedCryptoKeyVersion",
+        "method": {
+          "fullName": "google.cloud.kms.v1.KeyManagementService.ImportTrustedKeyWrappedCryptoKeyVersion",
+          "service": {
+            "fullName": "google.cloud.kms.v1.KeyManagementService",
+            "shortName": "KeyManagementService"
+          },
+          "shortName": "ImportTrustedKeyWrappedCryptoKeyVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "kmspb.ImportTrustedKeyWrappedCryptoKeyVersionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*kmspb.CryptoKeyVersion",
+        "shortName": "ImportTrustedKeyWrappedCryptoKeyVersion"
+      },
+      "description": "ImportTrustedKeyWrappedCryptoKeyVersion import wrapped key material into a\n[CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] with a trusted\nkey.\n\nAll requests must specify a [CryptoKey][google.cloud.kms.v1.CryptoKey]. If\na [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] is additionally\nspecified in the request, key material will be reimported into that\nversion. Otherwise, a new version will be created, and will be assigned the\nnext sequential id within the [CryptoKey][google.cloud.kms.v1.CryptoKey].\n\nThe [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] will have\ntrusted_wrapping_enabled set to true.",
+      "file": "KeyManagementClient/ImportTrustedKeyWrappedCryptoKeyVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudkms_v1_generated_KeyManagementService_ImportTrustedKeyWrappedCryptoKeyVersion_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudkms ImportTrustedKeyWrappedCryptoKeyVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.kms.v1.KeyManagementClient",
+          "shortName": "KeyManagementClient"
+        },
         "fullName": "google.cloud.kms.v1.KeyManagementClient.ListCryptoKeyVersions",
         "method": {
           "fullName": "google.cloud.kms.v1.KeyManagementService.ListCryptoKeyVersions",
@@ -3400,7 +3492,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "KeyManagementClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

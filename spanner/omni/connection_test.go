@@ -17,18 +17,28 @@ limitations under the License.
 package omni
 
 import (
+	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
+	"crypto/sha256"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"fmt"
 	"math/big"
 	"net"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 	"time"
+
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/test/bufconn"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func generateCerts(t *testing.T) (caFile, certFile, keyFile string) {
@@ -121,8 +131,8 @@ func TestConnectionOptions(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ConnectionOptions() unexpected error: %v", err)
 		}
-		if len(opts) != 2 {
-			t.Errorf("expected 2 connection options, got %v", len(opts))
+		if len(opts) != 1 {
+			t.Errorf("expected 1 connection option, got %v", len(opts))
 		}
 	})
 
@@ -131,8 +141,8 @@ func TestConnectionOptions(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ConnectionOptions() unexpected error: %v", err)
 		}
-		if len(opts) != 2 {
-			t.Errorf("expected 2 connection options, got %v", len(opts))
+		if len(opts) != 1 {
+			t.Errorf("expected 1 connection option, got %v", len(opts))
 		}
 	})
 
@@ -142,8 +152,8 @@ func TestConnectionOptions(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ConnectionOptions() unexpected error: %v", err)
 		}
-		if len(opts) != 2 {
-			t.Errorf("expected 2 connection options, got %v", len(opts))
+		if len(opts) != 1 {
+			t.Errorf("expected 1 connection option, got %v", len(opts))
 		}
 	})
 
@@ -153,8 +163,8 @@ func TestConnectionOptions(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ConnectionOptions() unexpected error: %v", err)
 		}
-		if len(opts) != 2 {
-			t.Errorf("expected 2 connection options, got %v", len(opts))
+		if len(opts) != 1 {
+			t.Errorf("expected 1 connection option, got %v", len(opts))
 		}
 	})
 
@@ -196,4 +206,394 @@ func TestConnectionOptions(t *testing.T) {
 			t.Fatal("expected error when client certificate is missing for mTLS")
 		}
 	})
+}
+
+type mockLoginServer struct {
+	handler func(grpc.ServerStream) error
+}
+
+func (s *mockLoginServer) Login(stream grpc.ServerStream) error {
+	return s.handler(stream)
+}
+
+func startMockServer(t *testing.T, handler func(grpc.ServerStream) error) (*bufconn.Listener, func()) {
+	t.Helper()
+	lis := bufconn.Listen(1024 * 1024)
+	server := grpc.NewServer()
+	server.RegisterService(&grpc.ServiceDesc{
+		ServiceName: "google.spanner.auth.v1.LoginService",
+		HandlerType: (*interface{})(nil),
+		Streams: []grpc.StreamDesc{
+			{
+				StreamName: "Login",
+				Handler: func(srv interface{}, stream grpc.ServerStream) error {
+					return srv.(*mockLoginServer).Login(stream)
+				},
+				ServerStreams: true,
+				ClientStreams: true,
+			},
+		},
+	}, &mockLoginServer{handler: handler})
+
+	go func() {
+		_ = server.Serve(lis)
+	}()
+
+	cleanup := func() {
+		server.Stop()
+		_ = lis.Close()
+	}
+
+	return lis, cleanup
+}
+
+func TestTokenSource_ServerUnsupportedProtocol(t *testing.T) {
+	lis, cleanup := startMockServer(t, func(stream grpc.ServerStream) error {
+		req := &LoginRequest{}
+		if err := stream.RecvMsg(req); err != nil {
+			return err
+		}
+		resp := &LoginResponse{
+			Response: &LoginResponse_HandshakeResponse{
+				HandshakeResponse: &PasswordAuthenticationHandshakeResponse{
+					PasswordAuthenticationProtocol: PasswordAuthenticationProtocol_PASSWORD_AUTHENTICATION_PROTOCOL_UNSPECIFIED,
+				},
+			},
+		}
+		return stream.SendMsg(resp)
+	})
+	defer cleanup()
+
+	ts := NewTokenSource(context.Background(), "user", []byte("pass"), []option.ClientOption{
+		option.WithGRPCDialOption(grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
+			return lis.Dial()
+		})),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithoutAuthentication(),
+	})
+
+	_, err := ts.Token()
+	if err == nil {
+		t.Fatal("expected error for unsupported authentication protocol")
+	}
+}
+
+func TestTokenSource_NoAccessTokenInFinalResponse(t *testing.T) {
+	username := "admin"
+	password := []byte("password")
+	argon2Params := &HashParameters_Argon2IdParameters{
+		IterationCount: 3,
+		MemoryUsage:    64 * 1024,
+		Parallelism:    4,
+		HashSize:       32,
+	}
+
+	lis, cleanup := startMockServer(t, func(stream grpc.ServerStream) error {
+		// 1. Recv Handshake
+		req1 := &LoginRequest{}
+		if err := stream.RecvMsg(req1); err != nil {
+			return err
+		}
+		resp1 := &LoginResponse{
+			Response: &LoginResponse_HandshakeResponse{
+				HandshakeResponse: &PasswordAuthenticationHandshakeResponse{
+					PasswordAuthenticationProtocol: PasswordAuthenticationProtocol_PASSWORD_AUTHENTICATION_PROTOCOL_OPAQUE,
+					HashParameters: &HashParameters{
+						Parameters: &HashParameters_Argon2IdParameters_{
+							Argon2IdParameters: argon2Params,
+						},
+					},
+				},
+			},
+		}
+		if err := stream.SendMsg(resp1); err != nil {
+			return err
+		}
+
+		// 2. Recv InitialRequest
+		req2 := &LoginRequest{}
+		if err := stream.RecvMsg(req2); err != nil {
+			return err
+		}
+
+		// Dummy OPAQUE initial response
+		resp2 := &LoginResponse{
+			Response: &LoginResponse_OpaqueResponse{
+				OpaqueResponse: &OpaqueLoginResponse{
+					Response: &OpaqueLoginResponse_InitialResponse{
+						InitialResponse: &InitialOpaqueLoginResponse{
+							EvaluatedMessage:     make([]byte, 33),
+							MaskingNonce:         make([]byte, 32),
+							MaskedResponse:       make([]byte, 97),
+							ServerNonce:          make([]byte, 32),
+							ServerMac:            make([]byte, 32),
+							ServerPublicKeyshare: make([]byte, 33),
+						},
+					},
+				},
+			},
+		}
+		if err := stream.SendMsg(resp2); err != nil {
+			return err
+		}
+
+		// 3. Recv FinalRequest
+		req3 := &LoginRequest{}
+		if err := stream.RecvMsg(req3); err != nil {
+			return err
+		}
+
+		// Send final response with nil AccessToken
+		resp3 := &LoginResponse{
+			AccessToken: nil,
+		}
+		return stream.SendMsg(resp3)
+	})
+	defer cleanup()
+
+	ts := NewTokenSource(context.Background(), username, password, []option.ClientOption{
+		option.WithGRPCDialOption(grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
+			return lis.Dial()
+		})),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithoutAuthentication(),
+	})
+
+	_, err := ts.Token()
+	if err == nil {
+		t.Fatal("expected error for missing access token")
+	}
+}
+
+func TestTokenSource_SuccessAndCaching(t *testing.T) {
+	username := "admin"
+	password := []byte("admin1234")
+
+	// Pre-derive server & client user registration data for OPAQUE
+	serverSeed := []byte("server-seed")
+	serverPublicKey, serverPrivateKey, err := deriveKeyPair(serverSeed, []byte(diffieHellmanKeyInfo))
+	if err != nil {
+		t.Fatalf("deriveKeyPair failed: %v", err)
+	}
+
+	oprfSeed := []byte("oprf-seed-32-bytes-long-1234567")
+	argon2Params := &HashParameters_Argon2IdParameters{
+		IterationCount: 3,
+		MemoryUsage:    64 * 1024,
+		Parallelism:    4,
+		HashSize:       32,
+	}
+	oprfSeedKey, err := expand(oprfSeed, []byte(username+"OprfKey"), 32)
+	if err != nil {
+		t.Fatalf("expand failed: %v", err)
+	}
+	_, oprfKey, err := deriveKeyPair(oprfSeedKey, []byte("OPAQUE-DeriveKeyPair"))
+	if err != nil {
+		t.Fatalf("deriveKeyPair failed: %v", err)
+	}
+	oprf, err := evaluate(t, password, oprfKey)
+	if err != nil {
+		t.Fatalf("evaluate failed: %v", err)
+	}
+	stretchedOprf, err := stretch(oprf, argon2Params)
+	if err != nil {
+		t.Fatalf("stretch failed: %v", err)
+	}
+	randomizedPassword, err := extract(slices.Concat(oprf, stretchedOprf))
+	if err != nil {
+		t.Fatalf("extract failed: %v", err)
+	}
+
+	// Client registration store
+	envelopeNonce, err := nonce()
+	if err != nil {
+		t.Fatalf("nonce failed: %v", err)
+	}
+	maskingKey, err := expand(randomizedPassword, []byte(maskingKeyInfo), sha256.Size)
+	if err != nil {
+		t.Fatalf("expand failed: %v", err)
+	}
+	authKey, err := expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(authKeyInfo)), sha256.Size)
+	if err != nil {
+		t.Fatalf("expand failed: %v", err)
+	}
+	seed, err := expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(privateKeyInfo)), sha256.Size)
+	if err != nil {
+		t.Fatalf("expand failed: %v", err)
+	}
+	clientPublicKey, _, err := deriveKeyPair(seed, []byte(diffieHellmanKeyInfo))
+	if err != nil {
+		t.Fatalf("deriveKeyPair failed: %v", err)
+	}
+	authTag := mac(authKey, slices.Concat(envelopeNonce, serverPublicKey, []byte(username)))
+
+	streamCount := 0
+
+	lis, cleanup := startMockServer(t, func(stream grpc.ServerStream) error {
+		streamCount++
+		// 1. Recv Handshake
+		req1 := &LoginRequest{}
+		if err := stream.RecvMsg(req1); err != nil {
+			return err
+		}
+		resp1 := &LoginResponse{
+			Response: &LoginResponse_HandshakeResponse{
+				HandshakeResponse: &PasswordAuthenticationHandshakeResponse{
+					PasswordAuthenticationProtocol: PasswordAuthenticationProtocol_PASSWORD_AUTHENTICATION_PROTOCOL_OPAQUE,
+					HashParameters: &HashParameters{
+						Parameters: &HashParameters_Argon2IdParameters_{
+							Argon2IdParameters: argon2Params,
+						},
+					},
+				},
+			},
+		}
+		if err := stream.SendMsg(resp1); err != nil {
+			return err
+		}
+
+		// 2. Recv InitialRequest
+		req2 := &LoginRequest{}
+		if err := stream.RecvMsg(req2); err != nil {
+			return err
+		}
+		initReq := req2.GetOpaqueRequest().GetInitialRequest()
+
+		// Server OPAQUE response generation
+		evaluatedElement, err := blindEvaluateServer(username, initReq.BlindedMessage, oprfSeed)
+		if err != nil {
+			return err
+		}
+		serverNonce, err := nonce()
+		if err != nil {
+			return err
+		}
+		maskingNonce, err := nonce()
+		if err != nil {
+			return err
+		}
+		serverPublicKeyshare, serverPrivateKeyshare, err := deriveKeyPair(serverNonce, []byte(diffieHellmanKeyInfo))
+		if err != nil {
+			return err
+		}
+
+		clearTextEnvelope := slices.Concat(serverPublicKey, envelopeNonce, authTag)
+		credentialResponsePad, err := expand(maskingKey, slices.Concat(maskingNonce, []byte("CredentialResponsePad")), len(clearTextEnvelope))
+		if err != nil {
+			return err
+		}
+		maskedResponse, err := xorBytes(clearTextEnvelope, credentialResponsePad)
+		if err != nil {
+			return err
+		}
+
+		dh1, err := diffieHellman(serverPrivateKeyshare, initReq.ClientPublicKeyshare)
+		if err != nil {
+			return err
+		}
+		dh2, err := diffieHellman(serverPrivateKey, initReq.ClientPublicKeyshare)
+		if err != nil {
+			return err
+		}
+		dh3, err := diffieHellman(serverPrivateKeyshare, clientPublicKey)
+		if err != nil {
+			return err
+		}
+		inputKeyMaterial := slices.Concat(dh1, dh2, dh3)
+
+		preamble := slices.Concat([]byte("OPAQUEv1-"), []byte(username), initReq.ClientNonce, initReq.ClientPublicKeyshare, serverPublicKey, evaluatedElement, serverNonce, serverPublicKeyshare)
+		km2, _, _, err := deriveSharedKeys(inputKeyMaterial, preamble)
+		if err != nil {
+			return err
+		}
+		hashedPreamble := sha256Hash(preamble)
+		serverMac := mac(km2, hashedPreamble[:])
+
+		resp2 := &LoginResponse{
+			Response: &LoginResponse_OpaqueResponse{
+				OpaqueResponse: &OpaqueLoginResponse{
+					Response: &OpaqueLoginResponse_InitialResponse{
+						InitialResponse: &InitialOpaqueLoginResponse{
+							EvaluatedMessage:     evaluatedElement,
+							MaskingNonce:         maskingNonce,
+							MaskedResponse:       maskedResponse,
+							ServerNonce:          serverNonce,
+							ServerMac:            serverMac,
+							ServerPublicKeyshare: serverPublicKeyshare,
+						},
+					},
+				},
+			},
+		}
+		if err := stream.SendMsg(resp2); err != nil {
+			return err
+		}
+
+		// 3. Recv FinalRequest
+		req3 := &LoginRequest{}
+		if err := stream.RecvMsg(req3); err != nil {
+			return err
+		}
+
+		resp3 := &LoginResponse{
+			AccessToken: &AccessToken{
+				Signature:      []byte("mock-signature"),
+				ExpirationTime: timestamppb.New(time.Now().Add(1 * time.Hour)),
+			},
+		}
+		return stream.SendMsg(resp3)
+	})
+	defer cleanup()
+
+	ts := NewTokenSource(context.Background(), username, password, []option.ClientOption{
+		option.WithGRPCDialOption(grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
+			return lis.Dial()
+		})),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithoutAuthentication(),
+	})
+
+	token1, err := ts.Token()
+	if err != nil {
+		t.Fatalf("ts.Token() failed: %v", err)
+	}
+	if token1 == nil || token1.AccessToken == "" {
+		t.Fatalf("expected valid token, got nil/empty")
+	}
+	if streamCount != 1 {
+		t.Errorf("expected 1 stream creation, got %d", streamCount)
+	}
+
+	// Second call should returned cached token
+	token2, err := ts.Token()
+	if err != nil {
+		t.Fatalf("ts.Token() second call failed: %v", err)
+	}
+	if token2.AccessToken != token1.AccessToken {
+		t.Errorf("expected cached token %s, got %s", token1.AccessToken, token2.AccessToken)
+	}
+	if streamCount != 1 {
+		t.Errorf("expected streamCount to remain 1 due to token caching, got %d", streamCount)
+	}
+}
+
+func blindEvaluateServer(username string, pubKey, oprfSeed []byte) ([]byte, error) {
+	seed, err := expand(oprfSeed, []byte(username+"OprfKey"), 32)
+	if err != nil {
+		return nil, fmt.Errorf("expand() failed: %v", err)
+	}
+	_, oprfKey, err := deriveKeyPair(seed, []byte("OPAQUE-DeriveKeyPair"))
+	if err != nil {
+		return nil, fmt.Errorf("deriveKeyPair() failed: %v", err)
+	}
+	curve := elliptic.P256()
+	x, y := elliptic.UnmarshalCompressed(curve, pubKey)
+	if x == nil {
+		return nil, fmt.Errorf("UnmarshalCompressed() failed")
+	}
+	sx, sy := curve.ScalarMult(x, y, oprfKey)
+	if sx == nil {
+		return nil, fmt.Errorf("ScalarMult() failed")
+	}
+	return elliptic.MarshalCompressed(curve, sx, sy), nil
 }

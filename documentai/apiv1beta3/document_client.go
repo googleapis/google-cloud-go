@@ -31,6 +31,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -541,8 +542,12 @@ func (c *documentGRPCClient) UpdateDataset(ctx context.Context, req *documentaip
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.UpdateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -567,8 +572,12 @@ func (c *documentGRPCClient) ImportDocuments(ctx context.Context, req *documenta
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.ImportDocumentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportDocumentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -666,8 +675,12 @@ func (c *documentGRPCClient) BatchDeleteDocuments(ctx context.Context, req *docu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.BatchDeleteDocumentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchDeleteDocumentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -943,8 +956,12 @@ func (c *documentRESTClient) UpdateDataset(ctx context.Context, req *documentaip
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.UpdateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1009,8 +1026,12 @@ func (c *documentRESTClient) ImportDocuments(ctx context.Context, req *documenta
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.ImportDocumentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportDocumentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1234,8 +1255,12 @@ func (c *documentRESTClient) BatchDeleteDocuments(ctx context.Context, req *docu
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.BatchDeleteDocumentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchDeleteDocumentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1692,7 +1717,7 @@ func (c *documentRESTClient) ListOperations(ctx context.Context, req *longrunnin
 // The name must be that of a previously created BatchDeleteDocumentsOperation, possibly from a different process.
 func (c *documentGRPCClient) BatchDeleteDocumentsOperation(name string) *BatchDeleteDocumentsOperation {
 	return &BatchDeleteDocumentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.BatchDeleteDocumentsOperation"),
 	}
 }
 
@@ -1701,7 +1726,7 @@ func (c *documentGRPCClient) BatchDeleteDocumentsOperation(name string) *BatchDe
 func (c *documentRESTClient) BatchDeleteDocumentsOperation(name string) *BatchDeleteDocumentsOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &BatchDeleteDocumentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.BatchDeleteDocumentsOperation"),
 		pollPath: override,
 	}
 }
@@ -1710,7 +1735,7 @@ func (c *documentRESTClient) BatchDeleteDocumentsOperation(name string) *BatchDe
 // The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
 func (c *documentGRPCClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
 	return &ImportDocumentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.ImportDocumentsOperation"),
 	}
 }
 
@@ -1719,7 +1744,7 @@ func (c *documentGRPCClient) ImportDocumentsOperation(name string) *ImportDocume
 func (c *documentRESTClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &ImportDocumentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.ImportDocumentsOperation"),
 		pollPath: override,
 	}
 }
@@ -1728,7 +1753,7 @@ func (c *documentRESTClient) ImportDocumentsOperation(name string) *ImportDocume
 // The name must be that of a previously created UpdateDatasetOperation, possibly from a different process.
 func (c *documentGRPCClient) UpdateDatasetOperation(name string) *UpdateDatasetOperation {
 	return &UpdateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.UpdateDatasetOperation"),
 	}
 }
 
@@ -1737,7 +1762,7 @@ func (c *documentGRPCClient) UpdateDatasetOperation(name string) *UpdateDatasetO
 func (c *documentRESTClient) UpdateDatasetOperation(name string) *UpdateDatasetOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &UpdateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.UpdateDatasetOperation"),
 		pollPath: override,
 	}
 }

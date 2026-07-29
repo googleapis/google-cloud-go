@@ -48,3 +48,9 @@ func (it *CaseIterator) All() iter.Seq2[*supportpb.Case, error] {
 func (it *CommentIterator) All() iter.Seq2[*supportpb.Comment, error] {
 	return iterator.RangeAdapter(it.Next)
 }
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SupportEventSubscriptionIterator) All() iter.Seq2[*supportpb.SupportEventSubscription, error] {
+	return iterator.RangeAdapter(it.Next)
+}

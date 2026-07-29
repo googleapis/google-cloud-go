@@ -32,6 +32,7 @@ import (
 	livestreampb "cloud.google.com/go/video/livestream/apiv1/livestreampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1321,8 +1322,12 @@ func (c *gRPCClient) CreateChannel(ctx context.Context, req *livestreampb.Create
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1423,8 +1428,12 @@ func (c *gRPCClient) DeleteChannel(ctx context.Context, req *livestreampb.Delete
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1446,8 +1455,12 @@ func (c *gRPCClient) UpdateChannel(ctx context.Context, req *livestreampb.Update
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdateChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1472,8 +1485,12 @@ func (c *gRPCClient) StartChannel(ctx context.Context, req *livestreampb.StartCh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StartChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1498,8 +1515,12 @@ func (c *gRPCClient) StopChannel(ctx context.Context, req *livestreampb.StopChan
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StopChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1524,8 +1545,12 @@ func (c *gRPCClient) StartDistribution(ctx context.Context, req *livestreampb.St
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StartDistributionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartDistributionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1550,8 +1575,12 @@ func (c *gRPCClient) StopDistribution(ctx context.Context, req *livestreampb.Sto
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StopDistributionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopDistributionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1576,8 +1605,12 @@ func (c *gRPCClient) CreateInput(ctx context.Context, req *livestreampb.CreateIn
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1678,8 +1711,12 @@ func (c *gRPCClient) DeleteInput(ctx context.Context, req *livestreampb.DeleteIn
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1701,8 +1738,12 @@ func (c *gRPCClient) UpdateInput(ctx context.Context, req *livestreampb.UpdateIn
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdateInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1947,8 +1988,12 @@ func (c *gRPCClient) CreateClip(ctx context.Context, req *livestreampb.CreateCli
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateClipOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClipOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1973,8 +2018,12 @@ func (c *gRPCClient) DeleteClip(ctx context.Context, req *livestreampb.DeleteCli
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteClipOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClipOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1999,8 +2048,12 @@ func (c *gRPCClient) CreateDvrSession(ctx context.Context, req *livestreampb.Cre
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateDvrSessionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDvrSessionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2101,8 +2154,12 @@ func (c *gRPCClient) DeleteDvrSession(ctx context.Context, req *livestreampb.Del
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteDvrSessionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDvrSessionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2124,8 +2181,12 @@ func (c *gRPCClient) UpdateDvrSession(ctx context.Context, req *livestreampb.Upd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdateDvrSessionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDvrSessionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2150,8 +2211,12 @@ func (c *gRPCClient) CreateAsset(ctx context.Context, req *livestreampb.CreateAs
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2176,8 +2241,12 @@ func (c *gRPCClient) DeleteAsset(ctx context.Context, req *livestreampb.DeleteAs
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2299,8 +2368,12 @@ func (c *gRPCClient) UpdatePool(ctx context.Context, req *livestreampb.UpdatePoo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdatePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2544,8 +2617,12 @@ func (c *restClient) CreateChannel(ctx context.Context, req *livestreampb.Create
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2751,8 +2828,12 @@ func (c *restClient) DeleteChannel(ctx context.Context, req *livestreampb.Delete
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2825,8 +2906,12 @@ func (c *restClient) UpdateChannel(ctx context.Context, req *livestreampb.Update
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdateChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2892,8 +2977,12 @@ func (c *restClient) StartChannel(ctx context.Context, req *livestreampb.StartCh
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StartChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2959,8 +3048,12 @@ func (c *restClient) StopChannel(ctx context.Context, req *livestreampb.StopChan
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StopChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3026,8 +3119,12 @@ func (c *restClient) StartDistribution(ctx context.Context, req *livestreampb.St
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StartDistributionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartDistributionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3092,8 +3189,12 @@ func (c *restClient) StopDistribution(ctx context.Context, req *livestreampb.Sto
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.StopDistributionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopDistributionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3163,8 +3264,12 @@ func (c *restClient) CreateInput(ctx context.Context, req *livestreampb.CreateIn
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3367,8 +3472,12 @@ func (c *restClient) DeleteInput(ctx context.Context, req *livestreampb.DeleteIn
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3441,8 +3550,12 @@ func (c *restClient) UpdateInput(ctx context.Context, req *livestreampb.UpdateIn
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdateInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3970,8 +4083,12 @@ func (c *restClient) CreateClip(ctx context.Context, req *livestreampb.CreateCli
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateClipOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClipOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4034,8 +4151,12 @@ func (c *restClient) DeleteClip(ctx context.Context, req *livestreampb.DeleteCli
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteClipOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClipOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4105,8 +4226,12 @@ func (c *restClient) CreateDvrSession(ctx context.Context, req *livestreampb.Cre
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateDvrSessionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDvrSessionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4309,8 +4434,12 @@ func (c *restClient) DeleteDvrSession(ctx context.Context, req *livestreampb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteDvrSessionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDvrSessionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4383,8 +4512,12 @@ func (c *restClient) UpdateDvrSession(ctx context.Context, req *livestreampb.Upd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdateDvrSessionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDvrSessionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4455,8 +4588,12 @@ func (c *restClient) CreateAsset(ctx context.Context, req *livestreampb.CreateAs
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.CreateAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4518,8 +4655,12 @@ func (c *restClient) DeleteAsset(ctx context.Context, req *livestreampb.DeleteAs
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.DeleteAssetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4790,8 +4931,12 @@ func (c *restClient) UpdatePool(ctx context.Context, req *livestreampb.UpdatePoo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*livestream.UpdatePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5157,7 +5302,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateAssetOperation, possibly from a different process.
 func (c *gRPCClient) CreateAssetOperation(name string) *CreateAssetOperation {
 	return &CreateAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateAssetOperation"),
 	}
 }
 
@@ -5166,7 +5311,7 @@ func (c *gRPCClient) CreateAssetOperation(name string) *CreateAssetOperation {
 func (c *restClient) CreateAssetOperation(name string) *CreateAssetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateAssetOperation"),
 		pollPath: override,
 	}
 }
@@ -5175,7 +5320,7 @@ func (c *restClient) CreateAssetOperation(name string) *CreateAssetOperation {
 // The name must be that of a previously created CreateChannelOperation, possibly from a different process.
 func (c *gRPCClient) CreateChannelOperation(name string) *CreateChannelOperation {
 	return &CreateChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateChannelOperation"),
 	}
 }
 
@@ -5184,7 +5329,7 @@ func (c *gRPCClient) CreateChannelOperation(name string) *CreateChannelOperation
 func (c *restClient) CreateChannelOperation(name string) *CreateChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -5193,7 +5338,7 @@ func (c *restClient) CreateChannelOperation(name string) *CreateChannelOperation
 // The name must be that of a previously created CreateClipOperation, possibly from a different process.
 func (c *gRPCClient) CreateClipOperation(name string) *CreateClipOperation {
 	return &CreateClipOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateClipOperation"),
 	}
 }
 
@@ -5202,7 +5347,7 @@ func (c *gRPCClient) CreateClipOperation(name string) *CreateClipOperation {
 func (c *restClient) CreateClipOperation(name string) *CreateClipOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateClipOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateClipOperation"),
 		pollPath: override,
 	}
 }
@@ -5211,7 +5356,7 @@ func (c *restClient) CreateClipOperation(name string) *CreateClipOperation {
 // The name must be that of a previously created CreateDvrSessionOperation, possibly from a different process.
 func (c *gRPCClient) CreateDvrSessionOperation(name string) *CreateDvrSessionOperation {
 	return &CreateDvrSessionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateDvrSessionOperation"),
 	}
 }
 
@@ -5220,7 +5365,7 @@ func (c *gRPCClient) CreateDvrSessionOperation(name string) *CreateDvrSessionOpe
 func (c *restClient) CreateDvrSessionOperation(name string) *CreateDvrSessionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDvrSessionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateDvrSessionOperation"),
 		pollPath: override,
 	}
 }
@@ -5229,7 +5374,7 @@ func (c *restClient) CreateDvrSessionOperation(name string) *CreateDvrSessionOpe
 // The name must be that of a previously created CreateInputOperation, possibly from a different process.
 func (c *gRPCClient) CreateInputOperation(name string) *CreateInputOperation {
 	return &CreateInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateInputOperation"),
 	}
 }
 
@@ -5238,7 +5383,7 @@ func (c *gRPCClient) CreateInputOperation(name string) *CreateInputOperation {
 func (c *restClient) CreateInputOperation(name string) *CreateInputOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.CreateInputOperation"),
 		pollPath: override,
 	}
 }
@@ -5247,7 +5392,7 @@ func (c *restClient) CreateInputOperation(name string) *CreateInputOperation {
 // The name must be that of a previously created DeleteAssetOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAssetOperation(name string) *DeleteAssetOperation {
 	return &DeleteAssetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteAssetOperation"),
 	}
 }
 
@@ -5256,7 +5401,7 @@ func (c *gRPCClient) DeleteAssetOperation(name string) *DeleteAssetOperation {
 func (c *restClient) DeleteAssetOperation(name string) *DeleteAssetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAssetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteAssetOperation"),
 		pollPath: override,
 	}
 }
@@ -5265,7 +5410,7 @@ func (c *restClient) DeleteAssetOperation(name string) *DeleteAssetOperation {
 // The name must be that of a previously created DeleteChannelOperation, possibly from a different process.
 func (c *gRPCClient) DeleteChannelOperation(name string) *DeleteChannelOperation {
 	return &DeleteChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteChannelOperation"),
 	}
 }
 
@@ -5274,7 +5419,7 @@ func (c *gRPCClient) DeleteChannelOperation(name string) *DeleteChannelOperation
 func (c *restClient) DeleteChannelOperation(name string) *DeleteChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -5283,7 +5428,7 @@ func (c *restClient) DeleteChannelOperation(name string) *DeleteChannelOperation
 // The name must be that of a previously created DeleteClipOperation, possibly from a different process.
 func (c *gRPCClient) DeleteClipOperation(name string) *DeleteClipOperation {
 	return &DeleteClipOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteClipOperation"),
 	}
 }
 
@@ -5292,7 +5437,7 @@ func (c *gRPCClient) DeleteClipOperation(name string) *DeleteClipOperation {
 func (c *restClient) DeleteClipOperation(name string) *DeleteClipOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteClipOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteClipOperation"),
 		pollPath: override,
 	}
 }
@@ -5301,7 +5446,7 @@ func (c *restClient) DeleteClipOperation(name string) *DeleteClipOperation {
 // The name must be that of a previously created DeleteDvrSessionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteDvrSessionOperation(name string) *DeleteDvrSessionOperation {
 	return &DeleteDvrSessionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteDvrSessionOperation"),
 	}
 }
 
@@ -5310,7 +5455,7 @@ func (c *gRPCClient) DeleteDvrSessionOperation(name string) *DeleteDvrSessionOpe
 func (c *restClient) DeleteDvrSessionOperation(name string) *DeleteDvrSessionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDvrSessionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteDvrSessionOperation"),
 		pollPath: override,
 	}
 }
@@ -5319,7 +5464,7 @@ func (c *restClient) DeleteDvrSessionOperation(name string) *DeleteDvrSessionOpe
 // The name must be that of a previously created DeleteInputOperation, possibly from a different process.
 func (c *gRPCClient) DeleteInputOperation(name string) *DeleteInputOperation {
 	return &DeleteInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteInputOperation"),
 	}
 }
 
@@ -5328,7 +5473,7 @@ func (c *gRPCClient) DeleteInputOperation(name string) *DeleteInputOperation {
 func (c *restClient) DeleteInputOperation(name string) *DeleteInputOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.DeleteInputOperation"),
 		pollPath: override,
 	}
 }
@@ -5337,7 +5482,7 @@ func (c *restClient) DeleteInputOperation(name string) *DeleteInputOperation {
 // The name must be that of a previously created StartChannelOperation, possibly from a different process.
 func (c *gRPCClient) StartChannelOperation(name string) *StartChannelOperation {
 	return &StartChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StartChannelOperation"),
 	}
 }
 
@@ -5346,7 +5491,7 @@ func (c *gRPCClient) StartChannelOperation(name string) *StartChannelOperation {
 func (c *restClient) StartChannelOperation(name string) *StartChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StartChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StartChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -5355,7 +5500,7 @@ func (c *restClient) StartChannelOperation(name string) *StartChannelOperation {
 // The name must be that of a previously created StartDistributionOperation, possibly from a different process.
 func (c *gRPCClient) StartDistributionOperation(name string) *StartDistributionOperation {
 	return &StartDistributionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StartDistributionOperation"),
 	}
 }
 
@@ -5364,7 +5509,7 @@ func (c *gRPCClient) StartDistributionOperation(name string) *StartDistributionO
 func (c *restClient) StartDistributionOperation(name string) *StartDistributionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StartDistributionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StartDistributionOperation"),
 		pollPath: override,
 	}
 }
@@ -5373,7 +5518,7 @@ func (c *restClient) StartDistributionOperation(name string) *StartDistributionO
 // The name must be that of a previously created StopChannelOperation, possibly from a different process.
 func (c *gRPCClient) StopChannelOperation(name string) *StopChannelOperation {
 	return &StopChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StopChannelOperation"),
 	}
 }
 
@@ -5382,7 +5527,7 @@ func (c *gRPCClient) StopChannelOperation(name string) *StopChannelOperation {
 func (c *restClient) StopChannelOperation(name string) *StopChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StopChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StopChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -5391,7 +5536,7 @@ func (c *restClient) StopChannelOperation(name string) *StopChannelOperation {
 // The name must be that of a previously created StopDistributionOperation, possibly from a different process.
 func (c *gRPCClient) StopDistributionOperation(name string) *StopDistributionOperation {
 	return &StopDistributionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StopDistributionOperation"),
 	}
 }
 
@@ -5400,7 +5545,7 @@ func (c *gRPCClient) StopDistributionOperation(name string) *StopDistributionOpe
 func (c *restClient) StopDistributionOperation(name string) *StopDistributionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StopDistributionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.StopDistributionOperation"),
 		pollPath: override,
 	}
 }
@@ -5409,7 +5554,7 @@ func (c *restClient) StopDistributionOperation(name string) *StopDistributionOpe
 // The name must be that of a previously created UpdateChannelOperation, possibly from a different process.
 func (c *gRPCClient) UpdateChannelOperation(name string) *UpdateChannelOperation {
 	return &UpdateChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdateChannelOperation"),
 	}
 }
 
@@ -5418,7 +5563,7 @@ func (c *gRPCClient) UpdateChannelOperation(name string) *UpdateChannelOperation
 func (c *restClient) UpdateChannelOperation(name string) *UpdateChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdateChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -5427,7 +5572,7 @@ func (c *restClient) UpdateChannelOperation(name string) *UpdateChannelOperation
 // The name must be that of a previously created UpdateDvrSessionOperation, possibly from a different process.
 func (c *gRPCClient) UpdateDvrSessionOperation(name string) *UpdateDvrSessionOperation {
 	return &UpdateDvrSessionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdateDvrSessionOperation"),
 	}
 }
 
@@ -5436,7 +5581,7 @@ func (c *gRPCClient) UpdateDvrSessionOperation(name string) *UpdateDvrSessionOpe
 func (c *restClient) UpdateDvrSessionOperation(name string) *UpdateDvrSessionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDvrSessionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdateDvrSessionOperation"),
 		pollPath: override,
 	}
 }
@@ -5445,7 +5590,7 @@ func (c *restClient) UpdateDvrSessionOperation(name string) *UpdateDvrSessionOpe
 // The name must be that of a previously created UpdateInputOperation, possibly from a different process.
 func (c *gRPCClient) UpdateInputOperation(name string) *UpdateInputOperation {
 	return &UpdateInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdateInputOperation"),
 	}
 }
 
@@ -5454,7 +5599,7 @@ func (c *gRPCClient) UpdateInputOperation(name string) *UpdateInputOperation {
 func (c *restClient) UpdateInputOperation(name string) *UpdateInputOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdateInputOperation"),
 		pollPath: override,
 	}
 }
@@ -5463,7 +5608,7 @@ func (c *restClient) UpdateInputOperation(name string) *UpdateInputOperation {
 // The name must be that of a previously created UpdatePoolOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePoolOperation(name string) *UpdatePoolOperation {
 	return &UpdatePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdatePoolOperation"),
 	}
 }
 
@@ -5472,7 +5617,7 @@ func (c *gRPCClient) UpdatePoolOperation(name string) *UpdatePoolOperation {
 func (c *restClient) UpdatePoolOperation(name string) *UpdatePoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*livestream.UpdatePoolOperation"),
 		pollPath: override,
 	}
 }

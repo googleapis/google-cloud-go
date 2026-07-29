@@ -33,6 +33,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1410,8 +1411,12 @@ func (c *catalogGRPCClient) CreateEntryType(ctx context.Context, req *dataplexpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateEntryTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEntryTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1433,8 +1438,12 @@ func (c *catalogGRPCClient) UpdateEntryType(ctx context.Context, req *dataplexpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateEntryTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEntryTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1459,8 +1468,12 @@ func (c *catalogGRPCClient) DeleteEntryType(ctx context.Context, req *dataplexpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteEntryTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEntryTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1561,8 +1574,12 @@ func (c *catalogGRPCClient) CreateAspectType(ctx context.Context, req *dataplexp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateAspectTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAspectTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1584,8 +1601,12 @@ func (c *catalogGRPCClient) UpdateAspectType(ctx context.Context, req *dataplexp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateAspectTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAspectTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1610,8 +1631,12 @@ func (c *catalogGRPCClient) DeleteAspectType(ctx context.Context, req *dataplexp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteAspectTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAspectTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1712,8 +1737,12 @@ func (c *catalogGRPCClient) CreateEntryGroup(ctx context.Context, req *dataplexp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateEntryGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEntryGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1735,8 +1764,12 @@ func (c *catalogGRPCClient) UpdateEntryGroup(ctx context.Context, req *dataplexp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateEntryGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEntryGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1761,8 +1794,12 @@ func (c *catalogGRPCClient) DeleteEntryGroup(ctx context.Context, req *dataplexp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteEntryGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEntryGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2105,8 +2142,12 @@ func (c *catalogGRPCClient) CreateMetadataJob(ctx context.Context, req *dataplex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateMetadataJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMetadataJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2396,8 +2437,12 @@ func (c *catalogGRPCClient) CreateMetadataFeed(ctx context.Context, req *dataple
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateMetadataFeedOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMetadataFeedOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2498,8 +2543,12 @@ func (c *catalogGRPCClient) DeleteMetadataFeed(ctx context.Context, req *dataple
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteMetadataFeedOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteMetadataFeedOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2521,8 +2570,12 @@ func (c *catalogGRPCClient) UpdateMetadataFeed(ctx context.Context, req *dataple
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateMetadataFeedOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateMetadataFeedOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2837,8 +2890,12 @@ func (c *catalogRESTClient) CreateEntryType(ctx context.Context, req *dataplexpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateEntryTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEntryTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2911,8 +2968,12 @@ func (c *catalogRESTClient) UpdateEntryType(ctx context.Context, req *dataplexpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateEntryTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEntryTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2974,8 +3035,12 @@ func (c *catalogRESTClient) DeleteEntryType(ctx context.Context, req *dataplexpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteEntryTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEntryTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3186,8 +3251,12 @@ func (c *catalogRESTClient) CreateAspectType(ctx context.Context, req *dataplexp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateAspectTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAspectTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3260,8 +3329,12 @@ func (c *catalogRESTClient) UpdateAspectType(ctx context.Context, req *dataplexp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateAspectTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAspectTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3323,8 +3396,12 @@ func (c *catalogRESTClient) DeleteAspectType(ctx context.Context, req *dataplexp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteAspectTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAspectTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3535,8 +3612,12 @@ func (c *catalogRESTClient) CreateEntryGroup(ctx context.Context, req *dataplexp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateEntryGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEntryGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3609,8 +3690,12 @@ func (c *catalogRESTClient) UpdateEntryGroup(ctx context.Context, req *dataplexp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateEntryGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEntryGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3672,8 +3757,12 @@ func (c *catalogRESTClient) DeleteEntryGroup(ctx context.Context, req *dataplexp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteEntryGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEntryGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4458,8 +4547,12 @@ func (c *catalogRESTClient) CreateMetadataJob(ctx context.Context, req *dataplex
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateMetadataJobOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMetadataJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5123,8 +5216,12 @@ func (c *catalogRESTClient) CreateMetadataFeed(ctx context.Context, req *dataple
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateMetadataFeedOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMetadataFeedOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5324,8 +5421,12 @@ func (c *catalogRESTClient) DeleteMetadataFeed(ctx context.Context, req *dataple
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteMetadataFeedOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteMetadataFeedOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5398,8 +5499,12 @@ func (c *catalogRESTClient) UpdateMetadataFeed(ctx context.Context, req *dataple
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateMetadataFeedOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateMetadataFeedOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5977,7 +6082,7 @@ func (c *catalogRESTClient) ListOperations(ctx context.Context, req *longrunning
 // The name must be that of a previously created CreateAspectTypeOperation, possibly from a different process.
 func (c *catalogGRPCClient) CreateAspectTypeOperation(name string) *CreateAspectTypeOperation {
 	return &CreateAspectTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateAspectTypeOperation"),
 	}
 }
 
@@ -5986,7 +6091,7 @@ func (c *catalogGRPCClient) CreateAspectTypeOperation(name string) *CreateAspect
 func (c *catalogRESTClient) CreateAspectTypeOperation(name string) *CreateAspectTypeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAspectTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateAspectTypeOperation"),
 		pollPath: override,
 	}
 }
@@ -5995,7 +6100,7 @@ func (c *catalogRESTClient) CreateAspectTypeOperation(name string) *CreateAspect
 // The name must be that of a previously created CreateEntryGroupOperation, possibly from a different process.
 func (c *catalogGRPCClient) CreateEntryGroupOperation(name string) *CreateEntryGroupOperation {
 	return &CreateEntryGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateEntryGroupOperation"),
 	}
 }
 
@@ -6004,7 +6109,7 @@ func (c *catalogGRPCClient) CreateEntryGroupOperation(name string) *CreateEntryG
 func (c *catalogRESTClient) CreateEntryGroupOperation(name string) *CreateEntryGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEntryGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateEntryGroupOperation"),
 		pollPath: override,
 	}
 }
@@ -6013,7 +6118,7 @@ func (c *catalogRESTClient) CreateEntryGroupOperation(name string) *CreateEntryG
 // The name must be that of a previously created CreateEntryTypeOperation, possibly from a different process.
 func (c *catalogGRPCClient) CreateEntryTypeOperation(name string) *CreateEntryTypeOperation {
 	return &CreateEntryTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateEntryTypeOperation"),
 	}
 }
 
@@ -6022,7 +6127,7 @@ func (c *catalogGRPCClient) CreateEntryTypeOperation(name string) *CreateEntryTy
 func (c *catalogRESTClient) CreateEntryTypeOperation(name string) *CreateEntryTypeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEntryTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateEntryTypeOperation"),
 		pollPath: override,
 	}
 }
@@ -6031,7 +6136,7 @@ func (c *catalogRESTClient) CreateEntryTypeOperation(name string) *CreateEntryTy
 // The name must be that of a previously created CreateMetadataFeedOperation, possibly from a different process.
 func (c *catalogGRPCClient) CreateMetadataFeedOperation(name string) *CreateMetadataFeedOperation {
 	return &CreateMetadataFeedOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateMetadataFeedOperation"),
 	}
 }
 
@@ -6040,7 +6145,7 @@ func (c *catalogGRPCClient) CreateMetadataFeedOperation(name string) *CreateMeta
 func (c *catalogRESTClient) CreateMetadataFeedOperation(name string) *CreateMetadataFeedOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateMetadataFeedOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateMetadataFeedOperation"),
 		pollPath: override,
 	}
 }
@@ -6049,7 +6154,7 @@ func (c *catalogRESTClient) CreateMetadataFeedOperation(name string) *CreateMeta
 // The name must be that of a previously created CreateMetadataJobOperation, possibly from a different process.
 func (c *catalogGRPCClient) CreateMetadataJobOperation(name string) *CreateMetadataJobOperation {
 	return &CreateMetadataJobOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateMetadataJobOperation"),
 	}
 }
 
@@ -6058,7 +6163,7 @@ func (c *catalogGRPCClient) CreateMetadataJobOperation(name string) *CreateMetad
 func (c *catalogRESTClient) CreateMetadataJobOperation(name string) *CreateMetadataJobOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateMetadataJobOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateMetadataJobOperation"),
 		pollPath: override,
 	}
 }
@@ -6067,7 +6172,7 @@ func (c *catalogRESTClient) CreateMetadataJobOperation(name string) *CreateMetad
 // The name must be that of a previously created DeleteAspectTypeOperation, possibly from a different process.
 func (c *catalogGRPCClient) DeleteAspectTypeOperation(name string) *DeleteAspectTypeOperation {
 	return &DeleteAspectTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteAspectTypeOperation"),
 	}
 }
 
@@ -6076,7 +6181,7 @@ func (c *catalogGRPCClient) DeleteAspectTypeOperation(name string) *DeleteAspect
 func (c *catalogRESTClient) DeleteAspectTypeOperation(name string) *DeleteAspectTypeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAspectTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteAspectTypeOperation"),
 		pollPath: override,
 	}
 }
@@ -6085,7 +6190,7 @@ func (c *catalogRESTClient) DeleteAspectTypeOperation(name string) *DeleteAspect
 // The name must be that of a previously created DeleteEntryGroupOperation, possibly from a different process.
 func (c *catalogGRPCClient) DeleteEntryGroupOperation(name string) *DeleteEntryGroupOperation {
 	return &DeleteEntryGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteEntryGroupOperation"),
 	}
 }
 
@@ -6094,7 +6199,7 @@ func (c *catalogGRPCClient) DeleteEntryGroupOperation(name string) *DeleteEntryG
 func (c *catalogRESTClient) DeleteEntryGroupOperation(name string) *DeleteEntryGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEntryGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteEntryGroupOperation"),
 		pollPath: override,
 	}
 }
@@ -6103,7 +6208,7 @@ func (c *catalogRESTClient) DeleteEntryGroupOperation(name string) *DeleteEntryG
 // The name must be that of a previously created DeleteEntryTypeOperation, possibly from a different process.
 func (c *catalogGRPCClient) DeleteEntryTypeOperation(name string) *DeleteEntryTypeOperation {
 	return &DeleteEntryTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteEntryTypeOperation"),
 	}
 }
 
@@ -6112,7 +6217,7 @@ func (c *catalogGRPCClient) DeleteEntryTypeOperation(name string) *DeleteEntryTy
 func (c *catalogRESTClient) DeleteEntryTypeOperation(name string) *DeleteEntryTypeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEntryTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteEntryTypeOperation"),
 		pollPath: override,
 	}
 }
@@ -6121,7 +6226,7 @@ func (c *catalogRESTClient) DeleteEntryTypeOperation(name string) *DeleteEntryTy
 // The name must be that of a previously created DeleteMetadataFeedOperation, possibly from a different process.
 func (c *catalogGRPCClient) DeleteMetadataFeedOperation(name string) *DeleteMetadataFeedOperation {
 	return &DeleteMetadataFeedOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteMetadataFeedOperation"),
 	}
 }
 
@@ -6130,7 +6235,7 @@ func (c *catalogGRPCClient) DeleteMetadataFeedOperation(name string) *DeleteMeta
 func (c *catalogRESTClient) DeleteMetadataFeedOperation(name string) *DeleteMetadataFeedOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteMetadataFeedOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteMetadataFeedOperation"),
 		pollPath: override,
 	}
 }
@@ -6139,7 +6244,7 @@ func (c *catalogRESTClient) DeleteMetadataFeedOperation(name string) *DeleteMeta
 // The name must be that of a previously created UpdateAspectTypeOperation, possibly from a different process.
 func (c *catalogGRPCClient) UpdateAspectTypeOperation(name string) *UpdateAspectTypeOperation {
 	return &UpdateAspectTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateAspectTypeOperation"),
 	}
 }
 
@@ -6148,7 +6253,7 @@ func (c *catalogGRPCClient) UpdateAspectTypeOperation(name string) *UpdateAspect
 func (c *catalogRESTClient) UpdateAspectTypeOperation(name string) *UpdateAspectTypeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateAspectTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateAspectTypeOperation"),
 		pollPath: override,
 	}
 }
@@ -6157,7 +6262,7 @@ func (c *catalogRESTClient) UpdateAspectTypeOperation(name string) *UpdateAspect
 // The name must be that of a previously created UpdateEntryGroupOperation, possibly from a different process.
 func (c *catalogGRPCClient) UpdateEntryGroupOperation(name string) *UpdateEntryGroupOperation {
 	return &UpdateEntryGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateEntryGroupOperation"),
 	}
 }
 
@@ -6166,7 +6271,7 @@ func (c *catalogGRPCClient) UpdateEntryGroupOperation(name string) *UpdateEntryG
 func (c *catalogRESTClient) UpdateEntryGroupOperation(name string) *UpdateEntryGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateEntryGroupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateEntryGroupOperation"),
 		pollPath: override,
 	}
 }
@@ -6175,7 +6280,7 @@ func (c *catalogRESTClient) UpdateEntryGroupOperation(name string) *UpdateEntryG
 // The name must be that of a previously created UpdateEntryTypeOperation, possibly from a different process.
 func (c *catalogGRPCClient) UpdateEntryTypeOperation(name string) *UpdateEntryTypeOperation {
 	return &UpdateEntryTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateEntryTypeOperation"),
 	}
 }
 
@@ -6184,7 +6289,7 @@ func (c *catalogGRPCClient) UpdateEntryTypeOperation(name string) *UpdateEntryTy
 func (c *catalogRESTClient) UpdateEntryTypeOperation(name string) *UpdateEntryTypeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateEntryTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateEntryTypeOperation"),
 		pollPath: override,
 	}
 }
@@ -6193,7 +6298,7 @@ func (c *catalogRESTClient) UpdateEntryTypeOperation(name string) *UpdateEntryTy
 // The name must be that of a previously created UpdateMetadataFeedOperation, possibly from a different process.
 func (c *catalogGRPCClient) UpdateMetadataFeedOperation(name string) *UpdateMetadataFeedOperation {
 	return &UpdateMetadataFeedOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateMetadataFeedOperation"),
 	}
 }
 
@@ -6202,7 +6307,7 @@ func (c *catalogGRPCClient) UpdateMetadataFeedOperation(name string) *UpdateMeta
 func (c *catalogRESTClient) UpdateMetadataFeedOperation(name string) *UpdateMetadataFeedOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateMetadataFeedOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateMetadataFeedOperation"),
 		pollPath: override,
 	}
 }

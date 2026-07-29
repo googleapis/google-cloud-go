@@ -127,8 +127,15 @@ type Product struct {
 	ProductStatus *ProductStatus `protobuf:"bytes,10,opt,name=product_status,json=productStatus,proto3" json:"product_status,omitempty"`
 	// Output only. The automated discounts information for the product.
 	AutomatedDiscounts *AutomatedDiscounts `protobuf:"bytes,12,opt,name=automated_discounts,json=automatedDiscounts,proto3" json:"automated_discounts,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// Output only. Determines whether the product is
+	// [archived](https://support.google.com/merchants/answer/11909930).
+	//
+	// To archive or restore your product, visit Merchant Center products page.
+	// Learn also more about [offer
+	// visibility](https://support.google.com/merchants/answer/12488713).
+	Archived      bool `protobuf:"varint,14,opt,name=archived,proto3" json:"archived,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Product) Reset() {
@@ -243,6 +250,13 @@ func (x *Product) GetAutomatedDiscounts() *AutomatedDiscounts {
 		return x.AutomatedDiscounts
 	}
 	return nil
+}
+
+func (x *Product) GetArchived() bool {
+	if x != nil {
+		return x.Archived
+	}
+	return false
 }
 
 // Request message for the GetProduct method.
@@ -460,7 +474,7 @@ var File_google_shopping_merchant_products_v1_products_proto protoreflect.FileDe
 
 const file_google_shopping_merchant_products_v1_products_proto_rawDesc = "" +
 	"\n" +
-	"3google/shopping/merchant/products/v1/products.proto\x12$google.shopping.merchant.products.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a:google/shopping/merchant/products/v1/products_common.proto\x1a google/shopping/type/types.proto\"\xbf\x06\n" +
+	"3google/shopping/merchant/products/v1/products.proto\x12$google.shopping.merchant.products.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a:google/shopping/merchant/products/v1/products_common.proto\x1a google/shopping/type/types.proto\"\xe0\x06\n" +
 	"\aProduct\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x123\n" +
 	"\x13base64_encoded_name\x18\x0f \x01(\tB\x03\xe0A\x03R\x11base64EncodedName\x12&\n" +
@@ -476,7 +490,8 @@ const file_google_shopping_merchant_products_v1_products_proto_rawDesc = "" +
 	"\x11custom_attributes\x18\t \x03(\v2%.google.shopping.type.CustomAttributeB\x03\xe0A\x03R\x10customAttributes\x12_\n" +
 	"\x0eproduct_status\x18\n" +
 	" \x01(\v23.google.shopping.merchant.products.v1.ProductStatusB\x03\xe0A\x03R\rproductStatus\x12n\n" +
-	"\x13automated_discounts\x18\f \x01(\v28.google.shopping.merchant.products.v1.AutomatedDiscountsB\x03\xe0A\x03R\x12automatedDiscounts:N\xeaAK\n" +
+	"\x13automated_discounts\x18\f \x01(\v28.google.shopping.merchant.products.v1.AutomatedDiscountsB\x03\xe0A\x03R\x12automatedDiscounts\x12\x1f\n" +
+	"\barchived\x18\x0e \x01(\bB\x03\xe0A\x03R\barchived:N\xeaAK\n" +
 	"\"merchantapi.googleapis.com/Product\x12%accounts/{account}/products/{product}B\x11\n" +
 	"\x0f_version_number\"S\n" +
 	"\x11GetProductRequest\x12>\n" +

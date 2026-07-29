@@ -1,5 +1,12 @@
 # Changes
 
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.31.0...cloudbuild/v1.32.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
 ## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.30.0...cloudbuild/v1.31.0) (2026-06-26)
 
 

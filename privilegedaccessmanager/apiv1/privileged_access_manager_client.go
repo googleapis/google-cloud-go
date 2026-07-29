@@ -31,6 +31,7 @@ import (
 	privilegedaccessmanagerpb "cloud.google.com/go/privilegedaccessmanager/apiv1/privilegedaccessmanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -874,8 +875,12 @@ func (c *gRPCClient) CreateEntitlement(ctx context.Context, req *privilegedacces
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privilegedaccessmanager.CreateEntitlementOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEntitlementOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -900,8 +905,12 @@ func (c *gRPCClient) DeleteEntitlement(ctx context.Context, req *privilegedacces
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privilegedaccessmanager.DeleteEntitlementOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEntitlementOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -923,8 +932,12 @@ func (c *gRPCClient) UpdateEntitlement(ctx context.Context, req *privilegedacces
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privilegedaccessmanager.UpdateEntitlementOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEntitlementOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1149,8 +1162,12 @@ func (c *gRPCClient) RevokeGrant(ctx context.Context, req *privilegedaccessmanag
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privilegedaccessmanager.RevokeGrantOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RevokeGrantOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1660,8 +1677,12 @@ func (c *restClient) CreateEntitlement(ctx context.Context, req *privilegedacces
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privilegedaccessmanager.CreateEntitlementOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEntitlementOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1728,8 +1749,12 @@ func (c *restClient) DeleteEntitlement(ctx context.Context, req *privilegedacces
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privilegedaccessmanager.DeleteEntitlementOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEntitlementOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1824,8 +1849,12 @@ func (c *restClient) UpdateEntitlement(ctx context.Context, req *privilegedacces
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privilegedaccessmanager.UpdateEntitlementOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEntitlementOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2313,8 +2342,12 @@ func (c *restClient) RevokeGrant(ctx context.Context, req *privilegedaccessmanag
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privilegedaccessmanager.RevokeGrantOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RevokeGrantOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2635,7 +2668,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateEntitlementOperation, possibly from a different process.
 func (c *gRPCClient) CreateEntitlementOperation(name string) *CreateEntitlementOperation {
 	return &CreateEntitlementOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privilegedaccessmanager.CreateEntitlementOperation"),
 	}
 }
 
@@ -2644,7 +2677,7 @@ func (c *gRPCClient) CreateEntitlementOperation(name string) *CreateEntitlementO
 func (c *restClient) CreateEntitlementOperation(name string) *CreateEntitlementOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEntitlementOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privilegedaccessmanager.CreateEntitlementOperation"),
 		pollPath: override,
 	}
 }
@@ -2653,7 +2686,7 @@ func (c *restClient) CreateEntitlementOperation(name string) *CreateEntitlementO
 // The name must be that of a previously created DeleteEntitlementOperation, possibly from a different process.
 func (c *gRPCClient) DeleteEntitlementOperation(name string) *DeleteEntitlementOperation {
 	return &DeleteEntitlementOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privilegedaccessmanager.DeleteEntitlementOperation"),
 	}
 }
 
@@ -2662,7 +2695,7 @@ func (c *gRPCClient) DeleteEntitlementOperation(name string) *DeleteEntitlementO
 func (c *restClient) DeleteEntitlementOperation(name string) *DeleteEntitlementOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEntitlementOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privilegedaccessmanager.DeleteEntitlementOperation"),
 		pollPath: override,
 	}
 }
@@ -2671,7 +2704,7 @@ func (c *restClient) DeleteEntitlementOperation(name string) *DeleteEntitlementO
 // The name must be that of a previously created RevokeGrantOperation, possibly from a different process.
 func (c *gRPCClient) RevokeGrantOperation(name string) *RevokeGrantOperation {
 	return &RevokeGrantOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privilegedaccessmanager.RevokeGrantOperation"),
 	}
 }
 
@@ -2680,7 +2713,7 @@ func (c *gRPCClient) RevokeGrantOperation(name string) *RevokeGrantOperation {
 func (c *restClient) RevokeGrantOperation(name string) *RevokeGrantOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RevokeGrantOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privilegedaccessmanager.RevokeGrantOperation"),
 		pollPath: override,
 	}
 }
@@ -2689,7 +2722,7 @@ func (c *restClient) RevokeGrantOperation(name string) *RevokeGrantOperation {
 // The name must be that of a previously created UpdateEntitlementOperation, possibly from a different process.
 func (c *gRPCClient) UpdateEntitlementOperation(name string) *UpdateEntitlementOperation {
 	return &UpdateEntitlementOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privilegedaccessmanager.UpdateEntitlementOperation"),
 	}
 }
 
@@ -2698,7 +2731,7 @@ func (c *gRPCClient) UpdateEntitlementOperation(name string) *UpdateEntitlementO
 func (c *restClient) UpdateEntitlementOperation(name string) *UpdateEntitlementOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateEntitlementOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privilegedaccessmanager.UpdateEntitlementOperation"),
 		pollPath: override,
 	}
 }

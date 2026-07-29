@@ -118,8 +118,8 @@ type SecurityProfileGroup struct {
 	// other fields, and may be sent on update and delete requests to ensure the
 	// client has an up-to-date value before proceeding.
 	Etag string `protobuf:"bytes,5,opt,name=etag,proto3" json:"etag,omitempty"`
-	// Output only. Identifier used by the data-path. Unique within \{container,
-	// location\}.
+	// Output only. Identifier used by the data-path. Unique within `{container,
+	// location}`.
 	DataPathId uint64 `protobuf:"varint,12,opt,name=data_path_id,json=dataPathId,proto3" json:"data_path_id,omitempty"`
 	// Optional. Labels as key value pairs.
 	Labels map[string]string `protobuf:"bytes,7,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`

@@ -758,7 +758,11 @@ type AgentGateway_SelfManaged struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Optional. A supported Google Cloud networking proxy in the Project and
 	// Location
-	ResourceUri   string `protobuf:"bytes,1,opt,name=resource_uri,json=resourceUri,proto3" json:"resource_uri,omitempty"`
+	ResourceUri string `protobuf:"bytes,1,opt,name=resource_uri,json=resourceUri,proto3" json:"resource_uri,omitempty"`
+	// Optional. List of supported Google Cloud networking proxies in the Project and
+	// Location.
+	// resource_uris is mutually exclusive with resource_uri.
+	ResourceUris  []string `protobuf:"bytes,2,rep,name=resource_uris,json=resourceUris,proto3" json:"resource_uris,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -798,6 +802,13 @@ func (x *AgentGateway_SelfManaged) GetResourceUri() string {
 		return x.ResourceUri
 	}
 	return ""
+}
+
+func (x *AgentGateway_SelfManaged) GetResourceUris() []string {
+	if x != nil {
+		return x.ResourceUris
+	}
+	return nil
 }
 
 // NetworkConfig contains network configurations for the AgentGateway.
@@ -1096,7 +1107,7 @@ var File_google_cloud_networkservices_v1_agent_gateway_proto protoreflect.FileDe
 
 const file_google_cloud_networkservices_v1_agent_gateway_proto_rawDesc = "" +
 	"\n" +
-	"3google/cloud/networkservices/v1/agent_gateway.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xad\x12\n" +
+	"3google/cloud/networkservices/v1/agent_gateway.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdd\x12\n" +
 	"\fAgentGateway\x12i\n" +
 	"\x0egoogle_managed\x18\b \x01(\v2;.google.cloud.networkservices.v1.AgentGateway.GoogleManagedB\x03\xe0A\x01H\x00R\rgoogleManaged\x12c\n" +
 	"\fself_managed\x18\t \x01(\v29.google.cloud.networkservices.v1.AgentGateway.SelfManagedB\x03\xe0A\x01H\x00R\vselfManaged\x12\x17\n" +
@@ -1120,10 +1131,12 @@ const file_google_cloud_networkservices_v1_agent_gateway_proto_rawDesc = "" +
 	"\x12GovernedAccessPath\x12$\n" +
 	" GOVERNED_ACCESS_PATH_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11AGENT_TO_ANYWHERE\x10\x01\x12\x13\n" +
-	"\x0fCLIENT_TO_AGENT\x10\x02\x1a;\n" +
+	"\x0fCLIENT_TO_AGENT\x10\x02\x1ak\n" +
 	"\vSelfManaged\x12,\n" +
 	"\fresource_uri\x18\x01 \x01(\tB\t\xe0A\x01\xfaA\x03\n" +
-	"\x01*R\vresourceUri\x1a\x96\x05\n" +
+	"\x01*R\vresourceUri\x12.\n" +
+	"\rresource_uris\x18\x02 \x03(\tB\t\xe0A\x01\xfaA\x03\n" +
+	"\x01*R\fresourceUris\x1a\x96\x05\n" +
 	"\rNetworkConfig\x12_\n" +
 	"\x06egress\x18\x01 \x01(\v2B.google.cloud.networkservices.v1.AgentGateway.NetworkConfig.EgressB\x03\xe0A\x01R\x06egress\x12\x7f\n" +
 	"\x12dns_peering_config\x18\x02 \x01(\v2L.google.cloud.networkservices.v1.AgentGateway.NetworkConfig.DnsPeeringConfigB\x03\xe0A\x01R\x10dnsPeeringConfig\x1a\xf3\x01\n" +

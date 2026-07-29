@@ -33,6 +33,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1314,8 +1315,12 @@ func (c *gRPCClient) CreateServiceProjectAttachment(ctx context.Context, req *ap
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.CreateServiceProjectAttachmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServiceProjectAttachmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1364,8 +1369,12 @@ func (c *gRPCClient) DeleteServiceProjectAttachment(ctx context.Context, req *ap
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.DeleteServiceProjectAttachmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServiceProjectAttachmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1566,8 +1575,12 @@ func (c *gRPCClient) CreateService(ctx context.Context, req *apphubpb.CreateServ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.CreateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1613,8 +1626,12 @@ func (c *gRPCClient) UpdateService(ctx context.Context, req *apphubpb.UpdateServ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.UpdateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1639,8 +1656,12 @@ func (c *gRPCClient) DeleteService(ctx context.Context, req *apphubpb.DeleteServ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.DeleteServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1817,8 +1838,12 @@ func (c *gRPCClient) CreateWorkload(ctx context.Context, req *apphubpb.CreateWor
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.CreateWorkloadOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkloadOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1864,8 +1889,12 @@ func (c *gRPCClient) UpdateWorkload(ctx context.Context, req *apphubpb.UpdateWor
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.UpdateWorkloadOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkloadOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1890,8 +1919,12 @@ func (c *gRPCClient) DeleteWorkload(ctx context.Context, req *apphubpb.DeleteWor
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.DeleteWorkloadOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkloadOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1968,8 +2001,12 @@ func (c *gRPCClient) CreateApplication(ctx context.Context, req *apphubpb.Create
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.CreateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2015,8 +2052,12 @@ func (c *gRPCClient) UpdateApplication(ctx context.Context, req *apphubpb.Update
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.UpdateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2041,8 +2082,12 @@ func (c *gRPCClient) DeleteApplication(ctx context.Context, req *apphubpb.Delete
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.DeleteApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2499,8 +2544,12 @@ func (c *restClient) CreateServiceProjectAttachment(ctx context.Context, req *ap
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.CreateServiceProjectAttachmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServiceProjectAttachmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2619,8 +2668,12 @@ func (c *restClient) DeleteServiceProjectAttachment(ctx context.Context, req *ap
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.DeleteServiceProjectAttachmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServiceProjectAttachmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3040,8 +3093,12 @@ func (c *restClient) CreateService(ctx context.Context, req *apphubpb.CreateServ
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.CreateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3171,8 +3228,12 @@ func (c *restClient) UpdateService(ctx context.Context, req *apphubpb.UpdateServ
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.UpdateServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3234,8 +3295,12 @@ func (c *restClient) DeleteService(ctx context.Context, req *apphubpb.DeleteServ
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.DeleteServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3590,8 +3655,12 @@ func (c *restClient) CreateWorkload(ctx context.Context, req *apphubpb.CreateWor
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.CreateWorkloadOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkloadOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3721,8 +3790,12 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *apphubpb.UpdateWor
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.UpdateWorkloadOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkloadOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3784,8 +3857,12 @@ func (c *restClient) DeleteWorkload(ctx context.Context, req *apphubpb.DeleteWor
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.DeleteWorkloadOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkloadOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3939,8 +4016,12 @@ func (c *restClient) CreateApplication(ctx context.Context, req *apphubpb.Create
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.CreateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4070,8 +4151,12 @@ func (c *restClient) UpdateApplication(ctx context.Context, req *apphubpb.Update
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.UpdateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4133,8 +4218,12 @@ func (c *restClient) DeleteApplication(ctx context.Context, req *apphubpb.Delete
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.DeleteApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4697,7 +4786,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateApplicationOperation, possibly from a different process.
 func (c *gRPCClient) CreateApplicationOperation(name string) *CreateApplicationOperation {
 	return &CreateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.CreateApplicationOperation"),
 	}
 }
 
@@ -4706,7 +4795,7 @@ func (c *gRPCClient) CreateApplicationOperation(name string) *CreateApplicationO
 func (c *restClient) CreateApplicationOperation(name string) *CreateApplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.CreateApplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -4715,7 +4804,7 @@ func (c *restClient) CreateApplicationOperation(name string) *CreateApplicationO
 // The name must be that of a previously created CreateServiceOperation, possibly from a different process.
 func (c *gRPCClient) CreateServiceOperation(name string) *CreateServiceOperation {
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.CreateServiceOperation"),
 	}
 }
 
@@ -4724,7 +4813,7 @@ func (c *gRPCClient) CreateServiceOperation(name string) *CreateServiceOperation
 func (c *restClient) CreateServiceOperation(name string) *CreateServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.CreateServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -4733,7 +4822,7 @@ func (c *restClient) CreateServiceOperation(name string) *CreateServiceOperation
 // The name must be that of a previously created CreateServiceProjectAttachmentOperation, possibly from a different process.
 func (c *gRPCClient) CreateServiceProjectAttachmentOperation(name string) *CreateServiceProjectAttachmentOperation {
 	return &CreateServiceProjectAttachmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.CreateServiceProjectAttachmentOperation"),
 	}
 }
 
@@ -4742,7 +4831,7 @@ func (c *gRPCClient) CreateServiceProjectAttachmentOperation(name string) *Creat
 func (c *restClient) CreateServiceProjectAttachmentOperation(name string) *CreateServiceProjectAttachmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateServiceProjectAttachmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.CreateServiceProjectAttachmentOperation"),
 		pollPath: override,
 	}
 }
@@ -4751,7 +4840,7 @@ func (c *restClient) CreateServiceProjectAttachmentOperation(name string) *Creat
 // The name must be that of a previously created CreateWorkloadOperation, possibly from a different process.
 func (c *gRPCClient) CreateWorkloadOperation(name string) *CreateWorkloadOperation {
 	return &CreateWorkloadOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.CreateWorkloadOperation"),
 	}
 }
 
@@ -4760,7 +4849,7 @@ func (c *gRPCClient) CreateWorkloadOperation(name string) *CreateWorkloadOperati
 func (c *restClient) CreateWorkloadOperation(name string) *CreateWorkloadOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateWorkloadOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.CreateWorkloadOperation"),
 		pollPath: override,
 	}
 }
@@ -4769,7 +4858,7 @@ func (c *restClient) CreateWorkloadOperation(name string) *CreateWorkloadOperati
 // The name must be that of a previously created DeleteApplicationOperation, possibly from a different process.
 func (c *gRPCClient) DeleteApplicationOperation(name string) *DeleteApplicationOperation {
 	return &DeleteApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.DeleteApplicationOperation"),
 	}
 }
 
@@ -4778,7 +4867,7 @@ func (c *gRPCClient) DeleteApplicationOperation(name string) *DeleteApplicationO
 func (c *restClient) DeleteApplicationOperation(name string) *DeleteApplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.DeleteApplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -4787,7 +4876,7 @@ func (c *restClient) DeleteApplicationOperation(name string) *DeleteApplicationO
 // The name must be that of a previously created DeleteServiceOperation, possibly from a different process.
 func (c *gRPCClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.DeleteServiceOperation"),
 	}
 }
 
@@ -4796,7 +4885,7 @@ func (c *gRPCClient) DeleteServiceOperation(name string) *DeleteServiceOperation
 func (c *restClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.DeleteServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -4805,7 +4894,7 @@ func (c *restClient) DeleteServiceOperation(name string) *DeleteServiceOperation
 // The name must be that of a previously created DeleteServiceProjectAttachmentOperation, possibly from a different process.
 func (c *gRPCClient) DeleteServiceProjectAttachmentOperation(name string) *DeleteServiceProjectAttachmentOperation {
 	return &DeleteServiceProjectAttachmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.DeleteServiceProjectAttachmentOperation"),
 	}
 }
 
@@ -4814,7 +4903,7 @@ func (c *gRPCClient) DeleteServiceProjectAttachmentOperation(name string) *Delet
 func (c *restClient) DeleteServiceProjectAttachmentOperation(name string) *DeleteServiceProjectAttachmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteServiceProjectAttachmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.DeleteServiceProjectAttachmentOperation"),
 		pollPath: override,
 	}
 }
@@ -4823,7 +4912,7 @@ func (c *restClient) DeleteServiceProjectAttachmentOperation(name string) *Delet
 // The name must be that of a previously created DeleteWorkloadOperation, possibly from a different process.
 func (c *gRPCClient) DeleteWorkloadOperation(name string) *DeleteWorkloadOperation {
 	return &DeleteWorkloadOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.DeleteWorkloadOperation"),
 	}
 }
 
@@ -4832,7 +4921,7 @@ func (c *gRPCClient) DeleteWorkloadOperation(name string) *DeleteWorkloadOperati
 func (c *restClient) DeleteWorkloadOperation(name string) *DeleteWorkloadOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteWorkloadOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.DeleteWorkloadOperation"),
 		pollPath: override,
 	}
 }
@@ -4841,7 +4930,7 @@ func (c *restClient) DeleteWorkloadOperation(name string) *DeleteWorkloadOperati
 // The name must be that of a previously created UpdateApplicationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateApplicationOperation(name string) *UpdateApplicationOperation {
 	return &UpdateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.UpdateApplicationOperation"),
 	}
 }
 
@@ -4850,7 +4939,7 @@ func (c *gRPCClient) UpdateApplicationOperation(name string) *UpdateApplicationO
 func (c *restClient) UpdateApplicationOperation(name string) *UpdateApplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.UpdateApplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -4859,7 +4948,7 @@ func (c *restClient) UpdateApplicationOperation(name string) *UpdateApplicationO
 // The name must be that of a previously created UpdateServiceOperation, possibly from a different process.
 func (c *gRPCClient) UpdateServiceOperation(name string) *UpdateServiceOperation {
 	return &UpdateServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.UpdateServiceOperation"),
 	}
 }
 
@@ -4868,7 +4957,7 @@ func (c *gRPCClient) UpdateServiceOperation(name string) *UpdateServiceOperation
 func (c *restClient) UpdateServiceOperation(name string) *UpdateServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.UpdateServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -4877,7 +4966,7 @@ func (c *restClient) UpdateServiceOperation(name string) *UpdateServiceOperation
 // The name must be that of a previously created UpdateWorkloadOperation, possibly from a different process.
 func (c *gRPCClient) UpdateWorkloadOperation(name string) *UpdateWorkloadOperation {
 	return &UpdateWorkloadOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.UpdateWorkloadOperation"),
 	}
 }
 
@@ -4886,7 +4975,7 @@ func (c *gRPCClient) UpdateWorkloadOperation(name string) *UpdateWorkloadOperati
 func (c *restClient) UpdateWorkloadOperation(name string) *UpdateWorkloadOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateWorkloadOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.UpdateWorkloadOperation"),
 		pollPath: override,
 	}
 }

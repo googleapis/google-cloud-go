@@ -33,6 +33,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1689,8 +1690,12 @@ func (c *cloudDeployGRPCClient) CreateDeliveryPipeline(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.CreateDeliveryPipelineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDeliveryPipelineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1712,8 +1717,12 @@ func (c *cloudDeployGRPCClient) UpdateDeliveryPipeline(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.UpdateDeliveryPipelineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDeliveryPipelineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1738,8 +1747,12 @@ func (c *cloudDeployGRPCClient) DeleteDeliveryPipeline(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.DeleteDeliveryPipelineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDeliveryPipelineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1864,8 +1877,12 @@ func (c *cloudDeployGRPCClient) CreateTarget(ctx context.Context, req *deploypb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.CreateTargetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTargetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1887,8 +1904,12 @@ func (c *cloudDeployGRPCClient) UpdateTarget(ctx context.Context, req *deploypb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.UpdateTargetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateTargetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1913,8 +1934,12 @@ func (c *cloudDeployGRPCClient) DeleteTarget(ctx context.Context, req *deploypb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.DeleteTargetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTargetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2015,8 +2040,12 @@ func (c *cloudDeployGRPCClient) CreateCustomTargetType(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.CreateCustomTargetTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCustomTargetTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2038,8 +2067,12 @@ func (c *cloudDeployGRPCClient) UpdateCustomTargetType(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.UpdateCustomTargetTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCustomTargetTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2064,8 +2097,12 @@ func (c *cloudDeployGRPCClient) DeleteCustomTargetType(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.DeleteCustomTargetTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCustomTargetTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2166,8 +2203,12 @@ func (c *cloudDeployGRPCClient) CreateRelease(ctx context.Context, req *deploypb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.CreateReleaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateReleaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2216,8 +2257,12 @@ func (c *cloudDeployGRPCClient) CreateDeployPolicy(ctx context.Context, req *dep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.CreateDeployPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDeployPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2239,8 +2284,12 @@ func (c *cloudDeployGRPCClient) UpdateDeployPolicy(ctx context.Context, req *dep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.UpdateDeployPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDeployPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2265,8 +2314,12 @@ func (c *cloudDeployGRPCClient) DeleteDeployPolicy(ctx context.Context, req *dep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.DeleteDeployPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDeployPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2515,8 +2568,12 @@ func (c *cloudDeployGRPCClient) CreateRollout(ctx context.Context, req *deploypb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.CreateRolloutOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRolloutOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2713,8 +2770,12 @@ func (c *cloudDeployGRPCClient) CreateAutomation(ctx context.Context, req *deplo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.CreateAutomationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAutomationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2736,8 +2797,12 @@ func (c *cloudDeployGRPCClient) UpdateAutomation(ctx context.Context, req *deplo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.UpdateAutomationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAutomationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2762,8 +2827,12 @@ func (c *cloudDeployGRPCClient) DeleteAutomation(ctx context.Context, req *deplo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.DeleteAutomationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAutomationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3398,8 +3467,12 @@ func (c *cloudDeployRESTClient) CreateDeliveryPipeline(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.CreateDeliveryPipelineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDeliveryPipelineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3478,8 +3551,12 @@ func (c *cloudDeployRESTClient) UpdateDeliveryPipeline(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.UpdateDeliveryPipelineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDeliveryPipelineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3553,8 +3630,12 @@ func (c *cloudDeployRESTClient) DeleteDeliveryPipeline(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.DeleteDeliveryPipelineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDeliveryPipelineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3831,8 +3912,12 @@ func (c *cloudDeployRESTClient) CreateTarget(ctx context.Context, req *deploypb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.CreateTargetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTargetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3911,8 +3996,12 @@ func (c *cloudDeployRESTClient) UpdateTarget(ctx context.Context, req *deploypb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.UpdateTargetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateTargetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3983,8 +4072,12 @@ func (c *cloudDeployRESTClient) DeleteTarget(ctx context.Context, req *deploypb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.DeleteTargetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTargetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4198,8 +4291,12 @@ func (c *cloudDeployRESTClient) CreateCustomTargetType(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.CreateCustomTargetTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCustomTargetTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4278,8 +4375,12 @@ func (c *cloudDeployRESTClient) UpdateCustomTargetType(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.UpdateCustomTargetTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCustomTargetTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4350,8 +4451,12 @@ func (c *cloudDeployRESTClient) DeleteCustomTargetType(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.DeleteCustomTargetTypeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCustomTargetTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4570,8 +4675,12 @@ func (c *cloudDeployRESTClient) CreateRelease(ctx context.Context, req *deploypb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.CreateReleaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateReleaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4707,8 +4816,12 @@ func (c *cloudDeployRESTClient) CreateDeployPolicy(ctx context.Context, req *dep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.CreateDeployPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDeployPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4787,8 +4900,12 @@ func (c *cloudDeployRESTClient) UpdateDeployPolicy(ctx context.Context, req *dep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.UpdateDeployPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDeployPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4859,8 +4976,12 @@ func (c *cloudDeployRESTClient) DeleteDeployPolicy(ctx context.Context, req *dep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.DeleteDeployPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDeployPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5412,8 +5533,12 @@ func (c *cloudDeployRESTClient) CreateRollout(ctx context.Context, req *deploypb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.CreateRolloutOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRolloutOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5873,8 +5998,12 @@ func (c *cloudDeployRESTClient) CreateAutomation(ctx context.Context, req *deplo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.CreateAutomationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAutomationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5953,8 +6082,12 @@ func (c *cloudDeployRESTClient) UpdateAutomation(ctx context.Context, req *deplo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.UpdateAutomationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAutomationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6025,8 +6158,12 @@ func (c *cloudDeployRESTClient) DeleteAutomation(ctx context.Context, req *deplo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*deploy.DeleteAutomationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAutomationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6937,7 +7074,7 @@ func (c *cloudDeployRESTClient) ListOperations(ctx context.Context, req *longrun
 // The name must be that of a previously created CreateAutomationOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) CreateAutomationOperation(name string) *CreateAutomationOperation {
 	return &CreateAutomationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.CreateAutomationOperation"),
 	}
 }
 
@@ -6946,7 +7083,7 @@ func (c *cloudDeployGRPCClient) CreateAutomationOperation(name string) *CreateAu
 func (c *cloudDeployRESTClient) CreateAutomationOperation(name string) *CreateAutomationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAutomationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.CreateAutomationOperation"),
 		pollPath: override,
 	}
 }
@@ -6955,7 +7092,7 @@ func (c *cloudDeployRESTClient) CreateAutomationOperation(name string) *CreateAu
 // The name must be that of a previously created CreateCustomTargetTypeOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) CreateCustomTargetTypeOperation(name string) *CreateCustomTargetTypeOperation {
 	return &CreateCustomTargetTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.CreateCustomTargetTypeOperation"),
 	}
 }
 
@@ -6964,7 +7101,7 @@ func (c *cloudDeployGRPCClient) CreateCustomTargetTypeOperation(name string) *Cr
 func (c *cloudDeployRESTClient) CreateCustomTargetTypeOperation(name string) *CreateCustomTargetTypeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCustomTargetTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.CreateCustomTargetTypeOperation"),
 		pollPath: override,
 	}
 }
@@ -6973,7 +7110,7 @@ func (c *cloudDeployRESTClient) CreateCustomTargetTypeOperation(name string) *Cr
 // The name must be that of a previously created CreateDeliveryPipelineOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) CreateDeliveryPipelineOperation(name string) *CreateDeliveryPipelineOperation {
 	return &CreateDeliveryPipelineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.CreateDeliveryPipelineOperation"),
 	}
 }
 
@@ -6982,7 +7119,7 @@ func (c *cloudDeployGRPCClient) CreateDeliveryPipelineOperation(name string) *Cr
 func (c *cloudDeployRESTClient) CreateDeliveryPipelineOperation(name string) *CreateDeliveryPipelineOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDeliveryPipelineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.CreateDeliveryPipelineOperation"),
 		pollPath: override,
 	}
 }
@@ -6991,7 +7128,7 @@ func (c *cloudDeployRESTClient) CreateDeliveryPipelineOperation(name string) *Cr
 // The name must be that of a previously created CreateDeployPolicyOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) CreateDeployPolicyOperation(name string) *CreateDeployPolicyOperation {
 	return &CreateDeployPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.CreateDeployPolicyOperation"),
 	}
 }
 
@@ -7000,7 +7137,7 @@ func (c *cloudDeployGRPCClient) CreateDeployPolicyOperation(name string) *Create
 func (c *cloudDeployRESTClient) CreateDeployPolicyOperation(name string) *CreateDeployPolicyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDeployPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.CreateDeployPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -7009,7 +7146,7 @@ func (c *cloudDeployRESTClient) CreateDeployPolicyOperation(name string) *Create
 // The name must be that of a previously created CreateReleaseOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) CreateReleaseOperation(name string) *CreateReleaseOperation {
 	return &CreateReleaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.CreateReleaseOperation"),
 	}
 }
 
@@ -7018,7 +7155,7 @@ func (c *cloudDeployGRPCClient) CreateReleaseOperation(name string) *CreateRelea
 func (c *cloudDeployRESTClient) CreateReleaseOperation(name string) *CreateReleaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateReleaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.CreateReleaseOperation"),
 		pollPath: override,
 	}
 }
@@ -7027,7 +7164,7 @@ func (c *cloudDeployRESTClient) CreateReleaseOperation(name string) *CreateRelea
 // The name must be that of a previously created CreateRolloutOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) CreateRolloutOperation(name string) *CreateRolloutOperation {
 	return &CreateRolloutOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.CreateRolloutOperation"),
 	}
 }
 
@@ -7036,7 +7173,7 @@ func (c *cloudDeployGRPCClient) CreateRolloutOperation(name string) *CreateRollo
 func (c *cloudDeployRESTClient) CreateRolloutOperation(name string) *CreateRolloutOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateRolloutOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.CreateRolloutOperation"),
 		pollPath: override,
 	}
 }
@@ -7045,7 +7182,7 @@ func (c *cloudDeployRESTClient) CreateRolloutOperation(name string) *CreateRollo
 // The name must be that of a previously created CreateTargetOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) CreateTargetOperation(name string) *CreateTargetOperation {
 	return &CreateTargetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.CreateTargetOperation"),
 	}
 }
 
@@ -7054,7 +7191,7 @@ func (c *cloudDeployGRPCClient) CreateTargetOperation(name string) *CreateTarget
 func (c *cloudDeployRESTClient) CreateTargetOperation(name string) *CreateTargetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateTargetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.CreateTargetOperation"),
 		pollPath: override,
 	}
 }
@@ -7063,7 +7200,7 @@ func (c *cloudDeployRESTClient) CreateTargetOperation(name string) *CreateTarget
 // The name must be that of a previously created DeleteAutomationOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) DeleteAutomationOperation(name string) *DeleteAutomationOperation {
 	return &DeleteAutomationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.DeleteAutomationOperation"),
 	}
 }
 
@@ -7072,7 +7209,7 @@ func (c *cloudDeployGRPCClient) DeleteAutomationOperation(name string) *DeleteAu
 func (c *cloudDeployRESTClient) DeleteAutomationOperation(name string) *DeleteAutomationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAutomationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.DeleteAutomationOperation"),
 		pollPath: override,
 	}
 }
@@ -7081,7 +7218,7 @@ func (c *cloudDeployRESTClient) DeleteAutomationOperation(name string) *DeleteAu
 // The name must be that of a previously created DeleteCustomTargetTypeOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) DeleteCustomTargetTypeOperation(name string) *DeleteCustomTargetTypeOperation {
 	return &DeleteCustomTargetTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.DeleteCustomTargetTypeOperation"),
 	}
 }
 
@@ -7090,7 +7227,7 @@ func (c *cloudDeployGRPCClient) DeleteCustomTargetTypeOperation(name string) *De
 func (c *cloudDeployRESTClient) DeleteCustomTargetTypeOperation(name string) *DeleteCustomTargetTypeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCustomTargetTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.DeleteCustomTargetTypeOperation"),
 		pollPath: override,
 	}
 }
@@ -7099,7 +7236,7 @@ func (c *cloudDeployRESTClient) DeleteCustomTargetTypeOperation(name string) *De
 // The name must be that of a previously created DeleteDeliveryPipelineOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) DeleteDeliveryPipelineOperation(name string) *DeleteDeliveryPipelineOperation {
 	return &DeleteDeliveryPipelineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.DeleteDeliveryPipelineOperation"),
 	}
 }
 
@@ -7108,7 +7245,7 @@ func (c *cloudDeployGRPCClient) DeleteDeliveryPipelineOperation(name string) *De
 func (c *cloudDeployRESTClient) DeleteDeliveryPipelineOperation(name string) *DeleteDeliveryPipelineOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDeliveryPipelineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.DeleteDeliveryPipelineOperation"),
 		pollPath: override,
 	}
 }
@@ -7117,7 +7254,7 @@ func (c *cloudDeployRESTClient) DeleteDeliveryPipelineOperation(name string) *De
 // The name must be that of a previously created DeleteDeployPolicyOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) DeleteDeployPolicyOperation(name string) *DeleteDeployPolicyOperation {
 	return &DeleteDeployPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.DeleteDeployPolicyOperation"),
 	}
 }
 
@@ -7126,7 +7263,7 @@ func (c *cloudDeployGRPCClient) DeleteDeployPolicyOperation(name string) *Delete
 func (c *cloudDeployRESTClient) DeleteDeployPolicyOperation(name string) *DeleteDeployPolicyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDeployPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.DeleteDeployPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -7135,7 +7272,7 @@ func (c *cloudDeployRESTClient) DeleteDeployPolicyOperation(name string) *Delete
 // The name must be that of a previously created DeleteTargetOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) DeleteTargetOperation(name string) *DeleteTargetOperation {
 	return &DeleteTargetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.DeleteTargetOperation"),
 	}
 }
 
@@ -7144,7 +7281,7 @@ func (c *cloudDeployGRPCClient) DeleteTargetOperation(name string) *DeleteTarget
 func (c *cloudDeployRESTClient) DeleteTargetOperation(name string) *DeleteTargetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteTargetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.DeleteTargetOperation"),
 		pollPath: override,
 	}
 }
@@ -7153,7 +7290,7 @@ func (c *cloudDeployRESTClient) DeleteTargetOperation(name string) *DeleteTarget
 // The name must be that of a previously created UpdateAutomationOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) UpdateAutomationOperation(name string) *UpdateAutomationOperation {
 	return &UpdateAutomationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.UpdateAutomationOperation"),
 	}
 }
 
@@ -7162,7 +7299,7 @@ func (c *cloudDeployGRPCClient) UpdateAutomationOperation(name string) *UpdateAu
 func (c *cloudDeployRESTClient) UpdateAutomationOperation(name string) *UpdateAutomationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateAutomationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.UpdateAutomationOperation"),
 		pollPath: override,
 	}
 }
@@ -7171,7 +7308,7 @@ func (c *cloudDeployRESTClient) UpdateAutomationOperation(name string) *UpdateAu
 // The name must be that of a previously created UpdateCustomTargetTypeOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) UpdateCustomTargetTypeOperation(name string) *UpdateCustomTargetTypeOperation {
 	return &UpdateCustomTargetTypeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.UpdateCustomTargetTypeOperation"),
 	}
 }
 
@@ -7180,7 +7317,7 @@ func (c *cloudDeployGRPCClient) UpdateCustomTargetTypeOperation(name string) *Up
 func (c *cloudDeployRESTClient) UpdateCustomTargetTypeOperation(name string) *UpdateCustomTargetTypeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCustomTargetTypeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.UpdateCustomTargetTypeOperation"),
 		pollPath: override,
 	}
 }
@@ -7189,7 +7326,7 @@ func (c *cloudDeployRESTClient) UpdateCustomTargetTypeOperation(name string) *Up
 // The name must be that of a previously created UpdateDeliveryPipelineOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) UpdateDeliveryPipelineOperation(name string) *UpdateDeliveryPipelineOperation {
 	return &UpdateDeliveryPipelineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.UpdateDeliveryPipelineOperation"),
 	}
 }
 
@@ -7198,7 +7335,7 @@ func (c *cloudDeployGRPCClient) UpdateDeliveryPipelineOperation(name string) *Up
 func (c *cloudDeployRESTClient) UpdateDeliveryPipelineOperation(name string) *UpdateDeliveryPipelineOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDeliveryPipelineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.UpdateDeliveryPipelineOperation"),
 		pollPath: override,
 	}
 }
@@ -7207,7 +7344,7 @@ func (c *cloudDeployRESTClient) UpdateDeliveryPipelineOperation(name string) *Up
 // The name must be that of a previously created UpdateDeployPolicyOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) UpdateDeployPolicyOperation(name string) *UpdateDeployPolicyOperation {
 	return &UpdateDeployPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.UpdateDeployPolicyOperation"),
 	}
 }
 
@@ -7216,7 +7353,7 @@ func (c *cloudDeployGRPCClient) UpdateDeployPolicyOperation(name string) *Update
 func (c *cloudDeployRESTClient) UpdateDeployPolicyOperation(name string) *UpdateDeployPolicyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDeployPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.UpdateDeployPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -7225,7 +7362,7 @@ func (c *cloudDeployRESTClient) UpdateDeployPolicyOperation(name string) *Update
 // The name must be that of a previously created UpdateTargetOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) UpdateTargetOperation(name string) *UpdateTargetOperation {
 	return &UpdateTargetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.UpdateTargetOperation"),
 	}
 }
 
@@ -7234,7 +7371,7 @@ func (c *cloudDeployGRPCClient) UpdateTargetOperation(name string) *UpdateTarget
 func (c *cloudDeployRESTClient) UpdateTargetOperation(name string) *UpdateTargetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateTargetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*deploy.UpdateTargetOperation"),
 		pollPath: override,
 	}
 }

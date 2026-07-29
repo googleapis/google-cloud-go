@@ -1,5 +1,12 @@
 # Changes
 
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/saasplatform/v0.9.0...saasplatform/v0.10.0) (2026-07-13)
+
+
+### Features
+
+* Update API sources and regenerate ([#20109](https://github.com/googleapis/google-cloud-go/issues/20109)) ([4314d30](https://github.com/googleapis/google-cloud-go/commit/4314d305008d9a4b2d9f464d07519f8081b2277d))
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/saasplatform%2Fv0.9.0) (2026-06-04)
 
 ### Features
@@ -38,4 +45,3 @@
 ### Features
 
 * add new clients (#13307) ([fa28dd8](https://github.com/googleapis/google-cloud-go/commit/fa28dd891d5f25f49ffbb7b229c47e97ce4eecde))
-

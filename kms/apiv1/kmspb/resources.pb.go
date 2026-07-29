@@ -280,6 +280,9 @@ const (
 	// [GetPublicKey][google.cloud.kms.v1.KeyManagementService.GetPublicKey]
 	// and [Decapsulate][google.cloud.kms.v1.KeyManagementService.Decapsulate].
 	CryptoKey_KEY_ENCAPSULATION CryptoKey_CryptoKeyPurpose = 10
+	// [CryptoKeys][google.cloud.kms.v1.CryptoKey] with this purpose may be used
+	// for AES key
+	CryptoKey_AES_WRAPPING CryptoKey_CryptoKeyPurpose = 11
 )
 
 // Enum value maps for CryptoKey_CryptoKeyPurpose.
@@ -292,6 +295,7 @@ var (
 		7:  "RAW_ENCRYPT_DECRYPT",
 		9:  "MAC",
 		10: "KEY_ENCAPSULATION",
+		11: "AES_WRAPPING",
 	}
 	CryptoKey_CryptoKeyPurpose_value = map[string]int32{
 		"CRYPTO_KEY_PURPOSE_UNSPECIFIED": 0,
@@ -301,6 +305,7 @@ var (
 		"RAW_ENCRYPT_DECRYPT":            7,
 		"MAC":                            9,
 		"KEY_ENCAPSULATION":              10,
+		"AES_WRAPPING":                   11,
 	}
 )
 
@@ -552,6 +557,9 @@ const (
 	// security level 5. Randomized version supporting externally-computed
 	// message representatives.
 	CryptoKeyVersion_PQ_SIGN_ML_DSA_87_EXTERNAL_MU CryptoKeyVersion_CryptoKeyVersionAlgorithm = 71
+	// AES key wrap with zero padding algorithm (RFC 5649). Can only be used
+	// by keys with purpose AES_WRAPPING.
+	CryptoKeyVersion_AES_256_KWP CryptoKeyVersion_CryptoKeyVersionAlgorithm = 73
 )
 
 // Enum value maps for CryptoKeyVersion_CryptoKeyVersionAlgorithm.
@@ -604,6 +612,7 @@ var (
 		70: "PQ_SIGN_ML_DSA_44_EXTERNAL_MU",
 		67: "PQ_SIGN_ML_DSA_65_EXTERNAL_MU",
 		71: "PQ_SIGN_ML_DSA_87_EXTERNAL_MU",
+		73: "AES_256_KWP",
 	}
 	CryptoKeyVersion_CryptoKeyVersionAlgorithm_value = map[string]int32{
 		"CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED": 0,
@@ -653,6 +662,7 @@ var (
 		"PQ_SIGN_ML_DSA_44_EXTERNAL_MU":            70,
 		"PQ_SIGN_ML_DSA_65_EXTERNAL_MU":            67,
 		"PQ_SIGN_ML_DSA_87_EXTERNAL_MU":            71,
+		"AES_256_KWP":                              73,
 	}
 )
 
@@ -985,27 +995,57 @@ const (
 	// to technical limitations of RSA wrapping, this method cannot be used to
 	// wrap RSA keys for import.
 	ImportJob_RSA_OAEP_4096_SHA256 ImportJob_ImportMethod = 6
+	// Represents the Hybrid Public Key Encryption (HPKE) Scheme originally
+	// defined in [RFC 9180](https://www.rfc-editor.org/rfc/rfc9180). It
+	// involves wrapping the raw key with an ephemeral AES key, derived with
+	// HKDF-SHA256 from an encryption context, that is, in turn obtained from
+	// the receiver’s public key with the help of the ML-KEM-768 KEM. For more
+	// details, see the [ML-KEM HPKE
+	// standard](http://datatracker.ietf.org/doc/draft-ietf-hpke-pq/01/).
+	ImportJob_HPKE_KEM_ML_KEM_768_HKDF_SHA256_AES_256_GCM ImportJob_ImportMethod = 8
+	// Represents the Hybrid Public Key Encryption (HPKE) Scheme originally
+	// defined in [RFC 9180](https://www.rfc-editor.org/rfc/rfc9180). It
+	// involves wrapping the raw key with an ephemeral AES key, derived with
+	// HKDF-SHA256 from an encryption context, that is, in turn obtained from
+	// the receiver’s public key with the help of the ML-KEM-1024 KEM. For more
+	// details, see the [ML-KEM HPKE
+	// standard](http://datatracker.ietf.org/doc/draft-ietf-hpke-pq/01/).
+	ImportJob_HPKE_KEM_ML_KEM_1024_HKDF_SHA256_AES_256_GCM ImportJob_ImportMethod = 9
+	// Represents the Hybrid Public Key Encryption (HPKE) Scheme originally
+	// defined in [RFC 9180](https://www.rfc-editor.org/rfc/rfc9180). It
+	// involves wrapping the raw key with an ephemeral AES key, derived with
+	// HKDF-SHA256 from an encryption context, that is, in turn obtained from
+	// the receiver’s public key with the help of the X-Wing hybrid KEM. For
+	// more details, see the [X-Wing
+	// standard](http://datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/09/).
+	ImportJob_HPKE_KEM_XWING_HKDF_SHA256_AES_256_GCM ImportJob_ImportMethod = 10
 )
 
 // Enum value maps for ImportJob_ImportMethod.
 var (
 	ImportJob_ImportMethod_name = map[int32]string{
-		0: "IMPORT_METHOD_UNSPECIFIED",
-		1: "RSA_OAEP_3072_SHA1_AES_256",
-		2: "RSA_OAEP_4096_SHA1_AES_256",
-		3: "RSA_OAEP_3072_SHA256_AES_256",
-		4: "RSA_OAEP_4096_SHA256_AES_256",
-		5: "RSA_OAEP_3072_SHA256",
-		6: "RSA_OAEP_4096_SHA256",
+		0:  "IMPORT_METHOD_UNSPECIFIED",
+		1:  "RSA_OAEP_3072_SHA1_AES_256",
+		2:  "RSA_OAEP_4096_SHA1_AES_256",
+		3:  "RSA_OAEP_3072_SHA256_AES_256",
+		4:  "RSA_OAEP_4096_SHA256_AES_256",
+		5:  "RSA_OAEP_3072_SHA256",
+		6:  "RSA_OAEP_4096_SHA256",
+		8:  "HPKE_KEM_ML_KEM_768_HKDF_SHA256_AES_256_GCM",
+		9:  "HPKE_KEM_ML_KEM_1024_HKDF_SHA256_AES_256_GCM",
+		10: "HPKE_KEM_XWING_HKDF_SHA256_AES_256_GCM",
 	}
 	ImportJob_ImportMethod_value = map[string]int32{
-		"IMPORT_METHOD_UNSPECIFIED":    0,
-		"RSA_OAEP_3072_SHA1_AES_256":   1,
-		"RSA_OAEP_4096_SHA1_AES_256":   2,
-		"RSA_OAEP_3072_SHA256_AES_256": 3,
-		"RSA_OAEP_4096_SHA256_AES_256": 4,
-		"RSA_OAEP_3072_SHA256":         5,
-		"RSA_OAEP_4096_SHA256":         6,
+		"IMPORT_METHOD_UNSPECIFIED":                    0,
+		"RSA_OAEP_3072_SHA1_AES_256":                   1,
+		"RSA_OAEP_4096_SHA1_AES_256":                   2,
+		"RSA_OAEP_3072_SHA256_AES_256":                 3,
+		"RSA_OAEP_4096_SHA256_AES_256":                 4,
+		"RSA_OAEP_3072_SHA256":                         5,
+		"RSA_OAEP_4096_SHA256":                         6,
+		"HPKE_KEM_ML_KEM_768_HKDF_SHA256_AES_256_GCM":  8,
+		"HPKE_KEM_ML_KEM_1024_HKDF_SHA256_AES_256_GCM": 9,
+		"HPKE_KEM_XWING_HKDF_SHA256_AES_256_GCM":       10,
 	}
 )
 
@@ -1636,8 +1676,24 @@ type CryptoKeyVersion struct {
 	// being specified as a target in
 	// [ImportCryptoKeyVersionRequest.crypto_key_version][google.cloud.kms.v1.ImportCryptoKeyVersionRequest.crypto_key_version].
 	ReimportEligible bool `protobuf:"varint,18,opt,name=reimport_eligible,json=reimportEligible,proto3" json:"reimport_eligible,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Immutable. Field indicating that the key may be wrapped by a trusted key.
+	// This field can be set for all key purposes except
+	// [ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ENCRYPT_DECRYPT],
+	// and is only valid for keys with protection level
+	// [HSM_SINGLE_TENANT][google.cloud.kms.v1.ProtectionLevel.HSM_SINGLE_TENANT].
+	// This field can only be set at creation or import time via
+	// [CreateCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.CreateCryptoKeyVersion],
+	// or
+	// [ImportCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.ImportCryptoKeyVersion].
+	TrustedWrappingEnabled bool `protobuf:"varint,21,opt,name=trusted_wrapping_enabled,json=trustedWrappingEnabled,proto3" json:"trusted_wrapping_enabled,omitempty"`
+	// Output only. Field indicating that the key wrapping key is trusted.
+	// This field is only valid for key purpose
+	// [AES_256_WRAPPING][CryptoKey.CryptoKeyPurpose.AES_256_WRAPPING], and
+	// protection level
+	// [HSM_SINGLE_TENANT][google.cloud.kms.v1.ProtectionLevel.HSM_SINGLE_TENANT].
+	HsmTrusted    bool `protobuf:"varint,23,opt,name=hsm_trusted,json=hsmTrusted,proto3" json:"hsm_trusted,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CryptoKeyVersion) Reset() {
@@ -1778,6 +1834,20 @@ func (x *CryptoKeyVersion) GetExternalProtectionLevelOptions() *ExternalProtecti
 func (x *CryptoKeyVersion) GetReimportEligible() bool {
 	if x != nil {
 		return x.ReimportEligible
+	}
+	return false
+}
+
+func (x *CryptoKeyVersion) GetTrustedWrappingEnabled() bool {
+	if x != nil {
+		return x.TrustedWrappingEnabled
+	}
+	return false
+}
+
+func (x *CryptoKeyVersion) GetHsmTrusted() bool {
+	if x != nil {
+		return x.HsmTrusted
 	}
 	return false
 }
@@ -2051,6 +2121,12 @@ type ImportJob struct {
 	// import. Only returned if [state][google.cloud.kms.v1.ImportJob.state] is
 	// [ACTIVE][google.cloud.kms.v1.ImportJob.ImportJobState.ACTIVE].
 	PublicKey *ImportJob_WrappingPublicKey `protobuf:"bytes,7,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	// Output only. Specifies the
+	// [WrappingPublicKey][google.cloud.kms.v1.ImportJob.WrappingPublicKey] format
+	// provided by the customer in the
+	// [KeyManagementService.GetImportJob][google.cloud.kms.v1.KeyManagementService.GetImportJob]
+	// request.
+	PublicKeyFormat PublicKey_PublicKeyFormat `protobuf:"varint,12,opt,name=public_key_format,json=publicKeyFormat,proto3,enum=google.cloud.kms.v1.PublicKey_PublicKeyFormat" json:"public_key_format,omitempty"`
 	// Output only. Statement that was generated and signed by the key creator
 	// (for example, an HSM) at key creation time. Use this statement to verify
 	// attributes of the key as stored on the HSM, independently of Google.
@@ -2161,6 +2237,13 @@ func (x *ImportJob) GetPublicKey() *ImportJob_WrappingPublicKey {
 		return x.PublicKey
 	}
 	return nil
+}
+
+func (x *ImportJob) GetPublicKeyFormat() PublicKey_PublicKeyFormat {
+	if x != nil {
+		return x.PublicKeyFormat
+	}
+	return PublicKey_PUBLIC_KEY_FORMAT_UNSPECIFIED
 }
 
 func (x *ImportJob) GetAttestation() *KeyOperationAttestation {
@@ -2456,7 +2539,19 @@ type ImportJob_WrappingPublicKey struct {
 	// Considerations](https://tools.ietf.org/html/rfc7468#section-2) and
 	// [Textual Encoding of Subject Public Key Info]
 	// (https://tools.ietf.org/html/rfc7468#section-13).
-	Pem           string `protobuf:"bytes,1,opt,name=pem,proto3" json:"pem,omitempty"`
+	// This field gets populated by default for RSA-based import methods, if no
+	// public_key_format is specified in the request.
+	// If you want to retrieve the wrapping key of an
+	// [ImportJob][google.cloud.kms.v1.ImportJob] in some other format, use
+	// [KeyManagementService.GetImportJob][google.cloud.kms.v1.KeyManagementService.GetImportJob]
+	// and set the public_key_format to the desired public key format.
+	Pem string `protobuf:"bytes,1,opt,name=pem,proto3" json:"pem,omitempty"`
+	// Output only. Contains the public key, formatted according to the
+	// [PublicKey.PublicKeyFormat][google.cloud.kms.v1.PublicKey.PublicKeyFormat]
+	// specified in the
+	// [KeyManagementService.GetImportJob][google.cloud.kms.v1.KeyManagementService.GetImportJob]
+	// request.
+	Data          []byte `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2498,6 +2593,13 @@ func (x *ImportJob_WrappingPublicKey) GetPem() string {
 	return ""
 }
 
+func (x *ImportJob_WrappingPublicKey) GetData() []byte {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
 var File_google_cloud_kms_v1_resources_proto protoreflect.FileDescriptor
 
 const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
@@ -2507,7 +2609,7 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime:a\xeaA^\n" +
-	"\x1fcloudkms.googleapis.com/KeyRing\x12;projects/{project}/locations/{location}/keyRings/{key_ring}\"\xeb\t\n" +
+	"\x1fcloudkms.googleapis.com/KeyRing\x12;projects/{project}/locations/{location}/keyRings/{key_ring}\"\xfd\t\n" +
 	"\tCryptoKey\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12D\n" +
 	"\aprimary\x18\x02 \x01(\v2%.google.cloud.kms.v1.CryptoKeyVersionB\x03\xe0A\x03R\aprimary\x12N\n" +
@@ -2527,7 +2629,7 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	" key_access_justifications_policy\x18\x11 \x01(\v22.google.cloud.kms.v1.KeyAccessJustificationsPolicyB\x03\xe0A\x01R\x1dkeyAccessJustificationsPolicy\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb1\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc3\x01\n" +
 	"\x10CryptoKeyPurpose\x12\"\n" +
 	"\x1eCRYPTO_KEY_PURPOSE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fENCRYPT_DECRYPT\x10\x01\x12\x13\n" +
@@ -2536,7 +2638,8 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	"\x13RAW_ENCRYPT_DECRYPT\x10\a\x12\a\n" +
 	"\x03MAC\x10\t\x12\x15\n" +
 	"\x11KEY_ENCAPSULATION\x10\n" +
-	":{\xeaAx\n" +
+	"\x12\x10\n" +
+	"\fAES_WRAPPING\x10\v:{\xeaAx\n" +
 	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}B\x13\n" +
 	"\x11rotation_schedule\"\xcf\x01\n" +
 	"\x18CryptoKeyVersionTemplate\x12O\n" +
@@ -2554,7 +2657,7 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	"\x11AttestationFormat\x12\"\n" +
 	"\x1eATTESTATION_FORMAT_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14CAVIUM_V1_COMPRESSED\x10\x03\x12\x18\n" +
-	"\x14CAVIUM_V2_COMPRESSED\x10\x04\"\xb1\x17\n" +
+	"\x14CAVIUM_V2_COMPRESSED\x10\x04\"\xa7\x18\n" +
 	"\x10CryptoKeyVersion\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12Q\n" +
 	"\x05state\x18\x03 \x01(\x0e2;.google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionStateR\x05state\x12T\n" +
@@ -2575,7 +2678,10 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	"\x19generation_failure_reason\x18\x13 \x01(\tB\x03\xe0A\x03R\x17generationFailureReason\x12R\n" +
 	"#external_destruction_failure_reason\x18\x14 \x01(\tB\x03\xe0A\x03R externalDestructionFailureReason\x12~\n" +
 	"!external_protection_level_options\x18\x11 \x01(\v23.google.cloud.kms.v1.ExternalProtectionLevelOptionsR\x1eexternalProtectionLevelOptions\x120\n" +
-	"\x11reimport_eligible\x18\x12 \x01(\bB\x03\xe0A\x03R\x10reimportEligible\"\x8a\n" +
+	"\x11reimport_eligible\x18\x12 \x01(\bB\x03\xe0A\x03R\x10reimportEligible\x12=\n" +
+	"\x18trusted_wrapping_enabled\x18\x15 \x01(\bB\x03\xe0A\x05R\x16trustedWrappingEnabled\x12$\n" +
+	"\vhsm_trusted\x18\x17 \x01(\bB\x03\xe0A\x03R\n" +
+	"hsmTrusted\"\x9b\n" +
 	"\n" +
 	"\x19CryptoKeyVersionAlgorithm\x12,\n" +
 	"(CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED\x10\x00\x12\x1f\n" +
@@ -2626,7 +2732,8 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	"%PQ_SIGN_HASH_SLH_DSA_SHA2_128S_SHA256\x10<\x12!\n" +
 	"\x1dPQ_SIGN_ML_DSA_44_EXTERNAL_MU\x10F\x12!\n" +
 	"\x1dPQ_SIGN_ML_DSA_65_EXTERNAL_MU\x10C\x12!\n" +
-	"\x1dPQ_SIGN_ML_DSA_87_EXTERNAL_MU\x10G\"\x9b\x02\n" +
+	"\x1dPQ_SIGN_ML_DSA_87_EXTERNAL_MU\x10G\x12\x0f\n" +
+	"\vAES_256_KWP\x10I\"\x9b\x02\n" +
 	"\x15CryptoKeyVersionState\x12(\n" +
 	"$CRYPTO_KEY_VERSION_STATE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12PENDING_GENERATION\x10\x05\x12\v\n" +
@@ -2663,8 +2770,7 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	"\x03DER\x10\x02\x12\f\n" +
 	"\bNIST_PQC\x10\x03\x12\x13\n" +
 	"\x0fXWING_RAW_BYTES\x10\x04:\xae\x01\xeaA\xaa\x01\n" +
-	"!cloudkms.googleapis.com/PublicKey\x12\x84\x01projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}/publicKey\"\x8d\n" +
-	"\n" +
+	"!cloudkms.googleapis.com/PublicKey\x12\x84\x01projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}/publicKey\"\x96\f\n" +
 	"\tImportJob\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12X\n" +
 	"\rimport_method\x18\x02 \x01(\x0e2+.google.cloud.kms.v1.ImportJob.ImportMethodB\x06\xe0A\x02\xe0A\x05R\fimportMethod\x12W\n" +
@@ -2678,12 +2784,14 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0fexpireEventTime\x12H\n" +
 	"\x05state\x18\x06 \x01(\x0e2-.google.cloud.kms.v1.ImportJob.ImportJobStateB\x03\xe0A\x03R\x05state\x12T\n" +
 	"\n" +
-	"public_key\x18\a \x01(\v20.google.cloud.kms.v1.ImportJob.WrappingPublicKeyB\x03\xe0A\x03R\tpublicKey\x12S\n" +
+	"public_key\x18\a \x01(\v20.google.cloud.kms.v1.ImportJob.WrappingPublicKeyB\x03\xe0A\x03R\tpublicKey\x12_\n" +
+	"\x11public_key_format\x18\f \x01(\x0e2..google.cloud.kms.v1.PublicKey.PublicKeyFormatB\x03\xe0A\x03R\x0fpublicKeyFormat\x12S\n" +
 	"\vattestation\x18\b \x01(\v2,.google.cloud.kms.v1.KeyOperationAttestationB\x03\xe0A\x03R\vattestation\x127\n" +
 	"\x12crypto_key_backend\x18\v \x01(\tB\t\xe0A\x05\xfaA\x03\n" +
-	"\x01*R\x10cryptoKeyBackend\x1a%\n" +
+	"\x01*R\x10cryptoKeyBackend\x1a>\n" +
 	"\x11WrappingPublicKey\x12\x10\n" +
-	"\x03pem\x18\x01 \x01(\tR\x03pem\"\xe5\x01\n" +
+	"\x03pem\x18\x01 \x01(\tR\x03pem\x12\x17\n" +
+	"\x04data\x18\x02 \x01(\fB\x03\xe0A\x03R\x04data\"\xf4\x02\n" +
 	"\fImportMethod\x12\x1d\n" +
 	"\x19IMPORT_METHOD_UNSPECIFIED\x10\x00\x12\x1e\n" +
 	"\x1aRSA_OAEP_3072_SHA1_AES_256\x10\x01\x12\x1e\n" +
@@ -2691,7 +2799,11 @@ const file_google_cloud_kms_v1_resources_proto_rawDesc = "" +
 	"\x1cRSA_OAEP_3072_SHA256_AES_256\x10\x03\x12 \n" +
 	"\x1cRSA_OAEP_4096_SHA256_AES_256\x10\x04\x12\x18\n" +
 	"\x14RSA_OAEP_3072_SHA256\x10\x05\x12\x18\n" +
-	"\x14RSA_OAEP_4096_SHA256\x10\x06\"c\n" +
+	"\x14RSA_OAEP_4096_SHA256\x10\x06\x12/\n" +
+	"+HPKE_KEM_ML_KEM_768_HKDF_SHA256_AES_256_GCM\x10\b\x120\n" +
+	",HPKE_KEM_ML_KEM_1024_HKDF_SHA256_AES_256_GCM\x10\t\x12*\n" +
+	"&HPKE_KEM_XWING_HKDF_SHA256_AES_256_GCM\x10\n" +
+	"\"c\n" +
 	"\x0eImportJobState\x12 \n" +
 	"\x1cIMPORT_JOB_STATE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12PENDING_GENERATION\x10\x01\x12\n" +
@@ -2816,14 +2928,15 @@ var file_google_cloud_kms_v1_resources_proto_depIdxs = []int32{
 	24, // 35: google.cloud.kms.v1.ImportJob.expire_event_time:type_name -> google.protobuf.Timestamp
 	9,  // 36: google.cloud.kms.v1.ImportJob.state:type_name -> google.cloud.kms.v1.ImportJob.ImportJobState
 	23, // 37: google.cloud.kms.v1.ImportJob.public_key:type_name -> google.cloud.kms.v1.ImportJob.WrappingPublicKey
-	13, // 38: google.cloud.kms.v1.ImportJob.attestation:type_name -> google.cloud.kms.v1.KeyOperationAttestation
-	1,  // 39: google.cloud.kms.v1.KeyAccessJustificationsPolicy.allowed_access_reasons:type_name -> google.cloud.kms.v1.AccessReason
-	24, // 40: google.cloud.kms.v1.RetiredResource.delete_time:type_name -> google.protobuf.Timestamp
-	41, // [41:41] is the sub-list for method output_type
-	41, // [41:41] is the sub-list for method input_type
-	41, // [41:41] is the sub-list for extension type_name
-	41, // [41:41] is the sub-list for extension extendee
-	0,  // [0:41] is the sub-list for field type_name
+	7,  // 38: google.cloud.kms.v1.ImportJob.public_key_format:type_name -> google.cloud.kms.v1.PublicKey.PublicKeyFormat
+	13, // 39: google.cloud.kms.v1.ImportJob.attestation:type_name -> google.cloud.kms.v1.KeyOperationAttestation
+	1,  // 40: google.cloud.kms.v1.KeyAccessJustificationsPolicy.allowed_access_reasons:type_name -> google.cloud.kms.v1.AccessReason
+	24, // 41: google.cloud.kms.v1.RetiredResource.delete_time:type_name -> google.protobuf.Timestamp
+	42, // [42:42] is the sub-list for method output_type
+	42, // [42:42] is the sub-list for method input_type
+	42, // [42:42] is the sub-list for extension type_name
+	42, // [42:42] is the sub-list for extension extendee
+	0,  // [0:42] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_kms_v1_resources_proto_init() }

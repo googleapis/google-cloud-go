@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -546,8 +547,12 @@ func (c *encryptionSpecGRPCClient) InitializeEncryptionSpec(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.InitializeEncryptionSpecOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &InitializeEncryptionSpecOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -826,8 +831,12 @@ func (c *encryptionSpecRESTClient) InitializeEncryptionSpec(ctx context.Context,
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.InitializeEncryptionSpecOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &InitializeEncryptionSpecOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1163,7 +1172,7 @@ func (c *encryptionSpecRESTClient) ListOperations(ctx context.Context, req *long
 // The name must be that of a previously created InitializeEncryptionSpecOperation, possibly from a different process.
 func (c *encryptionSpecGRPCClient) InitializeEncryptionSpecOperation(name string) *InitializeEncryptionSpecOperation {
 	return &InitializeEncryptionSpecOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.InitializeEncryptionSpecOperation"),
 	}
 }
 
@@ -1172,7 +1181,7 @@ func (c *encryptionSpecGRPCClient) InitializeEncryptionSpecOperation(name string
 func (c *encryptionSpecRESTClient) InitializeEncryptionSpecOperation(name string) *InitializeEncryptionSpecOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &InitializeEncryptionSpecOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.InitializeEncryptionSpecOperation"),
 		pollPath: override,
 	}
 }

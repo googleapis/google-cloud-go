@@ -1,5 +1,12 @@
 # Changes
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.24.0...eventarc/v1.25.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.23.0...eventarc/v1.24.0) (2026-06-26)
 
 

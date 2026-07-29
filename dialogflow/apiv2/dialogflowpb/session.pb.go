@@ -50,6 +50,8 @@ const (
 	StreamingRecognitionResult_MESSAGE_TYPE_UNSPECIFIED StreamingRecognitionResult_MessageType = 0
 	// Message contains a (possibly partial) transcript.
 	StreamingRecognitionResult_TRANSCRIPT StreamingRecognitionResult_MessageType = 1
+	// Message contains DTMF digits.
+	StreamingRecognitionResult_DTMF_DIGITS StreamingRecognitionResult_MessageType = 3
 	// This event indicates that the server has detected the end of the user's
 	// speech utterance and expects no additional inputs.
 	// Therefore, the server will not process additional audio (although it may
@@ -59,6 +61,18 @@ const (
 	// message is only sent if `single_utterance` was set to `true`, and is not
 	// used otherwise.
 	StreamingRecognitionResult_END_OF_SINGLE_UTTERANCE StreamingRecognitionResult_MessageType = 2
+	// Message contains DTMF digits. Before a message with DTMF_DIGITS is sent,
+	// a message with PARTIAL_DTMF_DIGITS may be sent with DTMF digits collected
+	// up to the time of sending, which represents an intermediate result.
+	StreamingRecognitionResult_PARTIAL_DTMF_DIGITS StreamingRecognitionResult_MessageType = 4
+	// This event indicates that the server has detected the beginning of human
+	// voice activity in the stream. This event can be returned multiple times
+	// if speech starts and stops repeatedly throughout the stream.
+	StreamingRecognitionResult_SPEECH_ACTIVITY_BEGIN StreamingRecognitionResult_MessageType = 5
+	// This event indicates that the server has detected the end of human voice
+	// activity in the stream. This event can be returned multiple times if
+	// speech starts and stops repeatedly throughout the stream.
+	StreamingRecognitionResult_SPEECH_ACTIVITY_END StreamingRecognitionResult_MessageType = 6
 )
 
 // Enum value maps for StreamingRecognitionResult_MessageType.
@@ -66,12 +80,20 @@ var (
 	StreamingRecognitionResult_MessageType_name = map[int32]string{
 		0: "MESSAGE_TYPE_UNSPECIFIED",
 		1: "TRANSCRIPT",
+		3: "DTMF_DIGITS",
 		2: "END_OF_SINGLE_UTTERANCE",
+		4: "PARTIAL_DTMF_DIGITS",
+		5: "SPEECH_ACTIVITY_BEGIN",
+		6: "SPEECH_ACTIVITY_END",
 	}
 	StreamingRecognitionResult_MessageType_value = map[string]int32{
 		"MESSAGE_TYPE_UNSPECIFIED": 0,
 		"TRANSCRIPT":               1,
+		"DTMF_DIGITS":              3,
 		"END_OF_SINGLE_UTTERANCE":  2,
+		"PARTIAL_DTMF_DIGITS":      4,
+		"SPEECH_ACTIVITY_BEGIN":    5,
+		"SPEECH_ACTIVITY_END":      6,
 	}
 )
 
@@ -1916,7 +1938,7 @@ const file_google_cloud_dialogflow_v2_session_proto_rawDesc = "" +
 	"\x0ewebhook_status\x18\x04 \x01(\v2\x12.google.rpc.StatusR\rwebhookStatus\x12!\n" +
 	"\foutput_audio\x18\x05 \x01(\fR\voutputAudio\x12]\n" +
 	"\x13output_audio_config\x18\x06 \x01(\v2-.google.cloud.dialogflow.v2.OutputAudioConfigR\x11outputAudioConfig\x12a\n" +
-	"\x0edebugging_info\x18\b \x01(\v2:.google.cloud.dialogflow.v2.CloudConversationDebuggingInfoR\rdebuggingInfo\"\xfa\x03\n" +
+	"\x0edebugging_info\x18\b \x01(\v2:.google.cloud.dialogflow.v2.CloudConversationDebuggingInfoR\rdebuggingInfo\"\xd9\x04\n" +
 	"\x1aStreamingRecognitionResult\x12e\n" +
 	"\fmessage_type\x18\x01 \x01(\x0e2B.google.cloud.dialogflow.v2.StreamingRecognitionResult.MessageTypeR\vmessageType\x12\x1e\n" +
 	"\n" +
@@ -1929,12 +1951,16 @@ const file_google_cloud_dialogflow_v2_session_proto_rawDesc = "" +
 	"\x10speech_word_info\x18\a \x03(\v2*.google.cloud.dialogflow.v2.SpeechWordInfoR\x0espeechWordInfo\x12E\n" +
 	"\x11speech_end_offset\x18\b \x01(\v2\x19.google.protobuf.DurationR\x0fspeechEndOffset\x12#\n" +
 	"\rlanguage_code\x18\n" +
-	" \x01(\tR\flanguageCode\"X\n" +
+	" \x01(\tR\flanguageCode\"\xb6\x01\n" +
 	"\vMessageType\x12\x1c\n" +
 	"\x18MESSAGE_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
-	"TRANSCRIPT\x10\x01\x12\x1b\n" +
-	"\x17END_OF_SINGLE_UTTERANCE\x10\x02\"N\n" +
+	"TRANSCRIPT\x10\x01\x12\x0f\n" +
+	"\vDTMF_DIGITS\x10\x03\x12\x1b\n" +
+	"\x17END_OF_SINGLE_UTTERANCE\x10\x02\x12\x17\n" +
+	"\x13PARTIAL_DTMF_DIGITS\x10\x04\x12\x19\n" +
+	"\x15SPEECH_ACTIVITY_BEGIN\x10\x05\x12\x17\n" +
+	"\x13SPEECH_ACTIVITY_END\x10\x06\"N\n" +
 	"\tTextInput\x12\x17\n" +
 	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\x12(\n" +
 	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x02R\flanguageCode\"\x88\x01\n" +

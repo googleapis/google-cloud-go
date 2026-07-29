@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1280,8 +1281,12 @@ func (c *gRPCClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1330,8 +1335,12 @@ func (c *gRPCClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.ResetInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResetInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1356,8 +1365,12 @@ func (c *gRPCClient) StartInstance(ctx context.Context, req *baremetalsolutionpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.StartInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1382,8 +1395,12 @@ func (c *gRPCClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.StopInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1408,8 +1425,12 @@ func (c *gRPCClient) EnableInteractiveSerialConsole(ctx context.Context, req *ba
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.EnableInteractiveSerialConsoleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EnableInteractiveSerialConsoleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1434,8 +1455,12 @@ func (c *gRPCClient) DisableInteractiveSerialConsole(ctx context.Context, req *b
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.DisableInteractiveSerialConsoleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DisableInteractiveSerialConsoleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1460,8 +1485,12 @@ func (c *gRPCClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.Det
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.DetachLunOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DetachLunOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1655,8 +1684,12 @@ func (c *gRPCClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.UpdateVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVolumeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1705,8 +1738,12 @@ func (c *gRPCClient) EvictVolume(ctx context.Context, req *baremetalsolutionpb.E
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.EvictVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EvictVolumeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1731,8 +1768,12 @@ func (c *gRPCClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.ResizeVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResizeVolumeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1854,8 +1895,12 @@ func (c *gRPCClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.UpdateNetworkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateNetworkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1904,8 +1949,12 @@ func (c *gRPCClient) RestoreVolumeSnapshot(ctx context.Context, req *baremetalso
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.RestoreVolumeSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreVolumeSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2102,8 +2151,12 @@ func (c *gRPCClient) EvictLun(ctx context.Context, req *baremetalsolutionpb.Evic
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.EvictLunOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EvictLunOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2201,8 +2254,12 @@ func (c *gRPCClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.UpdateNfsShareOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateNfsShareOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2227,8 +2284,12 @@ func (c *gRPCClient) CreateNfsShare(ctx context.Context, req *baremetalsolutionp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.CreateNfsShareOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateNfsShareOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2277,8 +2338,12 @@ func (c *gRPCClient) DeleteNfsShare(ctx context.Context, req *baremetalsolutionp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.DeleteNfsShareOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteNfsShareOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2776,8 +2841,12 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2907,8 +2976,12 @@ func (c *restClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.ResetInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResetInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2973,8 +3046,12 @@ func (c *restClient) StartInstance(ctx context.Context, req *baremetalsolutionpb
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.StartInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3039,8 +3116,12 @@ func (c *restClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.StopInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3105,8 +3186,12 @@ func (c *restClient) EnableInteractiveSerialConsole(ctx context.Context, req *ba
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.EnableInteractiveSerialConsoleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EnableInteractiveSerialConsoleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3171,8 +3256,12 @@ func (c *restClient) DisableInteractiveSerialConsole(ctx context.Context, req *b
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.DisableInteractiveSerialConsoleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DisableInteractiveSerialConsoleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3237,8 +3326,12 @@ func (c *restClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.Det
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.DetachLunOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DetachLunOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3633,8 +3726,12 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.UpdateVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVolumeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3764,8 +3861,12 @@ func (c *restClient) EvictVolume(ctx context.Context, req *baremetalsolutionpb.E
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.EvictVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EvictVolumeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3830,8 +3931,12 @@ func (c *restClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.ResizeVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResizeVolumeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4097,8 +4202,12 @@ func (c *restClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.UpdateNetworkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateNetworkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4229,8 +4338,12 @@ func (c *restClient) RestoreVolumeSnapshot(ctx context.Context, req *baremetalso
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.RestoreVolumeSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreVolumeSnapshotOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4612,8 +4725,12 @@ func (c *restClient) EvictLun(ctx context.Context, req *baremetalsolutionpb.Evic
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.EvictLunOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EvictLunOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4821,8 +4938,12 @@ func (c *restClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.UpdateNfsShareOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateNfsShareOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4888,8 +5009,12 @@ func (c *restClient) CreateNfsShare(ctx context.Context, req *baremetalsolutionp
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.CreateNfsShareOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateNfsShareOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5012,8 +5137,12 @@ func (c *restClient) DeleteNfsShare(ctx context.Context, req *baremetalsolutionp
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*baremetalsolution.DeleteNfsShareOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteNfsShareOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5635,7 +5764,7 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 // The name must be that of a previously created CreateNfsShareOperation, possibly from a different process.
 func (c *gRPCClient) CreateNfsShareOperation(name string) *CreateNfsShareOperation {
 	return &CreateNfsShareOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.CreateNfsShareOperation"),
 	}
 }
 
@@ -5644,7 +5773,7 @@ func (c *gRPCClient) CreateNfsShareOperation(name string) *CreateNfsShareOperati
 func (c *restClient) CreateNfsShareOperation(name string) *CreateNfsShareOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateNfsShareOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.CreateNfsShareOperation"),
 		pollPath: override,
 	}
 }
@@ -5653,7 +5782,7 @@ func (c *restClient) CreateNfsShareOperation(name string) *CreateNfsShareOperati
 // The name must be that of a previously created DeleteNfsShareOperation, possibly from a different process.
 func (c *gRPCClient) DeleteNfsShareOperation(name string) *DeleteNfsShareOperation {
 	return &DeleteNfsShareOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.DeleteNfsShareOperation"),
 	}
 }
 
@@ -5662,7 +5791,7 @@ func (c *gRPCClient) DeleteNfsShareOperation(name string) *DeleteNfsShareOperati
 func (c *restClient) DeleteNfsShareOperation(name string) *DeleteNfsShareOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteNfsShareOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.DeleteNfsShareOperation"),
 		pollPath: override,
 	}
 }
@@ -5671,7 +5800,7 @@ func (c *restClient) DeleteNfsShareOperation(name string) *DeleteNfsShareOperati
 // The name must be that of a previously created DetachLunOperation, possibly from a different process.
 func (c *gRPCClient) DetachLunOperation(name string) *DetachLunOperation {
 	return &DetachLunOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.DetachLunOperation"),
 	}
 }
 
@@ -5680,7 +5809,7 @@ func (c *gRPCClient) DetachLunOperation(name string) *DetachLunOperation {
 func (c *restClient) DetachLunOperation(name string) *DetachLunOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DetachLunOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.DetachLunOperation"),
 		pollPath: override,
 	}
 }
@@ -5689,7 +5818,7 @@ func (c *restClient) DetachLunOperation(name string) *DetachLunOperation {
 // The name must be that of a previously created DisableInteractiveSerialConsoleOperation, possibly from a different process.
 func (c *gRPCClient) DisableInteractiveSerialConsoleOperation(name string) *DisableInteractiveSerialConsoleOperation {
 	return &DisableInteractiveSerialConsoleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.DisableInteractiveSerialConsoleOperation"),
 	}
 }
 
@@ -5698,7 +5827,7 @@ func (c *gRPCClient) DisableInteractiveSerialConsoleOperation(name string) *Disa
 func (c *restClient) DisableInteractiveSerialConsoleOperation(name string) *DisableInteractiveSerialConsoleOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DisableInteractiveSerialConsoleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.DisableInteractiveSerialConsoleOperation"),
 		pollPath: override,
 	}
 }
@@ -5707,7 +5836,7 @@ func (c *restClient) DisableInteractiveSerialConsoleOperation(name string) *Disa
 // The name must be that of a previously created EnableInteractiveSerialConsoleOperation, possibly from a different process.
 func (c *gRPCClient) EnableInteractiveSerialConsoleOperation(name string) *EnableInteractiveSerialConsoleOperation {
 	return &EnableInteractiveSerialConsoleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.EnableInteractiveSerialConsoleOperation"),
 	}
 }
 
@@ -5716,7 +5845,7 @@ func (c *gRPCClient) EnableInteractiveSerialConsoleOperation(name string) *Enabl
 func (c *restClient) EnableInteractiveSerialConsoleOperation(name string) *EnableInteractiveSerialConsoleOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &EnableInteractiveSerialConsoleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.EnableInteractiveSerialConsoleOperation"),
 		pollPath: override,
 	}
 }
@@ -5725,7 +5854,7 @@ func (c *restClient) EnableInteractiveSerialConsoleOperation(name string) *Enabl
 // The name must be that of a previously created EvictLunOperation, possibly from a different process.
 func (c *gRPCClient) EvictLunOperation(name string) *EvictLunOperation {
 	return &EvictLunOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.EvictLunOperation"),
 	}
 }
 
@@ -5734,7 +5863,7 @@ func (c *gRPCClient) EvictLunOperation(name string) *EvictLunOperation {
 func (c *restClient) EvictLunOperation(name string) *EvictLunOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &EvictLunOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.EvictLunOperation"),
 		pollPath: override,
 	}
 }
@@ -5743,7 +5872,7 @@ func (c *restClient) EvictLunOperation(name string) *EvictLunOperation {
 // The name must be that of a previously created EvictVolumeOperation, possibly from a different process.
 func (c *gRPCClient) EvictVolumeOperation(name string) *EvictVolumeOperation {
 	return &EvictVolumeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.EvictVolumeOperation"),
 	}
 }
 
@@ -5752,7 +5881,7 @@ func (c *gRPCClient) EvictVolumeOperation(name string) *EvictVolumeOperation {
 func (c *restClient) EvictVolumeOperation(name string) *EvictVolumeOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &EvictVolumeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.EvictVolumeOperation"),
 		pollPath: override,
 	}
 }
@@ -5761,7 +5890,7 @@ func (c *restClient) EvictVolumeOperation(name string) *EvictVolumeOperation {
 // The name must be that of a previously created ResetInstanceOperation, possibly from a different process.
 func (c *gRPCClient) ResetInstanceOperation(name string) *ResetInstanceOperation {
 	return &ResetInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.ResetInstanceOperation"),
 	}
 }
 
@@ -5770,7 +5899,7 @@ func (c *gRPCClient) ResetInstanceOperation(name string) *ResetInstanceOperation
 func (c *restClient) ResetInstanceOperation(name string) *ResetInstanceOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &ResetInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.ResetInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5779,7 +5908,7 @@ func (c *restClient) ResetInstanceOperation(name string) *ResetInstanceOperation
 // The name must be that of a previously created ResizeVolumeOperation, possibly from a different process.
 func (c *gRPCClient) ResizeVolumeOperation(name string) *ResizeVolumeOperation {
 	return &ResizeVolumeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.ResizeVolumeOperation"),
 	}
 }
 
@@ -5788,7 +5917,7 @@ func (c *gRPCClient) ResizeVolumeOperation(name string) *ResizeVolumeOperation {
 func (c *restClient) ResizeVolumeOperation(name string) *ResizeVolumeOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &ResizeVolumeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.ResizeVolumeOperation"),
 		pollPath: override,
 	}
 }
@@ -5797,7 +5926,7 @@ func (c *restClient) ResizeVolumeOperation(name string) *ResizeVolumeOperation {
 // The name must be that of a previously created RestoreVolumeSnapshotOperation, possibly from a different process.
 func (c *gRPCClient) RestoreVolumeSnapshotOperation(name string) *RestoreVolumeSnapshotOperation {
 	return &RestoreVolumeSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.RestoreVolumeSnapshotOperation"),
 	}
 }
 
@@ -5806,7 +5935,7 @@ func (c *gRPCClient) RestoreVolumeSnapshotOperation(name string) *RestoreVolumeS
 func (c *restClient) RestoreVolumeSnapshotOperation(name string) *RestoreVolumeSnapshotOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &RestoreVolumeSnapshotOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.RestoreVolumeSnapshotOperation"),
 		pollPath: override,
 	}
 }
@@ -5815,7 +5944,7 @@ func (c *restClient) RestoreVolumeSnapshotOperation(name string) *RestoreVolumeS
 // The name must be that of a previously created StartInstanceOperation, possibly from a different process.
 func (c *gRPCClient) StartInstanceOperation(name string) *StartInstanceOperation {
 	return &StartInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.StartInstanceOperation"),
 	}
 }
 
@@ -5824,7 +5953,7 @@ func (c *gRPCClient) StartInstanceOperation(name string) *StartInstanceOperation
 func (c *restClient) StartInstanceOperation(name string) *StartInstanceOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &StartInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.StartInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5833,7 +5962,7 @@ func (c *restClient) StartInstanceOperation(name string) *StartInstanceOperation
 // The name must be that of a previously created StopInstanceOperation, possibly from a different process.
 func (c *gRPCClient) StopInstanceOperation(name string) *StopInstanceOperation {
 	return &StopInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.StopInstanceOperation"),
 	}
 }
 
@@ -5842,7 +5971,7 @@ func (c *gRPCClient) StopInstanceOperation(name string) *StopInstanceOperation {
 func (c *restClient) StopInstanceOperation(name string) *StopInstanceOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &StopInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.StopInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5851,7 +5980,7 @@ func (c *restClient) StopInstanceOperation(name string) *StopInstanceOperation {
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *gRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.UpdateInstanceOperation"),
 	}
 }
 
@@ -5860,7 +5989,7 @@ func (c *gRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperati
 func (c *restClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.UpdateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5869,7 +5998,7 @@ func (c *restClient) UpdateInstanceOperation(name string) *UpdateInstanceOperati
 // The name must be that of a previously created UpdateNetworkOperation, possibly from a different process.
 func (c *gRPCClient) UpdateNetworkOperation(name string) *UpdateNetworkOperation {
 	return &UpdateNetworkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.UpdateNetworkOperation"),
 	}
 }
 
@@ -5878,7 +6007,7 @@ func (c *gRPCClient) UpdateNetworkOperation(name string) *UpdateNetworkOperation
 func (c *restClient) UpdateNetworkOperation(name string) *UpdateNetworkOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateNetworkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.UpdateNetworkOperation"),
 		pollPath: override,
 	}
 }
@@ -5887,7 +6016,7 @@ func (c *restClient) UpdateNetworkOperation(name string) *UpdateNetworkOperation
 // The name must be that of a previously created UpdateNfsShareOperation, possibly from a different process.
 func (c *gRPCClient) UpdateNfsShareOperation(name string) *UpdateNfsShareOperation {
 	return &UpdateNfsShareOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.UpdateNfsShareOperation"),
 	}
 }
 
@@ -5896,7 +6025,7 @@ func (c *gRPCClient) UpdateNfsShareOperation(name string) *UpdateNfsShareOperati
 func (c *restClient) UpdateNfsShareOperation(name string) *UpdateNfsShareOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateNfsShareOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.UpdateNfsShareOperation"),
 		pollPath: override,
 	}
 }
@@ -5905,7 +6034,7 @@ func (c *restClient) UpdateNfsShareOperation(name string) *UpdateNfsShareOperati
 // The name must be that of a previously created UpdateVolumeOperation, possibly from a different process.
 func (c *gRPCClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 	return &UpdateVolumeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.UpdateVolumeOperation"),
 	}
 }
 
@@ -5914,7 +6043,7 @@ func (c *gRPCClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 func (c *restClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateVolumeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*baremetalsolution.UpdateVolumeOperation"),
 		pollPath: override,
 	}
 }

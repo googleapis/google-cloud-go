@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -407,8 +408,12 @@ func (c *provisioningRESTClient) CreateApiHubInstance(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.CreateApiHubInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApiHubInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -467,8 +472,12 @@ func (c *provisioningRESTClient) DeleteApiHubInstance(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.DeleteApiHubInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteApiHubInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -950,7 +959,7 @@ func (c *provisioningRESTClient) ListOperations(ctx context.Context, req *longru
 func (c *provisioningRESTClient) CreateApiHubInstanceOperation(name string) *CreateApiHubInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateApiHubInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.CreateApiHubInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -960,7 +969,7 @@ func (c *provisioningRESTClient) CreateApiHubInstanceOperation(name string) *Cre
 func (c *provisioningRESTClient) DeleteApiHubInstanceOperation(name string) *DeleteApiHubInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteApiHubInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.DeleteApiHubInstanceOperation"),
 		pollPath: override,
 	}
 }
