@@ -1,5 +1,18 @@
 # Changes
 
+## [1.94.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.93.0...spanner/v1.94.0) (2026-07-28)
+
+
+### Features
+
+* **spanner:** Implement OPAQUE login authentication for Spanner Omni ([#20085](https://github.com/googleapis/google-cloud-go/issues/20085)) ([1c073b8](https://github.com/googleapis/google-cloud-go/commit/1c073b89998e4cd73e479a8f1c33eb4c5625d944))
+
+
+### Bug Fixes
+
+* **spanner/spannertest:** Add support for UUID column type ([#20164](https://github.com/googleapis/google-cloud-go/issues/20164)) ([bbfeb3f](https://github.com/googleapis/google-cloud-go/commit/bbfeb3fce4da59af018f8f4089e984b76f207a6e))
+* **spanner:** Excise a stale test reference to old genproto paths ([#20245](https://github.com/googleapis/google-cloud-go/issues/20245)) ([2063c07](https://github.com/googleapis/google-cloud-go/commit/2063c077a697312c4f2ae90521b608113bd44068))
+
 ## [1.93.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.92.0...spanner/v1.93.0) (2026-07-15)
 
 
