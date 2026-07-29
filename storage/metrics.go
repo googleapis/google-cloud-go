@@ -1005,6 +1005,7 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 			ctx:           ctx,
 			serverStreams: desc.ServerStreams,
 			clientStreams: desc.ClientStreams,
+			isBidi:        desc.ServerStreams && desc.ClientStreams,
 		}, nil
 	}
 
@@ -1021,6 +1022,7 @@ type wrappedClientStream struct {
 	recorded      atomic.Bool
 	serverStreams bool
 	clientStreams bool
+	isBidi        bool
 	recordedTTFB  atomic.Bool
 
 	msgMu         sync.Mutex
@@ -1032,7 +1034,7 @@ func (w *wrappedClientStream) RecvMsg(m interface{}) error {
 	err := w.ClientStream.RecvMsg(m)
 	if err == nil {
 		w.recordTTFB(m)
-		if w.serverStreams && w.clientStreams {
+		if w.isBidi {
 			w.msgMu.Lock()
 			w.lastRecvTime = time.Now()
 			w.msgMu.Unlock()
@@ -1048,17 +1050,22 @@ func (w *wrappedClientStream) RecvMsg(m interface{}) error {
 }
 
 func (w *wrappedClientStream) SendMsg(m interface{}) error {
-	isBidiStreaming := w.serverStreams && w.clientStreams
-	if isBidiStreaming {
+	if w.isBidi {
 		w.msgMu.Lock()
+		var duration float64
+		record := false
 		if !w.reqStartTime.IsZero() && !w.lastRecvTime.IsZero() {
 			// Record the previous request-response cycle.
-			duration := w.lastRecvTime.Sub(w.reqStartTime).Seconds()
-			w.metrics.recordRPC(w.ctx, w.method, w.target, duration, nil)
+			duration = w.lastRecvTime.Sub(w.reqStartTime).Seconds()
+			record = true
 		}
 		w.reqStartTime = time.Now()
 		w.lastRecvTime = time.Time{}
 		w.msgMu.Unlock()
+		
+		if record {
+			w.metrics.recordRPC(w.ctx, w.method, w.target, duration, nil)
+		}
 	}
 
 	err := w.ClientStream.SendMsg(m)
@@ -1071,8 +1078,7 @@ func (w *wrappedClientStream) SendMsg(m interface{}) error {
 func (w *wrappedClientStream) record(err error) {
 	if w.recorded.CompareAndSwap(false, true) {
 		duration := time.Since(w.startTime).Seconds()
-		isBidiStreaming := w.serverStreams && w.clientStreams
-		if isBidiStreaming {
+		if w.isBidi {
 			w.msgMu.Lock()
 			if !w.reqStartTime.IsZero() {
 				if !w.lastRecvTime.IsZero() {
