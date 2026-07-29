@@ -74,6 +74,9 @@ const (
 	metricLabelKeyGRPCLBLocality        = "grpc.lb.locality"
 	metricLabelKeyGRPCLBBackendService  = "grpc.lb.backend_service"
 	metricLabelKeyGRPCDisconnectError   = "grpc.disconnect_error"
+	metricLabelKeyGRPCClientCallCustom  = "grpc.client.call.custom"
+	metricLabelKeyInstanceID            = "instance_id"
+	metricLabelKeyDatabaseID            = "database_id"
 	metricLabelKeyFromChannelName       = "from_channel_name"
 	metricLabelKeyToChannelName         = "to_channel_name"
 	metricLabelKeyChannelName           = "channel_name"
@@ -249,6 +252,7 @@ var (
 		"grpc.disconnect_error",
 		"grpc.lb.backend_service",
 		"grpc.lb.locality",
+		metricLabelKeyGRPCClientCallCustom,
 	}
 )
 
@@ -323,11 +327,17 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 		tracerFactory.meterProvider = meterProvider
 
 		if isEnableGRPCBuiltInMetrics {
+			grpcMetricAttributes := []attribute.KeyValue{
+				attribute.String(metricLabelKeyInstanceID, instance),
+				attribute.String(metricLabelKeyDatabaseID, database),
+			}
+			grpcMeterProvider := newFixedAttributeMeterProvider(meterProvider, grpcMetricAttributes)
 			mo := opentelemetry.MetricsOptions{
-				MeterProvider:  meterProvider,
+				MeterProvider:  grpcMeterProvider,
 				Metrics:        stats.NewMetrics(grpcMetricsToEnable...),
 				OptionalLabels: grpcOptionalLabels,
 			}
+			customLabel := instance + "|" + database
 
 			// Configure gRPC dial options to enable gRPC metrics collection and static method call option.
 			// The static method call option ensures consistent method names in metrics by preventing gRPC from
@@ -338,6 +348,10 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 					opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo})),
 				option.WithGRPCDialOption(
 					grpc.WithDefaultCallOptions(grpc.StaticMethodCallOption{})),
+				option.WithGRPCDialOption(
+					grpc.WithChainUnaryInterceptor(grpcCustomLabelUnaryInterceptor(customLabel))),
+				option.WithGRPCDialOption(
+					grpc.WithChainStreamInterceptor(grpcCustomLabelStreamInterceptor(customLabel))),
 			}
 		}
 		tracerFactory.enabled = true
@@ -366,6 +380,15 @@ func builtInMeterProviderOptions(project, compression string, clientAttributes [
 	if err != nil {
 		return nil, nil, err
 	}
+	return []sdkmetric.Option{sdkmetric.WithReader(
+		sdkmetric.NewPeriodicReader(
+			defaultExporter,
+			sdkmetric.WithInterval(defaultSamplePeriod),
+		),
+	), sdkmetric.WithView(builtInMetricViews()...)}, defaultExporter, nil
+}
+
+func builtInMetricViews() []sdkmetric.View {
 	var views []sdkmetric.View
 	for _, m := range grpcMetricsToEnable {
 		views = append(views, sdkmetric.NewView(
@@ -413,12 +436,19 @@ func builtInMeterProviderOptions(project, compression string, clientAttributes [
 			},
 		))
 	}
-	return []sdkmetric.Option{sdkmetric.WithReader(
-		sdkmetric.NewPeriodicReader(
-			defaultExporter,
-			sdkmetric.WithInterval(defaultSamplePeriod),
-		),
-	), sdkmetric.WithView(views...)}, defaultExporter, nil
+	return views
+}
+
+func grpcCustomLabelUnaryInterceptor(label string) grpc.UnaryClientInterceptor {
+	return func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		return invoker(stats.NewContextWithCustomLabel(ctx, label), method, req, reply, cc, opts...)
+	}
+}
+
+func grpcCustomLabelStreamInterceptor(label string) grpc.StreamClientInterceptor {
+	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		return streamer(stats.NewContextWithCustomLabel(ctx, label), desc, cc, method, opts...)
+	}
 }
 
 func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) error {

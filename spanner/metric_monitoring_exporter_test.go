@@ -21,15 +21,60 @@ import (
 	"net"
 	"strings"
 	"sync"
+	"testing"
 	"time"
 
 	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	metricpb "google.golang.org/genproto/googleapis/api/metric"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
+
+func TestGRPCFixedAndCustomLabelsSurviveMonitoringExporterFilter(t *testing.T) {
+	const (
+		instanceID  = "test-instance"
+		databaseID  = "test-database"
+		customLabel = instanceID + "|" + databaseID
+	)
+	exporter := &monitoringExporter{
+		clientAttributes: []attribute.KeyValue{
+			attribute.String(monitoredResLabelKeyProject, "test-project"),
+			attribute.String(monitoredResLabelKeyInstance, instanceID),
+			attribute.String(metricLabelKeyDatabase, databaseID),
+		},
+	}
+	metric, monitoredResource := exporter.recordToMetricAndMonitoredResourcePbs(
+		metricdata.Metrics{Name: "grpc.client.attempt.started"},
+		attribute.NewSet(
+			attribute.String(metricLabelKeyInstanceID, instanceID),
+			attribute.String(metricLabelKeyDatabaseID, databaseID),
+			attribute.String(metricLabelKeyGRPCClientCallCustom, customLabel),
+			attribute.String("not.allowed", "dropped"),
+		),
+	)
+
+	wantLabels := map[string]string{
+		metricLabelKeyInstanceID:  instanceID,
+		metricLabelKeyDatabaseID:  databaseID,
+		"grpc_client_call_custom": customLabel,
+		metricLabelKeyDatabase:    databaseID,
+	}
+	for key, want := range wantLabels {
+		if got := metric.Labels[key]; got != want {
+			t.Errorf("metric label %q = %q, want %q; all labels: %v", key, got, want, metric.Labels)
+		}
+	}
+	if _, ok := metric.Labels["not_allowed"]; ok {
+		t.Errorf("metric labels contain disallowed label: %v", metric.Labels)
+	}
+	if got := monitoredResource.Labels[monitoredResLabelKeyInstance]; got != instanceID {
+		t.Errorf("monitored resource instance_id = %q, want %q", got, instanceID)
+	}
+}
 
 type MetricsTestServer struct {
 	lis                         net.Listener

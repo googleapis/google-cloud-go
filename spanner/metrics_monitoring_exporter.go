@@ -70,6 +70,9 @@ var (
 		metricLabelKeyGRPCLBLocality:        true,
 		metricLabelKeyGRPCLBBackendService:  true,
 		metricLabelKeyGRPCDisconnectError:   true,
+		metricLabelKeyGRPCClientCallCustom:  true,
+		metricLabelKeyInstanceID:            true,
+		metricLabelKeyDatabaseID:            true,
 		metricLabelKeyClientUID:             true,
 		metricLabelKeyClientName:            true,
 		metricLabelKeyDatabase:              true,
@@ -225,6 +228,7 @@ func (me *monitoringExporter) recordToMetricAndMonitoredResourcePbs(metrics otel
 	}
 	labels := make(map[string]string)
 	isEEFMetric := strings.HasPrefix(metrics.Name, "eef.")
+	isGRPCMetric := strings.HasPrefix(metrics.Name, "grpc.")
 	addAttributes := func(attr *attribute.Set) {
 		iter := attr.Iter()
 		for iter.Next() {
@@ -234,6 +238,9 @@ func (me *monitoringExporter) recordToMetricAndMonitoredResourcePbs(metrics otel
 			labelKey := strings.Replace(string(kv.Key), ".", "_", -1)
 			if _, isResLabel := monitoredResLabelsSet[labelKey]; isResLabel {
 				mr.Labels[labelKey] = kv.Value.Emit()
+				if isGRPCMetric && allowedMetricLabels[string(kv.Key)] {
+					labels[labelKey] = kv.Value.Emit()
+				}
 			} else {
 				if _, ok := allowedMetricLabels[string(kv.Key)]; ok {
 					labels[labelKey] = kv.Value.Emit()
