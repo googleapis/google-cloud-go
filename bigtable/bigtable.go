@@ -380,7 +380,21 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 
 // ReadRow is a convenience implementation of a single-row reader.
 // A missing row will return nil for both Row and error.
+//
+// When t.divertible is set (populated by Open on Clients with a Diverter),
+// the call routes through the shim so it can be diverted to the session
+// data path. Otherwise it runs the classic ReadRows-with-LimitRows(1) flow.
 func (t *Table) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
+	if t.divertible != nil {
+		return t.divertible.ReadRow(ctx, row, opts...)
+	}
+	return t.readRowClassic(ctx, row, opts...)
+}
+
+// readRowClassic is the classic single-row reader — called directly by
+// tableImpl.ReadRow (which bypasses the divertible gate) and by the
+// gate in Table.ReadRow when no divertible shim is wired.
+func (t *Table) readRowClassic(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
 	var r Row
 
 	opts = append([]ReadOption{LimitRows(1)}, opts...)
@@ -894,7 +908,22 @@ var maxMutations = 100000
 
 // Apply mutates a row atomically. A mutation must contain at least one
 // operation and at most 100000 operations.
-func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) (err error) {
+//
+// When t.divertible is set (populated by Open on Clients with a Diverter),
+// the call routes through the shim so it can be diverted to the session
+// data path. Otherwise it runs the classic MutateRow (or CheckAndMutateRow
+// for conditional mutations) flow inline.
+func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
+	if t.divertible != nil {
+		return t.divertible.Apply(ctx, row, m, opts...)
+	}
+	return t.applyClassic(ctx, row, m, opts...)
+}
+
+// applyClassic is the classic Apply body — called directly by
+// tableImpl.Apply (which bypasses the divertible gate) and by the
+// gate in Table.Apply when no divertible shim is wired.
+func (t *Table) applyClassic(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) (err error) {
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/Apply")
 	defer func() { trace.EndSpan(ctx, err) }()
