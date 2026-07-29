@@ -1117,6 +1117,52 @@
           "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
           "shortName": "CommerceTransactionClient"
         },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.ResolveAmendmentTarget",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.ResolveAmendmentTarget",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "ResolveAmendmentTarget"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.ResolveAmendmentTargetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*commerceproducerpb.ResolveAmendmentTargetResponse",
+        "shortName": "ResolveAmendmentTarget"
+      },
+      "description": "ResolveAmendmentTarget resolves the existing offer that must be amended when creating a new\nPrivateOffer. Use this method to determine the correct amendment target\nbefore creating or publishing an offer.",
+      "file": "CommerceTransactionClient/ResolveAmendmentTarget/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_ResolveAmendmentTarget_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer ResolveAmendmentTarget Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
         "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.UpdatePrivateOffer",
         "method": {
           "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.UpdatePrivateOffer",
