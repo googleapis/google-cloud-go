@@ -237,7 +237,7 @@ func (f *fakeSessionClient) OpenMaterializedView(v string) session.TableAPI {
 	return f.handle("mv:" + v)
 }
 
-func (f *fakeSessionClient) MeterProvider() metric.MeterProvider          { return nil }
+func (f *fakeSessionClient) MeterProvider() metric.MeterProvider           { return nil }
 func (f *fakeSessionClient) SessionDebug() btransport.SessionDebugProvider { return nil }
 func (f *fakeSessionClient) ChannelDebug() btransport.ChannelDebugProvider { return nil }
 func (f *fakeSessionClient) ConfigDebug() btransport.ConfigDebugProvider   { return nil }
