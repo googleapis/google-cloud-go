@@ -277,8 +277,12 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
 		if sessionErr != nil {
 			// Best-effort cleanup of the classic pool since we won't
-			// return c to the caller.
-			_ = mPool.Pool.Close()
+			// return c to the caller. Go through the ManagedChannelPool
+			// wrapper (not mPool.Pool.Close directly) so any
+			// wrapper-owned cleanup — metrics reporter, connection
+			// recycler, dynamic scale monitor — winds down too. Matches
+			// the shape used by (*Client).Close.
+			_ = mPool.Close()
 			return nil, fmt.Errorf("bigtable: EnableSessionPool: session.NewClient: %w", sessionErr)
 		}
 		sc.AddSessionLoadListener(c.diverter.SetSessionLoad)
