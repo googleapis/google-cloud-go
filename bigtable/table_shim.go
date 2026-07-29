@@ -83,9 +83,11 @@ func (t *TableShim) ReadRow(ctx context.Context, row string, opts ...ReadOption)
 // Apply implements TableAPI. Non-conditional mutations may route
 // through the session path (subject to the diverter); conditional
 // mutations always go to classic — CheckAndMutateRow has no session
-// equivalent.
+// equivalent. Nil mutations also route to classic so the classic
+// client's nil-handling error surfaces exactly as it always has,
+// rather than panicking here on m.ops.
 func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
-	if m != nil && m.isConditional {
+	if m == nil || m.isConditional {
 		return t.classic.Apply(ctx, row, m, opts...)
 	}
 	if !t.useSession() {
@@ -127,10 +129,16 @@ func (t *TableShim) useSession() bool {
 	return t.session != nil && t.diverter != nil && t.diverter.UseSession()
 }
 
-// protoRowToRow converts a proto Row (the wire shape returned by the
-// session-path SessionReadRowResponse) into the classic bigtable.Row
-// map shape that TableAPI.ReadRow callers expect. Moved from the
-// deleted session_table.go — the shim is the only consumer.
+// protoRowToRow converts a proto Row (the wire shape returned by a
+// proto-native session backend's SessionReadRowResponse) into the
+// classic bigtable.Row map shape that TableAPI.ReadRow callers expect.
+//
+// Contract: preserves wire order for cells within a column and columns
+// within a family; a row with no cells (or nil input) returns nil to
+// match classic Table.ReadRow's row-not-found signal — callers check
+// `row == nil`. Same-named families that appear twice in Families are
+// appended, not deduped, matching the server's wire format. Test suite
+// (TestProtoRowToRow) pins every branch of this contract.
 func protoRowToRow(pr *btpb.Row) Row {
 	if pr == nil {
 		return nil

@@ -472,7 +472,7 @@ func TestProtoRowToRow(t *testing.T) {
 			want: Row{"cf": []ReadItem{{Row: "k", Column: "cf:q", Timestamp: 1000, Value: []byte("v"), Labels: []string{"L1", "L2"}}}},
 		},
 		{
-			name: "TimestampMicros=0 preserved (server-server-set-to-now semantic is caller's job)",
+			name: "TimestampMicros=0 preserved (server-set-to-now semantic is caller's job)",
 			in:   row("k", fam("cf", col("q", cell(0, "v")))),
 			want: Row{"cf": []ReadItem{{Row: "k", Column: "cf:q", Timestamp: 0, Value: []byte("v")}}},
 		},
