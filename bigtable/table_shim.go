@@ -41,14 +41,17 @@ func NewTableShim(classic, session TableAPI, diverter *internal.Diverter) TableA
 	}
 }
 
-// pickSession returns true only when a session backend is wired AND the
-// diverter says to route this call to it. Consulting the diverter is
-// side-effectful (it updates the per-outcome pick counters used by the
-// debug UI), so the nil-session short-circuit runs FIRST — otherwise
-// the pick-count histogram would show session picks that were
-// silently downgraded to classic here.
+// pickSession returns true only when a session backend is wired, a
+// diverter is wired, AND the diverter says to route this call to
+// session. Consulting the diverter is side-effectful (it updates the
+// per-outcome pick counters used by the debug UI), so the nil-session
+// short-circuit runs FIRST — otherwise the pick-count histogram would
+// show session picks that were silently downgraded to classic here.
+// The nil-diverter guard covers direct-construction cases: TableShim
+// is exported, and a test or external caller can build one with only
+// classic + session set, without wiring a Diverter.
 func (t *TableShim) pickSession() bool {
-	if t.session == nil {
+	if t.session == nil || t.diverter == nil {
 		return false
 	}
 	return t.diverter.UseSession()
