@@ -48,6 +48,7 @@ const (
 	StorageControl_DeleteManagedFolder_FullMethodName                  = "/google.storage.control.v2.StorageControl/DeleteManagedFolder"
 	StorageControl_GetManagedFolder_FullMethodName                     = "/google.storage.control.v2.StorageControl/GetManagedFolder"
 	StorageControl_ListManagedFolders_FullMethodName                   = "/google.storage.control.v2.StorageControl/ListManagedFolders"
+	StorageControl_UpdateManagedFolder_FullMethodName                  = "/google.storage.control.v2.StorageControl/UpdateManagedFolder"
 	StorageControl_CreateAnywhereCache_FullMethodName                  = "/google.storage.control.v2.StorageControl/CreateAnywhereCache"
 	StorageControl_UpdateAnywhereCache_FullMethodName                  = "/google.storage.control.v2.StorageControl/UpdateAnywhereCache"
 	StorageControl_DisableAnywhereCache_FullMethodName                 = "/google.storage.control.v2.StorageControl/DisableAnywhereCache"
@@ -55,6 +56,10 @@ const (
 	StorageControl_ResumeAnywhereCache_FullMethodName                  = "/google.storage.control.v2.StorageControl/ResumeAnywhereCache"
 	StorageControl_GetAnywhereCache_FullMethodName                     = "/google.storage.control.v2.StorageControl/GetAnywhereCache"
 	StorageControl_ListAnywhereCaches_FullMethodName                   = "/google.storage.control.v2.StorageControl/ListAnywhereCaches"
+	StorageControl_CreateRapidCache_FullMethodName                     = "/google.storage.control.v2.StorageControl/CreateRapidCache"
+	StorageControl_UpdateRapidCache_FullMethodName                     = "/google.storage.control.v2.StorageControl/UpdateRapidCache"
+	StorageControl_GetRapidCache_FullMethodName                        = "/google.storage.control.v2.StorageControl/GetRapidCache"
+	StorageControl_ListRapidCaches_FullMethodName                      = "/google.storage.control.v2.StorageControl/ListRapidCaches"
 	StorageControl_GetProjectIntelligenceConfig_FullMethodName         = "/google.storage.control.v2.StorageControl/GetProjectIntelligenceConfig"
 	StorageControl_UpdateProjectIntelligenceConfig_FullMethodName      = "/google.storage.control.v2.StorageControl/UpdateProjectIntelligenceConfig"
 	StorageControl_GetFolderIntelligenceConfig_FullMethodName          = "/google.storage.control.v2.StorageControl/GetFolderIntelligenceConfig"
@@ -105,6 +110,9 @@ type StorageControlClient interface {
 	GetManagedFolder(ctx context.Context, in *GetManagedFolderRequest, opts ...grpc.CallOption) (*ManagedFolder, error)
 	// Retrieves a list of managed folders for a given bucket.
 	ListManagedFolders(ctx context.Context, in *ListManagedFoldersRequest, opts ...grpc.CallOption) (*ListManagedFoldersResponse, error)
+	// Updates a managed folder. Currently, this RPC only supports updating the
+	// `rapid_cache_config` field.
+	UpdateManagedFolder(ctx context.Context, in *UpdateManagedFolderRequest, opts ...grpc.CallOption) (*ManagedFolder, error)
 	// Creates an Anywhere Cache instance.
 	CreateAnywhereCache(ctx context.Context, in *CreateAnywhereCacheRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates an Anywhere Cache instance. Mutable fields include `ttl` and
@@ -123,6 +131,14 @@ type StorageControlClient interface {
 	GetAnywhereCache(ctx context.Context, in *GetAnywhereCacheRequest, opts ...grpc.CallOption) (*AnywhereCache, error)
 	// Lists Anywhere Cache instances for a given bucket.
 	ListAnywhereCaches(ctx context.Context, in *ListAnywhereCachesRequest, opts ...grpc.CallOption) (*ListAnywhereCachesResponse, error)
+	// Creates a Rapid Cache instance.
+	CreateRapidCache(ctx context.Context, in *CreateRapidCacheRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates a Rapid Cache instance.
+	UpdateRapidCache(ctx context.Context, in *UpdateRapidCacheRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets a Rapid Cache instance.
+	GetRapidCache(ctx context.Context, in *GetRapidCacheRequest, opts ...grpc.CallOption) (*RapidCache, error)
+	// Lists Rapid Cache instances for a given bucket.
+	ListRapidCaches(ctx context.Context, in *ListRapidCachesRequest, opts ...grpc.CallOption) (*ListRapidCachesResponse, error)
 	// Returns the Project scoped singleton IntelligenceConfig resource.
 	GetProjectIntelligenceConfig(ctx context.Context, in *GetProjectIntelligenceConfigRequest, opts ...grpc.CallOption) (*IntelligenceConfig, error)
 	// Updates the Project scoped singleton IntelligenceConfig resource.
@@ -157,10 +173,10 @@ type StorageControlClient interface {
 	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	// Gets the `IntelligenceFinding` for a project.
 	GetIntelligenceFinding(ctx context.Context, in *GetIntelligenceFindingRequest, opts ...grpc.CallOption) (*IntelligenceFinding, error)
-	// Lists the `IntelligenceFinding` resources for the specified project.
+	// Lists the `IntelligenceFinding` resources for the specified the project.
 	ListIntelligenceFindings(ctx context.Context, in *ListIntelligenceFindingsRequest, opts ...grpc.CallOption) (*ListIntelligenceFindingsResponse, error)
-	// Summarize the intelligence findings for the specified scope(org, folder or
-	// project).
+	// Summarizes the intelligence findings for the specified scope (organization,
+	// folder or project).
 	SummarizeIntelligenceFindings(ctx context.Context, in *SummarizeIntelligenceFindingsRequest, opts ...grpc.CallOption) (*SummarizeIntelligenceFindingsResponse, error)
 	// Gets the `IntelligenceFindingRevision` resource.
 	GetIntelligenceFindingRevision(ctx context.Context, in *GetIntelligenceFindingRevisionRequest, opts ...grpc.CallOption) (*IntelligenceFindingRevision, error)
@@ -275,6 +291,15 @@ func (c *storageControlClient) ListManagedFolders(ctx context.Context, in *ListM
 	return out, nil
 }
 
+func (c *storageControlClient) UpdateManagedFolder(ctx context.Context, in *UpdateManagedFolderRequest, opts ...grpc.CallOption) (*ManagedFolder, error) {
+	out := new(ManagedFolder)
+	err := c.cc.Invoke(ctx, StorageControl_UpdateManagedFolder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *storageControlClient) CreateAnywhereCache(ctx context.Context, in *CreateAnywhereCacheRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, StorageControl_CreateAnywhereCache_FullMethodName, in, out, opts...)
@@ -332,6 +357,42 @@ func (c *storageControlClient) GetAnywhereCache(ctx context.Context, in *GetAnyw
 func (c *storageControlClient) ListAnywhereCaches(ctx context.Context, in *ListAnywhereCachesRequest, opts ...grpc.CallOption) (*ListAnywhereCachesResponse, error) {
 	out := new(ListAnywhereCachesResponse)
 	err := c.cc.Invoke(ctx, StorageControl_ListAnywhereCaches_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageControlClient) CreateRapidCache(ctx context.Context, in *CreateRapidCacheRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, StorageControl_CreateRapidCache_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageControlClient) UpdateRapidCache(ctx context.Context, in *UpdateRapidCacheRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, StorageControl_UpdateRapidCache_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageControlClient) GetRapidCache(ctx context.Context, in *GetRapidCacheRequest, opts ...grpc.CallOption) (*RapidCache, error) {
+	out := new(RapidCache)
+	err := c.cc.Invoke(ctx, StorageControl_GetRapidCache_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *storageControlClient) ListRapidCaches(ctx context.Context, in *ListRapidCachesRequest, opts ...grpc.CallOption) (*ListRapidCachesResponse, error) {
+	out := new(ListRapidCachesResponse)
+	err := c.cc.Invoke(ctx, StorageControl_ListRapidCaches_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -498,6 +559,9 @@ type StorageControlServer interface {
 	GetManagedFolder(context.Context, *GetManagedFolderRequest) (*ManagedFolder, error)
 	// Retrieves a list of managed folders for a given bucket.
 	ListManagedFolders(context.Context, *ListManagedFoldersRequest) (*ListManagedFoldersResponse, error)
+	// Updates a managed folder. Currently, this RPC only supports updating the
+	// `rapid_cache_config` field.
+	UpdateManagedFolder(context.Context, *UpdateManagedFolderRequest) (*ManagedFolder, error)
 	// Creates an Anywhere Cache instance.
 	CreateAnywhereCache(context.Context, *CreateAnywhereCacheRequest) (*longrunningpb.Operation, error)
 	// Updates an Anywhere Cache instance. Mutable fields include `ttl` and
@@ -516,6 +580,14 @@ type StorageControlServer interface {
 	GetAnywhereCache(context.Context, *GetAnywhereCacheRequest) (*AnywhereCache, error)
 	// Lists Anywhere Cache instances for a given bucket.
 	ListAnywhereCaches(context.Context, *ListAnywhereCachesRequest) (*ListAnywhereCachesResponse, error)
+	// Creates a Rapid Cache instance.
+	CreateRapidCache(context.Context, *CreateRapidCacheRequest) (*longrunningpb.Operation, error)
+	// Updates a Rapid Cache instance.
+	UpdateRapidCache(context.Context, *UpdateRapidCacheRequest) (*longrunningpb.Operation, error)
+	// Gets a Rapid Cache instance.
+	GetRapidCache(context.Context, *GetRapidCacheRequest) (*RapidCache, error)
+	// Lists Rapid Cache instances for a given bucket.
+	ListRapidCaches(context.Context, *ListRapidCachesRequest) (*ListRapidCachesResponse, error)
 	// Returns the Project scoped singleton IntelligenceConfig resource.
 	GetProjectIntelligenceConfig(context.Context, *GetProjectIntelligenceConfigRequest) (*IntelligenceConfig, error)
 	// Updates the Project scoped singleton IntelligenceConfig resource.
@@ -550,10 +622,10 @@ type StorageControlServer interface {
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 	// Gets the `IntelligenceFinding` for a project.
 	GetIntelligenceFinding(context.Context, *GetIntelligenceFindingRequest) (*IntelligenceFinding, error)
-	// Lists the `IntelligenceFinding` resources for the specified project.
+	// Lists the `IntelligenceFinding` resources for the specified the project.
 	ListIntelligenceFindings(context.Context, *ListIntelligenceFindingsRequest) (*ListIntelligenceFindingsResponse, error)
-	// Summarize the intelligence findings for the specified scope(org, folder or
-	// project).
+	// Summarizes the intelligence findings for the specified scope (organization,
+	// folder or project).
 	SummarizeIntelligenceFindings(context.Context, *SummarizeIntelligenceFindingsRequest) (*SummarizeIntelligenceFindingsResponse, error)
 	// Gets the `IntelligenceFindingRevision` resource.
 	GetIntelligenceFindingRevision(context.Context, *GetIntelligenceFindingRevisionRequest) (*IntelligenceFindingRevision, error)
@@ -598,6 +670,9 @@ func (UnimplementedStorageControlServer) GetManagedFolder(context.Context, *GetM
 func (UnimplementedStorageControlServer) ListManagedFolders(context.Context, *ListManagedFoldersRequest) (*ListManagedFoldersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListManagedFolders not implemented")
 }
+func (UnimplementedStorageControlServer) UpdateManagedFolder(context.Context, *UpdateManagedFolderRequest) (*ManagedFolder, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateManagedFolder not implemented")
+}
 func (UnimplementedStorageControlServer) CreateAnywhereCache(context.Context, *CreateAnywhereCacheRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAnywhereCache not implemented")
 }
@@ -618,6 +693,18 @@ func (UnimplementedStorageControlServer) GetAnywhereCache(context.Context, *GetA
 }
 func (UnimplementedStorageControlServer) ListAnywhereCaches(context.Context, *ListAnywhereCachesRequest) (*ListAnywhereCachesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAnywhereCaches not implemented")
+}
+func (UnimplementedStorageControlServer) CreateRapidCache(context.Context, *CreateRapidCacheRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRapidCache not implemented")
+}
+func (UnimplementedStorageControlServer) UpdateRapidCache(context.Context, *UpdateRapidCacheRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRapidCache not implemented")
+}
+func (UnimplementedStorageControlServer) GetRapidCache(context.Context, *GetRapidCacheRequest) (*RapidCache, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRapidCache not implemented")
+}
+func (UnimplementedStorageControlServer) ListRapidCaches(context.Context, *ListRapidCachesRequest) (*ListRapidCachesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRapidCaches not implemented")
 }
 func (UnimplementedStorageControlServer) GetProjectIntelligenceConfig(context.Context, *GetProjectIntelligenceConfigRequest) (*IntelligenceConfig, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProjectIntelligenceConfig not implemented")
@@ -871,6 +958,24 @@ func _StorageControl_ListManagedFolders_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageControl_UpdateManagedFolder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateManagedFolderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageControlServer).UpdateManagedFolder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageControl_UpdateManagedFolder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageControlServer).UpdateManagedFolder(ctx, req.(*UpdateManagedFolderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _StorageControl_CreateAnywhereCache_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateAnywhereCacheRequest)
 	if err := dec(in); err != nil {
@@ -993,6 +1098,78 @@ func _StorageControl_ListAnywhereCaches_Handler(srv interface{}, ctx context.Con
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StorageControlServer).ListAnywhereCaches(ctx, req.(*ListAnywhereCachesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageControl_CreateRapidCache_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRapidCacheRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageControlServer).CreateRapidCache(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageControl_CreateRapidCache_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageControlServer).CreateRapidCache(ctx, req.(*CreateRapidCacheRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageControl_UpdateRapidCache_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRapidCacheRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageControlServer).UpdateRapidCache(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageControl_UpdateRapidCache_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageControlServer).UpdateRapidCache(ctx, req.(*UpdateRapidCacheRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageControl_GetRapidCache_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRapidCacheRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageControlServer).GetRapidCache(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageControl_GetRapidCache_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageControlServer).GetRapidCache(ctx, req.(*GetRapidCacheRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StorageControl_ListRapidCaches_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRapidCachesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageControlServer).ListRapidCaches(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageControl_ListRapidCaches_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageControlServer).ListRapidCaches(ctx, req.(*ListRapidCachesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1301,6 +1478,10 @@ var StorageControl_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _StorageControl_ListManagedFolders_Handler,
 		},
 		{
+			MethodName: "UpdateManagedFolder",
+			Handler:    _StorageControl_UpdateManagedFolder_Handler,
+		},
+		{
 			MethodName: "CreateAnywhereCache",
 			Handler:    _StorageControl_CreateAnywhereCache_Handler,
 		},
@@ -1327,6 +1508,22 @@ var StorageControl_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListAnywhereCaches",
 			Handler:    _StorageControl_ListAnywhereCaches_Handler,
+		},
+		{
+			MethodName: "CreateRapidCache",
+			Handler:    _StorageControl_CreateRapidCache_Handler,
+		},
+		{
+			MethodName: "UpdateRapidCache",
+			Handler:    _StorageControl_UpdateRapidCache_Handler,
+		},
+		{
+			MethodName: "GetRapidCache",
+			Handler:    _StorageControl_GetRapidCache_Handler,
+		},
+		{
+			MethodName: "ListRapidCaches",
+			Handler:    _StorageControl_ListRapidCaches_Handler,
 		},
 		{
 			MethodName: "GetProjectIntelligenceConfig",

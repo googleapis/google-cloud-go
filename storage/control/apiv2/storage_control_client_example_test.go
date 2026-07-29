@@ -139,6 +139,36 @@ func ExampleStorageControlClient_CreateManagedFolder() {
 	_ = resp
 }
 
+func ExampleStorageControlClient_CreateRapidCache() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.CreateRapidCacheRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#CreateRapidCacheRequest.
+	}
+	op, err := c.CreateRapidCache(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleStorageControlClient_DeleteFolder() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -463,6 +493,31 @@ func ExampleStorageControlClient_GetProjectIntelligenceConfig() {
 	_ = resp
 }
 
+func ExampleStorageControlClient_GetRapidCache() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.GetRapidCacheRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#GetRapidCacheRequest.
+	}
+	resp, err := c.GetRapidCache(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleStorageControlClient_GetStorageLayout() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -670,6 +725,43 @@ func ExampleStorageControlClient_ListManagedFolders() {
 		// Otherwise, remove this line. Only populated after
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*controlpb.ListManagedFoldersResponse)
+	}
+}
+
+func ExampleStorageControlClient_ListRapidCaches() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.ListRapidCachesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#ListRapidCachesRequest.
+	}
+	it := c.ListRapidCaches(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*controlpb.ListRapidCachesResponse)
 	}
 }
 
@@ -895,6 +987,31 @@ func ExampleStorageControlClient_UpdateFolderIntelligenceConfig() {
 	_ = resp
 }
 
+func ExampleStorageControlClient_UpdateManagedFolder() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.UpdateManagedFolderRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#UpdateManagedFolderRequest.
+	}
+	resp, err := c.UpdateManagedFolder(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleStorageControlClient_UpdateOrganizationIntelligenceConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -938,6 +1055,36 @@ func ExampleStorageControlClient_UpdateProjectIntelligenceConfig() {
 		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#UpdateProjectIntelligenceConfigRequest.
 	}
 	resp, err := c.UpdateProjectIntelligenceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleStorageControlClient_UpdateRapidCache() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := control.NewStorageControlClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &controlpb.UpdateRapidCacheRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/control/apiv2/controlpb#UpdateRapidCacheRequest.
+	}
+	op, err := c.UpdateRapidCache(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
