@@ -21,7 +21,6 @@ import (
 	"os"
 	"reflect"
 	"strconv"
-	"strings"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
@@ -276,30 +275,11 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	sc.AddSessionLoadListener(c.diverter.SetSessionLoad)
 	c.sessionImpl = sc
 
-	// Per-resource TableAPI cache with TTL-on-idle eviction. openFn
-	// dispatches on the key prefix set by getOrCreateSession* helpers
-	// in open.go — "tbl:<t>" / "av:<t>:<v>" / "mv:<v>" — so cache
-	// lookups are agnostic to the resource kind but the underlying
-	// session.Client Open call is not.
-	c.sessionTables = newSessionTableCache(func(key string) session.TableAPI {
-		if strings.HasPrefix(key, "tbl:") {
-			return sc.OpenTable(strings.TrimPrefix(key, "tbl:"))
-		}
-		if strings.HasPrefix(key, "mv:") {
-			return sc.OpenMaterializedView(strings.TrimPrefix(key, "mv:"))
-		}
-		if strings.HasPrefix(key, "av:") {
-			rest := strings.TrimPrefix(key, "av:")
-			// Cache key is "av:<table>:<view>". Split on the FIRST
-			// colon (table names contain no colons; view names may).
-			if i := strings.IndexByte(rest, ':'); i > 0 {
-				return sc.OpenAuthorizedView(rest[:i], rest[i+1:])
-			}
-		}
-		// Unknown prefix should never happen — callers only go
-		// through the three getOrCreateSession* helpers below.
-		return nil
-	}, sessionTableCacheTTL, sessionTableCacheSweepInt, nil /* time.Now */)
+	// Per-resource TableAPI cache with TTL-on-idle eviction. The cache
+	// is opener-agnostic — each getOrCreateSession* helper in open.go
+	// passes its own openFn per call, using the fully-qualified
+	// resource name as the cache key. No prefix parsing, no dispatch.
+	c.sessionTables = newSessionTableCache(sessionTableCacheTTL, sessionTableCacheSweepInt, nil /* time.Now */)
 
 	return c, nil
 }

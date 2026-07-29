@@ -85,38 +85,47 @@ func (c *Client) OpenMaterializedView(materializedView string) TableAPI {
 
 // getOrCreateSessionTable returns a cached session TableAPI handle
 // for this table. Returns nil when the session backend isn't wired
-// (hand-built or emulator-only Clients where sessionImpl is nil, or
-// sessionTables is nil); TableShim treats a nil session as
-// classic-only. Cache key is "tbl:<table>".
+// (hand-built or emulator-only Clients where sessionImpl is nil).
+// TableShim treats a nil session as classic-only.
 //
-// The cache exists because session.Client does not: each
-// session.Client.OpenTable call would otherwise open a new pair of
-// read/write session pools for the same resource. Handles evict
-// after sessionTableCacheTTL of idle (default 1 h) or when the
-// caller Close()s them explicitly. See session_table_cache.go.
+// The cache key is the fully-qualified table resource name
+// ("projects/P/instances/I/tables/T") — same identity Cloud Bigtable
+// uses over the wire, so table + AV + MV keys never collide even
+// though they share one cache. Handles evict after
+// sessionTableCacheTTL of idle (default 1 h) or when the caller
+// Close()s them explicitly. See session_table_cache.go.
 func (c *Client) getOrCreateSessionTable(table string) session.TableAPI {
 	if c.sessionImpl == nil {
 		return nil
 	}
-	return c.sessionTables.getOrOpen("tbl:" + table)
+	return c.sessionTables.getOrOpen(c.fullTableName(table), func() session.TableAPI {
+		return c.sessionImpl.OpenTable(table)
+	})
 }
 
 // getOrCreateSessionAuthorizedView is the cache lookup for authorized
-// views. Cache key is "av:<table>:<view>" (table-qualified so two AVs
-// with the same view id on different tables get distinct session
-// pools + distinct sessionz labels).
+// views. Cache key is the fully-qualified AV resource name
+// ("projects/P/instances/I/tables/T/authorizedViews/V") — table-
+// qualified by construction, so two AVs with the same view id on
+// different tables get distinct session pools + distinct sessionz
+// labels.
 func (c *Client) getOrCreateSessionAuthorizedView(table, view string) session.TableAPI {
 	if c.sessionImpl == nil {
 		return nil
 	}
-	return c.sessionTables.getOrOpen("av:" + table + ":" + view)
+	return c.sessionTables.getOrOpen(c.fullAuthorizedViewName(table, view), func() session.TableAPI {
+		return c.sessionImpl.OpenAuthorizedView(table, view)
+	})
 }
 
 // getOrCreateSessionMaterializedView is the cache lookup for
-// materialized views. Cache key is "mv:<view>".
+// materialized views. Cache key is the fully-qualified MV resource
+// name ("projects/P/instances/I/materializedViews/V").
 func (c *Client) getOrCreateSessionMaterializedView(view string) session.TableAPI {
 	if c.sessionImpl == nil {
 		return nil
 	}
-	return c.sessionTables.getOrOpen("mv:" + view)
+	return c.sessionTables.getOrOpen(c.fullMaterializedViewName(view), func() session.TableAPI {
+		return c.sessionImpl.OpenMaterializedView(view)
+	})
 }

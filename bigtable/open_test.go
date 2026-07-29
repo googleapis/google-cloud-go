@@ -16,7 +16,6 @@ package bigtable
 
 import (
 	"context"
-	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -285,21 +284,7 @@ func newSessionWiredClient(t *testing.T, fsc *fakeSessionClient) *Client {
 	// Cache with a huge TTL and huge sweep interval so eviction never
 	// fires during these tests. Cache-behavior tests build their own
 	// cache with tight timings.
-	c.sessionTables = newSessionTableCache(func(key string) session.TableAPI {
-		if strings.HasPrefix(key, "tbl:") {
-			return fsc.OpenTable(strings.TrimPrefix(key, "tbl:"))
-		}
-		if strings.HasPrefix(key, "mv:") {
-			return fsc.OpenMaterializedView(strings.TrimPrefix(key, "mv:"))
-		}
-		if strings.HasPrefix(key, "av:") {
-			rest := strings.TrimPrefix(key, "av:")
-			if i := strings.IndexByte(rest, ':'); i > 0 {
-				return fsc.OpenAuthorizedView(rest[:i], rest[i+1:])
-			}
-		}
-		return nil
-	}, 24*time.Hour, 24*time.Hour, nil)
+	c.sessionTables = newSessionTableCache(24*time.Hour, 24*time.Hour, nil)
 	t.Cleanup(c.sessionTables.close)
 	return c
 }
@@ -333,6 +318,11 @@ func TestOpenTable_WithSessionBackend_WiresSessionTableAPI(t *testing.T) {
 		t.Fatal("OpenTable→TableShim.session = nil, want non-nil (session backend is wired)")
 	}
 	nst := unwrapSession(t, shim.session)
+	// noopSessionTable.key is fakeSessionClient's internal identity
+	// tag (prefixed inside fakeSessionClient.handle to disambiguate
+	// its own bookkeeping) — unrelated to what the cache uses as its
+	// key, which is now the fully-qualified resource name from
+	// c.fullTableName.
 	if nst.key != "tbl:my-table" {
 		t.Errorf("session key = %q, want %q", nst.key, "tbl:my-table")
 	}
@@ -421,17 +411,30 @@ func TestGetOrCreateSession_NilSessionImplReturnsNil(t *testing.T) {
 
 // ─── sessionTableCache tests ──────────────────────────────────────────
 
-// newTestSessionTableCache builds a cache whose openFn always returns
-// a fresh *noopSessionTable stamped with the key, plus an
-// injectable clock. Sweep interval is tiny (1ms) so the sweeper
-// preempts predictably in the eviction test. TTL is set per test.
+// newTestSessionTableCache builds a cache with an injectable clock.
+// Sweep interval is tiny (1ms) so the sweeper preempts predictably
+// in the eviction test. TTL is set per test.
 func newTestSessionTableCache(t *testing.T, ttl time.Duration, clock *fakeClock) *sessionTableCache {
 	t.Helper()
-	c := newSessionTableCache(func(key string) session.TableAPI {
-		return &noopSessionTable{key: key}
-	}, ttl, 1*time.Millisecond, clock.now)
+	c := newSessionTableCache(ttl, 1*time.Millisecond, clock.now)
 	t.Cleanup(c.close)
 	return c
+}
+
+// openNoop returns an openFn that constructs a *noopSessionTable
+// stamped with the given key. Used by cache-internal tests that
+// want to inspect which key the cache asked to open.
+func openNoop(key string) func() session.TableAPI {
+	return func() session.TableAPI { return &noopSessionTable{key: key} }
+}
+
+// openClosing returns an openFn that constructs a
+// *closeCountingTable stamped with the given key, incrementing
+// *counter on every Close call.
+func openClosing(key string, counter *int) func() session.TableAPI {
+	return func() session.TableAPI {
+		return &closeCountingTable{noopSessionTable{key: key}, counter}
+	}
 }
 
 // fakeClock is a monotonic clock that only advances on explicit
@@ -454,8 +457,8 @@ func TestSessionTableCache_HandleIsCacheEntry(t *testing.T) {
 	clock := newFakeClock(time.Unix(1_700_000_000, 0))
 	c := newTestSessionTableCache(t, 1*time.Hour, clock)
 
-	h1 := c.getOrOpen("tbl:t").(*sessionTableHandle)
-	h2 := c.getOrOpen("tbl:t").(*sessionTableHandle)
+	h1 := c.getOrOpen("tbl:t", openNoop("tbl:t")).(*sessionTableHandle)
+	h2 := c.getOrOpen("tbl:t", openNoop("tbl:t")).(*sessionTableHandle)
 	if h1 != h2 {
 		t.Errorf("repeat getOrOpen on same key = distinct handles: h1=%p h2=%p", h1, h2)
 	}
@@ -471,7 +474,7 @@ func TestSessionTableCache_ReadRowTouchesLastAccess(t *testing.T) {
 	clock := newFakeClock(time.Unix(1_700_000_000, 0))
 	c := newTestSessionTableCache(t, 1*time.Hour, clock)
 
-	h := c.getOrOpen("tbl:t").(*sessionTableHandle)
+	h := c.getOrOpen("tbl:t", openNoop("tbl:t")).(*sessionTableHandle)
 	before := h.lastAccessNano.Load()
 
 	clock.advance(30 * time.Minute)
@@ -490,13 +493,10 @@ func TestSessionTableCache_ReadRowTouchesLastAccess(t *testing.T) {
 func TestSessionTableCache_CloseEvictsAndFires(t *testing.T) {
 	clock := newFakeClock(time.Unix(1_700_000_000, 0))
 	closeCount := 0
-	closingOpen := func(key string) session.TableAPI {
-		return &closeCountingTable{noopSessionTable{key: key}, &closeCount}
-	}
-	c := newSessionTableCache(closingOpen, 1*time.Hour, 1*time.Second, clock.now)
+	c := newSessionTableCache(1*time.Hour, 1*time.Second, clock.now)
 	t.Cleanup(c.close)
 
-	h1 := c.getOrOpen("tbl:t").(*sessionTableHandle)
+	h1 := c.getOrOpen("tbl:t", openClosing("tbl:t", &closeCount)).(*sessionTableHandle)
 	if err := h1.Close(); err != nil {
 		t.Fatalf("h1.Close: %v", err)
 	}
@@ -511,19 +511,18 @@ func TestSessionTableCache_CloseEvictsAndFires(t *testing.T) {
 		t.Error("entry still present after handle.Close()")
 	}
 	// Second Open mints a fresh handle.
-	h2 := c.getOrOpen("tbl:t").(*sessionTableHandle)
+	h2 := c.getOrOpen("tbl:t", openClosing("tbl:t", &closeCount)).(*sessionTableHandle)
 	if h2 == h1 {
 		t.Error("getOrOpen after Close returned the evicted handle")
 	}
-	// Double-Close on h1 is safe.
+	// Double-Close on h1 is fully idempotent — closeOnce guards both
+	// the map removal AND the underlying api.Close call, so the
+	// counter stays at 1 even after a second h1.Close().
 	if err := h1.Close(); err != nil {
 		t.Errorf("h1.Close (idempotent) err = %v, want nil", err)
 	}
-	if closeCount != 2 {
-		// h1.Close still calls api.Close a second time — that's the
-		// underlying api's contract, not the cache's. closeOnce
-		// guards the cache eviction, not the api.Close call.
-		t.Errorf("underlying Close called %d times after double-Close, want 2", closeCount)
+	if closeCount != 1 {
+		t.Errorf("underlying Close called %d times after double-Close, want 1 (Close is fully idempotent)", closeCount)
 	}
 }
 
@@ -533,15 +532,12 @@ func TestSessionTableCache_CloseEvictsAndFires(t *testing.T) {
 func TestSessionTableCache_TTLSweepEvictsIdle(t *testing.T) {
 	clock := newFakeClock(time.Unix(1_700_000_000, 0))
 	closeCount := 0
-	closingOpen := func(key string) session.TableAPI {
-		return &closeCountingTable{noopSessionTable{key: key}, &closeCount}
-	}
-	c := newSessionTableCache(closingOpen, 1*time.Hour, 1*time.Millisecond, clock.now)
+	c := newSessionTableCache(1*time.Hour, 1*time.Millisecond, clock.now)
 	t.Cleanup(c.close)
 
 	// Open two handles, touch neither.
-	_ = c.getOrOpen("tbl:a")
-	_ = c.getOrOpen("tbl:b")
+	_ = c.getOrOpen("tbl:a", openClosing("tbl:a", &closeCount))
+	_ = c.getOrOpen("tbl:b", openClosing("tbl:b", &closeCount))
 
 	// Advance past TTL and let the 1ms sweeper fire.
 	clock.advance(2 * time.Hour)
@@ -575,7 +571,7 @@ func TestSessionTableCache_TouchDefersEviction(t *testing.T) {
 	clock := newFakeClock(time.Unix(1_700_000_000, 0))
 	c := newTestSessionTableCache(t, 1*time.Hour, clock)
 
-	h := c.getOrOpen("tbl:t").(*sessionTableHandle)
+	h := c.getOrOpen("tbl:t", openNoop("tbl:t")).(*sessionTableHandle)
 	// Every half-TTL, touch and step past a full TTL from the LAST
 	// touch. Each touch resets the clock reference so eviction never
 	// triggers.
@@ -598,14 +594,11 @@ func TestSessionTableCache_TouchDefersEviction(t *testing.T) {
 func TestSessionTableCache_CloseEvictsAll(t *testing.T) {
 	clock := newFakeClock(time.Unix(1_700_000_000, 0))
 	closeCount := 0
-	closingOpen := func(key string) session.TableAPI {
-		return &closeCountingTable{noopSessionTable{key: key}, &closeCount}
-	}
-	c := newSessionTableCache(closingOpen, 1*time.Hour, 1*time.Hour, clock.now)
+	c := newSessionTableCache(1*time.Hour, 1*time.Hour, clock.now)
 
-	_ = c.getOrOpen("tbl:a")
-	_ = c.getOrOpen("tbl:b")
-	_ = c.getOrOpen("mv:v")
+	_ = c.getOrOpen("tbl:a", openClosing("tbl:a", &closeCount))
+	_ = c.getOrOpen("tbl:b", openClosing("tbl:b", &closeCount))
+	_ = c.getOrOpen("mv:v", openClosing("mv:v", &closeCount))
 
 	c.close()
 
