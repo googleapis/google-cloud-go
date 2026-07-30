@@ -49,8 +49,9 @@ func (c *Client) Open(table string) *Table {
 // divertible nil-ed — that break in the loop is what stops
 // tableImpl.Apply/ReadRow from recursing back through the outer gate.
 //
-// Cost per unique Open call (when both c.diverter and c.sessionImpl
-// are wired): one cache entry in c.sessionTables. No I/O — session
+// Cost (when both c.diverter and c.sessionImpl are wired): one
+// c.sessionTables entry per unique fully-qualified table name.
+// Repeated Open of the same table hits the cache. No I/O — session
 // pools materialize lazily on first RPC via lazyPool.get(), so
 // SessionPoolImpl count and server-side OpenSession stream count
 // are unchanged.
