@@ -43,12 +43,12 @@ func newBareClientForOpenTests(t *testing.T, sessionLoad float64) *Client {
 	}
 }
 
-// TestOpen_ReturnsBareTable pins the post-Option-B-revert contract:
-// Client.Open returns a plain *Table with no session-routing wrapper.
-// Callers holding *Table (BulkMutation, ReadModifyWrite consumers,
-// external code) stay on the classic path regardless of Client's
-// diverter setting.
-func TestOpen_ReturnsBareTable(t *testing.T) {
+// TestOpen_WiresDivertibleWhenDiverterPresent pins Open's session-
+// routing contract: when c.diverter is set, the returned *Table has
+// divertible populated with a *TableShim, so Apply / ReadRow route
+// through the shim. Backward-compatible: the return type stays
+// *Table and every non-Apply/ReadRow method is untouched.
+func TestOpen_WiresDivertibleWhenDiverterPresent(t *testing.T) {
 	c := newBareClientForOpenTests(t, 0.0)
 
 	tbl := c.Open("mytable")
@@ -67,6 +67,172 @@ func TestOpen_ReturnsBareTable(t *testing.T) {
 	if tbl.materializedView != "" {
 		t.Errorf("Open→Table.materializedView = %q, want empty", tbl.materializedView)
 	}
+	if tbl.divertible == nil {
+		t.Fatal("Open→Table.divertible = nil, want *TableShim (c.diverter is set)")
+	}
+	shim, ok := tbl.divertible.(*TableShim)
+	if !ok {
+		t.Fatalf("Open→Table.divertible = %T, want *TableShim", tbl.divertible)
+	}
+	if shim.diverter != c.diverter {
+		t.Errorf("shim.diverter = %p, want client's diverter %p", shim.diverter, c.diverter)
+	}
+}
+
+// TestOpen_NoDivertibleWhenDiverterAbsent pins the zero-cost classic
+// path: with c.diverter nil, Open must return a *Table with
+// divertible=nil so the Apply / ReadRow gate short-circuits to the
+// *Classic helpers without any shim allocation.
+func TestOpen_NoDivertibleWhenDiverterAbsent(t *testing.T) {
+	c := &Client{
+		project:        "p",
+		instance:       "i",
+		appProfile:     "ap",
+		featureFlagsMD: metadata.MD{},
+		// diverter deliberately unset.
+	}
+	tbl := c.Open("mytable")
+	if tbl.divertible != nil {
+		t.Errorf("Open→Table.divertible = %v, want nil (no diverter → no shim)", tbl.divertible)
+	}
+}
+
+// TestOpen_DivertibleShimBreaksRecursionLoop pins the anti-recursion
+// invariant that makes Table.Apply / Table.ReadRow gate-then-classic
+// pattern safe: the *tableImpl on the shim's classic side wraps a
+// SNAPSHOT of the outer Table with divertible EXPLICITLY nil-ed.
+//
+// Without this break, tableImpl.Apply → Table.Apply would re-enter
+// the gate → shim → tableImpl.Apply → ... forever. The tableImpl
+// override calling applyClassic/readRowClassic directly is the second
+// half of the safety net; this test guards the first half — the
+// value-copy + nil field trick.
+func TestOpen_DivertibleShimBreaksRecursionLoop(t *testing.T) {
+	c := newBareClientForOpenTests(t, 0.0)
+
+	tbl := c.Open("mytable")
+	shim, ok := tbl.divertible.(*TableShim)
+	if !ok {
+		t.Fatalf("divertible = %T, want *TableShim", tbl.divertible)
+	}
+	inner, ok := shim.classic.(*tableImpl)
+	if !ok {
+		t.Fatalf("shim.classic = %T, want *tableImpl", shim.classic)
+	}
+	if inner.table != "mytable" {
+		t.Errorf("inner.table = %q, want %q (snapshot must carry the same table id)", inner.table, "mytable")
+	}
+	if inner.divertible != nil {
+		t.Errorf("inner.divertible = %v, want nil (must be cleared to break the recursion loop)", inner.divertible)
+	}
+}
+
+// TestOpen_ApplyRoutesThroughDivertible drives an end-to-end Apply on
+// the *Table returned by Open with a wired session backend and
+// SessionLoad=1.0. Proves the session path is reached — i.e., the
+// divertible gate fires and the shim dispatches to session, not the
+// classic MutateRow (which would panic here because the client has
+// no gRPC connection).
+func TestOpen_ApplyRoutesThroughDivertible(t *testing.T) {
+	fsc := newFakeSessionClient()
+	c := newSessionWiredClient(t, fsc)
+	c.diverter.SetSessionLoad(1.0)
+
+	tbl := c.Open("mytable")
+	if tbl.divertible == nil {
+		t.Fatal("divertible = nil, want shim (diverter + sessionImpl wired)")
+	}
+
+	mut := NewMutation()
+	mut.Set("cf", "q", 1_000_000, []byte("v"))
+	if err := tbl.Apply(context.Background(), "row-1", mut); err != nil {
+		t.Fatalf("Apply: %v", err)
+	}
+	if got := len(fsc.openTableCalls); got != 1 || fsc.openTableCalls[0] != "mytable" {
+		t.Errorf("fake session OpenTable calls = %v, want [mytable]", fsc.openTableCalls)
+	}
+}
+
+// TestOpen_ReadRowRoutesThroughDivertible mirrors the Apply test for
+// the read side. Same setup, same proof — the divertible gate on
+// Table.ReadRow dispatches to the shim's session path.
+func TestOpen_ReadRowRoutesThroughDivertible(t *testing.T) {
+	fsc := newFakeSessionClient()
+	c := newSessionWiredClient(t, fsc)
+	c.diverter.SetSessionLoad(1.0)
+
+	tbl := c.Open("mytable")
+	if _, err := tbl.ReadRow(context.Background(), "row-1"); err != nil {
+		t.Fatalf("ReadRow: %v", err)
+	}
+	if got := len(fsc.openTableCalls); got != 1 || fsc.openTableCalls[0] != "mytable" {
+		t.Errorf("fake session OpenTable calls = %v, want [mytable]", fsc.openTableCalls)
+	}
+}
+
+// TestTableImpl_BypassesDivertibleGate pins the second half of the
+// anti-recursion safety net: even if a tableImpl is somehow given a
+// Table with divertible set (defensive — buildDivertible always nil-s
+// it), the tableImpl.Apply / tableImpl.ReadRow overrides must call
+// the *Classic helpers directly and NOT re-enter the gate.
+//
+// Uses a spy divertible whose methods panic — if the gate fires, the
+// test panics; if the bypass works, the test reaches classic and
+// fails predictably (no gRPC conn → panic in unrelated code); we
+// catch that with recover to distinguish the two failure modes.
+func TestTableImpl_BypassesDivertibleGate(t *testing.T) {
+	spy := &panickingTableAPI{}
+	ti := &tableImpl{Table: Table{
+		c:          newBareClientForOpenTests(t, 0.0),
+		table:      "mytable",
+		divertible: spy, // if the gate fires, spy panics with a distinctive message
+	}}
+
+	// Apply: catch any panic and check it's NOT from the spy.
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				if _, ok := r.(spyPanic); ok {
+					t.Errorf("tableImpl.Apply reached the divertible spy — gate must be bypassed")
+				}
+				// Classic body panicking on missing gRPC conn is expected here.
+			}
+		}()
+		_ = ti.Apply(context.Background(), "row-1", NewMutation())
+	}()
+
+	// ReadRow: same shape.
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				if _, ok := r.(spyPanic); ok {
+					t.Errorf("tableImpl.ReadRow reached the divertible spy — gate must be bypassed")
+				}
+			}
+		}()
+		_, _ = ti.ReadRow(context.Background(), "row-1")
+	}()
+}
+
+type spyPanic struct{}
+
+type panickingTableAPI struct{}
+
+func (p *panickingTableAPI) ReadRow(context.Context, string, ...ReadOption) (Row, error) {
+	panic(spyPanic{})
+}
+func (p *panickingTableAPI) Apply(context.Context, string, *Mutation, ...ApplyOption) error {
+	panic(spyPanic{})
+}
+func (p *panickingTableAPI) ReadRows(context.Context, RowSet, func(Row) bool, ...ReadOption) error {
+	panic(spyPanic{})
+}
+func (p *panickingTableAPI) SampleRowKeys(context.Context) ([]string, error) { panic(spyPanic{}) }
+func (p *panickingTableAPI) ApplyBulk(context.Context, []string, []*Mutation, ...ApplyOption) ([]error, error) {
+	panic(spyPanic{})
+}
+func (p *panickingTableAPI) ApplyReadModifyWrite(context.Context, string, *ReadModifyWrite) (Row, error) {
+	panic(spyPanic{})
 }
 
 // TestOpenTable_ProducesNilSessionShim pins the shim shape returned by
