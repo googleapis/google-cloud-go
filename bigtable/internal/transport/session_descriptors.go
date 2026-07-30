@@ -46,6 +46,25 @@ func (t SessionType) String() string {
 	}
 }
 
+// ProtoName returns the bare name of the inner OpenSessionRequest proto for
+// this session type — e.g. "OpenTable" — used to build human-readable
+// pool identifiers ("OpenTablePool-3 [READ]") in the debug UI. Unknown
+// enum values include the raw int so a stale caller shows up as
+// "OpenSession(unknown=N)" in pool labels instead of silently pretending
+// to be a real proto.
+func (t SessionType) ProtoName() string {
+	switch t {
+	case SessionTypeTable:
+		return "OpenTable"
+	case SessionTypeAuthorizedView:
+		return "OpenAuthorizedView"
+	case SessionTypeMaterializedView:
+		return "OpenMaterializedView"
+	default:
+		return fmt.Sprintf("OpenSession(unknown=%d)", int(t))
+	}
+}
+
 // SessionDescriptor models a dynamic envelope handshake parameters compiler.
 type SessionDescriptor struct {
 	Type       SessionType

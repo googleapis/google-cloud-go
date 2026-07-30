@@ -1,0 +1,107 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.maps.navconnect.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/maps/navconnect/apiv1",
+    "version": "1.38.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.navconnect.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.navconnect.v1.Client.CreateTrip",
+        "method": {
+          "fullName": "google.maps.navconnect.v1.NavConnectService.CreateTrip",
+          "service": {
+            "fullName": "google.maps.navconnect.v1.NavConnectService",
+            "shortName": "NavConnectService"
+          },
+          "shortName": "CreateTrip"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "navconnectpb.CreateTripRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*navconnectpb.Trip",
+        "shortName": "CreateTrip"
+      },
+      "description": "CreateTrip creates a trip. This must be called before the mobile application can start\nthe trip. The returned trip will have the `auth_token` field set.",
+      "file": "Client/CreateTrip/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "navigationconnect_v1_generated_NavConnectService_CreateTrip_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "navigationconnect CreateTrip Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.navconnect.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.maps.navconnect.v1.Client.GetTrip",
+        "method": {
+          "fullName": "google.maps.navconnect.v1.NavConnectService.GetTrip",
+          "service": {
+            "fullName": "google.maps.navconnect.v1.NavConnectService",
+            "shortName": "NavConnectService"
+          },
+          "shortName": "GetTrip"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "navconnectpb.GetTripRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*navconnectpb.Trip",
+        "shortName": "GetTrip"
+      },
+      "description": "GetTrip gets a trip.",
+      "file": "Client/GetTrip/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "navigationconnect_v1_generated_NavConnectService_GetTrip_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "navigationconnect GetTrip Sample"
+    }
+  ]
+}

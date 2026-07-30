@@ -31,7 +31,7 @@ func makeSnapshot(id AfeID, inflight int, e2eCost float64) AfeSnapshot {
 }
 
 func TestSimpleAfePicker_EmptyReturnsNil(t *testing.T) {
-	_, picked, dec := NewSimpleAfePicker().PickAfe(nil)
+	_, picked, dec := NewSimpleAfePicker(true).PickAfe(nil)
 	if picked {
 		t.Error("PickAfe(nil) picked = true, want false")
 	}
@@ -47,7 +47,7 @@ func TestSimpleAfePicker_DistributesRoughly(t *testing.T) {
 		makeSnapshot(3, 0, 0),
 	}
 	counts := map[AfeID]int{}
-	p := NewSimpleAfePicker()
+	p := NewSimpleAfePicker(true)
 	const N = 3000
 	for i := 0; i < N; i++ {
 		id, _, _ := p.PickAfe(snaps)
@@ -63,7 +63,7 @@ func TestSimpleAfePicker_DistributesRoughly(t *testing.T) {
 }
 
 func TestLeastInFlightAfePicker_EmptyReturnsNil(t *testing.T) {
-	_, picked, _ := NewLeastInFlightAfePicker(0).PickAfe(nil)
+	_, picked, _ := NewLeastInFlightAfePicker(0, true).PickAfe(nil)
 	if picked {
 		t.Error("PickAfe(nil) picked = true, want false")
 	}
@@ -77,7 +77,7 @@ func TestLeastInFlightAfePicker_PicksMinWhenSubsetCoversAll(t *testing.T) {
 		makeSnapshot(2, 1, 0), // min
 		makeSnapshot(3, 3, 0),
 	}
-	p := NewLeastInFlightAfePicker(len(snaps))
+	p := NewLeastInFlightAfePicker(len(snaps), true)
 	for i := 0; i < 100; i++ {
 		id, _, _ := p.PickAfe(snaps)
 		if id != 2 {
@@ -95,7 +95,7 @@ func TestLeastInFlightAfePicker_KChoicePrefersLowInflight(t *testing.T) {
 		makeSnapshot(3, 1, 0), // the good one
 		makeSnapshot(4, 100, 0),
 	}
-	p := NewLeastInFlightAfePicker(2)
+	p := NewLeastInFlightAfePicker(2, true)
 	counts := map[AfeID]int{}
 	const N = 4000
 	for i := 0; i < N; i++ {
@@ -116,7 +116,7 @@ func TestLeastLatencyAfePicker_PicksMinCost(t *testing.T) {
 		makeSnapshot(2, 0, 5.0), // min cost
 		makeSnapshot(3, 0, 30.0),
 	}
-	p := NewLeastLatencyAfePicker(len(snaps))
+	p := NewLeastLatencyAfePicker(len(snaps), true)
 	for i := 0; i < 100; i++ {
 		id, _, _ := p.PickAfe(snaps)
 		if id != 2 {
@@ -126,7 +126,7 @@ func TestLeastLatencyAfePicker_PicksMinCost(t *testing.T) {
 }
 
 func TestLeastLatencyAfePicker_EmptyReturnsNil(t *testing.T) {
-	_, picked, _ := NewLeastLatencyAfePicker(0).PickAfe(nil)
+	_, picked, _ := NewLeastLatencyAfePicker(0, true).PickAfe(nil)
 	if picked {
 		t.Error("PickAfe(nil) picked = true, want false")
 	}
@@ -148,7 +148,7 @@ func TestKChoiceMinCost_MutatesInputInPlace(t *testing.T) {
 	// set of IDs (swap-to-front is a permutation, not a rewrite). Also
 	// verify that the picker actually visited every slot: with K=len(snaps)
 	// the first-K elements are exactly the K sampled candidates.
-	NewLeastInFlightAfePicker(3).PickAfe(snaps)
+	NewLeastInFlightAfePicker(3, true).PickAfe(snaps)
 
 	seen := map[AfeID]bool{}
 	for _, s := range snaps {
@@ -170,7 +170,7 @@ func TestPickDecision_RecordsCandidatesAndReason(t *testing.T) {
 		makeSnapshot(2, 1, 0),
 		makeSnapshot(3, 3, 0),
 	}
-	_, _, dec := NewLeastInFlightAfePicker(2).PickAfe(snaps)
+	_, _, dec := NewLeastInFlightAfePicker(2, true).PickAfe(snaps)
 	if len(dec.Candidates) != 2 {
 		t.Fatalf("Candidates len = %d, want 2 (K-choice-2)", len(dec.Candidates))
 	}
@@ -182,7 +182,7 @@ func TestPickDecision_RecordsCandidatesAndReason(t *testing.T) {
 	}
 
 	// LeastLatency uses e2e cost.
-	_, _, dec2 := NewLeastLatencyAfePicker(len(snaps)).PickAfe(snaps)
+	_, _, dec2 := NewLeastLatencyAfePicker(len(snaps), true).PickAfe(snaps)
 	if dec2.Reason != "min-latency" {
 		t.Errorf("LeastLatency reason = %q, want min-latency", dec2.Reason)
 	}
@@ -196,9 +196,9 @@ func TestAfePicker_Names(t *testing.T) {
 		p    AfePicker
 		want string
 	}{
-		{NewSimpleAfePicker(), "simple"},
-		{NewLeastInFlightAfePicker(0), "least-inflight"},
-		{NewLeastLatencyAfePicker(0), "least-latency"},
+		{NewSimpleAfePicker(true), "simple"},
+		{NewLeastInFlightAfePicker(0, true), "least-inflight"},
+		{NewLeastLatencyAfePicker(0, true), "least-latency"},
 	} {
 		if got := tc.p.Name(); got != tc.want {
 			t.Errorf("%T.Name() = %q, want %q", tc.p, got, tc.want)

@@ -24,6 +24,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -170,6 +171,16 @@ type SessionPoolImpl struct {
 	// Session.Start so teardown propagates.
 	poolCtx    context.Context
 	poolCancel context.CancelFunc
+
+	// debugEnabled mirrors session.Config.EnableDebug via
+	// NewSessionPoolImpl. Immutable after construction (no atomic
+	// needed). When false, every allocating debug recorder in
+	// session_pool_debug.go / session_debug.go / session_pool_scaling.go
+	// early-returns before touching a slice / map / ring buffer, and
+	// the picker skips the PickDecision.Candidates slice construction.
+	// Pure atomic-counter bumps (msgsSent, retries, etc.) are NOT
+	// gated — a branch check costs more than the atomic.
+	debugEnabled bool
 }
 
 // noteVRpcOutcome forwards the outcome to the AFE's PeakEwma trackers
@@ -184,7 +195,7 @@ func (p *SessionPoolImpl) noteVRpcOutcome(sh *SessionHandle, e2e, backend time.D
 // NewSessionPoolImpl creates a new SessionPoolImpl. id is baked into
 // every session log name so channelz/sessionz can reverse-link back to
 // the pool that owns each session.
-func NewSessionPoolImpl(id uint64, poolName string, min, max int, streamFactory func(ctx context.Context) (Stream, error), openSessionRequest *spb.OpenSessionRequest, md metadata.MD, sessionType SessionType) *SessionPoolImpl {
+func NewSessionPoolImpl(id uint64, poolName string, min, max int, streamFactory func(ctx context.Context) (Stream, error), openSessionRequest *spb.OpenSessionRequest, md metadata.MD, sessionType SessionType, debugEnabled bool) *SessionPoolImpl {
 	poolCtx, poolCancel := context.WithCancel(context.Background())
 	pool := &SessionPoolImpl{
 		poolName:           poolName,
@@ -198,6 +209,7 @@ func NewSessionPoolImpl(id uint64, poolName string, min, max int, streamFactory 
 		poolCtx:            poolCtx,
 		poolCancel:         poolCancel,
 		sl:                 newSessionList(),
+		debugEnabled:       debugEnabled,
 	}
 	pool.m.afePickCounts = make(map[AfeID]int64)
 
@@ -220,7 +232,7 @@ func NewSessionPoolImpl(id uint64, poolName string, min, max int, streamFactory 
 	}
 	fetcher := func() *PoolStats { return pool.Stats() }
 	pool.sizer = NewPoolSizer(fetcher, min, max, float64(defaultCfg.GetHeadroom()))
-	pool.picker = pickerFromLoadBalancing(defaultCfg.GetLoadBalancingOptions())
+	pool.picker = pickerFromLoadBalancing(defaultCfg.GetLoadBalancingOptions(), pool.debugEnabled)
 	pool.budget = NewAdaptiveSessionThrottler(
 		int(defaultCfg.GetNewSessionCreationBudget()),
 		defaultCfg.GetNewSessionCreationPenalty().AsDuration(),
@@ -417,6 +429,15 @@ func (p *SessionPoolImpl) Stats() *PoolStats {
 // bracket min/max as an atomic pair here.
 func (p *SessionPoolImpl) UpdateConfig(config *spb.SessionClientConfiguration_SessionPoolConfiguration) {
 	p.m.listenerFires.Add(1)
+	// Defensive: ClientConfigurationManager only fires listeners on
+	// successful GetClientConfiguration, so config should never be nil
+	// in practice. Log-and-bail (rather than silent-return or panic) so
+	// a broken caller shows up in operator logs the same day it lands,
+	// but a bad configuration source doesn't take down the pool.
+	if config == nil {
+		log.Printf("bigtable_session_pool: UpdateConfig received nil config; ignoring (ClientConfigurationManager contract violation)")
+		return
+	}
 	// p.mu only brackets the picker swap — it's the sole non-atomic
 	// field UpdateConfig mutates that a concurrent CheckoutSession
 	// reads. sizer.UpdateConfig / budget.UpdateConfig each take their
@@ -425,7 +446,7 @@ func (p *SessionPoolImpl) UpdateConfig(config *spb.SessionClientConfiguration_Se
 	// a hot-path CheckoutSession behind the sizer/budget config writes.
 	p.mu.Lock()
 	if config.LoadBalancingOptions != nil {
-		p.picker = pickerFromLoadBalancing(config.LoadBalancingOptions)
+		p.picker = pickerFromLoadBalancing(config.LoadBalancingOptions, p.debugEnabled)
 	}
 	p.mu.Unlock()
 
@@ -456,27 +477,27 @@ func (p *SessionPoolImpl) UpdateConfig(config *spb.SessionClientConfiguration_Se
 // bootstrap paths and tests that skip the config wiring still work.
 // Sole LBO → picker mapping; every picker with a K knob reads its
 // RandomSubsetSize from the corresponding oneof.
-func pickerFromLoadBalancing(lbo *spb.LoadBalancingOptions) AfePicker {
+func pickerFromLoadBalancing(lbo *spb.LoadBalancingOptions, recordCandidates bool) AfePicker {
 	if lbo == nil {
-		return NewLeastInFlightAfePicker(defaultAfeRandomSubsetSize)
+		return NewLeastInFlightAfePicker(defaultAfeRandomSubsetSize, recordCandidates)
 	}
 	switch opt := lbo.LoadBalancingStrategy.(type) {
 	case *spb.LoadBalancingOptions_Random_:
-		return NewSimpleAfePicker()
+		return NewSimpleAfePicker(recordCandidates)
 	case *spb.LoadBalancingOptions_LeastInFlight_:
 		k := defaultAfeRandomSubsetSize
 		if opt.LeastInFlight != nil && opt.LeastInFlight.RandomSubsetSize > 0 {
 			k = int(opt.LeastInFlight.RandomSubsetSize)
 		}
-		return NewLeastInFlightAfePicker(k)
+		return NewLeastInFlightAfePicker(k, recordCandidates)
 	case *spb.LoadBalancingOptions_PeakEwma_:
 		k := defaultAfeRandomSubsetSize
 		if opt.PeakEwma != nil && opt.PeakEwma.RandomSubsetSize > 0 {
 			k = int(opt.PeakEwma.RandomSubsetSize)
 		}
-		return NewLeastLatencyAfePicker(k)
+		return NewLeastLatencyAfePicker(k, recordCandidates)
 	default:
-		return NewLeastInFlightAfePicker(defaultAfeRandomSubsetSize)
+		return NewLeastInFlightAfePicker(defaultAfeRandomSubsetSize, recordCandidates)
 	}
 }
 
@@ -489,11 +510,6 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 		// Record checkout failure so pool-exhaustion incidents show up
 		// in sessionz's slow-vRPC table and latency histograms.
 		p.recordCheckoutFailure(checkoutStart, desc, err)
-		// Attributes the resulting downstream TagSessionAttemptNilClusterInfo
-		// to the pool checkout-failure exit — otherwise the nil at
-		// stampAttempt is indistinguishable from "session picked but
-		// returned nil". Dominates during pool cold-start warmup.
-		recordDebugTag(tagSessionPoolCheckoutFailedCINil)
 		return InvokeResult{}, err
 	}
 	// poolWait is the queue-time spent inside CheckoutSession waiting
@@ -531,10 +547,15 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 	// Pool-level histograms feed the debug UI (per-session ring buffers
 	// are too small). BackendLatency only records when the server
 	// populated Stats; TotalLatency records for every call.
-	p.m.totalLatencyHist.record(latency)
+	// Gated on debugEnabled — histograms are debug-only surfaces.
+	if p.debugEnabled {
+		p.m.totalLatencyHist.record(latency)
+	}
 	if result.Stats != nil && result.Stats.BackendLatency != nil {
 		backendDur = result.Stats.BackendLatency.AsDuration()
-		p.m.backendLatencyHist.record(backendDur)
+		if p.debugEnabled {
+			p.m.backendLatencyHist.record(backendDur)
+		}
 	}
 	// TransportLatency (wire + AFE + client-decode overhead) is now
 	// computed at the source in Session.processResult as
@@ -542,9 +563,13 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 	// server didn't populate Stats, the call errored pre-Recv, or the
 	// subtraction was non-positive (clock skew) — all cases we skip
 	// from the per-AFE transport-overhead histograms so p50 isn't
-	// dragged toward 0.
+	// dragged toward 0. RecordTransportOverhead feeds the OTel
+	// transport_latencies metric — that is NOT debug-gated (it's a
+	// customer-facing metric); only the debug histogram is gated.
 	if result.TransportLatency > 0 {
-		p.m.transportLatencyHist.record(result.TransportLatency)
+		if p.debugEnabled {
+			p.m.transportLatencyHist.record(result.TransportLatency)
+		}
 		sh.session.RecordTransportOverhead(ctx, desc.Method(), result.TransportLatency)
 	}
 	if latency > defaultSlowThreshold {
