@@ -34,12 +34,14 @@ import (
 	"time"
 
 	"cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/experimental"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"github.com/googleapis/gax-go/v2/callctx"
+	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -4003,4 +4005,200 @@ func setBidiReads(t *testing.T, client storageClient) {
 			c.config.grpcBidiReads = false
 		})
 	}
+}
+
+func TestOTelReaderAndWriterAttributesEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		te := testutil.NewOpenTelemetryTestExporter()
+		t.Cleanup(func() {
+			te.Unregister(ctx)
+		})
+		t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+		// Create bucket using emulator client
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+
+		objName := fmt.Sprintf("test-trace-attrs-obj-%d.txt", time.Now().Nanosecond())
+		obj := veneerClient.Bucket(bucket).Object(objName)
+
+		// 1. Write an object
+		w := obj.NewWriter(ctx)
+		w.ChunkSize = 256 * 1024
+		if _, err := w.Write([]byte("Hello emulated tracing!")); err != nil {
+			t.Fatalf("w.Write: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("w.Close: %v", err)
+		}
+
+		// 2. Read the object with a range
+		r, err := obj.NewRangeReader(ctx, 0, 5)
+		if err != nil {
+			t.Fatalf("NewRangeReader: %v", err)
+		}
+		if _, err := io.ReadAll(r); err != nil && err != io.EOF {
+			t.Fatalf("io.ReadAll: %v", err)
+		}
+		r.Close()
+
+		// 3. Verify writer and reader spans
+		spans := te.Spans()
+		var writerSpan, readerSpan tracetest.SpanStub
+		for _, s := range spans {
+			if s.Name == "cloud.google.com/go/storage.Object.Writer" {
+				writerSpan = s
+			} else if s.Name == "cloud.google.com/go/storage.Object.Reader" {
+				readerSpan = s
+			}
+		}
+		if writerSpan.Name == "" {
+			t.Fatalf("Object.Writer span not found in %d spans", len(spans))
+		}
+		if readerSpan.Name == "" {
+			t.Fatalf("Object.Reader span not found in %d spans", len(spans))
+		}
+
+		// Verify Writer mode attribute
+		foundWriteMode := false
+		for _, a := range writerSpan.Attributes {
+			if string(a.Key) == "storage.write.mode" {
+				foundWriteMode = true
+				if got, want := a.Value.AsString(), "resumable"; got != want {
+					t.Errorf("writer storage.write.mode = %q, want %q", got, want)
+				}
+			}
+		}
+		if !foundWriteMode {
+			t.Errorf("storage.write.mode attribute not found on Object.Writer span")
+		}
+
+		// Verify Reader mode attribute
+		foundReadMode := false
+		for _, a := range readerSpan.Attributes {
+			if string(a.Key) == "storage.read.mode" {
+				foundReadMode = true
+				if got, want := a.Value.AsString(), "range"; got != want {
+					t.Errorf("reader storage.read.mode = %q, want %q", got, want)
+				}
+			}
+		}
+		if !foundReadMode {
+			t.Errorf("storage.read.mode attribute not found on Object.Reader span")
+		}
+	})
+}
+
+func TestOTelRetryBackoffTracingEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		te := testutil.NewOpenTelemetryTestExporter()
+		t.Cleanup(func() {
+			te.Unregister(ctx)
+		})
+		t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+		// Create bucket using emulator client
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+
+		// Setup retry test for Bucket.Attrs (storage.buckets.get)
+		instructions := map[string][]string{
+			"storage.buckets.get": {"return-503", "return-503"},
+		}
+		testID := createRetryTest(t, client, instructions)
+		ctxRetry := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+		vc := &Client{tc: client}
+		if _, err := vc.Bucket(bucket).Attrs(ctxRetry); err != nil {
+			t.Fatalf("vc.Bucket.Attrs: %v", err)
+		}
+
+		// Verify exported spans
+		spans := te.Spans()
+		var parentSpan tracetest.SpanStub
+		var retryBackoffCount int
+		for _, s := range spans {
+			if strings.HasSuffix(s.Name, "RetryBackoff") {
+				retryBackoffCount++
+			} else if strings.HasSuffix(s.Name, "Bucket.Attrs") {
+				parentSpan = s
+			}
+		}
+
+		if parentSpan.Name == "" {
+			t.Fatalf("Bucket.Attrs parent span not found in %d spans", len(spans))
+		}
+		if retryBackoffCount != 2 {
+			t.Errorf("expected 2 RetryBackoff child spans, got %d", retryBackoffCount)
+		}
+		if len(parentSpan.Events) != 2 {
+			t.Errorf("expected 2 storage.retry.backoff trace events on parent span, got %d", len(parentSpan.Events))
+		}
+	})
+}
+
+func TestOTelListObjectsGroupingEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		te := testutil.NewOpenTelemetryTestExporter()
+		t.Cleanup(func() {
+			te.Unregister(ctx)
+		})
+		t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+		// Create bucket using emulator client
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+
+		// Setup retry test for ListObjects (storage.objects.list)
+		instructions := map[string][]string{
+			"storage.objects.list": {"return-503", "return-503"},
+		}
+		testID := createRetryTest(t, client, instructions)
+		ctxRetry := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+		vc := &Client{tc: client}
+		it := vc.Bucket(bucket).Objects(ctxRetry, nil)
+		if _, err := it.Next(); err != iterator.Done && err != nil {
+			t.Fatalf("ListObjects Next: %v", err)
+		}
+
+		// Verify that RetryBackoff spans are children of ObjectsListCall
+		spans := te.Spans()
+		var listCallSpan tracetest.SpanStub
+		var retryBackoffSpans []tracetest.SpanStub
+		for _, s := range spans {
+			if strings.HasSuffix(s.Name, "ObjectsListCall") {
+				listCallSpan = s
+			} else if strings.HasSuffix(s.Name, "RetryBackoff") {
+				retryBackoffSpans = append(retryBackoffSpans, s)
+			}
+		}
+
+		if listCallSpan.Name == "" {
+			t.Fatalf("ObjectsListCall span not found in %d spans", len(spans))
+		}
+		if len(retryBackoffSpans) != 2 {
+			t.Fatalf("expected 2 RetryBackoff child spans, got %d", len(retryBackoffSpans))
+		}
+		for i, s := range retryBackoffSpans {
+			if got, want := s.Parent.TraceID(), listCallSpan.SpanContext.TraceID(); got != want {
+				t.Errorf("RetryBackoff span %d traceID = %v, want %v", i, got, want)
+			}
+			if got, want := s.Parent.SpanID(), listCallSpan.SpanContext.SpanID(); got != want {
+				t.Errorf("RetryBackoff span %d parentID = %v, want listCallSpan ID %v", i, got, want)
+			}
+		}
+	})
 }

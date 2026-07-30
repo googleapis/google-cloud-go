@@ -616,7 +616,7 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		defer func() { endSpan(ctx, err) }()
 		var objects []*storagepb.Object
 		var gitr *gapic.ObjectIterator
-		err = run(it.ctx, func(ctx context.Context) error {
+		err = run(ctx, func(ctx context.Context) error {
 			gitr = c.raw.ListObjects(ctx, req, s.gax...)
 			objects, token, err = gitr.InternalFetch(pageSize, pageToken)
 			return err

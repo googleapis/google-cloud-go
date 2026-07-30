@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -348,5 +349,220 @@ func TestEndSpanEviction(t *testing.T) {
 				t.Errorf("expected bucket to remain in cache")
 			}
 		})
+	}
+}
+
+func TestRecordRetryBackoffEvent(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	spanName := "Object.Writer"
+	ctx, _ = startSpan(ctx, spanName)
+	startTime := time.Now()
+	backoff := 150 * time.Millisecond
+	recordRetryBackoffEvent(ctx, backoff, 2, startTime)
+	endSpan(ctx, nil)
+
+	spans := te.Spans()
+	if len(spans) != 2 {
+		t.Fatalf("expected 2 spans (parent + RetryBackoff child), got %d", len(spans))
+	}
+
+	var parentSpan, backoffSpan tracetest.SpanStub
+	for _, s := range spans {
+		if strings.HasSuffix(s.Name, "RetryBackoff") {
+			backoffSpan = s
+		} else if strings.HasSuffix(s.Name, spanName) {
+			parentSpan = s
+		}
+	}
+	if backoffSpan.Name == "" || parentSpan.Name == "" {
+		t.Fatalf("failed to find both parent and RetryBackoff spans in %v", spans)
+	}
+
+	// Verify parent span has the storage.retry.backoff event
+	if len(parentSpan.Events) != 1 {
+		t.Fatalf("expected 1 event on parent span, got %d", len(parentSpan.Events))
+	}
+	if got, want := parentSpan.Events[0].Name, "storage.retry.backoff"; got != want {
+		t.Errorf("got event name %q, want %q", got, want)
+	}
+
+	// Verify RetryBackoff child span attributes
+	wantAttrs := map[string]interface{}{
+		"attempt": int64(2),
+		"backoff": backoff.String(),
+	}
+	for k, wantVal := range wantAttrs {
+		found := false
+		for _, a := range backoffSpan.Attributes {
+			if string(a.Key) == k {
+				found = true
+				if gotVal := a.Value.AsInt64(); k == "attempt" && gotVal != wantVal.(int64) {
+					t.Errorf("got attempt %v, want %v", gotVal, wantVal)
+				} else if gotStr := a.Value.AsString(); k == "backoff" && gotStr != wantVal.(string) {
+					t.Errorf("got backoff %v, want %v", gotStr, wantVal)
+				}
+			}
+		}
+		if !found {
+			t.Errorf("attribute %q not found on RetryBackoff span", k)
+		}
+	}
+}
+
+func TestRecordWriterTraceAttributes(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	spanName := "Object.Writer"
+	ctx, _ = startSpan(ctx, spanName)
+	w := &Writer{
+		ChunkSize:            256 * 1024,
+		Append:               false,
+		EnableParallelUpload: false,
+		ObjectAttrs:          ObjectAttrs{Name: "test-file.txt"},
+	}
+	recordWriterTraceAttributes(ctx, w)
+	endSpan(ctx, nil)
+
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Fatalf("expected 1 span, got %d", len(spans))
+	}
+	gotSpan := spans[0]
+
+	wantAttrs := map[string]interface{}{
+		"storage.write.mode":       "resumable",
+		"storage.write.chunk_size": int64(256 * 1024),
+		"storage.write.append":     false,
+		"storage.write.parallel":   false,
+		"storage.object.name":      "test-file.txt",
+	}
+	for k, wantVal := range wantAttrs {
+		found := false
+		for _, a := range gotSpan.Attributes {
+			if string(a.Key) == k {
+				found = true
+				switch v := wantVal.(type) {
+				case string:
+					if got := a.Value.AsString(); got != v {
+						t.Errorf("key %q: got %v, want %v", k, got, v)
+					}
+				case int64:
+					if got := a.Value.AsInt64(); got != v {
+						t.Errorf("key %q: got %v, want %v", k, got, v)
+					}
+				case bool:
+					if got := a.Value.AsBool(); got != v {
+						t.Errorf("key %q: got %v, want %v", k, got, v)
+					}
+				}
+			}
+		}
+		if !found {
+			t.Errorf("attribute %q not found on span", k)
+		}
+	}
+}
+
+func TestRecordReaderTraceAttributes(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	spanName := "Object.Reader"
+	ctx, _ = startSpan(ctx, spanName)
+	recordReaderTraceAttributes(ctx, "range", 100, 500, "read-obj.txt")
+	endSpan(ctx, nil)
+
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Fatalf("expected 1 span, got %d", len(spans))
+	}
+	gotSpan := spans[0]
+
+	wantAttrs := map[string]interface{}{
+		"storage.read.mode":   "range",
+		"storage.read.offset": int64(100),
+		"storage.read.length": int64(500),
+		"storage.object.name": "read-obj.txt",
+	}
+	for k, wantVal := range wantAttrs {
+		found := false
+		for _, a := range gotSpan.Attributes {
+			if string(a.Key) == k {
+				found = true
+				switch v := wantVal.(type) {
+				case string:
+					if got := a.Value.AsString(); got != v {
+						t.Errorf("key %q: got %v, want %v", k, got, v)
+					}
+				case int64:
+					if got := a.Value.AsInt64(); got != v {
+						t.Errorf("key %q: got %v, want %v", k, got, v)
+					}
+				}
+			}
+		}
+		if !found {
+			t.Errorf("attribute %q not found on span", k)
+		}
+	}
+}
+
+func TestMetadataRetryBackoffTracing(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	// Test metadata operation (e.g. Bucket.Attrs or ObjectsListCall) experiencing 2 retries
+	spanName := "Bucket.Attrs"
+	ctx, _ = startSpan(ctx, spanName)
+	recordRetryBackoffEvent(ctx, 100*time.Millisecond, 1, time.Now())
+	recordRetryBackoffEvent(ctx, 200*time.Millisecond, 2, time.Now())
+	endSpan(ctx, nil)
+
+	spans := te.Spans()
+	if len(spans) != 3 {
+		t.Fatalf("expected 3 spans (1 parent metadata span + 2 RetryBackoff child spans), got %d", len(spans))
+	}
+
+	var parentSpan tracetest.SpanStub
+	var backoffCount int
+	for _, s := range spans {
+		if strings.HasSuffix(s.Name, "RetryBackoff") {
+			backoffCount++
+		} else if strings.HasSuffix(s.Name, spanName) {
+			parentSpan = s
+		}
+	}
+	if backoffCount != 2 {
+		t.Errorf("expected 2 RetryBackoff child spans, got %d", backoffCount)
+	}
+	if parentSpan.Name == "" {
+		t.Fatalf("failed to find parent metadata span %q", spanName)
+	}
+	if len(parentSpan.Events) != 2 {
+		t.Fatalf("expected 2 storage.retry.backoff events on metadata span, got %d", len(parentSpan.Events))
+	}
+	for i, ev := range parentSpan.Events {
+		if ev.Name != "storage.retry.backoff" {
+			t.Errorf("event %d: got name %q, want %q", i, ev.Name, "storage.retry.backoff")
+		}
 	}
 }

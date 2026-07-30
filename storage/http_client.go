@@ -473,7 +473,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 			req.MaxResults(int64(pageSize))
 		}
 		var resp *raw.Objects
-		err = run(it.ctx, func(ctx context.Context) error {
+		err = run(ctx, func(ctx context.Context) error {
 			resp, err = req.Context(ctx).Do()
 			return err
 		}, s.retry, s.idempotent, withOperation("ListObjects"), withObject(it.query.Prefix), withBucket(bucket))

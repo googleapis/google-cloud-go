@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
@@ -180,4 +181,91 @@ func getCommonAttributes() []attribute.KeyValue {
 
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
+}
+
+// recordRetryBackoffEvent adds an event and a child span to the current span in ctx recording a retry backoff.
+func recordRetryBackoffEvent(ctx context.Context, backoff time.Duration, attempt int, startTime time.Time) {
+	if !isOTelTracingDevEnabled() {
+		return
+	}
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+	attrs := []attribute.KeyValue{
+		attribute.Int("attempt", attempt),
+		attribute.String("backoff", backoff.String()),
+	}
+	span.AddEvent("storage.retry.backoff", trace.WithAttributes(attrs...))
+
+	// Create a child span for the backoff duration so it appears as a visual
+	// block in Trace Explorer waterfall charts.
+	if startTime.IsZero() {
+		startTime = time.Now().Add(-backoff)
+	}
+	_, backoffSpan := startSpan(ctx, "RetryBackoff", trace.WithTimestamp(startTime))
+	backoffSpan.SetAttributes(attrs...)
+	backoffSpan.End(trace.WithTimestamp(startTime.Add(backoff)))
+}
+
+// recordWriterTraceAttributes attaches descriptive upload mode and configuration attributes
+// to the Object.Writer span in ctx so observers can inspect the write type in Trace Explorer.
+func recordWriterTraceAttributes(ctx context.Context, w *Writer) {
+	if !isOTelTracingDevEnabled() || w == nil {
+		return
+	}
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+
+	writeMode := "resumable"
+	if w.EnableParallelUpload {
+		writeMode = "parallel_composite"
+	} else if strings.HasPrefix(w.ObjectAttrs.Name, "gcs-go-sdk-pu-tmp/") {
+		writeMode = "pcu_part_writer"
+	} else if w.Append {
+		writeMode = "appendable"
+	} else if w.ChunkSize == 0 {
+		writeMode = "oneshot"
+	}
+
+	attrs := []attribute.KeyValue{
+		attribute.String("storage.write.mode", writeMode),
+		attribute.Int("storage.write.chunk_size", w.ChunkSize),
+		attribute.Bool("storage.write.append", w.Append),
+		attribute.Bool("storage.write.parallel", w.EnableParallelUpload),
+		attribute.String("storage.object.name", w.ObjectAttrs.Name),
+	}
+	if w.EnableParallelUpload {
+		attrs = append(attrs,
+			attribute.Int("storage.write.pcu_part_size", w.ParallelUploadConfig.PartSize),
+			attribute.Int("storage.write.pcu_concurrency", w.ParallelUploadConfig.MaxConcurrency),
+		)
+	}
+	span.SetAttributes(attrs...)
+}
+
+// recordReaderTraceAttributes attaches descriptive read mode and range attributes
+// to the Object.Reader or Object.MultiRangeDownloader span in ctx.
+func recordReaderTraceAttributes(ctx context.Context, readMode string, offset, length int64, objectName string) {
+	if !isOTelTracingDevEnabled() {
+		return
+	}
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+
+	attrs := []attribute.KeyValue{
+		attribute.String("storage.read.mode", readMode),
+		attribute.String("storage.object.name", objectName),
+	}
+	if readMode == "range" || readMode == "full" {
+		attrs = append(attrs,
+			attribute.Int64("storage.read.offset", offset),
+			attribute.Int64("storage.read.length", length),
+		)
+	}
+	span.SetAttributes(attrs...)
 }
