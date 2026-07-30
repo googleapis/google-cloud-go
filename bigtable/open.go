@@ -41,37 +41,19 @@ func (c *Client) Open(table string) *Table {
 	return t
 }
 
-// buildDivertible wraps a *Table's classic side in a TableShim so
-// Apply / ReadRow can be routed to the session data path. Returns nil
-// when the client has no Diverter (classic-only mode) so callers can
-// assign the result straight into Table.divertible.
+// buildDivertible wraps t's classic side in a TableShim so Apply /
+// ReadRow can be routed to the session data path. Returns nil when
+// c.diverter is nil so the caller stays on the zero-cost classic path.
 //
-// The classic side is a *tableImpl over a snapshot of t with divertible
-// EXPLICITLY nil-ed — that break in the loop is what prevents
+// The classic side is a *tableImpl over a value-copy of t with
+// divertible nil-ed — that break in the loop is what stops
 // tableImpl.Apply/ReadRow from recursing back through the outer gate.
-// openSession is called eagerly when the diverter is present AND the
-// session client is wired — this matches OpenTable's pre-existing
-// behavior of registering a session pool entry at Open time. Callers
-// pass nil openSession to skip the session backend entirely (TableShim
-// treats nil session as classic-only).
 //
-// Cardinality note. There are three cardinalities in play and only one
-// of them shifts with this Open-time registration:
-//
-//  1. c.sessionTables map size — grows with each unique Open call now
-//     (previously only OpenTable). Cost per entry is a string key +
-//     one *SessionTable struct (~110 B total). No I/O.
-//  2. SessionPoolImpl count (and therefore OTel session_name label
-//     cardinality) — UNCHANGED. Sessions and their pools are still
-//     opened lazily by lazyPool.get() on the first ReadRow/Apply for
-//     the table.
-//  3. Server-side OpenSession stream count — UNCHANGED, same trigger.
-//
-// So an app that Opens 10k tables but only exercises a handful sees a
-// bounded map growth and zero change in dashboards or server load. If
-// that map growth ever matters, hoist openSession into a lazy closure
-// held by TableShim so it fires on first RPC — costs a mutex round on
-// the hot path in exchange, which is why we don't do it today.
+// Cost per unique Open call (when both c.diverter and c.sessionImpl
+// are wired): one cache entry in c.sessionTables. No I/O — session
+// pools materialize lazily on first RPC via lazyPool.get(), so
+// SessionPoolImpl count and server-side OpenSession stream count
+// are unchanged.
 func (c *Client) buildDivertible(t *Table, openSession func() session.TableAPI) TableAPI {
 	if c.diverter == nil {
 		return nil
