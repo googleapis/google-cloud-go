@@ -52,6 +52,11 @@ type Client struct {
 	executeQueryRetryOption gax.CallOption
 	featureFlagsMD          metadata.MD // Pre-computed feature flags metadata to be sent with each request.
 	mPool                   btransport.ManagedChannelPool
+	// diverter picks between the classic and (future) session data path
+	// on every Open* return. Initialized with sessionLoad=0.0 so all
+	// traffic stays on the classic path until a follow-up change enables
+	// the session backend and bumps the ratio.
+	diverter *btransport.Diverter
 }
 
 // ClientConfig has configurations for the client.
@@ -227,6 +232,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		executeQueryRetryOption: executeQueryRetryOption,
 		featureFlagsMD:          directAccessMD,
 		mPool:                   mPool,
+		diverter:                btransport.NewDiverter(0.0),
 	}, nil
 }
 
@@ -260,55 +266,6 @@ func (c *Client) reqParamsHeaderValTable(table string) string {
 
 func (c *Client) reqParamsHeaderValInstance() string {
 	return fmt.Sprintf("name=%s&app_profile_id=%s", url.QueryEscape(c.fullInstanceName()), url.QueryEscape(c.appProfile))
-}
-
-// Open opens a table.
-func (c *Client) Open(table string) *Table {
-	return &Table{
-		c:     c,
-		table: table,
-		md: metadata.Join(metadata.Pairs(
-			resourcePrefixHeader, c.fullTableName(table),
-			requestParamsHeader, c.reqParamsHeaderValTable(table),
-		), c.featureFlagsMD),
-	}
-}
-
-// OpenTable opens a table.
-func (c *Client) OpenTable(table string) TableAPI {
-	return &tableImpl{Table{
-		c:     c,
-		table: table,
-		md: metadata.Join(metadata.Pairs(
-			resourcePrefixHeader, c.fullTableName(table),
-			requestParamsHeader, c.reqParamsHeaderValTable(table),
-		), c.featureFlagsMD),
-	}}
-}
-
-// OpenAuthorizedView opens an authorized view.
-func (c *Client) OpenAuthorizedView(table, authorizedView string) TableAPI {
-	return &tableImpl{Table{
-		c:     c,
-		table: table,
-		md: metadata.Join(metadata.Pairs(
-			resourcePrefixHeader, c.fullAuthorizedViewName(table, authorizedView),
-			requestParamsHeader, c.reqParamsHeaderValTable(table),
-		), c.featureFlagsMD),
-		authorizedView: authorizedView,
-	}}
-}
-
-// OpenMaterializedView opens a materialized view.
-func (c *Client) OpenMaterializedView(materializedView string) TableAPI {
-	return &tableImpl{Table{
-		c: c,
-		md: metadata.Join(metadata.Pairs(
-			resourcePrefixHeader, c.fullMaterializedViewName(materializedView),
-			requestParamsHeader, c.reqParamsHeaderValTable(materializedView),
-		), c.featureFlagsMD),
-		materializedView: materializedView,
-	}}
 }
 
 // PingAndWarm pings the server and warms up the connection.

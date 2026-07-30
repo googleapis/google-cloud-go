@@ -160,17 +160,54 @@ func (p permission) display() string {
 // resource. Struct keys let the map dedup on both axes without string
 // concatenation.
 type poolKey struct {
-	resource string
-	perm     permission
+	resourceName string
+	perm         permission
 }
 
 // less orders poolKeys for stable snapshot rendering (resource first,
 // then permission).
 func (k poolKey) less(other poolKey) bool {
-	if k.resource != other.resource {
-		return k.resource < other.resource
+	if k.resourceName != other.resourceName {
+		return k.resourceName < other.resourceName
 	}
 	return k.perm < other.perm
+}
+
+// displayName renders the human-readable pool identity that is stamped
+// as the OTel `session_name` metric label (via WithSessionPoolName)
+// and rendered in sessionz. Format: "<resource-id>-<PERM>".
+//
+// Resource-id is the caller-supplied short name with the internal
+// type-prefix stripped:
+//
+//	table:<id>    → "<id>-<PERM>"            e.g. "my-table-READ"
+//	av:<t>:<v>    → "<t>/<v>-<PERM>"         e.g. "my-table/my-view-READ"
+//	mv:<v>        → "<v>-<PERM>"             e.g. "my-view-READ"
+//
+// For authorized views the table qualifier is preserved as "<table>/<view>"
+// (converted from the "av:" pool-key encoding "av:<table>:<view>") so
+// two AVs with the same view id on different tables produce distinct
+// `session_name` timeseries and distinct sessionz rows — otherwise they
+// would silently aggregate on the label.
+//
+// (Resource, permission) is already unique per pool, so the numeric
+// pool id is intentionally left out of the display name. The pool id
+// remains on SessionPoolImpl (as poolID) and gets baked into per-session
+// log names via createSession — `session_name` label cardinality stays
+// bounded by (resource × permission).
+func (k poolKey) displayName() string {
+	r := k.resourceName
+	switch {
+	case strings.HasPrefix(r, "table:"):
+		r = strings.TrimPrefix(r, "table:")
+	case strings.HasPrefix(r, "mv:"):
+		r = strings.TrimPrefix(r, "mv:")
+	case strings.HasPrefix(r, "av:"):
+		// "av:<table>:<view>" → "<table>/<view>" so the label
+		// disambiguates AVs with the same view id on different tables.
+		r = strings.Replace(strings.TrimPrefix(r, "av:"), ":", "/", 1)
+	}
+	return r + "-" + k.perm.display()
 }
 
 // sessionClient is the internal implementation of the Client
@@ -621,10 +658,13 @@ func (sc *sessionClient) getOrCreateSessionPool(
 		return mp.pool
 	}
 	id := sc.nextPoolID.Add(1)
-	poolName := fmt.Sprintf("%sPool-%d", sessionType.ProtoName(), id)
-	if label := key.perm.display(); label != "" {
-		poolName += " [" + label + "]"
-	}
+	// poolName is stamped as the `session_name` OTel metric label and
+	// surfaces in sessionz — "<resource-id>-<PERM>" (see poolKey.displayName).
+	// Numeric pool id lives on SessionPoolImpl.poolID for the sessionz
+	// ↔ channelz reverse link and per-session log names; we don't need
+	// it in the human-readable label because (resource, permission)
+	// already uniquely identifies the pool.
+	poolName := key.displayName()
 	// Pool bounds start at 0; NewSessionPoolImpl falls back to
 	// defaultPoolConfig() and ClientConfigurationManager overrides on
 	// first UpdateConfig with server-driven values.
