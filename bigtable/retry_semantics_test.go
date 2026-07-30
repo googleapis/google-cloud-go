@@ -42,9 +42,9 @@ import (
 // faultyMutateRow returns a MutateRowFn that fails the first failN
 // attempts with the given code, then succeeds. attemptCount is
 // incremented on every call so tests can assert exact attempts.
-func faultyMutateRow(attemptCount *int64, failN int, code codes.Code) func(context.Context, *btpb.MutateRowRequest) (*btpb.MutateRowResponse, error) {
+func faultyMutateRow(attemptCount *atomic.Int64, failN int, code codes.Code) func(context.Context, *btpb.MutateRowRequest) (*btpb.MutateRowResponse, error) {
 	return func(_ context.Context, _ *btpb.MutateRowRequest) (*btpb.MutateRowResponse, error) {
-		n := atomic.AddInt64(attemptCount, 1)
+		n := attemptCount.Add(1)
 		if int(n) <= failN {
 			return nil, status.Error(code, "injected fault")
 		}
@@ -84,7 +84,7 @@ func TestRetrySemantics_Classic_Idempotent(t *testing.T) {
 	}
 	defer srv.Close()
 
-	var attempts int64
+	var attempts atomic.Int64
 	srv.MutateRowFn = faultyMutateRow(&attempts, 2, codes.Unavailable)
 
 	client := newRetryTestClient(t, srv)
@@ -100,7 +100,7 @@ func TestRetrySemantics_Classic_Idempotent(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Apply: got err=%v, want nil (should have retried past 2 faults)", err)
 	}
-	if got := atomic.LoadInt64(&attempts); got != 3 {
+	if got := attempts.Load(); got != 3 {
 		t.Errorf("attempts=%d, want 3 (2 injected fails + 1 success)", got)
 	}
 }
@@ -116,7 +116,7 @@ func TestRetrySemantics_Classic_NonIdempotent(t *testing.T) {
 	}
 	defer srv.Close()
 
-	var attempts int64
+	var attempts atomic.Int64
 	srv.MutateRowFn = faultyMutateRow(&attempts, 2, codes.Unavailable)
 
 	client := newRetryTestClient(t, srv)
@@ -135,7 +135,7 @@ func TestRetrySemantics_Classic_NonIdempotent(t *testing.T) {
 	if got := status.Code(err); got != codes.Unavailable {
 		t.Errorf("err code=%s, want Unavailable", got)
 	}
-	if got := atomic.LoadInt64(&attempts); got != 1 {
+	if got := attempts.Load(); got != 1 {
 		t.Errorf("attempts=%d, want 1 (non-idempotent must not retry)", got)
 	}
 }
@@ -151,7 +151,7 @@ func TestRetrySemantics_Classic_AbortedRetries(t *testing.T) {
 	}
 	defer srv.Close()
 
-	var attempts int64
+	var attempts atomic.Int64
 	srv.MutateRowFn = faultyMutateRow(&attempts, 1, codes.Aborted)
 
 	client := newRetryTestClient(t, srv)
@@ -167,7 +167,7 @@ func TestRetrySemantics_Classic_AbortedRetries(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Apply: got err=%v, want nil", err)
 	}
-	if got := atomic.LoadInt64(&attempts); got < 2 {
+	if got := attempts.Load(); got < 2 {
 		t.Errorf("attempts=%d, want >=2 (classic retries Aborted for idempotent)", got)
 	}
 }
