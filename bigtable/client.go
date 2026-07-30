@@ -280,7 +280,12 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		preDialed = uResolver.ResolvedGRPCConnIsCustom()
 	}
 	if !preDialed {
-		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
+		// Pass the fully-merged option list (o), not the raw caller
+		// opts. gtransport.Dial needs the DefaultClientOptions merged
+		// in (endpoint, scopes, user-agent, interceptors) — passing
+		// bare opts leaves the resolver target empty and the dial
+		// aborts with "passthrough: received empty target in Build()".
+		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, o...)
 		if sessionErr != nil {
 			// Best-effort cleanup of the classic pool since we won't
 			// return c to the caller. Go through the ManagedChannelPool
