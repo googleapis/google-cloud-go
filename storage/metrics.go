@@ -1030,9 +1030,9 @@ type wrappedClientStream struct {
 	clientStreams bool
 	recordedTTFB  atomic.Bool
 
-	msgMu         sync.Mutex
-	reqStartTime  time.Time
-	lastRecvTime  time.Time
+	msgMu        sync.Mutex
+	reqStartTime time.Time
+	lastRecvTime time.Time
 }
 
 func (w *wrappedClientStream) RecvMsg(m interface{}) error {
@@ -1067,7 +1067,7 @@ func (w *wrappedClientStream) SendMsg(m interface{}) error {
 		w.reqStartTime = time.Now()
 		w.lastRecvTime = time.Time{}
 		w.msgMu.Unlock()
-		
+
 		if record {
 			w.metrics.recordRPC(w.ctx, w.method, w.target, duration, nil)
 		}
