@@ -33,21 +33,15 @@ import (
 // Conditional mutations always route to classic — session vRPC does
 // not support the CheckAndMutateRow shape today.
 //
-// UNIMPLEMENTED fallback lives in session.UnimplementedErrorInterceptor.
-// TableShim owns one instance per resource; ReadRow and Apply route
-// their session call through session.InterceptUnimplemented so a server that
-// returns codes.Unimplemented on the session RPC transparently
-// falls back to the classic path AND, after N consecutive
-// Unimplemented responses, trips the interceptor's sticky breaker
-// so useSession() short-circuits future calls at the routing gate.
+// ReadRow and Apply route their session call through
+// session.InterceptUnimplemented: a codes.Unimplemented response falls
+// back to classic, and after enough consecutive Unimplementeds the
+// interceptor's sticky breaker gates useSession() so future calls skip
+// session entirely.
 type TableShim struct {
-	classic  TableAPI
-	session  session.TableAPI
-	diverter *btransport.Diverter
-	// unimplemented handles both the per-call classic fallback on
-	// codes.Unimplemented AND the sticky breaker that skips session
-	// entirely after N consecutive Unimplemented responses. See
-	// session.UnimplementedErrorInterceptor for reset/trip semantics.
+	classic       TableAPI
+	session       session.TableAPI
+	diverter      *btransport.Diverter
 	unimplemented *session.UnimplementedErrorInterceptor
 }
 
@@ -68,9 +62,6 @@ func NewTableShim(classic TableAPI, sessionAPI session.TableAPI, diverter *btran
 // delegates to classic. On the session path, translates
 // (row, opts) → SessionReadRowRequest, then translates the response
 // back via protoRowToRow. WithFullReadStats callbacks fire from here.
-//
-// A session-path Unimplemented is transparently rescued via classic
-// by the interceptor; see session.UnimplementedErrorInterceptor doc.
 func (t *TableShim) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
 	if !t.useSession() {
 		return t.classic.ReadRow(ctx, row, opts...)
@@ -110,9 +101,6 @@ func (t *TableShim) ReadRow(ctx context.Context, row string, opts ...ReadOption)
 // equivalent. Nil mutations also route to classic so the classic
 // client's nil-handling error surfaces exactly as it always has,
 // rather than panicking here on m.ops.
-//
-// A session-path Unimplemented is transparently rescued via classic
-// by the interceptor; see session.UnimplementedErrorInterceptor doc.
 func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
 	if m == nil || m.isConditional {
 		return t.classic.Apply(ctx, row, m, opts...)
@@ -124,9 +112,8 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 		Key:       []byte(row),
 		Mutations: m.ops,
 	}
-	// Apply returns only an error; use struct{} for the value slot so
-	// the interceptor's generic contract is satisfied without a
-	// pretend-response type.
+	// Apply returns only an error; use struct{} to satisfy the
+	// interceptor's generic value slot without a stand-in response.
 	_, err := session.InterceptUnimplemented(t.unimplemented,
 		func() (struct{}, error) {
 			_, e := t.session.MutateRow(ctx, req)
@@ -159,12 +146,9 @@ func (t *TableShim) ApplyReadModifyWrite(ctx context.Context, row string, m *Rea
 	return t.classic.ApplyReadModifyWrite(ctx, row, m)
 }
 
-// useSession returns true when both a session API and diverter are
-// configured, the interceptor's sticky UNIMPLEMENTED breaker has NOT
-// tripped for this resource, AND the diverter says this call should
-// go over session. The bypass check is a cheap atomic Load — a
-// tripped shim never rolls the diverter, never dials, and never
-// calls into the session backend.
+// useSession returns true when session + diverter are configured, the
+// interceptor's Unimplemented breaker hasn't tripped, and the diverter
+// says this call should go over session.
 func (t *TableShim) useSession() bool {
 	return t.session != nil &&
 		t.diverter != nil &&

@@ -364,10 +364,9 @@ func TestTableShim_NilSession_AllMethodsFallBackToClassic(t *testing.T) {
 // TransportFailure on a non-idempotent Apply is not automatically safe to
 // re-run on classic.
 //
-// Exception (see TestTableShim_Apply_UnimplementedFallsBackToClassic +
-// siblings): codes.Unimplemented is a server-capability signal, not a
-// transport failure, and IS retried on classic. This test uses a plain
-// errors.New — status.Code returns codes.Unknown, so the fallback
+// codes.Unimplemented is the sole exception (see
+// TestTableShim_Apply_UnimplementedFallsBackToClassic). Here we use
+// plain errors.New — status.Code returns Unknown — so the fallback
 // branch does not fire and the retry-safety contract still holds.
 func TestTableShim_SessionErrorNotRetriedOnClassic(t *testing.T) {
 	wantErr := errors.New("session apply failed")
@@ -509,12 +508,10 @@ func TestProtoRowToRow(t *testing.T) {
 
 // --- UNIMPLEMENTED → classic fallback ---------------------------------------
 
-// TestTableShim_ReadRow_UnimplementedFallsBackToClassic pins the core
-// fallback: when the session ReadRow returns codes.Unimplemented (the
-// server-side session backend isn't rolled out on this AFE), the shim
-// transparently re-issues on classic and returns classic's row.
-// Trips the sessionUnimplemented breaker as a side effect — see the
-// BreakerTrippedSkipsSession test for that arm.
+// TestTableShim_ReadRow_UnimplementedFallsBackToClassic: session
+// ReadRow returns codes.Unimplemented → shim transparently re-issues
+// on classic and returns classic's row. See BreakerTrippedSkipsSession
+// for the sticky-breaker arm.
 func TestTableShim_ReadRow_UnimplementedFallsBackToClassic(t *testing.T) {
 	classicRow := Row{"fam": []ReadItem{{Row: "r1", Column: "fam:q", Value: []byte("classic")}}}
 	classic := &mockClassicTable{
@@ -544,9 +541,9 @@ func TestTableShim_ReadRow_UnimplementedFallsBackToClassic(t *testing.T) {
 	}
 }
 
-// TestTableShim_Apply_UnimplementedFallsBackToClassic — same shape for
-// mutations. Non-conditional Apply is the only mutation entrypoint
-// that reaches the session path (conditional and nil bypass earlier).
+// TestTableShim_Apply_UnimplementedFallsBackToClassic — same shape
+// for mutations. Non-conditional Apply is the only mutation
+// entrypoint that reaches the session path.
 func TestTableShim_Apply_UnimplementedFallsBackToClassic(t *testing.T) {
 	classic := &mockClassicTable{}
 	sess := &mockSessionTable{
@@ -569,17 +566,10 @@ func TestTableShim_Apply_UnimplementedFallsBackToClassic(t *testing.T) {
 	}
 }
 
-// TestTableShim_BreakerTrippedSkipsSession pins the sticky-per-resource
-// arm of the fallback: once the consecutive-Unimplemented counter hits
-// session.UnimplementedThreshold, EVERY subsequent ReadRow / Apply
-// skips the session path outright. Session invoker call count stops
-// climbing at threshold — proves the breaker short-circuits at
-// useSession() before dialing session.
-//
-// Overrides session.UnimplementedThreshold to 1 for the test so a
-// single Unimplemented flips the breaker (production threshold is 30,
-// same value Java uses; this test isn't the place to burn 30
-// iterations to prove sticky behavior).
+// TestTableShim_BreakerTrippedSkipsSession: once the counter hits
+// session.UnimplementedThreshold, subsequent ReadRow / Apply skip
+// the session path outright at useSession(). Threshold overridden
+// to 1 so one Unimplemented trips.
 func TestTableShim_BreakerTrippedSkipsSession(t *testing.T) {
 	withThreshold(t, 1)
 
@@ -615,9 +605,7 @@ func TestTableShim_BreakerTrippedSkipsSession(t *testing.T) {
 }
 
 // withThreshold overrides session.UnimplementedThreshold for the test
-// duration and restores it on cleanup. Keeps threshold-sensitive tests
-// fast without exposing a public setter or making the threshold a
-// TableShim field.
+// duration and restores it on cleanup.
 func withThreshold(t *testing.T, v int32) {
 	t.Helper()
 	orig := session.UnimplementedThreshold
@@ -625,10 +613,9 @@ func withThreshold(t *testing.T, v int32) {
 	t.Cleanup(func() { session.UnimplementedThreshold = orig })
 }
 
-// TestTableShim_UnimplementedTripsBreakerAtThreshold pins the counter
-// semantics: N-1 Unimplemented responses do NOT trip; the Nth does.
-// Uses threshold=3 so the test iterates a small explicit number and
-// asserts the transition boundary rather than the hard-coded 30.
+// TestTableShim_UnimplementedTripsBreakerAtThreshold: N-1
+// Unimplementeds don't trip; the Nth does. Threshold=3 to keep the
+// transition boundary explicit.
 func TestTableShim_UnimplementedTripsBreakerAtThreshold(t *testing.T) {
 	withThreshold(t, 3)
 
@@ -675,12 +662,9 @@ func TestTableShim_UnimplementedTripsBreakerAtThreshold(t *testing.T) {
 	}
 }
 
-// TestTableShim_UnimplementedCounterResetsOnSuccess pins the "consecutive"
-// arm of the counter. A successful session response resets the count
-// to 0 — after that, another N-1 Unimplemented responses still don't
-// trip. Guards against a monotonically-growing "total lifetime
-// Unimplemented" bug that would trip long-running clients that saw
-// scattered failures during transient AFE hiccups.
+// TestTableShim_UnimplementedCounterResetsOnSuccess: a successful
+// session response resets the count. 2 unimpl + 1 success + 2 unimpl
+// is 4 total but never 3 consecutive, so the breaker must not trip.
 func TestTableShim_UnimplementedCounterResetsOnSuccess(t *testing.T) {
 	withThreshold(t, 3)
 
@@ -715,10 +699,9 @@ func TestTableShim_UnimplementedCounterResetsOnSuccess(t *testing.T) {
 	}
 }
 
-// TestTableShim_UnimplementedCounterResetsOnNonUnimplementedError pins
-// the second reset path: a non-Unimplemented error (e.g. Unavailable)
-// also resets the counter, because that response proves the wire
-// understood the RPC. Matches Java SessionPoolImpl.java:578.
+// TestTableShim_UnimplementedCounterResetsOnNonUnimplementedError: a
+// non-Unimplemented error (e.g. Unavailable) also resets the counter,
+// because that response proves the wire understood the RPC.
 func TestTableShim_UnimplementedCounterResetsOnNonUnimplementedError(t *testing.T) {
 	withThreshold(t, 3)
 
@@ -766,12 +749,10 @@ func TestTableShim_UnimplementedCounterResetsOnNonUnimplementedError(t *testing.
 	}
 }
 
-// TestTableShim_NonUnimplementedError_DoesNotFallBack is the regression
-// guard. For every gRPC code OTHER than Unimplemented (Unavailable,
-// DeadlineExceeded, PermissionDenied, Canceled, Internal, ...) the
-// session error MUST propagate unchanged and the breaker MUST NOT trip.
-// Fallback is a capability-signal-only concession; transport failures
-// stay on their own path per SESSION_SPEC.md #14 + #9.
+// TestTableShim_NonUnimplementedError_DoesNotFallBack: for every gRPC
+// code other than Unimplemented, the session error propagates
+// unchanged and the breaker does not trip. Fallback is a
+// capability-signal concession only.
 func TestTableShim_NonUnimplementedError_DoesNotFallBack(t *testing.T) {
 	nonFallbackCodes := []codes.Code{
 		codes.Unavailable,
