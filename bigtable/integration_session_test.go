@@ -346,15 +346,8 @@ func TestIntegration_SessionVRpc_NonRetryableInvalidArgument(t *testing.T) {
 	if err == nil {
 		t.Fatal("ReadRow returned nil, want InvalidArgument")
 	}
-	st, ok := status.FromError(err)
-	if !ok {
-		// Error may be wrapped in fmt.Errorf %w — walk the chain.
-		if se := errors.Unwrap(err); se != nil {
-			st, ok = status.FromError(se)
-		}
-	}
-	if !ok || st.Code() != codes.InvalidArgument {
-		t.Errorf("err = %v (ok=%t, code=%s), want InvalidArgument", err, ok, st.Code())
+	if got := status.Code(err); got != codes.InvalidArgument {
+		t.Errorf("err = %v, want InvalidArgument, got %s", err, got)
 	}
 	// Exactly one wire frame — no retry.
 	vrpcs := h.server.snapshotVRpcs()
@@ -433,9 +426,8 @@ func TestIntegration_SessionVRpc_BareServerResultNotRetried(t *testing.T) {
 	if err == nil {
 		t.Fatal("ReadRow returned nil, want Unavailable from first attempt")
 	}
-	st, _ := status.FromError(errors.Unwrap(err))
-	if st.Code() != codes.Unavailable {
-		t.Errorf("err code = %s, want Unavailable", st.Code())
+	if got := status.Code(err); got != codes.Unavailable {
+		t.Errorf("err code = %s, want Unavailable", got)
 	}
 
 	// Wait briefly in case the vRPC log capture races the return.
@@ -469,8 +461,7 @@ func TestIntegration_SessionVRpc_ContextCanceled(t *testing.T) {
 	}
 	if !errors.Is(err, context.Canceled) {
 		// Some paths convert to codes.Canceled — accept either shape.
-		st, _ := status.FromError(errors.Unwrap(err))
-		if st.Code() != codes.Canceled {
+		if got := status.Code(err); got != codes.Canceled {
 			t.Errorf("err = %v, want context.Canceled or codes.Canceled", err)
 		}
 	}
@@ -494,8 +485,7 @@ func TestIntegration_SessionVRpc_DeadlineExceeded(t *testing.T) {
 		t.Fatal("ReadRow with slow server + short deadline returned nil error")
 	}
 	if !errors.Is(err, context.DeadlineExceeded) {
-		st, _ := status.FromError(errors.Unwrap(err))
-		if st.Code() != codes.DeadlineExceeded {
+		if got := status.Code(err); got != codes.DeadlineExceeded {
 			t.Errorf("err = %v, want context.DeadlineExceeded or codes.DeadlineExceeded", err)
 		}
 	}
