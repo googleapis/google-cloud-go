@@ -2,6 +2,13 @@
 
 
 
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.38.0...maps/v1.39.0) (2026-07-30)
+
+
+### Features
+
+* **google/maps/navconnect/v1:** Onboard a new library ([#20253](https://github.com/googleapis/google-cloud-go/issues/20253)) ([9f7081e](https://github.com/googleapis/google-cloud-go/commit/9f7081e2c2bbb42cd2b73a68dbdebd0423e81d9e))
+
 ## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.37.0...maps/v1.38.0) (2026-07-20)
 
 
