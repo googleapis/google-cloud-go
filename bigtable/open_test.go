@@ -235,6 +235,54 @@ func (p *panickingTableAPI) ApplyReadModifyWrite(context.Context, string, *ReadM
 	panic(spyPanic{})
 }
 
+// TestOpen_ClassicOnlyMethodsSkipDivertibleGate pins the invariant
+// that Table methods with no session equivalent (ReadRows, ApplyBulk,
+// SampleRowKeys, ApplyReadModifyWrite) MUST NOT gate on t.divertible.
+// They run the classic body directly — TableShim's own delegation
+// would just be pure indirection since the shim also always delegates
+// them to classic (see TableShim.ReadRows / ApplyBulk / etc).
+//
+// Uses the same panickingTableAPI spy as TestTableImpl_BypassesDivertibleGate:
+// if any of these methods started dispatching to divertible, the spy
+// panics with a distinctive sentinel. Reaching classic (which panics
+// on the nil gRPC conn) is the expected outcome.
+func TestOpen_ClassicOnlyMethodsSkipDivertibleGate(t *testing.T) {
+	newTable := func() *Table {
+		return &Table{
+			c:          newBareClientForOpenTests(t, 0.0),
+			table:      "mytable",
+			divertible: &panickingTableAPI{},
+		}
+	}
+
+	assertNotSpyPanic := func(t *testing.T, method string) {
+		t.Helper()
+		if r := recover(); r != nil {
+			if _, ok := r.(spyPanic); ok {
+				t.Errorf("Table.%s reached divertible spy — this method must NOT gate on divertible", method)
+			}
+			// Any other panic (nil-conn from classic body) is expected.
+		}
+	}
+
+	t.Run("ReadRows", func(t *testing.T) {
+		defer assertNotSpyPanic(t, "ReadRows")
+		_ = newTable().ReadRows(context.Background(), InfiniteRange(""), func(Row) bool { return true })
+	})
+	t.Run("ApplyBulk", func(t *testing.T) {
+		defer assertNotSpyPanic(t, "ApplyBulk")
+		_, _ = newTable().ApplyBulk(context.Background(), []string{"r"}, []*Mutation{NewMutation()})
+	})
+	t.Run("SampleRowKeys", func(t *testing.T) {
+		defer assertNotSpyPanic(t, "SampleRowKeys")
+		_, _ = newTable().SampleRowKeys(context.Background())
+	})
+	t.Run("ApplyReadModifyWrite", func(t *testing.T) {
+		defer assertNotSpyPanic(t, "ApplyReadModifyWrite")
+		_, _ = newTable().ApplyReadModifyWrite(context.Background(), "r", &ReadModifyWrite{})
+	})
+}
+
 // TestOpenTable_ProducesNilSessionShim pins the shim shape returned by
 // OpenTable: a *TableShim whose classic side is a *tableImpl and whose
 // session side is nil (session data path isn't wired here). The
