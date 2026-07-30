@@ -466,13 +466,17 @@ func (sc *sessionClient) OpenTable(tableID string) TableAPI {
 	fullName := sc.fullTableName(tableID)
 	streamFactory := func(ctx context.Context) (btransport.Stream, error) { return sc.stub.OpenTable(ctx) }
 	resource := "table:" + tableID
+	readKey := poolKey{resource, permissionRead}
+	writeKey := poolKey{resource, permissionWrite}
 	openRead := sc.buildLazyOpener(fullName, btransport.TABLE_SESSION, streamFactory,
 		&btpb.OpenTableRequest{TableName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenTableRequest_PERMISSION_READ},
-		poolKey{resource, permissionRead})
+		readKey)
 	openWrite := sc.buildLazyOpener(fullName, btransport.TABLE_SESSION, streamFactory,
 		&btpb.OpenTableRequest{TableName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenTableRequest_PERMISSION_WRITE},
-		poolKey{resource, permissionWrite})
-	return newSessionTable(tableID, openRead, openWrite, btransport.READ_ROW, btransport.MUTATE_ROW, sc.perResourceMetadata(fullName, "table_name", fullName), sc.metricsFactory)
+		writeKey)
+	closeRead := sc.buildLazyReleaser(readKey)
+	closeWrite := sc.buildLazyReleaser(writeKey)
+	return newSessionTable(tableID, openRead, openWrite, closeRead, closeWrite, btransport.READ_ROW, btransport.MUTATE_ROW, sc.perResourceMetadata(fullName, "table_name", fullName), sc.metricsFactory)
 }
 
 // OpenAuthorizedView returns a TableAPI for an authorized view.
@@ -480,13 +484,17 @@ func (sc *sessionClient) OpenAuthorizedView(table, view string) TableAPI {
 	fullName := sc.fullAuthorizedViewName(table, view)
 	streamFactory := func(ctx context.Context) (btransport.Stream, error) { return sc.stub.OpenAuthorizedView(ctx) }
 	resource := fmt.Sprintf("av:%s:%s", table, view)
+	readKey := poolKey{resource, permissionRead}
+	writeKey := poolKey{resource, permissionWrite}
 	openRead := sc.buildLazyOpener(fullName, btransport.AUTHORIZED_VIEW_SESSION, streamFactory,
 		&btpb.OpenAuthorizedViewRequest{AuthorizedViewName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenAuthorizedViewRequest_PERMISSION_READ},
-		poolKey{resource, permissionRead})
+		readKey)
 	openWrite := sc.buildLazyOpener(fullName, btransport.AUTHORIZED_VIEW_SESSION, streamFactory,
 		&btpb.OpenAuthorizedViewRequest{AuthorizedViewName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenAuthorizedViewRequest_PERMISSION_WRITE},
-		poolKey{resource, permissionWrite})
-	return newSessionTable(table, openRead, openWrite, btransport.READ_ROW_AUTH_VIEW, btransport.MUTATE_ROW_AUTH_VIEW, sc.perResourceMetadata(fullName, "authorized_view_name", fullName), sc.metricsFactory)
+		writeKey)
+	closeRead := sc.buildLazyReleaser(readKey)
+	closeWrite := sc.buildLazyReleaser(writeKey)
+	return newSessionTable(table, openRead, openWrite, closeRead, closeWrite, btransport.READ_ROW_AUTH_VIEW, btransport.MUTATE_ROW_AUTH_VIEW, sc.perResourceMetadata(fullName, "authorized_view_name", fullName), sc.metricsFactory)
 }
 
 // OpenMaterializedView returns a read-only TableAPI for a
@@ -494,6 +502,7 @@ func (sc *sessionClient) OpenAuthorizedView(table, view string) TableAPI {
 // cleanly via the nil openWrite passed to newSessionTable.
 func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 	fullName := sc.fullMaterializedViewName(view)
+	readKey := poolKey{"mv:" + view, permissionRead}
 	openRead := sc.buildLazyOpener(fullName, btransport.MATERIALIZED_VIEW_SESSION,
 		func(ctx context.Context) (btransport.Stream, error) { return sc.stub.OpenMaterializedView(ctx) },
 		&btpb.OpenMaterializedViewRequest{
@@ -501,8 +510,9 @@ func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 			AppProfileId:         sc.cfg.AppProfile,
 			Permission:           btpb.OpenMaterializedViewRequest_PERMISSION_READ,
 		},
-		poolKey{"mv:" + view, permissionRead})
-	return newSessionTable("", openRead, nil, btransport.READ_ROW_MAT_VIEW, nil, sc.perResourceMetadata(fullName, "materialized_view_name", fullName), sc.metricsFactory)
+		readKey)
+	closeRead := sc.buildLazyReleaser(readKey)
+	return newSessionTable("", openRead, nil, closeRead, nil, btransport.READ_ROW_MAT_VIEW, nil, sc.perResourceMetadata(fullName, "materialized_view_name", fullName), sc.metricsFactory)
 }
 
 // Close tears down in a phased order that keeps late callbacks from
@@ -590,6 +600,60 @@ func (sc *sessionClient) buildLazyOpener(
 		}
 		return pool, nil
 	}
+}
+
+// buildLazyReleaser returns a closure that releases the pool entry
+// for the given key from sessionPools + closes the underlying pool.
+// Returned closure is idempotent (second call finds entry absent and
+// no-ops) and nil-safe when key is the zero value (the caller can
+// pass nil for resources without a write side — e.g. materialized
+// views — mirroring buildLazyOpener's payload==nil convention).
+//
+// Symmetric with buildLazyOpener so sessionTable can drive real
+// per-resource teardown from its Close() without needing back-refs
+// or knowing about poolKey / sessionPools internals.
+func (sc *sessionClient) buildLazyReleaser(key poolKey) func() error {
+	return func() error {
+		return sc.releaseSessionPool(key)
+	}
+}
+
+// releaseSessionPool removes key from sessionPools and closes the
+// underlying pool. No-op when:
+//   - the client has already Closed (sessionPools == nil), so any late
+//     release from a cache handle draining on the way out doesn't
+//     racily double-close a pool that Client.Close is already
+//     tearing down.
+//   - the entry is absent (already released — makes second calls safe).
+//
+// Assumes the caller (currently bigtable.Client via sessionTableCache)
+// guarantees at-most-one sessionTable per resource at any moment. That
+// invariant means no co-owner can be relying on the pool we're closing.
+// If session.Client is ever exposed to callers that bypass that cache,
+// this must gain a refcount.
+//
+// Teardown runs OUTSIDE sessionPoolsMu so a graceful pool drain (which
+// can block on in-flight vRPCs) doesn't deadlock any snapshotter
+// waiting on the lock. Matches the snapshot-under-lock / teardown-
+// outside pattern in Client.Close.
+func (sc *sessionClient) releaseSessionPool(key poolKey) error {
+	sc.sessionPoolsMu.Lock()
+	if sc.sessionPools == nil {
+		sc.sessionPoolsMu.Unlock()
+		return nil
+	}
+	mp, ok := sc.sessionPools[key]
+	if !ok {
+		sc.sessionPoolsMu.Unlock()
+		return nil
+	}
+	delete(sc.sessionPools, key)
+	sc.sessionPoolsMu.Unlock()
+
+	if mp.unregister != nil {
+		mp.unregister()
+	}
+	return mp.pool.Close()
 }
 
 // createSessionPoolForPayload marshals the resource-typed OpenXxxRequest

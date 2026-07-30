@@ -275,8 +275,15 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// traffic through this Client's Diverter — a control-plane update
 	// then shifts traffic across every open TableShim without a client
 	// restart.
+	// Inspect the merged option list (o), not the raw caller opts.
+	// BIGTABLE_EMULATOR_HOST injects option.WithGRPCConn inside
+	// btopt.DefaultClientOptions (option.go:113), so it lives in o —
+	// callers never pass it explicitly. Reading only from opts misses
+	// the emulator conn and lets session.NewClient dial an empty
+	// resolver target (fails with "passthrough: received empty target
+	// in Build()"), breaking every emulator-based test.
 	preDialed := false
-	if uResolver, resErr := internaloption.NewUnsafeResolver(opts...); resErr == nil {
+	if uResolver, resErr := internaloption.NewUnsafeResolver(o...); resErr == nil {
 		preDialed = uResolver.ResolvedGRPCConnIsCustom()
 	}
 	if !preDialed {

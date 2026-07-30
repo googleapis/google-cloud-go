@@ -45,12 +45,14 @@ var (
 // every subsequent Close() call — that keeps the observable behavior
 // stable for callers that treat Close as a query.
 //
-// Caveat about the underlying Close: the session.TableAPI godoc
-// promises per-resource pool teardown, but sessionTable.Close in
-// internal/session/table.go is a no-op today — pools are torn down
-// only when session.Client.Close fires. Until the session package
-// grows real per-resource teardown, this cache's eviction frees the
-// bigtable-side map entry but not the session pools.
+// Underlying Close: session.TableAPI.Close (sessionTable.Close in
+// internal/session/table.go) releases the per-resource read + write
+// pool entries from sessionClient.sessionPools. Cache eviction — TTL
+// sweep, explicit handle Close, or cache-wide shutdown — therefore
+// actually reclaims the session pools for the resource. Safety of
+// per-handle teardown depends on this cache's at-most-one-handle-per-
+// key invariant, which acts as an implicit refcount of size 1; see
+// sessionTable.Close's doc.
 type sessionTableHandle struct {
 	api            session.TableAPI
 	key            string
@@ -104,6 +106,12 @@ type sessionTableCache struct {
 
 	mu      sync.Mutex
 	entries map[string]*sessionTableHandle
+	// closed is flipped by close() under mu. getOrOpen's slow path
+	// re-checks it before inserting the freshly-opened handle so a
+	// slow-path insert straddling close() can't orphan a live
+	// underlying api (which would leak its per-resource session pool
+	// once sessionTable.Close does real teardown).
+	closed bool
 
 	stopOnce sync.Once
 	stop     chan struct{}
@@ -164,6 +172,18 @@ func (c *sessionTableCache) getOrOpen(key string, openFn func() session.TableAPI
 	}
 
 	c.mu.Lock()
+	if c.closed {
+		// close() ran between the slow-path openFn and our re-lock.
+		// If we inserted this handle now, nothing would ever call
+		// its Close (sweeper stopped, close() already snapshotted an
+		// empty map, cache-Close is stopOnce-guarded). Release the
+		// freshly-opened api ourselves and return nil so the caller
+		// falls back to classic (TableShim treats nil session-side
+		// as classic-only).
+		c.mu.Unlock()
+		_ = api.Close()
+		return nil
+	}
 	if h, ok := c.entries[key]; ok {
 		c.mu.Unlock()
 		_ = api.Close() // duplicate opened concurrently; release its resources
@@ -249,6 +269,7 @@ func (c *sessionTableCache) close() {
 	c.sweeperG.Wait()
 
 	c.mu.Lock()
+	c.closed = true
 	remaining := make([]*sessionTableHandle, 0, len(c.entries))
 	for k, h := range c.entries {
 		remaining = append(remaining, h)
