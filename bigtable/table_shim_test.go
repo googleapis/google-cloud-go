@@ -22,6 +22,8 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // mockClassicTable stands in for a classic TableAPI (bigtable.Table
@@ -360,6 +362,12 @@ func TestTableShim_NilSession_AllMethodsFallBackToClassic(t *testing.T) {
 // Doing so would violate the retry oracle (spec #9) — a session-side
 // TransportFailure on a non-idempotent Apply is not automatically safe to
 // re-run on classic.
+//
+// Exception (see TestTableShim_Apply_UnimplementedFallsBackToClassic +
+// siblings): codes.Unimplemented is a server-capability signal, not a
+// transport failure, and IS retried on classic. This test uses a plain
+// errors.New — status.Code returns codes.Unknown, so the fallback
+// branch does not fire and the retry-safety contract still holds.
 func TestTableShim_SessionErrorNotRetriedOnClassic(t *testing.T) {
 	wantErr := errors.New("session apply failed")
 	classic := &mockClassicTable{}
@@ -493,6 +501,164 @@ func TestProtoRowToRow(t *testing.T) {
 			got := protoRowToRow(tc.in)
 			if !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("protoRowToRow(%+v)\n got  = %#v\n want = %#v", tc.in, got, tc.want)
+			}
+		})
+	}
+}
+
+// --- UNIMPLEMENTED → classic fallback ---------------------------------------
+
+// TestTableShim_ReadRow_UnimplementedFallsBackToClassic pins the core
+// fallback: when the session ReadRow returns codes.Unimplemented (the
+// server-side session backend isn't rolled out on this AFE), the shim
+// transparently re-issues on classic and returns classic's row.
+// Trips the sessionUnimplemented breaker as a side effect — see the
+// BreakerTrippedSkipsSession test for that arm.
+func TestTableShim_ReadRow_UnimplementedFallsBackToClassic(t *testing.T) {
+	classicRow := Row{"fam": []ReadItem{{Row: "r1", Column: "fam:q", Value: []byte("classic")}}}
+	classic := &mockClassicTable{
+		readRowFn: func(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
+			return classicRow, nil
+		},
+	}
+	session := &mockSessionTable{
+		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+			return nil, status.Error(codes.Unimplemented, "session backend not implemented on this AFE")
+		},
+	}
+	shim := NewTableShim(classic, session, btransport.NewDiverter(1.0))
+
+	got, err := shim.ReadRow(context.Background(), "r1")
+	if err != nil {
+		t.Fatalf("ReadRow err = %v, want nil (classic path should succeed after Unimplemented fallback)", err)
+	}
+	if !reflect.DeepEqual(got, classicRow) {
+		t.Errorf("ReadRow returned %v, want classic row %v (fallback must surface classic's result, not session's error)", got, classicRow)
+	}
+	if session.readRowCalls != 1 {
+		t.Errorf("session.readRowCalls = %d, want 1 (single attempt before fallback)", session.readRowCalls)
+	}
+	if classic.readRowCalls != 1 {
+		t.Errorf("classic.readRowCalls = %d, want 1 (fallback must dispatch to classic)", classic.readRowCalls)
+	}
+}
+
+// TestTableShim_Apply_UnimplementedFallsBackToClassic — same shape for
+// mutations. Non-conditional Apply is the only mutation entrypoint
+// that reaches the session path (conditional and nil bypass earlier).
+func TestTableShim_Apply_UnimplementedFallsBackToClassic(t *testing.T) {
+	classic := &mockClassicTable{}
+	session := &mockSessionTable{
+		mutateRowFn: func(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error) {
+			return nil, status.Error(codes.Unimplemented, "session backend not implemented on this AFE")
+		},
+	}
+	shim := NewTableShim(classic, session, btransport.NewDiverter(1.0))
+
+	mut := NewMutation()
+	mut.Set("fam", "col", 1_000_000, []byte("v"))
+	if err := shim.Apply(context.Background(), "r1", mut); err != nil {
+		t.Fatalf("Apply err = %v, want nil (classic path should succeed after Unimplemented fallback)", err)
+	}
+	if session.mutateRowCalls != 1 {
+		t.Errorf("session.mutateRowCalls = %d, want 1 (single attempt before fallback)", session.mutateRowCalls)
+	}
+	if classic.applyCalls != 1 {
+		t.Errorf("classic.applyCalls = %d, want 1 (fallback must dispatch to classic)", classic.applyCalls)
+	}
+}
+
+// TestTableShim_BreakerTrippedSkipsSession pins the sticky-per-resource
+// arm of the fallback: once ANY Unimplemented has flipped the breaker,
+// EVERY subsequent ReadRow / Apply skips the session path outright.
+// Session invoker call count stays at 1 across many calls — proves
+// the breaker short-circuits at useSession() before dialing session.
+func TestTableShim_BreakerTrippedSkipsSession(t *testing.T) {
+	classic := &mockClassicTable{}
+	session := &mockSessionTable{
+		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+			return nil, status.Error(codes.Unimplemented, "not implemented")
+		},
+	}
+	shim := NewTableShim(classic, session, btransport.NewDiverter(1.0))
+
+	// First ReadRow trips the breaker + falls back to classic.
+	if _, err := shim.ReadRow(context.Background(), "r1"); err != nil {
+		t.Fatalf("first ReadRow err = %v, want nil (classic fallback)", err)
+	}
+	if session.readRowCalls != 1 {
+		t.Fatalf("session.readRowCalls after first call = %d, want 1", session.readRowCalls)
+	}
+
+	// Nine more calls. If the breaker is working, session.readRowCalls
+	// stays at 1 (never re-attempted). classic.readRowCalls climbs.
+	for i := 0; i < 9; i++ {
+		if _, err := shim.ReadRow(context.Background(), "r"); err != nil {
+			t.Fatalf("post-trip ReadRow #%d err = %v, want nil", i+2, err)
+		}
+	}
+	if session.readRowCalls != 1 {
+		t.Errorf("session.readRowCalls after 10 total calls = %d, want 1 (breaker must gate useSession)", session.readRowCalls)
+	}
+	if classic.readRowCalls != 10 {
+		t.Errorf("classic.readRowCalls after 10 total calls = %d, want 10", classic.readRowCalls)
+	}
+}
+
+// TestTableShim_NonUnimplementedError_DoesNotFallBack is the regression
+// guard. For every gRPC code OTHER than Unimplemented (Unavailable,
+// DeadlineExceeded, PermissionDenied, Canceled, Internal, ...) the
+// session error MUST propagate unchanged and the breaker MUST NOT trip.
+// Fallback is a capability-signal-only concession; transport failures
+// stay on their own path per SESSION_SPEC.md #14 + #9.
+func TestTableShim_NonUnimplementedError_DoesNotFallBack(t *testing.T) {
+	nonFallbackCodes := []codes.Code{
+		codes.Unavailable,
+		codes.DeadlineExceeded,
+		codes.PermissionDenied,
+		codes.Canceled,
+		codes.Internal,
+		codes.ResourceExhausted,
+		codes.FailedPrecondition,
+	}
+
+	for _, code := range nonFallbackCodes {
+		t.Run(code.String(), func(t *testing.T) {
+			sessErr := status.Error(code, "session err")
+			classic := &mockClassicTable{}
+			session := &mockSessionTable{
+				readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+					return nil, sessErr
+				},
+				mutateRowFn: func(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error) {
+					return nil, sessErr
+				},
+			}
+			shim := NewTableShim(classic, session, btransport.NewDiverter(1.0)).(*TableShim)
+
+			// ReadRow: session err must propagate, no classic fallback.
+			_, gotRead := shim.ReadRow(context.Background(), "r")
+			if !errors.Is(gotRead, sessErr) {
+				t.Errorf("ReadRow err = %v, want unwrap to %v", gotRead, sessErr)
+			}
+			if classic.readRowCalls != 0 {
+				t.Errorf("classic.readRowCalls = %d, want 0 (only Unimplemented triggers fallback)", classic.readRowCalls)
+			}
+
+			// Apply: same contract for mutations.
+			mut := NewMutation()
+			mut.Set("fam", "col", 1_000_000, []byte("v"))
+			gotApply := shim.Apply(context.Background(), "r", mut)
+			if !errors.Is(gotApply, sessErr) {
+				t.Errorf("Apply err = %v, want unwrap to %v", gotApply, sessErr)
+			}
+			if classic.applyCalls != 0 {
+				t.Errorf("classic.applyCalls = %d, want 0 (only Unimplemented triggers fallback)", classic.applyCalls)
+			}
+
+			// Breaker must NOT have tripped — subsequent calls still route session.
+			if shim.sessionUnimplemented.Load() {
+				t.Errorf("sessionUnimplemented tripped after code=%v; only codes.Unimplemented may trip it", code)
 			}
 		})
 	}

@@ -417,13 +417,15 @@ func (p *SessionPoolImpl) noteAbnormalCloseIfAny(sh *SessionHandle) {
 	woken := p.drainWaitersWithErr(tripErr)
 	if woken > 0 {
 		recordDebugTag(tagSessionPoolConsecutiveFailuresTripped)
-		// TODO(mutianf): if consecutive trips are driven by Unimplemented
-		// (server-side session RPC not supported — the classic-path
-		// fallback signal), transition the client back to unary Bigtable
-		// RPCs instead of continuing to trip and drain. Routing flip is
-		// SessionClient / Diverter's decision, not the pool's — the pool
-		// only surfaces the trip cause; the layer above owns the choice
-		// to divert future opens to the classic (unary) path.
+		// If consecutive trips are driven by Unimplemented (server-side
+		// session RPC not supported), the routing layer above the pool
+		// handles it: TableShim.ReadRow / Apply observe
+		// status.Code(err) == codes.Unimplemented on the returned
+		// consecutiveFailureError (whose GRPCStatus inherits the
+		// underlying code) and flip a sticky per-resource breaker so
+		// future calls skip the session path and go straight to
+		// classic. The pool only surfaces the trip cause; TableShim
+		// owns the divert-forever decision.
 	}
 }
 
