@@ -20,13 +20,14 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-// Open opens a table for use with the classic data path helpers that
-// still take *Table directly (BulkMutation, etc.). The returned *Table
-// is always the classic implementation regardless of the Client's
-// session-load ratio — callers who want the divertible surface should
-// use OpenTable / OpenAuthorizedView / OpenMaterializedView.
+// Open opens a table. The returned *Table honors the Client's Diverter:
+// when c.diverter is set, Apply and ReadRow are routed through an
+// internal TableShim so calls can be diverted to the session data path
+// under the diverter's SessionLoad ratio. Backward-compatible — the
+// return type stays *Table and every method that already existed keeps
+// its signature and behavior.
 func (c *Client) Open(table string) *Table {
-	return &Table{
+	t := &Table{
 		c:     c,
 		table: table,
 		md: metadata.Join(metadata.Pairs(
@@ -34,6 +35,30 @@ func (c *Client) Open(table string) *Table {
 			requestParamsHeader, c.reqParamsHeaderValTable(table),
 		), c.featureFlagsMD),
 	}
+	t.divertible = c.buildDivertible(t, func() session.TableAPI {
+		return c.getOrCreateSessionTable(table)
+	})
+	return t
+}
+
+// buildDivertible wraps t's classic side in a TableShim so Apply /
+// ReadRow can be routed to the session data path. Returns nil when
+// c.diverter is nil so the caller stays on the zero-cost classic path.
+//
+// The classic side is a *tableImpl over a value-copy of t with
+// divertible nil-ed — that break in the loop is what stops
+// tableImpl.Apply/ReadRow from recursing back through the outer gate.
+func (c *Client) buildDivertible(t *Table, openSession func() session.TableAPI) TableAPI {
+	if c.diverter == nil {
+		return nil
+	}
+	inner := *t
+	inner.divertible = nil
+	var sess session.TableAPI
+	if c.sessionImpl != nil && openSession != nil {
+		sess = openSession()
+	}
+	return NewTableShim(&tableImpl{Table: inner}, sess, c.diverter)
 }
 
 // OpenTable opens a table. Returns a TableShim that routes each RPC via
