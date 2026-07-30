@@ -25,6 +25,24 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// sessionUnimplementedThreshold is the number of CONSECUTIVE
+// codes.Unimplemented responses from the session path required to
+// trip TableShim's sticky per-resource breaker. Matches Java
+// (ShimImpl.java:77 MAX_CONSECUTIVE_UNIMPLEMENTED_FAILURES = 30). A
+// var (not const) so tests can drop it to 1 for fast breaker-trip
+// assertions without touching production code — same pattern as
+// sessionTableCacheTTL / sessionTableCacheSweepInt in
+// session_table_cache.go.
+//
+// "Consecutive" means the counter resets to 0 on any non-Unimplemented
+// session response (success OR non-Unimplemented error) — see
+// recordSessionOutcome. Rationale: a non-Unimplemented response proves
+// the session RPC is understood by whatever backend served it (either
+// wire is fine, or the failure is transport/app-level); the previous
+// Unimplemented streak must have been transient or from a different
+// AFE in the pool.
+var sessionUnimplementedThreshold int32 = 30
+
 // TableShim implements TableAPI by routing between a classic gRPC
 // data-plane and a proto-native session data-plane
 // (session.TableAPI). Traffic direction is decided per-call by
@@ -36,27 +54,41 @@ import (
 // Conditional mutations always route to classic — session vRPC does
 // not support the CheckAndMutateRow shape today.
 //
-// UNIMPLEMENTED fallback: when a session-path RPC returns
-// codes.Unimplemented (the server-side session backend isn't rolled
-// out on this AFE), TableShim transparently re-issues the request on
-// the classic path AND flips a sticky per-resource breaker so all
-// subsequent calls on this shim skip the session path entirely. See
-// sessionUnimplemented + tripSessionBreaker.
+// UNIMPLEMENTED fallback (two-layer):
+//   - Per-call rescue: whenever a session-path RPC returns
+//     codes.Unimplemented, TableShim transparently re-issues on the
+//     classic path so the user's request always succeeds — even
+//     BEFORE the sticky breaker trips. Improves UX over Java (which
+//     fails the request until the breaker trips) at zero extra cost
+//     (classic re-issue would happen on the next call anyway).
+//   - Sticky per-resource breaker: after
+//     sessionUnimplementedThreshold consecutive Unimplemented
+//     responses, all subsequent calls skip the session path outright
+//     via useSession()'s short-circuit. See sessionUnimplemented +
+//     unimplementedCount + recordSessionOutcome.
 type TableShim struct {
 	classic  TableAPI
 	session  session.TableAPI
 	diverter *btransport.Diverter
 	// sessionUnimplemented is the sticky per-resource UNIMPLEMENTED
-	// breaker. Flipped by tripSessionBreaker on the first Unimplemented
-	// from the session path; useSession() short-circuits on it so
-	// subsequent calls never hit session for the same resource. Sticky
-	// for the shim's lifetime — no retry, no probe. UNIMPLEMENTED
+	// breaker. Flipped by recordSessionOutcome when unimplementedCount
+	// reaches sessionUnimplementedThreshold; useSession() short-circuits
+	// on it so subsequent calls never hit session for the same resource.
+	// Sticky for the shim's lifetime — no retry, no probe. UNIMPLEMENTED
 	// is a backend capability signal (this AFE doesn't implement the
 	// session RPC), not a transient failure; a fresh shim (via
 	// bigtable.Client.OpenTable after the sessionTableCache TTL-evicts
 	// this handle) starts un-tripped and can re-observe if backends
 	// have since rolled out.
 	sessionUnimplemented atomic.Bool
+	// unimplementedCount is the running count of consecutive
+	// Unimplemented responses from the session path. Incremented by
+	// recordSessionOutcome on Unimplemented; reset to 0 on any other
+	// session response (success OR non-Unimplemented error). Reaches
+	// sessionUnimplementedThreshold → sessionUnimplemented flips true.
+	// atomic.Int32 (not int32 + mutex) because updates are single-writer
+	// per goroutine call and readers only take the value momentarily.
+	unimplementedCount atomic.Int32
 }
 
 // NewTableShim wraps a classic TableAPI + a proto-native session API
@@ -95,9 +127,9 @@ func (t *TableShim) ReadRow(ctx context.Context, row string, opts ...ReadOption)
 		Filter: tmpReq.Filter,
 	}
 	resp, err := t.session.ReadRow(ctx, req)
+	t.recordSessionOutcome(err)
 	if err != nil {
 		if status.Code(err) == codes.Unimplemented {
-			t.tripSessionBreaker()
 			return t.classic.ReadRow(ctx, row, opts...)
 		}
 		return nil, err
@@ -130,9 +162,10 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 		Key:       []byte(row),
 		Mutations: m.ops,
 	}
-	if _, err := t.session.MutateRow(ctx, req); err != nil {
+	_, err := t.session.MutateRow(ctx, req)
+	t.recordSessionOutcome(err)
+	if err != nil {
 		if status.Code(err) == codes.Unimplemented {
-			t.tripSessionBreaker()
 			return t.classic.Apply(ctx, row, m, opts...)
 		}
 		return err
@@ -173,13 +206,36 @@ func (t *TableShim) useSession() bool {
 		t.diverter.UseSession()
 }
 
-// tripSessionBreaker atomically flips sessionUnimplemented from false
-// to true. Uses CompareAndSwap so concurrent Unimplemented responses
-// coalesce into a single trip — useful once observability lands (the
-// intended debug-tag / metric fire on the winning CAS emits exactly
-// once per resource, not once per racing caller).
-func (t *TableShim) tripSessionBreaker() {
-	t.sessionUnimplemented.CompareAndSwap(false, true)
+// recordSessionOutcome updates the consecutive-Unimplemented counter
+// (and possibly flips the sticky breaker) based on the outcome of a
+// session-path RPC. Called by ReadRow and Apply immediately after the
+// session response, before the per-call fallback decision.
+//
+// Semantics:
+//   - err == nil (session succeeded) → counter reset to 0. Proves the
+//     RPC is understood — any prior Unimplemented streak was transient
+//     or from a different AFE in the pool.
+//   - err carries any non-Unimplemented code → counter reset to 0.
+//     Same reasoning: the wire understood the RPC (failure is
+//     transport / app-level), so the streak breaks.
+//   - err carries codes.Unimplemented → counter increment. On the
+//     transition from N-1 → N == sessionUnimplementedThreshold, flip
+//     sessionUnimplemented true via CompareAndSwap so a follow-up
+//     debug tag / metric hook (to be wired when RecordDebugTag lands
+//     in the public transport surface) fires exactly once per
+//     resource under concurrent trip races.
+//
+// Matches Java's SessionPoolImpl reset semantics
+// (SessionPoolImpl.java:489, 578) adapted to our per-op observation
+// surface — Java's signal source is session-close, ours is per-RPC.
+func (t *TableShim) recordSessionOutcome(err error) {
+	if err == nil || status.Code(err) != codes.Unimplemented {
+		t.unimplementedCount.Store(0)
+		return
+	}
+	if n := t.unimplementedCount.Add(1); n >= sessionUnimplementedThreshold {
+		t.sessionUnimplemented.CompareAndSwap(false, true)
+	}
 }
 
 // protoRowToRow converts a proto Row (the wire shape returned by a
