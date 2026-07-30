@@ -142,8 +142,8 @@ func readTrustChain(trustChainPath string) ([]*x509.Certificate, error) {
 	return certificateTrustChain, nil
 }
 
-func (xp *x509Provider) ecpSubjectToken() (string, error) {
-	key, err := client.Cred(xp.ConfigFilePath)
+func (xp *x509Provider) ecpSubjectToken(configFilePath string) (string, error) {
+	key, err := client.Cred(configFilePath)
 	if err != nil {
 		return "", fmt.Errorf("failed to initialize ECP client: %w", err)
 	}
@@ -178,16 +178,16 @@ func (xp *x509Provider) ecpSubjectToken() (string, error) {
 // The leaf certificate must be at the top of the trust chain file. This JSON
 // array is used as the subject token for mTLS authentication.
 func (xp *x509Provider) subjectToken(context.Context) (string, error) {
-	xp.ConfigFilePath = cert.GetConfigFilePath(xp.ConfigFilePath)
+	configFilePath := cert.GetConfigFilePath(xp.ConfigFilePath)
 
 	// First check if it's ECP based cert config
-	if cert.IsECPConfig(xp.ConfigFilePath) {
-		return xp.ecpSubjectToken()
+	if cert.IsECPConfig(configFilePath) {
+		return xp.ecpSubjectToken(configFilePath)
 	}
 
 	// It's not ECP, do the normal file based cert config way.
 	// Load the leaf certificate.
-	leafCert, err := loadLeafCertificate(xp.ConfigFilePath)
+	leafCert, err := loadLeafCertificate(configFilePath)
 	if err != nil {
 		return "", fmt.Errorf("failed to load leaf certificate: %w", err)
 	}
