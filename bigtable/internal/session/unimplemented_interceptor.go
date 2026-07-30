@@ -21,30 +21,34 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// UnimplementedThreshold is the number of consecutive
+// DefaultUnimplementedThreshold is the standard number of consecutive
 // codes.Unimplemented responses required to trip the sticky breaker.
-// Var (not const) so tests can lower it without a public setter.
-var UnimplementedThreshold int32 = 30
+// Callers pass this to NewUnimplementedErrorInterceptor unless they
+// have a specific reason to pick a different value (tests use small
+// values to keep breaker-trip assertions fast).
+const DefaultUnimplementedThreshold int32 = 30
 
 // UnimplementedErrorInterceptor wraps a session-path call with:
 //   - per-call classic fallback on codes.Unimplemented (the caller's
 //     request always succeeds via classic, even before the breaker trips)
-//   - a sticky breaker that trips after UnimplementedThreshold
-//     consecutive Unimplemented responses; Bypass() then lets callers
-//     short-circuit before dialing session again
+//   - a sticky breaker that trips after `threshold` consecutive
+//     Unimplemented responses; Bypass() then lets callers short-circuit
+//     before dialing session again
 //
 // One instance per resource. Any non-Unimplemented response (success
 // or other error) resets the consecutive count — a non-Unimplemented
 // reply proves the RPC is understood by whichever backend served it.
 type UnimplementedErrorInterceptor struct {
-	count   atomic.Int32
-	tripped atomic.Bool
+	threshold int32
+	count     atomic.Int32
+	tripped   atomic.Bool
 }
 
-// NewUnimplementedErrorInterceptor returns an interceptor with a
-// zeroed counter and un-tripped breaker.
-func NewUnimplementedErrorInterceptor() *UnimplementedErrorInterceptor {
-	return &UnimplementedErrorInterceptor{}
+// NewUnimplementedErrorInterceptor returns an interceptor that trips
+// its sticky breaker after `threshold` consecutive Unimplemented
+// responses. Pass DefaultUnimplementedThreshold in production.
+func NewUnimplementedErrorInterceptor(threshold int32) *UnimplementedErrorInterceptor {
+	return &UnimplementedErrorInterceptor{threshold: threshold}
 }
 
 // Bypass reports whether the sticky breaker has tripped. Cheap atomic
@@ -63,15 +67,15 @@ func (i *UnimplementedErrorInterceptor) Count() int32 {
 // based on a session-path RPC's outcome:
 //
 //   - nil or non-Unimplemented err → count resets to 0
-//   - codes.Unimplemented → count increments; on reaching
-//     UnimplementedThreshold, trip via CompareAndSwap so a follow-up
-//     debug-tag / metric hook fires exactly once
+//   - codes.Unimplemented → count increments; on reaching threshold,
+//     trip via CompareAndSwap so a follow-up debug-tag / metric hook
+//     fires exactly once
 func (i *UnimplementedErrorInterceptor) RecordOutcome(err error) {
 	if err == nil || status.Code(err) != codes.Unimplemented {
 		i.count.Store(0)
 		return
 	}
-	if n := i.count.Add(1); n >= UnimplementedThreshold {
+	if n := i.count.Add(1); n >= i.threshold {
 		i.tripped.CompareAndSwap(false, true)
 	}
 }

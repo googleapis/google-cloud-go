@@ -567,12 +567,10 @@ func TestTableShim_Apply_UnimplementedFallsBackToClassic(t *testing.T) {
 }
 
 // TestTableShim_BreakerTrippedSkipsSession: once the counter hits
-// session.UnimplementedThreshold, subsequent ReadRow / Apply skip
-// the session path outright at useSession(). Threshold overridden
-// to 1 so one Unimplemented trips.
+// the interceptor's configured threshold, subsequent ReadRow /
+// Apply skip the session path outright at useSession(). Threshold
+// overridden to 1 so one Unimplemented trips.
 func TestTableShim_BreakerTrippedSkipsSession(t *testing.T) {
-	withThreshold(t, 1)
-
 	classic := &mockClassicTable{}
 	sess := &mockSessionTable{
 		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
@@ -580,6 +578,7 @@ func TestTableShim_BreakerTrippedSkipsSession(t *testing.T) {
 		},
 	}
 	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+	withThreshold(t, shim, 1)
 
 	// First ReadRow trips the breaker + falls back to classic.
 	if _, err := shim.ReadRow(context.Background(), "r1"); err != nil {
@@ -604,21 +603,21 @@ func TestTableShim_BreakerTrippedSkipsSession(t *testing.T) {
 	}
 }
 
-// withThreshold overrides session.UnimplementedThreshold for the test
-// duration and restores it on cleanup.
-func withThreshold(t *testing.T, v int32) {
+// withThreshold swaps shim's interceptor for one with a smaller
+// threshold so breaker-trip assertions don't have to iterate 30
+// times. Accepts the TableAPI value returned by NewTableShim and
+// casts to *TableShim internally. Caller must run this BEFORE
+// issuing any requests through the shim (prior interceptor state is
+// dropped).
+func withThreshold(t *testing.T, shim TableAPI, threshold int32) {
 	t.Helper()
-	orig := session.UnimplementedThreshold
-	session.UnimplementedThreshold = v
-	t.Cleanup(func() { session.UnimplementedThreshold = orig })
+	shim.(*TableShim).unimplemented = session.NewUnimplementedErrorInterceptor(threshold)
 }
 
 // TestTableShim_UnimplementedTripsBreakerAtThreshold: N-1
 // Unimplementeds don't trip; the Nth does. Threshold=3 to keep the
 // transition boundary explicit.
 func TestTableShim_UnimplementedTripsBreakerAtThreshold(t *testing.T) {
-	withThreshold(t, 3)
-
 	classic := &mockClassicTable{}
 	sess := &mockSessionTable{
 		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
@@ -626,6 +625,7 @@ func TestTableShim_UnimplementedTripsBreakerAtThreshold(t *testing.T) {
 		},
 	}
 	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)).(*TableShim)
+	withThreshold(t, shim, 3)
 
 	// Calls 1 and 2 hit session (still under threshold), fall back to
 	// classic per-call. Breaker stays untripped.
@@ -634,7 +634,7 @@ func TestTableShim_UnimplementedTripsBreakerAtThreshold(t *testing.T) {
 			t.Fatalf("call #%d err = %v, want nil", i+1, err)
 		}
 		if shim.unimplemented.Bypass() {
-			t.Fatalf("breaker tripped after %d/%d Unimplemented — expected trip only at threshold=3", i+1, session.UnimplementedThreshold)
+			t.Fatalf("breaker tripped after %d/3 Unimplemented — expected trip only at threshold=3", i+1)
 		}
 	}
 
@@ -666,8 +666,6 @@ func TestTableShim_UnimplementedTripsBreakerAtThreshold(t *testing.T) {
 // session response resets the count. 2 unimpl + 1 success + 2 unimpl
 // is 4 total but never 3 consecutive, so the breaker must not trip.
 func TestTableShim_UnimplementedCounterResetsOnSuccess(t *testing.T) {
-	withThreshold(t, 3)
-
 	// Programmable session: first 2 calls Unimplemented, next 1 success,
 	// next 2 Unimplemented — total 4 Unimplemented but never 3
 	// consecutive, so breaker MUST NOT trip.
@@ -685,6 +683,7 @@ func TestTableShim_UnimplementedCounterResetsOnSuccess(t *testing.T) {
 		},
 	}
 	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)).(*TableShim)
+	withThreshold(t, shim, 3)
 
 	for i := 0; i < 5; i++ {
 		if _, err := shim.ReadRow(context.Background(), "r"); err != nil {
@@ -703,8 +702,6 @@ func TestTableShim_UnimplementedCounterResetsOnSuccess(t *testing.T) {
 // non-Unimplemented error (e.g. Unavailable) also resets the counter,
 // because that response proves the wire understood the RPC.
 func TestTableShim_UnimplementedCounterResetsOnNonUnimplementedError(t *testing.T) {
-	withThreshold(t, 3)
-
 	unavail := status.Error(codes.Unavailable, "boom")
 
 	callN := 0
@@ -723,6 +720,7 @@ func TestTableShim_UnimplementedCounterResetsOnNonUnimplementedError(t *testing.
 		},
 	}
 	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)).(*TableShim)
+	withThreshold(t, shim, 3)
 
 	// Calls 1 and 2 fall back to classic transparently.
 	for i := 0; i < 2; i++ {

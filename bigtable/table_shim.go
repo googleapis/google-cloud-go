@@ -53,7 +53,7 @@ func NewTableShim(classic TableAPI, sessionAPI session.TableAPI, diverter *btran
 		classic:       classic,
 		session:       sessionAPI,
 		diverter:      diverter,
-		unimplemented: session.NewUnimplementedErrorInterceptor(),
+		unimplemented: session.NewUnimplementedErrorInterceptor(session.DefaultUnimplementedThreshold),
 	}
 }
 
