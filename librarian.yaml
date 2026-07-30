@@ -105,7 +105,7 @@ libraries:
         go:
           proto_only: true
   - name: analytics
-    version: 0.36.0
+    version: 0.36.1
     apis:
       - path: google/analytics/admin/v1alpha
   - name: apigateway
@@ -502,7 +502,7 @@ libraries:
     apis:
       - path: google/cloud/commerce/consumer/procurement/v1
   - name: commerceproducer
-    version: 0.2.0
+    version: 0.3.0
     apis:
       - path: google/cloud/commerceproducer/v1beta
     copyright_year: "2026"
@@ -552,7 +552,7 @@ libraries:
     apis:
       - path: google/cloud/contactcenterinsights/v1
   - name: container
-    version: 1.53.0
+    version: 1.53.1
     apis:
       - path: google/container/v1
   - name: containeranalysis
@@ -669,7 +669,7 @@ libraries:
       - path: google/cloud/discoveryengine/v1beta
       - path: google/cloud/discoveryengine/v1alpha
   - name: dlp
-    version: 1.36.0
+    version: 1.36.1
     apis:
       - path: google/privacy/dlp/v2
         go:
@@ -909,7 +909,7 @@ libraries:
       - path: google/cloud/managedkafka/v1
       - path: google/cloud/managedkafka/schemaregistry/v1
   - name: maps
-    version: 1.38.0
+    version: 1.39.0
     apis:
       - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
@@ -999,7 +999,7 @@ libraries:
       - path: google/cloud/networksecurity/v1
       - path: google/cloud/networksecurity/v1beta1
   - name: networkservices
-    version: 1.4.0
+    version: 1.5.0
     apis:
       - path: google/cloud/networkservices/v1
   - name: notebooks
@@ -1378,7 +1378,7 @@ libraries:
     apis:
       - path: google/streetview/publish/v1
   - name: support
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/cloud/support/v2
       - path: google/cloud/support/v2beta
