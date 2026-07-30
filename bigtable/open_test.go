@@ -242,14 +242,20 @@ func (p *panickingTableAPI) ApplyReadModifyWrite(context.Context, string, *ReadM
 // would just be pure indirection since the shim also always delegates
 // them to classic (see TableShim.ReadRows / ApplyBulk / etc).
 //
-// Uses the same panickingTableAPI spy as TestTableImpl_BypassesDivertibleGate:
-// if any of these methods started dispatching to divertible, the spy
-// panics with a distinctive sentinel. Reaching classic (which panics
-// on the nil gRPC conn) is the expected outcome.
+// Fixture matches a realistic session-wired client (session backend +
+// diverter with SessionLoad=1.0), then swaps divertible for the
+// panickingTableAPI spy so we can distinguish gate-dispatch (spy
+// panic) from classic-body execution (nil-conn panic in the classic
+// body). Under the natural configuration where a stray gate would
+// actually route to session, this is where the accident would show.
 func TestOpen_ClassicOnlyMethodsSkipDivertibleGate(t *testing.T) {
+	fsc := newFakeSessionClient()
+	c := newSessionWiredClient(t, fsc)
+	c.diverter.SetSessionLoad(1.0)
+
 	newTable := func() *Table {
 		return &Table{
-			c:          newBareClientForOpenTests(t, 0.0),
+			c:          c,
 			table:      "mytable",
 			divertible: &panickingTableAPI{},
 		}
