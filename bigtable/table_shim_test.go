@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"cloud.google.com/go/bigtable/internal/session"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -123,8 +124,8 @@ func (m *mockSessionTable) Close() error { return nil }
 func TestTableShim_ReadRow_RoutesByDiverter(t *testing.T) {
 	t.Run("classic when SessionLoad=0.0", func(t *testing.T) {
 		classic := &mockClassicTable{}
-		session := &mockSessionTable{}
-		shim := NewTableShim(classic, session, btransport.NewDiverter(0.0))
+		sess := &mockSessionTable{}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter(0.0))
 
 		row, err := shim.ReadRow(context.Background(), "r1")
 		if err != nil {
@@ -136,15 +137,15 @@ func TestTableShim_ReadRow_RoutesByDiverter(t *testing.T) {
 		if classic.readRowCalls != 1 {
 			t.Errorf("classic.readRowCalls = %d, want 1", classic.readRowCalls)
 		}
-		if session.readRowCalls != 0 {
-			t.Errorf("session.readRowCalls = %d, want 0", session.readRowCalls)
+		if sess.readRowCalls != 0 {
+			t.Errorf("sess.readRowCalls = %d, want 0", sess.readRowCalls)
 		}
 	})
 
 	t.Run("session when SessionLoad=1.0", func(t *testing.T) {
 		classic := &mockClassicTable{}
-		session := &mockSessionTable{}
-		shim := NewTableShim(classic, session, btransport.NewDiverter(1.0))
+		sess := &mockSessionTable{}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
 
 		row, err := shim.ReadRow(context.Background(), "r2")
 		if err != nil {
@@ -156,8 +157,8 @@ func TestTableShim_ReadRow_RoutesByDiverter(t *testing.T) {
 		if classic.readRowCalls != 0 {
 			t.Errorf("classic.readRowCalls = %d, want 0", classic.readRowCalls)
 		}
-		if session.readRowCalls != 1 {
-			t.Errorf("session.readRowCalls = %d, want 1", session.readRowCalls)
+		if sess.readRowCalls != 1 {
+			t.Errorf("sess.readRowCalls = %d, want 1", sess.readRowCalls)
 		}
 	})
 
@@ -176,12 +177,12 @@ func TestTableShim_ReadRow_RoutesByDiverter(t *testing.T) {
 
 	t.Run("session error propagates", func(t *testing.T) {
 		wantErr := errors.New("session read failed")
-		session := &mockSessionTable{
+		sess := &mockSessionTable{
 			readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
 				return nil, wantErr
 			},
 		}
-		shim := NewTableShim(&mockClassicTable{}, session, btransport.NewDiverter(1.0))
+		shim := NewTableShim(&mockClassicTable{}, sess, btransport.NewDiverter(1.0))
 		_, err := shim.ReadRow(context.Background(), "r4")
 		if !errors.Is(err, wantErr) {
 			t.Errorf("err = %v, want unwrap to %v", err, wantErr)
@@ -194,8 +195,8 @@ func TestTableShim_ReadRow_RoutesByDiverter(t *testing.T) {
 // CheckAndMutateRow has no session equivalent.
 func TestTableShim_Apply_ConditionalAlwaysClassic(t *testing.T) {
 	classic := &mockClassicTable{}
-	session := &mockSessionTable{}
-	shim := NewTableShim(classic, session, btransport.NewDiverter(1.0)) // diverter says session
+	sess := &mockSessionTable{}
+	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)) // diverter says session
 
 	cond := NewCondMutation(PassAllFilter(), NewMutation(), nil)
 	if err := shim.Apply(context.Background(), "r", cond); err != nil {
@@ -204,8 +205,8 @@ func TestTableShim_Apply_ConditionalAlwaysClassic(t *testing.T) {
 	if classic.applyCalls != 1 {
 		t.Errorf("classic.applyCalls = %d, want 1 (conditional must go classic)", classic.applyCalls)
 	}
-	if session.mutateRowCalls != 0 {
-		t.Errorf("session.mutateRowCalls = %d, want 0 (conditional must NOT go session)", session.mutateRowCalls)
+	if sess.mutateRowCalls != 0 {
+		t.Errorf("sess.mutateRowCalls = %d, want 0 (conditional must NOT go session)", sess.mutateRowCalls)
 	}
 }
 
@@ -214,31 +215,31 @@ func TestTableShim_Apply_ConditionalAlwaysClassic(t *testing.T) {
 func TestTableShim_Apply_NonConditionalRoutesByDiverter(t *testing.T) {
 	t.Run("session when SessionLoad=1.0", func(t *testing.T) {
 		classic := &mockClassicTable{}
-		session := &mockSessionTable{}
-		shim := NewTableShim(classic, session, btransport.NewDiverter(1.0))
+		sess := &mockSessionTable{}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
 
 		mut := NewMutation()
 		mut.Set("fam", "col", 1_000_000, []byte("v"))
 		if err := shim.Apply(context.Background(), "r", mut); err != nil {
 			t.Fatalf("unexpected err: %v", err)
 		}
-		if classic.applyCalls != 0 || session.mutateRowCalls != 1 {
-			t.Errorf("classic=%d session=%d, want classic=0 session=1", classic.applyCalls, session.mutateRowCalls)
+		if classic.applyCalls != 0 || sess.mutateRowCalls != 1 {
+			t.Errorf("classic=%d session=%d, want classic=0 session=1", classic.applyCalls, sess.mutateRowCalls)
 		}
 	})
 
 	t.Run("classic when SessionLoad=0.0", func(t *testing.T) {
 		classic := &mockClassicTable{}
-		session := &mockSessionTable{}
-		shim := NewTableShim(classic, session, btransport.NewDiverter(0.0))
+		sess := &mockSessionTable{}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter(0.0))
 
 		mut := NewMutation()
 		mut.Set("fam", "col", 1_000_000, []byte("v"))
 		if err := shim.Apply(context.Background(), "r", mut); err != nil {
 			t.Fatalf("unexpected err: %v", err)
 		}
-		if classic.applyCalls != 1 || session.mutateRowCalls != 0 {
-			t.Errorf("classic=%d session=%d, want classic=1 session=0", classic.applyCalls, session.mutateRowCalls)
+		if classic.applyCalls != 1 || sess.mutateRowCalls != 0 {
+			t.Errorf("classic=%d session=%d, want classic=1 session=0", classic.applyCalls, sess.mutateRowCalls)
 		}
 	})
 }
@@ -371,12 +372,12 @@ func TestTableShim_NilSession_AllMethodsFallBackToClassic(t *testing.T) {
 func TestTableShim_SessionErrorNotRetriedOnClassic(t *testing.T) {
 	wantErr := errors.New("session apply failed")
 	classic := &mockClassicTable{}
-	session := &mockSessionTable{
+	sess := &mockSessionTable{
 		mutateRowFn: func(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error) {
 			return nil, wantErr
 		},
 	}
-	shim := NewTableShim(classic, session, btransport.NewDiverter(1.0))
+	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
 
 	mut := NewMutation()
 	mut.Set("fam", "col", 1_000_000, []byte("v"))
@@ -385,8 +386,8 @@ func TestTableShim_SessionErrorNotRetriedOnClassic(t *testing.T) {
 	if !errors.Is(err, wantErr) {
 		t.Errorf("err = %v, want unwrap to %v", err, wantErr)
 	}
-	if session.mutateRowCalls != 1 {
-		t.Errorf("session.mutateRowCalls = %d, want 1 (single attempt)", session.mutateRowCalls)
+	if sess.mutateRowCalls != 1 {
+		t.Errorf("sess.mutateRowCalls = %d, want 1 (single attempt)", sess.mutateRowCalls)
 	}
 	if classic.applyCalls != 0 {
 		t.Errorf("classic.applyCalls = %d, want 0 — shim MUST NOT retry session failure on classic (spec #14 + #9)", classic.applyCalls)
@@ -521,12 +522,12 @@ func TestTableShim_ReadRow_UnimplementedFallsBackToClassic(t *testing.T) {
 			return classicRow, nil
 		},
 	}
-	session := &mockSessionTable{
+	sess := &mockSessionTable{
 		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
 			return nil, status.Error(codes.Unimplemented, "session backend not implemented on this AFE")
 		},
 	}
-	shim := NewTableShim(classic, session, btransport.NewDiverter(1.0))
+	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
 
 	got, err := shim.ReadRow(context.Background(), "r1")
 	if err != nil {
@@ -535,8 +536,8 @@ func TestTableShim_ReadRow_UnimplementedFallsBackToClassic(t *testing.T) {
 	if !reflect.DeepEqual(got, classicRow) {
 		t.Errorf("ReadRow returned %v, want classic row %v (fallback must surface classic's result, not session's error)", got, classicRow)
 	}
-	if session.readRowCalls != 1 {
-		t.Errorf("session.readRowCalls = %d, want 1 (single attempt before fallback)", session.readRowCalls)
+	if sess.readRowCalls != 1 {
+		t.Errorf("sess.readRowCalls = %d, want 1 (single attempt before fallback)", sess.readRowCalls)
 	}
 	if classic.readRowCalls != 1 {
 		t.Errorf("classic.readRowCalls = %d, want 1 (fallback must dispatch to classic)", classic.readRowCalls)
@@ -548,20 +549,20 @@ func TestTableShim_ReadRow_UnimplementedFallsBackToClassic(t *testing.T) {
 // that reaches the session path (conditional and nil bypass earlier).
 func TestTableShim_Apply_UnimplementedFallsBackToClassic(t *testing.T) {
 	classic := &mockClassicTable{}
-	session := &mockSessionTable{
+	sess := &mockSessionTable{
 		mutateRowFn: func(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error) {
 			return nil, status.Error(codes.Unimplemented, "session backend not implemented on this AFE")
 		},
 	}
-	shim := NewTableShim(classic, session, btransport.NewDiverter(1.0))
+	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
 
 	mut := NewMutation()
 	mut.Set("fam", "col", 1_000_000, []byte("v"))
 	if err := shim.Apply(context.Background(), "r1", mut); err != nil {
 		t.Fatalf("Apply err = %v, want nil (classic path should succeed after Unimplemented fallback)", err)
 	}
-	if session.mutateRowCalls != 1 {
-		t.Errorf("session.mutateRowCalls = %d, want 1 (single attempt before fallback)", session.mutateRowCalls)
+	if sess.mutateRowCalls != 1 {
+		t.Errorf("sess.mutateRowCalls = %d, want 1 (single attempt before fallback)", sess.mutateRowCalls)
 	}
 	if classic.applyCalls != 1 {
 		t.Errorf("classic.applyCalls = %d, want 1 (fallback must dispatch to classic)", classic.applyCalls)
@@ -570,12 +571,12 @@ func TestTableShim_Apply_UnimplementedFallsBackToClassic(t *testing.T) {
 
 // TestTableShim_BreakerTrippedSkipsSession pins the sticky-per-resource
 // arm of the fallback: once the consecutive-Unimplemented counter hits
-// sessionUnimplementedThreshold, EVERY subsequent ReadRow / Apply
+// session.UnimplementedThreshold, EVERY subsequent ReadRow / Apply
 // skips the session path outright. Session invoker call count stops
 // climbing at threshold — proves the breaker short-circuits at
 // useSession() before dialing session.
 //
-// Overrides sessionUnimplementedThreshold to 1 for the test so a
+// Overrides session.UnimplementedThreshold to 1 for the test so a
 // single Unimplemented flips the breaker (production threshold is 30,
 // same value Java uses; this test isn't the place to burn 30
 // iterations to prove sticky behavior).
@@ -583,45 +584,45 @@ func TestTableShim_BreakerTrippedSkipsSession(t *testing.T) {
 	withThreshold(t, 1)
 
 	classic := &mockClassicTable{}
-	session := &mockSessionTable{
+	sess := &mockSessionTable{
 		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
 			return nil, status.Error(codes.Unimplemented, "not implemented")
 		},
 	}
-	shim := NewTableShim(classic, session, btransport.NewDiverter(1.0))
+	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
 
 	// First ReadRow trips the breaker + falls back to classic.
 	if _, err := shim.ReadRow(context.Background(), "r1"); err != nil {
 		t.Fatalf("first ReadRow err = %v, want nil (classic fallback)", err)
 	}
-	if session.readRowCalls != 1 {
-		t.Fatalf("session.readRowCalls after first call = %d, want 1", session.readRowCalls)
+	if sess.readRowCalls != 1 {
+		t.Fatalf("sess.readRowCalls after first call = %d, want 1", sess.readRowCalls)
 	}
 
-	// Nine more calls. If the breaker is working, session.readRowCalls
+	// Nine more calls. If the breaker is working, sess.readRowCalls
 	// stays at 1 (never re-attempted). classic.readRowCalls climbs.
 	for i := 0; i < 9; i++ {
 		if _, err := shim.ReadRow(context.Background(), "r"); err != nil {
 			t.Fatalf("post-trip ReadRow #%d err = %v, want nil", i+2, err)
 		}
 	}
-	if session.readRowCalls != 1 {
-		t.Errorf("session.readRowCalls after 10 total calls = %d, want 1 (breaker must gate useSession)", session.readRowCalls)
+	if sess.readRowCalls != 1 {
+		t.Errorf("sess.readRowCalls after 10 total calls = %d, want 1 (breaker must gate useSession)", sess.readRowCalls)
 	}
 	if classic.readRowCalls != 10 {
 		t.Errorf("classic.readRowCalls after 10 total calls = %d, want 10", classic.readRowCalls)
 	}
 }
 
-// withThreshold overrides sessionUnimplementedThreshold for the test
+// withThreshold overrides session.UnimplementedThreshold for the test
 // duration and restores it on cleanup. Keeps threshold-sensitive tests
 // fast without exposing a public setter or making the threshold a
 // TableShim field.
 func withThreshold(t *testing.T, v int32) {
 	t.Helper()
-	orig := sessionUnimplementedThreshold
-	sessionUnimplementedThreshold = v
-	t.Cleanup(func() { sessionUnimplementedThreshold = orig })
+	orig := session.UnimplementedThreshold
+	session.UnimplementedThreshold = v
+	t.Cleanup(func() { session.UnimplementedThreshold = orig })
 }
 
 // TestTableShim_UnimplementedTripsBreakerAtThreshold pins the counter
@@ -632,12 +633,12 @@ func TestTableShim_UnimplementedTripsBreakerAtThreshold(t *testing.T) {
 	withThreshold(t, 3)
 
 	classic := &mockClassicTable{}
-	session := &mockSessionTable{
+	sess := &mockSessionTable{
 		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
 			return nil, status.Error(codes.Unimplemented, "not implemented")
 		},
 	}
-	shim := NewTableShim(classic, session, btransport.NewDiverter(1.0)).(*TableShim)
+	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)).(*TableShim)
 
 	// Calls 1 and 2 hit session (still under threshold), fall back to
 	// classic per-call. Breaker stays untripped.
@@ -645,8 +646,8 @@ func TestTableShim_UnimplementedTripsBreakerAtThreshold(t *testing.T) {
 		if _, err := shim.ReadRow(context.Background(), "r"); err != nil {
 			t.Fatalf("call #%d err = %v, want nil", i+1, err)
 		}
-		if shim.sessionUnimplemented.Load() {
-			t.Fatalf("breaker tripped after %d/%d Unimplemented — expected trip only at threshold=3", i+1, sessionUnimplementedThreshold)
+		if shim.unimplemented.Bypass() {
+			t.Fatalf("breaker tripped after %d/%d Unimplemented — expected trip only at threshold=3", i+1, session.UnimplementedThreshold)
 		}
 	}
 
@@ -655,19 +656,19 @@ func TestTableShim_UnimplementedTripsBreakerAtThreshold(t *testing.T) {
 	if _, err := shim.ReadRow(context.Background(), "r"); err != nil {
 		t.Fatalf("call #3 err = %v, want nil", err)
 	}
-	if !shim.sessionUnimplemented.Load() {
+	if !shim.unimplemented.Bypass() {
 		t.Errorf("breaker NOT tripped after 3/3 Unimplemented — recordSessionOutcome must flip sessionUnimplemented when count reaches threshold")
 	}
-	if session.readRowCalls != 3 {
-		t.Errorf("session.readRowCalls = %d, want 3 (one attempt per call until trip)", session.readRowCalls)
+	if sess.readRowCalls != 3 {
+		t.Errorf("sess.readRowCalls = %d, want 3 (one attempt per call until trip)", sess.readRowCalls)
 	}
 
 	// Call 4 skips session outright (breaker gate at useSession).
 	if _, err := shim.ReadRow(context.Background(), "r"); err != nil {
 		t.Fatalf("call #4 err = %v, want nil (classic-only after trip)", err)
 	}
-	if session.readRowCalls != 3 {
-		t.Errorf("session.readRowCalls after post-trip call = %d, want 3 (breaker must gate useSession)", session.readRowCalls)
+	if sess.readRowCalls != 3 {
+		t.Errorf("sess.readRowCalls after post-trip call = %d, want 3 (breaker must gate useSession)", sess.readRowCalls)
 	}
 	if classic.readRowCalls != 4 {
 		t.Errorf("classic.readRowCalls = %d, want 4 (3 per-call fallbacks + 1 breaker-gated)", classic.readRowCalls)
@@ -688,7 +689,7 @@ func TestTableShim_UnimplementedCounterResetsOnSuccess(t *testing.T) {
 	// consecutive, so breaker MUST NOT trip.
 	callN := 0
 	classic := &mockClassicTable{}
-	session := &mockSessionTable{
+	sess := &mockSessionTable{
 		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
 			callN++
 			switch callN {
@@ -699,17 +700,17 @@ func TestTableShim_UnimplementedCounterResetsOnSuccess(t *testing.T) {
 			return &btpb.SessionReadRowResponse{Row: &btpb.Row{Key: req.GetKey()}}, nil
 		},
 	}
-	shim := NewTableShim(classic, session, btransport.NewDiverter(1.0)).(*TableShim)
+	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)).(*TableShim)
 
 	for i := 0; i < 5; i++ {
 		if _, err := shim.ReadRow(context.Background(), "r"); err != nil {
 			t.Fatalf("call #%d err = %v, want nil", i+1, err)
 		}
 	}
-	if shim.sessionUnimplemented.Load() {
+	if shim.unimplemented.Bypass() {
 		t.Errorf("breaker tripped after 4 non-consecutive Unimplemented (call 3 succeeded — counter must have reset)")
 	}
-	if got := shim.unimplementedCount.Load(); got != 2 {
+	if got := shim.unimplemented.Count(); got != 2 {
 		t.Errorf("unimplementedCount = %d, want 2 (calls 4 and 5, counting from post-reset)", got)
 	}
 }
@@ -725,7 +726,7 @@ func TestTableShim_UnimplementedCounterResetsOnNonUnimplementedError(t *testing.
 
 	callN := 0
 	classic := &mockClassicTable{}
-	session := &mockSessionTable{
+	sess := &mockSessionTable{
 		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
 			callN++
 			switch callN {
@@ -738,7 +739,7 @@ func TestTableShim_UnimplementedCounterResetsOnNonUnimplementedError(t *testing.
 			}
 		},
 	}
-	shim := NewTableShim(classic, session, btransport.NewDiverter(1.0)).(*TableShim)
+	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)).(*TableShim)
 
 	// Calls 1 and 2 fall back to classic transparently.
 	for i := 0; i < 2; i++ {
@@ -750,7 +751,7 @@ func TestTableShim_UnimplementedCounterResetsOnNonUnimplementedError(t *testing.
 	if _, err := shim.ReadRow(context.Background(), "r"); !errors.Is(err, unavail) {
 		t.Fatalf("call #3 err = %v, want unwrap to %v", err, unavail)
 	}
-	if got := shim.unimplementedCount.Load(); got != 0 {
+	if got := shim.unimplemented.Count(); got != 0 {
 		t.Fatalf("unimplementedCount after Unavailable = %d, want 0 (non-Unimplemented response must reset counter)", got)
 	}
 	// Calls 4 and 5 Unimplemented — counter climbs from 0 again, still
@@ -760,7 +761,7 @@ func TestTableShim_UnimplementedCounterResetsOnNonUnimplementedError(t *testing.
 			t.Fatalf("call #%d err = %v, want nil", i+4, err)
 		}
 	}
-	if shim.sessionUnimplemented.Load() {
+	if shim.unimplemented.Bypass() {
 		t.Errorf("breaker tripped after Unavailable reset — counter should be at 2, not threshold=3")
 	}
 }
@@ -786,7 +787,7 @@ func TestTableShim_NonUnimplementedError_DoesNotFallBack(t *testing.T) {
 		t.Run(code.String(), func(t *testing.T) {
 			sessErr := status.Error(code, "session err")
 			classic := &mockClassicTable{}
-			session := &mockSessionTable{
+			sess := &mockSessionTable{
 				readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
 					return nil, sessErr
 				},
@@ -794,7 +795,7 @@ func TestTableShim_NonUnimplementedError_DoesNotFallBack(t *testing.T) {
 					return nil, sessErr
 				},
 			}
-			shim := NewTableShim(classic, session, btransport.NewDiverter(1.0)).(*TableShim)
+			shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0)).(*TableShim)
 
 			// ReadRow: session err must propagate, no classic fallback.
 			_, gotRead := shim.ReadRow(context.Background(), "r")
@@ -817,7 +818,7 @@ func TestTableShim_NonUnimplementedError_DoesNotFallBack(t *testing.T) {
 			}
 
 			// Breaker must NOT have tripped — subsequent calls still route session.
-			if shim.sessionUnimplemented.Load() {
+			if shim.unimplemented.Bypass() {
 				t.Errorf("sessionUnimplemented tripped after code=%v; only codes.Unimplemented may trip it", code)
 			}
 		})
