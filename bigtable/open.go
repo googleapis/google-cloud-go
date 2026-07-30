@@ -20,13 +20,14 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-// Open opens a table for use with the classic data path helpers that
-// still take *Table directly (BulkMutation, etc.). The returned *Table
-// is always the classic implementation regardless of the Client's
-// session-load ratio — callers who want the divertible surface should
-// use OpenTable / OpenAuthorizedView / OpenMaterializedView.
+// Open opens a table. The returned *Table honors the Client's Diverter:
+// when c.diverter is set, Apply and ReadRow are routed through an
+// internal TableShim so calls can be diverted to the session data path
+// under the diverter's SessionLoad ratio. Backward-compatible — the
+// return type stays *Table and every method that already existed keeps
+// its signature and behavior.
 func (c *Client) Open(table string) *Table {
-	return &Table{
+	t := &Table{
 		c:     c,
 		table: table,
 		md: metadata.Join(metadata.Pairs(
@@ -34,6 +35,54 @@ func (c *Client) Open(table string) *Table {
 			requestParamsHeader, c.reqParamsHeaderValTable(table),
 		), c.featureFlagsMD),
 	}
+	t.divertible = c.buildDivertible(t, func() session.TableAPI {
+		return c.getOrCreateSessionTable(table)
+	})
+	return t
+}
+
+// buildDivertible wraps a *Table's classic side in a TableShim so
+// Apply / ReadRow can be routed to the session data path. Returns nil
+// when the client has no Diverter (classic-only mode) so callers can
+// assign the result straight into Table.divertible.
+//
+// The classic side is a *tableImpl over a snapshot of t with divertible
+// EXPLICITLY nil-ed — that break in the loop is what prevents
+// tableImpl.Apply/ReadRow from recursing back through the outer gate.
+// openSession is called eagerly when the diverter is present AND the
+// session client is wired — this matches OpenTable's pre-existing
+// behavior of registering a session pool entry at Open time. Callers
+// pass nil openSession to skip the session backend entirely (TableShim
+// treats nil session as classic-only).
+//
+// Cardinality note. There are three cardinalities in play and only one
+// of them shifts with this Open-time registration:
+//
+//  1. c.sessionTables map size — grows with each unique Open call now
+//     (previously only OpenTable). Cost per entry is a string key +
+//     one *SessionTable struct (~110 B total). No I/O.
+//  2. SessionPoolImpl count (and therefore OTel session_name label
+//     cardinality) — UNCHANGED. Sessions and their pools are still
+//     opened lazily by lazyPool.get() on the first ReadRow/Apply for
+//     the table.
+//  3. Server-side OpenSession stream count — UNCHANGED, same trigger.
+//
+// So an app that Opens 10k tables but only exercises a handful sees a
+// bounded map growth and zero change in dashboards or server load. If
+// that map growth ever matters, hoist openSession into a lazy closure
+// held by TableShim so it fires on first RPC — costs a mutex round on
+// the hot path in exchange, which is why we don't do it today.
+func (c *Client) buildDivertible(t *Table, openSession func() session.TableAPI) TableAPI {
+	if c.diverter == nil {
+		return nil
+	}
+	inner := *t
+	inner.divertible = nil
+	var sess session.TableAPI
+	if c.sessionImpl != nil && openSession != nil {
+		sess = openSession()
+	}
+	return NewTableShim(&tableImpl{Table: inner}, sess, c.diverter)
 }
 
 // OpenTable opens a table. Returns a TableShim that routes each RPC via
