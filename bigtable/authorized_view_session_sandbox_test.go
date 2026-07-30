@@ -17,6 +17,7 @@ package bigtable
 import (
 	"context"
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
@@ -26,19 +27,23 @@ import (
 )
 
 // TestAuthorizedViewSessionSandbox drives Client.OpenAuthorizedView
-// end-to-end against the sandbox and asserts round-trip on both the
-// classic and session paths of the diverter. Creates the AV if
-// missing (SubsetView pinned to a stable row prefix + single family
-// qualifier) so the test is idempotent across runs — the AV is not
-// deleted between runs so multiple test invocations reuse it.
+// end-to-end against a live Bigtable instance and asserts round-trip
+// on both the classic and session paths of the diverter. Creates the
+// AV if missing (SubsetView pinned to a stable row prefix + single
+// family qualifier) so the test is idempotent across runs — the AV
+// is not deleted between runs so multiple test invocations reuse it.
 //
 // AV path is distinct from the plain-table path: different RPC field
 // (AuthorizedViewName vs TableName), different session pool per
 // (av, permission) tuple, different resource-prefix header. Failure
-// here on the session path means the session-side AV wiring
+// on the session path here means the session-side AV wiring
 // regressed independently of table reads working.
+//
+// Gated on CBT_RUN_SANDBOX so `go test ./...` in dev doesn't dial a
+// real instance. Defaults target autonomous-mote-782 / sushanb-uc1 /
+// sushanb / cf12; every field env-var-overridable via CBT_SANDBOX_*.
 func TestAuthorizedViewSessionSandbox(t *testing.T) {
-	tgt := sandboxFromEnv(t)
+	tgt := sandboxAVTargetFromEnv(t)
 	const (
 		authorizedViewID = "session-test-av"
 		rowPrefix        = "session-av:"
@@ -82,7 +87,7 @@ func TestAuthorizedViewSessionSandbox(t *testing.T) {
 		t.Logf("created AV %q", authorizedViewID)
 	}
 
-	c := newSandboxClient(ctx, t, tgt)
+	c := newSandboxAVClient(ctx, t, tgt)
 	defer c.Close()
 	av := c.OpenAuthorizedView(tgt.table, authorizedViewID)
 
@@ -96,7 +101,7 @@ func TestAuthorizedViewSessionSandbox(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			pinSessionLoad(c, tc.load)
+			c.diverter.SetSessionLoad(tc.load)
 			rowKey := fmt.Sprintf("%s%s-%d", rowPrefix, tc.name, runID)
 			value := []byte(fmt.Sprintf("av-%s-%d", tc.name, runID))
 
@@ -126,4 +131,49 @@ func TestAuthorizedViewSessionSandbox(t *testing.T) {
 				tc.name, items[0].Column, items[0].Value)
 		})
 	}
+}
+
+type sandboxAVTarget struct {
+	project, instance, table, family string
+	endpoint, adminEndpoint          string
+}
+
+// sandboxAVTargetFromEnv resolves the sandbox target from env vars.
+// Skips the test when the CBT_RUN_SANDBOX gate is unset so the suite
+// stays inert under `go test ./...`.
+func sandboxAVTargetFromEnv(t *testing.T) sandboxAVTarget {
+	t.Helper()
+	const gate = "CBT_RUN_SANDBOX"
+	if os.Getenv(gate) == "" {
+		t.Skipf("sandbox test skipped: set %s=1 to run", gate)
+	}
+	getenv := func(key, def string) string {
+		if v := os.Getenv(key); v != "" {
+			return v
+		}
+		return def
+	}
+	return sandboxAVTarget{
+		project:       getenv("CBT_SANDBOX_PROJECT", "autonomous-mote-782"),
+		instance:      getenv("CBT_SANDBOX_INSTANCE", "sushanb-uc1"),
+		table:         getenv("CBT_SANDBOX_TABLE", "sushanb"),
+		family:        getenv("CBT_SANDBOX_COLUMN_FAMILY", "cf12"),
+		endpoint:      os.Getenv("CBT_SANDBOX_ENDPOINT"),
+		adminEndpoint: os.Getenv("CBT_SANDBOX_ADMIN_ENDPOINT"),
+	}
+}
+
+func newSandboxAVClient(ctx context.Context, t *testing.T, tgt sandboxAVTarget) *Client {
+	t.Helper()
+	opts := []option.ClientOption{}
+	if tgt.endpoint != "" {
+		opts = append(opts, option.WithEndpoint(tgt.endpoint))
+	}
+	c, err := NewClientWithConfig(ctx, tgt.project, tgt.instance,
+		ClientConfig{MetricsProvider: NoopMetricsProvider{}}, opts...)
+	if err != nil {
+		t.Fatalf("NewClientWithConfig(project=%s instance=%s endpoint=%q): %v",
+			tgt.project, tgt.instance, tgt.endpoint, err)
+	}
+	return c
 }
