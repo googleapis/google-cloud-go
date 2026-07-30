@@ -429,9 +429,10 @@ func openNoop(key string) func() session.TableAPI {
 }
 
 // openClosing returns an openFn that constructs a
-// *closeCountingTable stamped with the given key, incrementing
-// *counter on every Close call.
-func openClosing(key string, counter *int) func() session.TableAPI {
+// *closeCountingTable stamped with the given key, atomically
+// incrementing counter on every Close call. Counter is atomic so
+// sweeper-goroutine writes don't race the test's Load.
+func openClosing(key string, counter *atomic.Int32) func() session.TableAPI {
 	return func() session.TableAPI {
 		return &closeCountingTable{noopSessionTable{key: key}, counter}
 	}
@@ -492,7 +493,7 @@ func TestSessionTableCache_ReadRowTouchesLastAccess(t *testing.T) {
 // (the closed one is not resurrected).
 func TestSessionTableCache_CloseEvictsAndFires(t *testing.T) {
 	clock := newFakeClock(time.Unix(1_700_000_000, 0))
-	closeCount := 0
+	var closeCount atomic.Int32
 	c := newSessionTableCache(1*time.Hour, 1*time.Second, clock.now)
 	t.Cleanup(c.close)
 
@@ -500,8 +501,8 @@ func TestSessionTableCache_CloseEvictsAndFires(t *testing.T) {
 	if err := h1.Close(); err != nil {
 		t.Fatalf("h1.Close: %v", err)
 	}
-	if closeCount != 1 {
-		t.Errorf("underlying Close called %d times, want 1", closeCount)
+	if got := closeCount.Load(); got != 1 {
+		t.Errorf("underlying Close called %d times, want 1", got)
 	}
 	// Map should no longer contain the key.
 	c.mu.Lock()
@@ -521,8 +522,8 @@ func TestSessionTableCache_CloseEvictsAndFires(t *testing.T) {
 	if err := h1.Close(); err != nil {
 		t.Errorf("h1.Close (idempotent) err = %v, want nil", err)
 	}
-	if closeCount != 1 {
-		t.Errorf("underlying Close called %d times after double-Close, want 1 (Close is fully idempotent)", closeCount)
+	if got := closeCount.Load(); got != 1 {
+		t.Errorf("underlying Close called %d times after double-Close, want 1 (Close is fully idempotent)", got)
 	}
 }
 
@@ -531,7 +532,7 @@ func TestSessionTableCache_CloseEvictsAndFires(t *testing.T) {
 // calls the underlying Close on eviction.
 func TestSessionTableCache_TTLSweepEvictsIdle(t *testing.T) {
 	clock := newFakeClock(time.Unix(1_700_000_000, 0))
-	closeCount := 0
+	var closeCount atomic.Int32
 	c := newSessionTableCache(1*time.Hour, 1*time.Millisecond, clock.now)
 	t.Cleanup(c.close)
 
@@ -559,8 +560,8 @@ func TestSessionTableCache_TTLSweepEvictsIdle(t *testing.T) {
 	if n != 0 {
 		t.Errorf("entries remaining after TTL sweep = %d, want 0", n)
 	}
-	if closeCount != 2 {
-		t.Errorf("underlying Close called %d times on TTL evict, want 2", closeCount)
+	if got := closeCount.Load(); got != 2 {
+		t.Errorf("underlying Close called %d times on TTL evict, want 2", got)
 	}
 }
 
@@ -593,7 +594,7 @@ func TestSessionTableCache_TouchDefersEviction(t *testing.T) {
 // itself stops the sweeper and closes every remaining entry.
 func TestSessionTableCache_CloseEvictsAll(t *testing.T) {
 	clock := newFakeClock(time.Unix(1_700_000_000, 0))
-	closeCount := 0
+	var closeCount atomic.Int32
 	c := newSessionTableCache(1*time.Hour, 1*time.Hour, clock.now)
 
 	_ = c.getOrOpen("tbl:a", openClosing("tbl:a", &closeCount))
@@ -602,21 +603,78 @@ func TestSessionTableCache_CloseEvictsAll(t *testing.T) {
 
 	c.close()
 
-	if closeCount != 3 {
-		t.Errorf("close(): underlying Close called %d times, want 3", closeCount)
+	if got := closeCount.Load(); got != 3 {
+		t.Errorf("close(): underlying Close called %d times, want 3", got)
 	}
 	// close() is idempotent.
 	c.close()
 }
 
-// closeCountingTable is a noopSessionTable that increments a counter
-// on Close so tests can assert eviction actually called Close.
+// TestSessionTableCache_ClosedGate_SlowPathInsertNoLeak reproduces
+// audit finding #5: without the closed-gate in getOrOpen's slow path,
+// a caller whose openFn straddles cache.close() would leak the
+// freshly-opened api (installed into a cache the sweeper has already
+// stopped clearing). This test forces that interleaving via a
+// synchronization channel on the openFn.
+//
+// Shape: caller A begins getOrOpen("k") on an empty cache. Fast-path
+// misses. Slow-path calls openFn. openFn blocks until we signal it to
+// return. Meanwhile close() runs on the cache (flips closed, walks the
+// empty map). Then openFn returns. getOrOpen re-locks, sees closed,
+// releases the fresh api itself, and returns nil. Underlying api's
+// Close counter must reach 1.
+func TestSessionTableCache_ClosedGate_SlowPathInsertNoLeak(t *testing.T) {
+	clock := newFakeClock(time.Unix(1_700_000_000, 0))
+	var closeCount atomic.Int32
+	c := newSessionTableCache(1*time.Hour, 1*time.Hour, clock.now)
+
+	release := make(chan struct{})
+	opened := make(chan struct{})
+	openFn := func() session.TableAPI {
+		close(opened)
+		<-release
+		return &closeCountingTable{noopSessionTable{key: "k"}, &closeCount}
+	}
+
+	var result session.TableAPI
+	done := make(chan struct{})
+	go func() {
+		result = c.getOrOpen("k", openFn)
+		close(done)
+	}()
+
+	// Wait until openFn is in-flight, THEN close the cache. This is the
+	// race window: openFn returns AFTER close() completed.
+	<-opened
+	c.close()
+	close(release)
+	<-done
+
+	if result != nil {
+		t.Errorf("getOrOpen returned non-nil after cache close: %v (want nil so TableShim falls back to classic)", result)
+	}
+	if got := closeCount.Load(); got != 1 {
+		t.Errorf("underlying api Close called %d times, want 1 (slow-path insert must release its api when cache is closed)", got)
+	}
+	// Cache map must be empty — the fresh api MUST NOT have been
+	// installed into an already-closed cache.
+	c.mu.Lock()
+	n := len(c.entries)
+	c.mu.Unlock()
+	if n != 0 {
+		t.Errorf("cache.entries has %d entries after close-race; want 0 (fresh handle must not be installed)", n)
+	}
+}
+
+// closeCountingTable is a noopSessionTable that atomically
+// increments a counter on Close so tests can assert eviction actually
+// called Close from any goroutine (including the cache sweeper).
 type closeCountingTable struct {
 	noopSessionTable
-	counter *int
+	counter *atomic.Int32
 }
 
 func (c *closeCountingTable) Close() error {
-	*c.counter++
+	c.counter.Add(1)
 	return nil
 }

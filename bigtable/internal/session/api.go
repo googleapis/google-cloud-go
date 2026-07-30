@@ -43,8 +43,14 @@ type TableAPI interface {
 	MutateRow(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error)
 
 	// Close releases this resource's underlying read + write session
-	// pools. Independent from Client.Close — closing an
-	// individual resource does not close the shared channel pool.
+	// pools from the sessionClient's per-resource keyed map. Idempotent.
+	// Independent from Client.Close — closing an individual resource
+	// does not close the shared channel pool.
+	//
+	// Per-handle pool teardown is safe because callers reach this method
+	// through bigtable.Client's sessionTableCache, which guarantees
+	// at-most-one TableAPI per resource per Client. A future caller that
+	// bypasses that cache must add a refcount before calling Close.
 	Close() error
 }
 

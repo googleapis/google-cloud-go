@@ -23,6 +23,7 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
+	btransport "cloud.google.com/go/bigtable/internal/transport"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -454,5 +455,69 @@ func TestPoolKey_DisplayName(t *testing.T) {
 				t.Errorf("displayName() = %q, want %q", got, tc.want)
 			}
 		})
+	}
+}
+
+// --- releaseSessionPool ------------------------------------------------------
+
+// TestReleaseSessionPool_AfterClientClose_NoOp: once Close nils out
+// sessionPools, any late release from a cache handle draining on the
+// way out must be a benign no-op rather than a nil-map panic.
+func TestReleaseSessionPool_AfterClientClose_NoOp(t *testing.T) {
+	sc := newTestClient(t, &fakeChannelPool{}, Config{})
+	sc.sessionPools = nil // simulate Close having snapshotted+nil'd
+	if err := sc.releaseSessionPool(poolKey{"table:foo", permissionRead}); err != nil {
+		t.Errorf("releaseSessionPool on nil map = %v, want nil (post-Close no-op)", err)
+	}
+}
+
+// TestReleaseSessionPool_MissingKeyNoOp: releasing a key that isn't in
+// the map returns nil and leaves other entries untouched. This is what
+// makes double-release safe (winner deletes; loser sees absent).
+func TestReleaseSessionPool_MissingKeyNoOp(t *testing.T) {
+	sc := newTestClient(t, &fakeChannelPool{}, Config{})
+	present := poolKey{"table:present", permissionRead}
+	sc.sessionPools[present] = &managedSessionPool{} // sentinel, not touched
+	if err := sc.releaseSessionPool(poolKey{"table:absent", permissionRead}); err != nil {
+		t.Errorf("releaseSessionPool on absent key = %v, want nil", err)
+	}
+	if _, still := sc.sessionPools[present]; !still {
+		t.Error("releaseSessionPool on absent key deleted a different entry")
+	}
+}
+
+// TestReleaseSessionPool_RemovesEntryAndInvokesUnregister covers the
+// happy path with a real (unstarted) SessionPoolImpl. The pool never
+// dialed a stream so Close returns cleanly; we assert the map entry
+// is gone AND the config-listener unregister thunk fired.
+func TestReleaseSessionPool_RemovesEntryAndInvokesUnregister(t *testing.T) {
+	sc := newTestClient(t, &fakeChannelPool{}, Config{})
+	key := poolKey{"table:foo", permissionRead}
+	pool := btransport.NewSessionPoolImpl(
+		1, "test-pool", 0, 0,
+		func(ctx context.Context) (btransport.Stream, error) { return nil, errors.New("test never dials") },
+		&btpb.OpenSessionRequest{}, nil,
+		btransport.SessionTypeTable, false,
+	)
+	var unregistered int
+	sc.sessionPools[key] = &managedSessionPool{
+		pool:       pool,
+		unregister: func() { unregistered++ },
+	}
+	if err := sc.releaseSessionPool(key); err != nil {
+		t.Fatalf("releaseSessionPool = %v, want nil", err)
+	}
+	if _, still := sc.sessionPools[key]; still {
+		t.Error("sessionPools still holds the released key")
+	}
+	if unregistered != 1 {
+		t.Errorf("unregister fired %d times, want 1", unregistered)
+	}
+	// Second release is a clean no-op (winner deleted, loser sees absent).
+	if err := sc.releaseSessionPool(key); err != nil {
+		t.Errorf("second releaseSessionPool = %v, want nil", err)
+	}
+	if unregistered != 1 {
+		t.Errorf("unregister fired %d times after second release, want still 1", unregistered)
 	}
 }

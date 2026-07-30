@@ -64,16 +64,27 @@ type sessionTable struct {
 	writeVRpcDesc  btransport.VRpcDescriptor
 	md             metadata.MD
 	metricsFactory *metrics.Factory
+	// closeRead / closeWrite release the per-resource pool entries on
+	// this sessionTable's Close(). Both are supplied by sessionClient
+	// via buildLazyReleaser and no-op cleanly when the pool was never
+	// opened or the client already tore itself down. closeWrite is nil
+	// for materialized views (read-only resources), mirroring the nil
+	// write side of the openRead/openWrite pair.
+	closeRead  func() error
+	closeWrite func() error
 }
 
 // newSessionTable is the internal constructor. Callers (sessionClient)
-// build the lazyPool open closures + supply the vRPC descriptors and
-// resource-scoped metadata. metricsFactory may be nil to disable
-// per-attempt metrics.
+// build the lazyPool open + release closures, supply the vRPC
+// descriptors, and resource-scoped metadata. metricsFactory may be nil
+// to disable per-attempt metrics. closeWrite may be nil for
+// materialized views (no write side).
 func newSessionTable(
 	tableID string,
 	openRead func() (Invoker, error),
 	openWrite func() (Invoker, error),
+	closeRead func() error,
+	closeWrite func() error,
 	readVRpcDesc btransport.VRpcDescriptor,
 	writeVRpcDesc btransport.VRpcDescriptor,
 	md metadata.MD,
@@ -87,6 +98,8 @@ func newSessionTable(
 		writeVRpcDesc:  writeVRpcDesc,
 		md:             md,
 		metricsFactory: metricsFactory,
+		closeRead:      closeRead,
+		closeWrite:     closeWrite,
 	}
 }
 
@@ -219,12 +232,34 @@ func dispatch[Args any, R any, Resp interface {
 	return resp, nil
 }
 
-// Close is a no-op today — the underlying pools are shared across
-// resources via sessionClient.pools and torn down by sessionClient.Close.
-// Retained on the interface so callers get a symmetric Open/Close
-// pattern and future implementations can add per-resource teardown.
+// Close releases this sessionTable's underlying read + write session
+// pools from the sessionClient's per-resource keyed map. Both release
+// closures are idempotent (second call finds the map entry absent
+// and no-ops) so double-close from the cache sweeper + explicit
+// caller is safe.
+//
+// Safety of per-handle pool teardown rests on a caller-side invariant:
+// bigtable.Client's sessionTableCache guarantees at-most-one
+// sessionTable per resource at any moment, so no co-owner can be
+// mid-flight on the pool we're closing. If session.Client ever gains
+// a caller that bypasses that cache, this method must gain a refcount
+// on the sessionClient side (or the caller must add its own).
+//
+// Returns the joined read + write teardown errors (nil for the
+// materialized-view case where closeWrite is nil).
 func (t *sessionTable) Close() error {
-	return nil
+	var errs []error
+	if t.closeRead != nil {
+		if err := t.closeRead(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	if t.closeWrite != nil {
+		if err := t.closeWrite(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	return errors.Join(errs...)
 }
 
 // ensureTracer returns a Tracer stashed on ctx (via metrics.NewContext

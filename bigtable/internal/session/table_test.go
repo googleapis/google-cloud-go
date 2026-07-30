@@ -16,6 +16,7 @@ package session
 
 import (
 	"context"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -80,6 +81,8 @@ func newTestTable(t *testing.T, readInv, writeInv Invoker) (*sessionTable, *sdkm
 		"test-table",
 		openRead,
 		openWrite,
+		nil, // closeRead — fake pools don't back real releaseSessionPool
+		nil, // closeWrite
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
 		nil,
@@ -480,3 +483,105 @@ func TestSessionTable_ReadAndWritePoolsDoNotShareSessions(t *testing.T) {
 		t.Errorf("readInv.calls after MutateRow = %d, want still 1 — read pool MUST NOT receive write traffic", got)
 	}
 }
+
+// --- Close teardown ---------------------------------------------------------
+
+// TestSessionTable_Close_CallsBothReleasers verifies Close fires the
+// closeRead and closeWrite release closures exactly once each.
+func TestSessionTable_Close_CallsBothReleasers(t *testing.T) {
+	var reads, writes int
+	tbl := newSessionTable(
+		"t",
+		func() (Invoker, error) { return nil, nil },
+		func() (Invoker, error) { return nil, nil },
+		func() error { reads++; return nil },
+		func() error { writes++; return nil },
+		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
+		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
+		nil, nil,
+	)
+	if err := tbl.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+	if reads != 1 || writes != 1 {
+		t.Errorf("release call counts = (read=%d write=%d), want (1,1)", reads, writes)
+	}
+}
+
+// TestSessionTable_Close_NilWriteReleaserOK covers the materialized-
+// view case: no write side means closeWrite is nil; Close must not
+// panic and must still call closeRead.
+func TestSessionTable_Close_NilWriteReleaserOK(t *testing.T) {
+	var reads int
+	tbl := newSessionTable(
+		"",
+		func() (Invoker, error) { return nil, nil },
+		nil,
+		func() error { reads++; return nil },
+		nil,
+		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
+		nil,
+		nil, nil,
+	)
+	if err := tbl.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+	if reads != 1 {
+		t.Errorf("closeRead called %d times, want 1", reads)
+	}
+}
+
+// TestSessionTable_Close_JoinsErrors: when BOTH release closures
+// return errors, Close returns them via errors.Join so callers see
+// both root causes rather than losing one to a first-error return.
+func TestSessionTable_Close_JoinsErrors(t *testing.T) {
+	readErr := status.Error(codes.Internal, "read pool teardown failed")
+	writeErr := status.Error(codes.Internal, "write pool teardown failed")
+	tbl := newSessionTable(
+		"t",
+		func() (Invoker, error) { return nil, nil },
+		func() (Invoker, error) { return nil, nil },
+		func() error { return readErr },
+		func() error { return writeErr },
+		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
+		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
+		nil, nil,
+	)
+	err := tbl.Close()
+	if err == nil {
+		t.Fatal("Close returned nil, want joined errors")
+	}
+	if got := err.Error(); !strings.Contains(got, "read pool teardown failed") || !strings.Contains(got, "write pool teardown failed") {
+		t.Errorf("Close error = %q; want both read+write causes surfaced", got)
+	}
+}
+
+// TestSessionTable_Close_ReleasersIdempotent verifies a second Close
+// call still runs the release closures (they're idempotent at the
+// sessionClient layer — second releaseSessionPool call finds the
+// entry absent and no-ops). The point is that sessionTable.Close
+// itself does not gate on a once — the underlying release is where
+// idempotency lives.
+func TestSessionTable_Close_ReleasersIdempotent(t *testing.T) {
+	var reads int
+	tbl := newSessionTable(
+		"t",
+		func() (Invoker, error) { return nil, nil },
+		nil,
+		func() error { reads++; return nil },
+		nil,
+		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
+		nil,
+		nil, nil,
+	)
+	if err := tbl.Close(); err != nil {
+		t.Fatalf("Close #1: %v", err)
+	}
+	if err := tbl.Close(); err != nil {
+		t.Fatalf("Close #2: %v", err)
+	}
+	if reads != 2 {
+		t.Errorf("closeRead called %d times across two Close calls, want 2 (release is caller-idempotent, not sessionTable-once-guarded)", reads)
+	}
+}
+
