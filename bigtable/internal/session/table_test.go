@@ -16,8 +16,10 @@ package session
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -585,3 +587,110 @@ func TestSessionTable_Close_ReleasersIdempotent(t *testing.T) {
 	}
 }
 
+// TestSessionTable_Close_RacingLazyOpen_NoLeak proves the guardOpen
+// wrapper cleans up a fresh pool that the underlying opener inserted
+// AFTER Close's releaser already no-op'd on an empty map. Reproduces
+// PR #20264 review comment (high): openRead's slow path straddles
+// Close, releaser sees no entry, opener finishes and inserts → leak.
+//
+// Interleaving:
+//  1. Goroutine A calls readPool.get() → guardOpen check passes
+//     (closed=false) → openRead blocks on unblockOpen chan.
+//  2. Main calls tbl.Close() → sets closed=true → invokes closeRead
+//     which increments releaseCalls; simulated "map lookup misses"
+//     because openRead hasn't inserted yet (fake release no-ops but
+//     the counter records the attempt).
+//  3. Main unblocks openRead. openRead returns "inserted a pool".
+//  4. guardOpen's post-check sees closed=true → calls release AGAIN
+//     to clean up its own insert. releaseCalls == 2.
+//  5. Return ErrClientClosed to the caller.
+//
+// Without the fix: releaseCalls == 1 (Close-side only), openRead
+// returned a fake pool that no one owns → leak.
+func TestSessionTable_Close_RacingLazyOpen_NoLeak(t *testing.T) {
+	unblockOpen := make(chan struct{})
+	openStarted := make(chan struct{})
+	var releaseCalls atomic.Int32
+	// Sentinel invoker returned by the fake openRead — proves the opener
+	// actually completed and returned a "pool" that would leak absent the
+	// post-check.
+	fakeInv := (Invoker)(nil)
+
+	tbl := newSessionTable(
+		"t",
+		func() (Invoker, error) {
+			close(openStarted)
+			<-unblockOpen
+			return fakeInv, nil
+		},
+		nil,
+		func() error { releaseCalls.Add(1); return nil },
+		nil,
+		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
+		nil,
+		nil, nil,
+	)
+
+	var (
+		wg         sync.WaitGroup
+		gotErr     error
+		gotInvoker Invoker
+	)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		gotInvoker, gotErr = tbl.readPool.get()
+	}()
+
+	<-openStarted // opener is blocked, guarantees Close runs first
+	if err := tbl.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+	close(unblockOpen)
+	wg.Wait()
+
+	if !errors.Is(gotErr, ErrClientClosed) {
+		t.Errorf("readPool.get() err = %v, want ErrClientClosed", gotErr)
+	}
+	if gotInvoker != nil {
+		t.Errorf("readPool.get() returned non-nil invoker %v, want nil", gotInvoker)
+	}
+	if got := releaseCalls.Load(); got != 2 {
+		t.Errorf("release called %d times, want 2 (once by Close, once by guardOpen post-check cleanup)", got)
+	}
+}
+
+// TestSessionTable_Close_BeforeLazyOpen_EarlyBail proves the guardOpen
+// early check short-circuits when Close ran before the opener ever
+// started. openRead is never invoked.
+func TestSessionTable_Close_BeforeLazyOpen_EarlyBail(t *testing.T) {
+	var openCalled atomic.Int32
+	var releaseCalls atomic.Int32
+	tbl := newSessionTable(
+		"t",
+		func() (Invoker, error) { openCalled.Add(1); return nil, nil },
+		nil,
+		func() error { releaseCalls.Add(1); return nil },
+		nil,
+		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
+		nil,
+		nil, nil,
+	)
+
+	if err := tbl.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+	inv, err := tbl.readPool.get()
+	if !errors.Is(err, ErrClientClosed) {
+		t.Errorf("readPool.get() after Close err = %v, want ErrClientClosed", err)
+	}
+	if inv != nil {
+		t.Errorf("readPool.get() after Close inv = %v, want nil", inv)
+	}
+	if openCalled.Load() != 0 {
+		t.Errorf("openRead was called %d times after Close, want 0 (early bail should short-circuit)", openCalled.Load())
+	}
+	if releaseCalls.Load() != 1 {
+		t.Errorf("release called %d times, want 1 (Close's own release only; guardOpen never entered inner)", releaseCalls.Load())
+	}
+}
