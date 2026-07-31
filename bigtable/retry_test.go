@@ -619,7 +619,6 @@ func TestRetryReverseReadRows(t *testing.T) {
 	}
 }
 
-
 func writeReadRowsResponse(ss grpc.ServerStream, rowKeys ...string) error {
 	var chunks []*btpb.ReadRowsResponse_CellChunk
 	for _, key := range rowKeys {
