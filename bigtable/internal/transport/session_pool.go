@@ -523,6 +523,8 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 	// in-flight counter and feeds the per-AFE PeakEwma with the outcome.
 	// The AFE-wake fires from the response handler BEFORE this defer runs,
 	// so pickers may see pre-update EWMAs for one tick — accepted lag.
+	//
+	// noteVRpcOutcome feeds e2e latency (not including CheckoutSession).
 	var (
 		invokeErr  error
 		backendDur time.Duration
@@ -530,7 +532,7 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 	)
 	defer func() {
 		sh.DecOutstanding()
-		p.noteVRpcOutcome(sh, latency, backendDur, invokeErr == nil)
+		p.noteVRpcOutcome(sh, latency-poolWait, backendDur, invokeErr == nil)
 	}()
 
 	var result InvokeResult
@@ -553,9 +555,9 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 			p.m.backendLatencyHist.record(backendDur)
 		}
 	}
-	// TransportLatency (wire + AFE + client-decode overhead) is now
-	// computed at the source in Session.processResult as
-	// WireLatency − BackendLatency (guarded > 0). Zero here means the
+	// TransportLatency is computed at the source in
+	// Session.processResult as (Send→Recv wall clock) − BackendLatency,
+	// i.e. the AFE-attributable overhead only. Zero here means the
 	// server didn't populate Stats, the call errored pre-Recv, or the
 	// subtraction was non-positive (clock skew) — all cases we skip
 	// from the per-AFE transport-overhead histograms so p50 isn't

@@ -48,6 +48,6 @@ type InvokeResult struct {
 	// (1, 2, 3, …). Distinguishes warm-up vRPCs (small id) from
 	// established-session vRPCs.
 	RPCIDOnSession int64
-	// TransportLatency = AttemptLatency - BackendLatency.
+	// TransportLatency = WireLatency − BackendLatency.
 	TransportLatency time.Duration
 }
