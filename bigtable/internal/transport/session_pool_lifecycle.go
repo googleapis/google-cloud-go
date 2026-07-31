@@ -443,16 +443,47 @@ func (p *SessionPoolImpl) consecutiveFailureErr() error {
 // balances reaction to server-driven config against CPU/mu contention.
 const tickInterval = 1 * time.Second
 
+// slowMetricsInterval is the cadence for periodic metric-recorder
+// bodies whose per-second firing was wasteful: sampleActiveUptimes
+// (session.uptime OTel histogram) and recordTimeSeries (in-memory
+// series for sessionz). Matches java-bigtable's
+// scheduleAtFixedRate(recordAsyncSessionMetrics, 1, 1, MINUTES) at
+// MetricsImpl.java:193 — session.uptime is a periodic snapshot
+// metric, not a per-second stream.
+const slowMetricsInterval = 1 * time.Minute
+
 // Start brings the pool up: fires a pre-start Tick to seed min-sessions,
-// then runs the periodic Tick watchdog, AFE prune loop, and
-// WaitServerClose sweep loop. Non-blocking; idempotent via startOnce.
+// then runs the periodic Tick watchdog, AFE prune loop,
+// WaitServerClose sweep loop, and 1-min slow-metrics recorder.
+// Non-blocking; idempotent via startOnce.
 func (p *SessionPoolImpl) Start(ctx context.Context) {
 	p.startOnce.Do(func() {
 		p.spawnTickOnce(ctx)
 		p.startTickLoop(ctx)
 		p.startAfePruneLoop(ctx)
 		p.startSweepStuckSessionsLoop(ctx)
+		p.startSlowMetricsLoop(ctx)
 	})
+}
+
+// startSlowMetricsLoop runs recordTimeSeries + sampleActiveUptimes
+// every slowMetricsInterval until ctx cancels. Decoupled from Tick so
+// Tick's per-second cadence doesn't drag ~60× extra OTel histogram
+// writes onto sessionUptime.
+func (p *SessionPoolImpl) startSlowMetricsLoop(ctx context.Context) {
+	go func() {
+		ticker := time.NewTicker(slowMetricsInterval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				p.recordTimeSeries()
+				p.sampleActiveUptimes(ctx)
+			}
+		}
+	}()
 }
 
 // startTickLoop runs Tick every tickInterval until ctx cancels.
@@ -474,9 +505,9 @@ func (p *SessionPoolImpl) startTickLoop(ctx context.Context) {
 
 // tickOnce runs one Tick with panic recovery + a debounce gate. The
 // tickPending CAS coalesces concurrent invocations to at most one
-// active Tick body — a burst of empty-pool kicks otherwise fires
-// redundant sampleActiveUptimes before the scalingInProgress gate
-// rejects them.
+// active Tick body so bursts of empty-pool kicks don't repeatedly
+// enter the sizer decision path before scalingInProgress rejects
+// them.
 func (p *SessionPoolImpl) tickOnce(ctx context.Context) {
 	if !p.tickPending.CompareAndSwap(false, true) {
 		return
