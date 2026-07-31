@@ -551,38 +551,18 @@ func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 // updates. Skipped when the opt-out flag is set or when configManager
 // is nil (test-fake path).
 //
-// The session-count source is sc.totalSessionCount — sums Stats()
-// across every session pool this client currently owns, so the target
-// reflects total load on the shared channel pool.
+// The monitor reads its session-count signal directly from
+// BigtableChannelPool.TotalStreamCount — sessions are bidi streams
+// (one streamingLoad increment on the picked connEntry when they
+// open), so the pool already tracks the number without any
+// cross-package plumbing.
 func (sc *sessionClient) registerScaleMonitor(pool *btransport.BigtableChannelPool) {
 	if sc.cfg.DisableSessionAwareChannelPool || sc.configManager == nil || pool == nil {
 		return
 	}
-	sc.scaleMonitor = btransport.NewSessionAwareScaleMonitor(pool, sc.totalSessionCount)
+	sc.scaleMonitor = btransport.NewSessionAwareScaleMonitor(pool)
 	sc.scaleMonitorUnreg = sc.configManager.AddChannelPoolConfigListener(sc.scaleMonitor.OnConfig)
 	sc.scaleMonitor.Start(sc.cfg.BackgroundCtx)
-}
-
-// totalSessionCount sums Ready + Starting across every session pool
-// this client owns — the input SessionAwareScaleMonitor feeds into the
-// per-server-session-count clamp. Runs from the monitor's tick
-// goroutine only.
-func (sc *sessionClient) totalSessionCount() int {
-	sc.sessionPoolsMu.Lock()
-	pools := make([]*managedSessionPool, 0, len(sc.sessionPools))
-	for _, mp := range sc.sessionPools {
-		pools = append(pools, mp)
-	}
-	sc.sessionPoolsMu.Unlock()
-	total := 0
-	for _, mp := range pools {
-		if mp == nil || mp.pool == nil {
-			continue
-		}
-		s := mp.pool.Stats()
-		total += s.ReadyCount + s.StartingCount
-	}
-	return total
 }
 
 // Close tears down in a phased order that keeps late callbacks from

@@ -172,7 +172,7 @@ func TestSessionAwareScaleMonitor_ConfigUpdateResizes(t *testing.T) {
 // every field. Runs against a real monitor instance so any drift in
 // the OnConfig↔tick contract is caught.
 func TestSessionAwareScaleMonitor_OnConfigStoresSnapshot(t *testing.T) {
-	m := NewSessionAwareScaleMonitor(nil, func() int { return 0 })
+	m := NewSessionAwareScaleMonitor(nil)
 
 	// Nil config is ignored — no snapshot stored, no panic.
 	m.OnConfig(nil)
@@ -207,7 +207,7 @@ func TestSessionAwareScaleMonitor_StartStopExitsCleanly(t *testing.T) {
 	SessionAwareTickInterval = 10 * time.Millisecond
 	t.Cleanup(func() { SessionAwareTickInterval = prevInterval })
 
-	m := NewSessionAwareScaleMonitor(nil, func() int { return 0 })
+	m := NewSessionAwareScaleMonitor(nil)
 	// No config set — tick short-circuits, so a nil pool is safe.
 	m.Start(context.Background())
 
@@ -234,19 +234,15 @@ func TestSessionAwareScaleMonitor_StartStopExitsCleanly(t *testing.T) {
 // TestSessionAwareScaleMonitor_TickForTest_NoConfigIsNoOp asserts the
 // tick short-circuits before touching the pool when no config has been
 // received. Uses the test-only constructor so the ticker is disabled
-// and we can drive tick manually.
+// and we can drive tick manually. A nil pool must be safe here —
+// tick() returns before calling pool.TotalStreamCount, so no panic.
 func TestSessionAwareScaleMonitor_TickForTest_NoConfigIsNoOp(t *testing.T) {
-	called := false
-	m := NewSessionAwareScaleMonitorForTest(nil, func() int {
-		called = true
-		return 0
-	})
+	m := NewSessionAwareScaleMonitorForTest(nil)
 	m.Start(context.Background())
 	defer m.Stop()
 
+	// If tick didn't short-circuit on nil config, this would panic on
+	// pool.TotalStreamCount(). The test passing means short-circuit
+	// works.
 	m.TickForTest()
-
-	if called {
-		t.Error("sessionCountFn called before OnConfig — tick should short-circuit")
-	}
 }
