@@ -43,6 +43,25 @@ var (
 	sessionMetricsErr  error
 )
 
+// sessionLifetimeBounds is a session-scale bucketing for histograms
+// whose samples span minutes-to-hours (an idle session lives until
+// server-driven scale-down, typically several minutes). The layout is
+// {0} + geometric doubling from 1ms to ~17.5min, matching the
+// cross-language client convention.
+//
+// The OTel SDK default explicit-bucket boundaries cap at 10s, so
+// without an explicit boundary override every session-lifetime sample
+// past 10s falls into the last bucket and p50/p95/p99 all render as
+// "10000ms" on the dashboard. Shared by session.durations and
+// session.uptime.
+var sessionLifetimeBounds = func() []float64 {
+	b := []float64{0}
+	for v := float64(1); v <= 1_200_000; v *= 2 {
+		b = append(b, v)
+	}
+	return b
+}()
+
 // FineGrainLatencyBounds matches java-bigtable's
 // AGGREGATION_WITH_MILLIS_HISTOGRAM: fine sub-ms + coarse tail. Shared
 // by transport_latencies and attempt_latencies2.
@@ -78,6 +97,7 @@ func InitializeSessionMetrics(meterProvider metric.MeterProvider) error {
 			"session.durations",
 			metric.WithDescription("Duration a session was alive (startTime → close)"),
 			metric.WithUnit("ms"),
+			metric.WithExplicitBucketBoundaries(sessionLifetimeBounds...),
 		); err != nil {
 			sessionMetricsErr = fmt.Errorf("create session.durations histogram: %w", err)
 			return
@@ -86,6 +106,7 @@ func InitializeSessionMetrics(meterProvider metric.MeterProvider) error {
 			"session.open_latencies",
 			metric.WithDescription("Latency to open a session"),
 			metric.WithUnit("ms"),
+			metric.WithExplicitBucketBoundaries(FineGrainLatencyBounds...),
 		); err != nil {
 			sessionMetricsErr = fmt.Errorf("create session.open_latencies histogram: %w", err)
 			return
@@ -94,6 +115,7 @@ func InitializeSessionMetrics(meterProvider metric.MeterProvider) error {
 			"session.uptime",
 			metric.WithDescription("Age of currently-active sessions, sampled periodically"),
 			metric.WithUnit("ms"),
+			metric.WithExplicitBucketBoundaries(sessionLifetimeBounds...),
 		); err != nil {
 			sessionMetricsErr = fmt.Errorf("create session.uptime histogram: %w", err)
 			return
