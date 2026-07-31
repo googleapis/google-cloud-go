@@ -48,6 +48,21 @@ type InvokeResult struct {
 	// (1, 2, 3, …). Distinguishes warm-up vRPCs (small id) from
 	// established-session vRPCs.
 	RPCIDOnSession int64
-	// TransportLatency = AttemptLatency - BackendLatency.
+	// WireLatency is the client-measured Send→Recv wall time
+	// (SentAt → response processed in Session.processResult). Includes
+	// server BackendLatency plus wire + AFE overhead. Populated at the
+	// source; retained separately from TransportLatency so callers that
+	// want the raw wire measurement (e.g. RTT-style diagnostics) don't
+	// have to add backend back in.
+	WireLatency time.Duration
+	// TransportLatency is the AFE-attributable overhead:
+	// WireLatency − BackendLatency, guarded > 0. Populated by
+	// SessionPoolImpl.Invoke after BackendLatency is known. Zero when
+	// the server didn't populate Stats, the call errored pre-Recv, or
+	// the subtraction was non-positive (clock skew). This is the
+	// signal the sessionz "Transport" histogram, the OTel
+	// transport_latencies metric, and the per-AFE picker should
+	// consume — it excludes server-side processing time so it reflects
+	// only what the AFE + wire contributed.
 	TransportLatency time.Duration
 }

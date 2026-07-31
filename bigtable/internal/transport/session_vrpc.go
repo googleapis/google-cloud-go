@@ -257,7 +257,10 @@ func (s *Session) awaitInvokeResult(ctx context.Context, rpc *vrpcImpl, desc VRp
 // under slotMu, handleVRPCResponse gates the id match BEFORE drainSlot,
 // so deliver can only ever put a matching-id response into resultChan.
 func (s *Session) processResult(desc VRpcDescriptor, result *InvokeResult, res vrpcResult) error {
-	result.TransportLatency = time.Since(result.SentAt)
+	// WireLatency is Send→Recv on the wire — INCLUDES the server's
+	// BackendLatency. Pool-level Invoke derives TransportLatency
+	// (wire − backend) once BackendLatency is available from Stats.
+	result.WireLatency = time.Since(result.SentAt)
 	ci := res.ClusterInfo()
 	result.ClusterInfo = ci
 	if ci != nil {
