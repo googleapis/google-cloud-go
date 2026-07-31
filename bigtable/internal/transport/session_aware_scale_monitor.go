@@ -20,6 +20,7 @@ import (
 	"time"
 
 	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	btopt "cloud.google.com/go/bigtable/internal/option"
 )
 
 // SessionAwareHeadroom is the multiplier applied to per-channel session
@@ -38,11 +39,13 @@ const SessionAwareHeadroom = 2
 var SessionAwareTickInterval = 1 * time.Minute
 
 // SessionAwareScaleMonitor sizes a BigtableChannelPool from live
-// session count instead of RPC load. Complements (and, in the session
-// client, replaces) DynamicScaleMonitor. On each tick:
+// streaming-RPC count instead of RPC load. Complements (and, in the
+// session client, replaces) DynamicScaleMonitor. On each tick:
 //
-//   1. Read sessionCountFn() — the caller's summary of live sessions
-//      across every session pool sharing this channel pool.
+//   1. Read pool.TotalStreamCount() — sum of streamingLoad across
+//      every connEntry. Sessions are bidi streams (one streaming RPC
+//      per open session), so this equals the total session count
+//      riding on the pool without any cross-package plumbing.
 //   2. Read the latest ChannelPoolConfiguration snapshot fed via
 //      OnConfig (min/max/perServerSessionCount).
 //   3. Compute target = ceil((sessions × SessionAwareHeadroom) /
@@ -51,8 +54,7 @@ var SessionAwareTickInterval = 1 * time.Minute
 //
 // Threading model:
 //   - OnConfig races with the tick — snapshot is stored atomically.
-//   - sessionCountFn is called from the tick goroutine only, so it
-//     doesn't need to be reentrant-safe.
+//   - pool.TotalStreamCount is called from the tick goroutine only.
 //   - Start / Stop are once-only; Stop blocks on the goroutine exit
 //     via the done channel so callers can rely on "no more mutations
 //     after Stop returns".
@@ -60,12 +62,11 @@ var SessionAwareTickInterval = 1 * time.Minute
 // Not thread-safe for concurrent Start / Stop — production callers
 // invoke each once from client construction / Close.
 type SessionAwareScaleMonitor struct {
-	pool            *BigtableChannelPool
-	sessionCountFn  func() int
-	config          atomic.Pointer[channelPoolConfigSnapshot]
-	tickInterval    time.Duration
-	cancel          context.CancelFunc
-	done            chan struct{}
+	pool         *BigtableChannelPool
+	config       atomic.Pointer[channelPoolConfigSnapshot]
+	tickInterval time.Duration
+	cancel       context.CancelFunc
+	done         chan struct{}
 	// tickHook, when non-nil, replaces the ticker-driven loop with a
 	// manual-drive contract: tests call m.TickForTest() to invoke tick()
 	// once. Kept optional so production wiring stays timer-based.
@@ -82,15 +83,15 @@ type channelPoolConfigSnapshot struct {
 }
 
 // NewSessionAwareScaleMonitor constructs a monitor bound to pool.
-// sessionCountFn must return the current total session count across
-// every session pool that shares pool. Called from the tick goroutine
-// only.
-func NewSessionAwareScaleMonitor(pool *BigtableChannelPool, sessionCountFn func() int) *SessionAwareScaleMonitor {
+// Reads pool.TotalStreamCount() on every tick — no cross-package
+// closure needed because sessions register as streaming RPCs on the
+// pool naturally when they open (bidi stream = one streamingLoad
+// increment on the picked connEntry).
+func NewSessionAwareScaleMonitor(pool *BigtableChannelPool) *SessionAwareScaleMonitor {
 	return &SessionAwareScaleMonitor{
-		pool:           pool,
-		sessionCountFn: sessionCountFn,
-		tickInterval:   SessionAwareTickInterval,
-		done:           make(chan struct{}),
+		pool:         pool,
+		tickInterval: SessionAwareTickInterval,
+		done:         make(chan struct{}),
 	}
 }
 
@@ -149,8 +150,8 @@ func (m *SessionAwareScaleMonitor) TickForTest() {
 // disables the internal timer so tests can call TickForTest to drive
 // the loop deterministically. Production code should always use
 // NewSessionAwareScaleMonitor.
-func NewSessionAwareScaleMonitorForTest(pool *BigtableChannelPool, sessionCountFn func() int) *SessionAwareScaleMonitor {
-	m := NewSessionAwareScaleMonitor(pool, sessionCountFn)
+func NewSessionAwareScaleMonitorForTest(pool *BigtableChannelPool) *SessionAwareScaleMonitor {
+	m := NewSessionAwareScaleMonitor(pool)
 	m.tickHookEnabled = true
 	return m
 }
@@ -195,13 +196,26 @@ func (m *SessionAwareScaleMonitor) loop(ctx context.Context) {
 func (m *SessionAwareScaleMonitor) tick() {
 	cfg := m.config.Load()
 	if cfg == nil {
-		return // Config listener hasn't fired yet.
+		btopt.Debugf(nil, "bigtable_connpool: SessionAwareScaleMonitor tick: no config yet, skip\n")
+		return
 	}
-	target := ComputeTarget(m.sessionCountFn(), cfg.softMax, cfg.min, cfg.max)
+	sessions := m.pool.TotalStreamCount()
+	target := ComputeTarget(sessions, cfg.softMax, cfg.min, cfg.max)
+	have := m.pool.Num()
+	// One line per tick: inputs + decision. Operators tailing the debug
+	// log see the sizer's reasoning without a separate metric.
+	action := "no-op"
+	switch {
+	case target > have:
+		action = "grow"
+	case target < have:
+		action = "shrink"
+	}
+	btopt.Debugf(nil, "bigtable_connpool: SessionAwareScaleMonitor tick: streams=%d softMax=%d min=%d max=%d target=%d have=%d action=%s\n",
+		sessions, cfg.softMax, cfg.min, cfg.max, target, have, action)
 	if target <= 0 {
 		return
 	}
-	have := m.pool.Num()
 	switch {
 	case target > have:
 		m.pool.addConnections(target-have, cfg.max)
