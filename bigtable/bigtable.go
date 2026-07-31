@@ -18,7 +18,6 @@ package bigtable // import "cloud.google.com/go/bigtable"
 
 import (
 	"context"
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"hash/crc32"
@@ -43,7 +42,6 @@ const (
 	// UNIVERSE_DOMAIN placeholder is replaced by the UniverseDomain from DialSettings while creating GRPC connection/dial pool.
 	prodAddr                    = "bigtable.UNIVERSE_DOMAIN:443"
 	mtlsProdAddr                = "bigtable.mtls.googleapis.com:443"
-	featureFlagsHeaderKey       = "bigtable-features"
 	methodNameReadRows          = "ReadRows"
 	defaultBigtableConnPoolSize = 10
 
@@ -171,34 +169,6 @@ func mergeOutgoingMetadata(ctx context.Context, mds ...metadata.MD) context.Cont
 	// The ordering matters, hence why ctxMD comes first.
 	allMDs := append([]metadata.MD{ctxMD}, mds...)
 	return metadata.NewOutgoingContext(ctx, metadata.Join(allMDs...))
-}
-
-// createFeatureFlagsMD creates the metadata for the `bigtable-features` header.
-// This header is sent on each request and includes all features supported and
-// enabled on the client.
-func createFeatureFlagsMD(clientSideMetricsEnabled, disableRetryInfo, enableDirectAccess bool) metadata.MD {
-	ff := btpb.FeatureFlags{
-		RoutingCookie:            true,
-		ReverseScans:             true,
-		LastScannedRowResponses:  true,
-		ClientSideMetricsEnabled: clientSideMetricsEnabled,
-		RetryInfo:                !disableRetryInfo,
-		TrafficDirectorEnabled:   enableDirectAccess,
-		DirectAccessRequested:    enableDirectAccess,
-		// PeerInfo tells the server it may send the bigtable-peer-info
-		// sideband metadata that populates attempt_latencies2's
-		// transport_type/region/zone/subzone labels. Extracted from
-		// header/trailer MD by the tracer's extractPeerInfo.
-		PeerInfo: true,
-	}
-
-	val := ""
-	b, err := proto.Marshal(&ff)
-	if err == nil {
-		val = base64.URLEncoding.EncodeToString(b)
-	}
-
-	return metadata.Pairs(featureFlagsHeaderKey, val)
 }
 
 // TODO(dsymonds): Read method that returns a sequence of ReadItems.

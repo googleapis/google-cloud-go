@@ -195,7 +195,11 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// and we evaluate the directAccess option after that.
 
 	allowDirectAccess := isDirectAccessEnabled(config)
-	directAccessMD := createFeatureFlagsMD(metricsTracerFactory.Enabled, disableRetryInfo, allowDirectAccess)
+	directAccessMD := btransport.MarshalFeatureFlagsMD(btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
+		ClientSideMetricsEnabled: metricsTracerFactory.Enabled,
+		DisableRetryInfo:         disableRetryInfo,
+		EnableDirectAccess:       allowDirectAccess,
+	}))
 
 	var mPool btransport.ManagedChannelPool
 	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()

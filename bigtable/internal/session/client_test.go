@@ -82,9 +82,9 @@ func newTestClient(t *testing.T, pool ChannelPool, cfg Config) *sessionClient {
 // FeatureFlags struct — mirrors what the server does on the wire.
 func decodeFeatureFlags(t *testing.T, md metadata.MD) *btpb.FeatureFlags {
 	t.Helper()
-	vals := md.Get(featureFlagsHeaderKey)
+	vals := md.Get(btransport.FeatureFlagsHeader)
 	if len(vals) != 1 {
-		t.Fatalf("md[%q] = %v, want exactly one value", featureFlagsHeaderKey, vals)
+		t.Fatalf("md[%q] = %v, want exactly one value", btransport.FeatureFlagsHeader, vals)
 	}
 	raw, err := base64.URLEncoding.DecodeString(vals[0])
 	if err != nil {
@@ -102,7 +102,7 @@ func decodeFeatureFlags(t *testing.T, md metadata.MD) *btpb.FeatureFlags {
 // server-visible flag needs to move, break this test on purpose so
 // reviewers notice.
 func TestBuildFeatureFlagsMD_AlwaysOnBits(t *testing.T) {
-	md := buildFeatureFlagsMD(false, false, false)
+	md := btransport.MarshalFeatureFlagsMD(btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{}))
 	ff := decodeFeatureFlags(t, md)
 	if !ff.RoutingCookie || !ff.ReverseScans || !ff.LastScannedRowResponses || !ff.SessionsCompatible || !ff.PeerInfo {
 		t.Errorf("always-on flags missing: %+v", ff)
@@ -129,7 +129,11 @@ func TestBuildFeatureFlagsMD_ReflectsToggles(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			ff := decodeFeatureFlags(t, buildFeatureFlagsMD(tc.metricsEnabled, tc.disableRetryInfo, tc.directAccess))
+			ff := decodeFeatureFlags(t, btransport.MarshalFeatureFlagsMD(btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
+				ClientSideMetricsEnabled: tc.metricsEnabled,
+				DisableRetryInfo:         tc.disableRetryInfo,
+				EnableDirectAccess:       tc.directAccess,
+			})))
 			if ff.ClientSideMetricsEnabled != tc.wantMetrics {
 				t.Errorf("ClientSideMetricsEnabled = %v, want %v", ff.ClientSideMetricsEnabled, tc.wantMetrics)
 			}
@@ -171,7 +175,11 @@ func TestSessionClient_NameFormatters(t *testing.T) {
 // metadata: resource-prefix + request-params (with URL-escaped values +
 // app_profile_id) + merged FeatureFlagsMD.
 func TestSessionClient_PerResourceMetadata(t *testing.T) {
-	ffMD := buildFeatureFlagsMD(true, false, true)
+	ffMD := btransport.MarshalFeatureFlagsMD(btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
+		ClientSideMetricsEnabled: true,
+		DisableRetryInfo:         false,
+		EnableDirectAccess:       true,
+	}))
 	sc := newTestClient(t, nil, Config{
 		Project: "p", Instance: "i", AppProfile: "profile with spaces",
 		FeatureFlagsMD: ffMD,
@@ -193,7 +201,7 @@ func TestSessionClient_PerResourceMetadata(t *testing.T) {
 	if params[0] != wantParam {
 		t.Errorf("%s = %q, want %q", requestParamsHeader, params[0], wantParam)
 	}
-	if len(md.Get(featureFlagsHeaderKey)) != 1 {
+	if len(md.Get(btransport.FeatureFlagsHeader)) != 1 {
 		t.Errorf("feature-flags header missing from perResourceMetadata output: %v", md)
 	}
 }
