@@ -16,12 +16,9 @@ package session
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"net/url"
-	"os"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -62,11 +59,6 @@ const (
 // vRPC descriptor set.
 const sessionProtocolVersion = 1
 
-// featureFlagsHeaderKey mirrors the bigtable package constant of the
-// same name — duplicated because internal/session can't import
-// bigtable (import cycle).
-const featureFlagsHeaderKey = "bigtable-features"
-
 // ChannelPool is the narrow surface sessionClient needs from the
 // managed channel pool it owns. Satisfied by
 // *btransport.BigtableChannelPool. Interfaced so tests can swap in a
@@ -91,11 +83,16 @@ type Config struct {
 	// GetClientConfiguration polls — instance-scoped headers.
 	ConfigMD metadata.MD
 
-	// MetricsEnabled / DisableRetryInfo mirror the SessionManager
-	// booleans of the same name; both propagate into FeatureFlags on
-	// every OpenSessionRequest.
-	MetricsEnabled   bool
-	DisableRetryInfo bool
+	// MetricsEnabled mirrors the SessionManager boolean of the same
+	// name; propagates into FeatureFlags on every OpenSessionRequest.
+	MetricsEnabled bool
+
+	// FeatureFlagsProto is the pre-built FeatureFlags proto stamped
+	// onto every OpenSessionRequest.Flags. Required — callers MUST
+	// populate this with the same proto they marshaled into
+	// FeatureFlagsMD so header and envelope are byte-identical (the
+	// server rejects OpenSession with INVALID_ARGUMENT on mismatch).
+	FeatureFlagsProto *btpb.FeatureFlags
 
 	// SessionLoadListener is invoked whenever the server-driven
 	// ClientConfigurationManager reports a new session-load ratio. The
@@ -243,6 +240,13 @@ type sessionClient struct {
 	// panel. Immutable after construction — no atomic needed.
 	enableDebug bool
 
+	// featureFlagsProto is the FeatureFlags proto stamped on every
+	// OpenSessionRequest.Flags. Built once at NewClient time so it
+	// stays byte-identical with the bigtable-features header — the
+	// server rejects OpenSession with INVALID_ARGUMENT when the two
+	// disagree on session-mode flags.
+	featureFlagsProto *btpb.FeatureFlags
+
 	sessionPoolsMu sync.Mutex
 	sessionPools   map[poolKey]*managedSessionPool
 	nextPoolID     atomic.Uint64
@@ -269,6 +273,7 @@ func NewClient(
 	ctx context.Context,
 	project, instance, appProfile string,
 	metricsProvider metrics.MetricsProvider,
+	featureFlagsProto *btpb.FeatureFlags,
 	opts ...option.ClientOption,
 ) (Client, error) {
 	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, metricsProvider)
@@ -276,10 +281,10 @@ func NewClient(
 		return nil, fmt.Errorf("session.NewClient: metrics.NewFactory: %w", err)
 	}
 
-	// Feature-flag metadata carried on every Prime + GetClientConfiguration
-	// invocation. Mirrors bigtable.createFeatureFlagsMD(true, false, true) —
-	// duplicated to avoid an import cycle back into the bigtable package.
-	directAccessMD := buildFeatureFlagsMD(factory.Enabled, false /* disableRetryInfo */, true /* enableDirectAccess */)
+	// featureFlagsProto comes pre-built from the classic client so
+	// header and envelope both derive from the same proto reference.
+	// Marshal once here for the bigtable-features header.
+	directAccessMD := btransport.MarshalFeatureFlagsMD(featureFlagsProto)
 
 	fullInstance := fmt.Sprintf("projects/%s/instances/%s", project, instance)
 
@@ -350,14 +355,14 @@ func NewClient(
 	backgroundCtx, cancel := context.WithCancel(context.Background())
 
 	sc := newSessionClientFromParts(pool, stub, factory, Config{
-		Project:          project,
-		Instance:         instance,
-		AppProfile:       appProfile,
-		FeatureFlagsMD:   directAccessMD,
-		ConfigMD:         configMD,
-		MetricsEnabled:   factory.Enabled,
-		DisableRetryInfo: false,
-		BackgroundCtx:    backgroundCtx,
+		Project:           project,
+		Instance:          instance,
+		AppProfile:        appProfile,
+		FeatureFlagsMD:    directAccessMD,
+		FeatureFlagsProto: featureFlagsProto,
+		ConfigMD:          configMD,
+		MetricsEnabled:    factory.Enabled,
+		BackgroundCtx:     backgroundCtx,
 		// EnableDebug intentionally left at zero (false): NewClient has
 		// no external caller upstream today, so exposing a positional
 		// bool on the constructor would ship a dead knob. When the
@@ -378,12 +383,13 @@ func newSessionClientFromParts(channelPool ChannelPool, stub btpb.BigtableClient
 		_ = btransport.InitializeSessionMetrics(metricsFactory.OtelMeterProvider)
 	}
 	sc := &sessionClient{
-		cfg:            cfg,
-		channelPool:    channelPool,
-		stub:           stub,
-		metricsFactory: metricsFactory,
-		enableDebug:    cfg.EnableDebug,
-		sessionPools:   make(map[poolKey]*managedSessionPool),
+		cfg:               cfg,
+		channelPool:       channelPool,
+		stub:              stub,
+		metricsFactory:    metricsFactory,
+		enableDebug:       cfg.EnableDebug,
+		featureFlagsProto: cfg.FeatureFlagsProto,
+		sessionPools:      make(map[poolKey]*managedSessionPool),
 	}
 	// stub == nil only happens on the test-only newSessionClientFromParts
 	// path (unit tests wiring a fake ChannelPool without a real gRPC stub).
@@ -402,39 +408,6 @@ func newSessionClientFromParts(channelPool ChannelPool, stub btpb.BigtableClient
 		}
 	}
 	return sc
-}
-
-// buildFeatureFlagsMD mirrors bigtable.createFeatureFlagsMD. Duplicated
-// (rather than exported+imported) to keep the internal/session package
-// free of a back-reference to the bigtable package.
-func buildFeatureFlagsMD(clientSideMetricsEnabled, disableRetryInfo, enableDirectAccess bool) metadata.MD {
-	// CBT_FORCE_SESSION tri-state — Google-internal only, gated
-	// server-side. See bigtable.createFeatureFlagsMD for the semantic
-	// (kept in sync intentionally; internal/session can't import
-	// bigtable due to the import-cycle boundary).
-	sessionsCompatible, sessionsRequired := true, false
-	if v, ok := os.LookupEnv("CBT_FORCE_SESSION"); ok {
-		if b, err := strconv.ParseBool(v); err == nil {
-			sessionsCompatible, sessionsRequired = b, b
-		}
-	}
-	ff := btpb.FeatureFlags{
-		RoutingCookie:            true,
-		ReverseScans:             true,
-		LastScannedRowResponses:  true,
-		ClientSideMetricsEnabled: clientSideMetricsEnabled,
-		RetryInfo:                !disableRetryInfo,
-		TrafficDirectorEnabled:   enableDirectAccess,
-		DirectAccessRequested:    enableDirectAccess,
-		SessionsCompatible:       sessionsCompatible,
-		SessionsRequired:         sessionsRequired,
-		PeerInfo:                 true,
-	}
-	val := ""
-	if b, err := proto.Marshal(&ff); err == nil {
-		val = base64.URLEncoding.EncodeToString(b)
-	}
-	return metadata.Pairs(featureFlagsHeaderKey, val)
 }
 
 func (sc *sessionClient) MeterProvider() otelmetric.MeterProvider {
@@ -765,36 +738,13 @@ func (sc *sessionClient) getOrCreateSessionPool(
 	return pool
 }
 
-// featureFlags builds the OpenSessionRequest.Flags proto from
-// sessionClient config. SessionsCompatible / SessionsRequired MUST
-// match the values in bigtable-features metadata header (built by
-// buildFeatureFlagsMD) — the server rejects OpenSession with
-// INVALID_ARGUMENT when the proto and header disagree on session-mode
-// flags. See bigtable.createFeatureFlagsMD for the tri-state semantic.
-//
-// TODO(sushanb): CBT_FORCE_SESSION is re-read here on every pool open
-// but buildFeatureFlagsMD reads it once at NewClient. If the
-// env flips mid-process the header + proto disagree and the server
-// rejects. Resolve once at construction and stash on Config.
+// featureFlags returns the FeatureFlags proto stamped onto every
+// OpenSessionRequest.Flags. Constructed once at NewClient time from
+// the same input as the bigtable-features gRPC header so the two are
+// byte-identical — the server rejects OpenSession with INVALID_ARGUMENT
+// when they disagree on session-mode flags.
 func (sc *sessionClient) featureFlags() *btpb.FeatureFlags {
-	sessionsCompatible, sessionsRequired := true, false
-	if v, ok := os.LookupEnv("CBT_FORCE_SESSION"); ok {
-		if b, err := strconv.ParseBool(v); err == nil {
-			sessionsCompatible, sessionsRequired = b, b
-		}
-	}
-	return &btpb.FeatureFlags{
-		RoutingCookie:            true,
-		ReverseScans:             true,
-		LastScannedRowResponses:  true,
-		ClientSideMetricsEnabled: sc.cfg.MetricsEnabled,
-		RetryInfo:                !sc.cfg.DisableRetryInfo,
-		TrafficDirectorEnabled:   true,
-		DirectAccessRequested:    true,
-		SessionsCompatible:       sessionsCompatible,
-		SessionsRequired:         sessionsRequired,
-		PeerInfo:                 true,
-	}
+	return sc.featureFlagsProto
 }
 
 // perResourceMetadata builds the per-vRPC context metadata: the pair
