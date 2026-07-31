@@ -47,14 +47,38 @@ type Table struct {
 	md               metadata.MD
 	authorizedView   string
 	materializedView string
+
+	// divertible, when non-nil, layers session routing on top of the
+	// classic body for the two methods that have session equivalents
+	// (Apply, ReadRow). Populated by Open when c.diverter != nil so
+	// callers that hold a bare *Table transparently participate in the
+	// session/classic split. Nil for classic-only clients — the gate in
+	// Table.Apply / Table.ReadRow short-circuits to the *Classic helper,
+	// preserving the old fast path.
+	//
+	// The value is a *TableShim whose classic side wraps a *tableImpl
+	// built from a snapshot of this Table with divertible EXPLICITLY
+	// nil-ed. That break in the loop is what prevents infinite
+	// recursion: the shim's classic branch dispatches into tableImpl,
+	// whose Apply/ReadRow overrides land on applyClassic/readRowClassic
+	// directly — not back through the gated Table.Apply/ReadRow.
+	divertible TableAPI
 }
 
 func (ti *tableImpl) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
 	return ti.Table.ReadRows(ctx, arg, f, opts...)
 }
 
+// ReadRow bypasses the Table.ReadRow divertible gate — a tableImpl used
+// as the classic side of a TableShim would otherwise recurse back through
+// the gate into the shim itself. See Table.divertible.
+func (ti *tableImpl) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
+	return ti.Table.readRowClassic(ctx, row, opts...)
+}
+
+// Apply bypasses the Table.Apply divertible gate — same reason as ReadRow.
 func (ti *tableImpl) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
-	return ti.Table.Apply(ctx, row, m, opts...)
+	return ti.Table.applyClassic(ctx, row, m, opts...)
 }
 
 func (ti *tableImpl) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) ([]error, error) {

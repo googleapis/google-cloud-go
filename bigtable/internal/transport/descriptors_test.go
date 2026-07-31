@@ -98,9 +98,9 @@ func TestTableDescriptors_ReadRow(t *testing.T) {
 		t.Fatalf("Failed to decode READ_ROW: %v", err)
 	}
 
-	result, ok := decoded.(ReadRowResult)
+	result, ok := decoded.(*btpb.SessionReadRowResponse)
 	if !ok {
-		t.Fatalf("Expected decoded result to be ReadRowResult, got %T", decoded)
+		t.Fatalf("Expected decoded result to be *btpb.SessionReadRowResponse, got %T", decoded)
 	}
 
 	if !bytes.Equal(result.Row.Key, []byte("row-key-1")) {
@@ -167,9 +167,9 @@ func TestTableDescriptors_MutateRow(t *testing.T) {
 		t.Fatalf("Failed to decode MUTATE_ROW: %v", err)
 	}
 
-	_, ok = decoded.(MutateRowResult)
+	_, ok = decoded.(*btpb.SessionMutateRowResponse)
 	if !ok {
-		t.Fatalf("Expected decoded result to be MutateRowResult, got %T", decoded)
+		t.Fatalf("Expected decoded result to be *btpb.SessionMutateRowResponse, got %T", decoded)
 	}
 }
 
@@ -222,9 +222,9 @@ func TestAuthorizedViewDescriptors_ReadRow(t *testing.T) {
 		t.Fatalf("Failed to decode READ_ROW_AUTH_VIEW: %v", err)
 	}
 
-	result, ok := decoded.(ReadRowResult)
+	result, ok := decoded.(*btpb.SessionReadRowResponse)
 	if !ok {
-		t.Fatalf("Expected decoded result to be ReadRowResult, got %T", decoded)
+		t.Fatalf("Expected decoded result to be *btpb.SessionReadRowResponse, got %T", decoded)
 	}
 
 	if !bytes.Equal(result.Row.Key, []byte("row-key-3")) {
@@ -276,9 +276,9 @@ func TestAuthorizedViewDescriptors_MutateRow(t *testing.T) {
 		t.Fatalf("Failed to decode MUTATE_ROW_AUTH_VIEW: %v", err)
 	}
 
-	_, ok = decoded.(MutateRowResult)
+	_, ok = decoded.(*btpb.SessionMutateRowResponse)
 	if !ok {
-		t.Fatalf("Expected decoded result to be MutateRowResult, got %T", decoded)
+		t.Fatalf("Expected decoded result to be *btpb.SessionMutateRowResponse, got %T", decoded)
 	}
 }
 
@@ -331,9 +331,9 @@ func TestMaterializedViewDescriptors_ReadRow(t *testing.T) {
 		t.Fatalf("Failed to decode READ_ROW_MAT_VIEW: %v", err)
 	}
 
-	result, ok := decoded.(ReadRowResult)
+	result, ok := decoded.(*btpb.SessionReadRowResponse)
 	if !ok {
-		t.Fatalf("Expected decoded result to be ReadRowResult, got %T", decoded)
+		t.Fatalf("Expected decoded result to be *btpb.SessionReadRowResponse, got %T", decoded)
 	}
 
 	if !bytes.Equal(result.Row.Key, []byte("row-key-5")) {

@@ -24,18 +24,25 @@ import (
 
 // TableShim implements TableAPI by routing between a classic gRPC
 // data-plane and a proto-native session data-plane
-// (session.TableAPI). Traffic direction is decided per-call by
-// the Diverter's SessionLoad ratio. TableShim owns the proto ↔
+// (session.TableAPI). Traffic direction is decided per-call by the
+// Diverter's SessionLoad ratio. TableShim owns the proto ↔
 // bigtable.Row conversion so the session package can stay proto-native.
 //
 // Methods with no session equivalent (ReadRows, SampleRowKeys,
 // ApplyBulk, ApplyReadModifyWrite) always delegate to classic.
 // Conditional mutations always route to classic — session vRPC does
 // not support the CheckAndMutateRow shape today.
+//
+// ReadRow and Apply route their session call through
+// session.InterceptUnimplemented: a codes.Unimplemented response falls
+// back to classic, and after enough consecutive Unimplementeds the
+// interceptor's sticky breaker gates useSession() so future calls skip
+// session entirely.
 type TableShim struct {
-	classic  TableAPI
-	session  session.TableAPI
-	diverter *btransport.Diverter
+	classic       TableAPI
+	session       session.TableAPI
+	diverter      *btransport.Diverter
+	unimplemented *session.UnimplementedErrorInterceptor
 }
 
 // NewTableShim wraps a classic TableAPI + a proto-native session API
@@ -43,9 +50,10 @@ type TableShim struct {
 // in which case the shim behaves like classic-only.
 func NewTableShim(classic TableAPI, sessionAPI session.TableAPI, diverter *btransport.Diverter) TableAPI {
 	return &TableShim{
-		classic:  classic,
-		session:  sessionAPI,
-		diverter: diverter,
+		classic:       classic,
+		session:       sessionAPI,
+		diverter:      diverter,
+		unimplemented: session.NewUnimplementedErrorInterceptor(session.DefaultUnimplementedThreshold),
 	}
 }
 
@@ -69,15 +77,22 @@ func (t *TableShim) ReadRow(ctx context.Context, row string, opts ...ReadOption)
 		Key:    []byte(row),
 		Filter: tmpReq.Filter,
 	}
-	resp, err := t.session.ReadRow(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-	if resp.GetStats() != nil && settings.fullReadStatsFunc != nil {
-		stats := makeFullReadStats(resp.GetStats())
-		settings.fullReadStatsFunc(&stats)
-	}
-	return protoRowToRow(resp.GetRow()), nil
+	return session.InterceptUnimplemented(t.unimplemented,
+		func() (Row, error) {
+			resp, err := t.session.ReadRow(ctx, req)
+			if err != nil {
+				return nil, err
+			}
+			if resp.GetStats() != nil && settings.fullReadStatsFunc != nil {
+				stats := makeFullReadStats(resp.GetStats())
+				settings.fullReadStatsFunc(&stats)
+			}
+			return protoRowToRow(resp.GetRow()), nil
+		},
+		func() (Row, error) {
+			return t.classic.ReadRow(ctx, row, opts...)
+		},
+	)
 }
 
 // Apply implements TableAPI. Non-conditional mutations may route
@@ -97,10 +112,18 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 		Key:       []byte(row),
 		Mutations: m.ops,
 	}
-	if _, err := t.session.MutateRow(ctx, req); err != nil {
-		return err
-	}
-	return nil
+	// Apply returns only an error; use struct{} to satisfy the
+	// interceptor's generic value slot without a stand-in response.
+	_, err := session.InterceptUnimplemented(t.unimplemented,
+		func() (struct{}, error) {
+			_, e := t.session.MutateRow(ctx, req)
+			return struct{}{}, e
+		},
+		func() (struct{}, error) {
+			return struct{}{}, t.classic.Apply(ctx, row, m, opts...)
+		},
+	)
+	return err
 }
 
 // ReadRows delegates to classic — session support is not implemented.
@@ -123,10 +146,14 @@ func (t *TableShim) ApplyReadModifyWrite(ctx context.Context, row string, m *Rea
 	return t.classic.ApplyReadModifyWrite(ctx, row, m)
 }
 
-// useSession returns true when both a session API and diverter are
-// configured AND the diverter says this call should go over session.
+// useSession returns true when session + diverter are configured, the
+// interceptor's Unimplemented breaker hasn't tripped, and the diverter
+// says this call should go over session.
 func (t *TableShim) useSession() bool {
-	return t.session != nil && t.diverter != nil && t.diverter.UseSession()
+	return t.session != nil &&
+		t.diverter != nil &&
+		!t.unimplemented.Bypass() &&
+		t.diverter.UseSession()
 }
 
 // protoRowToRow converts a proto Row (the wire shape returned by a

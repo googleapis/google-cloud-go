@@ -280,10 +280,6 @@ func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, 
 				idle.IncPicks()
 				return idle, nil
 			}
-			// Picker chose this AFE but its ready session was taken
-			// (concurrent Checkout / OnClosing eviction). Counter tells
-			// us how often it's actually hurting throughput.
-			recordDebugTag(tagSessionPoolPickLostRace)
 		}
 
 		// Slow path: picker returned nil or 2 checkoutSession raced and returned the same AFE id. Dying sessions leave sl.readyCount
@@ -469,6 +465,15 @@ func (p *SessionPoolImpl) UpdateConfig(config *spb.SessionClientConfiguration_Se
 	if thr := config.GetConsecutiveSessionFailureThreshold(); thr > 0 {
 		p.consecutiveFailureThreshold.Store(thr)
 	}
+
+	// Server-driven config change (min/max bump most commonly) may
+	// require a scale-up. Sizing is otherwise fully event-driven via
+	// onActive / onClosing / CheckoutSession's empty-pool kick; this
+	// explicit kick covers the one path where none of those events
+	// fire — a config poll that raises MinSessionCount on an idle
+	// pool. spawnTickOnce is CAS-guarded so a burst of listener fires
+	// coalesces to one Tick body.
+	p.spawnTickOnce(p.poolCtx)
 }
 
 // pickerFromLoadBalancing builds an AfePicker from server-driven
@@ -527,6 +532,8 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 	// in-flight counter and feeds the per-AFE PeakEwma with the outcome.
 	// The AFE-wake fires from the response handler BEFORE this defer runs,
 	// so pickers may see pre-update EWMAs for one tick — accepted lag.
+	//
+	// noteVRpcOutcome feeds e2e latency (not including CheckoutSession).
 	var (
 		invokeErr  error
 		backendDur time.Duration
@@ -534,7 +541,7 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 	)
 	defer func() {
 		sh.DecOutstanding()
-		p.noteVRpcOutcome(sh, latency, backendDur, invokeErr == nil)
+		p.noteVRpcOutcome(sh, latency-poolWait, backendDur, invokeErr == nil)
 	}()
 
 	var result InvokeResult
@@ -557,9 +564,9 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 			p.m.backendLatencyHist.record(backendDur)
 		}
 	}
-	// TransportLatency (wire + AFE + client-decode overhead) is now
-	// computed at the source in Session.processResult as
-	// WireLatency − BackendLatency (guarded > 0). Zero here means the
+	// TransportLatency is computed at the source in
+	// Session.processResult as (Send→Recv wall clock) − BackendLatency,
+	// i.e. the AFE-attributable overhead only. Zero here means the
 	// server didn't populate Stats, the call errored pre-Recv, or the
 	// subtraction was non-positive (clock skew) — all cases we skip
 	// from the per-AFE transport-overhead histograms so p50 isn't

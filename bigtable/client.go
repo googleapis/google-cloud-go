@@ -26,6 +26,7 @@ import (
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	btopt "cloud.google.com/go/bigtable/internal/option"
+	"cloud.google.com/go/bigtable/internal/session"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
@@ -52,11 +53,27 @@ type Client struct {
 	executeQueryRetryOption gax.CallOption
 	featureFlagsMD          metadata.MD // Pre-computed feature flags metadata to be sent with each request.
 	mPool                   btransport.ManagedChannelPool
-	// diverter picks between the classic and (future) session data path
-	// on every Open* return. Initialized with sessionLoad=0.0 so all
-	// traffic stays on the classic path until a follow-up change enables
-	// the session backend and bumps the ratio.
+	// diverter picks between the classic and session data path on every
+	// Open* return. Initialized with sessionLoad=0.0 so all traffic
+	// stays on the classic path until the session backend's
+	// ConfigurationManager bumps the ratio via AddSessionLoadListener.
 	diverter *btransport.Diverter
+	// sessionImpl is the session data-plane client. Always constructed
+	// by NewClientWithConfig so a control-plane session-load bump can
+	// route traffic to it without a client restart. No RPCs actually
+	// travel to the session backend until the diverter's SessionLoad
+	// > 0 — the initial value is 0.0 and only the server-driven
+	// ClientConfigurationManager writes to it. Session pools + streams
+	// are lazily materialized on first use, so an idle client pays
+	// only for one channel pool and one config-poll goroutine.
+	sessionImpl session.Client
+	// sessionTables caches per-resource session.TableAPI handles so
+	// repeat Open* calls return the same handle (and by extension the
+	// same underlying session pools). session.Client does not cache;
+	// this Client is responsible. Entries evict on TTL-idle (default
+	// 1 h) via a background sweeper, or immediately when the caller
+	// calls Close() on the returned handle. See session_table_cache.go.
+	sessionTables *sessionTableCache
 }
 
 // ClientConfig has configurations for the client.
@@ -220,7 +237,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		return nil, err
 	}
 
-	return &Client{
+	c := &Client{
 		connPool:                mPool.Pool,
 		client:                  btpb.NewBigtableClient(mPool.Pool),
 		project:                 project,
@@ -233,7 +250,71 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		featureFlagsMD:          directAccessMD,
 		mPool:                   mPool,
 		diverter:                btransport.NewDiverter(0.0),
-	}, nil
+	}
+
+	// Session data-plane backend construction has two guardrails so it
+	// can't interfere with the classic path in test / emulator setups:
+	//
+	//  1. If the caller passed option.WithGRPCConn(conn) — i.e. handed
+	//     us one pre-dialed *grpc.ClientConn to use for everything —
+	//     skip session entirely. Two independent backends can't
+	//     reasonably share one physical conn; running the session
+	//     dialer against a pre-dialed conn either gets both backends
+	//     entangled on the same underlying transport (so a
+	//     session-side teardown propagates a "connection is closing"
+	//     error to classic RPCs — the conformance test-proxy failure
+	//     mode) or double-dials the same fake server. Same guard
+	//     covers BIGTABLE_EMULATOR_HOST since DefaultClientOptions
+	//     sets WithGRPCConn internally in that mode.
+	//
+	//  2. On session.NewClient failure, tear down the classic pool
+	//     since we won't return c to the caller.
+	//
+	// When both guardrails pass, wire AddSessionLoadListener so the
+	// server-driven SessionLoad from ClientConfigurationManager retargets
+	// traffic through this Client's Diverter — a control-plane update
+	// then shifts traffic across every open TableShim without a client
+	// restart.
+	// Inspect the merged option list (o), not the raw caller opts.
+	// BIGTABLE_EMULATOR_HOST injects option.WithGRPCConn inside
+	// btopt.DefaultClientOptions (option.go:113), so it lives in o —
+	// callers never pass it explicitly. Reading only from opts misses
+	// the emulator conn and lets session.NewClient dial an empty
+	// resolver target (fails with "passthrough: received empty target
+	// in Build()"), breaking every emulator-based test.
+	preDialed := false
+	if uResolver, resErr := internaloption.NewUnsafeResolver(o...); resErr == nil {
+		preDialed = uResolver.ResolvedGRPCConnIsCustom()
+	}
+	if !preDialed {
+		// Pass the fully-merged option list (o), not the raw caller
+		// opts. gtransport.Dial needs the DefaultClientOptions merged
+		// in (endpoint, scopes, user-agent, interceptors) — passing
+		// bare opts leaves the resolver target empty and the dial
+		// aborts with "passthrough: received empty target in Build()".
+		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, o...)
+		if sessionErr != nil {
+			// Best-effort cleanup of the classic pool since we won't
+			// return c to the caller. Go through the ManagedChannelPool
+			// wrapper so any wrapper-owned cleanup — metrics reporter,
+			// connection recycler, dynamic scale monitor — winds down
+			// too. Matches (*Client).Close.
+			_ = mPool.Close()
+			return nil, fmt.Errorf("bigtable: session.NewClient: %w", sessionErr)
+		}
+		sc.AddSessionLoadListener(c.diverter.SetSessionLoad)
+		c.sessionImpl = sc
+
+		// Per-resource TableAPI cache with TTL-on-idle eviction. The
+		// cache is opener-agnostic — each getOrCreateSession* helper
+		// in open.go passes its own openFn per call, using the fully-
+		// qualified resource name as the cache key. Only constructed
+		// when the session backend is actually wired — a sweeper
+		// goroutine over an always-empty map would be dead weight.
+		c.sessionTables = newSessionTableCache(sessionTableCacheTTL, sessionTableCacheSweepInt, nil /* time.Now */)
+	}
+
+	return c, nil
 }
 
 // Close closes the Client.
@@ -241,7 +322,27 @@ func (c *Client) Close() error {
 	if c.metricsTracerFactory != nil {
 		c.metricsTracerFactory.Shutdown()
 	}
-	return c.mPool.Close()
+	// Close the per-resource cache first so its sweeper goroutine
+	// stops and every cached handle sees Close() before we tear down
+	// the session client that owns their pools. sessionTables is nil
+	// on hand-built Clients that skipped session-backend wiring; the
+	// cache's own close() nil-checks for that.
+	c.sessionTables.close()
+	// Then the session backend — its bookkeeping (session pools,
+	// ConfigurationManager poller) winds down before we drop the
+	// shared gRPC channels. Any error is aggregated with the classic
+	// pool's Close error.
+	var sessionErr error
+	if c.sessionImpl != nil {
+		sessionErr = c.sessionImpl.Close()
+	}
+	if err := c.mPool.Close(); err != nil {
+		if sessionErr != nil {
+			return fmt.Errorf("bigtable.Client.Close: classic pool: %w; session: %v", err, sessionErr)
+		}
+		return err
+	}
+	return sessionErr
 }
 
 func (c *Client) fullInstanceName() string {
