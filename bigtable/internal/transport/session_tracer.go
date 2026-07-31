@@ -43,12 +43,17 @@ var (
 	sessionMetricsErr  error
 )
 
-// SessionLifetimeBounds matches java-bigtable's ClientSessionDuration
-// / ClientSessionUptime BUCKETS_MS: {0} + geometric doubling from
-// 1ms to ~17.5min. Sessions live minutes-to-hours; the OTel SDK
-// default explicit-bucket boundaries cap at 10s, so p50/p95/p99 all
-// clip to "10000ms" on the dashboard when session lifetimes exceed
-// 10s. Shared by session.durations and session.uptime.
+// SessionLifetimeBounds is a session-scale bucketing for histograms
+// whose samples span minutes-to-hours (an idle session lives until
+// server-driven scale-down, typically several minutes). The layout is
+// {0} + geometric doubling from 1ms to ~17.5min, matching the
+// cross-language client convention.
+//
+// The OTel SDK default explicit-bucket boundaries cap at 10s, so
+// without an explicit boundary override every session-lifetime sample
+// past 10s falls into the last bucket and p50/p95/p99 all render as
+// "10000ms" on the dashboard. Shared by session.durations and
+// session.uptime.
 var SessionLifetimeBounds = func() []float64 {
 	b := []float64{0}
 	for v := float64(1); v <= 1_200_000; v *= 2 {
