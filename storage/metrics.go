@@ -1140,13 +1140,11 @@ func (w *wrappedClientStream) recordTTFB(m interface{}) {
 type metricsKey struct{}
 
 type metricsState struct {
-	method       string
-	startTime    time.Time
-	metrics      *clientMetrics
-	isHTTP       bool
-	ttfbRecorded atomic.Bool
-	ttfbStart    time.Time
-	record       func(error)
+	method    string
+	startTime time.Time
+	metrics   *clientMetrics
+	isHTTP    bool
+	record    func(error)
 }
 
 func contextWithMetricsState(ctx context.Context, state *metricsState) context.Context {
@@ -1180,7 +1178,6 @@ func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHT
 		metrics:   cm,
 		isHTTP:    isHTTP,
 	}
-	state.ttfbStart = state.startTime
 
 	var recordOnce sync.Once
 	record := func(err error) {
