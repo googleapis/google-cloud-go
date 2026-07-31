@@ -33,18 +33,21 @@ func writeJSON(w http.ResponseWriter, v interface{}) {
 	w.Header().Set("Cache-Control", "no-store")
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "  ")
-	if err := enc.Encode(v); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	// If Encode errors after having written any bytes, the status is
+	// committed and http.Error would trigger a superfluous-WriteHeader
+	// warning. Swallow silently; the partial body is what the client
+	// gets.
+	_ = enc.Encode(v)
 }
 
 // writeHTML is the shared HTML response helper used by every -z view.
 func writeHTML(w http.ResponseWriter, tpl *template.Template, data interface{}) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-store")
-	if err := tpl.Execute(w, data); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	// Same rationale as writeJSON: once Execute streams the first
+	// byte, the response is committed to 200 and http.Error would
+	// log a spurious warning without helping the client.
+	_ = tpl.Execute(w, data)
 }
 
 // roundDurationShort is the sub-second-first rounding rule used by
