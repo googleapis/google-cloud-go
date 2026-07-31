@@ -82,9 +82,6 @@ func (p *SessionPoolImpl) snapshotScalingHistory() []ScalingEvent {
 // Negative deltas are logged, not actioned. Stuck-session sweeping is
 // on its own loop (startSweepStuckSessionsLoop) at a coarser cadence.
 func (p *SessionPoolImpl) Tick(ctx context.Context) {
-	p.recordTimeSeries()
-	p.sampleActiveUptimes(ctx)
-
 	p.mu.Lock()
 	if p.closed || p.scalingInProgress {
 		p.mu.Unlock()
