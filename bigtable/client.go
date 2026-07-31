@@ -180,14 +180,16 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	retryOption := defaultRetryOption
 	executeQueryRetryOption := defaultExecuteQueryRetryOption
 
-	// Single source of truth for the DirectAccess bit — same value
-	// feeds the bigtable-features header, the session client's own
-	// header + envelope, and the dial-time DirectPath switch below.
-	allowDirectAccess := isDirectAccessEnabled(config)
-	directAccessMD := btransport.MarshalFeatureFlagsMD(btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
+	// Build feature-flags proto + header MD ONCE. Both are threaded
+	// into session.NewClient below so classic and session ship
+	// byte-identical bigtable-features headers AND session's
+	// OpenSessionRequest.Flags reuses the same proto reference —
+	// zero drift by construction, no re-marshal in session.
+	featureFlagsProto := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
 		ClientSideMetricsEnabled: metricsTracerFactory.Enabled,
-		EnableDirectAccess:       allowDirectAccess,
-	}))
+		EnableDirectAccess:       isDirectAccessEnabled(config),
+	})
+	directAccessMD := btransport.MarshalFeatureFlagsMD(featureFlagsProto)
 
 	var mPool btransport.ManagedChannelPool
 	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()
@@ -283,7 +285,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// in (endpoint, scopes, user-agent, interceptors) — passing
 		// bare opts leaves the resolver target empty and the dial
 		// aborts with "passthrough: received empty target in Build()".
-		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, allowDirectAccess, o...)
+		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, featureFlagsProto, o...)
 		if sessionErr != nil {
 			// Best-effort cleanup of the classic pool since we won't
 			// return c to the caller. Go through the ManagedChannelPool

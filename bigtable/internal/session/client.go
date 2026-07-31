@@ -273,7 +273,7 @@ func NewClient(
 	ctx context.Context,
 	project, instance, appProfile string,
 	metricsProvider metrics.MetricsProvider,
-	enableDirectAccess bool,
+	featureFlagsProto *btpb.FeatureFlags,
 	opts ...option.ClientOption,
 ) (Client, error) {
 	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, metricsProvider)
@@ -281,14 +281,9 @@ func NewClient(
 		return nil, fmt.Errorf("session.NewClient: metrics.NewFactory: %w", err)
 	}
 
-	// Feature-flag proto shared by the bigtable-features header AND
-	// OpenSessionRequest.Flags — build once so the header and the
-	// envelope byte-match (server rejects OpenSession with
-	// INVALID_ARGUMENT if they disagree on session-mode flags).
-	featureFlagsProto := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
-		ClientSideMetricsEnabled: factory.Enabled,
-		EnableDirectAccess:       enableDirectAccess,
-	})
+	// featureFlagsProto comes pre-built from the classic client so
+	// header and envelope both derive from the same proto reference.
+	// Marshal once here for the bigtable-features header.
 	directAccessMD := btransport.MarshalFeatureFlagsMD(featureFlagsProto)
 
 	fullInstance := fmt.Sprintf("projects/%s/instances/%s", project, instance)
