@@ -87,6 +87,16 @@ type Config struct {
 	// name; propagates into FeatureFlags on every OpenSessionRequest.
 	MetricsEnabled bool
 
+	// FeatureFlagsProto is the pre-built FeatureFlags proto stamped
+	// onto every OpenSessionRequest.Flags. When non-nil,
+	// newSessionClientFromParts stashes it directly rather than
+	// rebuilding — this is the byte-identical guarantee against the
+	// bigtable-features header (the server rejects OpenSession with
+	// INVALID_ARGUMENT if header and envelope disagree on session-mode
+	// flags). Left nil by the test-only newSessionClientFromParts
+	// callers, which fall back to reconstruction from MetricsEnabled.
+	FeatureFlagsProto *btpb.FeatureFlags
+
 	// SessionLoadListener is invoked whenever the server-driven
 	// ClientConfigurationManager reports a new session-load ratio. The
 	// bigtable Client wires this to Diverter.SetSessionLoad so the
@@ -352,13 +362,14 @@ func NewClient(
 	backgroundCtx, cancel := context.WithCancel(context.Background())
 
 	sc := newSessionClientFromParts(pool, stub, factory, Config{
-		Project:        project,
-		Instance:       instance,
-		AppProfile:     appProfile,
-		FeatureFlagsMD: directAccessMD,
-		ConfigMD:       configMD,
-		MetricsEnabled: factory.Enabled,
-		BackgroundCtx:  backgroundCtx,
+		Project:           project,
+		Instance:          instance,
+		AppProfile:        appProfile,
+		FeatureFlagsMD:    directAccessMD,
+		FeatureFlagsProto: featureFlagsProto,
+		ConfigMD:          configMD,
+		MetricsEnabled:    factory.Enabled,
+		BackgroundCtx:     backgroundCtx,
 		// EnableDebug intentionally left at zero (false): NewClient has
 		// no external caller upstream today, so exposing a positional
 		// bool on the constructor would ship a dead knob. When the
@@ -378,21 +389,26 @@ func newSessionClientFromParts(channelPool ChannelPool, stub btpb.BigtableClient
 	if cfg.MetricsEnabled && metricsFactory != nil {
 		_ = btransport.InitializeSessionMetrics(metricsFactory.OtelMeterProvider)
 	}
-	sc := &sessionClient{
-		cfg:            cfg,
-		channelPool:    channelPool,
-		stub:           stub,
-		metricsFactory: metricsFactory,
-		enableDebug:    cfg.EnableDebug,
-		// Same input as the bigtable-features header built in NewClient;
-		// same inputs → identical proto (deterministic modulo the
-		// CBT_FORCE_SESSION env var, which is read at both call sites
-		// back-to-back so the header and this envelope-side proto agree).
-		featureFlagsProto: btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
+	// Reuse the proto NewClient built for the bigtable-features header
+	// when the caller supplied one — byte-identical header + envelope
+	// is a hard invariant (server rejects OpenSession on mismatch).
+	// Fall back to a fresh build only for the test-only entry that
+	// doesn't route through NewClient.
+	ffProto := cfg.FeatureFlagsProto
+	if ffProto == nil {
+		ffProto = btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
 			ClientSideMetricsEnabled: cfg.MetricsEnabled,
 			EnableDirectAccess:       true,
-		}),
-		sessionPools: make(map[poolKey]*managedSessionPool),
+		})
+	}
+	sc := &sessionClient{
+		cfg:               cfg,
+		channelPool:       channelPool,
+		stub:              stub,
+		metricsFactory:    metricsFactory,
+		enableDebug:       cfg.EnableDebug,
+		featureFlagsProto: ffProto,
+		sessionPools:      make(map[poolKey]*managedSessionPool),
 	}
 	// stub == nil only happens on the test-only newSessionClientFromParts
 	// path (unit tests wiring a fake ChannelPool without a real gRPC stub).
