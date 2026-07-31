@@ -632,11 +632,13 @@ func TestGetOrCreateSession_NilSessionImplReturnsNil(t *testing.T) {
 // ─── sessionTableCache tests ──────────────────────────────────────────
 
 // newTestSessionTableCache builds a cache with an injectable clock.
-// Sweep interval is tiny (1ms) so the sweeper preempts predictably
-// in the eviction test. TTL is set per test.
+// Sweep interval is intentionally long — tests drive sweepOnce
+// directly instead of waiting on the background ticker, which is
+// wall-clock and flaky under CI scheduler pressure (#20266). TTL is
+// set per test.
 func newTestSessionTableCache(t *testing.T, ttl time.Duration, clock *fakeClock) *sessionTableCache {
 	t.Helper()
-	c := newSessionTableCache(ttl, 1*time.Millisecond, clock.now)
+	c := newSessionTableCache(ttl, 1*time.Hour, clock.now)
 	t.Cleanup(c.close)
 	return c
 }
@@ -747,33 +749,33 @@ func TestSessionTableCache_CloseEvictsAndFires(t *testing.T) {
 	}
 }
 
-// TestSessionTableCache_TTLSweepEvictsIdle pins that the background
-// sweeper evicts entries whose lastAccess is older than TTL, and
-// calls the underlying Close on eviction.
+// TestSessionTableCache_TTLSweepEvictsIdle pins that a sweep evicts
+// entries whose lastAccess is older than TTL, and calls the
+// underlying Close on eviction.
+//
+// Drives sweepOnce directly instead of polling on the background
+// ticker: the ticker fires at a real-wall-clock cadence and, under CI
+// scheduler pressure, may not run within the assertion's deadline
+// window even at a 1ms interval — see #20266 for the flake pattern.
+// Same-package access to sweepOnce lets us exercise the sweep logic
+// deterministically without any wall-clock dependency.
 func TestSessionTableCache_TTLSweepEvictsIdle(t *testing.T) {
 	clock := newFakeClock(time.Unix(1_700_000_000, 0))
 	var closeCount atomic.Int32
-	c := newSessionTableCache(1*time.Hour, 1*time.Millisecond, clock.now)
+	// Use a long sweepInterval so the background ticker never races the
+	// direct sweepOnce call below — the test asserts sweep behavior,
+	// not scheduler timing.
+	c := newSessionTableCache(1*time.Hour, 1*time.Hour, clock.now)
 	t.Cleanup(c.close)
 
 	// Open two handles, touch neither.
 	_ = c.getOrOpen("tbl:a", openClosing("tbl:a", &closeCount))
 	_ = c.getOrOpen("tbl:b", openClosing("tbl:b", &closeCount))
 
-	// Advance past TTL and let the 1ms sweeper fire.
+	// Advance past TTL and drive a sweep synchronously.
 	clock.advance(2 * time.Hour)
-	// The 1ms sweep ticker will fire; give it a few sweeps' worth of
-	// wall-clock to definitely run.
-	deadline := time.Now().Add(500 * time.Millisecond)
-	for time.Now().Before(deadline) {
-		c.mu.Lock()
-		n := len(c.entries)
-		c.mu.Unlock()
-		if n == 0 {
-			break
-		}
-		time.Sleep(2 * time.Millisecond)
-	}
+	c.sweepOnce()
+
 	c.mu.Lock()
 	n := len(c.entries)
 	c.mu.Unlock()
@@ -800,8 +802,9 @@ func TestSessionTableCache_TouchDefersEviction(t *testing.T) {
 		clock.advance(30 * time.Minute)
 		_, _ = h.ReadRow(context.Background(), &btpb.SessionReadRowRequest{Key: []byte("r")})
 	}
-	// Give the sweeper a chance to run; it should NOT evict.
-	time.Sleep(20 * time.Millisecond)
+	// Drive a sweep directly; touch-driven lastAccess should keep the
+	// entry alive despite the clock advance.
+	c.sweepOnce()
 	c.mu.Lock()
 	_, present := c.entries["tbl:t"]
 	c.mu.Unlock()
