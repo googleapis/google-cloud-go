@@ -257,8 +257,6 @@ func (s *Session) awaitInvokeResult(ctx context.Context, rpc *vrpcImpl, desc VRp
 // under slotMu, handleVRPCResponse gates the id match BEFORE drainSlot,
 // so deliver can only ever put a matching-id response into resultChan.
 func (s *Session) processResult(desc VRpcDescriptor, result *InvokeResult, res vrpcResult) error {
-	// wire = Send→Recv wall clock; used only to derive TransportLatency
-	// once BackendLatency is known below.
 	wire := time.Since(result.SentAt)
 	ci := res.ClusterInfo()
 	result.ClusterInfo = ci
@@ -285,10 +283,6 @@ func (s *Session) processResult(desc VRpcDescriptor, result *InvokeResult, res v
 	if res.resp.Stats != nil && res.resp.Stats.BackendLatency != nil {
 		backend := res.resp.Stats.BackendLatency.AsDuration()
 		s.recordLatency(backend)
-		// TransportLatency = wire − backend = AFE-attributable
-		// overhead. wire ≥ backend by construction; the downstream
-		// `> 0` gate at the pool's histogram/OTel record sites
-		// filters the vanishingly-rare clock-skew edge.
 		result.TransportLatency = wire - backend
 	}
 	return nil
