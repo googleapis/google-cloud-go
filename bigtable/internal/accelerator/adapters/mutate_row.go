@@ -23,6 +23,8 @@ import (
 // MutateRowRequestAdapter adapts V2 MutateRowRequest to SessionMutateRowRequest.
 type MutateRowRequestAdapter struct{}
 
+// Adapt converts a V2 MutateRowRequest into a SessionMutateRowRequest,
+// carrying over the row key and mutations. It returns nil for a nil input.
 func (a *MutateRowRequestAdapter) Adapt(from *v2pb.MutateRowRequest) (*v2pb.SessionMutateRowRequest, error) {
 	if from == nil {
 		return nil, nil
@@ -55,6 +57,9 @@ func (a *MutateRowRequestAdapter) ExtractResource(from *v2pb.MutateRowRequest) (
 // MutateRowResponseAdapter adapts SessionMutateRowResponse to MutateRowResponse.
 type MutateRowResponseAdapter struct{}
 
+// Adapt converts a SessionMutateRowResponse into a V2 MutateRowResponse. The V2
+// response carries no fields, so this returns an empty response on success and
+// nil for a nil input.
 func (a *MutateRowResponseAdapter) Adapt(from *v2pb.SessionMutateRowResponse) (*v2pb.MutateRowResponse, error) {
 	if from == nil {
 		return nil, nil

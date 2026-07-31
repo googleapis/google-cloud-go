@@ -24,6 +24,10 @@ import (
 // ReadRowRequestAdapter adapts V2 ReadRowsRequest to SessionReadRowRequest.
 type ReadRowRequestAdapter struct{}
 
+// Adapt converts a V2 ReadRowsRequest into a SessionReadRowRequest for a point
+// read, carrying over the filter and extracting the single row key from either
+// RowKeys[0] or the closed start key of RowRanges[0]. It returns nil for a nil
+// input.
 func (a *ReadRowRequestAdapter) Adapt(from *v2pb.ReadRowsRequest) (*v2pb.SessionReadRowRequest, error) {
 	if from == nil {
 		return nil, nil
@@ -70,6 +74,10 @@ func (a *ReadRowRequestAdapter) ExtractResource(from *v2pb.ReadRowsRequest) (Res
 // CommitRow on the last chunk).
 type ReadRowResponseAdapter struct{}
 
+// Adapt converts a SessionReadRowResponse into a V2 ReadRowsResponse, flattening
+// the row's families, columns, and cells into CellChunks with the on-wire
+// boundary markers. It returns nil when the input or its row is nil, or when the
+// row contains no cells.
 func (a *ReadRowResponseAdapter) Adapt(from *v2pb.SessionReadRowResponse) (*v2pb.ReadRowsResponse, error) {
 	if from == nil || from.Row == nil {
 		return nil, nil
