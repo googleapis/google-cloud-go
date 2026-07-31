@@ -60,6 +60,15 @@ type ChannelPoolDebug struct {
 	// SessionsByChannel maps a connEntry index to the sessions riding
 	// on it. Populated only for the "session" role.
 	SessionsByChannel map[int][]SessionRef
+	// InstanceName is the fully-qualified Bigtable instance path
+	// ("projects/P/instances/I") the pool dials. Populated by the
+	// Client that owns the pool; renderers use it as the top-line
+	// identifier on the channelz page. Empty if the caller couldn't
+	// determine it.
+	InstanceName string
+	// AppProfile is the app profile id every RPC on this pool carries.
+	// Empty when the caller uses the default profile.
+	AppProfile string
 }
 
 // SessionRef identifies one session for the channelz → sessionz reverse

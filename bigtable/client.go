@@ -67,6 +67,10 @@ type Client struct {
 	// are lazily materialized on first use, so an idle client pays
 	// only for one channel pool and one config-poll goroutine.
 	sessionImpl session.Client
+	// tcpStats is populated when ClientConfig.EnableDebug is true. Nil
+	// otherwise. Client.TCPStats() returns this directly; callers hand
+	// it to bigtable/debugview.Handler for the tcpz page.
+	tcpStats *TCPStats
 	// sessionTables caches per-resource session.TableAPI handles so
 	// repeat Open* calls return the same handle (and by extension the
 	// same underlying session pools). session.Client does not cache;
@@ -101,6 +105,21 @@ type ClientConfig struct {
 
 	// DisableDirectAccess disables direct access by default.
 	DisableDirectAccess bool
+
+	// EnableDebug opts the client into the /debug/{sessionz,afez,loadz,
+	// channelz,configz,tcpz,debugtagsz} pages served by
+	// bigtable/debugview.Handler.
+	//
+	// When true, NewClientWithConfig auto-constructs the internal
+	// TCPStats collector and attaches its dial option so per-connection
+	// TCP_INFO scraping is available via Client.TCPStats(). The session-,
+	// channel-, and config-debug providers are unconditionally reachable
+	// via Client.SessionDebug / ChannelDebug / ConfigDebug regardless of
+	// this flag; EnableDebug is purely about opting into the extra
+	// dial-time interception TCPStats needs.
+	//
+	// Zero cost when false — no TCPStats allocation, no dial hook.
+	EnableDebug bool
 }
 
 // MetricsProvider is a wrapper for the built-in metrics meter provider.
@@ -173,6 +192,17 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// Allow non-default service account in DirectPath.
 	o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
 	o = append(o, opts...)
+	// When EnableDebug is set, construct the TCPStats collector and
+	// append its dial option so every subsequent gRPC dial (both the
+	// classic channel pool and, via option propagation, the session
+	// channel pool) registers with the collector. Stashed on Client
+	// so callers can retrieve it via Client.TCPStats() and hand it to
+	// bigtable/debugview.Handler.
+	var tcpStats *TCPStats
+	if config.EnableDebug {
+		tcpStats = NewTCPStats()
+		o = append(o, tcpStats.ClientOption())
+	}
 	o = append(o, internaloption.EnableNewAuthLibrary())
 	o = append(o, internaloption.EnableJwtWithScope())
 
@@ -250,6 +280,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		featureFlagsMD:          directAccessMD,
 		mPool:                   mPool,
 		diverter:                btransport.NewDiverter(0.0),
+		tcpStats:                tcpStats,
 	}
 
 	// Session data-plane backend construction has two guardrails so it
@@ -292,7 +323,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// in (endpoint, scopes, user-agent, interceptors) — passing
 		// bare opts leaves the resolver target empty and the dial
 		// aborts with "passthrough: received empty target in Build()".
-		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, o...)
+		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, config.EnableDebug, o...)
 		if sessionErr != nil {
 			// Best-effort cleanup of the classic pool since we won't
 			// return c to the caller. Go through the ManagedChannelPool

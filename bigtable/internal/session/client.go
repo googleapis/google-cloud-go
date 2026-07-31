@@ -124,6 +124,17 @@ type Config struct {
 	// off. The debug surface is otherwise unchanged; flipping the
 	// flag on or off requires rebuilding the client.
 	EnableDebug bool
+
+	// DisableSessionAwareChannelPool reverts to the classic RPC-load-
+	// driven DynamicScaleMonitor for channel-pool sizing. Default
+	// (false) is the recommended production behavior: session-count-
+	// driven sizing keeps per-channel session load under the server-
+	// specified soft cap (ChannelPoolConfiguration.PerServerSessionCount).
+	//
+	// Escape hatch — flip on if a deployment sees pathological churn
+	// under the session-aware policy and needs the classic behavior
+	// while root-cause is investigated.
+	DisableSessionAwareChannelPool bool
 }
 
 // managedSessionPool bundles a pool with its config-listener unregister
@@ -237,6 +248,15 @@ type sessionClient struct {
 	// managed.Pool == nil, so Close falls back to sc.channelPool.Close().
 	managedChannelPool btransport.ManagedChannelPool
 
+	// scaleMonitor sizes the shared channel pool from live session count
+	// instead of RPC load. Populated by NewClient when
+	// Config.DisableSessionAwareChannelPool is false (default). Nil on
+	// the test-only newSessionClientFromParts path and when the opt-out
+	// flag is set. Close() stops it before managed.Close so no scale
+	// tick races against pool teardown.
+	scaleMonitor       *btransport.SessionAwareScaleMonitor
+	scaleMonitorUnreg  func()
+
 	// enableDebug mirrors Config.EnableDebug. When false, pools this
 	// client mints short-circuit every allocating debug recorder and
 	// SessionDebug() returns nil so /debug/ renders a "not enabled"
@@ -269,6 +289,7 @@ func NewClient(
 	ctx context.Context,
 	project, instance, appProfile string,
 	metricsProvider metrics.MetricsProvider,
+	enableDebug bool,
 	opts ...option.ClientOption,
 ) (Client, error) {
 	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, metricsProvider)
@@ -340,11 +361,17 @@ func NewClient(
 	if err != nil {
 		return nil, fmt.Errorf("session.NewClient: NewBigtableChannelPool: %w", err)
 	}
-	dsm := btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), pool)
-	dsm.Start(ctx)
+	// DynamicScaleMonitor is skipped in favor of SessionAwareScaleMonitor
+	// (registered after sc.configManager exists — see below). The two
+	// policies can't share a pool: both would fight to add/remove
+	// connections on independent signals. Session-aware is the more
+	// informed signal for the session data plane; RPC-load stays
+	// available on the classic path (bigtable/internal/transport/
+	// channel_pool_factory.go). ManagedChannelPool.Close is nil-safe on
+	// Dsm so passing nil here doesn't break the teardown chain.
 	connRecycler := btransport.NewConnectionRecycler(btopt.DefaultConnectionRecycleConfig(), pool)
 	connRecycler.Start(ctx)
-	managed := btransport.NewManagedChannelPool(pool, dsm, connRecycler)
+	managed := btransport.NewManagedChannelPool(pool, nil, connRecycler)
 	stub := btpb.NewBigtableClient(pool)
 
 	backgroundCtx, cancel := context.WithCancel(context.Background())
@@ -358,14 +385,14 @@ func NewClient(
 		MetricsEnabled:   factory.Enabled,
 		DisableRetryInfo: false,
 		BackgroundCtx:    backgroundCtx,
-		// EnableDebug intentionally left at zero (false): NewClient has
-		// no external caller upstream today, so exposing a positional
-		// bool on the constructor would ship a dead knob. When the
-		// top-level bigtable.Client wiring lands, that PR can plumb
-		// EnableClientDebug into this Config field directly.
+		EnableDebug:      enableDebug,
 	})
 	sc.backgroundCancel = cancel
 	sc.managedChannelPool = managed
+	// SessionAwareScaleMonitor is only meaningful once sc.configManager
+	// exists — newSessionClientFromParts constructs it inline. Register
+	// after that call so the config listener has something to hook.
+	sc.registerScaleMonitor(pool)
 	return sc, nil
 }
 
@@ -515,6 +542,26 @@ func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 	return newSessionTable("", openRead, nil, closeRead, nil, btransport.READ_ROW_MAT_VIEW, nil, sc.perResourceMetadata(fullName, "materialized_view_name", fullName), sc.metricsFactory)
 }
 
+// registerScaleMonitor wires SessionAwareScaleMonitor to the shared
+// channel pool, hooking its OnConfig into ClientConfigurationManager
+// so the sizer reacts to server-driven min/max/perServerSessionCount
+// updates. Skipped when the opt-out flag is set or when configManager
+// is nil (test-fake path).
+//
+// The monitor reads its session-count signal directly from
+// BigtableChannelPool.TotalStreamCount — sessions are bidi streams
+// (one streamingLoad increment on the picked connEntry when they
+// open), so the pool already tracks the number without any
+// cross-package plumbing.
+func (sc *sessionClient) registerScaleMonitor(pool *btransport.BigtableChannelPool) {
+	if sc.cfg.DisableSessionAwareChannelPool || sc.configManager == nil || pool == nil {
+		return
+	}
+	sc.scaleMonitor = btransport.NewSessionAwareScaleMonitor(pool)
+	sc.scaleMonitorUnreg = sc.configManager.AddChannelPoolConfigListener(sc.scaleMonitor.OnConfig)
+	sc.scaleMonitor.Start(sc.cfg.BackgroundCtx)
+}
+
 // Close tears down in a phased order that keeps late callbacks from
 // firing against half-dead pools:
 //  1. Stop config polling — no more UpdateConfig can fire after.
@@ -542,8 +589,20 @@ func (sc *sessionClient) Close() error {
 	managed := sc.managedChannelPool
 	factory := sc.metricsFactory
 	cancel := sc.backgroundCancel
+	sam := sc.scaleMonitor
+	samUnreg := sc.scaleMonitorUnreg
 	sc.sessionPoolsMu.Unlock()
 
+	// Stop the scale monitor BEFORE mgr.Close so a mid-tick reconcile
+	// can't fire an addConnections into a channel pool that Phase 4
+	// is about to tear down. Order: unregister listener → Stop the
+	// monitor's goroutine → then unwind everything else.
+	if samUnreg != nil {
+		samUnreg()
+	}
+	if sam != nil {
+		sam.Stop()
+	}
 	if mgr != nil {
 		mgr.Close()
 	}
