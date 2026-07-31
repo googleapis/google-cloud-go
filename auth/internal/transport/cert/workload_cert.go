@@ -78,8 +78,7 @@ func GetFileBasedCertificatePath(configFilePath string) (string, error) {
 	return info.certPath, nil
 }
 
-// IsECPConfig checks if the given configuration specifies that ECP
-// (Enterprise Certificate Proxy) is enabled.
+// IsECPConfig checks if the given configuration is an ECP certificate configuration.
 func IsECPConfig(configFilePath string) bool {
 	configFilePath = GetConfigFilePath(configFilePath)
 	info, err := parseCertConfig(configFilePath)

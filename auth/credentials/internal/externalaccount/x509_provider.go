@@ -60,11 +60,11 @@ func loadLeafCertificate(configFilePath string) (*x509.Certificate, error) {
 	// Get the path to the certificate file from the configuration file.
 	path, err := cert.GetFileBasedCertificatePath(configFilePath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get certificate path from config file: %w", err)
+		return nil, fmt.Errorf("credentials: failed to get certificate path from config file: %w", err)
 	}
 	leafCertBytes, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read leaf certificate file: %w", err)
+		return nil, fmt.Errorf("credentials: failed to read leaf certificate file: %w", err)
 	}
 	// Parse the certificate bytes.
 	return parseCertificate(leafCertBytes)
@@ -79,20 +79,20 @@ func encodeCert(cert *x509.Certificate) string {
 // parseCertificate parses a PEM-encoded certificate from the given byte slice.
 func parseCertificate(certData []byte) (*x509.Certificate, error) {
 	if len(certData) == 0 {
-		return nil, errors.New("invalid certificate data: empty input")
+		return nil, errors.New("credentials: invalid certificate data: empty input")
 	}
 	// Decode the PEM-encoded data.
 	block, _ := pem.Decode(certData)
 	if block == nil {
-		return nil, errors.New("invalid PEM-encoded certificate data: no PEM block found")
+		return nil, errors.New("credentials: invalid PEM-encoded certificate data: no PEM block found")
 	}
 	if block.Type != "CERTIFICATE" {
-		return nil, fmt.Errorf("invalid PEM-encoded certificate data: expected CERTIFICATE block type, got %s", block.Type)
+		return nil, fmt.Errorf("credentials: invalid PEM-encoded certificate data: expected CERTIFICATE block type, got %s", block.Type)
 	}
 	// Parse the DER-encoded certificate.
 	certificate, err := x509.ParseCertificate(block.Bytes)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse certificate: %w", err)
+		return nil, fmt.Errorf("credentials: failed to parse certificate: %w", err)
 	}
 	return certificate, nil
 }
@@ -111,9 +111,9 @@ func readTrustChain(trustChainPath string) ([]*x509.Certificate, error) {
 	trustChainData, err := os.ReadFile(trustChainPath)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
-			return nil, fmt.Errorf("trust chain file not found: %w", err)
+			return nil, fmt.Errorf("credentials: trust chain file not found: %w", err)
 		}
-		return nil, fmt.Errorf("failed to read trust chain file: %w", err)
+		return nil, fmt.Errorf("credentials: failed to read trust chain file: %w", err)
 	}
 
 	// Split the file content into PEM certificate blocks.
@@ -131,7 +131,7 @@ func readTrustChain(trustChainPath string) ([]*x509.Certificate, error) {
 			// Parse the certificate data.
 			cert, err := parseCertificate([]byte(certData))
 			if err != nil {
-				return nil, fmt.Errorf("error parsing certificate from trust chain file: %w", err)
+				return nil, fmt.Errorf("credentials: error parsing certificate from trust chain file: %w", err)
 			}
 
 			// Append the certificate to the trust chain.
@@ -145,27 +145,27 @@ func readTrustChain(trustChainPath string) ([]*x509.Certificate, error) {
 func (xp *x509Provider) ecpSubjectToken(configFilePath string) (string, error) {
 	key, err := client.Cred(configFilePath)
 	if err != nil {
-		return "", fmt.Errorf("failed to initialize ECP client: %w", err)
+		return "", fmt.Errorf("credentials: failed to initialize ECP client: %w", err)
 	}
 	defer key.Close()
 
 	rawChain := key.CertificateChain()
 	if len(rawChain) == 0 {
-		return "", errors.New("ECP returned an empty certificate chain")
+		return "", errors.New("credentials: ECP returned an empty certificate chain")
 	}
 
 	certChain := make([]string, 0, len(rawChain))
 	for _, derBytes := range rawChain {
 		cert, err := x509.ParseCertificate(derBytes)
 		if err != nil {
-			return "", fmt.Errorf("failed to parse certificate from ECP chain: %w", err)
+			return "", fmt.Errorf("credentials: failed to parse certificate from ECP chain: %w", err)
 		}
 		certChain = append(certChain, encodeCert(cert))
 	}
 
 	jsonChain, err := json.Marshal(certChain)
 	if err != nil {
-		return "", fmt.Errorf("failed to format certificate data: %w", err)
+		return "", fmt.Errorf("credentials: failed to format certificate data: %w", err)
 	}
 
 	return string(jsonChain), nil
@@ -189,13 +189,13 @@ func (xp *x509Provider) subjectToken(context.Context) (string, error) {
 	// Load the leaf certificate.
 	leafCert, err := loadLeafCertificate(configFilePath)
 	if err != nil {
-		return "", fmt.Errorf("failed to load leaf certificate: %w", err)
+		return "", fmt.Errorf("credentials: failed to load leaf certificate: %w", err)
 	}
 
 	// Read the trust chain.
 	trustChain, err := readTrustChain(xp.TrustChainPath)
 	if err != nil {
-		return "", fmt.Errorf("failed to read trust chain: %w", err)
+		return "", fmt.Errorf("credentials: failed to read trust chain: %w", err)
 	}
 
 	// Initialize the certificate chain with the leaf certificate.
@@ -216,7 +216,7 @@ func (xp *x509Provider) subjectToken(context.Context) (string, error) {
 
 			// Return an error if the current certificate is the same as the leaf certificate.
 			if encoded == certChain[0] {
-				return "", errors.New("the leaf certificate must be at the top of the trust chain file")
+				return "", errors.New("credentials: the leaf certificate must be at the top of the trust chain file")
 			}
 
 			// Add the current certificate to the chain.
@@ -227,7 +227,7 @@ func (xp *x509Provider) subjectToken(context.Context) (string, error) {
 	// Convert the certificate chain to a JSON array of base64-encoded strings.
 	jsonChain, err := json.Marshal(certChain)
 	if err != nil {
-		return "", fmt.Errorf("failed to format certificate data: %w", err)
+		return "", fmt.Errorf("credentials: failed to format certificate data: %w", err)
 	}
 
 	// Return the JSON-formatted certificate chain.
