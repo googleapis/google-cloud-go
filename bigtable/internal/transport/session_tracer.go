@@ -43,7 +43,7 @@ var (
 	sessionMetricsErr  error
 )
 
-// SessionLifetimeBounds is a session-scale bucketing for histograms
+// sessionLifetimeBounds is a session-scale bucketing for histograms
 // whose samples span minutes-to-hours (an idle session lives until
 // server-driven scale-down, typically several minutes). The layout is
 // {0} + geometric doubling from 1ms to ~17.5min, matching the
@@ -54,7 +54,7 @@ var (
 // past 10s falls into the last bucket and p50/p95/p99 all render as
 // "10000ms" on the dashboard. Shared by session.durations and
 // session.uptime.
-var SessionLifetimeBounds = func() []float64 {
+var sessionLifetimeBounds = func() []float64 {
 	b := []float64{0}
 	for v := float64(1); v <= 1_200_000; v *= 2 {
 		b = append(b, v)
@@ -97,7 +97,7 @@ func InitializeSessionMetrics(meterProvider metric.MeterProvider) error {
 			"session.durations",
 			metric.WithDescription("Duration a session was alive (startTime → close)"),
 			metric.WithUnit("ms"),
-			metric.WithExplicitBucketBoundaries(SessionLifetimeBounds...),
+			metric.WithExplicitBucketBoundaries(sessionLifetimeBounds...),
 		); err != nil {
 			sessionMetricsErr = fmt.Errorf("create session.durations histogram: %w", err)
 			return
@@ -115,7 +115,7 @@ func InitializeSessionMetrics(meterProvider metric.MeterProvider) error {
 			"session.uptime",
 			metric.WithDescription("Age of currently-active sessions, sampled periodically"),
 			metric.WithUnit("ms"),
-			metric.WithExplicitBucketBoundaries(SessionLifetimeBounds...),
+			metric.WithExplicitBucketBoundaries(sessionLifetimeBounds...),
 		); err != nil {
 			sessionMetricsErr = fmt.Errorf("create session.uptime histogram: %w", err)
 			return

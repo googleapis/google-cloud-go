@@ -46,7 +46,7 @@ import (
 // first poll to return. Session pools intentionally IGNORE
 // option.WithGRPCConnectionPool(N) — pool shape is server-driven
 // end-to-end.
-const defaultSessionChannelPoolSize = 4
+const defaultSessionChannelPoolSize = 10
 
 // Standard gRPC routing headers — aliased to the shared exports in
 // internal/transport so the session package and the top-level bigtable
