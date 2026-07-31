@@ -527,6 +527,17 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 	// in-flight counter and feeds the per-AFE PeakEwma with the outcome.
 	// The AFE-wake fires from the response handler BEFORE this defer runs,
 	// so pickers may see pre-update EWMAs for one tick — accepted lag.
+	//
+	// noteVRpcOutcome is fed rpcLatency (latency − poolWait), NOT the
+	// full user-visible latency. The AFE picker's e2eEwma / transportEwma
+	// should reflect the AFE's own contribution, not our pool-side queue
+	// contention. Passing raw `latency` would poison the picker: under
+	// pool saturation every AFE that happens to be picked during a queue
+	// spike gets a 10-30ms sample fed into its EWMA even though the AFE
+	// actually served a 1ms wire+backend round-trip. LeastLatencyPicker
+	// would then steer traffic AWAY from those AFEs on the next tick,
+	// and over time every AFE's EWMA drifts upward as saturation events
+	// contaminate the signal.
 	var (
 		invokeErr  error
 		backendDur time.Duration
@@ -534,7 +545,14 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 	)
 	defer func() {
 		sh.DecOutstanding()
-		p.noteVRpcOutcome(sh, latency, backendDur, invokeErr == nil)
+		rpcLatency := latency - poolWait
+		if rpcLatency < 0 {
+			// Should never happen — latency is computed AFTER poolWait,
+			// so rpcLatency ≥ 0 by construction. Defensive to avoid a
+			// negative sample poisoning the picker on a clock-skew edge.
+			rpcLatency = 0
+		}
+		p.noteVRpcOutcome(sh, rpcLatency, backendDur, invokeErr == nil)
 	}()
 
 	var result InvokeResult
