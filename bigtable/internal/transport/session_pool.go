@@ -280,10 +280,6 @@ func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, 
 				idle.IncPicks()
 				return idle, nil
 			}
-			// Picker chose this AFE but its ready session was taken
-			// (concurrent Checkout / OnClosing eviction). Counter tells
-			// us how often it's actually hurting throughput.
-			recordDebugTag(tagSessionPoolPickLostRace)
 		}
 
 		// Slow path: picker returned nil or 2 checkoutSession raced and returned the same AFE id. Dying sessions leave sl.readyCount

@@ -123,7 +123,6 @@ const (
 	// a client-side bug, an error is typically transient — so ops
 	// should be able to grep them apart in the debug-tag counters.
 	tagSessionPoolCreatePanic                = "session_pool_create_panic"
-	tagSessionPoolPickLostRace               = "session_pool_pick_lost_race"
 	tagSessionPoolConsecutiveFailuresTripped = "session_pool_consecutive_failures_tripped"
 	// tagSessionPoolNoBudget fires when createSession's budget.Acquire
 	// returns an error — either poolCtx cancel (teardown) or the
