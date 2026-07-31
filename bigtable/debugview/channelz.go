@@ -60,13 +60,17 @@ func (s *channelzServer) handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := channelzTpl.Execute(w, channelzPageData{
+	// If Execute errors partway through, the body has already been
+	// (partially) written and the status code is committed to 200 —
+	// calling http.Error here would trigger a "superfluous
+	// WriteHeader" warning without doing anything useful for the
+	// client. Silently swallow; the partial page is what the caller
+	// gets to see.
+	_ = channelzTpl.Execute(w, channelzPageData{
 		Pools:       pools,
 		Generated:   time.Now(),
 		HasProvider: s.provider != nil,
-	}); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	})
 }
 
 type channelzPageData struct {

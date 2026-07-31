@@ -269,6 +269,7 @@ func NewClient(
 	ctx context.Context,
 	project, instance, appProfile string,
 	metricsProvider metrics.MetricsProvider,
+	enableDebug bool,
 	opts ...option.ClientOption,
 ) (Client, error) {
 	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, metricsProvider)
@@ -358,11 +359,7 @@ func NewClient(
 		MetricsEnabled:   factory.Enabled,
 		DisableRetryInfo: false,
 		BackgroundCtx:    backgroundCtx,
-		// EnableDebug intentionally left at zero (false): NewClient has
-		// no external caller upstream today, so exposing a positional
-		// bool on the constructor would ship a dead knob. When the
-		// top-level bigtable.Client wiring lands, that PR can plumb
-		// EnableClientDebug into this Config field directly.
+		EnableDebug:      enableDebug,
 	})
 	sc.backgroundCancel = cancel
 	sc.managedChannelPool = managed
