@@ -724,7 +724,7 @@ A spike in the &lt;1m bucket indicates churn (sessions dying young — usually G
 <td class="num" title="java-parity ClientTransportLatency = (stream Send→Recv) − Backend; wire + AFE + client-decode overhead outside server processing">{{dur .TransportLatency}}</td>
 <td class="num" title="server-reported BackendLatency">{{dur .BackendLatency}}</td>
 <td class="mono">{{.Session}}</td>
-<td class="num" title="per-session 1-indexed RPC id; small values indicate a fresh session">{{.RpcIDOnSession}}</td>
+<td class="num" title="per-session 1-indexed RPC id; small values indicate a fresh session">{{.RPCIDOnSession}}</td>
 <td class="num" title="age of the session at the time of this call">{{dur .SessionAge}}</td>
 <td class="mono" title="ApplicationFrontendId (hex) / region / subzone of the AFE this session was bound to at call time">{{with (peerShort .Peer)}}{{.}}{{else}}—{{end}}</td>
 <td class="mono" title="TCP remote (AFE) addr this session's stream is bound to. Click to filter tcpz to the conn(s) with this remote.">{{if .RemoteAddr}}<a href="../../tcpz/?remote={{.RemoteAddr | urlquery}}">{{.RemoteAddr}}</a>{{else}}—{{end}}</td>

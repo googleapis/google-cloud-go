@@ -43,27 +43,89 @@ type ConfigDebugProvider = btransport.ConfigDebugProvider
 
 // SessionDebug returns a SessionDebugProvider for this Client. Returns
 // nil when the session backend isn't wired (hand-built or emulator-only
-// Clients where sessionImpl is nil) or when the session client's own
-// debug recorders are disabled. The debugview handler renders the
-// "not enabled" panel in that case.
+// Clients where sessionImpl is nil) or when session-side debug
+// recorders are disabled.
+//
+// The concrete provider layers the mixed-mode Diverter on top of the
+// session client's own session-only provider. sessionImpl.SessionDebug
+// intentionally returns an empty DiverterSnapshot (per its doc, "only
+// bigtable.Client knows about the classic/session split"); the adapter
+// below overrides Diverter() with the Client's actual Diverter.Snapshot.
 func (c *Client) SessionDebug() SessionDebugProvider {
 	if c.sessionImpl == nil {
 		return nil
 	}
-	return c.sessionImpl.SessionDebug()
-}
-
-// ChannelDebug returns a ChannelDebugProvider for this Client. Returns
-// nil when the session backend isn't wired. When wired, delegates to
-// sessionImpl.ChannelDebug — which contributes entries for the session
-// channel pool. The classic-side pool is not surfaced here today; if
-// that becomes needed, wrap this in a mixed-mode adapter that adds a
-// classic entry from c.mPool.
-func (c *Client) ChannelDebug() ChannelDebugProvider {
-	if c.sessionImpl == nil {
+	base := c.sessionImpl.SessionDebug()
+	if base == nil {
 		return nil
 	}
-	return c.sessionImpl.ChannelDebug()
+	return mixedModeSessionDebug{base: base, diverter: c.diverter}
+}
+
+// mixedModeSessionDebug wraps a session-only provider with the Client's
+// classic/session Diverter. Snapshot + LoadBalancingSnapshots pass
+// through unchanged; only Diverter() overrides.
+type mixedModeSessionDebug struct {
+	base     SessionDebugProvider
+	diverter *btransport.Diverter
+}
+
+func (m mixedModeSessionDebug) Snapshot() []btransport.PoolSnapshot {
+	return m.base.Snapshot()
+}
+
+func (m mixedModeSessionDebug) LoadBalancingSnapshots() []btransport.LoadBalancingSnapshot {
+	return m.base.LoadBalancingSnapshots()
+}
+
+func (m mixedModeSessionDebug) Diverter() btransport.DiverterSnapshot {
+	if m.diverter == nil {
+		return btransport.DiverterSnapshot{}
+	}
+	return m.diverter.Snapshot()
+}
+
+// ChannelDebug returns a ChannelDebugProvider for this Client. Emits
+// exactly one entry for the classic channel pool (Role="classic") and
+// prepends the session channel pool entries when the session backend
+// is wired.
+func (c *Client) ChannelDebug() ChannelDebugProvider {
+	return mixedModeChannelDebug{client: c}
+}
+
+// mixedModeChannelDebug composes the Client's classic channel pool
+// with the session pool contributed by sessionImpl. Emits the classic
+// entry first (Role="classic"), then the session entry (Role="session")
+// when session pooling is enabled and its pool is a
+// *btransport.BigtableChannelPool (skipped otherwise — test fakes may
+// substitute a non-BigtableChannelPool).
+type mixedModeChannelDebug struct {
+	client *Client
+}
+
+func (a mixedModeChannelDebug) Snapshot() []ChannelPoolDebug {
+	out := make([]ChannelPoolDebug, 0, 2)
+	if p := bigtableChannelPool(a.client.mPool.Pool); p != nil {
+		out = append(out, ChannelPoolDebug{Role: "classic", Snapshot: p.ChannelPoolSnapshot()})
+	}
+	if a.client.sessionImpl != nil {
+		if sp := a.client.sessionImpl.ChannelDebug(); sp != nil {
+			out = append(out, sp.Snapshot()...)
+		}
+	}
+	return out
+}
+
+// bigtableChannelPool extracts *btransport.BigtableChannelPool from a
+// gtransport.ConnPool, returning nil if the pool isn't a
+// BigtableChannelPool (e.g. an emulator-only client that uses the
+// simple gtransport.DialPool).
+func bigtableChannelPool(p interface{}) *btransport.BigtableChannelPool {
+	if p == nil {
+		return nil
+	}
+	bp, _ := p.(*btransport.BigtableChannelPool)
+	return bp
 }
 
 // ConfigDebug returns a ConfigDebugProvider for this Client. Returns
@@ -78,8 +140,8 @@ func (c *Client) ConfigDebug() ConfigDebugProvider {
 
 // TCPStats returns the per-connection TCP_INFO collector when
 // ClientConfig.EnableDebug was set at construction, else nil. The
-// returned pointer is safe to hand directly to
-// bigtable/debugview.Handler for the tcpz page.
+// returned pointer is safe to hand to bigtable/debugview.Handler for
+// the tcpz page.
 func (c *Client) TCPStats() *TCPStats {
 	return c.tcpStats
 }
