@@ -192,8 +192,8 @@ a:hover{text-decoration:underline}
 {{$sessionsByChan := .SessionsByChannel}}
 <h3 id="pool-{{.Role}}">{{.Role}} pool</h3>
 <div class="summary">
-<span><b>Instance</b> <span class="mono">{{orDash .Snapshot.InstanceName}}</span></span>
-<span><b>App&nbsp;profile</b> <span class="mono">{{orDash .Snapshot.AppProfile}}</span></span>
+<span><b>Instance</b> <span class="mono">{{orDash .InstanceName}}</span></span>
+<span><b>App&nbsp;profile</b> <span class="mono">{{orDash .AppProfile}}</span></span>
 <span><b>LB&nbsp;policy</b> {{orDash .Snapshot.LBPolicy}}</span>
 <span><b>Channels</b> {{.Snapshot.TotalConns}}</span>
 </div>

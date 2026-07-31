@@ -105,12 +105,29 @@ type mixedModeChannelDebug struct {
 
 func (a mixedModeChannelDebug) Snapshot() []ChannelPoolDebug {
 	out := make([]ChannelPoolDebug, 0, 2)
+	instance := a.client.fullInstanceName()
 	if p := bigtableChannelPool(a.client.mPool.Pool); p != nil {
-		out = append(out, ChannelPoolDebug{Role: "classic", Snapshot: p.ChannelPoolSnapshot()})
+		out = append(out, ChannelPoolDebug{
+			Role:         "classic",
+			Snapshot:     p.ChannelPoolSnapshot(),
+			InstanceName: instance,
+			AppProfile:   a.client.appProfile,
+		})
 	}
 	if a.client.sessionImpl != nil {
 		if sp := a.client.sessionImpl.ChannelDebug(); sp != nil {
-			out = append(out, sp.Snapshot()...)
+			// Session-side entries come pre-labeled with Role="session";
+			// stamp instance / app-profile onto each since the session
+			// package can't reach back to the outer bigtable.Client.
+			for _, e := range sp.Snapshot() {
+				if e.InstanceName == "" {
+					e.InstanceName = instance
+				}
+				if e.AppProfile == "" {
+					e.AppProfile = a.client.appProfile
+				}
+				out = append(out, e)
+			}
 		}
 	}
 	return out
