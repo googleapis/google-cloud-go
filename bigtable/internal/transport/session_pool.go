@@ -574,19 +574,14 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 		if p.debugEnabled {
 			p.m.backendLatencyHist.record(backendDur)
 		}
-		// Derive TransportLatency = WireLatency − BackendLatency.
-		// wire ≥ backend by construction (wire = RTT + backend +
-		// decode); the downstream `> 0` gate at the histogram/OTel
-		// record sites below catches any clock-skew edge that would
-		// otherwise emit a negative sample.
-		result.TransportLatency = result.WireLatency - backendDur
 	}
-	// TransportLatency is now the AFE-attributable portion
-	// (WireLatency − BackendLatency, computed above). Zero here means
-	// the server didn't populate Stats, the call errored pre-Recv, or
-	// the subtraction was non-positive — all cases we skip from the
-	// per-AFE transport-overhead histograms so p50 isn't dragged
-	// toward 0. RecordTransportOverhead feeds the OTel
+	// TransportLatency is computed at the source in
+	// Session.processResult as (Send→Recv wall clock) − BackendLatency,
+	// i.e. the AFE-attributable overhead only. Zero here means the
+	// server didn't populate Stats, the call errored pre-Recv, or the
+	// subtraction was non-positive (clock skew) — all cases we skip
+	// from the per-AFE transport-overhead histograms so p50 isn't
+	// dragged toward 0. RecordTransportOverhead feeds the OTel
 	// transport_latencies metric — that is NOT debug-gated (it's a
 	// customer-facing metric); only the debug histogram is gated.
 	if result.TransportLatency > 0 {
