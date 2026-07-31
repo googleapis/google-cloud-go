@@ -415,4 +415,3 @@ func isDirectAccessEnabled(config ClientConfig) bool {
 	res, _ := strconv.ParseBool(os.Getenv(directAccessEnvVar))
 	return res
 }
-
