@@ -180,12 +180,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	retryOption := defaultRetryOption
 	executeQueryRetryOption := defaultExecuteQueryRetryOption
 
-	// Create the feature flags metadata with direct access enabled
-	// setting feature flags for direct access is good
-	// as CFE/GFE will call RLS with gslb target type
-	// only TD calls the RLS with grpc target type
-	// and we evaluate the directAccess option after that.
-
+	// Single source of truth for the DirectAccess bit — same value
+	// feeds the bigtable-features header, the session client's own
+	// header + envelope, and the dial-time DirectPath switch below.
 	allowDirectAccess := isDirectAccessEnabled(config)
 	directAccessMD := btransport.MarshalFeatureFlagsMD(btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
 		ClientSideMetricsEnabled: metricsTracerFactory.Enabled,
@@ -286,7 +283,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// in (endpoint, scopes, user-agent, interceptors) — passing
 		// bare opts leaves the resolver target empty and the dial
 		// aborts with "passthrough: received empty target in Build()".
-		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, o...)
+		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, allowDirectAccess, o...)
 		if sessionErr != nil {
 			// Best-effort cleanup of the classic pool since we won't
 			// return c to the caller. Go through the ManagedChannelPool
@@ -402,6 +399,13 @@ func (c *Client) newBuiltinMetricsTracer(ctx context.Context, table string, isSt
 	return c.metricsTracerFactory.CreateTracer(ctx, table, isStreaming)
 }
 
+// isDirectAccessEnabled resolves whether this client advertises
+// DirectAccess capability on the wire AND dials DirectPath. Single
+// source of truth threaded into both the classic and session
+// FeatureFlags builders so header bits stay in lockstep with the
+// dial-time switch. CBT_ENABLE_DIRECTPATH overrides
+// ClientConfig.DisableDirectAccess when set; unset falls back to
+// the config default.
 func isDirectAccessEnabled(config ClientConfig) bool {
 	if os.Getenv(directAccessEnvVar) == "" {
 		return !config.DisableDirectAccess
@@ -409,3 +413,4 @@ func isDirectAccessEnabled(config ClientConfig) bool {
 	res, _ := strconv.ParseBool(os.Getenv(directAccessEnvVar))
 	return res
 }
+

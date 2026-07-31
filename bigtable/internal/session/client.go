@@ -273,6 +273,7 @@ func NewClient(
 	ctx context.Context,
 	project, instance, appProfile string,
 	metricsProvider metrics.MetricsProvider,
+	enableDirectAccess bool,
 	opts ...option.ClientOption,
 ) (Client, error) {
 	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, metricsProvider)
@@ -286,7 +287,7 @@ func NewClient(
 	// INVALID_ARGUMENT if they disagree on session-mode flags).
 	featureFlagsProto := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
 		ClientSideMetricsEnabled: factory.Enabled,
-		EnableDirectAccess:       true,
+		EnableDirectAccess:       enableDirectAccess,
 	})
 	directAccessMD := btransport.MarshalFeatureFlagsMD(featureFlagsProto)
 

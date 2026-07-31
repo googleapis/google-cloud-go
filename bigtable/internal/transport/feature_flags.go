@@ -63,10 +63,9 @@ func NewFeatureFlagsProto(in FeatureFlagsInput) *btpb.FeatureFlags {
 		ReverseScans:             true,
 		LastScannedRowResponses:  true,
 		ClientSideMetricsEnabled: in.ClientSideMetricsEnabled,
-		// RetryInfo is unconditionally advertised — this client
-		// always honors server-attached retry hints; classic and
-		// session both ship the same fixed value here so they cannot
-		// drift.
+		// RetryInfo is unconditionally advertised — this client always
+		// honors server-attached retry hints; classic and session both
+		// ship the same fixed value.
 		RetryInfo:              true,
 		TrafficDirectorEnabled: in.EnableDirectAccess,
 		DirectAccessRequested:  in.EnableDirectAccess,
