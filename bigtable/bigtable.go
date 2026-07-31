@@ -74,13 +74,11 @@ var (
 		Max:        2 * time.Second,
 		Multiplier: 1.2,
 	}
-	clientOnlyRetryOption             = newRetryOption(clientOnlyRetry, true)
-	clientOnlyExecuteQueryRetryOption = newRetryOption(clientOnlyExecuteQueryRetry, true)
-	defaultRetryOption                = newRetryOption(clientOnlyRetry, false)
-	defaultExecuteQueryRetryOption    = newRetryOption(clientOnlyExecuteQueryRetry, false)
+	defaultRetryOption             = newRetryOption(clientOnlyRetry)
+	defaultExecuteQueryRetryOption = newRetryOption(clientOnlyExecuteQueryRetry)
 )
 
-func newRetryOption(retryFn func(*gax.Backoff, error) (time.Duration, bool), disableRetryInfo bool) gax.CallOption {
+func newRetryOption(retryFn func(*gax.Backoff, error) (time.Duration, bool)) gax.CallOption {
 	return gax.WithRetry(func() gax.Retryer {
 		// Create a new Backoff instance for each retryer to ensure independent state.
 		newBackoffInstance := gax.Backoff{
@@ -89,9 +87,8 @@ func newRetryOption(retryFn func(*gax.Backoff, error) (time.Duration, bool), dis
 			Multiplier: defaultBackoff.Multiplier,
 		}
 		return &bigtableRetryer{
-			baseRetryFn:      retryFn,
-			backoff:          newBackoffInstance,
-			disableRetryInfo: disableRetryInfo,
+			baseRetryFn: retryFn,
+			backoff:     newBackoffInstance,
 		}
 	})
 }
@@ -112,37 +109,34 @@ func clientOnlyRetry(backoff *gax.Backoff, err error) (time.Duration, bool) {
 	return 0, false
 }
 
-// bigtableRetryer implements the gax.Retryer interface. It manages retry decisions,
-// incorporating server-sent RetryInfo if enabled, and client-side exponential backoff.
-// It specifically handles reseting the client-side backoff to its initial state if
-// RetryInfo was previously used for an operation and then stops being provided.
+// bigtableRetryer implements the gax.Retryer interface. It always
+// consumes server-sent RetryInfo when present and falls back to a
+// per-instance exponential backoff otherwise. If a prior attempt used
+// a RetryInfo-driven delay and the current error carries none, the
+// backoff is reset so we don't reuse a stale multiplier.
 type bigtableRetryer struct {
 	baseRetryFn               func(*gax.Backoff, error) (time.Duration, bool)
 	backoff                   gax.Backoff
-	disableRetryInfo          bool // If true, this retryer will process server-sent RetryInfo.
 	wasLastDelayFromRetryInfo bool // true if the previous retry delay for this operation was from RetryInfo.
-
 }
 
 // Retry determines if an operation should be retried and for how long to wait.
 func (r *bigtableRetryer) Retry(err error) (time.Duration, bool) {
-	if !r.disableRetryInfo {
-		apiErr, ok := apierror.FromError(err)
-		if ok && apiErr != nil && apiErr.Details().RetryInfo != nil {
-			// RetryInfo is present in the current error. Use its delay.
-			r.wasLastDelayFromRetryInfo = true
-			return apiErr.Details().RetryInfo.GetRetryDelay().AsDuration(), true
-		}
-
-		if r.wasLastDelayFromRetryInfo {
-			r.backoff = gax.Backoff{
-				Initial:    r.backoff.Initial,
-				Max:        r.backoff.Max,
-				Multiplier: r.backoff.Multiplier,
-			}
-		}
-		r.wasLastDelayFromRetryInfo = false
+	apiErr, ok := apierror.FromError(err)
+	if ok && apiErr != nil && apiErr.Details().RetryInfo != nil {
+		// RetryInfo is present in the current error. Use its delay.
+		r.wasLastDelayFromRetryInfo = true
+		return apiErr.Details().RetryInfo.GetRetryDelay().AsDuration(), true
 	}
+
+	if r.wasLastDelayFromRetryInfo {
+		r.backoff = gax.Backoff{
+			Initial:    r.backoff.Initial,
+			Max:        r.backoff.Max,
+			Multiplier: r.backoff.Multiplier,
+		}
+	}
+	r.wasLastDelayFromRetryInfo = false
 
 	return r.baseRetryFn(&r.backoff, err)
 }

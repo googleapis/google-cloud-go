@@ -48,7 +48,6 @@ type Client struct {
 	project, instance       string
 	appProfile              string
 	metricsTracerFactory    *metrics.Factory
-	disableRetryInfo        bool
 	retryOption             gax.CallOption
 	executeQueryRetryOption gax.CallOption
 	featureFlagsMD          metadata.MD // Pre-computed feature flags metadata to be sent with each request.
@@ -176,17 +175,10 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	o = append(o, internaloption.EnableNewAuthLibrary())
 	o = append(o, internaloption.EnableJwtWithScope())
 
-	disableRetryInfo := false
-
-	// If DISABLE_RETRY_INFO=1, library does not base retry decision and back off time on server returned RetryInfo value.
-	disableRetryInfoEnv := os.Getenv("DISABLE_RETRY_INFO")
-	disableRetryInfo = disableRetryInfoEnv == "1"
+	// RetryInfo is unconditionally on; retryer + on-wire flag agree via
+	// NewFeatureFlagsProto (feature_flags.go) and defaultRetryOption.
 	retryOption := defaultRetryOption
 	executeQueryRetryOption := defaultExecuteQueryRetryOption
-	if disableRetryInfo {
-		retryOption = clientOnlyRetryOption
-		executeQueryRetryOption = clientOnlyExecuteQueryRetryOption
-	}
 
 	// Create the feature flags metadata with direct access enabled
 	// setting feature flags for direct access is good
@@ -197,7 +189,6 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	allowDirectAccess := isDirectAccessEnabled(config)
 	directAccessMD := btransport.MarshalFeatureFlagsMD(btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
 		ClientSideMetricsEnabled: metricsTracerFactory.Enabled,
-		DisableRetryInfo:         disableRetryInfo,
 		EnableDirectAccess:       allowDirectAccess,
 	}))
 
@@ -248,7 +239,6 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		instance:                instance,
 		appProfile:              config.AppProfile,
 		metricsTracerFactory:    metricsTracerFactory,
-		disableRetryInfo:        disableRetryInfo,
 		retryOption:             retryOption,
 		executeQueryRetryOption: executeQueryRetryOption,
 		featureFlagsMD:          directAccessMD,

@@ -109,36 +109,35 @@ func TestBuildFeatureFlagsMD_AlwaysOnBits(t *testing.T) {
 	}
 }
 
-// TestBuildFeatureFlagsMD_ReflectsToggles walks the three toggle inputs
-// and asserts each maps to the right proto field, including RetryInfo's
-// inversion (input=disableRetryInfo, wire=RetryInfo).
+// TestBuildFeatureFlagsMD_ReflectsToggles walks the caller-driven
+// inputs and asserts each maps to the right proto field. RetryInfo
+// is not in the input set — it's unconditionally true on the wire.
 func TestBuildFeatureFlagsMD_ReflectsToggles(t *testing.T) {
 	tests := []struct {
-		name             string
-		metricsEnabled   bool
-		disableRetryInfo bool
-		directAccess     bool
-		wantMetrics      bool
-		wantRetryInfo    bool
-		wantDirect       bool
+		name           string
+		metricsEnabled bool
+		directAccess   bool
+		wantMetrics    bool
+		wantDirect     bool
 	}{
-		{"all-off", false, false, false, false, true /* !disable */, false},
-		{"all-on", true, true, true, true, false /* !disable */, true},
-		{"metrics-only", true, false, false, true, true, false},
-		{"direct-only", false, false, true, false, true, true},
+		{"all-off", false, false, false, false},
+		{"all-on", true, true, true, true},
+		{"metrics-only", true, false, true, false},
+		{"direct-only", false, true, false, true},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ff := decodeFeatureFlags(t, btransport.MarshalFeatureFlagsMD(btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
 				ClientSideMetricsEnabled: tc.metricsEnabled,
-				DisableRetryInfo:         tc.disableRetryInfo,
 				EnableDirectAccess:       tc.directAccess,
 			})))
 			if ff.ClientSideMetricsEnabled != tc.wantMetrics {
 				t.Errorf("ClientSideMetricsEnabled = %v, want %v", ff.ClientSideMetricsEnabled, tc.wantMetrics)
 			}
-			if ff.RetryInfo != tc.wantRetryInfo {
-				t.Errorf("RetryInfo = %v, want %v (input disableRetryInfo=%v)", ff.RetryInfo, tc.wantRetryInfo, tc.disableRetryInfo)
+			// RetryInfo is unconditionally true — this client always
+			// honors server-attached retry hints.
+			if !ff.RetryInfo {
+				t.Errorf("RetryInfo = false, want true (unconditional)")
 			}
 			if ff.DirectAccessRequested != tc.wantDirect {
 				t.Errorf("DirectAccessRequested = %v, want %v", ff.DirectAccessRequested, tc.wantDirect)
@@ -177,7 +176,6 @@ func TestSessionClient_NameFormatters(t *testing.T) {
 func TestSessionClient_PerResourceMetadata(t *testing.T) {
 	ffMD := btransport.MarshalFeatureFlagsMD(btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
 		ClientSideMetricsEnabled: true,
-		DisableRetryInfo:         false,
 		EnableDirectAccess:       true,
 	}))
 	sc := newTestClient(t, nil, Config{
@@ -207,20 +205,20 @@ func TestSessionClient_PerResourceMetadata(t *testing.T) {
 }
 
 // TestSessionClient_FeatureFlags asserts featureFlags() (used to build
-// each OpenSessionRequest.Flags) reflects the config booleans, with
-// RetryInfo inverted from DisableRetryInfo.
+// each OpenSessionRequest.Flags) reflects the config booleans and
+// always ships RetryInfo=true (single source of truth in
+// NewFeatureFlagsProto).
 func TestSessionClient_FeatureFlags(t *testing.T) {
-	sc := newTestClient(t, nil, Config{MetricsEnabled: true, DisableRetryInfo: true})
+	sc := newTestClient(t, nil, Config{MetricsEnabled: true})
 	defer sc.Close()
 
 	ff := sc.featureFlags()
 	if !ff.ClientSideMetricsEnabled {
 		t.Error("ClientSideMetricsEnabled = false, want true (MetricsEnabled=true)")
 	}
-	if ff.RetryInfo {
-		t.Error("RetryInfo = true, want false (DisableRetryInfo=true)")
+	if !ff.RetryInfo {
+		t.Error("RetryInfo = false, want true (unconditional)")
 	}
-	// Always-on bits — same invariant list as buildFeatureFlagsMD.
 	if !ff.RoutingCookie || !ff.ReverseScans || !ff.LastScannedRowResponses ||
 		!ff.SessionsCompatible || !ff.PeerInfo || !ff.TrafficDirectorEnabled || !ff.DirectAccessRequested {
 		t.Errorf("always-on bits missing: %+v", ff)

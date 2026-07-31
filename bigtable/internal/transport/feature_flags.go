@@ -36,7 +36,6 @@ const FeatureFlagsHeader = "bigtable-features"
 // the two paths cannot drift.
 type FeatureFlagsInput struct {
 	ClientSideMetricsEnabled bool
-	DisableRetryInfo         bool
 	EnableDirectAccess       bool
 }
 
@@ -64,11 +63,15 @@ func NewFeatureFlagsProto(in FeatureFlagsInput) *btpb.FeatureFlags {
 		ReverseScans:             true,
 		LastScannedRowResponses:  true,
 		ClientSideMetricsEnabled: in.ClientSideMetricsEnabled,
-		RetryInfo:                !in.DisableRetryInfo,
-		TrafficDirectorEnabled:   in.EnableDirectAccess,
-		DirectAccessRequested:    in.EnableDirectAccess,
-		SessionsCompatible:       sessionsCompatible,
-		SessionsRequired:         sessionsRequired,
+		// RetryInfo is unconditionally advertised — this client
+		// always honors server-attached retry hints; classic and
+		// session both ship the same fixed value here so they cannot
+		// drift.
+		RetryInfo:              true,
+		TrafficDirectorEnabled: in.EnableDirectAccess,
+		DirectAccessRequested:  in.EnableDirectAccess,
+		SessionsCompatible:     sessionsCompatible,
+		SessionsRequired:       sessionsRequired,
 		// PeerInfo asks the server to send bigtable-peer-info sideband
 		// metadata that populates transport_type/region/zone/subzone
 		// on the per-attempt tracer.

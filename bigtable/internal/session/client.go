@@ -83,11 +83,9 @@ type Config struct {
 	// GetClientConfiguration polls — instance-scoped headers.
 	ConfigMD metadata.MD
 
-	// MetricsEnabled / DisableRetryInfo mirror the SessionManager
-	// booleans of the same name; both propagate into FeatureFlags on
-	// every OpenSessionRequest.
-	MetricsEnabled   bool
-	DisableRetryInfo bool
+	// MetricsEnabled mirrors the SessionManager boolean of the same
+	// name; propagates into FeatureFlags on every OpenSessionRequest.
+	MetricsEnabled bool
 
 	// SessionLoadListener is invoked whenever the server-driven
 	// ClientConfigurationManager reports a new session-load ratio. The
@@ -281,7 +279,6 @@ func NewClient(
 	// INVALID_ARGUMENT if they disagree on session-mode flags).
 	featureFlagsProto := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
 		ClientSideMetricsEnabled: factory.Enabled,
-		DisableRetryInfo:         false,
 		EnableDirectAccess:       true,
 	})
 	directAccessMD := btransport.MarshalFeatureFlagsMD(featureFlagsProto)
@@ -355,14 +352,13 @@ func NewClient(
 	backgroundCtx, cancel := context.WithCancel(context.Background())
 
 	sc := newSessionClientFromParts(pool, stub, factory, Config{
-		Project:          project,
-		Instance:         instance,
-		AppProfile:       appProfile,
-		FeatureFlagsMD:   directAccessMD,
-		ConfigMD:         configMD,
-		MetricsEnabled:   factory.Enabled,
-		DisableRetryInfo: false,
-		BackgroundCtx:    backgroundCtx,
+		Project:        project,
+		Instance:       instance,
+		AppProfile:     appProfile,
+		FeatureFlagsMD: directAccessMD,
+		ConfigMD:       configMD,
+		MetricsEnabled: factory.Enabled,
+		BackgroundCtx:  backgroundCtx,
 		// EnableDebug intentionally left at zero (false): NewClient has
 		// no external caller upstream today, so exposing a positional
 		// bool on the constructor would ship a dead knob. When the
@@ -394,7 +390,6 @@ func newSessionClientFromParts(channelPool ChannelPool, stub btpb.BigtableClient
 		// back-to-back so the header and this envelope-side proto agree).
 		featureFlagsProto: btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
 			ClientSideMetricsEnabled: cfg.MetricsEnabled,
-			DisableRetryInfo:         cfg.DisableRetryInfo,
 			EnableDirectAccess:       true,
 		}),
 		sessionPools: make(map[poolKey]*managedSessionPool),
