@@ -88,13 +88,10 @@ type Config struct {
 	MetricsEnabled bool
 
 	// FeatureFlagsProto is the pre-built FeatureFlags proto stamped
-	// onto every OpenSessionRequest.Flags. When non-nil,
-	// newSessionClientFromParts stashes it directly rather than
-	// rebuilding — this is the byte-identical guarantee against the
-	// bigtable-features header (the server rejects OpenSession with
-	// INVALID_ARGUMENT if header and envelope disagree on session-mode
-	// flags). Left nil by the test-only newSessionClientFromParts
-	// callers, which fall back to reconstruction from MetricsEnabled.
+	// onto every OpenSessionRequest.Flags. Required — callers MUST
+	// populate this with the same proto they marshaled into
+	// FeatureFlagsMD so header and envelope are byte-identical (the
+	// server rejects OpenSession with INVALID_ARGUMENT on mismatch).
 	FeatureFlagsProto *btpb.FeatureFlags
 
 	// SessionLoadListener is invoked whenever the server-driven
@@ -389,25 +386,13 @@ func newSessionClientFromParts(channelPool ChannelPool, stub btpb.BigtableClient
 	if cfg.MetricsEnabled && metricsFactory != nil {
 		_ = btransport.InitializeSessionMetrics(metricsFactory.OtelMeterProvider)
 	}
-	// Reuse the proto NewClient built for the bigtable-features header
-	// when the caller supplied one — byte-identical header + envelope
-	// is a hard invariant (server rejects OpenSession on mismatch).
-	// Fall back to a fresh build only for the test-only entry that
-	// doesn't route through NewClient.
-	ffProto := cfg.FeatureFlagsProto
-	if ffProto == nil {
-		ffProto = btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
-			ClientSideMetricsEnabled: cfg.MetricsEnabled,
-			EnableDirectAccess:       true,
-		})
-	}
 	sc := &sessionClient{
 		cfg:               cfg,
 		channelPool:       channelPool,
 		stub:              stub,
 		metricsFactory:    metricsFactory,
 		enableDebug:       cfg.EnableDebug,
-		featureFlagsProto: ffProto,
+		featureFlagsProto: cfg.FeatureFlagsProto,
 		sessionPools:      make(map[poolKey]*managedSessionPool),
 	}
 	// stub == nil only happens on the test-only newSessionClientFromParts

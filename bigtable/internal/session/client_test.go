@@ -74,6 +74,12 @@ func newTestClient(t *testing.T, pool ChannelPool, cfg Config) *sessionClient {
 	if cfg.AppProfile == "" {
 		cfg.AppProfile = "test-profile"
 	}
+	if cfg.FeatureFlagsProto == nil {
+		cfg.FeatureFlagsProto = btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
+			ClientSideMetricsEnabled: cfg.MetricsEnabled,
+			EnableDirectAccess:       true,
+		})
+	}
 	return newSessionClientFromParts(pool, nil, newTestFactory(t), cfg)
 }
 
