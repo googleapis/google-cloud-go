@@ -637,3 +637,90 @@ func TestManagerPoll_StopPollingFlagsCurrentConfig(t *testing.T) {
 // poll() cannot snapshot the listener map while addListener holds the
 // write lock, so the registration fire always lands before any poll
 // fire and listeners observe seq monotonically by construction.
+
+// TestAddChannelPoolConfigListener_FiresOnUpdate exercises the
+// bootstrap-fire + poll-driven-fire path for the channel-pool config
+// listener. Mirrors TestAddSessionPoolListener_SkipsOnUnchangedSlice's
+// shape: two polls whose ChannelPoolConfiguration is byte-identical must
+// only produce one poll-driven delivery, because the per-listener proto
+// diff suppresses the no-op second update.
+func TestAddChannelPoolConfigListener_FiresOnUpdate(t *testing.T) {
+	const (
+		minServers = 4
+		maxServers = 40
+		perServer  = 8
+	)
+	configs := []*bigtablepb.ClientConfiguration{
+		{
+			Polling: &bigtablepb.ClientConfiguration_PollingConfiguration_{
+				PollingConfiguration: &bigtablepb.ClientConfiguration_PollingConfiguration{
+					PollingInterval: durationpb.New(600 * time.Second),
+				},
+			},
+			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+				ChannelConfiguration: &bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration{
+					MinServerCount:        minServers,
+					MaxServerCount:        maxServers,
+					PerServerSessionCount: perServer,
+				},
+			},
+		},
+		{
+			Polling: &bigtablepb.ClientConfiguration_PollingConfiguration_{
+				PollingConfiguration: &bigtablepb.ClientConfiguration_PollingConfiguration{
+					PollingInterval: durationpb.New(900 * time.Second),
+				},
+			},
+			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+				ChannelConfiguration: &bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration{
+					MinServerCount:        minServers,
+					MaxServerCount:        maxServers,
+					PerServerSessionCount: perServer, // unchanged — must not fire
+				},
+			},
+		},
+	}
+	var idx int
+	var idxMu sync.Mutex
+	client := &mockBigtableClient{
+		getConfigFunc: func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
+			idxMu.Lock()
+			defer idxMu.Unlock()
+			cfg := configs[idx]
+			if idx+1 < len(configs) {
+				idx++
+			}
+			return cfg, nil
+		},
+	}
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
+
+	var mu sync.Mutex
+	var deliveries []*bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration
+	manager.AddChannelPoolConfigListener(func(cp *bigtablepb.SessionClientConfiguration_ChannelPoolConfiguration) {
+		mu.Lock()
+		deliveries = append(deliveries, cp)
+		mu.Unlock()
+	})
+
+	manager.poll(context.Background()) // default -> {4, 40, 8}: fires
+	manager.poll(context.Background()) // {4, 40, 8} -> {4, 40, 8}: must skip
+
+	mu.Lock()
+	defer mu.Unlock()
+	// Expect 2 deliveries: bootstrap (default) + first poll (default ->
+	// {4, 40, 8}). The second poll changes the whole config but not the
+	// channel-pool tuple, so the per-listener diff must suppress that fire.
+	if len(deliveries) != 2 {
+		t.Fatalf("AddChannelPoolConfigListener fired %d times, want 2 (bootstrap + first poll only)", len(deliveries))
+	}
+	if got := deliveries[1].GetMinServerCount(); got != minServers {
+		t.Errorf("post-first-poll MinServerCount = %d, want %d", got, minServers)
+	}
+	if got := deliveries[1].GetMaxServerCount(); got != maxServers {
+		t.Errorf("post-first-poll MaxServerCount = %d, want %d", got, maxServers)
+	}
+	if got := deliveries[1].GetPerServerSessionCount(); got != perServer {
+		t.Errorf("post-first-poll PerServerSessionCount = %d, want %d", got, perServer)
+	}
+}
