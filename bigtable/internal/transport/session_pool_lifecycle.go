@@ -439,10 +439,6 @@ func (p *SessionPoolImpl) consecutiveFailureErr() error {
 	return &consecutiveFailureError{inner: *last}
 }
 
-// tickInterval is the cadence for the periodic Tick watchdog. 1 s
-// balances reaction to server-driven config against CPU/mu contention.
-const tickInterval = 1 * time.Second
-
 // slowMetricsInterval is the cadence for periodic metric-recorder
 // bodies whose per-second firing was wasteful: sampleActiveUptimes
 // (session.uptime OTel histogram) and recordTimeSeries (in-memory
@@ -453,13 +449,25 @@ const tickInterval = 1 * time.Second
 const slowMetricsInterval = 1 * time.Minute
 
 // Start brings the pool up: fires a pre-start Tick to seed min-sessions,
-// then runs the periodic Tick watchdog, AFE prune loop,
-// WaitServerClose sweep loop, and 1-min slow-metrics recorder.
-// Non-blocking; idempotent via startOnce.
+// then runs the AFE prune loop, WaitServerClose sweep loop, and 1-min
+// slow-metrics recorder. Non-blocking; idempotent via startOnce.
+//
+// There is deliberately no periodic Tick watchdog — sizing decisions
+// are driven by events at the four sites that meaningfully change
+// pool state:
+//
+//   - onActive → signalFree                    (session became Ready)
+//   - onClosing → spawnTickOnce                (Ready→closing transition)
+//   - CheckoutSession → spawnTickOnce          (waiter park on empty)
+//   - UpdateConfig → spawnTickOnce             (server-driven min/max bump)
+//
+// The pre-start Tick above (line: p.spawnTickOnce(ctx)) covers the
+// cold-start MinSessions seed; everything after is event-driven.
+// Matches java-bigtable's fully event-driven poolSizer (no periodic
+// timer for sizing).
 func (p *SessionPoolImpl) Start(ctx context.Context) {
 	p.startOnce.Do(func() {
 		p.spawnTickOnce(ctx)
-		p.startTickLoop(ctx)
 		p.startAfePruneLoop(ctx)
 		p.startSweepStuckSessionsLoop(ctx)
 		p.startSlowMetricsLoop(ctx)
@@ -481,23 +489,6 @@ func (p *SessionPoolImpl) startSlowMetricsLoop(ctx context.Context) {
 			case <-ticker.C:
 				p.recordTimeSeries()
 				p.sampleActiveUptimes(ctx)
-			}
-		}
-	}()
-}
-
-// startTickLoop runs Tick every tickInterval until ctx cancels.
-func (p *SessionPoolImpl) startTickLoop(ctx context.Context) {
-	go func() {
-		ticker := time.NewTicker(tickInterval)
-		defer ticker.Stop()
-
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case <-ticker.C:
-				p.tickOnce(ctx)
 			}
 		}
 	}()

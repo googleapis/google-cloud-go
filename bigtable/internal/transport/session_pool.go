@@ -465,6 +465,15 @@ func (p *SessionPoolImpl) UpdateConfig(config *spb.SessionClientConfiguration_Se
 	if thr := config.GetConsecutiveSessionFailureThreshold(); thr > 0 {
 		p.consecutiveFailureThreshold.Store(thr)
 	}
+
+	// Server-driven config change (min/max bump most commonly) may
+	// require a scale-up. Sizing is otherwise fully event-driven via
+	// onActive / onClosing / CheckoutSession's empty-pool kick; this
+	// explicit kick covers the one path where none of those events
+	// fire — a config poll that raises MinSessionCount on an idle
+	// pool. spawnTickOnce is CAS-guarded so a burst of listener fires
+	// coalesces to one Tick body.
+	p.spawnTickOnce(p.poolCtx)
 }
 
 // pickerFromLoadBalancing builds an AfePicker from server-driven
