@@ -281,9 +281,11 @@ func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, 
 				return idle, nil
 			}
 			// Picker chose this AFE but its ready session was taken
-			// (concurrent Checkout / OnClosing eviction). Counter tells
-			// us how often it's actually hurting throughput.
-			recordDebugTag(tagSessionPoolPickLostRace)
+			// (concurrent Checkout / OnClosing eviction). Loops back
+			// to re-pick; under saturation this is common enough that
+			// recordDebugTag's global-lock cost is a hot-path violator
+			// (RWMutex + sync.Map + WithAttributes allocation per
+			// retry). Not worth counting.
 		}
 
 		// Slow path: picker returned nil or 2 checkoutSession raced and returned the same AFE id. Dying sessions leave sl.readyCount
