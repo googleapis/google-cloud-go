@@ -55,25 +55,76 @@ var (
 // sessionTable.Close's doc.
 type sessionTableHandle struct {
 	api            session.TableAPI
+	openFn         func() session.TableAPI // captured for self-heal on eviction
 	key            string
 	cache          *sessionTableCache
 	lastAccessNano atomic.Int64
-	closeOnce      sync.Once
-	closeErr       error
+	// evicted flips to true inside Close() BEFORE api.Close runs — the
+	// atomic-Load on ReadRow/MutateRow's happy path is the entire per-
+	// RPC cost of self-heal (no cache-map lookup unless we actually
+	// were evicted). Ordering-critical: Store happens under closeOnce
+	// before removeEntry + api.Close, so any reader that hasn't yet
+	// taken the fast-path Load routes through reopenAfterEviction
+	// instead of dispatching on the (about-to-be) closed api. Race
+	// window is nanoseconds, only possible for a fresh RPC arriving at
+	// the exact instant of eviction on an otherwise-idle handle.
+	evicted   atomic.Bool
+	closeOnce sync.Once
+	closeErr  error
 }
 
 func (h *sessionTableHandle) touch() {
 	h.lastAccessNano.Store(h.cache.now().UnixNano())
 }
 
+// ReadRow: atomic-Load fast path, self-heal on eviction. When the
+// handle is still live (the common case) the added cost vs a bare
+// api.ReadRow is one atomic Load. Cache-map lookup only happens on
+// the recovery path where the sweeper has already Close'd us.
 func (h *sessionTableHandle) ReadRow(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+	if h.evicted.Load() {
+		if fresh := h.reopenAfterEviction(); fresh != nil {
+			return fresh.ReadRow(ctx, req)
+		}
+		// Reopen refused (cache closed / openFn returned nil) — fall
+		// through; h.api.ReadRow will surface whatever error the dead
+		// api produces. Caller's error is the honest signal in that
+		// terminal state.
+	}
 	h.touch()
 	return h.api.ReadRow(ctx, req)
 }
 
+// MutateRow: same shape as ReadRow.
 func (h *sessionTableHandle) MutateRow(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error) {
+	if h.evicted.Load() {
+		if fresh := h.reopenAfterEviction(); fresh != nil {
+			return fresh.MutateRow(ctx, req)
+		}
+	}
 	h.touch()
 	return h.api.MutateRow(ctx, req)
+}
+
+// reopenAfterEviction routes through getOrOpen so any concurrent
+// re-open converges on a single winner. Identity-checked removeEntry
+// guards against clobbering a peer's fresh install. Returns nil when
+// the cache is closed or openFn refused.
+//
+// This is the ONLY cache-map access on the sessionTableHandle RPC path;
+// it runs strictly on the evicted-true branch. The happy path is a
+// single atomic Load.
+func (h *sessionTableHandle) reopenAfterEviction() *sessionTableHandle {
+	h.cache.removeEntry(h.key, h)
+	api := h.cache.getOrOpen(h.key, h.openFn)
+	if api == nil {
+		return nil
+	}
+	fresh, ok := api.(*sessionTableHandle)
+	if !ok || fresh == h {
+		return nil
+	}
+	return fresh
 }
 
 // Close evicts the handle from its cache and Close()s the underlying
@@ -81,8 +132,13 @@ func (h *sessionTableHandle) MutateRow(ctx context.Context, req *btpb.SessionMut
 // error captured on the first call without invoking api.Close again.
 // Safe to call from multiple paths (explicit caller Close, TTL sweep,
 // cache-wide shutdown) concurrently.
+//
+// Ordering matters: evicted.Store(true) MUST run BEFORE api.Close so
+// concurrent readers observing evicted=true route through the self-
+// heal path instead of dispatching on a torn-down api.
 func (h *sessionTableHandle) Close() error {
 	h.closeOnce.Do(func() {
+		h.evicted.Store(true)
 		h.cache.removeEntry(h.key, h)
 		h.closeErr = h.api.Close()
 	})
@@ -190,7 +246,7 @@ func (c *sessionTableCache) getOrOpen(key string, openFn func() session.TableAPI
 		h.touch()
 		return h
 	}
-	h := &sessionTableHandle{api: api, key: key, cache: c}
+	h := &sessionTableHandle{api: api, openFn: openFn, key: key, cache: c}
 	h.lastAccessNano.Store(c.now().UnixNano())
 	c.entries[key] = h
 	c.mu.Unlock()
