@@ -769,11 +769,14 @@ func (p *BigtableChannelPool) getBigtableConn() *BigtableConn {
 }
 
 // NewStream selects a connection by the configured load-balancing strategy
-// and opens a stream on it. grpc.OnFinish fires exactly once for any stream
-// that was successfully created (normal completion, context cancellation,
-// transport teardown), so it is the single source of truth for both load
-// accounting and per-stream error attribution — no need to wrap the
-// returned ClientStream.
+// and opens a stream on it. Load accounting and per-stream error attribution
+// live entirely inside the grpc.OnFinish callback, gated by a CAS so it
+// runs exactly once per NewStream call. This matters because grpc-go can
+// fire OnFinish more than once on some stream-creation failure paths (e.g.
+// closed ClientConn: withRetry → cs.finish → endOfClientStream, then
+// newClientStream's deferred endOfClientStream re-fires the same OnFinish).
+// Without the guard, streamingLoad would drift negative on every such
+// failure — see debug pages showing e.g. "Streaming in flight: -9".
 func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 	entry, err := p.selectFunc()
 	if err != nil {
@@ -782,7 +785,11 @@ func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDe
 
 	entry.streamingLoad.Add(1)
 
+	var finished atomic.Bool
 	onFinish := grpc.OnFinish(func(err error) {
+		if !finished.CompareAndSwap(false, true) {
+			return
+		}
 		if err != nil {
 			entry.errorCount.Add(1)
 			entry.applyErrorPenalty(err)
@@ -794,15 +801,7 @@ func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDe
 	// that share the same backing array).
 	opts = append([]grpc.CallOption{onFinish}, opts...)
 
-	stream, err := entry.conn.NewStream(ctx, desc, method, opts...)
-	if err != nil {
-		entry.errorCount.Add(1)
-		entry.applyErrorPenalty(err)
-		entry.streamingLoad.Add(-1) // Decrement immediately on creation failure
-		return nil, err
-	}
-
-	return stream, nil
+	return entry.conn.NewStream(ctx, desc, method, opts...)
 }
 
 // selectLeastLoadedRandomOfTwo() returns the index of the connection via random of two

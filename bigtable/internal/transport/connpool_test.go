@@ -631,6 +631,41 @@ func TestPoolNewStream(t *testing.T) {
 			t.Errorf("Load is %d, want 0 after stream error", pool.getConns()[0].streamingLoad.Load())
 		}
 	})
+
+	// Regression: when entry.conn.NewStream itself returns an error (e.g.
+	// the ClientConn is closed), grpc-go's deferred endOfClientStream fires
+	// every registered OnFinish. Load accounting must not double-decrement
+	// on that path or streamingLoad goes negative and stays negative.
+	t.Run("NewStreamImmediateFailureLoadStaysNonNegative", func(t *testing.T) {
+		poolSize := 1
+		fake := &fakeService{}
+		addr := setupTestServer(t, fake)
+		dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, time.Now(), poolOpts()...)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		entry := pool.getConns()[0]
+		// Close the underlying ClientConn so any subsequent NewStream fails
+		// immediately with codes.Canceled / codes.Unavailable.
+		entry.conn.Close()
+
+		for i := 0; i < 5; i++ {
+			stream, err := pool.NewStream(ctx, &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
+			if err == nil {
+				stream.CloseSend()
+				t.Fatalf("attempt %d: NewStream unexpectedly succeeded on a closed conn", i)
+			}
+			if got := entry.streamingLoad.Load(); got < 0 {
+				t.Fatalf("attempt %d: streamingLoad went negative (%d) — OnFinish decremented twice", i, got)
+			}
+		}
+		if got := entry.streamingLoad.Load(); got != 0 {
+			t.Errorf("streamingLoad after 5 failed NewStreams = %d, want 0", got)
+		}
+	})
 }
 
 func TestNewBigtableChannelPool(t *testing.T) {
