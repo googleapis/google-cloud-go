@@ -22,6 +22,8 @@ import (
 	"time"
 
 	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // newStubStreamFactory returns a streamFactory that hands out fresh
@@ -358,6 +360,14 @@ func TestCheckoutSession_ParkedWaiter_DeadlineExceeded(t *testing.T) {
 	}
 	if !errors.Is(err, context.DeadlineExceeded) {
 		t.Errorf("err = %v (type %T), want unwrappable to context.DeadlineExceeded (was the ctx cause dropped?)", err, err)
+	}
+	// Also pin status.Code — the ctx.Err() must be wrapped through
+	// *vrpcErr's GRPCStatus so callers reading status.Code(err) get
+	// DeadlineExceeded instead of Unknown. Load tests against real
+	// Bigtable showed 99% of tight-deadline checkout-timeouts
+	// misclassified as Unknown before this wrap landed.
+	if code := status.Code(err); code != codes.DeadlineExceeded {
+		t.Errorf("status.Code(err) = %v, want DeadlineExceeded (ctx.Err() must go through *vrpcErr.GRPCStatus)", code)
 	}
 	// Positive proof we parked (independent of timing).
 	select {

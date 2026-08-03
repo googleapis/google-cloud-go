@@ -305,7 +305,12 @@ func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, 
 			// Remove from queue so a subsequent free-session wake
 			// doesn't burn on a caller that's already given up.
 			p.removeWaiter(w)
-			return nil, fmt.Errorf("%w: %w", ErrNoSessionsAvailable, ctx.Err())
+			// tagErr wraps ctx.Err() in *vrpcErr, which implements
+			// GRPCStatus — otherwise status.Code(err) returns Unknown
+			// instead of DeadlineExceeded / Canceled and any consumer
+			// keying off the gRPC code (metrics, retry classifiers,
+			// dashboards) misclassifies the attempt.
+			return nil, fmt.Errorf("%w: %w", ErrNoSessionsAvailable, tagErr(StateUncommitted, ctx.Err()))
 		case <-w.ready:
 			p.waitersCount.Add(-1)
 			// A poisoned wake (drainWaitersWithErr) sets w.err before
