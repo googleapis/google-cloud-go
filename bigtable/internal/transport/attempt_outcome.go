@@ -78,14 +78,10 @@ type vrpcErr struct {
 func (e *vrpcErr) Error() string { return e.outcome.Err.Error() }
 func (e *vrpcErr) Unwrap() error { return e.outcome.Err }
 
-// GRPCStatus lets status.Code / status.FromError see through a tagged
-// wrapper. Needed because the session vRPC path is bidi and bypasses
-// grpc-go's client-side unary interceptor, which is where ctx.Err() →
-// gRPC status translation normally happens.
-//
-// Preference: existing gRPC status wins verbatim; else translate via
-// status.FromContextError; else Unknown. Unwrap() is untouched so
-// errors.Is(err, context.DeadlineExceeded) still walks through.
+// GRPCStatus translates the wrapped error to a gRPC status. Session
+// vRPC bypasses grpc-go's unary client interceptor, so ctx.Err() →
+// gRPC status translation has to happen here or status.Code returns
+// Unknown. Unwrap() intentionally stays raw so errors.Is walks through.
 func (e *vrpcErr) GRPCStatus() *status.Status {
 	if s, ok := status.FromError(e.outcome.Err); ok {
 		return s
@@ -113,10 +109,8 @@ func tagErr(state AttemptState, err error) error {
 // fake Invoker must tag its errors the same way for the RetryingVRpc
 // interceptor's default classification to see them.
 //
-// Returns nil for nil err. errors.Is sees the underlying err via
-// Unwrap. status.FromError returns the wrapper's gRPC status — an
-// existing status passes through, a stdlib ctx error is translated to
-// DeadlineExceeded / Canceled, anything else surfaces as Unknown.
+// Returns nil for nil err. Unwrap exposes the raw err (errors.Is walks
+// through); GRPCStatus returns the translated gRPC status.
 func TagErr(state AttemptState, err error) error { return tagErr(state, err) }
 
 // ClassifyErr returns the outcome for any error. Untagged errors fall

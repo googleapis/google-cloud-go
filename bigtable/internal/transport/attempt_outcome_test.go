@@ -110,16 +110,10 @@ func TestClassifyErr_FindsThroughWrapper(t *testing.T) {
 	}
 }
 
-// TestVRPCErr_GRPCStatus pins the three preference branches of
-// vrpcErr.GRPCStatus. This is the wrapper method that status.Code /
-// status.FromError find via errors.As — see the doc comment in
-// attempt_outcome.go for why translation lives on the wrapper.
-//
-// A wrapped-ctx case is included because real call sites (e.g.
-// session_vrpc.go:163 "send vRPC request: %w") produce that shape;
-// if a future grpc-go bump swaps FromContextError's errors.Is walk
-// for identity comparison the branch would silently regress to
-// Unknown and this test catches it.
+// The fmt.Errorf-wrapped-ctx case is deliberate: real call sites wrap
+// ctx.Err in fmt.Errorf, and a future grpc-go bump swapping
+// FromContextError's errors.Is walk for identity comparison would
+// silently regress that branch to Unknown.
 func TestVRPCErr_GRPCStatus(t *testing.T) {
 	tests := []struct {
 		name    string

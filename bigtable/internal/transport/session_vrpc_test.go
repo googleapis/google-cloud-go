@@ -373,13 +373,8 @@ func TestHandleVRPCResponse_LateResponseAfterCtxDone_FlagsCancelledDrained(t *te
 		if !errors.Is(err, context.DeadlineExceeded) {
 			t.Fatalf("Invoke err = %v, want DeadlineExceeded", err)
 		}
-		// Also pins the gRPC status code — awaitInvokeResult must
-		// translate ctx.Err() to a status.Error(DeadlineExceeded, ...)
-		// so callers reading status.Code(err) get the right code
-		// after fmt.Errorf(...:%w) wraps at the dispatch layer.
-		// Without translation, status.Code returns Unknown.
 		if code := status.Code(err); code != codes.DeadlineExceeded {
-			t.Errorf("status.Code(err) = %v, want DeadlineExceeded (ctx.Err() must be translated to a gRPC status before wrap)", code)
+			t.Errorf("status.Code(err) = %v, want DeadlineExceeded", code)
 		}
 	case <-time.After(2 * time.Second):
 		t.Fatal("Invoke did not return within outer bound")
