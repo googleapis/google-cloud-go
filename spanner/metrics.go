@@ -547,6 +547,7 @@ type opTracer struct {
 type attemptTracer struct {
 	startTime time.Time // The start time of the attempt.
 	status    string    // The gRPC status code of the attempt.
+	completed bool      // Whether completion metrics were already recorded.
 
 	directPathUsed      bool // Indicates if DirectPath was used for the attempt.
 	serverTimingMetrics map[string]time.Duration
@@ -619,6 +620,16 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		instrumentGFEErrorCount:      tf.gfeErrorCount,
 		instrumentAFEErrorCount:      tf.afeErrorCount,
 	}
+}
+
+// newBuiltinMetricsTracer avoids constructing operation state, allocating a
+// tracer, or reading the clock when built-in metrics are disabled.
+func (tf *builtinMetricsTracerFactory) newBuiltinMetricsTracer(ctx context.Context) *builtinMetricsTracer {
+	if tf == nil || !tf.enabled {
+		return nil
+	}
+	tracer := tf.createBuiltinMetricsTracer(ctx)
+	return &tracer
 }
 
 // toOtelMetricAttrs:
@@ -710,7 +721,7 @@ func convertToGrpcStatusErr(err error) (codes.Code, error) {
 // Ignore errors seen while creating metric attributes since metric can still
 // be recorded with rest of the attributes
 func recordAttemptCompletion(mt *builtinMetricsTracer) {
-	if !mt.builtInEnabled {
+	if mt == nil || !mt.builtInEnabled {
 		return
 	}
 	// capture AFE metrics only if direct-path is enabled and used in current attempt
@@ -743,7 +754,7 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 // Ignores error seen while creating metric attributes since metric can still
 // be recorded with rest of the attributes
 func recordOperationCompletion(mt *builtinMetricsTracer) {
-	if !mt.builtInEnabled {
+	if mt == nil || !mt.builtInEnabled {
 		return
 	}
 

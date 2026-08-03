@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -39,6 +40,23 @@ import (
 	proto3 "google.golang.org/protobuf/types/known/structpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
+
+type fixedStreamingReceiver struct {
+	ctx        context.Context
+	results    []*sppb.PartialResultSet
+	nextResult int
+}
+
+func (r *fixedStreamingReceiver) Recv() (*sppb.PartialResultSet, error) {
+	if r.nextResult == len(r.results) {
+		return nil, io.EOF
+	}
+	result := r.results[r.nextResult]
+	r.nextResult++
+	return result, nil
+}
+
+func (r *fixedStreamingReceiver) Context() context.Context { return r.ctx }
 
 var (
 	// Mocked transaction timestamp.
@@ -582,7 +600,7 @@ nextTest:
 		var rows []*Row
 		p := &partialResultSetDecoder{}
 		for j, v := range test.input {
-			rs, _, err := p.add(v)
+			rs, _, err := p.add(v, nil)
 			if err != nil {
 				t.Errorf("test %d.%d: partialResultSetDecoder.add(%v) = %v; want nil", i, j, v, err)
 				continue nextTest
@@ -895,10 +913,6 @@ func TestRsdNonblockingStates(t *testing.T) {
 					}
 					return
 				}
-				mt.currOp.incrementAttemptCount()
-				mt.currOp.currAttempt = &attemptTracer{
-					startTime: time.Now(),
-				}
 				// Receive next decoded item.
 				if r.next(&mt) {
 					rs = append(rs, r.get())
@@ -1170,10 +1184,6 @@ func TestRsdBlockingStates(t *testing.T) {
 			var rs []*sppb.PartialResultSet
 			rowsFetched := make(chan int)
 			go func() {
-				mt.currOp.incrementAttemptCount()
-				mt.currOp.currAttempt = &attemptTracer{
-					startTime: time.Now(),
-				}
 				for {
 					if !r.next(&mt) {
 						// Note that r.Next also exits on context cancel/timeout.
@@ -2022,6 +2032,108 @@ func TestIteratorWithError(t *testing.T) {
 	defer iter.Stop()
 	if _, err := iter.Next(); err != injected {
 		t.Fatalf("Expected error: %v, got %v", injected, err)
+	}
+}
+
+func TestRowIteratorMetricsSpanAllRows(t *testing.T) {
+	_, c, teardown := setupMockedTestServer(t)
+	defer teardown()
+	client, err := c.sc.nextClient()
+	if err != nil {
+		t.Fatal(err)
+	}
+	gsc := client.(*grpcSpannerClient)
+	ctx := context.Background()
+	metricsFactory := *c.metricsTracerFactory
+	metricsFactory.enabled = true
+	newReceiver := func(values ...string) *fixedStreamingReceiver {
+		protoValues := make([]*proto3.Value, len(values))
+		for i, value := range values {
+			protoValues[i] = &proto3.Value{Kind: &proto3.Value_StringValue{StringValue: value}}
+		}
+		return &fixedStreamingReceiver{ctx: ctx, results: []*sppb.PartialResultSet{{
+			Metadata: &sppb.ResultSetMetadata{RowType: &sppb.StructType{Fields: []*sppb.StructType_Field{{
+				Name: "value",
+				Type: &sppb.Type{Code: sppb.TypeCode_STRING},
+			}}}},
+			Values: protoValues,
+			Last:   true,
+		}}}
+	}
+	receiver := newReceiver("one", "two")
+	iter := stream(ctx, nil, &metricsFactory,
+		func(ctx context.Context, _ []byte, _ ...gax.CallOption) (streamingReceiver, error) {
+			mt := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+			mt.method = "/google.spanner.v1.Spanner/ExecuteStreamingSql"
+			return receiver, nil
+		}, nil, func(error) {}, gsc)
+	// This test exercises attempt/operation boundaries, not instruments.
+	iter.metricsTracer.builtInEnabled = false
+	defer iter.Stop()
+
+	if got := iter.metricsTracer.currOp.attemptCount; got != 0 {
+		t.Fatalf("attempt count before first Next = %d, want 0", got)
+	}
+	if _, err := iter.Next(); err != nil {
+		t.Fatalf("first Next: %v", err)
+	}
+	attempt := iter.metricsTracer.currOp.currAttempt
+	if attempt == nil {
+		t.Fatal("attempt tracer not started")
+	}
+	if got := iter.metricsTracer.currOp.attemptCount; got != 1 {
+		t.Fatalf("attempt count after first Next = %d, want 1", got)
+	}
+	if iter.metricsDone {
+		t.Fatal("metrics completed before iteration terminated")
+	}
+	if attempt.completed {
+		t.Fatal("attempt completed before iteration terminated")
+	}
+	if _, err := iter.Next(); err != nil {
+		t.Fatalf("second Next: %v", err)
+	}
+	if got := iter.metricsTracer.currOp.currAttempt; got != attempt {
+		t.Fatal("second row started a new attempt tracer")
+	}
+	if got := iter.metricsTracer.currOp.attemptCount; got != 1 {
+		t.Fatalf("attempt count after second Next = %d, want 1", got)
+	}
+	if _, err := iter.Next(); err != iterator.Done {
+		t.Fatalf("terminal Next = %v, want iterator.Done", err)
+	}
+	if !iter.metricsDone {
+		t.Fatal("metrics not completed at iterator.Done")
+	}
+	if !attempt.completed {
+		t.Fatal("attempt not completed at iterator.Done")
+	}
+	if got := iter.metricsTracer.currOp.attemptCount; got != 1 {
+		t.Fatalf("final attempt count = %d, want 1", got)
+	}
+	iter.Stop()
+	if got := iter.metricsTracer.currOp.attemptCount; got != 1 {
+		t.Fatalf("Stop changed completed attempt count to %d", got)
+	}
+
+	stoppedReceiver := newReceiver("one")
+	stoppedIter := stream(ctx, nil, &metricsFactory,
+		func(ctx context.Context, _ []byte, _ ...gax.CallOption) (streamingReceiver, error) {
+			mt := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+			mt.method = "/google.spanner.v1.Spanner/ExecuteStreamingSql"
+			return stoppedReceiver, nil
+		}, nil, func(error) {}, gsc)
+	stoppedIter.metricsTracer.builtInEnabled = false
+	if _, err := stoppedIter.Next(); err != nil {
+		t.Fatalf("Next before Stop: %v", err)
+	}
+	stoppedAttempt := stoppedIter.metricsTracer.currOp.currAttempt
+	stoppedIter.Stop()
+	if !stoppedIter.metricsDone || !stoppedAttempt.completed {
+		t.Fatal("Stop did not complete operation and attempt metrics")
+	}
+	if got := stoppedIter.metricsTracer.currOp.attemptCount; got != 1 {
+		t.Fatalf("attempt count after Stop = %d, want 1", got)
 	}
 }
 

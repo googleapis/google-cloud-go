@@ -227,3 +227,7 @@ func recordGFELatencyMetricsOT(ctx context.Context, md metadata.MD, keyMethod st
 	}
 	return nil
 }
+
+func gfeLatencySinksEnabled(hasOpenCensusContext bool, otConfig *openTelemetryConfig) bool {
+	return (getGFELatencyMetricsFlag() && hasOpenCensusContext) || (otConfig != nil && otConfig.enabled)
+}

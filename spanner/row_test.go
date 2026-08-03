@@ -168,6 +168,7 @@ var (
 			),
 			nullProto(),
 		},
+		nil,
 	}
 )
 
@@ -329,6 +330,7 @@ func TestNilDst(t *testing.T) {
 					{Name: "Col0", Type: stringType()},
 				},
 				[]*proto3.Value{stringProto("value")},
+				nil,
 			},
 			nil,
 			errDecodeColumn(0, errNilDst(nil)),
@@ -341,6 +343,7 @@ func TestNilDst(t *testing.T) {
 					{Name: "Col0", Type: stringType()},
 				},
 				[]*proto3.Value{stringProto("value")},
+				nil,
 			},
 			(*string)(nil),
 			errDecodeColumn(0, errNilDst((*string)(nil))),
@@ -365,6 +368,7 @@ func TestNilDst(t *testing.T) {
 				[]*proto3.Value{listProto(
 					listProto(intProto(3), floatProto(33.3), float32Proto(0.3), uuidProto(uuid1)),
 				)},
+				nil,
 			},
 			(*[]*struct {
 				Col1 int
@@ -552,6 +556,7 @@ func TestInvalidColumnRequest(t *testing.T) {
 						{Name: "Val", Type: stringType()},
 					},
 					[]*proto3.Value{stringProto("value1"), stringProto("value2")},
+					nil,
 				}
 				return r.ColumnByName("Val", &s)
 			},
@@ -569,6 +574,7 @@ func TestInvalidColumnRequest(t *testing.T) {
 						{Name: "Val", Type: stringType()},
 					},
 					[]*proto3.Value{stringProto("value1"), stringProto("value2")},
+					nil,
 				}
 				return r.ToStruct(s)
 			},
@@ -590,6 +596,7 @@ func TestInvalidColumnRequest(t *testing.T) {
 						{Name: "", Type: stringType()},
 					},
 					[]*proto3.Value{stringProto("value1")},
+					nil,
 				}
 				return r.ToStruct(s)
 			},
@@ -609,6 +616,7 @@ func TestInvalidColumnRequest(t *testing.T) {
 						{Name: "Val", Type: stringType()},
 					},
 					[]*proto3.Value{stringProto("value1"), stringProto("value2")},
+					nil,
 				}
 				return r.ToStructLenient(s)
 			},
@@ -630,6 +638,7 @@ func TestInvalidColumnRequest(t *testing.T) {
 						{Name: "", Type: stringType()},
 					},
 					[]*proto3.Value{stringProto("value1")},
+					nil,
 				}
 				return r.ToStructLenient(s)
 			},
@@ -755,11 +764,13 @@ func TestBrokenRow(t *testing.T) {
 			&Row{
 				[]*sppb.StructType_Field{},
 				[]*proto3.Value{stringProto("value")},
+				nil,
 			},
 			&NullString{"value", true},
 			errFieldsMismatchVals(&Row{
 				[]*sppb.StructType_Field{},
 				[]*proto3.Value{stringProto("value")},
+				nil,
 			}),
 		},
 		{
@@ -767,6 +778,7 @@ func TestBrokenRow(t *testing.T) {
 			&Row{
 				[]*sppb.StructType_Field{nil},
 				[]*proto3.Value{stringProto("value")},
+				nil,
 			},
 			&NullString{"value", true},
 			errNilColType(0),
@@ -778,6 +790,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: nil},
 				},
 				[]*proto3.Value{listProto(stringProto("value1"), stringProto("value2"))},
+				nil,
 			},
 			&[]NullString{},
 			errDecodeColumn(0, errNilSpannerType()),
@@ -789,6 +802,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: &sppb.Type{Code: sppb.TypeCode_ARRAY}},
 				},
 				[]*proto3.Value{listProto(stringProto("value1"), stringProto("value2"))},
+				nil,
 			},
 			&[]NullString{},
 			errDecodeColumn(0, errNilArrElemType(&sppb.Type{Code: sppb.TypeCode_ARRAY})),
@@ -800,6 +814,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: intType()},
 				},
 				[]*proto3.Value{nil},
+				nil,
 			},
 			&NullInt64{1, true},
 			errDecodeColumn(0, errNilSrc()),
@@ -811,6 +826,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: intType()},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}},
+				nil,
 			},
 			&NullInt64{1, true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}, "String")),
@@ -822,6 +838,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: intType()},
 				},
 				[]*proto3.Value{floatProto(1.0)},
+				nil,
 			},
 			&NullInt64{1, true},
 			errDecodeColumn(0, errSrcVal(floatProto(1.0), "String")),
@@ -833,6 +850,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: intType()},
 				},
 				[]*proto3.Value{stringProto("&1")},
+				nil,
 			},
 			proto.Int64(0),
 			errDecodeColumn(0, errBadEncoding(stringProto("&1"), func() error {
@@ -847,6 +865,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: intType()},
 				},
 				[]*proto3.Value{stringProto("&1")},
+				nil,
 			},
 			&NullInt64{},
 			errDecodeColumn(0, errBadEncoding(stringProto("&1"), func() error {
@@ -861,6 +880,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: stringType()},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}},
+				nil,
 			},
 			&NullString{"value", true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}, "String")),
@@ -872,6 +892,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: stringType()},
 				},
 				[]*proto3.Value{listProto(stringProto("value"))},
+				nil,
 			},
 			&NullString{"value", true},
 			errDecodeColumn(0, errSrcVal(listProto(stringProto("value")), "String")),
@@ -883,6 +904,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: floatType()},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_NumberValue)(nil)}},
+				nil,
 			},
 			&NullFloat64{1.0, true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_NumberValue)(nil)}, "Number")),
@@ -894,6 +916,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: floatType()},
 				},
 				[]*proto3.Value{boolProto(true)},
+				nil,
 			},
 			&NullFloat64{1.0, true},
 			errDecodeColumn(0, errSrcVal(boolProto(true), "Number")),
@@ -905,6 +928,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: floatType()},
 				},
 				[]*proto3.Value{stringProto("nan")},
+				nil,
 			},
 			&NullFloat64{},
 			errDecodeColumn(0, errUnexpectedFloat64Str("nan")),
@@ -916,6 +940,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: floatType()},
 				},
 				[]*proto3.Value{stringProto("nan")},
+				nil,
 			},
 			proto.Float64(0),
 			errDecodeColumn(0, errUnexpectedFloat64Str("nan")),
@@ -927,6 +952,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: float32Type()},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_NumberValue)(nil)}},
+				nil,
 			},
 			&NullFloat32{1.0, true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_NumberValue)(nil)}, "Number")),
@@ -938,6 +964,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: float32Type()},
 				},
 				[]*proto3.Value{boolProto(true)},
+				nil,
 			},
 			&NullFloat32{1.0, true},
 			errDecodeColumn(0, errSrcVal(boolProto(true), "Number")),
@@ -949,6 +976,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: float32Type()},
 				},
 				[]*proto3.Value{stringProto("nan")},
+				nil,
 			},
 			&NullFloat32{},
 			errDecodeColumn(0, errUnexpectedFloat32Str("nan")),
@@ -960,6 +988,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: float32Type()},
 				},
 				[]*proto3.Value{stringProto("nan")},
+				nil,
 			},
 			proto.Float32(0),
 			errDecodeColumn(0, errUnexpectedFloat32Str("nan")),
@@ -971,6 +1000,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: bytesType()},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}},
+				nil,
 			},
 			&[]byte{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}, "String")),
@@ -982,6 +1012,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: bytesType()},
 				},
 				[]*proto3.Value{boolProto(false)},
+				nil,
 			},
 			&[]byte{},
 			errDecodeColumn(0, errSrcVal(boolProto(false), "String")),
@@ -993,6 +1024,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: bytesType()},
 				},
 				[]*proto3.Value{stringProto("&&")},
+				nil,
 			},
 			&[]byte{},
 			errDecodeColumn(0, errBadEncoding(stringProto("&&"), func() error {
@@ -1007,6 +1039,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: boolType()},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_BoolValue)(nil)}},
+				nil,
 			},
 			&NullBool{false, true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_BoolValue)(nil)}, "Bool")),
@@ -1018,6 +1051,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: boolType()},
 				},
 				[]*proto3.Value{stringProto("false")},
+				nil,
 			},
 			&NullBool{false, true},
 			errDecodeColumn(0, errSrcVal(stringProto("false"), "Bool")),
@@ -1029,6 +1063,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: timeType()},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}},
+				nil,
 			},
 			&NullTime{time.Now(), true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}, "String")),
@@ -1040,6 +1075,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: timeType()},
 				},
 				[]*proto3.Value{boolProto(false)},
+				nil,
 			},
 			&NullTime{time.Now(), true},
 			errDecodeColumn(0, errSrcVal(boolProto(false), "String")),
@@ -1051,6 +1087,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: timeType()},
 				},
 				[]*proto3.Value{stringProto("junk")},
+				nil,
 			},
 			&NullTime{time.Now(), true},
 			errDecodeColumn(0, errBadEncoding(stringProto("junk"), func() error {
@@ -1065,6 +1102,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: dateType()},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}},
+				nil,
 			},
 			&NullDate{civil.Date{}, true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}, "String")),
@@ -1076,6 +1114,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: dateType()},
 				},
 				[]*proto3.Value{boolProto(false)},
+				nil,
 			},
 			&NullDate{civil.Date{}, true},
 			errDecodeColumn(0, errSrcVal(boolProto(false), "String")),
@@ -1087,6 +1126,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: dateType()},
 				},
 				[]*proto3.Value{stringProto("junk")},
+				nil,
 			},
 			&NullDate{civil.Date{}, true},
 			errDecodeColumn(0, errBadEncoding(stringProto("junk"), func() error {
@@ -1101,6 +1141,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: uuidType()},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}},
+				nil,
 			},
 			&NullUUID{uuid1, true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}, "String")),
@@ -1112,6 +1153,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: uuidType()},
 				},
 				[]*proto3.Value{boolProto(true)},
+				nil,
 			},
 			&NullUUID{uuid1, true},
 			errDecodeColumn(0, errSrcVal(boolProto(true), "String")),
@@ -1123,6 +1165,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: uuidType()},
 				},
 				[]*proto3.Value{stringProto("xyz")},
+				nil,
 			},
 			&NullUUID{},
 			errDecodeColumn(0, errBadEncoding(stringProto("xyz"), func() error {
@@ -1138,6 +1181,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(intType())},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				nil,
 			},
 			&[]NullInt64{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1149,6 +1193,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(intType())},
 				},
 				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				nil,
 			},
 			&[]NullInt64{},
 			errDecodeColumn(0, errNilListValue("INT64")),
@@ -1160,6 +1205,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(intType())},
 				},
 				[]*proto3.Value{bytesProto([]byte("value"))},
+				nil,
 			},
 			&[]NullInt64{},
 			errDecodeColumn(0, errSrcVal(bytesProto([]byte("value")), "List")),
@@ -1171,6 +1217,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(intType())},
 				},
 				[]*proto3.Value{listProto(boolProto(true))},
+				nil,
 			},
 			&[]NullInt64{},
 			errDecodeColumn(0, errDecodeArrayElement(0, boolProto(true),
@@ -1183,6 +1230,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(stringType())},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				nil,
 			},
 			&[]NullString{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1194,6 +1242,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(stringType())},
 				},
 				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				nil,
 			},
 			&[]NullString{},
 			errDecodeColumn(0, errNilListValue("STRING")),
@@ -1205,6 +1254,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(stringType())},
 				},
 				[]*proto3.Value{boolProto(true)},
+				nil,
 			},
 			&[]NullString{},
 			errDecodeColumn(0, errSrcVal(boolProto(true), "List")),
@@ -1216,6 +1266,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(stringType())},
 				},
 				[]*proto3.Value{listProto(boolProto(true))},
+				nil,
 			},
 			&[]NullString{},
 			errDecodeColumn(0, errDecodeArrayElement(0, boolProto(true),
@@ -1228,6 +1279,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(floatType())},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				nil,
 			},
 			&[]NullFloat64{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1239,6 +1291,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(floatType())},
 				},
 				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				nil,
 			},
 			&[]NullFloat64{},
 			errDecodeColumn(0, errNilListValue("FLOAT64")),
@@ -1250,6 +1303,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(floatType())},
 				},
 				[]*proto3.Value{stringProto("value")},
+				nil,
 			},
 			&[]NullFloat64{},
 			errDecodeColumn(0, errSrcVal(stringProto("value"), "List")),
@@ -1261,6 +1315,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(floatType())},
 				},
 				[]*proto3.Value{listProto(boolProto(true))},
+				nil,
 			},
 			&[]NullFloat64{},
 			errDecodeColumn(0, errDecodeArrayElement(0, boolProto(true),
@@ -1273,6 +1328,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(bytesType())},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				nil,
 			},
 			&[][]byte{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1284,6 +1340,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(bytesType())},
 				},
 				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				nil,
 			},
 			&[][]byte{},
 			errDecodeColumn(0, errNilListValue("BYTES")),
@@ -1295,6 +1352,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(bytesType())},
 				},
 				[]*proto3.Value{floatProto(1.0)},
+				nil,
 			},
 			&[][]byte{},
 			errDecodeColumn(0, errSrcVal(floatProto(1.0), "List")),
@@ -1306,6 +1364,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(bytesType())},
 				},
 				[]*proto3.Value{listProto(floatProto(1.0))},
+				nil,
 			},
 			&[][]byte{},
 			errDecodeColumn(0, errDecodeArrayElement(0, floatProto(1.0),
@@ -1318,6 +1377,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(boolType())},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				nil,
 			},
 			&[]NullBool{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1329,6 +1389,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(boolType())},
 				},
 				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				nil,
 			},
 			&[]NullBool{},
 			errDecodeColumn(0, errNilListValue("BOOL")),
@@ -1340,6 +1401,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(boolType())},
 				},
 				[]*proto3.Value{floatProto(1.0)},
+				nil,
 			},
 			&[]NullBool{},
 			errDecodeColumn(0, errSrcVal(floatProto(1.0), "List")),
@@ -1351,6 +1413,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(boolType())},
 				},
 				[]*proto3.Value{listProto(floatProto(1.0))},
+				nil,
 			},
 			&[]NullBool{},
 			errDecodeColumn(0, errDecodeArrayElement(0, floatProto(1.0),
@@ -1363,6 +1426,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(timeType())},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				nil,
 			},
 			&[]NullTime{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1374,6 +1438,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(timeType())},
 				},
 				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				nil,
 			},
 			&[]NullTime{},
 			errDecodeColumn(0, errNilListValue("TIMESTAMP")),
@@ -1385,6 +1450,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(timeType())},
 				},
 				[]*proto3.Value{floatProto(1.0)},
+				nil,
 			},
 			&[]NullTime{},
 			errDecodeColumn(0, errSrcVal(floatProto(1.0), "List")),
@@ -1396,6 +1462,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(timeType())},
 				},
 				[]*proto3.Value{listProto(floatProto(1.0))},
+				nil,
 			},
 			&[]NullTime{},
 			errDecodeColumn(0, errDecodeArrayElement(0, floatProto(1.0),
@@ -1408,6 +1475,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(dateType())},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				nil,
 			},
 			&[]NullDate{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1419,6 +1487,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(dateType())},
 				},
 				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				nil,
 			},
 			&[]NullDate{},
 			errDecodeColumn(0, errNilListValue("DATE")),
@@ -1430,6 +1499,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(dateType())},
 				},
 				[]*proto3.Value{floatProto(1.0)},
+				nil,
 			},
 			&[]NullDate{},
 			errDecodeColumn(0, errSrcVal(floatProto(1.0), "List")),
@@ -1441,6 +1511,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(dateType())},
 				},
 				[]*proto3.Value{listProto(floatProto(1.0))},
+				nil,
 			},
 			&[]NullDate{},
 			errDecodeColumn(0, errDecodeArrayElement(0, floatProto(1.0),
@@ -1453,6 +1524,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(uuidType())},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				nil,
 			},
 			&[]NullUUID{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1464,6 +1536,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(uuidType())},
 				},
 				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				nil,
 			},
 			&[]NullUUID{},
 			errDecodeColumn(0, errNilListValue("UUID")),
@@ -1475,6 +1548,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(uuidType())},
 				},
 				[]*proto3.Value{floatProto(1.0)},
+				nil,
 			},
 			&[]NullUUID{},
 			errDecodeColumn(0, errSrcVal(floatProto(1.0), "List")),
@@ -1486,6 +1560,7 @@ func TestBrokenRow(t *testing.T) {
 					{Name: "Col0", Type: listType(uuidType())},
 				},
 				[]*proto3.Value{listProto(floatProto(1.0))},
+				nil,
 			},
 			&[]NullUUID{},
 			errDecodeColumn(0, errDecodeArrayElement(0, floatProto(1.0),
@@ -1502,6 +1577,7 @@ func TestBrokenRow(t *testing.T) {
 					))},
 				},
 				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				nil,
 			},
 			&[]*struct {
 				Col1 int64
@@ -1521,6 +1597,7 @@ func TestBrokenRow(t *testing.T) {
 					))},
 				},
 				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				nil,
 			},
 			&[]*struct {
 				Col1 int64
@@ -1545,6 +1622,7 @@ func TestBrokenRow(t *testing.T) {
 					},
 				},
 				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				nil,
 			},
 			&[]NullRow{},
 			errDecodeColumn(0, errNilListValue("STRUCT")),
@@ -1565,6 +1643,7 @@ func TestBrokenRow(t *testing.T) {
 					},
 				},
 				[]*proto3.Value{bytesProto([]byte("value"))},
+				nil,
 			},
 			&[]*struct {
 				Col1 int64
@@ -1589,6 +1668,7 @@ func TestBrokenRow(t *testing.T) {
 					},
 				},
 				[]*proto3.Value{listProto(bytesProto([]byte("value")))},
+				nil,
 			},
 			&[]NullRow{},
 			errDecodeColumn(0, errNotStructElement(0, bytesProto([]byte("value")))),
@@ -1609,6 +1689,7 @@ func TestBrokenRow(t *testing.T) {
 					},
 				},
 				[]*proto3.Value{listProto(bytesProto([]byte("value")))},
+				nil,
 			},
 			&[]*struct {
 				Col1 int64
@@ -1627,6 +1708,7 @@ func TestBrokenRow(t *testing.T) {
 					},
 				},
 				[]*proto3.Value{listProto(listProto(intProto(1), floatProto(2.0), stringProto("3")))},
+				nil,
 			},
 			&[]*struct {
 				Col1 int64
@@ -1652,6 +1734,7 @@ func TestBrokenRow(t *testing.T) {
 					},
 				},
 				[]*proto3.Value{listProto(listProto(intProto(1), boolProto(true), stringProto("3")))},
+				nil,
 			},
 			&[]*struct {
 				Col1 int64
@@ -2020,6 +2103,7 @@ func TestToStructEmbedded(t *testing.T) {
 			stringProto("v1"),
 			stringProto("v2"),
 		},
+		nil,
 	}
 	var got S2
 	if err := r.ToStruct(&got); err != nil {
@@ -2069,6 +2153,7 @@ func TestToStructWithUnEqualFields(t *testing.T) {
 					stringProto("v1"),
 					stringProto("v2"),
 				},
+				nil,
 			},
 			want: &extraField{F1: "v1", F2: "v2", F3: ""},
 		},
@@ -2086,6 +2171,7 @@ func TestToStructWithUnEqualFields(t *testing.T) {
 					stringProto("v2"),
 					stringProto("v3"),
 				},
+				nil,
 			},
 			want: &lessField{F1: "v1", F3: "v3"},
 		},
@@ -2112,6 +2198,7 @@ func TestRowToString(t *testing.T) {
 			stringProto("v1"),
 			stringProto("v2"),
 		},
+		nil,
 	}
 	got := r.String()
 	want := `{fields: [name:"F1" type:{code:STRING} name:"F2" type:{code:STRING}], values: [string_value:"v1" string_value:"v2"]}`
@@ -2217,6 +2304,7 @@ func TestNewRow(t *testing.T) {
 					stringProto("abc"),
 					listProto(intProto(91), nullProto(), intProto(87)),
 				},
+				nil,
 			},
 		},
 	} {
@@ -2329,12 +2417,14 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col0", Type: stringType()},
 						},
 						[]*proto3.Value{stringProto("value")},
+						nil,
 					},
 					&Row{
 						[]*sppb.StructType_Field{
 							{Name: "Col0", Type: stringType()},
 						},
 						[]*proto3.Value{stringProto("value2")},
+						nil,
 					},
 					iterator.Done,
 				),
@@ -2351,12 +2441,14 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col0", Type: stringType()},
 						},
 						[]*proto3.Value{stringProto("value")},
+						nil,
 					},
 					&Row{
 						[]*sppb.StructType_Field{
 							{Name: "Col0", Type: stringType()},
 						},
 						[]*proto3.Value{stringProto("value2")},
+						nil,
 					},
 					iterator.Done,
 				),
@@ -2376,6 +2468,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col4", Type: timeType()},
 						},
 						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value"), timeProto(tm)},
+						nil,
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2385,6 +2478,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col4", Type: timeType()},
 						},
 						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2"), timeProto(tm.Add(24 * time.Hour))},
+						nil,
 					},
 					iterator.Done,
 				),
@@ -2406,6 +2500,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col3", Type: stringType()},
 						},
 						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+						nil,
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2414,6 +2509,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col3", Type: stringType()},
 						},
 						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2")},
+						nil,
 					},
 					iterator.Done,
 				),
@@ -2436,6 +2532,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col5", Type: stringType()},
 						},
 						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value"), timeProto(tm), stringProto("value2")},
+						nil,
 					},
 					// failure case
 					iterator.Done,
@@ -2458,6 +2555,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col3", Type: stringType()},
 						},
 						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+						nil,
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2466,6 +2564,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col3", Type: stringType()},
 						},
 						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2")},
+						nil,
 					},
 					iterator.Done,
 				),
@@ -2489,6 +2588,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col4", Type: stringType()},
 						},
 						[]*proto3.Value{intProto(3), floatProto(3.3), stringProto("value3"), stringProto("test3")},
+						nil,
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2498,6 +2598,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col4", Type: stringType()},
 						},
 						[]*proto3.Value{intProto(1), floatProto(1.1), nullProto(), nullProto()},
+						nil,
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2507,6 +2608,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col4", Type: stringType()},
 						},
 						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2"), stringProto("test2")},
+						nil,
 					},
 					iterator.Done,
 				),
@@ -2530,6 +2632,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag4", Type: timeType()},
 						},
 						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value"), timeProto(tm)},
+						nil,
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2539,6 +2642,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag4", Type: timeType()},
 						},
 						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2"), timeProto(tm.Add(24 * time.Hour))},
+						nil,
 					},
 					iterator.Done,
 				),
@@ -2561,6 +2665,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag3", Type: intType()},
 						},
 						[]*proto3.Value{intProto(2), intProto(1), intProto(4), intProto(3)},
+						nil,
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2570,6 +2675,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag4", Type: intType()},
 						},
 						[]*proto3.Value{intProto(1), intProto(2), intProto(3), intProto(4)},
+						nil,
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2579,6 +2685,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag3", Type: intType()},
 						},
 						[]*proto3.Value{intProto(2), intProto(1), intProto(4), intProto(3)},
+						nil,
 					},
 					iterator.Done,
 				),
@@ -2602,6 +2709,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag3", Type: stringType()},
 						},
 						[]*proto3.Value{floatProto(1.1), intProto(1), timeProto(tm), stringProto("value")},
+						nil,
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2611,6 +2719,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag3", Type: stringType()},
 						},
 						[]*proto3.Value{floatProto(2.2), intProto(2), timeProto(tm.Add(24 * time.Hour)), stringProto("value2")},
+						nil,
 					},
 					iterator.Done,
 				),
@@ -2632,6 +2741,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col3", Type: stringType()},
 						},
 						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+						nil,
 					},
 					// failure case
 					errors.New("some error"),
@@ -2656,6 +2766,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col4", Type: stringType()},
 						},
 						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+						nil,
 					},
 					// failure case
 					iterator.Done,
@@ -2679,6 +2790,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col4", Type: stringType()},
 						},
 						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+						nil,
 					},
 					// failure case
 					iterator.Done,
@@ -2700,6 +2812,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col4", Type: stringType()},
 						},
 						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+						nil,
 					},
 					// failure case
 					iterator.Done,
@@ -2729,6 +2842,7 @@ func TestSelectAll(t *testing.T) {
 							stringProto("City1"),
 							dateProto(civil.Date{Year: 2000, Month: 11, Day: 14}),
 						},
+						nil,
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2745,6 +2859,7 @@ func TestSelectAll(t *testing.T) {
 							stringProto("City2"),
 							dateProto(civil.Date{Year: 2001, Month: 11, Day: 14}),
 						},
+						nil,
 					},
 					iterator.Done,
 				),
@@ -2772,6 +2887,7 @@ func TestSelectAll(t *testing.T) {
 							dateProto(civil.Date{Year: 2000, Month: 11, Day: 14}),
 							stringProto("ZipCode1"),
 						},
+						nil,
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2788,6 +2904,7 @@ func TestSelectAll(t *testing.T) {
 							dateProto(civil.Date{Year: 2001, Month: 11, Day: 14}),
 							stringProto("ZipCode2"),
 						},
+						nil,
 					},
 					iterator.Done,
 				),
