@@ -78,23 +78,15 @@ type vrpcErr struct {
 func (e *vrpcErr) Error() string { return e.outcome.Err.Error() }
 func (e *vrpcErr) Unwrap() error { return e.outcome.Err }
 
-// GRPCStatus makes vrpcErr satisfy the grpc-go interface that
-// status.Code / status.FromError look for via errors.As. Without this,
-// tagged wrappers around stdlib ctx errors (context.DeadlineExceeded /
-// context.Canceled) would surface as codes.Unknown to callers reading
-// status.Code(err) — the classic gRPC unary path gets the translation
-// from grpc-go's client-side interceptor, but the session vRPC path
-// bypasses that interceptor and has to translate on its own.
+// GRPCStatus lets status.Code / status.FromError see through a tagged
+// wrapper. Needed because the session vRPC path is bidi and bypasses
+// grpc-go's client-side unary interceptor, which is where ctx.Err() →
+// gRPC status translation normally happens.
 //
-// Preference order: an already-status error wins verbatim; otherwise
-// interpret stdlib ctx errors via status.FromContextError (returns
-// DeadlineExceeded / Canceled as appropriate); otherwise Unknown with
-// the underlying message. Unwrap() still yields the raw wrapped error
-// so errors.Is(err, context.DeadlineExceeded) etc. keep working.
+// Preference: existing gRPC status wins verbatim; else translate via
+// status.FromContextError; else Unknown. Unwrap() is untouched so
+// errors.Is(err, context.DeadlineExceeded) still walks through.
 func (e *vrpcErr) GRPCStatus() *status.Status {
-	if e.outcome.Err == nil {
-		return status.New(codes.OK, "")
-	}
 	if s, ok := status.FromError(e.outcome.Err); ok {
 		return s
 	}
@@ -121,8 +113,10 @@ func tagErr(state AttemptState, err error) error {
 // fake Invoker must tag its errors the same way for the RetryingVRpc
 // interceptor's default classification to see them.
 //
-// Returns nil for nil err. Wraps unwrap()-transparently — errors.Is and
-// status.FromError continue to see the underlying err.
+// Returns nil for nil err. errors.Is sees the underlying err via
+// Unwrap. status.FromError returns the wrapper's gRPC status — an
+// existing status passes through, a stdlib ctx error is translated to
+// DeadlineExceeded / Canceled, anything else surfaces as Unknown.
 func TagErr(state AttemptState, err error) error { return tagErr(state, err) }
 
 // ClassifyErr returns the outcome for any error. Untagged errors fall

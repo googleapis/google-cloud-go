@@ -597,17 +597,7 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 		ev.Peer = peerInfoToSnapshot(sh.session.PeerInfo())
 		ev.RemoteAddr = sh.session.RemoteAddr()
 		if invokeErr != nil {
-			// stdlib context errors don't implement GRPCStatus, so
-			// status.Code returns Unknown — classify explicitly so
-			// deadline/cancel rows label correctly.
-			switch {
-			case errors.Is(invokeErr, context.DeadlineExceeded):
-				ev.ErrCode = "DeadlineExceeded"
-			case errors.Is(invokeErr, context.Canceled):
-				ev.ErrCode = "Canceled"
-			default:
-				ev.ErrCode = status.Code(invokeErr).String()
-			}
+			ev.ErrCode = status.Code(invokeErr).String()
 			btopt.Debugf(nil, "POOL %s slow vRPC failed method=%s session=%s rpc_id=%d code=%s latency=%v session_age=%v backend=%v raw_err=%v",
 				p.poolName, ev.Method, ev.Session, ev.RPCIDOnSession, ev.ErrCode, ev.Latency, ev.SessionAge, ev.BackendLatency, invokeErr)
 		}
