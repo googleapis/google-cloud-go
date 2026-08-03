@@ -77,18 +77,21 @@ type vrpcErr struct {
 func (e *vrpcErr) Error() string { return e.outcome.Err.Error() }
 func (e *vrpcErr) Unwrap() error { return e.outcome.Err }
 
-// GRPCStatus translates the wrapped error to a gRPC status. Session
-// vRPC bypasses grpc-go's unary client interceptor, so ctx.Err() →
-// gRPC status translation has to happen here or status.Code returns
-// Unknown. Unwrap() intentionally stays raw so errors.Is walks through.
-func (e *vrpcErr) GRPCStatus() *status.Status {
-	if s, ok := status.FromError(e.outcome.Err); ok {
+// GRPCStatus lets status.Code / status.FromError see through the tagged
+// wrapper. Session vRPC bypasses grpc-go's unary client interceptor —
+// the place where ctx.Err() → gRPC status translation normally happens
+// — so we do it here. Unwrap() stays raw so errors.Is walks through.
+func (e *vrpcErr) GRPCStatus() *status.Status { return statusOf(e.outcome.Err) }
+
+// statusOf returns err's gRPC status: existing status wins, else
+// stdlib ctx errors get translated to DeadlineExceeded / Canceled,
+// else Unknown-with-message. Shared by vrpcErr.GRPCStatus and the
+// pool's slow-op labelers so ctx-err → status logic lives in one place.
+func statusOf(err error) *status.Status {
+	if s, ok := status.FromError(err); ok {
 		return s
 	}
-	// FromContextError translates ctx errors to DeadlineExceeded /
-	// Canceled and falls back to Unknown-with-message for anything else,
-	// which is the fallback we want anyway.
-	return status.FromContextError(e.outcome.Err)
+	return status.FromContextError(err)
 }
 
 // tagErr wraps err with the given AttemptState. Returns nil for nil err so

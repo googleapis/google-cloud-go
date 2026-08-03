@@ -597,7 +597,7 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 		ev.Peer = peerInfoToSnapshot(sh.session.PeerInfo())
 		ev.RemoteAddr = sh.session.RemoteAddr()
 		if invokeErr != nil {
-			ev.ErrCode = status.Code(invokeErr).String()
+			ev.ErrCode = statusOf(invokeErr).Code().String()
 			btopt.Debugf(nil, "POOL %s slow vRPC failed method=%s session=%s rpc_id=%d code=%s latency=%v session_age=%v backend=%v raw_err=%v",
 				p.poolName, ev.Method, ev.Session, ev.RPCIDOnSession, ev.ErrCode, ev.Latency, ev.SessionAge, ev.BackendLatency, invokeErr)
 		}

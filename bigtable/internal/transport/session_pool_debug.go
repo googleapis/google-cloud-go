@@ -19,15 +19,12 @@
 package internal
 
 import (
-	"context"
-	"errors"
 	"math/bits"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	btopt "cloud.google.com/go/bigtable/internal/option"
-	"google.golang.org/grpc/status"
 )
 
 // poolMetrics owns every observability-only field for SessionPoolImpl:
@@ -333,14 +330,7 @@ func (p *SessionPoolImpl) recordCheckoutFailure(checkoutStart time.Time, desc VR
 		Latency:  poolWait,
 		PoolWait: poolWait,
 	}
-	switch {
-	case errors.Is(err, context.DeadlineExceeded):
-		ev.ErrCode = "DeadlineExceeded"
-	case errors.Is(err, context.Canceled):
-		ev.ErrCode = "Canceled"
-	default:
-		ev.ErrCode = status.Code(err).String()
-	}
+	ev.ErrCode = statusOf(err).Code().String()
 	btopt.Debugf(nil, "POOL %s slow checkout failed method=%s pool_wait=%v code=%s raw_err=%v",
 		p.poolName, ev.Method, poolWait, ev.ErrCode, err)
 	p.recordSlowVRpc(ev)
