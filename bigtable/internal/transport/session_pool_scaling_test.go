@@ -228,9 +228,12 @@ func TestTick_CreateSessionPanic_PoolSurvives(t *testing.T) {
 		panic("simulated streamFactory panic")
 	}
 	p := NewSessionPoolImpl(
-		uint64(1), "test-panic-pool", 1, 10, panicFactory,
+		uint64(1), "test-panic-pool", panicFactory,
 		&spb.OpenSessionRequest{ProtocolVersion: 1}, nil, SessionTypeTable, true,
 	)
+	p.sizer.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+		MinSessionCount: 1, MaxSessionCount: 10,
+	})
 	t.Cleanup(func() { _ = p.Close() })
 
 	// Tick spawns a createSession goroutine; the factory panics inside

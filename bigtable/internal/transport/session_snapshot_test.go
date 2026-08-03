@@ -130,8 +130,11 @@ func TestSessionHandle_Snapshot(t *testing.T) {
 func TestPoolSnapshot_AggregatesSessions(t *testing.T) {
 	pool := NewSessionPoolImpl(
 		uint64(1),
-		"test:read", 1, 5, nil, nil, nil, SessionTypeTable, true,
+		"test:read", nil, nil, nil, SessionTypeTable, true,
 	)
+	pool.sizer.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+		MinSessionCount: 1, MaxSessionCount: 5,
+	})
 
 	// Two active sessions, one with traffic.
 	handles := make([]*SessionHandle, 0, 2)
