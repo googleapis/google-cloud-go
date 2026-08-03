@@ -38,10 +38,13 @@ func TestSessionPool_DebugDisabled_NoRecorderState(t *testing.T) {
 	}
 	p := NewSessionPoolImpl(
 		uint64(1),
-		"test-pool-nodebug", 0, 1, neverDialing,
+		"test-pool-nodebug", neverDialing,
 		&spb.OpenSessionRequest{ProtocolVersion: 1}, nil, SessionTypeTable,
 		false, // debugEnabled — the contract under test
 	)
+	p.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+		MinSessionCount: 0, MaxSessionCount: 1,
+	})
 	defer p.Close()
 
 	// Exercise the recorder call sites via direct calls. The pool

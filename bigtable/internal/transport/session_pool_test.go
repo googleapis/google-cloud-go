@@ -123,13 +123,14 @@ func newTestPool(t testing.TB, min, max int) *SessionPoolImpl {
 	p := NewSessionPoolImpl(
 		uint64(1),
 		"test-pool",
-		min,
-		max,
 		factory,
 		&spb.OpenSessionRequest{ProtocolVersion: 1},
 		nil,
 		SessionTypeTable, true,
 	)
+	p.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+		MinSessionCount: int32(min), MaxSessionCount: int32(max),
+	})
 	// Close streams before closing the pool: the pool's Close waits for
 	// per-session teardown, which requires the readLoop goroutines to
 	// exit — and they won't while parked on fakeStream.Recv.
@@ -242,12 +243,14 @@ func TestSessionPool_Invoke_RecordsSlowCheckoutFailure(t *testing.T) {
 	p := NewSessionPoolImpl(
 		uint64(1),
 		"test-pool",
-		0, 1,
 		neverDialing,
 		&spb.OpenSessionRequest{ProtocolVersion: 1},
 		nil,
 		SessionTypeTable, true,
 	)
+	p.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+		MinSessionCount: 0, MaxSessionCount: 1,
+	})
 	defer p.Close()
 
 	// 50ms ctx budget vs the 10ms defaultSlowThreshold means the checkout
@@ -303,12 +306,14 @@ func TestCheckoutSession_ParkedWaiter_DeadlineExceeded(t *testing.T) {
 	p := NewSessionPoolImpl(
 		uint64(1),
 		"test-pool",
-		0, 1,
 		neverDialing,
 		&spb.OpenSessionRequest{ProtocolVersion: 1},
 		nil,
 		SessionTypeTable, true,
 	)
+	p.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+		MinSessionCount: 0, MaxSessionCount: 1,
+	})
 	defer p.Close()
 
 	// Short deadline so the test doesn't loiter, long enough that the
@@ -447,7 +452,7 @@ func TestNewSessionPoolImpl_Identity(t *testing.T) {
 
 	p := NewSessionPoolImpl(
 		uint64(42),
-		"test-pool", 1, 10, factory, &spb.OpenSessionRequest{ProtocolVersion: 1}, nil, SessionTypeTable, true,
+		"test-pool", factory, &spb.OpenSessionRequest{ProtocolVersion: 1}, nil, SessionTypeTable, true,
 	)
 	if p.poolID != 42 {
 		t.Errorf("poolID = %d, want 42", p.poolID)
@@ -647,9 +652,11 @@ func TestUpdateConfig_SwapsPickerAndBounds(t *testing.T) {
 	if got := p.picker.Name(); got != "least-latency" {
 		t.Errorf("after PeakEwma swap, picker = %q, want least-latency", got)
 	}
-	// listenerFires counter bumps once per UpdateConfig.
-	if got := p.m.listenerFires.Load(); got != 2 {
-		t.Errorf("listenerFires = %d, want 2 (one per UpdateConfig)", got)
+	// listenerFires counter bumps once per UpdateConfig. Expect 3:
+	// one from newTestPool's bootstrap UpdateConfig plus the two in
+	// this test body.
+	if got := p.m.listenerFires.Load(); got != 3 {
+		t.Errorf("listenerFires = %d, want 3 (one per UpdateConfig)", got)
 	}
 }
 
