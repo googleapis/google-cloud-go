@@ -90,7 +90,29 @@ type sessionTableHandle struct {
 	//     not a same-RPC one. The Load-false-then-preempt-then-dispatch
 	//     window can span arbitrary wall-clock under scheduler pressure;
 	//     do not assume it's tight.
-	evicted   atomic.Bool
+	evicted atomic.Bool
+	// successor caches this handle's resolved live successor after the
+	// first resolveSuccessor call. Subsequent dispatch() calls that
+	// observe evicted=true then load a non-nil successor and follow it
+	// directly — no cache-map lookup, no cache.mu acquisition. Under
+	// TableShim's process-lifetime pointer-caching pattern this matters:
+	// without it, EVERY RPC on a stale handle would pay 2× cache.mu
+	// (removeEntry + getOrOpen) forever until process restart. With it,
+	// only the FIRST post-eviction RPC pays that cost; all subsequent
+	// ones are one extra atomic.Load. dispatch() also applies path
+	// compression on the return so a chain of evicted handles collapses
+	// on the next observation.
+	//
+	// Store races are safe: two concurrent dispatches that both call
+	// resolveSuccessor race into getOrOpen, which is at-most-one-per-key
+	// (loser closes its local api and returns the winner's handle), so
+	// both racers see the same `next` — the Store is idempotent. A
+	// divergent-`next` race (successor itself gets evicted between one
+	// dispatch's resolveSuccessor and another's Store) writes a stale
+	// successor pointer; the next dispatch's outer for loop walks one
+	// extra hop through it and updates. No correctness bug, just a
+	// lagging compression.
+	successor atomic.Pointer[sessionTableHandle]
 	closeOnce sync.Once
 	closeErr  error
 }
@@ -103,23 +125,37 @@ func (h *sessionTableHandle) touch() {
 //
 //   - Happy path (evicted=false): returns h. One atomic Load, no cache
 //     map lookup.
-//   - Eviction path: routes through resolveSuccessor to install-or-find
-//     the live successor in the cache. Loops so an aggressive-TTL test
-//     where the fresh handle gets evicted mid-flight can still resolve
-//     to a live one instead of recursing. Falls through to h when the
-//     cache is closed / openFn refuses so the caller sees the honest
-//     terminal-state error from h.api rather than a hang.
+//   - Eviction path: consults cur.successor first (one more atomic
+//     Load) — the cached pointer set by an earlier post-eviction
+//     dispatch. Only when the cache is cold does it fall back to
+//     resolveSuccessor, which does the cache-map work. Loops so an
+//     aggressive-TTL test where the fresh handle gets evicted mid-
+//     flight can still resolve to a live one instead of recursing.
+//     Falls through to cur when the cache is closed / openFn refuses
+//     so the caller sees the honest terminal-state error from
+//     cur.api rather than a hang.
+//   - Path compression: on return, stores the final live handle onto
+//     the original h so the next dispatch call skips the intermediate
+//     evicted handles (union-find with path compression). Intermediate
+//     handles become unreachable from h and are eligible for GC.
 //
 // Callers dispatch onto the returned handle and pay the touch() there,
 // so ReadRow / MutateRow avoid the wasted touch on the doomed original.
 func (h *sessionTableHandle) dispatch() *sessionTableHandle {
 	cur := h
 	for cur.evicted.Load() {
-		next := cur.resolveSuccessor()
+		next := cur.successor.Load()
 		if next == nil {
-			return cur // reopen refused; let cur.api surface the terminal error
+			next = cur.resolveSuccessor()
+			if next == nil {
+				return cur // reopen refused; let cur.api surface the terminal error
+			}
+			cur.successor.Store(next)
 		}
 		cur = next
+	}
+	if cur != h {
+		h.successor.Store(cur)
 	}
 	return cur
 }
