@@ -486,13 +486,24 @@ func (mt *Tracer) toOtelMetricAttrs(metricName string) (attribute.Set, error) {
 		case MetricLabelKeyStreamingOperation:
 			attrKeyValues = append(attrKeyValues, attribute.Bool(MetricLabelKeyStreamingOperation, mt.isStreaming))
 		case MetricTransportType:
-			attrKeyValues = append(attrKeyValues, attribute.String(MetricTransportType, mt.currOp.currAttempt.transportType))
+			// Fallback to "unknown" when an attempt errors before
+			// PeerInfo arrives (deadline exceeded, transport failure).
+			// Matches Java's Util.formatTransportType(null peerInfo) →
+			// TRANSPORT_TYPE_UNKNOWN.name() → "unknown".
+			attrKeyValues = append(attrKeyValues, attribute.String(MetricTransportType,
+				FallbackString(mt.currOp.currAttempt.transportType, defaultTransportType)))
 		case MetricTransportRegion:
-			attrKeyValues = append(attrKeyValues, attribute.String(MetricTransportRegion, mt.currOp.currAttempt.transportRegion))
+			// No fallback — Java emits "" here on the empty-PeerInfo
+			// path (Util.formatTransportRegion with null peerInfo).
+			// Kept identical for cross-language label alignment.
+			attrKeyValues = append(attrKeyValues, attribute.String(MetricTransportRegion,
+				mt.currOp.currAttempt.transportRegion))
 		case MetricTransportSubZone:
-			attrKeyValues = append(attrKeyValues, attribute.String(MetricTransportSubZone, mt.currOp.currAttempt.transportSubZone))
+			attrKeyValues = append(attrKeyValues, attribute.String(MetricTransportSubZone,
+				mt.currOp.currAttempt.transportSubZone))
 		case MetricTransportZone:
-			attrKeyValues = append(attrKeyValues, attribute.String(MetricTransportZone, mt.currOp.currAttempt.transportZone))
+			attrKeyValues = append(attrKeyValues, attribute.String(MetricTransportZone,
+				mt.currOp.currAttempt.transportZone))
 		default:
 			return attribute.Set{}, fmt.Errorf("unknown additional attribute: %v", attrKey)
 		}
