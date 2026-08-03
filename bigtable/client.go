@@ -48,7 +48,6 @@ type Client struct {
 	project, instance       string
 	appProfile              string
 	metricsTracerFactory    *metrics.Factory
-	disableRetryInfo        bool
 	retryOption             gax.CallOption
 	executeQueryRetryOption gax.CallOption
 	featureFlagsMD          metadata.MD // Pre-computed feature flags metadata to be sent with each request.
@@ -176,26 +175,21 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	o = append(o, internaloption.EnableNewAuthLibrary())
 	o = append(o, internaloption.EnableJwtWithScope())
 
-	disableRetryInfo := false
-
-	// If DISABLE_RETRY_INFO=1, library does not base retry decision and back off time on server returned RetryInfo value.
-	disableRetryInfoEnv := os.Getenv("DISABLE_RETRY_INFO")
-	disableRetryInfo = disableRetryInfoEnv == "1"
+	// RetryInfo is unconditionally on; retryer + on-wire flag agree via
+	// NewFeatureFlagsProto (feature_flags.go) and defaultRetryOption.
 	retryOption := defaultRetryOption
 	executeQueryRetryOption := defaultExecuteQueryRetryOption
-	if disableRetryInfo {
-		retryOption = clientOnlyRetryOption
-		executeQueryRetryOption = clientOnlyExecuteQueryRetryOption
-	}
 
-	// Create the feature flags metadata with direct access enabled
-	// setting feature flags for direct access is good
-	// as CFE/GFE will call RLS with gslb target type
-	// only TD calls the RLS with grpc target type
-	// and we evaluate the directAccess option after that.
-
-	allowDirectAccess := isDirectAccessEnabled(config)
-	directAccessMD := createFeatureFlagsMD(metricsTracerFactory.Enabled, disableRetryInfo, allowDirectAccess)
+	// Build feature-flags proto + header MD ONCE. Both are threaded
+	// into session.NewClient below so classic and session ship
+	// byte-identical bigtable-features headers AND session's
+	// OpenSessionRequest.Flags reuses the same proto reference —
+	// zero drift by construction, no re-marshal in session.
+	featureFlagsProto := btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
+		ClientSideMetricsEnabled: metricsTracerFactory.Enabled,
+		EnableDirectAccess:       isDirectAccessEnabled(config),
+	})
+	directAccessMD := btransport.MarshalFeatureFlagsMD(featureFlagsProto)
 
 	var mPool btransport.ManagedChannelPool
 	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()
@@ -244,7 +238,6 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		instance:                instance,
 		appProfile:              config.AppProfile,
 		metricsTracerFactory:    metricsTracerFactory,
-		disableRetryInfo:        disableRetryInfo,
 		retryOption:             retryOption,
 		executeQueryRetryOption: executeQueryRetryOption,
 		featureFlagsMD:          directAccessMD,
@@ -275,8 +268,15 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// traffic through this Client's Diverter — a control-plane update
 	// then shifts traffic across every open TableShim without a client
 	// restart.
+	// Inspect the merged option list (o), not the raw caller opts.
+	// BIGTABLE_EMULATOR_HOST injects option.WithGRPCConn inside
+	// btopt.DefaultClientOptions (option.go:113), so it lives in o —
+	// callers never pass it explicitly. Reading only from opts misses
+	// the emulator conn and lets session.NewClient dial an empty
+	// resolver target (fails with "passthrough: received empty target
+	// in Build()"), breaking every emulator-based test.
 	preDialed := false
-	if uResolver, resErr := internaloption.NewUnsafeResolver(opts...); resErr == nil {
+	if uResolver, resErr := internaloption.NewUnsafeResolver(o...); resErr == nil {
 		preDialed = uResolver.ResolvedGRPCConnIsCustom()
 	}
 	if !preDialed {
@@ -285,7 +285,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// in (endpoint, scopes, user-agent, interceptors) — passing
 		// bare opts leaves the resolver target empty and the dial
 		// aborts with "passthrough: received empty target in Build()".
-		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, o...)
+		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, featureFlagsProto, o...)
 		if sessionErr != nil {
 			// Best-effort cleanup of the classic pool since we won't
 			// return c to the caller. Go through the ManagedChannelPool
@@ -401,6 +401,13 @@ func (c *Client) newBuiltinMetricsTracer(ctx context.Context, table string, isSt
 	return c.metricsTracerFactory.CreateTracer(ctx, table, isStreaming)
 }
 
+// isDirectAccessEnabled resolves whether this client advertises
+// DirectAccess capability on the wire AND dials DirectPath. Single
+// source of truth threaded into both the classic and session
+// FeatureFlags builders so header bits stay in lockstep with the
+// dial-time switch. CBT_ENABLE_DIRECTPATH overrides
+// ClientConfig.DisableDirectAccess when set; unset falls back to
+// the config default.
 func isDirectAccessEnabled(config ClientConfig) bool {
 	if os.Getenv(directAccessEnvVar) == "" {
 		return !config.DisableDirectAccess

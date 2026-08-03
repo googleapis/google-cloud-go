@@ -18,7 +18,6 @@ package bigtable // import "cloud.google.com/go/bigtable"
 
 import (
 	"context"
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"hash/crc32"
@@ -43,7 +42,6 @@ const (
 	// UNIVERSE_DOMAIN placeholder is replaced by the UniverseDomain from DialSettings while creating GRPC connection/dial pool.
 	prodAddr                    = "bigtable.UNIVERSE_DOMAIN:443"
 	mtlsProdAddr                = "bigtable.mtls.googleapis.com:443"
-	featureFlagsHeaderKey       = "bigtable-features"
 	methodNameReadRows          = "ReadRows"
 	defaultBigtableConnPoolSize = 10
 
@@ -76,13 +74,11 @@ var (
 		Max:        2 * time.Second,
 		Multiplier: 1.2,
 	}
-	clientOnlyRetryOption             = newRetryOption(clientOnlyRetry, true)
-	clientOnlyExecuteQueryRetryOption = newRetryOption(clientOnlyExecuteQueryRetry, true)
-	defaultRetryOption                = newRetryOption(clientOnlyRetry, false)
-	defaultExecuteQueryRetryOption    = newRetryOption(clientOnlyExecuteQueryRetry, false)
+	defaultRetryOption             = newRetryOption(clientOnlyRetry)
+	defaultExecuteQueryRetryOption = newRetryOption(clientOnlyExecuteQueryRetry)
 )
 
-func newRetryOption(retryFn func(*gax.Backoff, error) (time.Duration, bool), disableRetryInfo bool) gax.CallOption {
+func newRetryOption(retryFn func(*gax.Backoff, error) (time.Duration, bool)) gax.CallOption {
 	return gax.WithRetry(func() gax.Retryer {
 		// Create a new Backoff instance for each retryer to ensure independent state.
 		newBackoffInstance := gax.Backoff{
@@ -91,9 +87,8 @@ func newRetryOption(retryFn func(*gax.Backoff, error) (time.Duration, bool), dis
 			Multiplier: defaultBackoff.Multiplier,
 		}
 		return &bigtableRetryer{
-			baseRetryFn:      retryFn,
-			backoff:          newBackoffInstance,
-			disableRetryInfo: disableRetryInfo,
+			baseRetryFn: retryFn,
+			backoff:     newBackoffInstance,
 		}
 	})
 }
@@ -114,37 +109,34 @@ func clientOnlyRetry(backoff *gax.Backoff, err error) (time.Duration, bool) {
 	return 0, false
 }
 
-// bigtableRetryer implements the gax.Retryer interface. It manages retry decisions,
-// incorporating server-sent RetryInfo if enabled, and client-side exponential backoff.
-// It specifically handles reseting the client-side backoff to its initial state if
-// RetryInfo was previously used for an operation and then stops being provided.
+// bigtableRetryer implements the gax.Retryer interface. It always
+// consumes server-sent RetryInfo when present and falls back to a
+// per-instance exponential backoff otherwise. If a prior attempt used
+// a RetryInfo-driven delay and the current error carries none, the
+// backoff is reset so we don't reuse a stale multiplier.
 type bigtableRetryer struct {
 	baseRetryFn               func(*gax.Backoff, error) (time.Duration, bool)
 	backoff                   gax.Backoff
-	disableRetryInfo          bool // If true, this retryer will process server-sent RetryInfo.
 	wasLastDelayFromRetryInfo bool // true if the previous retry delay for this operation was from RetryInfo.
-
 }
 
 // Retry determines if an operation should be retried and for how long to wait.
 func (r *bigtableRetryer) Retry(err error) (time.Duration, bool) {
-	if !r.disableRetryInfo {
-		apiErr, ok := apierror.FromError(err)
-		if ok && apiErr != nil && apiErr.Details().RetryInfo != nil {
-			// RetryInfo is present in the current error. Use its delay.
-			r.wasLastDelayFromRetryInfo = true
-			return apiErr.Details().RetryInfo.GetRetryDelay().AsDuration(), true
-		}
-
-		if r.wasLastDelayFromRetryInfo {
-			r.backoff = gax.Backoff{
-				Initial:    r.backoff.Initial,
-				Max:        r.backoff.Max,
-				Multiplier: r.backoff.Multiplier,
-			}
-		}
-		r.wasLastDelayFromRetryInfo = false
+	apiErr, ok := apierror.FromError(err)
+	if ok && apiErr != nil && apiErr.Details().RetryInfo != nil {
+		// RetryInfo is present in the current error. Use its delay.
+		r.wasLastDelayFromRetryInfo = true
+		return apiErr.Details().RetryInfo.GetRetryDelay().AsDuration(), true
 	}
+
+	if r.wasLastDelayFromRetryInfo {
+		r.backoff = gax.Backoff{
+			Initial:    r.backoff.Initial,
+			Max:        r.backoff.Max,
+			Multiplier: r.backoff.Multiplier,
+		}
+	}
+	r.wasLastDelayFromRetryInfo = false
 
 	return r.baseRetryFn(&r.backoff, err)
 }
@@ -171,34 +163,6 @@ func mergeOutgoingMetadata(ctx context.Context, mds ...metadata.MD) context.Cont
 	// The ordering matters, hence why ctxMD comes first.
 	allMDs := append([]metadata.MD{ctxMD}, mds...)
 	return metadata.NewOutgoingContext(ctx, metadata.Join(allMDs...))
-}
-
-// createFeatureFlagsMD creates the metadata for the `bigtable-features` header.
-// This header is sent on each request and includes all features supported and
-// enabled on the client.
-func createFeatureFlagsMD(clientSideMetricsEnabled, disableRetryInfo, enableDirectAccess bool) metadata.MD {
-	ff := btpb.FeatureFlags{
-		RoutingCookie:            true,
-		ReverseScans:             true,
-		LastScannedRowResponses:  true,
-		ClientSideMetricsEnabled: clientSideMetricsEnabled,
-		RetryInfo:                !disableRetryInfo,
-		TrafficDirectorEnabled:   enableDirectAccess,
-		DirectAccessRequested:    enableDirectAccess,
-		// PeerInfo tells the server it may send the bigtable-peer-info
-		// sideband metadata that populates attempt_latencies2's
-		// transport_type/region/zone/subzone labels. Extracted from
-		// header/trailer MD by the tracer's extractPeerInfo.
-		PeerInfo: true,
-	}
-
-	val := ""
-	b, err := proto.Marshal(&ff)
-	if err == nil {
-		val = base64.URLEncoding.EncodeToString(b)
-	}
-
-	return metadata.Pairs(featureFlagsHeaderKey, val)
 }
 
 // TODO(dsymonds): Read method that returns a sequence of ReadItems.
@@ -380,7 +344,22 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 
 // ReadRow is a convenience implementation of a single-row reader.
 // A missing row will return nil for both Row and error.
+//
+// When t.divertible is set (populated by Open on Clients with a
+// Diverter), the call routes through the shim so it can be diverted
+// to the session data path. Otherwise it runs the classic
+// ReadRows-with-LimitRows(1) flow.
 func (t *Table) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
+	if t.divertible != nil {
+		return t.divertible.ReadRow(ctx, row, opts...)
+	}
+	return t.readRowClassic(ctx, row, opts...)
+}
+
+// readRowClassic is the classic single-row reader — called directly by
+// tableImpl.ReadRow (which bypasses the divertible gate) and by the
+// gate in Table.ReadRow when no divertible shim is wired.
+func (t *Table) readRowClassic(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
 	var r Row
 
 	opts = append([]ReadOption{LimitRows(1)}, opts...)
@@ -894,7 +873,22 @@ var maxMutations = 100000
 
 // Apply mutates a row atomically. A mutation must contain at least one
 // operation and at most 100000 operations.
-func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) (err error) {
+//
+// When t.divertible is set (populated by Open on Clients with a
+// Diverter), the call routes through the shim so it can be diverted
+// to the session data path. Otherwise it runs the classic MutateRow
+// (or CheckAndMutateRow for conditional mutations) flow inline.
+func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
+	if t.divertible != nil {
+		return t.divertible.Apply(ctx, row, m, opts...)
+	}
+	return t.applyClassic(ctx, row, m, opts...)
+}
+
+// applyClassic is the classic Apply body — called directly by
+// tableImpl.Apply (which bypasses the divertible gate) and by the
+// gate in Table.Apply when no divertible shim is wired.
+func (t *Table) applyClassic(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) (err error) {
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/Apply")
 	defer func() { trace.EndSpan(ctx, err) }()

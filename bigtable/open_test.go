@@ -43,12 +43,12 @@ func newBareClientForOpenTests(t *testing.T, sessionLoad float64) *Client {
 	}
 }
 
-// TestOpen_ReturnsBareTable pins the post-Option-B-revert contract:
-// Client.Open returns a plain *Table with no session-routing wrapper.
-// Callers holding *Table (BulkMutation, ReadModifyWrite consumers,
-// external code) stay on the classic path regardless of Client's
-// diverter setting.
-func TestOpen_ReturnsBareTable(t *testing.T) {
+// TestOpen_WiresDivertibleWhenDiverterPresent pins Open's session-
+// routing contract: when c.diverter is set, the returned *Table has
+// divertible populated with a *TableShim, so Apply / ReadRow route
+// through the shim. Backward-compatible: the return type stays
+// *Table and every non-Apply/ReadRow method is untouched.
+func TestOpen_WiresDivertibleWhenDiverterPresent(t *testing.T) {
 	c := newBareClientForOpenTests(t, 0.0)
 
 	tbl := c.Open("mytable")
@@ -67,6 +67,226 @@ func TestOpen_ReturnsBareTable(t *testing.T) {
 	if tbl.materializedView != "" {
 		t.Errorf("Open→Table.materializedView = %q, want empty", tbl.materializedView)
 	}
+	if tbl.divertible == nil {
+		t.Fatal("Open→Table.divertible = nil, want *TableShim (c.diverter is set)")
+	}
+	shim, ok := tbl.divertible.(*TableShim)
+	if !ok {
+		t.Fatalf("Open→Table.divertible = %T, want *TableShim", tbl.divertible)
+	}
+	if shim.diverter != c.diverter {
+		t.Errorf("shim.diverter = %p, want client's diverter %p", shim.diverter, c.diverter)
+	}
+}
+
+// TestOpen_NoDivertibleWhenDiverterAbsent pins the zero-cost classic
+// path: with c.diverter nil, Open must return a *Table with
+// divertible=nil so the Apply / ReadRow gate short-circuits to the
+// *Classic helpers without any shim allocation.
+func TestOpen_NoDivertibleWhenDiverterAbsent(t *testing.T) {
+	c := &Client{
+		project:        "p",
+		instance:       "i",
+		appProfile:     "ap",
+		featureFlagsMD: metadata.MD{},
+		// diverter deliberately unset.
+	}
+	tbl := c.Open("mytable")
+	if tbl.divertible != nil {
+		t.Errorf("Open→Table.divertible = %v, want nil (no diverter → no shim)", tbl.divertible)
+	}
+}
+
+// TestOpen_DivertibleShimBreaksRecursionLoop pins the anti-recursion
+// invariant that makes Table.Apply / Table.ReadRow gate-then-classic
+// pattern safe: the *tableImpl on the shim's classic side wraps a
+// SNAPSHOT of the outer Table with divertible EXPLICITLY nil-ed.
+//
+// Without this break, tableImpl.Apply → Table.Apply would re-enter
+// the gate → shim → tableImpl.Apply → ... forever. The tableImpl
+// override calling applyClassic/readRowClassic directly is the second
+// half of the safety net; this test guards the first half — the
+// value-copy + nil field trick.
+func TestOpen_DivertibleShimBreaksRecursionLoop(t *testing.T) {
+	c := newBareClientForOpenTests(t, 0.0)
+
+	tbl := c.Open("mytable")
+	shim, ok := tbl.divertible.(*TableShim)
+	if !ok {
+		t.Fatalf("divertible = %T, want *TableShim", tbl.divertible)
+	}
+	inner, ok := shim.classic.(*tableImpl)
+	if !ok {
+		t.Fatalf("shim.classic = %T, want *tableImpl", shim.classic)
+	}
+	if inner.table != "mytable" {
+		t.Errorf("inner.table = %q, want %q (snapshot must carry the same table id)", inner.table, "mytable")
+	}
+	if inner.divertible != nil {
+		t.Errorf("inner.divertible = %v, want nil (must be cleared to break the recursion loop)", inner.divertible)
+	}
+}
+
+// TestOpen_ApplyRoutesThroughDivertible drives an end-to-end Apply on
+// the *Table returned by Open with a wired session backend and
+// SessionLoad=1.0. Proves the session path is reached — i.e., the
+// divertible gate fires and the shim dispatches to session, not the
+// classic MutateRow (which would panic here because the client has
+// no gRPC connection).
+func TestOpen_ApplyRoutesThroughDivertible(t *testing.T) {
+	fsc := newFakeSessionClient()
+	c := newSessionWiredClient(t, fsc)
+	c.diverter.SetSessionLoad(1.0)
+
+	tbl := c.Open("mytable")
+	if tbl.divertible == nil {
+		t.Fatal("divertible = nil, want shim (diverter + sessionImpl wired)")
+	}
+
+	mut := NewMutation()
+	mut.Set("cf", "q", 1_000_000, []byte("v"))
+	if err := tbl.Apply(context.Background(), "row-1", mut); err != nil {
+		t.Fatalf("Apply: %v", err)
+	}
+	if got := len(fsc.openTableCalls); got != 1 || fsc.openTableCalls[0] != "mytable" {
+		t.Errorf("fake session OpenTable calls = %v, want [mytable]", fsc.openTableCalls)
+	}
+}
+
+// TestOpen_ReadRowRoutesThroughDivertible mirrors the Apply test for
+// the read side. Same setup, same proof — the divertible gate on
+// Table.ReadRow dispatches to the shim's session path.
+func TestOpen_ReadRowRoutesThroughDivertible(t *testing.T) {
+	fsc := newFakeSessionClient()
+	c := newSessionWiredClient(t, fsc)
+	c.diverter.SetSessionLoad(1.0)
+
+	tbl := c.Open("mytable")
+	if _, err := tbl.ReadRow(context.Background(), "row-1"); err != nil {
+		t.Fatalf("ReadRow: %v", err)
+	}
+	if got := len(fsc.openTableCalls); got != 1 || fsc.openTableCalls[0] != "mytable" {
+		t.Errorf("fake session OpenTable calls = %v, want [mytable]", fsc.openTableCalls)
+	}
+}
+
+// TestTableImpl_BypassesDivertibleGate pins the second half of the
+// anti-recursion safety net: even if a tableImpl is somehow given a
+// Table with divertible set (defensive — buildDivertible always nil-s
+// it), the tableImpl.Apply / tableImpl.ReadRow overrides must call
+// the *Classic helpers directly and NOT re-enter the gate.
+//
+// Uses a spy divertible whose methods panic — if the gate fires, the
+// test panics; if the bypass works, the test reaches classic and
+// fails predictably (no gRPC conn → panic in unrelated code); we
+// catch that with recover to distinguish the two failure modes.
+func TestTableImpl_BypassesDivertibleGate(t *testing.T) {
+	spy := &panickingTableAPI{}
+	ti := &tableImpl{Table: Table{
+		c:          newBareClientForOpenTests(t, 0.0),
+		table:      "mytable",
+		divertible: spy, // if the gate fires, spy panics with a distinctive message
+	}}
+
+	// Apply: catch any panic and check it's NOT from the spy.
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				if _, ok := r.(spyPanic); ok {
+					t.Errorf("tableImpl.Apply reached the divertible spy — gate must be bypassed")
+				}
+				// Classic body panicking on missing gRPC conn is expected here.
+			}
+		}()
+		_ = ti.Apply(context.Background(), "row-1", NewMutation())
+	}()
+
+	// ReadRow: same shape.
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				if _, ok := r.(spyPanic); ok {
+					t.Errorf("tableImpl.ReadRow reached the divertible spy — gate must be bypassed")
+				}
+			}
+		}()
+		_, _ = ti.ReadRow(context.Background(), "row-1")
+	}()
+}
+
+type spyPanic struct{}
+
+type panickingTableAPI struct{}
+
+func (p *panickingTableAPI) ReadRow(context.Context, string, ...ReadOption) (Row, error) {
+	panic(spyPanic{})
+}
+func (p *panickingTableAPI) Apply(context.Context, string, *Mutation, ...ApplyOption) error {
+	panic(spyPanic{})
+}
+func (p *panickingTableAPI) ReadRows(context.Context, RowSet, func(Row) bool, ...ReadOption) error {
+	panic(spyPanic{})
+}
+func (p *panickingTableAPI) SampleRowKeys(context.Context) ([]string, error) { panic(spyPanic{}) }
+func (p *panickingTableAPI) ApplyBulk(context.Context, []string, []*Mutation, ...ApplyOption) ([]error, error) {
+	panic(spyPanic{})
+}
+func (p *panickingTableAPI) ApplyReadModifyWrite(context.Context, string, *ReadModifyWrite) (Row, error) {
+	panic(spyPanic{})
+}
+
+// TestOpen_ClassicOnlyMethodsSkipDivertibleGate pins the invariant
+// that Table methods with no session equivalent (ReadRows, ApplyBulk,
+// SampleRowKeys, ApplyReadModifyWrite) MUST NOT gate on t.divertible.
+// They run the classic body directly — TableShim's own delegation
+// would just be pure indirection since the shim also always delegates
+// them to classic (see TableShim.ReadRows / ApplyBulk / etc).
+//
+// Fixture matches a realistic session-wired client (session backend +
+// diverter with SessionLoad=1.0), then swaps divertible for the
+// panickingTableAPI spy so we can distinguish gate-dispatch (spy
+// panic) from classic-body execution (nil-conn panic in the classic
+// body). Under the natural configuration where a stray gate would
+// actually route to session, this is where the accident would show.
+func TestOpen_ClassicOnlyMethodsSkipDivertibleGate(t *testing.T) {
+	fsc := newFakeSessionClient()
+	c := newSessionWiredClient(t, fsc)
+	c.diverter.SetSessionLoad(1.0)
+
+	newTable := func() *Table {
+		return &Table{
+			c:          c,
+			table:      "mytable",
+			divertible: &panickingTableAPI{},
+		}
+	}
+
+	assertNotSpyPanic := func(t *testing.T, method string) {
+		t.Helper()
+		if r := recover(); r != nil {
+			if _, ok := r.(spyPanic); ok {
+				t.Errorf("Table.%s reached divertible spy — this method must NOT gate on divertible", method)
+			}
+			// Any other panic (nil-conn from classic body) is expected.
+		}
+	}
+
+	t.Run("ReadRows", func(t *testing.T) {
+		defer assertNotSpyPanic(t, "ReadRows")
+		_ = newTable().ReadRows(context.Background(), InfiniteRange(""), func(Row) bool { return true })
+	})
+	t.Run("ApplyBulk", func(t *testing.T) {
+		defer assertNotSpyPanic(t, "ApplyBulk")
+		_, _ = newTable().ApplyBulk(context.Background(), []string{"r"}, []*Mutation{NewMutation()})
+	})
+	t.Run("SampleRowKeys", func(t *testing.T) {
+		defer assertNotSpyPanic(t, "SampleRowKeys")
+		_, _ = newTable().SampleRowKeys(context.Background())
+	})
+	t.Run("ApplyReadModifyWrite", func(t *testing.T) {
+		defer assertNotSpyPanic(t, "ApplyReadModifyWrite")
+		_, _ = newTable().ApplyReadModifyWrite(context.Background(), "r", &ReadModifyWrite{})
+	})
 }
 
 // TestOpenTable_ProducesNilSessionShim pins the shim shape returned by
@@ -412,11 +632,13 @@ func TestGetOrCreateSession_NilSessionImplReturnsNil(t *testing.T) {
 // ─── sessionTableCache tests ──────────────────────────────────────────
 
 // newTestSessionTableCache builds a cache with an injectable clock.
-// Sweep interval is tiny (1ms) so the sweeper preempts predictably
-// in the eviction test. TTL is set per test.
+// Sweep interval is intentionally long — tests drive sweepOnce
+// directly instead of waiting on the background ticker, which is
+// wall-clock and flaky under CI scheduler pressure (#20266). TTL is
+// set per test.
 func newTestSessionTableCache(t *testing.T, ttl time.Duration, clock *fakeClock) *sessionTableCache {
 	t.Helper()
-	c := newSessionTableCache(ttl, 1*time.Millisecond, clock.now)
+	c := newSessionTableCache(ttl, 1*time.Hour, clock.now)
 	t.Cleanup(c.close)
 	return c
 }
@@ -429,9 +651,10 @@ func openNoop(key string) func() session.TableAPI {
 }
 
 // openClosing returns an openFn that constructs a
-// *closeCountingTable stamped with the given key, incrementing
-// *counter on every Close call.
-func openClosing(key string, counter *int) func() session.TableAPI {
+// *closeCountingTable stamped with the given key, atomically
+// incrementing counter on every Close call. Counter is atomic so
+// sweeper-goroutine writes don't race the test's Load.
+func openClosing(key string, counter *atomic.Int32) func() session.TableAPI {
 	return func() session.TableAPI {
 		return &closeCountingTable{noopSessionTable{key: key}, counter}
 	}
@@ -492,7 +715,7 @@ func TestSessionTableCache_ReadRowTouchesLastAccess(t *testing.T) {
 // (the closed one is not resurrected).
 func TestSessionTableCache_CloseEvictsAndFires(t *testing.T) {
 	clock := newFakeClock(time.Unix(1_700_000_000, 0))
-	closeCount := 0
+	var closeCount atomic.Int32
 	c := newSessionTableCache(1*time.Hour, 1*time.Second, clock.now)
 	t.Cleanup(c.close)
 
@@ -500,8 +723,8 @@ func TestSessionTableCache_CloseEvictsAndFires(t *testing.T) {
 	if err := h1.Close(); err != nil {
 		t.Fatalf("h1.Close: %v", err)
 	}
-	if closeCount != 1 {
-		t.Errorf("underlying Close called %d times, want 1", closeCount)
+	if got := closeCount.Load(); got != 1 {
+		t.Errorf("underlying Close called %d times, want 1", got)
 	}
 	// Map should no longer contain the key.
 	c.mu.Lock()
@@ -521,46 +744,46 @@ func TestSessionTableCache_CloseEvictsAndFires(t *testing.T) {
 	if err := h1.Close(); err != nil {
 		t.Errorf("h1.Close (idempotent) err = %v, want nil", err)
 	}
-	if closeCount != 1 {
-		t.Errorf("underlying Close called %d times after double-Close, want 1 (Close is fully idempotent)", closeCount)
+	if got := closeCount.Load(); got != 1 {
+		t.Errorf("underlying Close called %d times after double-Close, want 1 (Close is fully idempotent)", got)
 	}
 }
 
-// TestSessionTableCache_TTLSweepEvictsIdle pins that the background
-// sweeper evicts entries whose lastAccess is older than TTL, and
-// calls the underlying Close on eviction.
+// TestSessionTableCache_TTLSweepEvictsIdle pins that a sweep evicts
+// entries whose lastAccess is older than TTL, and calls the
+// underlying Close on eviction.
+//
+// Drives sweepOnce directly instead of polling on the background
+// ticker: the ticker fires at a real-wall-clock cadence and, under CI
+// scheduler pressure, may not run within the assertion's deadline
+// window even at a 1ms interval — see #20266 for the flake pattern.
+// Same-package access to sweepOnce lets us exercise the sweep logic
+// deterministically without any wall-clock dependency.
 func TestSessionTableCache_TTLSweepEvictsIdle(t *testing.T) {
 	clock := newFakeClock(time.Unix(1_700_000_000, 0))
-	closeCount := 0
-	c := newSessionTableCache(1*time.Hour, 1*time.Millisecond, clock.now)
+	var closeCount atomic.Int32
+	// Use a long sweepInterval so the background ticker never races the
+	// direct sweepOnce call below — the test asserts sweep behavior,
+	// not scheduler timing.
+	c := newSessionTableCache(1*time.Hour, 1*time.Hour, clock.now)
 	t.Cleanup(c.close)
 
 	// Open two handles, touch neither.
 	_ = c.getOrOpen("tbl:a", openClosing("tbl:a", &closeCount))
 	_ = c.getOrOpen("tbl:b", openClosing("tbl:b", &closeCount))
 
-	// Advance past TTL and let the 1ms sweeper fire.
+	// Advance past TTL and drive a sweep synchronously.
 	clock.advance(2 * time.Hour)
-	// The 1ms sweep ticker will fire; give it a few sweeps' worth of
-	// wall-clock to definitely run.
-	deadline := time.Now().Add(500 * time.Millisecond)
-	for time.Now().Before(deadline) {
-		c.mu.Lock()
-		n := len(c.entries)
-		c.mu.Unlock()
-		if n == 0 {
-			break
-		}
-		time.Sleep(2 * time.Millisecond)
-	}
+	c.sweepOnce()
+
 	c.mu.Lock()
 	n := len(c.entries)
 	c.mu.Unlock()
 	if n != 0 {
 		t.Errorf("entries remaining after TTL sweep = %d, want 0", n)
 	}
-	if closeCount != 2 {
-		t.Errorf("underlying Close called %d times on TTL evict, want 2", closeCount)
+	if got := closeCount.Load(); got != 2 {
+		t.Errorf("underlying Close called %d times on TTL evict, want 2", got)
 	}
 }
 
@@ -579,8 +802,9 @@ func TestSessionTableCache_TouchDefersEviction(t *testing.T) {
 		clock.advance(30 * time.Minute)
 		_, _ = h.ReadRow(context.Background(), &btpb.SessionReadRowRequest{Key: []byte("r")})
 	}
-	// Give the sweeper a chance to run; it should NOT evict.
-	time.Sleep(20 * time.Millisecond)
+	// Drive a sweep directly; touch-driven lastAccess should keep the
+	// entry alive despite the clock advance.
+	c.sweepOnce()
 	c.mu.Lock()
 	_, present := c.entries["tbl:t"]
 	c.mu.Unlock()
@@ -593,7 +817,7 @@ func TestSessionTableCache_TouchDefersEviction(t *testing.T) {
 // itself stops the sweeper and closes every remaining entry.
 func TestSessionTableCache_CloseEvictsAll(t *testing.T) {
 	clock := newFakeClock(time.Unix(1_700_000_000, 0))
-	closeCount := 0
+	var closeCount atomic.Int32
 	c := newSessionTableCache(1*time.Hour, 1*time.Hour, clock.now)
 
 	_ = c.getOrOpen("tbl:a", openClosing("tbl:a", &closeCount))
@@ -602,21 +826,78 @@ func TestSessionTableCache_CloseEvictsAll(t *testing.T) {
 
 	c.close()
 
-	if closeCount != 3 {
-		t.Errorf("close(): underlying Close called %d times, want 3", closeCount)
+	if got := closeCount.Load(); got != 3 {
+		t.Errorf("close(): underlying Close called %d times, want 3", got)
 	}
 	// close() is idempotent.
 	c.close()
 }
 
-// closeCountingTable is a noopSessionTable that increments a counter
-// on Close so tests can assert eviction actually called Close.
+// TestSessionTableCache_ClosedGate_SlowPathInsertNoLeak reproduces
+// audit finding #5: without the closed-gate in getOrOpen's slow path,
+// a caller whose openFn straddles cache.close() would leak the
+// freshly-opened api (installed into a cache the sweeper has already
+// stopped clearing). This test forces that interleaving via a
+// synchronization channel on the openFn.
+//
+// Shape: caller A begins getOrOpen("k") on an empty cache. Fast-path
+// misses. Slow-path calls openFn. openFn blocks until we signal it to
+// return. Meanwhile close() runs on the cache (flips closed, walks the
+// empty map). Then openFn returns. getOrOpen re-locks, sees closed,
+// releases the fresh api itself, and returns nil. Underlying api's
+// Close counter must reach 1.
+func TestSessionTableCache_ClosedGate_SlowPathInsertNoLeak(t *testing.T) {
+	clock := newFakeClock(time.Unix(1_700_000_000, 0))
+	var closeCount atomic.Int32
+	c := newSessionTableCache(1*time.Hour, 1*time.Hour, clock.now)
+
+	release := make(chan struct{})
+	opened := make(chan struct{})
+	openFn := func() session.TableAPI {
+		close(opened)
+		<-release
+		return &closeCountingTable{noopSessionTable{key: "k"}, &closeCount}
+	}
+
+	var result session.TableAPI
+	done := make(chan struct{})
+	go func() {
+		result = c.getOrOpen("k", openFn)
+		close(done)
+	}()
+
+	// Wait until openFn is in-flight, THEN close the cache. This is the
+	// race window: openFn returns AFTER close() completed.
+	<-opened
+	c.close()
+	close(release)
+	<-done
+
+	if result != nil {
+		t.Errorf("getOrOpen returned non-nil after cache close: %v (want nil so TableShim falls back to classic)", result)
+	}
+	if got := closeCount.Load(); got != 1 {
+		t.Errorf("underlying api Close called %d times, want 1 (slow-path insert must release its api when cache is closed)", got)
+	}
+	// Cache map must be empty — the fresh api MUST NOT have been
+	// installed into an already-closed cache.
+	c.mu.Lock()
+	n := len(c.entries)
+	c.mu.Unlock()
+	if n != 0 {
+		t.Errorf("cache.entries has %d entries after close-race; want 0 (fresh handle must not be installed)", n)
+	}
+}
+
+// closeCountingTable is a noopSessionTable that atomically
+// increments a counter on Close so tests can assert eviction actually
+// called Close from any goroutine (including the cache sweeper).
 type closeCountingTable struct {
 	noopSessionTable
-	counter *int
+	counter *atomic.Int32
 }
 
 func (c *closeCountingTable) Close() error {
-	*c.counter++
+	c.counter.Add(1)
 	return nil
 }

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.36.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.36.0...dlp/v1.36.1) (2026-07-30)
+
+
+### Bug Fixes
+
+* **multiple:** Correct module go version declaration ([#20260](https://github.com/googleapis/google-cloud-go/issues/20260)) ([bf30b2f](https://github.com/googleapis/google-cloud-go/commit/bf30b2f57819575f35cb69fa935d22913be29d4a))
+
 ## [1.36.0](https://github.com/googleapis/google-cloud-go/releases/tag/dlp%2Fv1.36.0) (2026-06-11)
 
 ### Features
@@ -433,4 +440,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out dlp as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
