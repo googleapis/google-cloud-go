@@ -770,13 +770,25 @@ func (p *BigtableChannelPool) getBigtableConn() *BigtableConn {
 
 // NewStream selects a connection by the configured load-balancing strategy
 // and opens a stream on it. Load accounting and per-stream error attribution
-// live entirely inside the grpc.OnFinish callback, gated by a CAS so it
-// runs exactly once per NewStream call. This matters because grpc-go can
-// fire OnFinish more than once on some stream-creation failure paths (e.g.
-// closed ClientConn: withRetry → cs.finish → endOfClientStream, then
-// newClientStream's deferred endOfClientStream re-fires the same OnFinish).
-// Without the guard, streamingLoad would drift negative on every such
-// failure — see debug pages showing e.g. "Streaming in flight: -9".
+// happen in a single `finish` closure that runs AT MOST ONCE per NewStream
+// call — the CAS in the closure body enforces that regardless of how many
+// times grpc-go invokes OnFinish (which has been observed to be 0, 1, or
+// more depending on the stream-creation path):
+//
+//   - Nominal path: grpc-go fires OnFinish once at stream teardown; the
+//     CAS wins on the first fire, all bookkeeping runs.
+//   - Double-fire path: grpc-go re-fires OnFinish on some stream-creation
+//     failures (retry unwinder + deferred stream-teardown both call it);
+//     the CAS wins once, subsequent fires are no-ops. Without the guard,
+//     streamingLoad would drift negative — the debug pages first surfaced
+//     this as "Streaming in flight: -9" on an idle classic pool.
+//   - Zero-fire path: if `entry.conn.NewStream` returns an error before
+//     grpc-go arms the OnFinish trigger, the deferred `finish(err)` at
+//     the return site picks it up. Belt-and-suspenders — no current
+//     grpc-go version does this on any path bigtable exercises, but the
+//     accounting invariant is now load-bearing and OnFinish is a
+//     best-effort callback, so we don't want a future interceptor
+//     addition to silently leak +1.
 func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 	entry, err := p.selectFunc()
 	if err != nil {
@@ -785,9 +797,14 @@ func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDe
 
 	entry.streamingLoad.Add(1)
 
-	var finished atomic.Bool
-	onFinish := grpc.OnFinish(func(err error) {
-		if !finished.CompareAndSwap(false, true) {
+	// onFinishFired is the exactly-once gate for `finish`. Named for the
+	// callback state ("did the accounting closure run?") — not the stream
+	// state — because both the OnFinish callback and the error-path
+	// fallback below race to be the first-and-only caller. Reads of this
+	// field are only ever "did we already fire?".
+	var onFinishFired atomic.Bool
+	finish := func(err error) {
+		if !onFinishFired.CompareAndSwap(false, true) {
 			return
 		}
 		if err != nil {
@@ -795,13 +812,22 @@ func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDe
 			entry.applyErrorPenalty(err)
 		}
 		entry.streamingLoad.Add(-1)
-	})
+	}
 	// Prepend onto a fresh slice so we never write into spare capacity of
 	// the caller's opts (which would race with concurrent NewStream calls
 	// that share the same backing array).
-	opts = append([]grpc.CallOption{onFinish}, opts...)
+	opts = append([]grpc.CallOption{grpc.OnFinish(finish)}, opts...)
 
-	return entry.conn.NewStream(ctx, desc, method, opts...)
+	stream, err := entry.conn.NewStream(ctx, desc, method, opts...)
+	if err != nil {
+		// Zero-fire fallback: if grpc-go never armed OnFinish before
+		// returning this error, `finish` wins the CAS here. If it DID
+		// fire OnFinish (once or twice), the CAS is already lost and
+		// this call is a no-op — safe to unconditionally invoke.
+		finish(err)
+		return nil, err
+	}
+	return stream, nil
 }
 
 // selectLeastLoadedRandomOfTwo() returns the index of the connection via random of two
