@@ -14,7 +14,12 @@
 
 package internal
 
-import "errors"
+import (
+	"errors"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
 
 // AttemptState classifies how far a single vRPC attempt progressed before
 // terminating. RetryingVRpc consumes this instead of raw gRPC codes so
@@ -72,6 +77,32 @@ type vrpcErr struct {
 
 func (e *vrpcErr) Error() string { return e.outcome.Err.Error() }
 func (e *vrpcErr) Unwrap() error { return e.outcome.Err }
+
+// GRPCStatus makes vrpcErr satisfy the grpc-go interface that
+// status.Code / status.FromError look for via errors.As. Without this,
+// tagged wrappers around stdlib ctx errors (context.DeadlineExceeded /
+// context.Canceled) would surface as codes.Unknown to callers reading
+// status.Code(err) — the classic gRPC unary path gets the translation
+// from grpc-go's client-side interceptor, but the session vRPC path
+// bypasses that interceptor and has to translate on its own.
+//
+// Preference order: an already-status error wins verbatim; otherwise
+// interpret stdlib ctx errors via status.FromContextError (returns
+// DeadlineExceeded / Canceled as appropriate); otherwise Unknown with
+// the underlying message. Unwrap() still yields the raw wrapped error
+// so errors.Is(err, context.DeadlineExceeded) etc. keep working.
+func (e *vrpcErr) GRPCStatus() *status.Status {
+	if e.outcome.Err == nil {
+		return status.New(codes.OK, "")
+	}
+	if s, ok := status.FromError(e.outcome.Err); ok {
+		return s
+	}
+	if s := status.FromContextError(e.outcome.Err); s.Code() != codes.Unknown {
+		return s
+	}
+	return status.New(codes.Unknown, e.outcome.Err.Error())
+}
 
 // tagErr wraps err with the given AttemptState. Returns nil for nil err so
 // call sites can compose without extra guards.
