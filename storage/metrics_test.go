@@ -449,13 +449,13 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		t.Fatalf("streamInt: %v", err)
 	}
 
-	// 1st request-response cycle
-	clientStreamBidi.SendMsg(nil) // sets reqStartTime
-	clientStreamBidi.RecvMsg(nil) // sets lastRecvTime
+	// 1st request-response cycle.
+	clientStreamBidi.SendMsg(nil)
+	clientStreamBidi.RecvMsg(nil)
 	// 2nd request (records 1st cycle)
 	clientStreamBidi.SendMsg(nil)
 	clientStreamBidi.RecvMsg(nil)
-	
+
 	// Terminate stream (records 2nd cycle)
 	clientStreamBidi.(*wrappedClientStream).record(io.EOF)
 
@@ -475,7 +475,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 					t.Fatalf("expected Histogram data, got %T", m.Data)
 				}
 				for _, dp := range hist.DataPoints {
-					dpCopy := dp // avoid reference capture of loop variable
+					dpCopy := dp
 					attrs := make(map[string]string)
 					for _, kv := range dp.Attributes.ToSlice() {
 						attrs[string(kv.Key)] = kv.Value.Emit()
