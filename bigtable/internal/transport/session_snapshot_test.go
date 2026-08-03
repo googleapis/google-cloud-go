@@ -132,7 +132,7 @@ func TestPoolSnapshot_AggregatesSessions(t *testing.T) {
 		uint64(1),
 		"test:read", nil, nil, nil, SessionTypeTable, true,
 	)
-	pool.sizer.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+	pool.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
 		MinSessionCount: 1, MaxSessionCount: 5,
 	})
 

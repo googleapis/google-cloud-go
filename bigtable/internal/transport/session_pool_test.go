@@ -128,7 +128,7 @@ func newTestPool(t testing.TB, min, max int) *SessionPoolImpl {
 		nil,
 		SessionTypeTable, true,
 	)
-	p.sizer.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+	p.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
 		MinSessionCount: int32(min), MaxSessionCount: int32(max),
 	})
 	// Close streams before closing the pool: the pool's Close waits for
@@ -248,7 +248,7 @@ func TestSessionPool_Invoke_RecordsSlowCheckoutFailure(t *testing.T) {
 		nil,
 		SessionTypeTable, true,
 	)
-	p.sizer.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+	p.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
 		MinSessionCount: 0, MaxSessionCount: 1,
 	})
 	defer p.Close()
@@ -311,7 +311,7 @@ func TestCheckoutSession_ParkedWaiter_DeadlineExceeded(t *testing.T) {
 		nil,
 		SessionTypeTable, true,
 	)
-	p.sizer.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+	p.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
 		MinSessionCount: 0, MaxSessionCount: 1,
 	})
 	defer p.Close()
@@ -652,9 +652,11 @@ func TestUpdateConfig_SwapsPickerAndBounds(t *testing.T) {
 	if got := p.picker.Name(); got != "least-latency" {
 		t.Errorf("after PeakEwma swap, picker = %q, want least-latency", got)
 	}
-	// listenerFires counter bumps once per UpdateConfig.
-	if got := p.m.listenerFires.Load(); got != 2 {
-		t.Errorf("listenerFires = %d, want 2 (one per UpdateConfig)", got)
+	// listenerFires counter bumps once per UpdateConfig. Expect 3:
+	// one from newTestPool's bootstrap UpdateConfig plus the two in
+	// this test body.
+	if got := p.m.listenerFires.Load(); got != 3 {
+		t.Errorf("listenerFires = %d, want 3 (one per UpdateConfig)", got)
 	}
 }
 

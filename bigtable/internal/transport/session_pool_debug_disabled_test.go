@@ -42,7 +42,7 @@ func TestSessionPool_DebugDisabled_NoRecorderState(t *testing.T) {
 		&spb.OpenSessionRequest{ProtocolVersion: 1}, nil, SessionTypeTable,
 		false, // debugEnabled — the contract under test
 	)
-	p.sizer.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+	p.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
 		MinSessionCount: 0, MaxSessionCount: 1,
 	})
 	defer p.Close()

@@ -197,11 +197,14 @@ func (p *SessionPoolImpl) noteVRpcOutcome(sh *SessionHandle, e2e, backend time.D
 // the pool that owns each session.
 //
 // The sizer/picker/budget/threshold are bootstrapped from the default
-// ClientConfiguration proto (default_client_config.go). Every real
-// caller registers via ClientConfigurationManager, which fires
+// ClientConfiguration proto (default_client_config.go). Production
+// callers register via ClientConfigurationManager, which fires
 // UpdateConfig synchronously and replaces these with server-driven
-// values before the pool serves traffic — so callers that want custom
-// bounds should call pool.UpdateConfig(...) right after construction.
+// values before the pool serves traffic. Callers that want custom
+// bounds without going through a manager (tests) should call
+// pool.UpdateConfig(...) right after construction; a pool that
+// never sees an UpdateConfig will serve traffic with the
+// defaultPoolConfig() values (currently 5/400).
 func NewSessionPoolImpl(id uint64, poolName string, streamFactory func(ctx context.Context) (Stream, error), openSessionRequest *spb.OpenSessionRequest, md metadata.MD, sessionType SessionType, debugEnabled bool) *SessionPoolImpl {
 	poolCtx, poolCancel := context.WithCancel(context.Background())
 	pool := &SessionPoolImpl{
