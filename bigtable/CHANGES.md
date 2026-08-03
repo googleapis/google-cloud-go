@@ -1,5 +1,46 @@
 # Changes
 
+## [1.52.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.51.0...bigtable/v1.52.0) (2026-08-03)
+
+
+### Features
+
+* **bigtable:** Add AFE picker (Simple / LeastInFlight / LeastLatency) ([#20204](https://github.com/googleapis/google-cloud-go/issues/20204)) ([bcbf714](https://github.com/googleapis/google-cloud-go/commit/bcbf71431d1742e2e13a13d1cbe8b0fc0433aede))
+* **bigtable:** Add ClientConfig.DisableSession to opt out of session backend ([#20297](https://github.com/googleapis/google-cloud-go/issues/20297)) ([7ee5e44](https://github.com/googleapis/google-cloud-go/commit/7ee5e44e0304c5509b9b77fe0760d97771657cd9))
+* **bigtable:** Add getClientConfigDirectAccessChecker for session pools ([#20209](https://github.com/googleapis/google-cloud-go/issues/20209)) ([3b8d30a](https://github.com/googleapis/google-cloud-go/commit/3b8d30adeaf03c8452207b056d69922646d63bf2))
+* **bigtable:** Add NoOpChannelPrimer for session channel pools ([#20208](https://github.com/googleapis/google-cloud-go/issues/20208)) ([d055a8a](https://github.com/googleapis/google-cloud-go/commit/d055a8a1b23980ad4b53c0cd690e291c9aa6248c))
+* **bigtable:** Add per-AFE sessionList for the two-tier session pool ([#20224](https://github.com/googleapis/google-cloud-go/issues/20224)) ([dbf0c3f](https://github.com/googleapis/google-cloud-go/commit/dbf0c3f3ea37279a2aa00803ded8e489229b15c9))
+* **bigtable:** Add protoRowToRow conversion helper for TableShim ([#20257](https://github.com/googleapis/google-cloud-go/issues/20257)) ([1297143](https://github.com/googleapis/google-cloud-go/commit/1297143a4fab4bf58cbd0bd6e44db4653a818c47))
+* **bigtable:** Add Session debug surface (observability fields + methods) ([#20211](https://github.com/googleapis/google-cloud-go/issues/20211)) ([d8d3e16](https://github.com/googleapis/google-cloud-go/commit/d8d3e160c3e63150ef5d14e83a2ea0fd25a7e214))
+* **bigtable:** Add Session lifecycle (Start, Close, ForceClose, readLoop, heartBeatLoop) ([#20215](https://github.com/googleapis/google-cloud-go/issues/20215)) ([b9e53c6](https://github.com/googleapis/google-cloud-go/commit/b9e53c6276efe28428adfcd4671d7ac8c7e8d330))
+* **bigtable:** Add Session struct + state machine ([#20117](https://github.com/googleapis/google-cloud-go/issues/20117)) ([09acbb3](https://github.com/googleapis/google-cloud-go/commit/09acbb37a385d2c6fca465adb70a3eb03ea4a38e))
+* **bigtable:** Add session.Config.EnableDebug to gate sessionz debug state ([#20247](https://github.com/googleapis/google-cloud-go/issues/20247)) ([ce74c31](https://github.com/googleapis/google-cloud-go/commit/ce74c315d41371b0ddf2c1ba7342446695a53900))
+* **bigtable:** Add SessionClient + SessionTable + lazyPool ([#20228](https://github.com/googleapis/google-cloud-go/issues/20228)) ([ab2c96c](https://github.com/googleapis/google-cloud-go/commit/ab2c96c3ed62514dcf6526bb32259267fbe63e97))
+* **bigtable:** Add SessionPoolImpl (two-tier pool + scaling + debug) ([#20225](https://github.com/googleapis/google-cloud-go/issues/20225)) ([683eda8](https://github.com/googleapis/google-cloud-go/commit/683eda8c690fd2b948bd3b56777039d28421ee7c))
+* **bigtable:** Rename session pool display to &lt;resource-id&gt;-&lt;PERM&gt; ([#20248](https://github.com/googleapis/google-cloud-go/issues/20248)) ([35e146e](https://github.com/googleapis/google-cloud-go/commit/35e146e25d2897082f2d1b78b9273087efd855fd))
+* **bigtable:** Route Client.Open()-returned *Table through the Diverter ([#20273](https://github.com/googleapis/google-cloud-go/issues/20273)) ([2b81c7d](https://github.com/googleapis/google-cloud-go/commit/2b81c7dc2d73739f4d5f87aa43cc9a3ac031822d))
+* **bigtable:** State-based classification for abnormal session close ([#20243](https://github.com/googleapis/google-cloud-go/issues/20243)) ([f2905b7](https://github.com/googleapis/google-cloud-go/commit/f2905b793d062ae597d9c39597d15a680e9e9967))
+* **bigtable:** TableShim fallback to classic on session UNIMPLEMENTED ([#20269](https://github.com/googleapis/google-cloud-go/issues/20269)) ([36540af](https://github.com/googleapis/google-cloud-go/commit/36540af84ab5f7360c5c1a92bbfb5a631d4c5cc6))
+* **bigtable:** TTL-on-idle cache for per-resource session.TableAPI ([#20263](https://github.com/googleapis/google-cloud-go/issues/20263)) ([00b2a49](https://github.com/googleapis/google-cloud-go/commit/00b2a49de38fe600736cf10c496f85e082ae8871))
+* **bigtable:** Wire Diverter on Client and route Open* via TableShim ([#20256](https://github.com/googleapis/google-cloud-go/issues/20256)) ([b32fbd7](https://github.com/googleapis/google-cloud-go/commit/b32fbd7d02f835e8f83b4be1926e5826c27fa8a9))
+
+
+### Bug Fixes
+
+* **bigtable:** AFE picker latency signal — subtract poolWait and compute TransportLatency = wire − backend at source ([#20281](https://github.com/googleapis/google-cloud-go/issues/20281)) ([bb8c4d5](https://github.com/googleapis/google-cloud-go/commit/bb8c4d56bf5bb53e5e1f1d510be326821fe4ddee))
+* **bigtable:** Guard NewStream OnFinish against grpc-go double-fire ([#20295](https://github.com/googleapis/google-cloud-go/issues/20295)) ([b51da29](https://github.com/googleapis/google-cloud-go/commit/b51da29536de5aa59582d2a9633a07186f8636ae))
+* **bigtable:** Real per-resource pool teardown on sessionTable.Close + cache close-race gate ([#20264](https://github.com/googleapis/google-cloud-go/issues/20264)) ([599aea9](https://github.com/googleapis/google-cloud-go/commit/599aea9e67ca2526b7822eb1e873e3aaf7b5124e))
+* **bigtable:** Session.durations / session.uptime — set explicit histogram bucket boundaries ([#20276](https://github.com/googleapis/google-cloud-go/issues/20276)) ([97eee22](https://github.com/googleapis/google-cloud-go/commit/97eee225c412db9288bb7813e6b9cc856e6aba44))
+* **bigtable:** SessionTableHandle self-heals across cache eviction ([#20296](https://github.com/googleapis/google-cloud-go/issues/20296)) ([0dd98cd](https://github.com/googleapis/google-cloud-go/commit/0dd98cd75383bd5902f3bec936d9ae68c64e6682))
+* **bigtable:** Translate ctx errors to gRPC status on session vRPC ([#20299](https://github.com/googleapis/google-cloud-go/issues/20299)) ([0f3b2a5](https://github.com/googleapis/google-cloud-go/commit/0f3b2a519e07eccdfacad1129aa0fb69bc8f06e6))
+* **bigtable:** Treat PingAndWarm NotFound as a successful prime ([#20219](https://github.com/googleapis/google-cloud-go/issues/20219)) ([a1557ad](https://github.com/googleapis/google-cloud-go/commit/a1557adec2fc8a579f70cdb4de5f959ceb8d51a1))
+
+
+### Performance Improvements
+
+* **bigtable:** Delete periodic Tick loop; sizing is event-driven ([#20285](https://github.com/googleapis/google-cloud-go/issues/20285)) ([2c096bd](https://github.com/googleapis/google-cloud-go/commit/2c096bddf6fc5353a3804d222b3683a55eda13e5))
+* **bigtable:** Drop pick_lost_race debug tag from CheckoutSession hot path ([#20280](https://github.com/googleapis/google-cloud-go/issues/20280)) ([bd0e400](https://github.com/googleapis/google-cloud-go/commit/bd0e400948a15639546f150d5d2b1a1a7ceb5741))
+
 ## [1.51.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.50.0...bigtable/v1.51.0) (2026-07-23)
 
 
