@@ -57,14 +57,18 @@ type Client struct {
 	// stays on the classic path until the session backend's
 	// ConfigurationManager bumps the ratio via AddSessionLoadListener.
 	diverter *btransport.Diverter
-	// sessionImpl is the session data-plane client. Always constructed
-	// by NewClientWithConfig so a control-plane session-load bump can
-	// route traffic to it without a client restart. No RPCs actually
-	// travel to the session backend until the diverter's SessionLoad
-	// > 0 — the initial value is 0.0 and only the server-driven
-	// ClientConfigurationManager writes to it. Session pools + streams
-	// are lazily materialized on first use, so an idle client pays
-	// only for one channel pool and one config-poll goroutine.
+	// sessionImpl is the session data-plane client. Constructed by
+	// NewClientWithConfig by default so a control-plane session-load
+	// bump can route traffic to it without a client restart. Nil when
+	// the caller pre-dialed a custom gRPC conn or opted out via
+	// ClientConfig.DisableSession — every downstream reader
+	// (open.go's getOrCreateSession*, Client.Close) nil-guards. When
+	// non-nil, no RPCs actually travel to the session backend until
+	// the diverter's SessionLoad > 0 — the initial value is 0.0 and
+	// only the server-driven ClientConfigurationManager writes to it.
+	// Session pools + streams are lazily materialized on first use,
+	// so an idle client pays only for one channel pool and one
+	// config-poll goroutine.
 	sessionImpl session.Client
 	// sessionTables caches per-resource session.TableAPI handles so
 	// repeat Open* calls return the same handle (and by extension the
@@ -100,6 +104,25 @@ type ClientConfig struct {
 
 	// DisableDirectAccess disables direct access by default.
 	DisableDirectAccess bool
+
+	// DisableSession, when true, tells NewClientWithConfig to skip
+	// constructing the session data-plane client entirely. sessionImpl
+	// and sessionTables are left nil; the client runs classic-only and
+	// pays none of the session infrastructure's per-connection background
+	// goroutines or gRPC-channel cost.
+	//
+	// Effect on Table: Open() returns a *Table whose divertible field is
+	// still built (Diverter is a classic-side concern), but its session
+	// side is nil, so TableShim.useSession() reports false and every
+	// Apply / ReadRow routes to the classic path unconditionally.
+	//
+	// Intended for callers who have specific reasons to opt out of the
+	// session data plane — running against a backend that doesn't
+	// support it, benchmarking classic-only baselines, or resource-
+	// constrained environments where the +N goroutines + +MB RSS of an
+	// idle session pool matter. Default (false) keeps the current
+	// behavior: session client is always constructed.
+	DisableSession bool
 }
 
 // MetricsProvider is a wrapper for the built-in metrics meter provider.
@@ -279,7 +302,13 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	if uResolver, resErr := internaloption.NewUnsafeResolver(o...); resErr == nil {
 		preDialed = uResolver.ResolvedGRPCConnIsCustom()
 	}
-	if !preDialed {
+	// Skip session-client construction when either (a) caller pre-dialed
+	// a custom conn (session.NewClient can't dial through it) or (b)
+	// caller opted out via ClientConfig.DisableSession. In both cases
+	// sessionImpl + sessionTables stay nil; every downstream caller
+	// (open.go's getOrCreateSession*, Client.Close) already nil-guards
+	// on that state.
+	if !preDialed && !config.DisableSession {
 		// Pass the fully-merged option list (o), not the raw caller
 		// opts. gtransport.Dial needs the DefaultClientOptions merged
 		// in (endpoint, scopes, user-agent, interceptors) — passing
