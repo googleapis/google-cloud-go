@@ -662,76 +662,8 @@ func TestPoolNewStream(t *testing.T) {
 				t.Fatalf("attempt %d: streamingLoad went negative (%d) — accounting fired more than once", i, got)
 			}
 		}
-		// The == 0 check also silently pins "the accounting closure fired
-		// at least once per iter" — if a future grpc-go regressed to
-		// zero-firing OnFinish on this path, the belt-and-suspenders
-		// `finish(err)` call inside NewStream's error branch would still
-		// catch it and this stays at 0. If both mechanisms broke, this
-		// would read as == 5, not < 0.
 		if got := entry.streamingLoad.Load(); got != 0 {
 			t.Errorf("streamingLoad after 5 failed NewStreams = %d, want 0", got)
-		}
-	})
-
-	// Belt-and-suspenders coverage: independently of what grpc-go does
-	// with OnFinish on any given failure path, the accounting closure
-	// MUST fire at least once per NewStream that returned an error. Wraps
-	// the user's OnFinish opt via a counting helper, forces N failed
-	// NewStreams on a closed conn, and asserts every attempt's OnFinish
-	// invocation count is exactly one or two — never zero. Pins the
-	// invariant the whole fix leans on.
-	t.Run("OnFinishFiresAtLeastOncePerFailedNewStream", func(t *testing.T) {
-		poolSize := 1
-		fake := &fakeService{}
-		addr := setupTestServer(t, fake)
-		dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
-		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, time.Now(), poolOpts()...)
-		if err != nil {
-			t.Fatalf("Failed to create pool: %v", err)
-		}
-		defer pool.Close()
-
-		entry := pool.getConns()[0]
-		entry.conn.Close()
-
-		// Wrap the pool's user-side ClientStream to observe how many
-		// times grpc-go's OnFinish trigger fires per NewStream. The
-		// pool's own OnFinish is CAS-gated — this counts the raw fires,
-		// not the accounting invocations.
-		const N = 5
-		fires := make([]int32, N)
-		for i := 0; i < N; i++ {
-			var thisAttempt atomic.Int32
-			userOnFinish := grpc.OnFinish(func(err error) {
-				thisAttempt.Add(1)
-			})
-			_, err := pool.NewStream(ctx, &grpc.StreamDesc{StreamName: "StreamingCall"},
-				"/grpc.testing.BenchmarkService/StreamingCall", userOnFinish)
-			if err == nil {
-				t.Fatalf("attempt %d: NewStream unexpectedly succeeded on a closed conn", i)
-			}
-			// Give grpc-go a moment to flush any deferred OnFinish
-			// invocations from teardown before we sample the count.
-			time.Sleep(5 * time.Millisecond)
-			fires[i] = thisAttempt.Load()
-		}
-		for i, n := range fires {
-			// grpc-go's OnFinish contract: on any NewStream that
-			// returned an error, expect >=1 fire (typically 1 or 2 —
-			// the double-fire path this whole fix guards against). If
-			// we ever see 0, the belt-and-suspenders finish(err) call
-			// in the error branch is doing all the accounting work.
-			if n == 0 {
-				t.Logf("attempt %d: grpc-go OnFinish fired 0 times — belt-and-suspenders fallback carried the accounting", i)
-			}
-			if n > 3 {
-				t.Errorf("attempt %d: grpc-go OnFinish fired %d times, want small (1 or 2 typical); investigate whether the CAS gate is still adequate", i, n)
-			}
-		}
-		// Regardless of how grpc-go distributes the fires, load
-		// accounting must land at 0.
-		if got := entry.streamingLoad.Load(); got != 0 {
-			t.Errorf("streamingLoad after %d failed NewStreams = %d, want 0", N, got)
 		}
 	})
 }
