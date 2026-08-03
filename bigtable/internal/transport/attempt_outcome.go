@@ -17,7 +17,6 @@ package internal
 import (
 	"errors"
 
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
@@ -86,10 +85,10 @@ func (e *vrpcErr) GRPCStatus() *status.Status {
 	if s, ok := status.FromError(e.outcome.Err); ok {
 		return s
 	}
-	if s := status.FromContextError(e.outcome.Err); s.Code() != codes.Unknown {
-		return s
-	}
-	return status.New(codes.Unknown, e.outcome.Err.Error())
+	// FromContextError translates ctx errors to DeadlineExceeded /
+	// Canceled and falls back to Unknown-with-message for anything else,
+	// which is the fallback we want anyway.
+	return status.FromContextError(e.outcome.Err)
 }
 
 // tagErr wraps err with the given AttemptState. Returns nil for nil err so
