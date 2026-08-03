@@ -116,8 +116,8 @@ func TestClassifyErr_FindsThroughWrapper(t *testing.T) {
 // silently regress that branch to Unknown.
 func TestVRPCErr_GRPCStatus(t *testing.T) {
 	tests := []struct {
-		name    string
-		inner   error
+		name     string
+		inner    error
 		wantCode codes.Code
 		wantMsg  string // required substring in status message
 	}{
