@@ -32,7 +32,6 @@ import (
 	"cloud.google.com/go/bigtable/internal/session"
 )
 
-
 // ─── sessionTableCache tests ──────────────────────────────────────────
 
 // newTestSessionTableCache builds a cache with an injectable clock.

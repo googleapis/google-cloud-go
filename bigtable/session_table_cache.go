@@ -62,8 +62,15 @@ type sessionTableHandle struct {
 	// closed cache; do not call this field directly or the post-close
 	// eviction guard is lost. Safe to hold for the process lifetime:
 	// *Client.sessionImpl is set-once at NewClient and never
-	// reassigned, so the closure never staless. If that ever becomes
-	// reconfigurable, self-heal will stale — revisit here.
+	// reassigned, so the closure never goes stale. If that ever
+	// becomes reconfigurable, self-heal will stale — revisit here.
+	//
+	// Invariant: openFn is the one captured at first insertion for the
+	// key. resolveSuccessor threads it through unchanged into any
+	// successor getOrOpen call, so all handles that ever share the key
+	// share the same closure. Threading a per-call override into
+	// getOrOpen without also updating this invariant would silently
+	// leave successors using the original openFn.
 	openFn         func() session.TableAPI
 	key            string
 	cache          *sessionTableCache
