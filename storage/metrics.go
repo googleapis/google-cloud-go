@@ -1079,6 +1079,8 @@ func (w *wrappedClientStream) SendMsg(m interface{}) error {
 func (w *wrappedClientStream) record(err error) {
 	if w.recorded.CompareAndSwap(false, true) {
 		duration := time.Since(w.startTime).Seconds()
+		skipRecordRPC := false
+		
 		if w.serverStreams && w.clientStreams {
 			w.msgMu.Lock()
 			hasPending := len(w.reqStartTimes) > 0
@@ -1090,11 +1092,13 @@ func (w *wrappedClientStream) record(err error) {
 			// If no pending request and err is nil/EOF, we've already recorded all cycles.
 			// Skip recording a duplicate final stream cycle.
 			if !hasPending && (err == nil || err == io.EOF) {
-				return
+				skipRecordRPC = true
 			}
 		}
 
-		w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err)
+		if !skipRecordRPC {
+			w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err)
+		}
 
 		logicalMethod := getLogicalMethod(w.method)
 
