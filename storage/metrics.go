@@ -1029,29 +1029,12 @@ type wrappedClientStream struct {
 	serverStreams bool
 	clientStreams bool
 	recordedTTFB  atomic.Bool
-
-	msgMu         sync.Mutex
-	reqStartTimes []time.Time
 }
 
 func (w *wrappedClientStream) RecvMsg(m interface{}) error {
 	err := w.ClientStream.RecvMsg(m)
 	if err == nil {
 		w.recordTTFB(m)
-		if w.serverStreams && w.clientStreams {
-			var startTime time.Time
-			w.msgMu.Lock()
-			if len(w.reqStartTimes) > 0 {
-				startTime = w.reqStartTimes[0]
-				w.reqStartTimes = w.reqStartTimes[1:]
-			}
-			w.msgMu.Unlock()
-
-			if !startTime.IsZero() {
-				duration := time.Since(startTime).Seconds()
-				w.metrics.recordRPC(w.ctx, w.method, w.target, duration, nil)
-			}
-		}
 	}
 	// For client-streaming streams (like WriteObject), the single successful RecvMsg call
 	// returns the response and nil error, which marks the completion of the stream.
@@ -1063,12 +1046,6 @@ func (w *wrappedClientStream) RecvMsg(m interface{}) error {
 }
 
 func (w *wrappedClientStream) SendMsg(m interface{}) error {
-	if w.serverStreams && w.clientStreams {
-		w.msgMu.Lock()
-		w.reqStartTimes = append(w.reqStartTimes, time.Now())
-		w.msgMu.Unlock()
-	}
-
 	err := w.ClientStream.SendMsg(m)
 	if err != nil {
 		w.record(err)
@@ -1079,26 +1056,7 @@ func (w *wrappedClientStream) SendMsg(m interface{}) error {
 func (w *wrappedClientStream) record(err error) {
 	if w.recorded.CompareAndSwap(false, true) {
 		duration := time.Since(w.startTime).Seconds()
-		skipRecordRPC := false
-
-		if w.serverStreams && w.clientStreams {
-			w.msgMu.Lock()
-			hasPending := len(w.reqStartTimes) > 0
-			if hasPending {
-				duration = time.Since(w.reqStartTimes[0]).Seconds()
-			}
-			w.msgMu.Unlock()
-
-			// If no pending request and err is nil/EOF, we've already recorded all cycles.
-			// Skip recording a duplicate final stream cycle.
-			if !hasPending && (err == nil || err == io.EOF) {
-				skipRecordRPC = true
-			}
-		}
-
-		if !skipRecordRPC {
-			w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err)
-		}
+		w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err)
 
 		logicalMethod := getLogicalMethod(w.method)
 
