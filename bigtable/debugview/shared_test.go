@@ -57,6 +57,14 @@ type fakeConfigProvider struct {
 
 func (f fakeConfigProvider) Snapshot() btransport.ConfigSnapshot { return f.snap }
 
+// fakeOutlierProvider satisfies bigtable.OutlierDebugProvider for
+// outlierz tests.
+type fakeOutlierProvider struct {
+	pools []btransport.OutlierPoolSnapshot
+}
+
+func (f fakeOutlierProvider) Snapshot() []btransport.OutlierPoolSnapshot { return f.pools }
+
 // get is a tiny helper wrapping httptest to keep the per-view test
 // files short. Every view's tests exercise Handler via the same shape.
 func get(t *testing.T, h http.Handler, target string) *httptest.ResponseRecorder {

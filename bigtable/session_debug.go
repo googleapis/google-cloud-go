@@ -41,6 +41,24 @@ type SessionRef = btransport.SessionRef
 // GetClientConfiguration poll outcome.
 type ConfigDebugProvider = btransport.ConfigDebugProvider
 
+// OutlierDebugProvider exposes per-pool outlier-scorer state (scorer
+// name, config, current per-AFE scores, recent transitions). Consumed
+// by the debugview package to render /debug/outlierz.
+type OutlierDebugProvider = btransport.OutlierDebugProvider
+
+// OutlierPoolSnapshot carries one pool's outlier-scorer state. See
+// btransport.OutlierPoolSnapshot for field details.
+type OutlierPoolSnapshot = btransport.OutlierPoolSnapshot
+
+// OutlierParam is one config knob rendered on the outlierz page.
+type OutlierParam = btransport.OutlierParam
+
+// OutlierScoreRow is one AFE's current score.
+type OutlierScoreRow = btransport.OutlierScoreRow
+
+// OutlierDecision is one entry in a scorer's audit ring.
+type OutlierDecision = btransport.OutlierDecision
+
 // SessionDebug returns a SessionDebugProvider for this Client. Returns
 // nil when the session backend isn't wired (hand-built or emulator-only
 // Clients where sessionImpl is nil) or when session-side debug
@@ -153,6 +171,17 @@ func (c *Client) ConfigDebug() ConfigDebugProvider {
 		return nil
 	}
 	return c.sessionImpl.ConfigDebug()
+}
+
+// OutlierDebug returns an OutlierDebugProvider for this Client. Returns
+// nil when the session backend isn't wired (hand-built or emulator-only
+// Client) or when session-side debug recorders are disabled
+// (EnableDebug=false).
+func (c *Client) OutlierDebug() OutlierDebugProvider {
+	if c.sessionImpl == nil {
+		return nil
+	}
+	return c.sessionImpl.OutlierDebug()
 }
 
 // TCPStats returns the per-connection TCP_INFO collector when

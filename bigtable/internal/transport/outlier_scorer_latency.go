@@ -16,6 +16,7 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"runtime/debug"
 	"sort"
 	"sync"
@@ -159,6 +160,61 @@ func (s *LatencyOutlierScorer) Score(id AfeID) float64 {
 		return v
 	}
 	return 1.0
+}
+
+// Name returns "latency-outlier".
+func (*LatencyOutlierScorer) Name() string { return "latency-outlier" }
+
+// Config returns a copy of the config the scorer was constructed with
+// (after defaults were applied). Debug pages render this to show
+// operators exactly which thresholds are in effect.
+func (s *LatencyOutlierScorer) Config() LatencyOutlierConfig { return s.cfg }
+
+// CurrentScores returns a copy of the current per-AFE score map, sorted
+// by AfeID. Empty until the first tick has landed. Safe for concurrent
+// callers.
+func (s *LatencyOutlierScorer) CurrentScores() []OutlierScoreRow {
+	m := s.scores.Load()
+	if m == nil || len(*m) == 0 {
+		return nil
+	}
+	out := make([]OutlierScoreRow, 0, len(*m))
+	for id, v := range *m {
+		out = append(out, OutlierScoreRow{
+			AfeID:     id,
+			Score:     v,
+			Penalized: v > 1.0,
+		})
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].AfeID < out[j].AfeID })
+	return out
+}
+
+// DebugSnapshot assembles a full OutlierPoolSnapshot for one pool. The
+// PoolName field is not populated here — the caller (SessionPoolImpl)
+// fills it in. CapturedAt is stamped at call time.
+func (s *LatencyOutlierScorer) DebugSnapshot() OutlierPoolSnapshot {
+	return OutlierPoolSnapshot{
+		ScorerName: s.Name(),
+		Params:     s.paramsForDebug(),
+		Scores:     s.CurrentScores(),
+		Recent:     s.OutlierSnapshot(),
+		CapturedAt: time.Now(),
+	}
+}
+
+// paramsForDebug renders the scorer's config as a list of name/value
+// pairs the debug template can iterate over.
+func (s *LatencyOutlierScorer) paramsForDebug() []OutlierParam {
+	c := s.cfg
+	return []OutlierParam{
+		{Name: "Interval", Value: c.Interval.String()},
+		{Name: "LatencyMultiplier", Value: fmt.Sprintf("%.2fx", c.LatencyMultiplier)},
+		{Name: "MinLatencyFloor", Value: c.MinLatencyFloor.String()},
+		{Name: "MinCohortSize", Value: fmt.Sprintf("%d", c.MinCohortSize)},
+		{Name: "PenaltyMultiplier", Value: fmt.Sprintf("%.2fx", c.PenaltyMultiplier)},
+		{Name: "AuditRingSize", Value: fmt.Sprintf("%d", c.AuditRingSize)},
+	}
 }
 
 // Start spawns the periodic detector loop. Cancels on ctx.Done — the

@@ -49,18 +49,21 @@ func Handler(c *bigtable.Client) http.Handler {
 		sessionProv bigtable.SessionDebugProvider
 		channelProv bigtable.ChannelDebugProvider
 		configProv  bigtable.ConfigDebugProvider
+		outlierProv bigtable.OutlierDebugProvider
 		stats       *bigtable.TCPStats
 	)
 	if c != nil {
 		sessionProv = c.SessionDebug()
 		channelProv = c.ChannelDebug()
 		configProv = c.ConfigDebug()
+		outlierProv = c.OutlierDebug()
 		stats = c.TCPStats()
 	}
 
 	mux.Handle("/sessionz/", http.StripPrefix("/sessionz", newSessionzHandler(sessionProv)))
 	mux.Handle("/afez/", http.StripPrefix("/afez", newAfezHandler(sessionProv)))
 	mux.Handle("/loadz/", http.StripPrefix("/loadz", newLoadzHandler(sessionProv)))
+	mux.Handle("/outlierz/", http.StripPrefix("/outlierz", newOutlierzHandler(outlierProv)))
 	mux.Handle("/channelz/", http.StripPrefix("/channelz", newChannelzHandler(channelProv)))
 	mux.Handle("/configz/", http.StripPrefix("/configz", newConfigzHandler(configProv)))
 	mux.Handle("/tcpz/", http.StripPrefix("/tcpz", newTcpzHandler(stats)))
@@ -126,6 +129,7 @@ allocating debug recorder for zero hot-path overhead.
 <li><a href="sessionz/">sessionz</a> <div class="desc">per-pool sessions, states, latency histograms, slow-vRPC log, scaling history.</div></li>
 <li><a href="afez/">afez</a> <div class="desc">per-AFE bucketing: refCount, idle, in-use, EWMAs, last-connected.</div></li>
 <li><a href="loadz/">loadz</a> <div class="desc">picker decision reasoning, actual-vs-ideal AFE fanout, K-choice trace.</div></li>
+<li><a href="outlierz/">outlierz</a> <div class="desc">outlier-scorer state per pool: scorer name, config knobs, current per-AFE cost multipliers, recent penalize/recover transitions.</div></li>
 <li><a href="channelz/">channelz</a> <div class="desc">gRPC channel pool state (classic + session).</div></li>
 <li><a href="configz/">configz</a> <div class="desc">server-driven client configuration (GetClientConfiguration).</div></li>
 <li><a href="tcpz/">tcpz</a> <div class="desc">per-connection TCP_INFO (RTT, retrans, PMTU) — requires ClientConfig.EnableDebug=true.</div></li>

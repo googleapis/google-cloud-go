@@ -31,12 +31,17 @@ import (
 // target. Implementations must be safe for concurrent Score calls from
 // multiple goroutines without external synchronization.
 //
+// Name returns a short, stable identifier for debug tooling and metrics
+// attribution ("noop", "latency-outlier", …). Must be safe to call
+// concurrently.
+//
 // This is the plug-point for outlier detection: pass an implementation
-// to NewSessionPoolImpl. Default is NoopScorer, which returns 1.0 for
-// every AFE and makes the picker behave exactly as it did before this
-// framework existed.
+// to SessionPoolImpl.SetOutlierScorer. Default is NoopScorer, which
+// returns 1.0 for every AFE and makes the picker behave exactly as it
+// did before this framework existed.
 type OutlierScorer interface {
 	Score(id AfeID) float64
+	Name() string
 }
 
 // LifecycleScorer is optionally implemented by scorers that maintain
@@ -94,3 +99,6 @@ type NoopScorer struct{}
 
 // Score always returns 1.0.
 func (NoopScorer) Score(AfeID) float64 { return 1.0 }
+
+// Name returns "noop".
+func (NoopScorer) Name() string { return "noop" }

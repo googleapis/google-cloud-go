@@ -471,6 +471,7 @@ func (f *fakeSessionClient) MeterProvider() metric.MeterProvider           { ret
 func (f *fakeSessionClient) SessionDebug() btransport.SessionDebugProvider { return nil }
 func (f *fakeSessionClient) ChannelDebug() btransport.ChannelDebugProvider { return nil }
 func (f *fakeSessionClient) ConfigDebug() btransport.ConfigDebugProvider   { return nil }
+func (f *fakeSessionClient) OutlierDebug() btransport.OutlierDebugProvider { return nil }
 func (f *fakeSessionClient) AddSessionLoadListener(_ func(load float64)) func() {
 	f.loadListenerSet = true
 	return func() {}

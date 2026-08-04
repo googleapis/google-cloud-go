@@ -805,6 +805,19 @@ func (sc *sessionClient) LoadBalancingSnapshots() []btransport.LoadBalancingSnap
 	return out
 }
 
+// OutlierDebugSnapshots returns per-pool outlier-scorer state for the
+// /debug/outlierz page. Ordered by pool key. Always non-empty per pool —
+// pools running NoopScorer produce an entry with ScorerName="noop" so
+// operators can see which pools have outlier detection wired.
+func (sc *sessionClient) OutlierDebugSnapshots() []btransport.OutlierPoolSnapshot {
+	entries := sc.orderedPoolEntries()
+	out := make([]btransport.OutlierPoolSnapshot, 0, len(entries))
+	for _, e := range entries {
+		out = append(out, e.pool.OutlierDebugSnapshot())
+	}
+	return out
+}
+
 // poolEntry is the internal (key, pool) tuple used by snapshot methods
 // so they can sort by poolKey without duplicating the collection loop.
 type poolEntry struct {

@@ -235,6 +235,43 @@ func (p *SessionPoolImpl) decorateReady(ready []AfeSnapshot) {
 	}
 }
 
+// OutlierDebugSnapshot returns per-pool outlier-scorer state for the
+// /debug/outlierz page. Always non-empty: even a pool running
+// NoopScorer produces an entry with ScorerName="noop" and empty
+// Params/Scores/Recent so operators can see WHICH pools have outlier
+// detection wired.
+func (p *SessionPoolImpl) OutlierDebugSnapshot() OutlierPoolSnapshot {
+	p.mu.Lock()
+	scorer := p.scorer
+	p.mu.Unlock()
+	snap := OutlierPoolSnapshot{
+		PoolName:   p.poolName,
+		ScorerName: "noop",
+		CapturedAt: time.Now(),
+	}
+	if scorer == nil {
+		return snap
+	}
+	// Preferred path: the scorer knows how to snapshot itself
+	// (LatencyOutlierScorer and any custom impl that satisfies the
+	// interface). This is the only place we assert the optional
+	// debug interface — other paths deliberately stay behind the
+	// minimal OutlierScorer + Name contract.
+	type debugSnapshotter interface {
+		DebugSnapshot() OutlierPoolSnapshot
+	}
+	if d, ok := scorer.(debugSnapshotter); ok {
+		s := d.DebugSnapshot()
+		s.PoolName = p.poolName
+		s.CapturedAt = snap.CapturedAt
+		return s
+	}
+	// Fallback: scorer is minimally-conformant — we can name it but
+	// have no visibility into its internal state.
+	snap.ScorerName = scorer.Name()
+	return snap
+}
+
 // NewSessionPoolImpl creates a new SessionPoolImpl. id is baked into
 // every session log name so channelz/sessionz can reverse-link back to
 // the pool that owns each session.
