@@ -286,18 +286,18 @@ func (s *LatencyOutlierScorer) tick() {
 		return
 	}
 
-	// Compute the outlier signal for each AFE: worst of e2eEwma and
-	// transportEwma. Backend-slow and network-slow are both bad; taking
-	// the max flags either.
+	// Signal is e2eEwma alone. transportEwma is fed (e2e - backend) per
+	// sample in RecordVRpcOutcome, so transportEwma <= e2eEwma by
+	// construction — taking max() collapses to e2eEwma. e2e also
+	// naturally captures both failure modes: a slow backend inflates e2e
+	// (transport unchanged), and slow-network / bad AFE inflates
+	// transport which flows into e2e. Client-observed latency is the
+	// canonical signal here.
 	worsts := make([]time.Duration, len(rows))
 	sorted := make([]time.Duration, len(rows))
 	for i, r := range rows {
-		w := r.E2eEwma
-		if r.TransportEwma > w {
-			w = r.TransportEwma
-		}
-		worsts[i] = w
-		sorted[i] = w
+		worsts[i] = r.E2eEwma
+		sorted[i] = r.E2eEwma
 	}
 	sort.Slice(sorted, func(i, j int) bool { return sorted[i] < sorted[j] })
 	median := sorted[len(sorted)/2]
