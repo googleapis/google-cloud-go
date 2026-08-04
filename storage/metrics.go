@@ -1030,9 +1030,8 @@ type wrappedClientStream struct {
 	clientStreams bool
 	recordedTTFB  atomic.Bool
 
-	msgMu        sync.Mutex
-	reqStartTime time.Time
-	lastRecvTime time.Time
+	msgMu         sync.Mutex
+	reqStartTimes []time.Time
 }
 
 func (w *wrappedClientStream) RecvMsg(m interface{}) error {
@@ -1040,9 +1039,18 @@ func (w *wrappedClientStream) RecvMsg(m interface{}) error {
 	if err == nil {
 		w.recordTTFB(m)
 		if w.serverStreams && w.clientStreams {
+			var startTime time.Time
 			w.msgMu.Lock()
-			w.lastRecvTime = time.Now()
+			if len(w.reqStartTimes) > 0 {
+				startTime = w.reqStartTimes[0]
+				w.reqStartTimes = w.reqStartTimes[1:]
+			}
 			w.msgMu.Unlock()
+
+			if !startTime.IsZero() {
+				duration := time.Since(startTime).Seconds()
+				w.metrics.recordRPC(w.ctx, w.method, w.target, duration, nil)
+			}
 		}
 	}
 	// For client-streaming streams (like WriteObject), the single successful RecvMsg call
@@ -1057,20 +1065,8 @@ func (w *wrappedClientStream) RecvMsg(m interface{}) error {
 func (w *wrappedClientStream) SendMsg(m interface{}) error {
 	if w.serverStreams && w.clientStreams {
 		w.msgMu.Lock()
-		var duration float64
-		record := false
-		if !w.reqStartTime.IsZero() && !w.lastRecvTime.IsZero() {
-			// Record the previous request-response cycle.
-			duration = w.lastRecvTime.Sub(w.reqStartTime).Seconds()
-			record = true
-		}
-		w.reqStartTime = time.Now()
-		w.lastRecvTime = time.Time{}
+		w.reqStartTimes = append(w.reqStartTimes, time.Now())
 		w.msgMu.Unlock()
-
-		if record {
-			w.metrics.recordRPC(w.ctx, w.method, w.target, duration, nil)
-		}
 	}
 
 	err := w.ClientStream.SendMsg(m)
@@ -1085,14 +1081,17 @@ func (w *wrappedClientStream) record(err error) {
 		duration := time.Since(w.startTime).Seconds()
 		if w.serverStreams && w.clientStreams {
 			w.msgMu.Lock()
-			if !w.reqStartTime.IsZero() {
-				if !w.lastRecvTime.IsZero() {
-					duration = w.lastRecvTime.Sub(w.reqStartTime).Seconds()
-				} else {
-					duration = time.Since(w.reqStartTime).Seconds()
-				}
+			hasPending := len(w.reqStartTimes) > 0
+			if hasPending {
+				duration = time.Since(w.reqStartTimes[0]).Seconds()
 			}
 			w.msgMu.Unlock()
+
+			// If no pending request and err is nil/EOF, we've already recorded all cycles.
+			// Skip recording a duplicate final stream cycle.
+			if !hasPending && (err == nil || err == io.EOF) {
+				return
+			}
 		}
 
 		w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err)

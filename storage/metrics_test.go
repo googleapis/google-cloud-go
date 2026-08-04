@@ -452,12 +452,27 @@ func TestGRPCMetricsRecording(t *testing.T) {
 	// 1st request-response cycle.
 	clientStreamBidi.SendMsg(nil)
 	clientStreamBidi.RecvMsg(nil)
-	// 2nd request (records 1st cycle)
+	// 2nd request-response cycle.
 	clientStreamBidi.SendMsg(nil)
 	clientStreamBidi.RecvMsg(nil)
 
-	// Terminate stream (records 2nd cycle)
+	// Terminate stream (no pending cycles, so no extra record).
 	clientStreamBidi.(*wrappedClientStream).record(io.EOF)
+
+	// Test consecutive pipelined sends and recvs.
+	clientStreamBidiPipelined, err := streamInt(ctx, descBidi, nil, "/google.storage.v2.Storage/BidiWriteObject", streamerBidi)
+	if err != nil {
+		t.Fatalf("streamInt pipelined: %v", err)
+	}
+	// 2 consecutive sends
+	clientStreamBidiPipelined.SendMsg(nil)
+	clientStreamBidiPipelined.SendMsg(nil)
+	// 2 consecutive recvs
+	clientStreamBidiPipelined.RecvMsg(nil)
+	clientStreamBidiPipelined.RecvMsg(nil)
+
+	// Terminate stream
+	clientStreamBidiPipelined.(*wrappedClientStream).record(io.EOF)
 
 	// Collect metrics.
 	var rm metricdata.ResourceMetrics
@@ -577,8 +592,8 @@ func TestGRPCMetricsRecording(t *testing.T) {
 	if bidiDp == nil {
 		t.Errorf("streaming metric (BidiWriteObject) not recorded")
 	} else {
-		if bidiDp.Count != 2 {
-			t.Errorf("expected bidi to record 2 cycles, got %d", bidiDp.Count)
+		if bidiDp.Count != 4 {
+			t.Errorf("Bidi stream count: expected 4, got %d", bidiDp.Count)
 		}
 		attrs := make(map[string]string)
 		for _, kv := range bidiDp.Attributes.ToSlice() {
