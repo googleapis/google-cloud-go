@@ -48,7 +48,7 @@ type TableAPI interface {
 	// does not close the shared channel pool.
 	//
 	// Per-handle pool teardown is safe because callers reach this method
-	// through bigtable.Client's sessionTableCache, which guarantees
+	// through bigtable.Client's session.TableCache, which guarantees
 	// at-most-one TableAPI per resource per Client. A future caller that
 	// bypasses that cache must add a refcount before calling Close.
 	Close() error

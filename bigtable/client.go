@@ -75,8 +75,9 @@ type Client struct {
 	// same underlying session pools). session.Client does not cache;
 	// this Client is responsible. Entries evict on TTL-idle (default
 	// 1 h) via a background sweeper, or immediately when the caller
-	// calls Close() on the returned handle. See session_table_cache.go.
-	sessionTables *sessionTableCache
+	// calls Close() on the returned handle. See
+	// internal/session/table_cache.go.
+	sessionTables *session.TableCache
 }
 
 // ClientConfig has configurations for the client.
@@ -333,7 +334,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// qualified resource name as the cache key. Only constructed
 		// when the session backend is actually wired — a sweeper
 		// goroutine over an always-empty map would be dead weight.
-		c.sessionTables = newSessionTableCache(sessionTableCacheTTL, sessionTableCacheSweepInt, nil /* time.Now */)
+		c.sessionTables = session.NewTableCache(session.DefaultTableCacheTTL, session.DefaultTableCacheSweepInterval, nil /* time.Now */)
 	}
 
 	return c, nil
@@ -348,8 +349,8 @@ func (c *Client) Close() error {
 	// stops and every cached handle sees Close() before we tear down
 	// the session client that owns their pools. sessionTables is nil
 	// on hand-built Clients that skipped session-backend wiring; the
-	// cache's own close() nil-checks for that.
-	c.sessionTables.close()
+	// cache's own Close() nil-checks for that.
+	c.sessionTables.Close()
 	// Then the session backend — its bookkeeping (session pools,
 	// ConfigurationManager poller) winds down before we drop the
 	// shared gRPC channels. Any error is aggregated with the classic

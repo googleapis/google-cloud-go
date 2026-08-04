@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package bigtable
+package session
 
 import (
 	"context"
@@ -21,22 +21,21 @@ import (
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
-	"cloud.google.com/go/bigtable/internal/session"
 )
 
-// Default eviction parameters for sessionTableCache. Vars (not consts)
-// so tests can tighten the sweep interval and TTL to milliseconds
+// Default eviction parameters for TableCache. Vars (not consts) so
+// tests can tighten the sweep interval and TTL to milliseconds
 // without touching the code under test.
 var (
-	sessionTableCacheTTL      = 1 * time.Hour
-	sessionTableCacheSweepInt = 10 * time.Minute
+	DefaultTableCacheTTL           = 1 * time.Hour
+	DefaultTableCacheSweepInterval = 10 * time.Minute
 )
 
-// sessionTableHandle wraps a session.TableAPI with a back-reference
-// to its cache and an atomically-updated last-access timestamp. It IS
-// the cache entry — one type does both jobs, so ReadRow / MutateRow
-// implicitly touch the entry without requiring the caller (TableShim)
-// to know about the cache.
+// TableHandle wraps a TableAPI with a back-reference to its cache and
+// an atomically-updated last-access timestamp. It IS the cache entry —
+// one type does both jobs, so ReadRow / MutateRow implicitly touch
+// the entry without requiring the caller (TableShim) to know about
+// the cache.
 //
 // Close() runs the eviction: removes the handle from the cache map
 // AND calls the underlying api.Close(), both guarded by closeOnce so
@@ -45,35 +44,35 @@ var (
 // every subsequent Close() call — that keeps the observable behavior
 // stable for callers that treat Close as a query.
 //
-// Underlying Close: session.TableAPI.Close (sessionTable.Close in
-// internal/session/table.go) releases the per-resource read + write
-// pool entries from sessionClient.sessionPools. Cache eviction — TTL
-// sweep, explicit handle Close, or cache-wide shutdown — therefore
-// actually reclaims the session pools for the resource. Safety of
-// per-handle teardown depends on this cache's at-most-one-handle-per-
-// key invariant, which acts as an implicit refcount of size 1; see
-// sessionTable.Close's doc.
-type sessionTableHandle struct {
-	api session.TableAPI
+// Underlying Close: TableAPI.Close (sessionTable.Close in table.go)
+// releases the per-resource read + write pool entries from
+// sessionClient.sessionPools. Cache eviction — TTL sweep, explicit
+// handle Close, or cache-wide shutdown — therefore actually reclaims
+// the session pools for the resource. Safety of per-handle teardown
+// depends on this cache's at-most-one-handle-per-key invariant, which
+// acts as an implicit refcount of size 1; see sessionTable.Close's
+// doc.
+type TableHandle struct {
+	api TableAPI
 	// openFn is the factory captured at cache-miss insertion time
-	// (session_table_cache.go's getOrOpen, driven from open.go via
+	// (table_cache.go's GetOrOpen, driven from bigtable/open.go via
 	// c.sessionImpl.OpenTable / OpenAuthorizedView / OpenMaterializedView).
-	// Invoked ONLY through cache.getOrOpen, which nil-guards on the
+	// Invoked ONLY through cache.GetOrOpen, which nil-guards on the
 	// closed cache; do not call this field directly or the post-close
 	// eviction guard is lost. Safe to hold for the process lifetime:
-	// *Client.sessionImpl is set-once at NewClient and never
+	// *bigtable.Client.sessionImpl is set-once at NewClient and never
 	// reassigned, so the closure never goes stale. If that ever
 	// becomes reconfigurable, self-heal will stale — revisit here.
 	//
 	// Invariant: openFn is the one captured at first insertion for the
 	// key. resolveSuccessor threads it through unchanged into any
-	// successor getOrOpen call, so all handles that ever share the key
+	// successor GetOrOpen call, so all handles that ever share the key
 	// share the same closure. Threading a per-call override into
-	// getOrOpen without also updating this invariant would silently
+	// GetOrOpen without also updating this invariant would silently
 	// leave successors using the original openFn.
-	openFn         func() session.TableAPI
+	openFn         func() TableAPI
 	key            string
-	cache          *sessionTableCache
+	cache          *TableCache
 	lastAccessNano atomic.Int64
 	// evicted flips to true inside Close() BEFORE api.Close runs. The
 	// happy-path cost is one atomic Load per RPC — the cache-map lookup
@@ -97,14 +96,14 @@ type sessionTableHandle struct {
 	// directly — no cache-map lookup, no cache.mu acquisition. Under
 	// TableShim's process-lifetime pointer-caching pattern this matters:
 	// without it, EVERY RPC on a stale handle would pay 2× cache.mu
-	// (removeEntry + getOrOpen) forever until process restart. With it,
+	// (removeEntry + GetOrOpen) forever until process restart. With it,
 	// only the FIRST post-eviction RPC pays that cost; all subsequent
 	// ones are one extra atomic.Load. dispatch() also applies path
 	// compression on the return so a chain of evicted handles collapses
 	// on the next observation.
 	//
 	// Store races are safe: two concurrent dispatches that both call
-	// resolveSuccessor race into getOrOpen, which is at-most-one-per-key
+	// resolveSuccessor race into GetOrOpen, which is at-most-one-per-key
 	// (loser closes its local api and returns the winner's handle), so
 	// both racers see the same `next` — the Store is idempotent. A
 	// divergent-`next` race (successor itself gets evicted between one
@@ -112,12 +111,17 @@ type sessionTableHandle struct {
 	// successor pointer; the next dispatch's outer for loop walks one
 	// extra hop through it and updates. No correctness bug, just a
 	// lagging compression.
-	successor atomic.Pointer[sessionTableHandle]
+	successor atomic.Pointer[TableHandle]
 	closeOnce sync.Once
 	closeErr  error
 }
 
-func (h *sessionTableHandle) touch() {
+// Unwrap returns the underlying TableAPI. Intended for test
+// inspection — production callers should use ReadRow / MutateRow so
+// dispatch()'s self-heal path stays in effect.
+func (h *TableHandle) Unwrap() TableAPI { return h.api }
+
+func (h *TableHandle) touch() {
 	h.lastAccessNano.Store(h.cache.now().UnixNano())
 }
 
@@ -141,7 +145,7 @@ func (h *sessionTableHandle) touch() {
 //
 // Callers dispatch onto the returned handle and pay the touch() there,
 // so ReadRow / MutateRow avoid the wasted touch on the doomed original.
-func (h *sessionTableHandle) dispatch() *sessionTableHandle {
+func (h *TableHandle) dispatch() *TableHandle {
 	cur := h
 	for cur.evicted.Load() {
 		next := cur.successor.Load()
@@ -163,7 +167,7 @@ func (h *sessionTableHandle) dispatch() *sessionTableHandle {
 // ReadRow: atomic-Load fast path, self-heal on eviction. Happy path
 // adds one atomic Load vs a bare api.ReadRow; the cache-map lookup
 // only fires on the recovery branch inside dispatch().
-func (h *sessionTableHandle) ReadRow(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+func (h *TableHandle) ReadRow(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
 	d := h.dispatch()
 	d.touch()
 	return d.api.ReadRow(ctx, req)
@@ -172,7 +176,7 @@ func (h *sessionTableHandle) ReadRow(ctx context.Context, req *btpb.SessionReadR
 // MutateRow: same shape as ReadRow. Kept minimal so any future proxied
 // method (BulkMutate, SampleRowKeys, etc.) drops in as a 3-line pass-
 // through without duplicating the self-heal conditional.
-func (h *sessionTableHandle) MutateRow(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error) {
+func (h *TableHandle) MutateRow(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error) {
 	d := h.dispatch()
 	d.touch()
 	return d.api.MutateRow(ctx, req)
@@ -185,32 +189,32 @@ func (h *sessionTableHandle) MutateRow(ctx context.Context, req *btpb.SessionMut
 //
 // The removeEntry call covers the interleaving where Close.Do fired
 // evicted.Store(true) but has not yet reached its own removeEntry (h is
-// still installed in the map). Without it, our subsequent getOrOpen
+// still installed in the map). Without it, our subsequent GetOrOpen
 // fast-path would return h itself and dispatch would loop forever. On
 // the sweeper path (where sweepOnce already removed h before firing
 // Close), this is a harmless no-op — removeEntry is identity-scoped, so
 // it won't clobber a peer's fresh install either.
-func (h *sessionTableHandle) resolveSuccessor() *sessionTableHandle {
+func (h *TableHandle) resolveSuccessor() *TableHandle {
 	h.cache.removeEntry(h.key, h)
-	api := h.cache.getOrOpen(h.key, h.openFn)
+	api := h.cache.GetOrOpen(h.key, h.openFn)
 	if api == nil {
 		return nil
 	}
 	// Type assertion narrows the interface back to the concrete cache
-	// entry. Guaranteed non-nil-and-not-h by getOrOpen's insertion path
-	// (the only construction site is inside getOrOpen's slow path,
-	// which mints a fresh *sessionTableHandle) — the assertion is a
-	// defensive check against a future getOrOpen contributor changing
-	// what the cache stores. If that ever fires, dispatch() falls
-	// through to h.api, which will surface the closed-api error.
-	fresh, _ := api.(*sessionTableHandle)
+	// entry. Guaranteed non-nil-and-not-h by GetOrOpen's insertion path
+	// (the only construction site is inside GetOrOpen's slow path,
+	// which mints a fresh *TableHandle) — the assertion is a defensive
+	// check against a future GetOrOpen contributor changing what the
+	// cache stores. If that ever fires, dispatch() falls through to
+	// h.api, which will surface the closed-api error.
+	fresh, _ := api.(*TableHandle)
 	return fresh
 }
 
 // Close evicts the handle from its cache and Close()s the underlying
-// session.TableAPI. Fully idempotent: subsequent calls return the
-// error captured on the first call without invoking api.Close again.
-// Safe to call from multiple paths (explicit caller Close, TTL sweep,
+// TableAPI. Fully idempotent: subsequent calls return the error
+// captured on the first call without invoking api.Close again. Safe
+// to call from multiple paths (explicit caller Close, TTL sweep,
 // cache-wide shutdown) concurrently.
 //
 // The three steps run in strict order inside closeOnce.Do:
@@ -218,15 +222,15 @@ func (h *sessionTableHandle) resolveSuccessor() *sessionTableHandle {
 //  1. evicted.Store(true) — readers observing true after this point
 //     route through dispatch() → resolveSuccessor instead of taking
 //     the fast path onto the doomed api.
-//  2. cache.removeEntry — future getOrOpen callers stop finding this
+//  2. cache.removeEntry — future GetOrOpen callers stop finding this
 //     handle in the map, so cache misses fall through to openFn and
 //     mint a fresh live successor.
 //  3. api.Close — actually tears down the underlying pool.
 //
 // The (1) → (3) ordering is the load-bearing invariant for self-heal.
-// (2) between them just tightens the window in which a getOrOpen
+// (2) between them just tightens the window in which a GetOrOpen
 // fast-path could still return this now-evicted handle.
-func (h *sessionTableHandle) Close() error {
+func (h *TableHandle) Close() error {
 	h.closeOnce.Do(func() {
 		h.evicted.Store(true)
 		h.cache.removeEntry(h.key, h)
@@ -235,26 +239,26 @@ func (h *sessionTableHandle) Close() error {
 	return h.closeErr
 }
 
-// sessionTableCache holds per-resource sessionTableHandles with
-// TTL-on-idle eviction. Zero size cap — cardinality is naturally
-// bounded by the caller's Open* pattern.
+// TableCache holds per-resource TableHandles with TTL-on-idle
+// eviction. Zero size cap — cardinality is naturally bounded by the
+// caller's Open* pattern.
 //
-// The cache is opener-agnostic: getOrOpen takes an openFn per call
+// The cache is opener-agnostic: GetOrOpen takes an openFn per call
 // so a single cache can back tables, authorized views, and
 // materialized views without needing to encode the resource kind
 // in the key or dispatch on a prefix. Keys are opaque strings; the
 // consumer (bigtable.Client) uses the fully-qualified resource name
 // (projects/P/instances/I/tables/T, etc.) so the cache key is the
 // same identity Cloud Bigtable uses over the wire.
-type sessionTableCache struct {
+type TableCache struct {
 	ttl           time.Duration
 	sweepInterval time.Duration
 
 	mu      sync.Mutex
-	entries map[string]*sessionTableHandle
-	// closed is flipped by close() under mu. getOrOpen's slow path
+	entries map[string]*TableHandle
+	// closed is flipped by Close() under mu. GetOrOpen's slow path
 	// re-checks it before inserting the freshly-opened handle so a
-	// slow-path insert straddling close() can't orphan a live
+	// slow-path insert straddling Close() can't orphan a live
 	// underlying api (which would leak its per-resource session pool
 	// once sessionTable.Close does real teardown).
 	closed bool
@@ -264,21 +268,21 @@ type sessionTableCache struct {
 	sweeperG sync.WaitGroup
 
 	// now is a func for tests to inject synthetic time. Defaults to
-	// time.Now when nil is passed to newSessionTableCache.
+	// time.Now when nil is passed to NewTableCache.
 	now func() time.Time
 }
 
-// newSessionTableCache constructs a cache and starts its background
-// sweeper. Production callers pass nil for now (→ time.Now); tests
-// inject a controllable clock.
-func newSessionTableCache(ttl, sweepInterval time.Duration, now func() time.Time) *sessionTableCache {
+// NewTableCache constructs a cache and starts its background sweeper.
+// Production callers pass nil for now (→ time.Now); tests inject a
+// controllable clock.
+func NewTableCache(ttl, sweepInterval time.Duration, now func() time.Time) *TableCache {
 	if now == nil {
 		now = time.Now
 	}
-	c := &sessionTableCache{
+	c := &TableCache{
 		ttl:           ttl,
 		sweepInterval: sweepInterval,
-		entries:       make(map[string]*sessionTableHandle),
+		entries:       make(map[string]*TableHandle),
 		stop:          make(chan struct{}),
 		now:           now,
 	}
@@ -287,7 +291,7 @@ func newSessionTableCache(ttl, sweepInterval time.Duration, now func() time.Time
 	return c
 }
 
-// getOrOpen returns the cached handle for key, opening a fresh one
+// GetOrOpen returns the cached handle for key, opening a fresh one
 // via openFn on cache miss. Returns nil when openFn returns nil.
 //
 // openFn is invoked OUTSIDE the cache mutex — safe for callers whose
@@ -295,7 +299,7 @@ func newSessionTableCache(ttl, sweepInterval time.Duration, now func() time.Time
 // callers race to open the same key concurrently, both may invoke
 // their openFn; the loser's api gets Close()d and the winner's is
 // returned to both callers.
-func (c *sessionTableCache) getOrOpen(key string, openFn func() session.TableAPI) session.TableAPI {
+func (c *TableCache) GetOrOpen(key string, openFn func() TableAPI) TableAPI {
 	if c == nil {
 		return nil
 	}
@@ -319,9 +323,9 @@ func (c *sessionTableCache) getOrOpen(key string, openFn func() session.TableAPI
 
 	c.mu.Lock()
 	if c.closed {
-		// close() ran between the slow-path openFn and our re-lock.
+		// Close() ran between the slow-path openFn and our re-lock.
 		// If we inserted this handle now, nothing would ever call
-		// its Close (sweeper stopped, close() already snapshotted an
+		// its Close (sweeper stopped, Close() already snapshotted an
 		// empty map, cache-Close is stopOnce-guarded). Release the
 		// freshly-opened api ourselves and return nil so the caller
 		// falls back to classic (TableShim treats nil session-side
@@ -336,7 +340,7 @@ func (c *sessionTableCache) getOrOpen(key string, openFn func() session.TableAPI
 		h.touch()
 		return h
 	}
-	h := &sessionTableHandle{api: api, openFn: openFn, key: key, cache: c}
+	h := &TableHandle{api: api, openFn: openFn, key: key, cache: c}
 	h.lastAccessNano.Store(c.now().UnixNano())
 	c.entries[key] = h
 	c.mu.Unlock()
@@ -347,7 +351,7 @@ func (c *sessionTableCache) getOrOpen(key string, openFn func() session.TableAPI
 // exactly h. Guards against the race where Close and a concurrent
 // Open both raced: Close should not evict the freshly-inserted
 // handle installed by the new Open.
-func (c *sessionTableCache) removeEntry(key string, h *sessionTableHandle) {
+func (c *TableCache) removeEntry(key string, h *TableHandle) {
 	c.mu.Lock()
 	if c.entries[key] == h {
 		delete(c.entries, key)
@@ -356,8 +360,8 @@ func (c *sessionTableCache) removeEntry(key string, h *sessionTableHandle) {
 }
 
 // sweeperLoop walks the cache every sweepInterval and evicts entries
-// idle for > ttl. Exits when close() signals stop.
-func (c *sessionTableCache) sweeperLoop() {
+// idle for > ttl. Exits when Close() signals stop.
+func (c *TableCache) sweeperLoop() {
 	defer c.sweeperG.Done()
 	t := time.NewTicker(c.sweepInterval)
 	defer t.Stop()
@@ -385,11 +389,11 @@ func (c *sessionTableCache) sweeperLoop() {
 // isn't on the RPC hot path. If cardinality ever grows to matter, a
 // time-ordered heap keyed by lastAccess would trim this to O(k) per
 // sweep where k = evicted count.
-func (c *sessionTableCache) sweepOnce() {
+func (c *TableCache) sweepOnce() {
 	cutoff := c.now().Add(-c.ttl).UnixNano()
 
 	c.mu.Lock()
-	var evicted []*sessionTableHandle
+	var evicted []*TableHandle
 	for k, h := range c.entries {
 		if h.lastAccessNano.Load() < cutoff {
 			evicted = append(evicted, h)
@@ -403,9 +407,9 @@ func (c *sessionTableCache) sweepOnce() {
 	}
 }
 
-// close stops the sweeper, waits for it to exit, then Close()s every
+// Close stops the sweeper, waits for it to exit, then Close()s every
 // remaining handle. Safe to call multiple times.
-func (c *sessionTableCache) close() {
+func (c *TableCache) Close() {
 	if c == nil {
 		return
 	}
@@ -416,7 +420,7 @@ func (c *sessionTableCache) close() {
 
 	c.mu.Lock()
 	c.closed = true
-	remaining := make([]*sessionTableHandle, 0, len(c.entries))
+	remaining := make([]*TableHandle, 0, len(c.entries))
 	for k, h := range c.entries {
 		remaining = append(remaining, h)
 		delete(c.entries, k)
