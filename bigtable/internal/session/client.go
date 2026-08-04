@@ -121,6 +121,17 @@ type Config struct {
 	// off. The debug surface is otherwise unchanged; flipping the
 	// flag on or off requires rebuilding the client.
 	EnableDebug bool
+
+	// OutlierScorerFactory, if non-nil, is invoked once per session
+	// pool this Client creates to construct the OutlierScorer plugged
+	// into that pool. The factory receives the pool's AFE snapshot
+	// source; the returned scorer is installed via
+	// SessionPoolImpl.SetOutlierScorer before Pool.Start so any
+	// LifecycleScorer implementation is given the pool's ctx.
+	//
+	// Nil means every pool runs NoopScorer — no outlier downweight,
+	// zero-cost pass-through in the picker's cost function.
+	OutlierScorerFactory btransport.OutlierScorerFactory
 }
 
 // managedSessionPool bundles a pool with its config-listener unregister
@@ -275,6 +286,7 @@ func NewClient(
 	metricsProvider metrics.MetricsProvider,
 	featureFlagsProto *btpb.FeatureFlags,
 	enableDebug bool,
+	outlierScorerFactory btransport.OutlierScorerFactory,
 	opts ...option.ClientOption,
 ) (Client, error) {
 	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, metricsProvider)
@@ -356,15 +368,16 @@ func NewClient(
 	backgroundCtx, cancel := context.WithCancel(context.Background())
 
 	sc := newSessionClientFromParts(pool, stub, factory, Config{
-		Project:           project,
-		Instance:          instance,
-		AppProfile:        appProfile,
-		FeatureFlagsMD:    directAccessMD,
-		FeatureFlagsProto: featureFlagsProto,
-		ConfigMD:          configMD,
-		MetricsEnabled:    factory.Enabled,
-		BackgroundCtx:     backgroundCtx,
-		EnableDebug:       enableDebug,
+		Project:              project,
+		Instance:             instance,
+		AppProfile:           appProfile,
+		FeatureFlagsMD:       directAccessMD,
+		FeatureFlagsProto:    featureFlagsProto,
+		ConfigMD:             configMD,
+		MetricsEnabled:       factory.Enabled,
+		BackgroundCtx:        backgroundCtx,
+		EnableDebug:          enableDebug,
+		OutlierScorerFactory: outlierScorerFactory,
 	})
 	sc.backgroundCancel = cancel
 	sc.managedChannelPool = managed
@@ -704,6 +717,13 @@ func (sc *sessionClient) getOrCreateSessionPool(
 		poolName, streamFactory, openSessionRequest, md, sessionType,
 		sc.enableDebug,
 	)
+	// Wire the configured OutlierScorerFactory (if any) BEFORE
+	// Pool.Start so LifecycleScorer.Start(poolCtx) fires with the
+	// pool's ctx. Nil factory leaves the pool on NoopScorer — same
+	// behaviour as before the framework existed.
+	if sc.cfg.OutlierScorerFactory != nil {
+		pool.SetOutlierScorer(sc.cfg.OutlierScorerFactory(pool.AfeSnapshotSource()))
+	}
 	mp := &managedSessionPool{pool: pool}
 	sc.sessionPools[key] = mp
 	configManager := sc.configManager

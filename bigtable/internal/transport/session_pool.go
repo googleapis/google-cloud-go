@@ -208,7 +208,7 @@ func (p *SessionPoolImpl) noteVRpcOutcome(sh *SessionHandle, e2e, backend time.D
 // invokes LifecycleScorer.Start on the plugged-in scorer during its own
 // startup, so swapping mid-run would leak the previous scorer's
 // background goroutine. Intended plug-point for
-// bigtable.ClientConfig.OutlierScorer.
+// bigtable.ClientConfig.OutlierScorerFactory.
 func (p *SessionPoolImpl) SetOutlierScorer(s OutlierScorer) {
 	if s == nil {
 		s = NoopScorer{}
@@ -216,6 +216,14 @@ func (p *SessionPoolImpl) SetOutlierScorer(s OutlierScorer) {
 	p.mu.Lock()
 	p.scorer = s
 	p.mu.Unlock()
+}
+
+// AfeSnapshotSource returns the pool's own AFE snapshot source. Passed
+// to an OutlierScorerFactory during pool construction so factories can
+// build stateful scorers (e.g. LatencyOutlierScorer) over the pool's
+// live per-AFE state without knowing about *sessionList directly.
+func (p *SessionPoolImpl) AfeSnapshotSource() AfeSnapshotSource {
+	return p.sl
 }
 
 // decorateReady populates OutlierScore on each snapshot from the

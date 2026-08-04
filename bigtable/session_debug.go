@@ -59,6 +59,67 @@ type OutlierScoreRow = btransport.OutlierScoreRow
 // OutlierDecision is one entry in a scorer's audit ring.
 type OutlierDecision = btransport.OutlierDecision
 
+// OutlierScorer is the plug-point interface for outlier detection —
+// latency-based pickers consult Score(id) on every CheckoutSession.
+// See btransport.OutlierScorer for the full contract.
+type OutlierScorer = btransport.OutlierScorer
+
+// OutlierScorerFactory is the constructor callback ClientConfig invokes
+// once per session pool to build the OutlierScorer for that pool. The
+// factory receives the pool's AFE snapshot source; the returned scorer
+// is installed and (if it implements LifecycleScorer) started with
+// the pool's ctx.
+type OutlierScorerFactory = btransport.OutlierScorerFactory
+
+// AfeSnapshotSource is the minimal read-only view of a pool's AFE
+// state that OutlierScorerFactory receives when a pool is being
+// constructed. Stateful scorers (LatencyOutlierScorer) read from this
+// on their tick loop.
+type AfeSnapshotSource = btransport.AfeSnapshotSource
+
+// AfeSnapshotRow is one row of per-AFE state returned by
+// AfeSnapshotSource.Snapshot(). Same shape as the transport-internal
+// type; aliased so callers implementing custom scorers don't need to
+// import the internal package.
+type AfeSnapshotRow = btransport.AfeSnapshotRow
+
+// LatencyOutlierConfig tunes the built-in LatencyOutlierScorer.
+type LatencyOutlierConfig = btransport.LatencyOutlierConfig
+
+// NoopScorer is the zero-cost default — Score always returns 1.0.
+// Every pool runs this when ClientConfig.OutlierScorerFactory is nil.
+type NoopScorer = btransport.NoopScorer
+
+// LatencyOutlierScorer is the built-in stateful outlier scorer that
+// periodically compares each AFE's PeakEwma latency against the cohort
+// median. See btransport.LatencyOutlierScorer for the full contract.
+type LatencyOutlierScorer = btransport.LatencyOutlierScorer
+
+// DefaultLatencyOutlierConfig returns the calibrated defaults for the
+// built-in latency outlier scorer (30s tick, 3x cohort multiplier,
+// 20ms floor, min-cohort 3, 10x penalty, 500-entry audit ring).
+func DefaultLatencyOutlierConfig() LatencyOutlierConfig {
+	return btransport.DefaultLatencyOutlierConfig()
+}
+
+// LatencyOutlierFactory returns an OutlierScorerFactory that constructs
+// the built-in LatencyOutlierScorer with cfg. Pass into
+// ClientConfig.OutlierScorerFactory for the standard latency-outlier
+// downweight behaviour. Zero-valued fields in cfg pick up defaults from
+// DefaultLatencyOutlierConfig.
+//
+// Example:
+//
+//	cfg := bigtable.ClientConfig{
+//	    EnableDebug:          true,
+//	    OutlierScorerFactory: bigtable.LatencyOutlierFactory(bigtable.DefaultLatencyOutlierConfig()),
+//	}
+func LatencyOutlierFactory(cfg LatencyOutlierConfig) OutlierScorerFactory {
+	return func(src AfeSnapshotSource) OutlierScorer {
+		return btransport.NewLatencyOutlierScorer(src, cfg)
+	}
+}
+
 // SessionDebug returns a SessionDebugProvider for this Client. Returns
 // nil when the session backend isn't wired (hand-built or emulator-only
 // Clients where sessionImpl is nil) or when session-side debug

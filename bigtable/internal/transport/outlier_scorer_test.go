@@ -15,6 +15,7 @@
 package internal
 
 import (
+	"context"
 	"testing"
 	"time"
 )
@@ -40,6 +41,61 @@ func row(id AfeID, e2e, transport time.Duration) AfeSnapshotRow {
 	}
 }
 
+// spyScorer records SetOutlierScorer + LifecycleScorer.Start invocations
+// so tests can assert the pool wired it correctly.
+type spyScorer struct {
+	scoreCalls int64
+	startCalls int64
+}
+
+func (s *spyScorer) Score(AfeID) float64 { s.scoreCalls++; return 1.0 }
+func (*spyScorer) Name() string          { return "spy" }
+func (s *spyScorer) Start(context.Context) {
+	s.startCalls++
+}
+
+// TestSessionPoolImpl_LifecycleScorerStartInvoked pins the wire-in that
+// SessionPoolImpl.Start calls scorer.Start(poolCtx) when the plugged
+// scorer implements LifecycleScorer. Downstream from
+// ClientConfig.OutlierScorerFactory — if this ever regresses, factories
+// wiring LatencyOutlierScorer (which needs the ctx to run its tick
+// loop) would silently no-op.
+func TestSessionPoolImpl_LifecycleScorerStartInvoked(t *testing.T) {
+	pool := NewSessionPoolImpl(
+		1, "test-pool", nil, nil, nil, SessionType(0), false,
+	)
+	spy := &spyScorer{}
+	pool.SetOutlierScorer(spy)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	pool.Start(ctx)
+	// Give the goroutine a chance if Start's scheduling is async;
+	// current Start invokes ls.Start synchronously.
+	if got := spy.startCalls; got != 1 {
+		t.Errorf("LifecycleScorer.Start called %d times, want 1", got)
+	}
+}
+
+// TestSessionPoolImpl_AfeSnapshotSourceReturnsPoolList verifies the
+// AfeSnapshotSource accessor exposes the pool's sessionList — the
+// interface an OutlierScorerFactory receives to build stateful scorers
+// like LatencyOutlierScorer.
+func TestSessionPoolImpl_AfeSnapshotSourceReturnsPoolList(t *testing.T) {
+	pool := NewSessionPoolImpl(
+		2, "test-pool", nil, nil, nil, SessionType(0), false,
+	)
+	src := pool.AfeSnapshotSource()
+	if src == nil {
+		t.Fatal("AfeSnapshotSource() = nil, want non-nil (pool.sl)")
+	}
+	// Snapshot must be callable and return an empty slice on a fresh pool.
+	rows := src.Snapshot()
+	if len(rows) != 0 {
+		t.Errorf("fresh pool Snapshot() = %d rows, want 0", len(rows))
+	}
+}
+
 func TestNoopScorer_AlwaysReturnsOne(t *testing.T) {
 	var s OutlierScorer = NoopScorer{}
 	for _, id := range []AfeID{0, 1, 42, -1, 1 << 62} {
@@ -51,7 +107,7 @@ func TestNoopScorer_AlwaysReturnsOne(t *testing.T) {
 
 func TestLatencyOutlierScorer_UnknownAfeReturnsOne(t *testing.T) {
 	src := &fakeAfeSource{}
-	s := newLatencyOutlierScorer(src, LatencyOutlierConfig{})
+	s := NewLatencyOutlierScorer(src, LatencyOutlierConfig{})
 	if got := s.Score(42); got != 1.0 {
 		t.Errorf("Score(42) before first tick = %v, want 1.0", got)
 	}
@@ -67,7 +123,7 @@ func TestLatencyOutlierScorer_PenalizesSlowAfe(t *testing.T) {
 			row(5, 100*time.Millisecond, 500*time.Microsecond), // 100x the peers
 		},
 	}
-	s := newLatencyOutlierScorer(src, LatencyOutlierConfig{})
+	s := NewLatencyOutlierScorer(src, LatencyOutlierConfig{})
 	s.tick()
 	for _, id := range []AfeID{1, 2, 3, 4} {
 		if got := s.Score(id); got != 1.0 {
@@ -89,7 +145,7 @@ func TestLatencyOutlierScorer_RecoversWhenLatencyDrops(t *testing.T) {
 			row(5, 100*time.Millisecond, 500*time.Microsecond),
 		},
 	}
-	s := newLatencyOutlierScorer(src, LatencyOutlierConfig{})
+	s := NewLatencyOutlierScorer(src, LatencyOutlierConfig{})
 	s.tick()
 	if got := s.Score(5); got != 10.0 {
 		t.Fatalf("pre-recovery Score(5) = %v, want 10.0", got)
@@ -109,7 +165,7 @@ func TestLatencyOutlierScorer_BelowMinCohortSkips(t *testing.T) {
 			row(2, 100*time.Millisecond, 500*time.Microsecond),
 		},
 	}
-	s := newLatencyOutlierScorer(src, LatencyOutlierConfig{MinCohortSize: 3})
+	s := NewLatencyOutlierScorer(src, LatencyOutlierConfig{MinCohortSize: 3})
 	s.tick()
 	// AFE 2 would look like a huge outlier but cohort has only 2 members.
 	if got := s.Score(2); got != 1.0 {
@@ -127,7 +183,7 @@ func TestLatencyOutlierScorer_BelowLatencyFloorSkips(t *testing.T) {
 			row(5, 900*time.Microsecond, 100*time.Microsecond), // 9× the cohort but below 20ms floor
 		},
 	}
-	s := newLatencyOutlierScorer(src, LatencyOutlierConfig{})
+	s := NewLatencyOutlierScorer(src, LatencyOutlierConfig{})
 	s.tick()
 	if got := s.Score(5); got != 1.0 {
 		t.Errorf("Score(5) at sub-floor latency = %v, want 1.0 (below floor)", got)
@@ -144,7 +200,7 @@ func TestLatencyOutlierScorer_TransitionOnlyEmission(t *testing.T) {
 			row(5, 100*time.Millisecond, 500*time.Microsecond),
 		},
 	}
-	s := newLatencyOutlierScorer(src, LatencyOutlierConfig{})
+	s := NewLatencyOutlierScorer(src, LatencyOutlierConfig{})
 
 	resetDebugTagCountsForTest()
 	s.tick() // AFE 5: 1.0 → 10.0 (penalized fires once)
@@ -175,7 +231,7 @@ func TestLatencyOutlierScorer_AuditRingBounded(t *testing.T) {
 			row(3, 1*time.Millisecond, 500*time.Microsecond),
 		},
 	}
-	s := newLatencyOutlierScorer(src, cfg)
+	s := NewLatencyOutlierScorer(src, cfg)
 	// Force 5 transitions on AFE 3.
 	for i := 0; i < 5; i++ {
 		if i%2 == 0 {
@@ -209,7 +265,7 @@ func TestLatencyOutlierScorer_PickerIntegration(t *testing.T) {
 			row(5, 1*time.Millisecond, 500*time.Microsecond),
 		},
 	}
-	scorer := newLatencyOutlierScorer(src, LatencyOutlierConfig{})
+	scorer := NewLatencyOutlierScorer(src, LatencyOutlierConfig{})
 	scorer.tick()
 	if got := scorer.Score(1); got != 10.0 {
 		t.Fatalf("Score(1) = %v, want 10.0 after penalty tick", got)

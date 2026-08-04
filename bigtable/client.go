@@ -142,6 +142,28 @@ type ClientConfig struct {
 	//
 	// Zero cost when false — no TCPStats allocation, no dial hook.
 	EnableDebug bool
+
+	// OutlierScorerFactory plugs an outlier-detection scorer into every
+	// session pool this Client creates. Nil (the default) leaves each
+	// pool on NoopScorer — the picker's cost function is untouched and
+	// no outlier downweight happens. Non-nil is invoked once per pool
+	// during construction with the pool's own AFE snapshot source; the
+	// returned OutlierScorer is installed via SetOutlierScorer BEFORE
+	// Pool.Start, so any LifecycleScorer implementation (e.g. the
+	// built-in LatencyOutlierScorer) is given the pool's ctx.
+	//
+	// Convenience: LatencyOutlierFactory returns a factory that builds
+	// the built-in LatencyOutlierScorer with a given config. Example:
+	//
+	//   cfg := bigtable.ClientConfig{
+	//       EnableDebug:          true, // for /debug/outlierz
+	//       OutlierScorerFactory: bigtable.LatencyOutlierFactory(bigtable.DefaultLatencyOutlierConfig()),
+	//   }
+	//
+	// Only latency-based pickers (LeastLatencyAfePicker) consult the
+	// score; other pickers ignore it. Zero cost with NoopScorer — one
+	// interface call per candidate per pick, returning the constant 1.0.
+	OutlierScorerFactory OutlierScorerFactory
 }
 
 // MetricsProvider is a wrapper for the built-in metrics meter provider.
@@ -345,7 +367,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// in (endpoint, scopes, user-agent, interceptors) — passing
 		// bare opts leaves the resolver target empty and the dial
 		// aborts with "passthrough: received empty target in Build()".
-		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, featureFlagsProto, config.EnableDebug, o...)
+		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, featureFlagsProto, config.EnableDebug, config.OutlierScorerFactory, o...)
 		if sessionErr != nil {
 			// Best-effort cleanup of the classic pool since we won't
 			// return c to the caller. Go through the ManagedChannelPool

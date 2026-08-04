@@ -93,22 +93,37 @@ func (c LatencyOutlierConfig) applyDefaults() LatencyOutlierConfig {
 	return c
 }
 
-// afeSnapshotSource is the minimal read-only surface LatencyOutlierScorer
-// needs from a sessionList. *sessionList satisfies it in production;
+// AfeSnapshotSource is the minimal read-only surface LatencyOutlierScorer
+// needs to observe AFE state. *sessionList satisfies it in production;
 // tests pass a fake that returns hand-authored snapshots without
 // standing up a real sessionList.
-type afeSnapshotSource interface {
+//
+// Exported so callers who pass an OutlierScorerFactory via
+// ClientConfig can build stateful scorers over it — the factory
+// receives this interface as its argument.
+type AfeSnapshotSource interface {
 	Snapshot() []AfeSnapshotRow
 }
 
+// OutlierScorerFactory constructs the OutlierScorer plugged into one
+// session pool. Called at pool-construction time; the returned scorer
+// is installed via SessionPoolImpl.SetOutlierScorer and, if it
+// satisfies LifecycleScorer, has Start(poolCtx) called during
+// SessionPoolImpl.Start.
+//
+// src is the pool's own AFE snapshot source — pass to
+// NewLatencyOutlierScorer or your custom scorer to give it a
+// read-only view of pool state.
+type OutlierScorerFactory func(src AfeSnapshotSource) OutlierScorer
+
 // LatencyOutlierScorer is the built-in OutlierScorer that periodically
-// reads per-AFE PeakEwma snapshots from a sessionList, compares each
-// AFE's worst latency against the cohort median, and inflates the score
-// of outliers so latency-based pickers steer traffic away.
+// reads per-AFE PeakEwma snapshots from an AfeSnapshotSource, compares
+// each AFE's worst latency against the cohort median, and inflates the
+// score of outliers so latency-based pickers steer traffic away.
 //
 // Implements OutlierScorer, LifecycleScorer, and SnapshottingScorer.
 type LatencyOutlierScorer struct {
-	src afeSnapshotSource
+	src AfeSnapshotSource
 	cfg LatencyOutlierConfig
 
 	// scores is the hot-path read surface: atomic.Pointer to an
@@ -127,18 +142,11 @@ type LatencyOutlierScorer struct {
 }
 
 // NewLatencyOutlierScorer constructs a LatencyOutlierScorer that reads
-// AFE snapshots from sl. Pass DefaultLatencyOutlierConfig() (or a
+// AFE snapshots from src. Pass DefaultLatencyOutlierConfig() (or a
 // partially-populated LatencyOutlierConfig) as cfg — zero-valued fields
 // pick up defaults. The returned scorer's Score always returns 1.0
 // until Start is called and the first tick lands.
-func NewLatencyOutlierScorer(sl *sessionList, cfg LatencyOutlierConfig) *LatencyOutlierScorer {
-	return newLatencyOutlierScorer(sl, cfg)
-}
-
-// newLatencyOutlierScorer is the unexported constructor accepting the
-// afeSnapshotSource interface — tests inject a fake source; production
-// callers use NewLatencyOutlierScorer which passes a *sessionList.
-func newLatencyOutlierScorer(src afeSnapshotSource, cfg LatencyOutlierConfig) *LatencyOutlierScorer {
+func NewLatencyOutlierScorer(src AfeSnapshotSource, cfg LatencyOutlierConfig) *LatencyOutlierScorer {
 	s := &LatencyOutlierScorer{
 		src: src,
 		cfg: cfg.applyDefaults(),
