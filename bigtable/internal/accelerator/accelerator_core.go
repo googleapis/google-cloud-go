@@ -213,6 +213,9 @@ func (c *Channel) Invoke(ctx context.Context, method string, args, reply interfa
 	case v2pb.Bigtable_MutateRow_FullMethodName:
 		return c.mutateRowImpl(ctx, args, reply)
 	default:
+		// Unimplemented is the fallback signal: the method is a valid Bigtable
+		// RPC this sidecar does not serve, and the caller is expected to retry
+		// it over a direct connection. See validateSingleRowReadRequest.
 		return status.Errorf(codes.Unimplemented, "accelerator: method %s not implemented", method)
 	}
 }
@@ -271,6 +274,9 @@ func (c *Channel) NewStream(ctx context.Context, _ *grpc.StreamDesc, method stri
 	case v2pb.Bigtable_ReadRows_FullMethodName:
 		return &readRowsClientStream{ctx: ctx, c: c}, nil
 	default:
+		// Unimplemented is the fallback signal: the method is a valid Bigtable
+		// RPC this sidecar does not serve, and the caller is expected to retry
+		// it over a direct connection. See validateSingleRowReadRequest.
 		return nil, status.Errorf(codes.Unimplemented, "accelerator: streaming method %s not implemented", method)
 	}
 }
@@ -409,6 +415,22 @@ func (s *readRowsClientStream) terminate(err error) error {
 // RowKeys and one closed-closed RowRange whose start and end are equal
 // (which pins the range to a single row). Anything broader must fail fast
 // rather than silently drop rows.
+//
+// Fallback contract: the accelerator is a fast-path sidecar for point reads and
+// writes, not a full Bigtable implementation. The status code encodes what the
+// caller should do next:
+//
+//   - codes.Unimplemented — the request is well-formed but outside the
+//     fast path (e.g. a range scan, reversed read, or multi-row read). Callers
+//     are expected to treat this as a signal to transparently retry the same
+//     request over a direct Bigtable connection; the operation is valid, this
+//     sidecar just does not serve it.
+//   - codes.InvalidArgument — the request is genuinely malformed (e.g. nil).
+//     A direct backend would reject it too, so callers must not fall back or
+//     retry.
+//
+// Preserving this distinction is why unsupported-but-valid shapes below return
+// Unimplemented rather than InvalidArgument.
 func validateSingleRowReadRequest(req *v2pb.ReadRowsRequest) error {
 	if req == nil {
 		return status.Error(codes.InvalidArgument, "accelerator: nil ReadRowsRequest")
