@@ -1080,7 +1080,7 @@ func (w *wrappedClientStream) record(err error) {
 	if w.recorded.CompareAndSwap(false, true) {
 		duration := time.Since(w.startTime).Seconds()
 		skipRecordRPC := false
-		
+
 		if w.serverStreams && w.clientStreams {
 			w.msgMu.Lock()
 			hasPending := len(w.reqStartTimes) > 0
