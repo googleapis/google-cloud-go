@@ -181,6 +181,16 @@ type SessionPoolImpl struct {
 	// Pure atomic-counter bumps (msgsSent, retries, etc.) are NOT
 	// gated — a branch check costs more than the atomic.
 	debugEnabled bool
+
+	// scorer is the plugged-in OutlierScorer. Defaults to NoopScorer{}
+	// (returns 1.0 for every AFE — picker cost unchanged). Callers
+	// swap in a real scorer via SetOutlierScorer BEFORE Start; changing
+	// the scorer after Start is not supported (Start may have invoked
+	// LifecycleScorer.Start on the initial scorer, and swapping would
+	// leak that goroutine). Read on the CheckoutSession hot path via
+	// decorateReady; write on the pool-construction path via
+	// SetOutlierScorer.
+	scorer OutlierScorer
 }
 
 // noteVRpcOutcome forwards the outcome to the AFE's PeakEwma trackers
@@ -190,6 +200,39 @@ type SessionPoolImpl struct {
 // of failed opens and keep the breaker from tripping.
 func (p *SessionPoolImpl) noteVRpcOutcome(sh *SessionHandle, e2e, backend time.Duration, ok bool) {
 	p.sl.RecordVRpcOutcome(sh, e2e, backend, ok)
+}
+
+// SetOutlierScorer plugs in an OutlierScorer that latency-based pickers
+// will consult on every CheckoutSession. Passing nil resets to
+// NoopScorer{}. Must be called BEFORE SessionPoolImpl.Start — the pool
+// invokes LifecycleScorer.Start on the plugged-in scorer during its own
+// startup, so swapping mid-run would leak the previous scorer's
+// background goroutine. Intended plug-point for
+// bigtable.ClientConfig.OutlierScorer.
+func (p *SessionPoolImpl) SetOutlierScorer(s OutlierScorer) {
+	if s == nil {
+		s = NoopScorer{}
+	}
+	p.mu.Lock()
+	p.scorer = s
+	p.mu.Unlock()
+}
+
+// decorateReady populates OutlierScore on each snapshot from the
+// currently-installed scorer. Runs on the CheckoutSession hot path once
+// per pick; O(len(ready)) scorer calls. With NoopScorer this loop is a
+// no-op (score field ends up at 1.0), so the branch cost is a single
+// interface call per candidate.
+func (p *SessionPoolImpl) decorateReady(ready []AfeSnapshot) {
+	p.mu.Lock()
+	scorer := p.scorer
+	p.mu.Unlock()
+	if scorer == nil {
+		return
+	}
+	for i := range ready {
+		ready[i].OutlierScore = scorer.Score(ready[i].ID)
+	}
 }
 
 // NewSessionPoolImpl creates a new SessionPoolImpl. id is baked into
@@ -220,6 +263,7 @@ func NewSessionPoolImpl(id uint64, poolName string, streamFactory func(ctx conte
 		poolCancel:         poolCancel,
 		sl:                 newSessionList(),
 		debugEnabled:       debugEnabled,
+		scorer:             NoopScorer{},
 	}
 	pool.m.afePickCounts = make(map[AfeID]int64)
 
@@ -263,8 +307,11 @@ func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, 
 		p.mu.Unlock()
 
 		// Two-tier pick: picker chooses an AFE from the ready snapshot,
-		// then sessionList dequeues one idle session in that AFE.
+		// then sessionList dequeues one idle session in that AFE. The
+		// scorer decorates each snapshot with an OutlierScore before the
+		// picker sees it — latency pickers multiply E2eCost × score.
 		ready := p.sl.ReadyAfes()
+		p.decorateReady(ready)
 		pickerName := picker.Name()
 		afeID, picked, decision := picker.PickAfe(ready)
 		p.recordPickDecision(decision, pickerName)

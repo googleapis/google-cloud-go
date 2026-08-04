@@ -144,10 +144,19 @@ func NewLeastLatencyAfePicker(randomSubsetSize int, recordCandidates bool) *Leas
 func (LeastLatencyAfePicker) Name() string { return "least-latency" }
 
 // PickAfe returns the AFE with the smallest E2eCost among K randomly-
-// drawn ready candidates.
+// drawn ready candidates. If SessionPoolImpl decorated the snapshots
+// with a non-zero OutlierScore (from its plugged-in OutlierScorer),
+// that multiplier inflates the per-candidate cost so outlier AFEs are
+// picked with much lower probability. Undecorated snapshots
+// (OutlierScore == 0) fall back to 1.0 so tests and callers that skip
+// decoration see baseline behaviour.
 func (p LeastLatencyAfePicker) PickAfe(ready []AfeSnapshot) (AfeID, bool, PickDecision) {
 	winner, picked, cands := kChoiceMinCost(ready, p.RandomSubsetSize, p.recordCandidates, func(s AfeSnapshot) float64 {
-		return s.E2eCost
+		score := s.OutlierScore
+		if score == 0 {
+			score = 1.0
+		}
+		return s.E2eCost * score
 	})
 	return decisionFor(winner, picked, cands, "min-latency")
 }
