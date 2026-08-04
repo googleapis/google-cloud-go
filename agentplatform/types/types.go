@@ -589,8 +589,7 @@ type MemoryBankCustomizationConfigConsolidationConfig struct {
 	RevisionsPerCandidateCount *int32 `json:"revisionsPerCandidateCount,omitempty"`
 }
 
-// Represents configuration for organizing natural language memories for a particular
-// scope.
+// Represents configuration for organizing natural language memories.
 type MemoryBankCustomizationConfig struct {
 	// Optional. Indicates whether the memories will be generated in the third person (i.e.
 	// "The user generates memories with Memory Bank."). By default, the memories will be
@@ -1296,6 +1295,91 @@ type UpdateAgentEngineConfig struct {
 type CreateMemoryBankConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. The user-defined name of the Memory Bank.
+	// The display name can be up to 128 characters long and can comprise any
+	// UTF-8 characters.
+	DisplayName string `json:"displayName,omitempty"`
+	// Optional. The description of the Memory Bank.
+	Description string `json:"description,omitempty"`
+	// Optional. The encryption spec to be used for the Memory Bank.
+	EncryptionSpec *genai_types.EncryptionSpec `json:"encryptionSpec,omitempty"`
+}
+
+// The configuration for generating memories.
+type ManagedSemanticMemoryConfigGenerationConfig struct {
+	// Optional. The model used to generate memories.
+	// Format:
+	// `projects/{project}/locations/{location}/publishers/google/models/{model}`.
+	Model string `json:"model,omitempty"`
+	// Optional. The configuration for triggering memory generation.
+	GenerationTriggerConfig *MemoryGenerationTriggerConfig `json:"generationTriggerConfig,omitempty"`
+}
+
+// The configuration for similarity search.
+type ManagedSemanticMemoryConfigSimilaritySearchConfig struct {
+	// Optional. The model used to generate embeddings to look up similar memories.
+	// Format:
+	// `projects/{project}/locations/{location}/publishers/google/models/{model}`.
+	EmbeddingModel string `json:"embeddingModel,omitempty"`
+}
+
+// The configuration for granular TTL.
+type ManagedSemanticMemoryConfigTTLConfigGranularTTLConfig struct {
+	// Optional. The TTL duration for memories uploaded via
+	// CreateMemory.
+	CreateTTL string `json:"createTtl,omitempty"`
+	// Optional. The TTL duration for memories generated via
+	// GenerateMemories.
+	GenerateCreatedTTL string `json:"generateCreatedTtl,omitempty"`
+	// Optional. The TTL duration for memories updated via
+	// GenerateMemories (GenerateMemoriesResponse.GeneratedMemory.Action.UPDATED).
+	// In the case of an UPDATE action, the `expire_time` of the existing memory
+	// will be updated to the new value (now + TTL).
+	GenerateUpdatedTTL string `json:"generateUpdatedTtl,omitempty"`
+}
+
+// The configuration for automatic TTL ('time-to-live') of the memories.
+type ManagedSemanticMemoryConfigTTLConfig struct {
+	// Optional. The default TTL for memories in the Memory Bank. If not set, TTL will not
+	// be applied automatically. The TTL can be explicitly set by modifying the `expire_time`
+	// of each Memory resource.
+	DefaultTTL string `json:"defaultTtl,omitempty"`
+	// Optional. The granular TTL config for memories.
+	GranularTTLConfig *ManagedSemanticMemoryConfigTTLConfigGranularTTLConfig `json:"granularTtlConfig,omitempty"`
+	// Optional. The default TTL for memory revisions in the Memory Bank. If not set, TTL
+	// will not be applied automatically. The TTL can be explicitly set by modifying the
+	// `expire_time` of each Memory resource.
+	MemoryRevisionDefaultTTL string `json:"memoryRevisionDefaultTtl,omitempty"`
+}
+
+// The configuration for managed semantic memory.
+type ManagedSemanticMemoryConfig struct {
+	// Optional. Represents configuration for LLMs calls.
+	GenerationConfig *ManagedSemanticMemoryConfigGenerationConfig `json:"generationConfig,omitempty"`
+	// Optional. Configuration for how to perform similarity search on memories.
+	SimilaritySearchConfig *ManagedSemanticMemoryConfigSimilaritySearchConfig `json:"similaritySearchConfig,omitempty"`
+	// Optional. Configuration for how to customize Memory Bank behavior for a
+	// particular scope for unstructured memories.
+	UnstructuredMemoryConfigs []*MemoryBankCustomizationConfig `json:"unstructuredMemoryConfigs,omitempty"`
+	// Optional. Configuration for organizing structured memories for a particular
+	// scope.
+	StructuredMemoryConfigs []*StructuredMemoryConfig `json:"structuredMemoryConfigs,omitempty"`
+	// Optional. Configuration for automatic TTL ('time-to-live') of the memories in
+	// the Memory Bank. If not set, TTL will not be applied automatically. The
+	// TTL can be explicitly set by modifying the `expire_time` of each Memory
+	// resource.
+	TTLConfig *ManagedSemanticMemoryConfigTTLConfig `json:"ttlConfig,omitempty"`
+	// Optional. If true, no memory revisions will be created for any requests to
+	// Memory Bank.
+	DisableMemoryRevisions bool `json:"disableMemoryRevisions,omitempty"`
+}
+
+// Represents a customer-managed encryption key specification that can be applied to
+// a Vertex AI resource.
+type EncryptionSpec struct {
+	// Required. Resource name of the Cloud KMS key used to protect the resource. The Cloud
+	// KMS key must be in the same region as the resource. It must have the format `projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}`.
+	KmsKeyName string `json:"kmsKeyName,omitempty"`
 }
 
 // A memory bank.
@@ -1303,6 +1387,66 @@ type MemoryBank struct {
 	// Required. Represents the ID of the schema. Must be 1-63 characters, start with a
 	// lowercase letter, and consist of lowercase letters, numbers, and hyphens.
 	Name string `json:"name,omitempty"`
+	// Represents the configuration for managed memories in Memory Bank. If not set, then
+	// the default configuration will be used.
+	ManagedSemanticMemoryConfig *ManagedSemanticMemoryConfig `json:"managedSemanticMemoryConfig,omitempty"`
+	// Represents the display name of the Memory Bank.
+	DisplayName string `json:"displayName,omitempty"`
+	// Represents the description of the Memory Bank.
+	Description string `json:"description,omitempty"`
+	// Timestamp when this Memory Bank was created.
+	CreateTime time.Time `json:"createTime,omitempty"`
+	// Timestamp when this Memory Bank was most recently updated.
+	UpdateTime time.Time `json:"updateTime,omitempty"`
+	// Customer-managed encryption key spec for a Memory Bank. If set, this Memory Bank
+	// and all sub-resources of this Memory Bank will be secured by this key.
+	EncryptionSpec *EncryptionSpec `json:"encryptionSpec,omitempty"`
+}
+
+func (m *MemoryBank) UnmarshalJSON(data []byte) error {
+	type Alias MemoryBank
+	aux := &struct {
+		CreateTime *time.Time `json:"createTime,omitempty"`
+		UpdateTime *time.Time `json:"updateTime,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(m),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if !reflect.ValueOf(aux.CreateTime).IsZero() {
+		m.CreateTime = time.Time(*aux.CreateTime)
+	}
+
+	if !reflect.ValueOf(aux.UpdateTime).IsZero() {
+		m.UpdateTime = time.Time(*aux.UpdateTime)
+	}
+
+	return nil
+}
+
+func (m *MemoryBank) MarshalJSON() ([]byte, error) {
+	type Alias MemoryBank
+	aux := &struct {
+		CreateTime *time.Time `json:"createTime,omitempty"`
+		UpdateTime *time.Time `json:"updateTime,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(m),
+	}
+
+	if !reflect.ValueOf(m.CreateTime).IsZero() {
+		aux.CreateTime = (*time.Time)(&m.CreateTime)
+	}
+
+	if !reflect.ValueOf(m.UpdateTime).IsZero() {
+		aux.UpdateTime = (*time.Time)(&m.UpdateTime)
+	}
+
+	return json.Marshal(aux)
 }
 
 // Operation that has an memory bank as a response.
@@ -1347,6 +1491,12 @@ type DeleteMemoryBankOperation struct {
 	Done bool `json:"done,omitempty"`
 	// Optional. The error result of the operation in case of failure or cancellation.
 	Error map[string]any `json:"error,omitempty"`
+}
+
+// Config for getting a Memory Bank.
+type GetMemoryBankConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 }
 
 // The direct contents source event for ingesting events.
@@ -1543,6 +1693,20 @@ type MemoryBankIngestEventsOperation struct {
 	Done bool `json:"done,omitempty"`
 	// Optional. The error result of the operation in case of failure or cancellation.
 	Error map[string]any `json:"error,omitempty"`
+}
+
+// Config for listing Memory Banks.
+type ListMemoryBanksConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. PageSize specifies the maximum number of cached contents to return per
+	// API call. If zero, the server will use a default value.
+	PageSize int32 `json:"pageSize,omitempty"`
+	// Optional. PageToken represents a token used for pagination in API responses. It's
+	// an opaque string that should be passed to subsequent requests to retrieve the next
+	// page of results. An empty PageToken typically indicates that there are no further
+	// pages available.
+	PageToken string `json:"pageToken,omitempty"`
 }
 
 type GetMemoryBankOperationConfig struct {
@@ -4114,4 +4278,10 @@ type deployOption struct {
 	AcceleratorType string `json:"acceleratorType,omitempty"`
 	// Optional. The number of accelerators.
 	AcceleratorCount int32 `json:"acceleratorCount,omitempty"`
+}
+
+// The response for listing Memory Banks.
+type ListMemoryBanksResponse struct {
+	// The list of Memory Banks.
+	MemoryBanks []*MemoryBank `json:"memoryBanks,omitempty"`
 }
