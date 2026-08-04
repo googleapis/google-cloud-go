@@ -16,7 +16,6 @@ package resourcemanager
 
 import (
 	"context"
-	"strings"
 
 	"cloud.google.com/go/bigtable/internal/session"
 	"google.golang.org/api/option"
@@ -37,7 +36,7 @@ var newSessionClient SessionClientFactory = func(
 	project, instance, appProfile string,
 	opts ...option.ClientOption,
 ) (session.Client, error) {
-	return session.NewClient(ctx, project, instance, appProfile, nil, opts...)
+	return session.NewClient(ctx, project, instance, appProfile, nil, nil, opts...)
 }
 
 // TestHookSessionClient swaps the session Client factory used by New for the
@@ -83,50 +82,51 @@ func New(
 // room to reintroduce pooling later without touching callers.
 func noopRelease() {}
 
-// GetSessionTable returns a session.TableAPI for the table named by resource.
+// GetSessionTable returns a session.TableAPI for the table identified by
+// tableID (the leaf segment of a "projects/P/instances/I/tables/T" name).
 //
-// Wire format note: V2 RPCs carry a full table resource name
-// ("projects/P/instances/I/tables/T"). session.Client.OpenTable prepends the
-// project/instance/tables/ prefix itself, so ResourceManager hands it just
-// the leaf segment.
+// The caller (the Channel) is responsible for validating the full V2 resource
+// name against the daemon's own (project, instance) scope and passing the leaf
+// through: session.Client.OpenTable re-prefixes the leaf with the client's own
+// project/instance, so a name from a different tenant must be rejected before
+// it reaches here, not silently rebound.
 //
 // method is accepted for call-site clarity ("ReadRow" / "MutateRow") but does
 // not affect which handle is returned: OpenTable vends a single handle that
 // routes reads and writes to their respective pools internally. The returned
 // release thunk is a no-op.
-func (rm *ResourceManager) GetSessionTable(resource, method string) (session.TableAPI, func(), error) {
-	return rm.sc.OpenTable(resourceLeaf(resource)), noopRelease, nil
+func (rm *ResourceManager) GetSessionTable(tableID, method string) (session.TableAPI, func(), error) {
+	return rm.sc.OpenTable(tableID), noopRelease, nil
 }
 
 // GetSessionAuthorizedView returns a session.TableAPI for the authorized view
-// named by resource.
+// identified by the tableID and viewID leaf segments of a
+// "projects/P/instances/I/tables/T/authorizedViews/V" name.
 //
-// Wire format note: V2 RPCs carry a full authorized-view resource name
-// ("projects/P/instances/I/tables/T/authorizedViews/V").
-// session.Client.OpenAuthorizedView takes the table and view leaf segments and
-// composes the full name itself, so ResourceManager splits them out here.
+// As with GetSessionTable, the caller validates the full name against the
+// daemon's scope and resolves the leaves; session.Client.OpenAuthorizedView
+// re-prefixes them with the client's own project/instance.
 //
 // method is accepted for call-site clarity ("ReadRow" / "MutateRow") and, as
 // with GetSessionTable, does not affect which handle is returned. The returned
 // release thunk is a no-op.
-func (rm *ResourceManager) GetSessionAuthorizedView(resource, method string) (session.TableAPI, func(), error) {
-	table, view := authorizedViewLeaves(resource)
-	return rm.sc.OpenAuthorizedView(table, view), noopRelease, nil
+func (rm *ResourceManager) GetSessionAuthorizedView(tableID, viewID, method string) (session.TableAPI, func(), error) {
+	return rm.sc.OpenAuthorizedView(tableID, viewID), noopRelease, nil
 }
 
 // GetSessionMaterializedView returns a read-only session.TableAPI for the
-// materialized view named by resource.
+// materialized view identified by viewID (the leaf segment of a
+// "projects/P/instances/I/materializedViews/V" name).
 //
-// Wire format note: V2 RPCs carry a full materialized-view resource name
-// ("projects/P/instances/I/materializedViews/V").
-// session.Client.OpenMaterializedView takes the view leaf segment and composes
-// the full name itself. Materialized views are read-only; MutateRow on the
-// returned handle errors.
+// As with GetSessionTable, the caller validates the full name against the
+// daemon's scope and resolves the leaf; session.Client.OpenMaterializedView
+// re-prefixes it with the client's own project/instance. Materialized views
+// are read-only; MutateRow on the returned handle errors.
 //
 // method is accepted for call-site clarity; see GetSessionTable. The returned
 // release thunk is a no-op.
-func (rm *ResourceManager) GetSessionMaterializedView(resource, method string) (session.TableAPI, func(), error) {
-	return rm.sc.OpenMaterializedView(resourceLeaf(resource)), noopRelease, nil
+func (rm *ResourceManager) GetSessionMaterializedView(viewID, method string) (session.TableAPI, func(), error) {
+	return rm.sc.OpenMaterializedView(viewID), noopRelease, nil
 }
 
 // Close closes the underlying session Client, tearing down its pools. Handles
@@ -136,28 +136,4 @@ func (rm *ResourceManager) Close() error {
 		return rm.sc.Close()
 	}
 	return nil
-}
-
-// resourceLeaf extracts the last path segment from a full resource name — e.g.
-// "T" from "projects/P/instances/I/tables/T", or "V" from
-// "projects/P/instances/I/materializedViews/V". Returns the input unchanged if
-// it does not contain a "/" — best-effort.
-func resourceLeaf(fullName string) string {
-	if i := strings.LastIndex(fullName, "/"); i >= 0 {
-		return fullName[i+1:]
-	}
-	return fullName
-}
-
-// authorizedViewLeaves splits a full authorized-view resource name
-// ("projects/P/instances/I/tables/T/authorizedViews/V") into its table ("T")
-// and view ("V") leaf segments, which is what session.Client.OpenAuthorizedView
-// expects. Best-effort: if the "/authorizedViews/" marker is absent, the whole
-// input is treated as the view leaf and table is returned empty.
-func authorizedViewLeaves(fullName string) (table, view string) {
-	const marker = "/authorizedViews/"
-	if i := strings.Index(fullName, marker); i >= 0 {
-		return resourceLeaf(fullName[:i]), resourceLeaf(fullName[i+len(marker):])
-	}
-	return "", resourceLeaf(fullName)
 }

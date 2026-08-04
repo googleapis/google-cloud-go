@@ -38,7 +38,7 @@ func (stubTable) MutateRow(context.Context, *btpb.SessionMutateRowRequest) (*btp
 func (stubTable) Close() error { return nil }
 
 // recordingClient records the leaf arguments the ResourceManager passes to each
-// Open* method so tests can assert the full-resource-name → leaf parsing.
+// Open* method so tests can assert the leaf IDs are forwarded unchanged.
 type recordingClient struct {
 	table session.TableAPI
 
@@ -83,10 +83,10 @@ func newTestManager(t *testing.T) (*ResourceManager, *recordingClient) {
 	return rm, rc
 }
 
-func TestGetSessionTable_ExtractsLeaf(t *testing.T) {
+func TestGetSessionTable_ForwardsLeaf(t *testing.T) {
 	rm, rc := newTestManager(t)
 
-	tbl, release, err := rm.GetSessionTable("projects/p/instances/i/tables/t", "ReadRow")
+	tbl, release, err := rm.GetSessionTable("t", "ReadRow")
 	if err != nil {
 		t.Fatalf("GetSessionTable: %v", err)
 	}
@@ -98,10 +98,10 @@ func TestGetSessionTable_ExtractsLeaf(t *testing.T) {
 	}
 }
 
-func TestGetSessionAuthorizedView_ExtractsLeaves(t *testing.T) {
+func TestGetSessionAuthorizedView_ForwardsLeaves(t *testing.T) {
 	rm, rc := newTestManager(t)
 
-	if _, _, err := rm.GetSessionAuthorizedView("projects/p/instances/i/tables/t/authorizedViews/v", "ReadRow"); err != nil {
+	if _, _, err := rm.GetSessionAuthorizedView("t", "v", "ReadRow"); err != nil {
 		t.Fatalf("GetSessionAuthorizedView: %v", err)
 	}
 	if rc.avTable != "t" || rc.avView != "v" {
@@ -109,22 +109,13 @@ func TestGetSessionAuthorizedView_ExtractsLeaves(t *testing.T) {
 	}
 }
 
-func TestGetSessionMaterializedView_ExtractsLeaf(t *testing.T) {
+func TestGetSessionMaterializedView_ForwardsLeaf(t *testing.T) {
 	rm, rc := newTestManager(t)
 
-	if _, _, err := rm.GetSessionMaterializedView("projects/p/instances/i/materializedViews/mv", "ReadRow"); err != nil {
+	if _, _, err := rm.GetSessionMaterializedView("mv", "ReadRow"); err != nil {
 		t.Fatalf("GetSessionMaterializedView: %v", err)
 	}
 	if rc.mvView != "mv" {
 		t.Errorf("OpenMaterializedView view = %q; want %q", rc.mvView, "mv")
-	}
-}
-
-func TestAuthorizedViewLeaves_NoMarker(t *testing.T) {
-	// Best-effort fallback: a bare name with no "/authorizedViews/" marker is
-	// treated wholly as the view leaf.
-	table, view := authorizedViewLeaves("just-a-view")
-	if table != "" || view != "just-a-view" {
-		t.Errorf("authorizedViewLeaves = (%q, %q); want (%q, %q)", table, view, "", "just-a-view")
 	}
 }
