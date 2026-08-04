@@ -187,10 +187,15 @@ type SessionPoolImpl struct {
 	// swap in a real scorer via SetOutlierScorer BEFORE Start; changing
 	// the scorer after Start is not supported (Start may have invoked
 	// LifecycleScorer.Start on the initial scorer, and swapping would
-	// leak that goroutine). Read on the CheckoutSession hot path via
-	// decorateReady; write on the pool-construction path via
-	// SetOutlierScorer.
-	scorer OutlierScorer
+	// leak that goroutine). Held under p.mu.
+	//
+	// hasCustomScorer is the atomic fast-path check consulted by
+	// CheckoutSession's decorateReady: when false (default), decorateReady
+	// short-circuits without acquiring p.mu or iterating ready — zero
+	// hot-path cost when no scorer is plugged in. Only SetOutlierScorer
+	// flips it, so writes are rare (once at pool construction).
+	scorer          OutlierScorer
+	hasCustomScorer atomic.Bool
 }
 
 // noteVRpcOutcome forwards the outcome to the AFE's PeakEwma trackers
@@ -209,13 +214,20 @@ func (p *SessionPoolImpl) noteVRpcOutcome(sh *SessionHandle, e2e, backend time.D
 // startup, so swapping mid-run would leak the previous scorer's
 // background goroutine. Intended plug-point for
 // bigtable.ClientConfig.OutlierScorerFactory.
+//
+// Flips hasCustomScorer so the CheckoutSession hot path can skip
+// decorateReady entirely when no custom scorer is plugged in — the
+// default state pays zero cost per checkout beyond one atomic.Bool
+// load.
 func (p *SessionPoolImpl) SetOutlierScorer(s OutlierScorer) {
 	if s == nil {
 		s = NoopScorer{}
 	}
+	_, isNoop := s.(NoopScorer)
 	p.mu.Lock()
 	p.scorer = s
 	p.mu.Unlock()
+	p.hasCustomScorer.Store(!isNoop)
 }
 
 // AfeSnapshotSource returns the pool's own AFE snapshot source. Passed
@@ -227,11 +239,19 @@ func (p *SessionPoolImpl) AfeSnapshotSource() AfeSnapshotSource {
 }
 
 // decorateReady populates OutlierScore on each snapshot from the
-// currently-installed scorer. Runs on the CheckoutSession hot path once
-// per pick; O(len(ready)) scorer calls. With NoopScorer this loop is a
-// no-op (score field ends up at 1.0), so the branch cost is a single
-// interface call per candidate.
+// currently-installed scorer. Fast-path when no custom scorer is
+// plugged in: a single atomic.Bool.Load and immediate return — no
+// p.mu acquisition, no allocation, no per-candidate loop. That fast
+// path keeps the pool's default behaviour byte-identical to the
+// pre-outlier-framework code, so poolwait latency doesn't regress
+// when the framework is present-but-unused (the common case).
+//
+// Slow path only runs when SetOutlierScorer installed a non-NoopScorer.
+// O(len(ready)) scorer calls under one p.mu take/release.
 func (p *SessionPoolImpl) decorateReady(ready []AfeSnapshot) {
+	if !p.hasCustomScorer.Load() {
+		return
+	}
 	p.mu.Lock()
 	scorer := p.scorer
 	p.mu.Unlock()

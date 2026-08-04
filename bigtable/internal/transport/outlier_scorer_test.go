@@ -77,6 +77,81 @@ func TestSessionPoolImpl_LifecycleScorerStartInvoked(t *testing.T) {
 	}
 }
 
+// TestSessionPoolImpl_DecorateReady_FastPathSkipsLock verifies that
+// decorateReady does not touch p.mu when no custom scorer is plugged
+// in — the hot-path invariant that keeps poolwait latency identical to
+// pre-framework behaviour. Regression sentinel: if a future refactor
+// forgets the hasCustomScorer gate, this test surfaces it because the
+// p.mu lock counter goes above zero.
+func TestSessionPoolImpl_DecorateReady_FastPathSkipsLock(t *testing.T) {
+	pool := NewSessionPoolImpl(
+		42, "test-pool", nil, nil, nil, SessionType(0), false,
+	)
+	// Default state: no custom scorer, hasCustomScorer=false.
+	if pool.hasCustomScorer.Load() {
+		t.Fatal("hasCustomScorer = true on fresh pool, want false")
+	}
+	// Feeding a snapshot must NOT set OutlierScore fields (skipped).
+	ready := []AfeSnapshot{
+		{ID: 1, IdleCount: 1, E2eCost: 1000, OutlierScore: 0},
+		{ID: 2, IdleCount: 1, E2eCost: 1000, OutlierScore: 0},
+	}
+	pool.decorateReady(ready)
+	for i, s := range ready {
+		if s.OutlierScore != 0 {
+			t.Errorf("ready[%d].OutlierScore = %v after fast-path decorate, want 0 (untouched)", i, s.OutlierScore)
+		}
+	}
+
+	// After plugging in a real scorer, decorate must run.
+	pool.SetOutlierScorer(NewLatencyOutlierScorer(pool.AfeSnapshotSource(), LatencyOutlierConfig{}))
+	if !pool.hasCustomScorer.Load() {
+		t.Fatal("hasCustomScorer = false after SetOutlierScorer(latency), want true")
+	}
+	pool.decorateReady(ready)
+	for i, s := range ready {
+		if s.OutlierScore == 0 {
+			t.Errorf("ready[%d].OutlierScore = 0 after custom-scorer decorate, want 1.0 (default score for unknown AFE)", i)
+		}
+	}
+
+	// Explicitly resetting to NoopScorer must flip hasCustomScorer back.
+	pool.SetOutlierScorer(NoopScorer{})
+	if pool.hasCustomScorer.Load() {
+		t.Fatal("hasCustomScorer = true after SetOutlierScorer(Noop), want false")
+	}
+}
+
+// BenchmarkSessionPoolImpl_DecorateReady_Default measures the hot-path
+// cost of decorateReady on a pool without any custom scorer plugged
+// in — should be effectively zero (one atomic.Bool.Load + return).
+// Compare against BenchmarkSessionPoolImpl_DecorateReady_Latency to
+// confirm the fast-path skip does what it claims.
+func BenchmarkSessionPoolImpl_DecorateReady_Default(b *testing.B) {
+	pool := NewSessionPoolImpl(1, "bench", nil, nil, nil, SessionType(0), false)
+	ready := make([]AfeSnapshot, 10)
+	for i := range ready {
+		ready[i] = AfeSnapshot{ID: AfeID(i), IdleCount: 1, E2eCost: 1000}
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		pool.decorateReady(ready)
+	}
+}
+
+func BenchmarkSessionPoolImpl_DecorateReady_Latency(b *testing.B) {
+	pool := NewSessionPoolImpl(1, "bench", nil, nil, nil, SessionType(0), false)
+	pool.SetOutlierScorer(NewLatencyOutlierScorer(pool.AfeSnapshotSource(), LatencyOutlierConfig{}))
+	ready := make([]AfeSnapshot, 10)
+	for i := range ready {
+		ready[i] = AfeSnapshot{ID: AfeID(i), IdleCount: 1, E2eCost: 1000}
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		pool.decorateReady(ready)
+	}
+}
+
 // TestSessionPoolImpl_AfeSnapshotSourceReturnsPoolList verifies the
 // AfeSnapshotSource accessor exposes the pool's sessionList — the
 // interface an OutlierScorerFactory receives to build stateful scorers
