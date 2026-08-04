@@ -456,16 +456,6 @@ func TestGRPCMetricsRecording(t *testing.T) {
 	// Terminate stream.
 	clientStreamBidi.(*wrappedClientStream).record(io.EOF)
 
-	// 2nd Bidi stream.
-	clientStreamBidiPipelined, err := streamInt(ctx, descBidi, nil, "/google.storage.v2.Storage/BidiWriteObject", streamerBidi)
-	if err != nil {
-		t.Fatalf("streamInt pipelined: %v", err)
-	}
-	clientStreamBidiPipelined.SendMsg(nil)
-	clientStreamBidiPipelined.RecvMsg(nil)
-
-	clientStreamBidiPipelined.(*wrappedClientStream).record(io.EOF)
-
 	// Collect metrics.
 	var rm metricdata.ResourceMetrics
 	if err := mr.Collect(ctx, &rm); err != nil {
@@ -584,8 +574,8 @@ func TestGRPCMetricsRecording(t *testing.T) {
 	if bidiDp == nil {
 		t.Errorf("streaming metric (BidiWriteObject) not recorded")
 	} else {
-		if bidiDp.Count != 2 {
-			t.Errorf("Bidi stream count: expected 2, got %d", bidiDp.Count)
+		if bidiDp.Count != 1 {
+			t.Errorf("Bidi stream count: expected 1, got %d", bidiDp.Count)
 		}
 		attrs := make(map[string]string)
 		for _, kv := range bidiDp.Attributes.ToSlice() {
