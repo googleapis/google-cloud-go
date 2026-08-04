@@ -30,6 +30,7 @@ import (
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -179,11 +180,18 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	var metricsCleanup func()
 	if isOtelMetricsEnabled(&config) {
 		var project string
-		if c, err := transport.Creds(ctx, s.clientOption...); err == nil {
+		var creds *google.Credentials
+		credsOpts := append([]option.ClientOption{option.WithScopes(gapic.DefaultAuthScopes()...)}, s.clientOption...)
+		if c, err := transport.Creds(ctx, credsOpts...); err == nil {
 			project = c.ProjectID
+			creds = c
 		}
 		clientMetrics, metricsCleanup = initClientMetrics(ctx, project, &config)
 		if clientMetrics != nil {
+			if creds != nil {
+				creds = wrapGoogleCredentials(creds, clientMetrics)
+				s.clientOption = append(s.clientOption, option.WithCredentials(creds))
+			}
 			unaryInt, streamInt := metricsInterceptors(clientMetrics)
 			s.clientOption = append(s.clientOption,
 				option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(unaryInt)),
