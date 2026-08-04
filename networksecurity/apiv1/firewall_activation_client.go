@@ -32,6 +32,7 @@ import (
 	networksecuritypb "cloud.google.com/go/networksecurity/apiv1/networksecuritypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -887,8 +888,12 @@ func (c *firewallActivationGRPCClient) CreateFirewallEndpoint(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateFirewallEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateFirewallEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -913,8 +918,12 @@ func (c *firewallActivationGRPCClient) CreateProjectFirewallEndpoint(ctx context
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateProjectFirewallEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateProjectFirewallEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -939,8 +948,12 @@ func (c *firewallActivationGRPCClient) DeleteFirewallEndpoint(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteFirewallEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFirewallEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -965,8 +978,12 @@ func (c *firewallActivationGRPCClient) DeleteProjectFirewallEndpoint(ctx context
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteProjectFirewallEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProjectFirewallEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -988,8 +1005,12 @@ func (c *firewallActivationGRPCClient) UpdateFirewallEndpoint(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateFirewallEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateFirewallEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1011,8 +1032,12 @@ func (c *firewallActivationGRPCClient) UpdateProjectFirewallEndpoint(ctx context
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateProjectFirewallEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateProjectFirewallEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1113,8 +1138,12 @@ func (c *firewallActivationGRPCClient) CreateFirewallEndpointAssociation(ctx con
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateFirewallEndpointAssociationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateFirewallEndpointAssociationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1139,8 +1168,12 @@ func (c *firewallActivationGRPCClient) DeleteFirewallEndpointAssociation(ctx con
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteFirewallEndpointAssociationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFirewallEndpointAssociationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1162,8 +1195,12 @@ func (c *firewallActivationGRPCClient) UpdateFirewallEndpointAssociation(ctx con
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateFirewallEndpointAssociationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateFirewallEndpointAssociationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1760,8 +1797,12 @@ func (c *firewallActivationRESTClient) CreateFirewallEndpoint(ctx context.Contex
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateFirewallEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateFirewallEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1831,8 +1872,12 @@ func (c *firewallActivationRESTClient) CreateProjectFirewallEndpoint(ctx context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateProjectFirewallEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateProjectFirewallEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1894,8 +1939,12 @@ func (c *firewallActivationRESTClient) DeleteFirewallEndpoint(ctx context.Contex
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteFirewallEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFirewallEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1957,8 +2006,12 @@ func (c *firewallActivationRESTClient) DeleteProjectFirewallEndpoint(ctx context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteProjectFirewallEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProjectFirewallEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2031,8 +2084,12 @@ func (c *firewallActivationRESTClient) UpdateFirewallEndpoint(ctx context.Contex
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateFirewallEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateFirewallEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2105,8 +2162,12 @@ func (c *firewallActivationRESTClient) UpdateProjectFirewallEndpoint(ctx context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateProjectFirewallEndpointOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateProjectFirewallEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2319,8 +2380,12 @@ func (c *firewallActivationRESTClient) CreateFirewallEndpointAssociation(ctx con
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateFirewallEndpointAssociationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateFirewallEndpointAssociationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2382,8 +2447,12 @@ func (c *firewallActivationRESTClient) DeleteFirewallEndpointAssociation(ctx con
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteFirewallEndpointAssociationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFirewallEndpointAssociationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2456,8 +2525,12 @@ func (c *firewallActivationRESTClient) UpdateFirewallEndpointAssociation(ctx con
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateFirewallEndpointAssociationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateFirewallEndpointAssociationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3035,7 +3108,7 @@ func (c *firewallActivationRESTClient) ListOperations(ctx context.Context, req *
 // The name must be that of a previously created CreateFirewallEndpointOperation, possibly from a different process.
 func (c *firewallActivationGRPCClient) CreateFirewallEndpointOperation(name string) *CreateFirewallEndpointOperation {
 	return &CreateFirewallEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateFirewallEndpointOperation"),
 	}
 }
 
@@ -3044,7 +3117,7 @@ func (c *firewallActivationGRPCClient) CreateFirewallEndpointOperation(name stri
 func (c *firewallActivationRESTClient) CreateFirewallEndpointOperation(name string) *CreateFirewallEndpointOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateFirewallEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateFirewallEndpointOperation"),
 		pollPath: override,
 	}
 }
@@ -3053,7 +3126,7 @@ func (c *firewallActivationRESTClient) CreateFirewallEndpointOperation(name stri
 // The name must be that of a previously created CreateFirewallEndpointAssociationOperation, possibly from a different process.
 func (c *firewallActivationGRPCClient) CreateFirewallEndpointAssociationOperation(name string) *CreateFirewallEndpointAssociationOperation {
 	return &CreateFirewallEndpointAssociationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateFirewallEndpointAssociationOperation"),
 	}
 }
 
@@ -3062,7 +3135,7 @@ func (c *firewallActivationGRPCClient) CreateFirewallEndpointAssociationOperatio
 func (c *firewallActivationRESTClient) CreateFirewallEndpointAssociationOperation(name string) *CreateFirewallEndpointAssociationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateFirewallEndpointAssociationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateFirewallEndpointAssociationOperation"),
 		pollPath: override,
 	}
 }
@@ -3071,7 +3144,7 @@ func (c *firewallActivationRESTClient) CreateFirewallEndpointAssociationOperatio
 // The name must be that of a previously created CreateProjectFirewallEndpointOperation, possibly from a different process.
 func (c *firewallActivationGRPCClient) CreateProjectFirewallEndpointOperation(name string) *CreateProjectFirewallEndpointOperation {
 	return &CreateProjectFirewallEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateProjectFirewallEndpointOperation"),
 	}
 }
 
@@ -3080,7 +3153,7 @@ func (c *firewallActivationGRPCClient) CreateProjectFirewallEndpointOperation(na
 func (c *firewallActivationRESTClient) CreateProjectFirewallEndpointOperation(name string) *CreateProjectFirewallEndpointOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateProjectFirewallEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateProjectFirewallEndpointOperation"),
 		pollPath: override,
 	}
 }
@@ -3089,7 +3162,7 @@ func (c *firewallActivationRESTClient) CreateProjectFirewallEndpointOperation(na
 // The name must be that of a previously created DeleteFirewallEndpointOperation, possibly from a different process.
 func (c *firewallActivationGRPCClient) DeleteFirewallEndpointOperation(name string) *DeleteFirewallEndpointOperation {
 	return &DeleteFirewallEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteFirewallEndpointOperation"),
 	}
 }
 
@@ -3098,7 +3171,7 @@ func (c *firewallActivationGRPCClient) DeleteFirewallEndpointOperation(name stri
 func (c *firewallActivationRESTClient) DeleteFirewallEndpointOperation(name string) *DeleteFirewallEndpointOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteFirewallEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteFirewallEndpointOperation"),
 		pollPath: override,
 	}
 }
@@ -3107,7 +3180,7 @@ func (c *firewallActivationRESTClient) DeleteFirewallEndpointOperation(name stri
 // The name must be that of a previously created DeleteFirewallEndpointAssociationOperation, possibly from a different process.
 func (c *firewallActivationGRPCClient) DeleteFirewallEndpointAssociationOperation(name string) *DeleteFirewallEndpointAssociationOperation {
 	return &DeleteFirewallEndpointAssociationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteFirewallEndpointAssociationOperation"),
 	}
 }
 
@@ -3116,7 +3189,7 @@ func (c *firewallActivationGRPCClient) DeleteFirewallEndpointAssociationOperatio
 func (c *firewallActivationRESTClient) DeleteFirewallEndpointAssociationOperation(name string) *DeleteFirewallEndpointAssociationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteFirewallEndpointAssociationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteFirewallEndpointAssociationOperation"),
 		pollPath: override,
 	}
 }
@@ -3125,7 +3198,7 @@ func (c *firewallActivationRESTClient) DeleteFirewallEndpointAssociationOperatio
 // The name must be that of a previously created DeleteProjectFirewallEndpointOperation, possibly from a different process.
 func (c *firewallActivationGRPCClient) DeleteProjectFirewallEndpointOperation(name string) *DeleteProjectFirewallEndpointOperation {
 	return &DeleteProjectFirewallEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteProjectFirewallEndpointOperation"),
 	}
 }
 
@@ -3134,7 +3207,7 @@ func (c *firewallActivationGRPCClient) DeleteProjectFirewallEndpointOperation(na
 func (c *firewallActivationRESTClient) DeleteProjectFirewallEndpointOperation(name string) *DeleteProjectFirewallEndpointOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteProjectFirewallEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteProjectFirewallEndpointOperation"),
 		pollPath: override,
 	}
 }
@@ -3143,7 +3216,7 @@ func (c *firewallActivationRESTClient) DeleteProjectFirewallEndpointOperation(na
 // The name must be that of a previously created UpdateFirewallEndpointOperation, possibly from a different process.
 func (c *firewallActivationGRPCClient) UpdateFirewallEndpointOperation(name string) *UpdateFirewallEndpointOperation {
 	return &UpdateFirewallEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateFirewallEndpointOperation"),
 	}
 }
 
@@ -3152,7 +3225,7 @@ func (c *firewallActivationGRPCClient) UpdateFirewallEndpointOperation(name stri
 func (c *firewallActivationRESTClient) UpdateFirewallEndpointOperation(name string) *UpdateFirewallEndpointOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateFirewallEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateFirewallEndpointOperation"),
 		pollPath: override,
 	}
 }
@@ -3161,7 +3234,7 @@ func (c *firewallActivationRESTClient) UpdateFirewallEndpointOperation(name stri
 // The name must be that of a previously created UpdateFirewallEndpointAssociationOperation, possibly from a different process.
 func (c *firewallActivationGRPCClient) UpdateFirewallEndpointAssociationOperation(name string) *UpdateFirewallEndpointAssociationOperation {
 	return &UpdateFirewallEndpointAssociationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateFirewallEndpointAssociationOperation"),
 	}
 }
 
@@ -3170,7 +3243,7 @@ func (c *firewallActivationGRPCClient) UpdateFirewallEndpointAssociationOperatio
 func (c *firewallActivationRESTClient) UpdateFirewallEndpointAssociationOperation(name string) *UpdateFirewallEndpointAssociationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateFirewallEndpointAssociationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateFirewallEndpointAssociationOperation"),
 		pollPath: override,
 	}
 }
@@ -3179,7 +3252,7 @@ func (c *firewallActivationRESTClient) UpdateFirewallEndpointAssociationOperatio
 // The name must be that of a previously created UpdateProjectFirewallEndpointOperation, possibly from a different process.
 func (c *firewallActivationGRPCClient) UpdateProjectFirewallEndpointOperation(name string) *UpdateProjectFirewallEndpointOperation {
 	return &UpdateProjectFirewallEndpointOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateProjectFirewallEndpointOperation"),
 	}
 }
 
@@ -3188,7 +3261,7 @@ func (c *firewallActivationGRPCClient) UpdateProjectFirewallEndpointOperation(na
 func (c *firewallActivationRESTClient) UpdateProjectFirewallEndpointOperation(name string) *UpdateProjectFirewallEndpointOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateProjectFirewallEndpointOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateProjectFirewallEndpointOperation"),
 		pollPath: override,
 	}
 }

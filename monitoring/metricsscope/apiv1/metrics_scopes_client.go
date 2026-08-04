@@ -29,6 +29,7 @@ import (
 	metricsscopepb "cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -343,8 +344,12 @@ func (c *metricsScopesGRPCClient) CreateMonitoredProject(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metricsscope.CreateMonitoredProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMonitoredProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -369,8 +374,12 @@ func (c *metricsScopesGRPCClient) DeleteMonitoredProject(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metricsscope.DeleteMonitoredProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteMonitoredProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -378,7 +387,7 @@ func (c *metricsScopesGRPCClient) DeleteMonitoredProject(ctx context.Context, re
 // The name must be that of a previously created CreateMonitoredProjectOperation, possibly from a different process.
 func (c *metricsScopesGRPCClient) CreateMonitoredProjectOperation(name string) *CreateMonitoredProjectOperation {
 	return &CreateMonitoredProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metricsscope.CreateMonitoredProjectOperation"),
 	}
 }
 
@@ -386,6 +395,6 @@ func (c *metricsScopesGRPCClient) CreateMonitoredProjectOperation(name string) *
 // The name must be that of a previously created DeleteMonitoredProjectOperation, possibly from a different process.
 func (c *metricsScopesGRPCClient) DeleteMonitoredProjectOperation(name string) *DeleteMonitoredProjectOperation {
 	return &DeleteMonitoredProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metricsscope.DeleteMonitoredProjectOperation"),
 	}
 }

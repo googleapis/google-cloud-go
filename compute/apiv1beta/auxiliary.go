@@ -1903,6 +1903,53 @@ func (it *HealthSourcesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// HostIterator manages a stream of *computepb.Host.
+type HostIterator struct {
+	items    []*computepb.Host
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Host, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *HostIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *HostIterator) Next() (*computepb.Host, error) {
+	var item *computepb.Host
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *HostIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *HostIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // ImageIterator manages a stream of *computepb.Image.
 type ImageIterator struct {
 	items    []*computepb.Image
@@ -4873,6 +4920,53 @@ func (it *RegionIterator) bufLen() int {
 }
 
 func (it *RegionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ReliabilityRiskIterator manages a stream of *computepb.ReliabilityRisk.
+type ReliabilityRiskIterator struct {
+	items    []*computepb.ReliabilityRisk
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.ReliabilityRisk, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *ReliabilityRiskIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ReliabilityRiskIterator) Next() (*computepb.ReliabilityRisk, error) {
+	var item *computepb.ReliabilityRisk
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ReliabilityRiskIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ReliabilityRiskIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

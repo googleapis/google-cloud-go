@@ -44,13 +44,13 @@ type ExperimentConfig_State int32
 const (
 	// Unspecified state.
 	ExperimentConfig_STATE_UNSPECIFIED ExperimentConfig_State = 0
-	// Pending state. Experiment is pending and not valid.
+	// Deprecated: This state is no longer used.
 	ExperimentConfig_PENDING ExperimentConfig_State = 1
 	// Running state. Experiment is running and valid.
 	ExperimentConfig_RUNNING ExperimentConfig_State = 2
-	// Done state. Experiment is done and no longer valid.
+	// Deprecated: This state is no longer used.
 	ExperimentConfig_DONE ExperimentConfig_State = 3
-	// Expired state. Experiment is expired and no longer valid.
+	// Deprecated: This state is no longer used.
 	ExperimentConfig_EXPIRED ExperimentConfig_State = 4
 )
 
@@ -173,8 +173,14 @@ type Deployment struct {
 	Etag string `protobuf:"bytes,7,opt,name=etag,proto3" json:"etag,omitempty"`
 	// Optional. Experiment configuration for the deployment.
 	ExperimentConfig *ExperimentConfig `protobuf:"bytes,9,opt,name=experiment_config,json=experimentConfig,proto3" json:"experiment_config,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Optional. Input only. Ephemeral WhatsApp credentials required when
+	// configuring a WhatsApp channel profile.
+	WhatsappCredentials *WhatsAppCredentials `protobuf:"bytes,10,opt,name=whatsapp_credentials,json=whatsappCredentials,proto3" json:"whatsapp_credentials,omitempty"`
+	// Optional. Input only. Ephemeral Instagram credentials required when
+	// configuring a Instagram channel profile.
+	InstagramCredentials *InstagramCredentials `protobuf:"bytes,11,opt,name=instagram_credentials,json=instagramCredentials,proto3" json:"instagram_credentials,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *Deployment) Reset() {
@@ -263,6 +269,166 @@ func (x *Deployment) GetExperimentConfig() *ExperimentConfig {
 	return nil
 }
 
+func (x *Deployment) GetWhatsappCredentials() *WhatsAppCredentials {
+	if x != nil {
+		return x.WhatsappCredentials
+	}
+	return nil
+}
+
+func (x *Deployment) GetInstagramCredentials() *InstagramCredentials {
+	if x != nil {
+		return x.InstagramCredentials
+	}
+	return nil
+}
+
+// Ephemeral Meta credentials for WhatsApp native integration.
+type WhatsAppCredentials struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The Meta auth code provided by the embedded signup flow.
+	AuthCode string `protobuf:"bytes,1,opt,name=auth_code,json=authCode,proto3" json:"auth_code,omitempty"`
+	// Required. The 6-digit PIN created by the user for two-step verification.
+	Pin string `protobuf:"bytes,2,opt,name=pin,proto3" json:"pin,omitempty"`
+	// Required. The phone number to register with WhatsApp.
+	PhoneNumber string `protobuf:"bytes,3,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
+	// Required. The Business Account ID to use for the phone number.
+	BusinessAccountId string `protobuf:"bytes,4,opt,name=business_account_id,json=businessAccountId,proto3" json:"business_account_id,omitempty"`
+	// Required. The WhatsApp Business Account ID.
+	WabaId string `protobuf:"bytes,5,opt,name=waba_id,json=wabaId,proto3" json:"waba_id,omitempty"`
+	// Required. The Conversation Profile ID to use for the deployment.
+	ConversationProfileId string `protobuf:"bytes,6,opt,name=conversation_profile_id,json=conversationProfileId,proto3" json:"conversation_profile_id,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *WhatsAppCredentials) Reset() {
+	*x = WhatsAppCredentials{}
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WhatsAppCredentials) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WhatsAppCredentials) ProtoMessage() {}
+
+func (x *WhatsAppCredentials) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WhatsAppCredentials.ProtoReflect.Descriptor instead.
+func (*WhatsAppCredentials) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_deployment_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *WhatsAppCredentials) GetAuthCode() string {
+	if x != nil {
+		return x.AuthCode
+	}
+	return ""
+}
+
+func (x *WhatsAppCredentials) GetPin() string {
+	if x != nil {
+		return x.Pin
+	}
+	return ""
+}
+
+func (x *WhatsAppCredentials) GetPhoneNumber() string {
+	if x != nil {
+		return x.PhoneNumber
+	}
+	return ""
+}
+
+func (x *WhatsAppCredentials) GetBusinessAccountId() string {
+	if x != nil {
+		return x.BusinessAccountId
+	}
+	return ""
+}
+
+func (x *WhatsAppCredentials) GetWabaId() string {
+	if x != nil {
+		return x.WabaId
+	}
+	return ""
+}
+
+func (x *WhatsAppCredentials) GetConversationProfileId() string {
+	if x != nil {
+		return x.ConversationProfileId
+	}
+	return ""
+}
+
+// Ephemeral Meta credentials for Instagram native integration.
+type InstagramCredentials struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The Meta auth code provided by the embedded signup flow.
+	AuthCode string `protobuf:"bytes,1,opt,name=auth_code,json=authCode,proto3" json:"auth_code,omitempty"`
+	// Required. The Conversation Profile ID to use for the deployment.
+	ConversationProfileId string `protobuf:"bytes,2,opt,name=conversation_profile_id,json=conversationProfileId,proto3" json:"conversation_profile_id,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *InstagramCredentials) Reset() {
+	*x = InstagramCredentials{}
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InstagramCredentials) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InstagramCredentials) ProtoMessage() {}
+
+func (x *InstagramCredentials) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InstagramCredentials.ProtoReflect.Descriptor instead.
+func (*InstagramCredentials) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_deployment_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *InstagramCredentials) GetAuthCode() string {
+	if x != nil {
+		return x.AuthCode
+	}
+	return ""
+}
+
+func (x *InstagramCredentials) GetConversationProfileId() string {
+	if x != nil {
+		return x.ConversationProfileId
+	}
+	return ""
+}
+
 // Version release for the experiment.
 type ExperimentConfig_VersionRelease struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -276,7 +442,7 @@ type ExperimentConfig_VersionRelease struct {
 
 func (x *ExperimentConfig_VersionRelease) Reset() {
 	*x = ExperimentConfig_VersionRelease{}
-	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[2]
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -288,7 +454,7 @@ func (x *ExperimentConfig_VersionRelease) String() string {
 func (*ExperimentConfig_VersionRelease) ProtoMessage() {}
 
 func (x *ExperimentConfig_VersionRelease) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[2]
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -337,7 +503,7 @@ type ExperimentConfig_VersionRelease_TrafficAllocation struct {
 
 func (x *ExperimentConfig_VersionRelease_TrafficAllocation) Reset() {
 	*x = ExperimentConfig_VersionRelease_TrafficAllocation{}
-	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[3]
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -349,7 +515,7 @@ func (x *ExperimentConfig_VersionRelease_TrafficAllocation) String() string {
 func (*ExperimentConfig_VersionRelease_TrafficAllocation) ProtoMessage() {}
 
 func (x *ExperimentConfig_VersionRelease_TrafficAllocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[3]
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -407,7 +573,7 @@ const file_google_cloud_ces_v1beta_deployment_proto_rawDesc = "" +
 	"\aPENDING\x10\x01\x12\v\n" +
 	"\aRUNNING\x10\x02\x12\b\n" +
 	"\x04DONE\x10\x03\x12\v\n" +
-	"\aEXPIRED\x10\x04\"\xf2\x04\n" +
+	"\aEXPIRED\x10\x04\"\xc7\x06\n" +
 	"\n" +
 	"Deployment\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
@@ -421,9 +587,22 @@ const file_google_cloud_ces_v1beta_deployment_proto_rawDesc = "" +
 	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"updateTime\x12\x17\n" +
 	"\x04etag\x18\a \x01(\tB\x03\xe0A\x03R\x04etag\x12[\n" +
-	"\x11experiment_config\x18\t \x01(\v2).google.cloud.ces.v1beta.ExperimentConfigB\x03\xe0A\x01R\x10experimentConfig:\x89\x01\xeaA\x85\x01\n" +
+	"\x11experiment_config\x18\t \x01(\v2).google.cloud.ces.v1beta.ExperimentConfigB\x03\xe0A\x01R\x10experimentConfig\x12g\n" +
+	"\x14whatsapp_credentials\x18\n" +
+	" \x01(\v2,.google.cloud.ces.v1beta.WhatsAppCredentialsB\x06\xe0A\x01\xe0A\x04R\x13whatsappCredentials\x12j\n" +
+	"\x15instagram_credentials\x18\v \x01(\v2-.google.cloud.ces.v1beta.InstagramCredentialsB\x06\xe0A\x01\xe0A\x04R\x14instagramCredentials:\x89\x01\xeaA\x85\x01\n" +
 	"\x1dces.googleapis.com/Deployment\x12Kprojects/{project}/locations/{location}/apps/{app}/deployments/{deployment}*\vdeployments2\n" +
-	"deploymentBc\n" +
+	"deployment\"\x86\x02\n" +
+	"\x13WhatsAppCredentials\x12 \n" +
+	"\tauth_code\x18\x01 \x01(\tB\x03\xe0A\x02R\bauthCode\x12\x15\n" +
+	"\x03pin\x18\x02 \x01(\tB\x03\xe0A\x02R\x03pin\x12&\n" +
+	"\fphone_number\x18\x03 \x01(\tB\x03\xe0A\x02R\vphoneNumber\x123\n" +
+	"\x13business_account_id\x18\x04 \x01(\tB\x03\xe0A\x02R\x11businessAccountId\x12\x1c\n" +
+	"\awaba_id\x18\x05 \x01(\tB\x03\xe0A\x02R\x06wabaId\x12;\n" +
+	"\x17conversation_profile_id\x18\x06 \x01(\tB\x03\xe0A\x02R\x15conversationProfileId\"u\n" +
+	"\x14InstagramCredentials\x12 \n" +
+	"\tauth_code\x18\x01 \x01(\tB\x03\xe0A\x02R\bauthCode\x12;\n" +
+	"\x17conversation_profile_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x15conversationProfileIdBc\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\x13ChannelProfileProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
 
 var (
@@ -439,29 +618,33 @@ func file_google_cloud_ces_v1beta_deployment_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_ces_v1beta_deployment_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_ces_v1beta_deployment_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_google_cloud_ces_v1beta_deployment_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_google_cloud_ces_v1beta_deployment_proto_goTypes = []any{
 	(ExperimentConfig_State)(0),                               // 0: google.cloud.ces.v1beta.ExperimentConfig.State
 	(*ExperimentConfig)(nil),                                  // 1: google.cloud.ces.v1beta.ExperimentConfig
 	(*Deployment)(nil),                                        // 2: google.cloud.ces.v1beta.Deployment
-	(*ExperimentConfig_VersionRelease)(nil),                   // 3: google.cloud.ces.v1beta.ExperimentConfig.VersionRelease
-	(*ExperimentConfig_VersionRelease_TrafficAllocation)(nil), // 4: google.cloud.ces.v1beta.ExperimentConfig.VersionRelease.TrafficAllocation
-	(*ChannelProfile)(nil),                                    // 5: google.cloud.ces.v1beta.ChannelProfile
-	(*timestamppb.Timestamp)(nil),                             // 6: google.protobuf.Timestamp
+	(*WhatsAppCredentials)(nil),                               // 3: google.cloud.ces.v1beta.WhatsAppCredentials
+	(*InstagramCredentials)(nil),                              // 4: google.cloud.ces.v1beta.InstagramCredentials
+	(*ExperimentConfig_VersionRelease)(nil),                   // 5: google.cloud.ces.v1beta.ExperimentConfig.VersionRelease
+	(*ExperimentConfig_VersionRelease_TrafficAllocation)(nil), // 6: google.cloud.ces.v1beta.ExperimentConfig.VersionRelease.TrafficAllocation
+	(*ChannelProfile)(nil),                                    // 7: google.cloud.ces.v1beta.ChannelProfile
+	(*timestamppb.Timestamp)(nil),                             // 8: google.protobuf.Timestamp
 }
 var file_google_cloud_ces_v1beta_deployment_proto_depIdxs = []int32{
-	3, // 0: google.cloud.ces.v1beta.ExperimentConfig.version_release:type_name -> google.cloud.ces.v1beta.ExperimentConfig.VersionRelease
-	5, // 1: google.cloud.ces.v1beta.Deployment.channel_profile:type_name -> google.cloud.ces.v1beta.ChannelProfile
-	6, // 2: google.cloud.ces.v1beta.Deployment.create_time:type_name -> google.protobuf.Timestamp
-	6, // 3: google.cloud.ces.v1beta.Deployment.update_time:type_name -> google.protobuf.Timestamp
+	5, // 0: google.cloud.ces.v1beta.ExperimentConfig.version_release:type_name -> google.cloud.ces.v1beta.ExperimentConfig.VersionRelease
+	7, // 1: google.cloud.ces.v1beta.Deployment.channel_profile:type_name -> google.cloud.ces.v1beta.ChannelProfile
+	8, // 2: google.cloud.ces.v1beta.Deployment.create_time:type_name -> google.protobuf.Timestamp
+	8, // 3: google.cloud.ces.v1beta.Deployment.update_time:type_name -> google.protobuf.Timestamp
 	1, // 4: google.cloud.ces.v1beta.Deployment.experiment_config:type_name -> google.cloud.ces.v1beta.ExperimentConfig
-	0, // 5: google.cloud.ces.v1beta.ExperimentConfig.VersionRelease.state:type_name -> google.cloud.ces.v1beta.ExperimentConfig.State
-	4, // 6: google.cloud.ces.v1beta.ExperimentConfig.VersionRelease.traffic_allocations:type_name -> google.cloud.ces.v1beta.ExperimentConfig.VersionRelease.TrafficAllocation
-	7, // [7:7] is the sub-list for method output_type
-	7, // [7:7] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	3, // 5: google.cloud.ces.v1beta.Deployment.whatsapp_credentials:type_name -> google.cloud.ces.v1beta.WhatsAppCredentials
+	4, // 6: google.cloud.ces.v1beta.Deployment.instagram_credentials:type_name -> google.cloud.ces.v1beta.InstagramCredentials
+	0, // 7: google.cloud.ces.v1beta.ExperimentConfig.VersionRelease.state:type_name -> google.cloud.ces.v1beta.ExperimentConfig.State
+	6, // 8: google.cloud.ces.v1beta.ExperimentConfig.VersionRelease.traffic_allocations:type_name -> google.cloud.ces.v1beta.ExperimentConfig.VersionRelease.TrafficAllocation
+	9, // [9:9] is the sub-list for method output_type
+	9, // [9:9] is the sub-list for method input_type
+	9, // [9:9] is the sub-list for extension type_name
+	9, // [9:9] is the sub-list for extension extendee
+	0, // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_deployment_proto_init() }
@@ -476,7 +659,7 @@ func file_google_cloud_ces_v1beta_deployment_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1beta_deployment_proto_rawDesc), len(file_google_cloud_ces_v1beta_deployment_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

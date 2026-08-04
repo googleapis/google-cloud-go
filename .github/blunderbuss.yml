@@ -1,10 +1,14 @@
 assign_issues_by:
 - labels:
   - 'api: bigtable'
+  to:
+  - sushanb
+- labels:
   - 'api: datastore'
   - 'api: firestore'
   to:
-  - bhshkh
+  - hongalex
+  - shollyman
 - labels:
   - 'api: storage'
   to:

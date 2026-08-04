@@ -721,3 +721,78 @@ func TestInvokeWithRetryContextWithoutRunOptions(t *testing.T) {
 		t.Errorf("expected empty Object, got %q", capturedContext.Object)
 	}
 }
+
+func TestIsError(t *testing.T) {
+	tests := []struct {
+		name          string
+		err           error
+		httpErrorCode int
+		grpcErrorCode codes.Code
+		want          bool
+	}{
+		{
+			name:          "matching HTTP error",
+			err:           &googleapi.Error{Code: 404},
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          true,
+		},
+		{
+			name:          "matching gRPC error",
+			err:           status.Error(codes.NotFound, "not found"),
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          true,
+		},
+		{
+			name:          "wrapped matching HTTP error",
+			err:           fmt.Errorf("wrapped: %w", &googleapi.Error{Code: 404}),
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          true,
+		},
+		{
+			name:          "wrapped matching gRPC error",
+			err:           fmt.Errorf("wrapped: %w", status.Error(codes.NotFound, "not found")),
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          true,
+		},
+		{
+			name:          "non-matching HTTP error",
+			err:           &googleapi.Error{Code: 403},
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          false,
+		},
+		{
+			name:          "non-matching gRPC error",
+			err:           status.Error(codes.PermissionDenied, "permission denied"),
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          false,
+		},
+		{
+			name:          "nil error",
+			err:           nil,
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          false,
+		},
+		{
+			name:          "unrelated error",
+			err:           errors.New("some other error"),
+			httpErrorCode: 404,
+			grpcErrorCode: codes.NotFound,
+			want:          false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isError(tt.err, tt.httpErrorCode, tt.grpcErrorCode); got != tt.want {
+				t.Errorf("isError() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

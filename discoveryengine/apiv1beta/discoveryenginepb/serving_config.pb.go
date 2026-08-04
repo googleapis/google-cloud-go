@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -99,9 +99,8 @@ type ServingConfig struct {
 	// The ranking expression controls the customized ranking on retrieval
 	// documents. To leverage this, document embedding is required. The ranking
 	// expression setting in ServingConfig applies to all search requests served
-	// by the serving config. However, if
-	// [SearchRequest.ranking_expression][google.cloud.discoveryengine.v1beta.SearchRequest.ranking_expression]
-	// is specified, it overrides the ServingConfig ranking expression.
+	// by the serving config. However, if `SearchRequest.ranking_expression` is
+	// specified, it overrides the ServingConfig ranking expression.
 	//
 	// The ranking expression is a single function or multiple functions that are
 	// joined by "+".
@@ -192,6 +191,10 @@ type ServingConfig struct {
 	// Order does not matter.
 	// Maximum number of specifications is 100.
 	IgnoreControlIds []string `protobuf:"bytes,19,rep,name=ignore_control_ids,json=ignoreControlIds,proto3" json:"ignore_control_ids,omitempty"`
+	// Condition promote specifications.
+	//
+	// Maximum number of specifications is 100.
+	PromoteControlIds []string `protobuf:"bytes,26,rep,name=promote_control_ids,json=promoteControlIds,proto3" json:"promote_control_ids,omitempty"`
 	// The specification for personalization spec.
 	//
 	// Notice that if both
@@ -203,8 +206,10 @@ type ServingConfig struct {
 	// overrides
 	// [ServingConfig.personalization_spec][google.cloud.discoveryengine.v1beta.ServingConfig.personalization_spec].
 	PersonalizationSpec *SearchRequest_PersonalizationSpec `protobuf:"bytes,25,opt,name=personalization_spec,json=personalizationSpec,proto3" json:"personalization_spec,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Optional. The specification for answer generation.
+	AnswerGenerationSpec *AnswerGenerationSpec `protobuf:"bytes,27,opt,name=answer_generation_spec,json=answerGenerationSpec,proto3" json:"answer_generation_spec,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *ServingConfig) Reset() {
@@ -381,9 +386,23 @@ func (x *ServingConfig) GetIgnoreControlIds() []string {
 	return nil
 }
 
+func (x *ServingConfig) GetPromoteControlIds() []string {
+	if x != nil {
+		return x.PromoteControlIds
+	}
+	return nil
+}
+
 func (x *ServingConfig) GetPersonalizationSpec() *SearchRequest_PersonalizationSpec {
 	if x != nil {
 		return x.PersonalizationSpec
+	}
+	return nil
+}
+
+func (x *ServingConfig) GetAnswerGenerationSpec() *AnswerGenerationSpec {
+	if x != nil {
+		return x.AnswerGenerationSpec
 	}
 	return nil
 }
@@ -405,6 +424,52 @@ type ServingConfig_GenericConfig_ struct {
 func (*ServingConfig_MediaConfig_) isServingConfig_VerticalConfig() {}
 
 func (*ServingConfig_GenericConfig_) isServingConfig_VerticalConfig() {}
+
+// The specification for answer generation.
+type AnswerGenerationSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The specification for user specified classifier spec.
+	UserDefinedClassifierSpec *AnswerGenerationSpec_UserDefinedClassifierSpec `protobuf:"bytes,1,opt,name=user_defined_classifier_spec,json=userDefinedClassifierSpec,proto3" json:"user_defined_classifier_spec,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *AnswerGenerationSpec) Reset() {
+	*x = AnswerGenerationSpec{}
+	mi := &file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AnswerGenerationSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AnswerGenerationSpec) ProtoMessage() {}
+
+func (x *AnswerGenerationSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AnswerGenerationSpec.ProtoReflect.Descriptor instead.
+func (*AnswerGenerationSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_serving_config_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *AnswerGenerationSpec) GetUserDefinedClassifierSpec() *AnswerGenerationSpec_UserDefinedClassifierSpec {
+	if x != nil {
+		return x.UserDefinedClassifierSpec
+	}
+	return nil
+}
 
 // Specifies the configurations needed for Media Discovery. Currently we
 // support:
@@ -456,7 +521,7 @@ type ServingConfig_MediaConfig struct {
 
 func (x *ServingConfig_MediaConfig) Reset() {
 	*x = ServingConfig_MediaConfig{}
-	mi := &file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes[1]
+	mi := &file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -468,7 +533,7 @@ func (x *ServingConfig_MediaConfig) String() string {
 func (*ServingConfig_MediaConfig) ProtoMessage() {}
 
 func (x *ServingConfig_MediaConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes[1]
+	mi := &file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -566,7 +631,7 @@ type ServingConfig_GenericConfig struct {
 
 func (x *ServingConfig_GenericConfig) Reset() {
 	*x = ServingConfig_GenericConfig{}
-	mi := &file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes[2]
+	mi := &file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -578,7 +643,7 @@ func (x *ServingConfig_GenericConfig) String() string {
 func (*ServingConfig_GenericConfig) ProtoMessage() {}
 
 func (x *ServingConfig_GenericConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes[2]
+	mi := &file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -601,11 +666,121 @@ func (x *ServingConfig_GenericConfig) GetContentSearchSpec() *SearchRequest_Cont
 	return nil
 }
 
+// The specification for user defined classifier.
+type AnswerGenerationSpec_UserDefinedClassifierSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Whether or not to enable and include user defined classifier.
+	EnableUserDefinedClassifier bool `protobuf:"varint,1,opt,name=enable_user_defined_classifier,json=enableUserDefinedClassifier,proto3" json:"enable_user_defined_classifier,omitempty"`
+	// Optional. The preamble to be used for the user defined classifier.
+	Preamble string `protobuf:"bytes,2,opt,name=preamble,proto3" json:"preamble,omitempty"`
+	// Optional. The model id to be used for the user defined classifier.
+	ModelId string `protobuf:"bytes,3,opt,name=model_id,json=modelId,proto3" json:"model_id,omitempty"`
+	// Optional. The task marker to be used for the user defined classifier.
+	TaskMarker string `protobuf:"bytes,4,opt,name=task_marker,json=taskMarker,proto3" json:"task_marker,omitempty"`
+	// Optional. The top-p value to be used for the user defined classifier.
+	TopP float64 `protobuf:"fixed64,5,opt,name=top_p,json=topP,proto3" json:"top_p,omitempty"`
+	// Optional. The top-k value to be used for the user defined classifier.
+	TopK int64 `protobuf:"varint,6,opt,name=top_k,json=topK,proto3" json:"top_k,omitempty"`
+	// Optional. The temperature value to be used for the user defined
+	// classifier.
+	Temperature float64 `protobuf:"fixed64,7,opt,name=temperature,proto3" json:"temperature,omitempty"`
+	// Optional. The seed value to be used for the user defined classifier.
+	Seed          int32 `protobuf:"varint,8,opt,name=seed,proto3" json:"seed,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AnswerGenerationSpec_UserDefinedClassifierSpec) Reset() {
+	*x = AnswerGenerationSpec_UserDefinedClassifierSpec{}
+	mi := &file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AnswerGenerationSpec_UserDefinedClassifierSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AnswerGenerationSpec_UserDefinedClassifierSpec) ProtoMessage() {}
+
+func (x *AnswerGenerationSpec_UserDefinedClassifierSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AnswerGenerationSpec_UserDefinedClassifierSpec.ProtoReflect.Descriptor instead.
+func (*AnswerGenerationSpec_UserDefinedClassifierSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_serving_config_proto_rawDescGZIP(), []int{1, 0}
+}
+
+func (x *AnswerGenerationSpec_UserDefinedClassifierSpec) GetEnableUserDefinedClassifier() bool {
+	if x != nil {
+		return x.EnableUserDefinedClassifier
+	}
+	return false
+}
+
+func (x *AnswerGenerationSpec_UserDefinedClassifierSpec) GetPreamble() string {
+	if x != nil {
+		return x.Preamble
+	}
+	return ""
+}
+
+func (x *AnswerGenerationSpec_UserDefinedClassifierSpec) GetModelId() string {
+	if x != nil {
+		return x.ModelId
+	}
+	return ""
+}
+
+func (x *AnswerGenerationSpec_UserDefinedClassifierSpec) GetTaskMarker() string {
+	if x != nil {
+		return x.TaskMarker
+	}
+	return ""
+}
+
+func (x *AnswerGenerationSpec_UserDefinedClassifierSpec) GetTopP() float64 {
+	if x != nil {
+		return x.TopP
+	}
+	return 0
+}
+
+func (x *AnswerGenerationSpec_UserDefinedClassifierSpec) GetTopK() int64 {
+	if x != nil {
+		return x.TopK
+	}
+	return 0
+}
+
+func (x *AnswerGenerationSpec_UserDefinedClassifierSpec) GetTemperature() float64 {
+	if x != nil {
+		return x.Temperature
+	}
+	return 0
+}
+
+func (x *AnswerGenerationSpec_UserDefinedClassifierSpec) GetSeed() int32 {
+	if x != nil {
+		return x.Seed
+	}
+	return 0
+}
+
 var File_google_cloud_discoveryengine_v1beta_serving_config_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1beta_serving_config_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/discoveryengine/v1beta/serving_config.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1a8google/cloud/discoveryengine/v1beta/search_service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x94\x11\n" +
+	"8google/cloud/discoveryengine/v1beta/serving_config.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1a8google/cloud/discoveryengine/v1beta/search_service.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xba\x12\n" +
 	"\rServingConfig\x12c\n" +
 	"\fmedia_config\x18\a \x01(\v2>.google.cloud.discoveryengine.v1beta.ServingConfig.MediaConfigH\x00R\vmediaConfig\x12i\n" +
 	"\x0egeneric_config\x18\n" +
@@ -628,8 +803,10 @@ const file_google_cloud_discoveryengine_v1beta_serving_config_proto_rawDesc = ""
 	"\x1boneway_synonyms_control_ids\x18\x10 \x03(\tR\x18onewaySynonymsControlIds\x124\n" +
 	"\x16dissociate_control_ids\x18\x11 \x03(\tR\x14dissociateControlIds\x126\n" +
 	"\x17replacement_control_ids\x18\x12 \x03(\tR\x15replacementControlIds\x12,\n" +
-	"\x12ignore_control_ids\x18\x13 \x03(\tR\x10ignoreControlIds\x12y\n" +
-	"\x14personalization_spec\x18\x19 \x01(\v2F.google.cloud.discoveryengine.v1beta.SearchRequest.PersonalizationSpecR\x13personalizationSpec\x1a\x87\x03\n" +
+	"\x12ignore_control_ids\x18\x13 \x03(\tR\x10ignoreControlIds\x12.\n" +
+	"\x13promote_control_ids\x18\x1a \x03(\tR\x11promoteControlIds\x12y\n" +
+	"\x14personalization_spec\x18\x19 \x01(\v2F.google.cloud.discoveryengine.v1beta.SearchRequest.PersonalizationSpecR\x13personalizationSpec\x12t\n" +
+	"\x16answer_generation_spec\x18\x1b \x01(\v29.google.cloud.discoveryengine.v1beta.AnswerGenerationSpecB\x03\xe0A\x01R\x14answerGenerationSpec\x1a\x87\x03\n" +
 	"\vMediaConfig\x12Q\n" +
 	"$content_watched_percentage_threshold\x18\x02 \x01(\x02H\x00R!contentWatchedPercentageThreshold\x12K\n" +
 	"!content_watched_seconds_threshold\x18\x05 \x01(\x02H\x00R\x1econtentWatchedSecondsThreshold\x12.\n" +
@@ -640,7 +817,19 @@ const file_google_cloud_discoveryengine_v1beta_serving_config_proto_rawDesc = ""
 	"\rGenericConfig\x12t\n" +
 	"\x13content_search_spec\x18\x01 \x01(\v2D.google.cloud.discoveryengine.v1beta.SearchRequest.ContentSearchSpecR\x11contentSearchSpec:\x80\x03\xeaA\xfc\x02\n" +
 	",discoveryengine.googleapis.com/ServingConfig\x12_projects/{project}/locations/{location}/dataStores/{data_store}/servingConfigs/{serving_config}\x12xprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/servingConfigs/{serving_config}\x12qprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/servingConfigs/{serving_config}B\x11\n" +
-	"\x0fvertical_configB\x99\x02\n" +
+	"\x0fvertical_config\"\xf5\x03\n" +
+	"\x14AnswerGenerationSpec\x12\x99\x01\n" +
+	"\x1cuser_defined_classifier_spec\x18\x01 \x01(\v2S.google.cloud.discoveryengine.v1beta.AnswerGenerationSpec.UserDefinedClassifierSpecB\x03\xe0A\x01R\x19userDefinedClassifierSpec\x1a\xc0\x02\n" +
+	"\x19UserDefinedClassifierSpec\x12H\n" +
+	"\x1eenable_user_defined_classifier\x18\x01 \x01(\bB\x03\xe0A\x01R\x1benableUserDefinedClassifier\x12\x1f\n" +
+	"\bpreamble\x18\x02 \x01(\tB\x03\xe0A\x01R\bpreamble\x12\x1e\n" +
+	"\bmodel_id\x18\x03 \x01(\tB\x03\xe0A\x01R\amodelId\x12$\n" +
+	"\vtask_marker\x18\x04 \x01(\tB\x03\xe0A\x01R\n" +
+	"taskMarker\x12\x18\n" +
+	"\x05top_p\x18\x05 \x01(\x01B\x03\xe0A\x01R\x04topP\x12\x18\n" +
+	"\x05top_k\x18\x06 \x01(\x03B\x03\xe0A\x01R\x04topK\x12%\n" +
+	"\vtemperature\x18\a \x01(\x01B\x03\xe0A\x01R\vtemperature\x12\x17\n" +
+	"\x04seed\x18\b \x01(\x05B\x03\xe0A\x01R\x04seedB\x99\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\x12ServingConfigProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
 
 var (
@@ -655,31 +844,35 @@ func file_google_cloud_discoveryengine_v1beta_serving_config_proto_rawDescGZIP()
 	return file_google_cloud_discoveryengine_v1beta_serving_config_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_google_cloud_discoveryengine_v1beta_serving_config_proto_goTypes = []any{
-	(*ServingConfig)(nil),                     // 0: google.cloud.discoveryengine.v1beta.ServingConfig
-	(*ServingConfig_MediaConfig)(nil),         // 1: google.cloud.discoveryengine.v1beta.ServingConfig.MediaConfig
-	(*ServingConfig_GenericConfig)(nil),       // 2: google.cloud.discoveryengine.v1beta.ServingConfig.GenericConfig
-	(SolutionType)(0),                         // 3: google.cloud.discoveryengine.v1beta.SolutionType
-	(*EmbeddingConfig)(nil),                   // 4: google.cloud.discoveryengine.v1beta.EmbeddingConfig
-	(*timestamppb.Timestamp)(nil),             // 5: google.protobuf.Timestamp
-	(*SearchRequest_PersonalizationSpec)(nil), // 6: google.cloud.discoveryengine.v1beta.SearchRequest.PersonalizationSpec
-	(*SearchRequest_ContentSearchSpec)(nil),   // 7: google.cloud.discoveryengine.v1beta.SearchRequest.ContentSearchSpec
+	(*ServingConfig)(nil),                                  // 0: google.cloud.discoveryengine.v1beta.ServingConfig
+	(*AnswerGenerationSpec)(nil),                           // 1: google.cloud.discoveryengine.v1beta.AnswerGenerationSpec
+	(*ServingConfig_MediaConfig)(nil),                      // 2: google.cloud.discoveryengine.v1beta.ServingConfig.MediaConfig
+	(*ServingConfig_GenericConfig)(nil),                    // 3: google.cloud.discoveryengine.v1beta.ServingConfig.GenericConfig
+	(*AnswerGenerationSpec_UserDefinedClassifierSpec)(nil), // 4: google.cloud.discoveryengine.v1beta.AnswerGenerationSpec.UserDefinedClassifierSpec
+	(SolutionType)(0),                                      // 5: google.cloud.discoveryengine.v1beta.SolutionType
+	(*EmbeddingConfig)(nil),                                // 6: google.cloud.discoveryengine.v1beta.EmbeddingConfig
+	(*timestamppb.Timestamp)(nil),                          // 7: google.protobuf.Timestamp
+	(*SearchRequest_PersonalizationSpec)(nil),              // 8: google.cloud.discoveryengine.v1beta.SearchRequest.PersonalizationSpec
+	(*SearchRequest_ContentSearchSpec)(nil),                // 9: google.cloud.discoveryengine.v1beta.SearchRequest.ContentSearchSpec
 }
 var file_google_cloud_discoveryengine_v1beta_serving_config_proto_depIdxs = []int32{
-	1, // 0: google.cloud.discoveryengine.v1beta.ServingConfig.media_config:type_name -> google.cloud.discoveryengine.v1beta.ServingConfig.MediaConfig
-	2, // 1: google.cloud.discoveryengine.v1beta.ServingConfig.generic_config:type_name -> google.cloud.discoveryengine.v1beta.ServingConfig.GenericConfig
-	3, // 2: google.cloud.discoveryengine.v1beta.ServingConfig.solution_type:type_name -> google.cloud.discoveryengine.v1beta.SolutionType
-	4, // 3: google.cloud.discoveryengine.v1beta.ServingConfig.embedding_config:type_name -> google.cloud.discoveryengine.v1beta.EmbeddingConfig
-	5, // 4: google.cloud.discoveryengine.v1beta.ServingConfig.create_time:type_name -> google.protobuf.Timestamp
-	5, // 5: google.cloud.discoveryengine.v1beta.ServingConfig.update_time:type_name -> google.protobuf.Timestamp
-	6, // 6: google.cloud.discoveryengine.v1beta.ServingConfig.personalization_spec:type_name -> google.cloud.discoveryengine.v1beta.SearchRequest.PersonalizationSpec
-	7, // 7: google.cloud.discoveryengine.v1beta.ServingConfig.GenericConfig.content_search_spec:type_name -> google.cloud.discoveryengine.v1beta.SearchRequest.ContentSearchSpec
-	8, // [8:8] is the sub-list for method output_type
-	8, // [8:8] is the sub-list for method input_type
-	8, // [8:8] is the sub-list for extension type_name
-	8, // [8:8] is the sub-list for extension extendee
-	0, // [0:8] is the sub-list for field type_name
+	2,  // 0: google.cloud.discoveryengine.v1beta.ServingConfig.media_config:type_name -> google.cloud.discoveryengine.v1beta.ServingConfig.MediaConfig
+	3,  // 1: google.cloud.discoveryengine.v1beta.ServingConfig.generic_config:type_name -> google.cloud.discoveryengine.v1beta.ServingConfig.GenericConfig
+	5,  // 2: google.cloud.discoveryengine.v1beta.ServingConfig.solution_type:type_name -> google.cloud.discoveryengine.v1beta.SolutionType
+	6,  // 3: google.cloud.discoveryengine.v1beta.ServingConfig.embedding_config:type_name -> google.cloud.discoveryengine.v1beta.EmbeddingConfig
+	7,  // 4: google.cloud.discoveryengine.v1beta.ServingConfig.create_time:type_name -> google.protobuf.Timestamp
+	7,  // 5: google.cloud.discoveryengine.v1beta.ServingConfig.update_time:type_name -> google.protobuf.Timestamp
+	8,  // 6: google.cloud.discoveryengine.v1beta.ServingConfig.personalization_spec:type_name -> google.cloud.discoveryengine.v1beta.SearchRequest.PersonalizationSpec
+	1,  // 7: google.cloud.discoveryengine.v1beta.ServingConfig.answer_generation_spec:type_name -> google.cloud.discoveryengine.v1beta.AnswerGenerationSpec
+	4,  // 8: google.cloud.discoveryengine.v1beta.AnswerGenerationSpec.user_defined_classifier_spec:type_name -> google.cloud.discoveryengine.v1beta.AnswerGenerationSpec.UserDefinedClassifierSpec
+	9,  // 9: google.cloud.discoveryengine.v1beta.ServingConfig.GenericConfig.content_search_spec:type_name -> google.cloud.discoveryengine.v1beta.SearchRequest.ContentSearchSpec
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1beta_serving_config_proto_init() }
@@ -693,7 +886,7 @@ func file_google_cloud_discoveryengine_v1beta_serving_config_proto_init() {
 		(*ServingConfig_MediaConfig_)(nil),
 		(*ServingConfig_GenericConfig_)(nil),
 	}
-	file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes[1].OneofWrappers = []any{
+	file_google_cloud_discoveryengine_v1beta_serving_config_proto_msgTypes[2].OneofWrappers = []any{
 		(*ServingConfig_MediaConfig_ContentWatchedPercentageThreshold)(nil),
 		(*ServingConfig_MediaConfig_ContentWatchedSecondsThreshold)(nil),
 	}
@@ -703,7 +896,7 @@ func file_google_cloud_discoveryengine_v1beta_serving_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1beta_serving_config_proto_rawDesc), len(file_google_cloud_discoveryengine_v1beta_serving_config_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

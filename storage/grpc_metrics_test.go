@@ -25,15 +25,6 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 )
 
-func TestMetricFormatter(t *testing.T) {
-	want := "storage.googleapis.com/client/metric/name"
-	s := metricdata.Metrics{Name: "metric.name"}
-	got := metricFormatter(s)
-	if want != got {
-		t.Errorf("got: %v, want %v", got, want)
-	}
-}
-
 func TestStorageMonitoredResource(t *testing.T) {
 	ctx := context.Background()
 	for _, test := range []struct {

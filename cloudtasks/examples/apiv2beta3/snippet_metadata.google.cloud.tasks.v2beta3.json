@@ -8,9 +8,101 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/cloudtasks/apiv2beta3",
-    "version": "1.18.0"
+    "version": "1.19.0"
   },
   "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tasks.v2beta3.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tasks.v2beta3.Client.BatchCreateTasks",
+        "method": {
+          "fullName": "google.cloud.tasks.v2beta3.CloudTasks.BatchCreateTasks",
+          "service": {
+            "fullName": "google.cloud.tasks.v2beta3.CloudTasks",
+            "shortName": "CloudTasks"
+          },
+          "shortName": "BatchCreateTasks"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cloudtaskspb.BatchCreateTasksRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BatchCreateTasksOperation",
+        "shortName": "BatchCreateTasks"
+      },
+      "description": "BatchCreateTasks creates a batch of tasks and adds them to a queue.\nThis call is not atomic.\n\nAll tasks must be for the same queue.\nA maximum of 100 tasks can be created in a single batch.",
+      "file": "Client/BatchCreateTasks/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudtasks_v2beta3_generated_CloudTasks_BatchCreateTasks_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudtasks BatchCreateTasks Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tasks.v2beta3.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tasks.v2beta3.Client.BatchDeleteTasks",
+        "method": {
+          "fullName": "google.cloud.tasks.v2beta3.CloudTasks.BatchDeleteTasks",
+          "service": {
+            "fullName": "google.cloud.tasks.v2beta3.CloudTasks",
+            "shortName": "CloudTasks"
+          },
+          "shortName": "BatchDeleteTasks"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cloudtaskspb.BatchDeleteTasksRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BatchDeleteTasksOperation",
+        "shortName": "BatchDeleteTasks"
+      },
+      "description": "BatchDeleteTasks deletes a batch of tasks.\nThis is a non-atomic operation: if deletion fails for some tasks, it\ncan still succeed for others. The metadata field of\ngoogle.longrunning.Operation contains details of failed deletions.\nA maximum of 1000 tasks can be deleted in a batch.",
+      "file": "Client/BatchDeleteTasks/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudtasks_v2beta3_generated_CloudTasks_BatchDeleteTasks_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudtasks BatchDeleteTasks Sample"
+    },
     {
       "clientMethod": {
         "client": {
@@ -134,7 +226,7 @@
         ],
         "shortName": "DeleteQueue"
       },
-      "description": "DeleteQueue deletes a queue.\n\nThis command will delete the queue even if it has tasks in it.\n\nNote: If you delete a queue, a queue with the same name can't be created\nfor 7 days.\n\nWARNING: Using this method may have unintended side effects if you are\nusing an App Engine `queue.yaml` or `queue.xml` file to manage your queues.\nRead\n[Overview of Queue Management and\nqueue.yaml](https: //cloud.google.com/tasks/docs/queue-yaml) before using\nthis method.",
+      "description": "DeleteQueue deletes a queue.\n\nThis command will delete the queue even if it has tasks in it.\n\nNote : If you delete a queue, you may be prevented from creating a new\nqueue with the same name as the deleted queue for a tombstone window of up\nto 3 days. During this window, the CreateQueue operation may appear to\nrecreate the queue, but this can be misleading. If you attempt to create\na queue with the same name as one that is in the tombstone window, run\nGetQueue to confirm that the queue creation was successful. If GetQueue\nreturns 200 response code, your queue was successfully created with the\nname of the previously deleted queue. Otherwise, your queue did not\nsuccessfully recreate.\n\nWARNING: Using this method may have unintended side effects if you are\nusing an App Engine `queue.yaml` or `queue.xml` file to manage your queues.\nRead\n[Overview of Queue Management and\nqueue.yaml](https: //cloud.google.com/tasks/docs/queue-yaml) before using\nthis method.",
       "file": "Client/DeleteQueue/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -192,6 +284,52 @@
         }
       ],
       "title": "cloudtasks DeleteTask Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tasks.v2beta3.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tasks.v2beta3.Client.GetCmekConfig",
+        "method": {
+          "fullName": "google.cloud.tasks.v2beta3.CloudTasks.GetCmekConfig",
+          "service": {
+            "fullName": "google.cloud.tasks.v2beta3.CloudTasks",
+            "shortName": "CloudTasks"
+          },
+          "shortName": "GetCmekConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cloudtaskspb.GetCmekConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*cloudtaskspb.CmekConfig",
+        "shortName": "GetCmekConfig"
+      },
+      "description": "GetCmekConfig gets the CMEK config.\n\nGets the Customer Managed Encryption Key configured with the Cloud Tasks\nlcoation. By default there is no kms_key configured.",
+      "file": "Client/GetCmekConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudtasks_v2beta3_generated_CloudTasks_GetCmekConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudtasks GetCmekConfig Sample"
     },
     {
       "clientMethod": {
@@ -291,6 +429,52 @@
           "fullName": "google.cloud.tasks.v2beta3.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.tasks.v2beta3.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudtasks_v2beta3_generated_CloudTasks_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudtasks GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tasks.v2beta3.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.tasks.v2beta3.Client.GetQueue",
         "method": {
           "fullName": "google.cloud.tasks.v2beta3.CloudTasks.GetQueue",
@@ -363,7 +547,7 @@
         "resultType": "*cloudtaskspb.Task",
         "shortName": "GetTask"
       },
-      "description": "GetTask gets a task.",
+      "description": "GetTask gets a task.\n\nAfter a task is successfully executed or has exhausted its retry attempts,\nthe task is deleted. A `GetTask` request for a deleted task returns a\n`NOT_FOUND` error.",
       "file": "Client/GetTask/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -409,7 +593,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -685,7 +869,7 @@
         "resultType": "*cloudtaskspb.Task",
         "shortName": "RunTask"
       },
-      "description": "RunTask forces a task to run now.\n\nWhen this method is called, Cloud Tasks will dispatch the task, even if\nthe task is already running, the queue has reached its\n[RateLimits][google.cloud.tasks.v2beta3.RateLimits] or is\n[PAUSED][google.cloud.tasks.v2beta3.Queue.State.PAUSED].\n\nThis command is meant to be used for manual debugging. For\nexample, [RunTask][google.cloud.tasks.v2beta3.CloudTasks.RunTask] can be\nused to retry a failed task after a fix has been made or to manually force\na task to be dispatched now.\n\nThe dispatched task is returned. That is, the task that is returned\ncontains the [status][Task.status] after the task is dispatched but\nbefore the task is received by its target.\n\nIf Cloud Tasks receives a successful response from the task's\ntarget, then the task will be deleted; otherwise the task's\n[schedule_time][google.cloud.tasks.v2beta3.Task.schedule_time] will be\nreset to the time that\n[RunTask][google.cloud.tasks.v2beta3.CloudTasks.RunTask] was called plus\nthe retry delay specified in the queue's\n[RetryConfig][google.cloud.tasks.v2beta3.RetryConfig].\n\n[RunTask][google.cloud.tasks.v2beta3.CloudTasks.RunTask] returns\n[NOT_FOUND][google.rpc.Code.NOT_FOUND] when it is called on a\ntask that has already succeeded or permanently failed.",
+      "description": "RunTask forces a task to run now.\n\nWhen this method is called, Cloud Tasks will dispatch the task, even if\nthe task is already running, the queue has reached its\n[RateLimits][google.cloud.tasks.v2beta3.RateLimits] or is\n[PAUSED][google.cloud.tasks.v2beta3.Queue.State.PAUSED].\n\nThis command is meant to be used for manual debugging. For\nexample, [RunTask][google.cloud.tasks.v2beta3.CloudTasks.RunTask] can be\nused to retry a failed task after a fix has been made or to manually force\na task to be dispatched now.\n\nThe dispatched task is returned. That is, the task that is returned\ncontains the [status][google.cloud.tasks.v2beta3.Task.first_attempt] after\nthe task is dispatched but before the task is received by its target.\n\nIf Cloud Tasks receives a successful response from the task's\ntarget, then the task will be deleted; otherwise the task's\n[schedule_time][google.cloud.tasks.v2beta3.Task.schedule_time] will be\nreset to the time that\n[RunTask][google.cloud.tasks.v2beta3.CloudTasks.RunTask] was called plus\nthe retry delay specified in the queue's\n[RetryConfig][google.cloud.tasks.v2beta3.RetryConfig].\n\n[RunTask][google.cloud.tasks.v2beta3.CloudTasks.RunTask] returns\n[NOT_FOUND][google.rpc.Code.NOT_FOUND] when it is called on a\ntask that has already succeeded or permanently failed.",
       "file": "Client/RunTask/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -790,6 +974,52 @@
         }
       ],
       "title": "cloudtasks TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tasks.v2beta3.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tasks.v2beta3.Client.UpdateCmekConfig",
+        "method": {
+          "fullName": "google.cloud.tasks.v2beta3.CloudTasks.UpdateCmekConfig",
+          "service": {
+            "fullName": "google.cloud.tasks.v2beta3.CloudTasks",
+            "shortName": "CloudTasks"
+          },
+          "shortName": "UpdateCmekConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cloudtaskspb.UpdateCmekConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*cloudtaskspb.CmekConfig",
+        "shortName": "UpdateCmekConfig"
+      },
+      "description": "UpdateCmekConfig creates or Updates a CMEK config.\n\nUpdates the Customer Managed Encryption Key associated with the Cloud Tasks\nlocation (Creates if the key does not already exist). All new tasks created\nin the location will be encrypted at-rest with the KMS-key provided in the\nconfig.",
+      "file": "Client/UpdateCmekConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudtasks_v2beta3_generated_CloudTasks_UpdateCmekConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudtasks UpdateCmekConfig Sample"
     },
     {
       "clientMethod": {

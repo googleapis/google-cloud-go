@@ -34,6 +34,7 @@ import (
 	runpb "cloud.google.com/go/run/apiv2/runpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -543,8 +544,12 @@ func (c *workerPoolsGRPCClient) CreateWorkerPool(ctx context.Context, req *runpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.CreateWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -669,8 +674,12 @@ func (c *workerPoolsGRPCClient) UpdateWorkerPool(ctx context.Context, req *runpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.UpdateWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -704,8 +713,12 @@ func (c *workerPoolsGRPCClient) DeleteWorkerPool(ctx context.Context, req *runpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.DeleteWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -963,8 +976,12 @@ func (c *workerPoolsRESTClient) CreateWorkerPool(ctx context.Context, req *runpb
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.CreateWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1199,8 +1216,12 @@ func (c *workerPoolsRESTClient) UpdateWorkerPool(ctx context.Context, req *runpb
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.UpdateWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1274,8 +1295,12 @@ func (c *workerPoolsRESTClient) DeleteWorkerPool(ctx context.Context, req *runpb
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.DeleteWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1711,7 +1736,7 @@ func (c *workerPoolsRESTClient) WaitOperation(ctx context.Context, req *longrunn
 // The name must be that of a previously created CreateWorkerPoolOperation, possibly from a different process.
 func (c *workerPoolsGRPCClient) CreateWorkerPoolOperation(name string) *CreateWorkerPoolOperation {
 	return &CreateWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.CreateWorkerPoolOperation"),
 	}
 }
 
@@ -1720,7 +1745,7 @@ func (c *workerPoolsGRPCClient) CreateWorkerPoolOperation(name string) *CreateWo
 func (c *workerPoolsRESTClient) CreateWorkerPoolOperation(name string) *CreateWorkerPoolOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.CreateWorkerPoolOperation"),
 		pollPath: override,
 	}
 }
@@ -1729,7 +1754,7 @@ func (c *workerPoolsRESTClient) CreateWorkerPoolOperation(name string) *CreateWo
 // The name must be that of a previously created DeleteWorkerPoolOperation, possibly from a different process.
 func (c *workerPoolsGRPCClient) DeleteWorkerPoolOperation(name string) *DeleteWorkerPoolOperation {
 	return &DeleteWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.DeleteWorkerPoolOperation"),
 	}
 }
 
@@ -1738,7 +1763,7 @@ func (c *workerPoolsGRPCClient) DeleteWorkerPoolOperation(name string) *DeleteWo
 func (c *workerPoolsRESTClient) DeleteWorkerPoolOperation(name string) *DeleteWorkerPoolOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.DeleteWorkerPoolOperation"),
 		pollPath: override,
 	}
 }
@@ -1747,7 +1772,7 @@ func (c *workerPoolsRESTClient) DeleteWorkerPoolOperation(name string) *DeleteWo
 // The name must be that of a previously created UpdateWorkerPoolOperation, possibly from a different process.
 func (c *workerPoolsGRPCClient) UpdateWorkerPoolOperation(name string) *UpdateWorkerPoolOperation {
 	return &UpdateWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.UpdateWorkerPoolOperation"),
 	}
 }
 
@@ -1756,7 +1781,7 @@ func (c *workerPoolsGRPCClient) UpdateWorkerPoolOperation(name string) *UpdateWo
 func (c *workerPoolsRESTClient) UpdateWorkerPoolOperation(name string) *UpdateWorkerPoolOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.UpdateWorkerPoolOperation"),
 		pollPath: override,
 	}
 }

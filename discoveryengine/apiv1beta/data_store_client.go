@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -551,8 +552,12 @@ func (c *dataStoreGRPCClient) CreateDataStore(ctx context.Context, req *discover
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.CreateDataStoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDataStoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -653,8 +658,12 @@ func (c *dataStoreGRPCClient) DeleteDataStore(ctx context.Context, req *discover
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteDataStoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDataStoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -789,10 +798,16 @@ func (c *dataStoreRESTClient) CreateDataStore(ctx context.Context, req *discover
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetCmekConfigName() != "" {
+		params.Add("cmekConfigName", fmt.Sprintf("%v", req.GetCmekConfigName()))
+	}
 	if req.GetCreateAdvancedSiteSearch() {
 		params.Add("createAdvancedSiteSearch", fmt.Sprintf("%v", req.GetCreateAdvancedSiteSearch()))
 	}
 	params.Add("dataStoreId", fmt.Sprintf("%v", req.GetDataStoreId()))
+	if req.GetDisableCmek() {
+		params.Add("disableCmek", fmt.Sprintf("%v", req.GetDisableCmek()))
+	}
 	if req.GetSkipDefaultSchemaCreation() {
 		params.Add("skipDefaultSchemaCreation", fmt.Sprintf("%v", req.GetSkipDefaultSchemaCreation()))
 	}
@@ -840,8 +855,12 @@ func (c *dataStoreRESTClient) CreateDataStore(ctx context.Context, req *discover
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.CreateDataStoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDataStoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1039,8 +1058,12 @@ func (c *dataStoreRESTClient) DeleteDataStore(ctx context.Context, req *discover
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteDataStoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDataStoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1300,7 +1323,7 @@ func (c *dataStoreRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created CreateDataStoreOperation, possibly from a different process.
 func (c *dataStoreGRPCClient) CreateDataStoreOperation(name string) *CreateDataStoreOperation {
 	return &CreateDataStoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.CreateDataStoreOperation"),
 	}
 }
 
@@ -1309,7 +1332,7 @@ func (c *dataStoreGRPCClient) CreateDataStoreOperation(name string) *CreateDataS
 func (c *dataStoreRESTClient) CreateDataStoreOperation(name string) *CreateDataStoreOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateDataStoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.CreateDataStoreOperation"),
 		pollPath: override,
 	}
 }
@@ -1318,7 +1341,7 @@ func (c *dataStoreRESTClient) CreateDataStoreOperation(name string) *CreateDataS
 // The name must be that of a previously created DeleteDataStoreOperation, possibly from a different process.
 func (c *dataStoreGRPCClient) DeleteDataStoreOperation(name string) *DeleteDataStoreOperation {
 	return &DeleteDataStoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteDataStoreOperation"),
 	}
 }
 
@@ -1327,7 +1350,7 @@ func (c *dataStoreGRPCClient) DeleteDataStoreOperation(name string) *DeleteDataS
 func (c *dataStoreRESTClient) DeleteDataStoreOperation(name string) *DeleteDataStoreOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteDataStoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteDataStoreOperation"),
 		pollPath: override,
 	}
 }

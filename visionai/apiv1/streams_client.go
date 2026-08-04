@@ -31,6 +31,7 @@ import (
 	visionaipb "cloud.google.com/go/visionai/apiv1/visionaipb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -880,8 +881,12 @@ func (c *streamsGRPCClient) CreateCluster(ctx context.Context, req *visionaipb.C
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -903,8 +908,12 @@ func (c *streamsGRPCClient) UpdateCluster(ctx context.Context, req *visionaipb.U
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -929,8 +938,12 @@ func (c *streamsGRPCClient) DeleteCluster(ctx context.Context, req *visionaipb.D
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1031,8 +1044,12 @@ func (c *streamsGRPCClient) CreateStream(ctx context.Context, req *visionaipb.Cr
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateStreamOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateStreamOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1054,8 +1071,12 @@ func (c *streamsGRPCClient) UpdateStream(ctx context.Context, req *visionaipb.Up
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateStreamOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateStreamOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1080,8 +1101,12 @@ func (c *streamsGRPCClient) DeleteStream(ctx context.Context, req *visionaipb.De
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteStreamOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteStreamOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1103,8 +1128,12 @@ func (c *streamsGRPCClient) GetStreamThumbnail(ctx context.Context, req *visiona
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.GetStreamThumbnailOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &GetStreamThumbnailOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1226,8 +1255,12 @@ func (c *streamsGRPCClient) CreateEvent(ctx context.Context, req *visionaipb.Cre
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateEventOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEventOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1249,8 +1282,12 @@ func (c *streamsGRPCClient) UpdateEvent(ctx context.Context, req *visionaipb.Upd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateEventOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEventOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1275,8 +1312,12 @@ func (c *streamsGRPCClient) DeleteEvent(ctx context.Context, req *visionaipb.Del
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteEventOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEventOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1377,8 +1418,12 @@ func (c *streamsGRPCClient) CreateSeries(ctx context.Context, req *visionaipb.Cr
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateSeriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSeriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1400,8 +1445,12 @@ func (c *streamsGRPCClient) UpdateSeries(ctx context.Context, req *visionaipb.Up
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateSeriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSeriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1426,8 +1475,12 @@ func (c *streamsGRPCClient) DeleteSeries(ctx context.Context, req *visionaipb.De
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteSeriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSeriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1452,8 +1505,12 @@ func (c *streamsGRPCClient) MaterializeChannel(ctx context.Context, req *visiona
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.MaterializeChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MaterializeChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1837,8 +1894,12 @@ func (c *streamsRESTClient) CreateCluster(ctx context.Context, req *visionaipb.C
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1911,8 +1972,12 @@ func (c *streamsRESTClient) UpdateCluster(ctx context.Context, req *visionaipb.U
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1974,8 +2039,12 @@ func (c *streamsRESTClient) DeleteCluster(ctx context.Context, req *visionaipb.D
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2186,8 +2255,12 @@ func (c *streamsRESTClient) CreateStream(ctx context.Context, req *visionaipb.Cr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateStreamOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateStreamOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2260,8 +2333,12 @@ func (c *streamsRESTClient) UpdateStream(ctx context.Context, req *visionaipb.Up
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateStreamOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateStreamOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2323,8 +2400,12 @@ func (c *streamsRESTClient) DeleteStream(ctx context.Context, req *visionaipb.De
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteStreamOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteStreamOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2386,8 +2467,12 @@ func (c *streamsRESTClient) GetStreamThumbnail(ctx context.Context, req *visiona
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.GetStreamThumbnailOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &GetStreamThumbnailOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2658,8 +2743,12 @@ func (c *streamsRESTClient) CreateEvent(ctx context.Context, req *visionaipb.Cre
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateEventOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEventOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2732,8 +2821,12 @@ func (c *streamsRESTClient) UpdateEvent(ctx context.Context, req *visionaipb.Upd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateEventOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEventOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2795,8 +2888,12 @@ func (c *streamsRESTClient) DeleteEvent(ctx context.Context, req *visionaipb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteEventOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEventOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3007,8 +3104,12 @@ func (c *streamsRESTClient) CreateSeries(ctx context.Context, req *visionaipb.Cr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateSeriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSeriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3081,8 +3182,12 @@ func (c *streamsRESTClient) UpdateSeries(ctx context.Context, req *visionaipb.Up
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateSeriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSeriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3144,8 +3249,12 @@ func (c *streamsRESTClient) DeleteSeries(ctx context.Context, req *visionaipb.De
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteSeriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSeriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3215,8 +3324,12 @@ func (c *streamsRESTClient) MaterializeChannel(ctx context.Context, req *visiona
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.MaterializeChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MaterializeChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3582,7 +3695,7 @@ func (c *streamsRESTClient) ListOperations(ctx context.Context, req *longrunning
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
 func (c *streamsGRPCClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateClusterOperation"),
 	}
 }
 
@@ -3591,7 +3704,7 @@ func (c *streamsGRPCClient) CreateClusterOperation(name string) *CreateClusterOp
 func (c *streamsRESTClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -3600,7 +3713,7 @@ func (c *streamsRESTClient) CreateClusterOperation(name string) *CreateClusterOp
 // The name must be that of a previously created CreateEventOperation, possibly from a different process.
 func (c *streamsGRPCClient) CreateEventOperation(name string) *CreateEventOperation {
 	return &CreateEventOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateEventOperation"),
 	}
 }
 
@@ -3609,7 +3722,7 @@ func (c *streamsGRPCClient) CreateEventOperation(name string) *CreateEventOperat
 func (c *streamsRESTClient) CreateEventOperation(name string) *CreateEventOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEventOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateEventOperation"),
 		pollPath: override,
 	}
 }
@@ -3618,7 +3731,7 @@ func (c *streamsRESTClient) CreateEventOperation(name string) *CreateEventOperat
 // The name must be that of a previously created CreateSeriesOperation, possibly from a different process.
 func (c *streamsGRPCClient) CreateSeriesOperation(name string) *CreateSeriesOperation {
 	return &CreateSeriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateSeriesOperation"),
 	}
 }
 
@@ -3627,7 +3740,7 @@ func (c *streamsGRPCClient) CreateSeriesOperation(name string) *CreateSeriesOper
 func (c *streamsRESTClient) CreateSeriesOperation(name string) *CreateSeriesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSeriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateSeriesOperation"),
 		pollPath: override,
 	}
 }
@@ -3636,7 +3749,7 @@ func (c *streamsRESTClient) CreateSeriesOperation(name string) *CreateSeriesOper
 // The name must be that of a previously created CreateStreamOperation, possibly from a different process.
 func (c *streamsGRPCClient) CreateStreamOperation(name string) *CreateStreamOperation {
 	return &CreateStreamOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateStreamOperation"),
 	}
 }
 
@@ -3645,7 +3758,7 @@ func (c *streamsGRPCClient) CreateStreamOperation(name string) *CreateStreamOper
 func (c *streamsRESTClient) CreateStreamOperation(name string) *CreateStreamOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateStreamOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateStreamOperation"),
 		pollPath: override,
 	}
 }
@@ -3654,7 +3767,7 @@ func (c *streamsRESTClient) CreateStreamOperation(name string) *CreateStreamOper
 // The name must be that of a previously created DeleteClusterOperation, possibly from a different process.
 func (c *streamsGRPCClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteClusterOperation"),
 	}
 }
 
@@ -3663,7 +3776,7 @@ func (c *streamsGRPCClient) DeleteClusterOperation(name string) *DeleteClusterOp
 func (c *streamsRESTClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -3672,7 +3785,7 @@ func (c *streamsRESTClient) DeleteClusterOperation(name string) *DeleteClusterOp
 // The name must be that of a previously created DeleteEventOperation, possibly from a different process.
 func (c *streamsGRPCClient) DeleteEventOperation(name string) *DeleteEventOperation {
 	return &DeleteEventOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteEventOperation"),
 	}
 }
 
@@ -3681,7 +3794,7 @@ func (c *streamsGRPCClient) DeleteEventOperation(name string) *DeleteEventOperat
 func (c *streamsRESTClient) DeleteEventOperation(name string) *DeleteEventOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEventOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteEventOperation"),
 		pollPath: override,
 	}
 }
@@ -3690,7 +3803,7 @@ func (c *streamsRESTClient) DeleteEventOperation(name string) *DeleteEventOperat
 // The name must be that of a previously created DeleteSeriesOperation, possibly from a different process.
 func (c *streamsGRPCClient) DeleteSeriesOperation(name string) *DeleteSeriesOperation {
 	return &DeleteSeriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteSeriesOperation"),
 	}
 }
 
@@ -3699,7 +3812,7 @@ func (c *streamsGRPCClient) DeleteSeriesOperation(name string) *DeleteSeriesOper
 func (c *streamsRESTClient) DeleteSeriesOperation(name string) *DeleteSeriesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteSeriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteSeriesOperation"),
 		pollPath: override,
 	}
 }
@@ -3708,7 +3821,7 @@ func (c *streamsRESTClient) DeleteSeriesOperation(name string) *DeleteSeriesOper
 // The name must be that of a previously created DeleteStreamOperation, possibly from a different process.
 func (c *streamsGRPCClient) DeleteStreamOperation(name string) *DeleteStreamOperation {
 	return &DeleteStreamOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteStreamOperation"),
 	}
 }
 
@@ -3717,7 +3830,7 @@ func (c *streamsGRPCClient) DeleteStreamOperation(name string) *DeleteStreamOper
 func (c *streamsRESTClient) DeleteStreamOperation(name string) *DeleteStreamOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteStreamOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteStreamOperation"),
 		pollPath: override,
 	}
 }
@@ -3726,7 +3839,7 @@ func (c *streamsRESTClient) DeleteStreamOperation(name string) *DeleteStreamOper
 // The name must be that of a previously created GetStreamThumbnailOperation, possibly from a different process.
 func (c *streamsGRPCClient) GetStreamThumbnailOperation(name string) *GetStreamThumbnailOperation {
 	return &GetStreamThumbnailOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.GetStreamThumbnailOperation"),
 	}
 }
 
@@ -3735,7 +3848,7 @@ func (c *streamsGRPCClient) GetStreamThumbnailOperation(name string) *GetStreamT
 func (c *streamsRESTClient) GetStreamThumbnailOperation(name string) *GetStreamThumbnailOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &GetStreamThumbnailOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.GetStreamThumbnailOperation"),
 		pollPath: override,
 	}
 }
@@ -3744,7 +3857,7 @@ func (c *streamsRESTClient) GetStreamThumbnailOperation(name string) *GetStreamT
 // The name must be that of a previously created MaterializeChannelOperation, possibly from a different process.
 func (c *streamsGRPCClient) MaterializeChannelOperation(name string) *MaterializeChannelOperation {
 	return &MaterializeChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.MaterializeChannelOperation"),
 	}
 }
 
@@ -3753,7 +3866,7 @@ func (c *streamsGRPCClient) MaterializeChannelOperation(name string) *Materializ
 func (c *streamsRESTClient) MaterializeChannelOperation(name string) *MaterializeChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &MaterializeChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.MaterializeChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -3762,7 +3875,7 @@ func (c *streamsRESTClient) MaterializeChannelOperation(name string) *Materializ
 // The name must be that of a previously created UpdateClusterOperation, possibly from a different process.
 func (c *streamsGRPCClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateClusterOperation"),
 	}
 }
 
@@ -3771,7 +3884,7 @@ func (c *streamsGRPCClient) UpdateClusterOperation(name string) *UpdateClusterOp
 func (c *streamsRESTClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -3780,7 +3893,7 @@ func (c *streamsRESTClient) UpdateClusterOperation(name string) *UpdateClusterOp
 // The name must be that of a previously created UpdateEventOperation, possibly from a different process.
 func (c *streamsGRPCClient) UpdateEventOperation(name string) *UpdateEventOperation {
 	return &UpdateEventOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateEventOperation"),
 	}
 }
 
@@ -3789,7 +3902,7 @@ func (c *streamsGRPCClient) UpdateEventOperation(name string) *UpdateEventOperat
 func (c *streamsRESTClient) UpdateEventOperation(name string) *UpdateEventOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateEventOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateEventOperation"),
 		pollPath: override,
 	}
 }
@@ -3798,7 +3911,7 @@ func (c *streamsRESTClient) UpdateEventOperation(name string) *UpdateEventOperat
 // The name must be that of a previously created UpdateSeriesOperation, possibly from a different process.
 func (c *streamsGRPCClient) UpdateSeriesOperation(name string) *UpdateSeriesOperation {
 	return &UpdateSeriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateSeriesOperation"),
 	}
 }
 
@@ -3807,7 +3920,7 @@ func (c *streamsGRPCClient) UpdateSeriesOperation(name string) *UpdateSeriesOper
 func (c *streamsRESTClient) UpdateSeriesOperation(name string) *UpdateSeriesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateSeriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateSeriesOperation"),
 		pollPath: override,
 	}
 }
@@ -3816,7 +3929,7 @@ func (c *streamsRESTClient) UpdateSeriesOperation(name string) *UpdateSeriesOper
 // The name must be that of a previously created UpdateStreamOperation, possibly from a different process.
 func (c *streamsGRPCClient) UpdateStreamOperation(name string) *UpdateStreamOperation {
 	return &UpdateStreamOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateStreamOperation"),
 	}
 }
 
@@ -3825,7 +3938,7 @@ func (c *streamsGRPCClient) UpdateStreamOperation(name string) *UpdateStreamOper
 func (c *streamsRESTClient) UpdateStreamOperation(name string) *UpdateStreamOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateStreamOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateStreamOperation"),
 		pollPath: override,
 	}
 }

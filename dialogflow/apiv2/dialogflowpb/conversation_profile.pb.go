@@ -241,7 +241,7 @@ func (x SuggestionFeature_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SuggestionFeature_Type.Descriptor instead.
 func (SuggestionFeature_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDescGZIP(), []int{12, 0}
+	return file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDescGZIP(), []int{13, 0}
 }
 
 // Defines the services to connect to incoming Dialogflow conversations.
@@ -291,6 +291,8 @@ type ConversationProfile struct {
 	// This should be a [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt)
 	// language tag. Example: "en-US".
 	LanguageCode string `protobuf:"bytes,10,opt,name=language_code,json=languageCode,proto3" json:"language_code,omitempty"`
+	// Optional. Configuration for SIP connections.
+	SipConfig *SipConfig `protobuf:"bytes,16,opt,name=sip_config,json=sipConfig,proto3" json:"sip_config,omitempty"`
 	// The time zone of this conversational profile from the
 	// [time zone database](https://www.iana.org/time-zones), e.g.,
 	// America/New_York, Europe/Paris. Defaults to America/New_York.
@@ -427,6 +429,13 @@ func (x *ConversationProfile) GetLanguageCode() string {
 		return x.LanguageCode
 	}
 	return ""
+}
+
+func (x *ConversationProfile) GetSipConfig() *SipConfig {
+	if x != nil {
+		return x.SipConfig
+	}
+	return nil
 }
 
 func (x *ConversationProfile) GetTimeZone() string {
@@ -1149,6 +1158,112 @@ func (x *LoggingConfig) GetEnableStackdriverLogging() bool {
 	return false
 }
 
+// Defines the SIP configuration.
+type SipConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Asks Dialogflow Telephony to create the conversation provided in the SIP
+	// header on the fly when the call comes in.
+	CreateConversationOnTheFly bool `protobuf:"varint,1,opt,name=create_conversation_on_the_fly,json=createConversationOnTheFly,proto3" json:"create_conversation_on_the_fly,omitempty"`
+	// Starts the conversation with inactive SDP directives
+	InactiveStart bool `protobuf:"varint,3,opt,name=inactive_start,json=inactiveStart,proto3" json:"inactive_start,omitempty"`
+	// Max duration for audio recording.
+	// Overrides the default value of 15 min.
+	// Max value is 8 hours.
+	MaxAudioRecordingDuration *durationpb.Duration `protobuf:"bytes,4,opt,name=max_audio_recording_duration,json=maxAudioRecordingDuration,proto3" json:"max_audio_recording_duration,omitempty"`
+	// Allows interactions with a Dialogflow virtual agent even if the call is
+	// connected for SIPREC purposes.
+	AllowVirtualAgentInteraction bool `protobuf:"varint,5,opt,name=allow_virtual_agent_interaction,json=allowVirtualAgentInteraction,proto3" json:"allow_virtual_agent_interaction,omitempty"`
+	// Keeps the conversation running even if the call is disconnected.
+	KeepConversationRunning bool `protobuf:"varint,6,opt,name=keep_conversation_running,json=keepConversationRunning,proto3" json:"keep_conversation_running,omitempty"`
+	// List of inbound call leg headers to be copied to outbound call legs created
+	// later.
+	CopyInboundCallLegHeaders []string `protobuf:"bytes,8,rep,name=copy_inbound_call_leg_headers,json=copyInboundCallLegHeaders,proto3" json:"copy_inbound_call_leg_headers,omitempty"`
+	// Ignores any media direction in the reINVITE SDP offer. Reuse the previous
+	// media direction.
+	IgnoreReinviteMediaDirection bool `protobuf:"varint,9,opt,name=ignore_reinvite_media_direction,json=ignoreReinviteMediaDirection,proto3" json:"ignore_reinvite_media_direction,omitempty"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
+}
+
+func (x *SipConfig) Reset() {
+	*x = SipConfig{}
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SipConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SipConfig) ProtoMessage() {}
+
+func (x *SipConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SipConfig.ProtoReflect.Descriptor instead.
+func (*SipConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *SipConfig) GetCreateConversationOnTheFly() bool {
+	if x != nil {
+		return x.CreateConversationOnTheFly
+	}
+	return false
+}
+
+func (x *SipConfig) GetInactiveStart() bool {
+	if x != nil {
+		return x.InactiveStart
+	}
+	return false
+}
+
+func (x *SipConfig) GetMaxAudioRecordingDuration() *durationpb.Duration {
+	if x != nil {
+		return x.MaxAudioRecordingDuration
+	}
+	return nil
+}
+
+func (x *SipConfig) GetAllowVirtualAgentInteraction() bool {
+	if x != nil {
+		return x.AllowVirtualAgentInteraction
+	}
+	return false
+}
+
+func (x *SipConfig) GetKeepConversationRunning() bool {
+	if x != nil {
+		return x.KeepConversationRunning
+	}
+	return false
+}
+
+func (x *SipConfig) GetCopyInboundCallLegHeaders() []string {
+	if x != nil {
+		return x.CopyInboundCallLegHeaders
+	}
+	return nil
+}
+
+func (x *SipConfig) GetIgnoreReinviteMediaDirection() bool {
+	if x != nil {
+		return x.IgnoreReinviteMediaDirection
+	}
+	return false
+}
+
 // The type of Human Agent Assistant API suggestion to perform, and the maximum
 // number of results to return for that type. Multiple `Feature` objects can
 // be specified in the `features` list.
@@ -1162,7 +1277,7 @@ type SuggestionFeature struct {
 
 func (x *SuggestionFeature) Reset() {
 	*x = SuggestionFeature{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[12]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1174,7 +1289,7 @@ func (x *SuggestionFeature) String() string {
 func (*SuggestionFeature) ProtoMessage() {}
 
 func (x *SuggestionFeature) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[12]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1187,7 +1302,7 @@ func (x *SuggestionFeature) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SuggestionFeature.ProtoReflect.Descriptor instead.
 func (*SuggestionFeature) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *SuggestionFeature) GetType() SuggestionFeature_Type {
@@ -1216,7 +1331,7 @@ type SetSuggestionFeatureConfigRequest struct {
 
 func (x *SetSuggestionFeatureConfigRequest) Reset() {
 	*x = SetSuggestionFeatureConfigRequest{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[13]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1228,7 +1343,7 @@ func (x *SetSuggestionFeatureConfigRequest) String() string {
 func (*SetSuggestionFeatureConfigRequest) ProtoMessage() {}
 
 func (x *SetSuggestionFeatureConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[13]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1241,7 +1356,7 @@ func (x *SetSuggestionFeatureConfigRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use SetSuggestionFeatureConfigRequest.ProtoReflect.Descriptor instead.
 func (*SetSuggestionFeatureConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *SetSuggestionFeatureConfigRequest) GetConversationProfile() string {
@@ -1284,7 +1399,7 @@ type ClearSuggestionFeatureConfigRequest struct {
 
 func (x *ClearSuggestionFeatureConfigRequest) Reset() {
 	*x = ClearSuggestionFeatureConfigRequest{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[14]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1296,7 +1411,7 @@ func (x *ClearSuggestionFeatureConfigRequest) String() string {
 func (*ClearSuggestionFeatureConfigRequest) ProtoMessage() {}
 
 func (x *ClearSuggestionFeatureConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[14]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1309,7 +1424,7 @@ func (x *ClearSuggestionFeatureConfigRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use ClearSuggestionFeatureConfigRequest.ProtoReflect.Descriptor instead.
 func (*ClearSuggestionFeatureConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ClearSuggestionFeatureConfigRequest) GetConversationProfile() string {
@@ -1355,7 +1470,7 @@ type SetSuggestionFeatureConfigOperationMetadata struct {
 
 func (x *SetSuggestionFeatureConfigOperationMetadata) Reset() {
 	*x = SetSuggestionFeatureConfigOperationMetadata{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[15]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1367,7 +1482,7 @@ func (x *SetSuggestionFeatureConfigOperationMetadata) String() string {
 func (*SetSuggestionFeatureConfigOperationMetadata) ProtoMessage() {}
 
 func (x *SetSuggestionFeatureConfigOperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[15]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1380,7 +1495,7 @@ func (x *SetSuggestionFeatureConfigOperationMetadata) ProtoReflect() protoreflec
 
 // Deprecated: Use SetSuggestionFeatureConfigOperationMetadata.ProtoReflect.Descriptor instead.
 func (*SetSuggestionFeatureConfigOperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *SetSuggestionFeatureConfigOperationMetadata) GetConversationProfile() string {
@@ -1433,7 +1548,7 @@ type ClearSuggestionFeatureConfigOperationMetadata struct {
 
 func (x *ClearSuggestionFeatureConfigOperationMetadata) Reset() {
 	*x = ClearSuggestionFeatureConfigOperationMetadata{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[16]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1445,7 +1560,7 @@ func (x *ClearSuggestionFeatureConfigOperationMetadata) String() string {
 func (*ClearSuggestionFeatureConfigOperationMetadata) ProtoMessage() {}
 
 func (x *ClearSuggestionFeatureConfigOperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[16]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1458,7 +1573,7 @@ func (x *ClearSuggestionFeatureConfigOperationMetadata) ProtoReflect() protorefl
 
 // Deprecated: Use ClearSuggestionFeatureConfigOperationMetadata.ProtoReflect.Descriptor instead.
 func (*ClearSuggestionFeatureConfigOperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ClearSuggestionFeatureConfigOperationMetadata) GetConversationProfile() string {
@@ -1503,7 +1618,7 @@ type HumanAgentAssistantConfig_SuggestionTriggerSettings struct {
 
 func (x *HumanAgentAssistantConfig_SuggestionTriggerSettings) Reset() {
 	*x = HumanAgentAssistantConfig_SuggestionTriggerSettings{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[17]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1515,7 +1630,7 @@ func (x *HumanAgentAssistantConfig_SuggestionTriggerSettings) String() string {
 func (*HumanAgentAssistantConfig_SuggestionTriggerSettings) ProtoMessage() {}
 
 func (x *HumanAgentAssistantConfig_SuggestionTriggerSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[17]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1583,6 +1698,18 @@ type HumanAgentAssistantConfig_SuggestionFeatureConfig struct {
 	// Optional. Settings for Responsible AI checks.
 	// Supported features:  KNOWLEDGE_ASSIST
 	RaiSettings *RaiSettings `protobuf:"bytes,19,opt,name=rai_settings,json=raiSettings,proto3" json:"rai_settings,omitempty"`
+	// Optional. The trigger event for suggestion.
+	// If unspecified, it will be `CUSTOMER_MESSAGE`.
+	// Supported features: KNOWLEDGE_ASSIST
+	// For KNOWLEDGE_ASSIST, these four trigger events are supported:
+	// 1. TRIGGER_EVENT_UNSPECIFIED
+	// 2. END_OF_UTTERANCE
+	// 3. CUSTOMER_MESSAGE
+	// 4. AGENT_MESSAGE
+	SuggestionTriggerEvent TriggerEvent `protobuf:"varint,20,opt,name=suggestion_trigger_event,json=suggestionTriggerEvent,proto3,enum=google.cloud.dialogflow.v2.TriggerEvent" json:"suggestion_trigger_event,omitempty"`
+	// Optional. If true, disable appending available search context to the
+	// search query. Supported features: KNOWLEDGE_ASSIST
+	DisableQuerySearchContext bool `protobuf:"varint,21,opt,name=disable_query_search_context,json=disableQuerySearchContext,proto3" json:"disable_query_search_context,omitempty"`
 	// Settings of suggestion trigger.
 	//
 	// Currently, only ARTICLE_SUGGESTION and FAQ will use this field.
@@ -1599,7 +1726,7 @@ type HumanAgentAssistantConfig_SuggestionFeatureConfig struct {
 
 func (x *HumanAgentAssistantConfig_SuggestionFeatureConfig) Reset() {
 	*x = HumanAgentAssistantConfig_SuggestionFeatureConfig{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[18]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1611,7 +1738,7 @@ func (x *HumanAgentAssistantConfig_SuggestionFeatureConfig) String() string {
 func (*HumanAgentAssistantConfig_SuggestionFeatureConfig) ProtoMessage() {}
 
 func (x *HumanAgentAssistantConfig_SuggestionFeatureConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[18]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1681,6 +1808,20 @@ func (x *HumanAgentAssistantConfig_SuggestionFeatureConfig) GetRaiSettings() *Ra
 		return x.RaiSettings
 	}
 	return nil
+}
+
+func (x *HumanAgentAssistantConfig_SuggestionFeatureConfig) GetSuggestionTriggerEvent() TriggerEvent {
+	if x != nil {
+		return x.SuggestionTriggerEvent
+	}
+	return TriggerEvent_TRIGGER_EVENT_UNSPECIFIED
+}
+
+func (x *HumanAgentAssistantConfig_SuggestionFeatureConfig) GetDisableQuerySearchContext() bool {
+	if x != nil {
+		return x.DisableQuerySearchContext
+	}
+	return false
 }
 
 func (x *HumanAgentAssistantConfig_SuggestionFeatureConfig) GetSuggestionTriggerSettings() *HumanAgentAssistantConfig_SuggestionTriggerSettings {
@@ -1759,7 +1900,7 @@ type HumanAgentAssistantConfig_SuggestionConfig struct {
 
 func (x *HumanAgentAssistantConfig_SuggestionConfig) Reset() {
 	*x = HumanAgentAssistantConfig_SuggestionConfig{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[19]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1771,7 +1912,7 @@ func (x *HumanAgentAssistantConfig_SuggestionConfig) String() string {
 func (*HumanAgentAssistantConfig_SuggestionConfig) ProtoMessage() {}
 
 func (x *HumanAgentAssistantConfig_SuggestionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[19]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1886,7 +2027,7 @@ type HumanAgentAssistantConfig_SuggestionQueryConfig struct {
 
 func (x *HumanAgentAssistantConfig_SuggestionQueryConfig) Reset() {
 	*x = HumanAgentAssistantConfig_SuggestionQueryConfig{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[20]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1898,7 +2039,7 @@ func (x *HumanAgentAssistantConfig_SuggestionQueryConfig) String() string {
 func (*HumanAgentAssistantConfig_SuggestionQueryConfig) ProtoMessage() {}
 
 func (x *HumanAgentAssistantConfig_SuggestionQueryConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[20]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2039,7 +2180,7 @@ type HumanAgentAssistantConfig_ConversationModelConfig struct {
 
 func (x *HumanAgentAssistantConfig_ConversationModelConfig) Reset() {
 	*x = HumanAgentAssistantConfig_ConversationModelConfig{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[21]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2051,7 +2192,7 @@ func (x *HumanAgentAssistantConfig_ConversationModelConfig) String() string {
 func (*HumanAgentAssistantConfig_ConversationModelConfig) ProtoMessage() {}
 
 func (x *HumanAgentAssistantConfig_ConversationModelConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[21]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2093,7 +2234,7 @@ type HumanAgentAssistantConfig_ConversationProcessConfig struct {
 
 func (x *HumanAgentAssistantConfig_ConversationProcessConfig) Reset() {
 	*x = HumanAgentAssistantConfig_ConversationProcessConfig{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[22]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2105,7 +2246,7 @@ func (x *HumanAgentAssistantConfig_ConversationProcessConfig) String() string {
 func (*HumanAgentAssistantConfig_ConversationProcessConfig) ProtoMessage() {}
 
 func (x *HumanAgentAssistantConfig_ConversationProcessConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[22]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2188,7 +2329,7 @@ type HumanAgentAssistantConfig_MessageAnalysisConfig struct {
 
 func (x *HumanAgentAssistantConfig_MessageAnalysisConfig) Reset() {
 	*x = HumanAgentAssistantConfig_MessageAnalysisConfig{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[23]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2200,7 +2341,7 @@ func (x *HumanAgentAssistantConfig_MessageAnalysisConfig) String() string {
 func (*HumanAgentAssistantConfig_MessageAnalysisConfig) ProtoMessage() {}
 
 func (x *HumanAgentAssistantConfig_MessageAnalysisConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[23]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2253,7 +2394,7 @@ type HumanAgentAssistantConfig_SuggestionQueryConfig_KnowledgeBaseQuerySource st
 
 func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_KnowledgeBaseQuerySource) Reset() {
 	*x = HumanAgentAssistantConfig_SuggestionQueryConfig_KnowledgeBaseQuerySource{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[24]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2265,7 +2406,7 @@ func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_KnowledgeBaseQuerySourc
 func (*HumanAgentAssistantConfig_SuggestionQueryConfig_KnowledgeBaseQuerySource) ProtoMessage() {}
 
 func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_KnowledgeBaseQuerySource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[24]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2304,7 +2445,7 @@ type HumanAgentAssistantConfig_SuggestionQueryConfig_DocumentQuerySource struct 
 
 func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_DocumentQuerySource) Reset() {
 	*x = HumanAgentAssistantConfig_SuggestionQueryConfig_DocumentQuerySource{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[25]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2316,7 +2457,7 @@ func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_DocumentQuerySource) St
 func (*HumanAgentAssistantConfig_SuggestionQueryConfig_DocumentQuerySource) ProtoMessage() {}
 
 func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_DocumentQuerySource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[25]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2357,7 +2498,7 @@ type HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource struc
 
 func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource) Reset() {
 	*x = HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[26]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2369,7 +2510,7 @@ func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource) 
 func (*HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource) ProtoMessage() {}
 
 func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[26]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2416,7 +2557,7 @@ type HumanAgentAssistantConfig_SuggestionQueryConfig_ContextFilterSettings struc
 
 func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_ContextFilterSettings) Reset() {
 	*x = HumanAgentAssistantConfig_SuggestionQueryConfig_ContextFilterSettings{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[27]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2428,7 +2569,7 @@ func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_ContextFilterSettings) 
 func (*HumanAgentAssistantConfig_SuggestionQueryConfig_ContextFilterSettings) ProtoMessage() {}
 
 func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_ContextFilterSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[27]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2483,7 +2624,7 @@ type HumanAgentAssistantConfig_SuggestionQueryConfig_Sections struct {
 
 func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_Sections) Reset() {
 	*x = HumanAgentAssistantConfig_SuggestionQueryConfig_Sections{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[28]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2495,7 +2636,7 @@ func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_Sections) String() stri
 func (*HumanAgentAssistantConfig_SuggestionQueryConfig_Sections) ProtoMessage() {}
 
 func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_Sections) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[28]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2532,7 +2673,7 @@ type HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource_Human
 
 func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource_HumanAgentSideConfig) Reset() {
 	*x = HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource_HumanAgentSideConfig{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[29]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2545,7 +2686,7 @@ func (*HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource_Hum
 }
 
 func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource_HumanAgentSideConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[29]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2580,7 +2721,7 @@ type HumanAgentHandoffConfig_LivePersonConfig struct {
 
 func (x *HumanAgentHandoffConfig_LivePersonConfig) Reset() {
 	*x = HumanAgentHandoffConfig_LivePersonConfig{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[30]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2592,7 +2733,7 @@ func (x *HumanAgentHandoffConfig_LivePersonConfig) String() string {
 func (*HumanAgentHandoffConfig_LivePersonConfig) ProtoMessage() {}
 
 func (x *HumanAgentHandoffConfig_LivePersonConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[30]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2635,7 +2776,7 @@ type HumanAgentHandoffConfig_SalesforceLiveAgentConfig struct {
 
 func (x *HumanAgentHandoffConfig_SalesforceLiveAgentConfig) Reset() {
 	*x = HumanAgentHandoffConfig_SalesforceLiveAgentConfig{}
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[31]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2647,7 +2788,7 @@ func (x *HumanAgentHandoffConfig_SalesforceLiveAgentConfig) String() string {
 func (*HumanAgentHandoffConfig_SalesforceLiveAgentConfig) ProtoMessage() {}
 
 func (x *HumanAgentHandoffConfig_SalesforceLiveAgentConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[31]
+	mi := &file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2695,7 +2836,7 @@ var File_google_cloud_dialogflow_v2_conversation_profile_proto protoreflect.File
 
 const file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/dialogflow/v2/conversation_profile.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/dialogflow/v2/audio_config.proto\x1a*google/cloud/dialogflow/v2/generator.proto\x1a,google/cloud/dialogflow/v2/participant.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfe\v\n" +
+	"5google/cloud/dialogflow/v2/conversation_profile.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/dialogflow/v2/audio_config.proto\x1a*google/cloud/dialogflow/v2/generator.proto\x1a,google/cloud/dialogflow/v2/participant.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc9\f\n" +
 	"\x13ConversationProfile\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12@\n" +
@@ -2713,7 +2854,9 @@ const file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDesc = "" +
 	"\n" +
 	"stt_config\x18\t \x01(\v2..google.cloud.dialogflow.v2.SpeechToTextConfigR\tsttConfig\x12#\n" +
 	"\rlanguage_code\x18\n" +
-	" \x01(\tR\flanguageCode\x12\x1b\n" +
+	" \x01(\tR\flanguageCode\x12I\n" +
+	"\n" +
+	"sip_config\x18\x10 \x01(\v2%.google.cloud.dialogflow.v2.SipConfigB\x03\xe0A\x01R\tsipConfig\x12\x1b\n" +
 	"\ttime_zone\x18\x0e \x01(\tR\btimeZone\x12^\n" +
 	"\x11security_settings\x18\r \x01(\tB1\xfaA.\n" +
 	",dialogflow.googleapis.com/CXSecuritySettingsR\x10securitySettings\x12Q\n" +
@@ -2745,7 +2888,7 @@ const file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDesc = "" +
 	"\x05agent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
 	"\x1fdialogflow.googleapis.com/AgentR\x05agent\x12?\n" +
 	"\vsession_ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\n" +
-	"sessionTtl\"\xf2%\n" +
+	"sessionTtl\"\xa1'\n" +
 	"\x19HumanAgentAssistantConfig\x12_\n" +
 	"\x13notification_config\x18\x02 \x01(\v2..google.cloud.dialogflow.v2.NotificationConfigR\x12notificationConfig\x12\x89\x01\n" +
 	"\x1dhuman_agent_suggestion_config\x18\x03 \x01(\v2F.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfigR\x1ahumanAgentSuggestionConfig\x12\x83\x01\n" +
@@ -2753,7 +2896,8 @@ const file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDesc = "" +
 	"\x17message_analysis_config\x18\x05 \x01(\v2K.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.MessageAnalysisConfigR\x15messageAnalysisConfig\x1ab\n" +
 	"\x19SuggestionTriggerSettings\x12!\n" +
 	"\fno_smalltalk\x18\x01 \x01(\bR\vnoSmalltalk\x12\"\n" +
-	"\ronly_end_user\x18\x02 \x01(\bR\vonlyEndUser\x1a\xa3\t\n" +
+	"\ronly_end_user\x18\x02 \x01(\bR\vonlyEndUser\x1a\xd2\n" +
+	"\n" +
 	"\x17SuggestionFeatureConfig\x12\\\n" +
 	"\x12suggestion_feature\x18\x05 \x01(\v2-.google.cloud.dialogflow.v2.SuggestionFeatureR\x11suggestionFeature\x12A\n" +
 	"\x1denable_event_based_suggestion\x18\x03 \x01(\bR\x1aenableEventBasedSuggestion\x12B\n" +
@@ -2762,7 +2906,9 @@ const file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDesc = "" +
 	"#enable_conversation_augmented_query\x18\x10 \x01(\bB\x03\xe0A\x01R enableConversationAugmentedQuery\x12D\n" +
 	"\x1cenable_query_suggestion_only\x18\x11 \x01(\bB\x03\xe0A\x01R\x19enableQuerySuggestionOnly\x12@\n" +
 	"\x1aenable_response_debug_info\x18\x12 \x01(\bB\x03\xe0A\x01R\x17enableResponseDebugInfo\x12O\n" +
-	"\frai_settings\x18\x13 \x01(\v2'.google.cloud.dialogflow.v2.RaiSettingsB\x03\xe0A\x01R\vraiSettings\x12\x8f\x01\n" +
+	"\frai_settings\x18\x13 \x01(\v2'.google.cloud.dialogflow.v2.RaiSettingsB\x03\xe0A\x01R\vraiSettings\x12g\n" +
+	"\x18suggestion_trigger_event\x18\x14 \x01(\x0e2(.google.cloud.dialogflow.v2.TriggerEventB\x03\xe0A\x01R\x16suggestionTriggerEvent\x12D\n" +
+	"\x1cdisable_query_search_context\x18\x15 \x01(\bB\x03\xe0A\x01R\x19disableQuerySearchContext\x12\x8f\x01\n" +
 	"\x1bsuggestion_trigger_settings\x18\n" +
 	" \x01(\v2O.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionTriggerSettingsR\x19suggestionTriggerSettings\x12n\n" +
 	"\fquery_config\x18\x06 \x01(\v2K.google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfigR\vqueryConfig\x12\x89\x01\n" +
@@ -2848,7 +2994,15 @@ const file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDesc = "" +
 	"\x05PROTO\x10\x01\x12\b\n" +
 	"\x04JSON\x10\x02\"M\n" +
 	"\rLoggingConfig\x12<\n" +
-	"\x1aenable_stackdriver_logging\x18\x03 \x01(\bR\x18enableStackdriverLogging\"\xf8\x01\n" +
+	"\x1aenable_stackdriver_logging\x18\x03 \x01(\bR\x18enableStackdriverLogging\"\xde\x03\n" +
+	"\tSipConfig\x12B\n" +
+	"\x1ecreate_conversation_on_the_fly\x18\x01 \x01(\bR\x1acreateConversationOnTheFly\x12%\n" +
+	"\x0einactive_start\x18\x03 \x01(\bR\rinactiveStart\x12Z\n" +
+	"\x1cmax_audio_recording_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\x19maxAudioRecordingDuration\x12E\n" +
+	"\x1fallow_virtual_agent_interaction\x18\x05 \x01(\bR\x1callowVirtualAgentInteraction\x12:\n" +
+	"\x19keep_conversation_running\x18\x06 \x01(\bR\x17keepConversationRunning\x12@\n" +
+	"\x1dcopy_inbound_call_leg_headers\x18\b \x03(\tR\x19copyInboundCallLegHeaders\x12E\n" +
+	"\x1fignore_reinvite_media_direction\x18\t \x01(\bR\x1cignoreReinviteMediaDirection\"\xf8\x01\n" +
 	"\x11SuggestionFeature\x12F\n" +
 	"\x04type\x18\x01 \x01(\x0e22.google.cloud.dialogflow.v2.SuggestionFeature.TypeR\x04type\"\x9a\x01\n" +
 	"\x04Type\x12\x14\n" +
@@ -2905,7 +3059,7 @@ func file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDescGZIP() []
 }
 
 var file_google_cloud_dialogflow_v2_conversation_profile_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
+var file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
 var file_google_cloud_dialogflow_v2_conversation_profile_proto_goTypes = []any{
 	(HumanAgentAssistantConfig_SuggestionQueryConfig_Sections_SectionType)(0),                          // 0: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.Sections.SectionType
 	(NotificationConfig_MessageFormat)(0),                                                              // 1: google.cloud.dialogflow.v2.NotificationConfig.MessageFormat
@@ -2922,39 +3076,41 @@ var file_google_cloud_dialogflow_v2_conversation_profile_proto_goTypes = []any{
 	(*HumanAgentHandoffConfig)(nil),                                                                    // 12: google.cloud.dialogflow.v2.HumanAgentHandoffConfig
 	(*NotificationConfig)(nil),                                                                         // 13: google.cloud.dialogflow.v2.NotificationConfig
 	(*LoggingConfig)(nil),                                                                              // 14: google.cloud.dialogflow.v2.LoggingConfig
-	(*SuggestionFeature)(nil),                                                                          // 15: google.cloud.dialogflow.v2.SuggestionFeature
-	(*SetSuggestionFeatureConfigRequest)(nil),                                                          // 16: google.cloud.dialogflow.v2.SetSuggestionFeatureConfigRequest
-	(*ClearSuggestionFeatureConfigRequest)(nil),                                                        // 17: google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigRequest
-	(*SetSuggestionFeatureConfigOperationMetadata)(nil),                                                // 18: google.cloud.dialogflow.v2.SetSuggestionFeatureConfigOperationMetadata
-	(*ClearSuggestionFeatureConfigOperationMetadata)(nil),                                              // 19: google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigOperationMetadata
-	(*HumanAgentAssistantConfig_SuggestionTriggerSettings)(nil),                                        // 20: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionTriggerSettings
-	(*HumanAgentAssistantConfig_SuggestionFeatureConfig)(nil),                                          // 21: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig
-	(*HumanAgentAssistantConfig_SuggestionConfig)(nil),                                                 // 22: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig
-	(*HumanAgentAssistantConfig_SuggestionQueryConfig)(nil),                                            // 23: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig
-	(*HumanAgentAssistantConfig_ConversationModelConfig)(nil),                                          // 24: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.ConversationModelConfig
-	(*HumanAgentAssistantConfig_ConversationProcessConfig)(nil),                                        // 25: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.ConversationProcessConfig
-	(*HumanAgentAssistantConfig_MessageAnalysisConfig)(nil),                                            // 26: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.MessageAnalysisConfig
-	(*HumanAgentAssistantConfig_SuggestionQueryConfig_KnowledgeBaseQuerySource)(nil),                   // 27: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.KnowledgeBaseQuerySource
-	(*HumanAgentAssistantConfig_SuggestionQueryConfig_DocumentQuerySource)(nil),                        // 28: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DocumentQuerySource
-	(*HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource)(nil),                      // 29: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DialogflowQuerySource
-	(*HumanAgentAssistantConfig_SuggestionQueryConfig_ContextFilterSettings)(nil),                      // 30: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.ContextFilterSettings
-	(*HumanAgentAssistantConfig_SuggestionQueryConfig_Sections)(nil),                                   // 31: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.Sections
-	(*HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource_HumanAgentSideConfig)(nil), // 32: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DialogflowQuerySource.HumanAgentSideConfig
-	(*HumanAgentHandoffConfig_LivePersonConfig)(nil),                                                   // 33: google.cloud.dialogflow.v2.HumanAgentHandoffConfig.LivePersonConfig
-	(*HumanAgentHandoffConfig_SalesforceLiveAgentConfig)(nil),                                          // 34: google.cloud.dialogflow.v2.HumanAgentHandoffConfig.SalesforceLiveAgentConfig
-	(*timestamppb.Timestamp)(nil),                                                                      // 35: google.protobuf.Timestamp
-	(*SpeechToTextConfig)(nil),                                                                         // 36: google.cloud.dialogflow.v2.SpeechToTextConfig
-	(*SynthesizeSpeechConfig)(nil),                                                                     // 37: google.cloud.dialogflow.v2.SynthesizeSpeechConfig
-	(*fieldmaskpb.FieldMask)(nil),                                                                      // 38: google.protobuf.FieldMask
-	(*durationpb.Duration)(nil),                                                                        // 39: google.protobuf.Duration
-	(Participant_Role)(0),                                                                              // 40: google.cloud.dialogflow.v2.Participant.Role
-	(*RaiSettings)(nil),                                                                                // 41: google.cloud.dialogflow.v2.RaiSettings
-	(*emptypb.Empty)(nil),                                                                              // 42: google.protobuf.Empty
-	(*longrunningpb.Operation)(nil),                                                                    // 43: google.longrunning.Operation
+	(*SipConfig)(nil),                                                                                  // 15: google.cloud.dialogflow.v2.SipConfig
+	(*SuggestionFeature)(nil),                                                                          // 16: google.cloud.dialogflow.v2.SuggestionFeature
+	(*SetSuggestionFeatureConfigRequest)(nil),                                                          // 17: google.cloud.dialogflow.v2.SetSuggestionFeatureConfigRequest
+	(*ClearSuggestionFeatureConfigRequest)(nil),                                                        // 18: google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigRequest
+	(*SetSuggestionFeatureConfigOperationMetadata)(nil),                                                // 19: google.cloud.dialogflow.v2.SetSuggestionFeatureConfigOperationMetadata
+	(*ClearSuggestionFeatureConfigOperationMetadata)(nil),                                              // 20: google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigOperationMetadata
+	(*HumanAgentAssistantConfig_SuggestionTriggerSettings)(nil),                                        // 21: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionTriggerSettings
+	(*HumanAgentAssistantConfig_SuggestionFeatureConfig)(nil),                                          // 22: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig
+	(*HumanAgentAssistantConfig_SuggestionConfig)(nil),                                                 // 23: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig
+	(*HumanAgentAssistantConfig_SuggestionQueryConfig)(nil),                                            // 24: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig
+	(*HumanAgentAssistantConfig_ConversationModelConfig)(nil),                                          // 25: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.ConversationModelConfig
+	(*HumanAgentAssistantConfig_ConversationProcessConfig)(nil),                                        // 26: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.ConversationProcessConfig
+	(*HumanAgentAssistantConfig_MessageAnalysisConfig)(nil),                                            // 27: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.MessageAnalysisConfig
+	(*HumanAgentAssistantConfig_SuggestionQueryConfig_KnowledgeBaseQuerySource)(nil),                   // 28: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.KnowledgeBaseQuerySource
+	(*HumanAgentAssistantConfig_SuggestionQueryConfig_DocumentQuerySource)(nil),                        // 29: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DocumentQuerySource
+	(*HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource)(nil),                      // 30: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DialogflowQuerySource
+	(*HumanAgentAssistantConfig_SuggestionQueryConfig_ContextFilterSettings)(nil),                      // 31: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.ContextFilterSettings
+	(*HumanAgentAssistantConfig_SuggestionQueryConfig_Sections)(nil),                                   // 32: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.Sections
+	(*HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource_HumanAgentSideConfig)(nil), // 33: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DialogflowQuerySource.HumanAgentSideConfig
+	(*HumanAgentHandoffConfig_LivePersonConfig)(nil),                                                   // 34: google.cloud.dialogflow.v2.HumanAgentHandoffConfig.LivePersonConfig
+	(*HumanAgentHandoffConfig_SalesforceLiveAgentConfig)(nil),                                          // 35: google.cloud.dialogflow.v2.HumanAgentHandoffConfig.SalesforceLiveAgentConfig
+	(*timestamppb.Timestamp)(nil),                                                                      // 36: google.protobuf.Timestamp
+	(*SpeechToTextConfig)(nil),                                                                         // 37: google.cloud.dialogflow.v2.SpeechToTextConfig
+	(*SynthesizeSpeechConfig)(nil),                                                                     // 38: google.cloud.dialogflow.v2.SynthesizeSpeechConfig
+	(*fieldmaskpb.FieldMask)(nil),                                                                      // 39: google.protobuf.FieldMask
+	(*durationpb.Duration)(nil),                                                                        // 40: google.protobuf.Duration
+	(Participant_Role)(0),                                                                              // 41: google.cloud.dialogflow.v2.Participant.Role
+	(*RaiSettings)(nil),                                                                                // 42: google.cloud.dialogflow.v2.RaiSettings
+	(TriggerEvent)(0),                                                                                  // 43: google.cloud.dialogflow.v2.TriggerEvent
+	(*emptypb.Empty)(nil),                                                                              // 44: google.protobuf.Empty
+	(*longrunningpb.Operation)(nil),                                                                    // 45: google.longrunning.Operation
 }
 var file_google_cloud_dialogflow_v2_conversation_profile_proto_depIdxs = []int32{
-	35, // 0: google.cloud.dialogflow.v2.ConversationProfile.create_time:type_name -> google.protobuf.Timestamp
-	35, // 1: google.cloud.dialogflow.v2.ConversationProfile.update_time:type_name -> google.protobuf.Timestamp
+	36, // 0: google.cloud.dialogflow.v2.ConversationProfile.create_time:type_name -> google.protobuf.Timestamp
+	36, // 1: google.cloud.dialogflow.v2.ConversationProfile.update_time:type_name -> google.protobuf.Timestamp
 	10, // 2: google.cloud.dialogflow.v2.ConversationProfile.automated_agent_config:type_name -> google.cloud.dialogflow.v2.AutomatedAgentConfig
 	11, // 3: google.cloud.dialogflow.v2.ConversationProfile.human_agent_assistant_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig
 	12, // 4: google.cloud.dialogflow.v2.ConversationProfile.human_agent_handoff_config:type_name -> google.cloud.dialogflow.v2.HumanAgentHandoffConfig
@@ -2962,64 +3118,67 @@ var file_google_cloud_dialogflow_v2_conversation_profile_proto_depIdxs = []int32
 	14, // 6: google.cloud.dialogflow.v2.ConversationProfile.logging_config:type_name -> google.cloud.dialogflow.v2.LoggingConfig
 	13, // 7: google.cloud.dialogflow.v2.ConversationProfile.new_message_event_notification_config:type_name -> google.cloud.dialogflow.v2.NotificationConfig
 	13, // 8: google.cloud.dialogflow.v2.ConversationProfile.new_recognition_result_notification_config:type_name -> google.cloud.dialogflow.v2.NotificationConfig
-	36, // 9: google.cloud.dialogflow.v2.ConversationProfile.stt_config:type_name -> google.cloud.dialogflow.v2.SpeechToTextConfig
-	37, // 10: google.cloud.dialogflow.v2.ConversationProfile.tts_config:type_name -> google.cloud.dialogflow.v2.SynthesizeSpeechConfig
-	3,  // 11: google.cloud.dialogflow.v2.ListConversationProfilesResponse.conversation_profiles:type_name -> google.cloud.dialogflow.v2.ConversationProfile
-	3,  // 12: google.cloud.dialogflow.v2.CreateConversationProfileRequest.conversation_profile:type_name -> google.cloud.dialogflow.v2.ConversationProfile
-	3,  // 13: google.cloud.dialogflow.v2.UpdateConversationProfileRequest.conversation_profile:type_name -> google.cloud.dialogflow.v2.ConversationProfile
-	38, // 14: google.cloud.dialogflow.v2.UpdateConversationProfileRequest.update_mask:type_name -> google.protobuf.FieldMask
-	39, // 15: google.cloud.dialogflow.v2.AutomatedAgentConfig.session_ttl:type_name -> google.protobuf.Duration
-	13, // 16: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.notification_config:type_name -> google.cloud.dialogflow.v2.NotificationConfig
-	22, // 17: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.human_agent_suggestion_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig
-	22, // 18: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.end_user_suggestion_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig
-	26, // 19: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.message_analysis_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.MessageAnalysisConfig
-	33, // 20: google.cloud.dialogflow.v2.HumanAgentHandoffConfig.live_person_config:type_name -> google.cloud.dialogflow.v2.HumanAgentHandoffConfig.LivePersonConfig
-	34, // 21: google.cloud.dialogflow.v2.HumanAgentHandoffConfig.salesforce_live_agent_config:type_name -> google.cloud.dialogflow.v2.HumanAgentHandoffConfig.SalesforceLiveAgentConfig
-	1,  // 22: google.cloud.dialogflow.v2.NotificationConfig.message_format:type_name -> google.cloud.dialogflow.v2.NotificationConfig.MessageFormat
-	2,  // 23: google.cloud.dialogflow.v2.SuggestionFeature.type:type_name -> google.cloud.dialogflow.v2.SuggestionFeature.Type
-	40, // 24: google.cloud.dialogflow.v2.SetSuggestionFeatureConfigRequest.participant_role:type_name -> google.cloud.dialogflow.v2.Participant.Role
-	21, // 25: google.cloud.dialogflow.v2.SetSuggestionFeatureConfigRequest.suggestion_feature_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig
-	40, // 26: google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigRequest.participant_role:type_name -> google.cloud.dialogflow.v2.Participant.Role
-	2,  // 27: google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigRequest.suggestion_feature_type:type_name -> google.cloud.dialogflow.v2.SuggestionFeature.Type
-	40, // 28: google.cloud.dialogflow.v2.SetSuggestionFeatureConfigOperationMetadata.participant_role:type_name -> google.cloud.dialogflow.v2.Participant.Role
-	2,  // 29: google.cloud.dialogflow.v2.SetSuggestionFeatureConfigOperationMetadata.suggestion_feature_type:type_name -> google.cloud.dialogflow.v2.SuggestionFeature.Type
-	35, // 30: google.cloud.dialogflow.v2.SetSuggestionFeatureConfigOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	40, // 31: google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigOperationMetadata.participant_role:type_name -> google.cloud.dialogflow.v2.Participant.Role
-	2,  // 32: google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigOperationMetadata.suggestion_feature_type:type_name -> google.cloud.dialogflow.v2.SuggestionFeature.Type
-	35, // 33: google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	15, // 34: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig.suggestion_feature:type_name -> google.cloud.dialogflow.v2.SuggestionFeature
-	41, // 35: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig.rai_settings:type_name -> google.cloud.dialogflow.v2.RaiSettings
-	20, // 36: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig.suggestion_trigger_settings:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionTriggerSettings
-	23, // 37: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig.query_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig
-	24, // 38: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig.conversation_model_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.ConversationModelConfig
-	25, // 39: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig.conversation_process_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.ConversationProcessConfig
-	21, // 40: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig.feature_configs:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig
-	27, // 41: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.knowledge_base_query_source:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.KnowledgeBaseQuerySource
-	28, // 42: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.document_query_source:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DocumentQuerySource
-	29, // 43: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.dialogflow_query_source:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DialogflowQuerySource
-	30, // 44: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.context_filter_settings:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.ContextFilterSettings
-	31, // 45: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.sections:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.Sections
-	32, // 46: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DialogflowQuerySource.human_agent_side_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DialogflowQuerySource.HumanAgentSideConfig
-	0,  // 47: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.Sections.section_types:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.Sections.SectionType
-	4,  // 48: google.cloud.dialogflow.v2.ConversationProfiles.ListConversationProfiles:input_type -> google.cloud.dialogflow.v2.ListConversationProfilesRequest
-	6,  // 49: google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile:input_type -> google.cloud.dialogflow.v2.GetConversationProfileRequest
-	7,  // 50: google.cloud.dialogflow.v2.ConversationProfiles.CreateConversationProfile:input_type -> google.cloud.dialogflow.v2.CreateConversationProfileRequest
-	8,  // 51: google.cloud.dialogflow.v2.ConversationProfiles.UpdateConversationProfile:input_type -> google.cloud.dialogflow.v2.UpdateConversationProfileRequest
-	9,  // 52: google.cloud.dialogflow.v2.ConversationProfiles.DeleteConversationProfile:input_type -> google.cloud.dialogflow.v2.DeleteConversationProfileRequest
-	16, // 53: google.cloud.dialogflow.v2.ConversationProfiles.SetSuggestionFeatureConfig:input_type -> google.cloud.dialogflow.v2.SetSuggestionFeatureConfigRequest
-	17, // 54: google.cloud.dialogflow.v2.ConversationProfiles.ClearSuggestionFeatureConfig:input_type -> google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigRequest
-	5,  // 55: google.cloud.dialogflow.v2.ConversationProfiles.ListConversationProfiles:output_type -> google.cloud.dialogflow.v2.ListConversationProfilesResponse
-	3,  // 56: google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile:output_type -> google.cloud.dialogflow.v2.ConversationProfile
-	3,  // 57: google.cloud.dialogflow.v2.ConversationProfiles.CreateConversationProfile:output_type -> google.cloud.dialogflow.v2.ConversationProfile
-	3,  // 58: google.cloud.dialogflow.v2.ConversationProfiles.UpdateConversationProfile:output_type -> google.cloud.dialogflow.v2.ConversationProfile
-	42, // 59: google.cloud.dialogflow.v2.ConversationProfiles.DeleteConversationProfile:output_type -> google.protobuf.Empty
-	43, // 60: google.cloud.dialogflow.v2.ConversationProfiles.SetSuggestionFeatureConfig:output_type -> google.longrunning.Operation
-	43, // 61: google.cloud.dialogflow.v2.ConversationProfiles.ClearSuggestionFeatureConfig:output_type -> google.longrunning.Operation
-	55, // [55:62] is the sub-list for method output_type
-	48, // [48:55] is the sub-list for method input_type
-	48, // [48:48] is the sub-list for extension type_name
-	48, // [48:48] is the sub-list for extension extendee
-	0,  // [0:48] is the sub-list for field type_name
+	37, // 9: google.cloud.dialogflow.v2.ConversationProfile.stt_config:type_name -> google.cloud.dialogflow.v2.SpeechToTextConfig
+	15, // 10: google.cloud.dialogflow.v2.ConversationProfile.sip_config:type_name -> google.cloud.dialogflow.v2.SipConfig
+	38, // 11: google.cloud.dialogflow.v2.ConversationProfile.tts_config:type_name -> google.cloud.dialogflow.v2.SynthesizeSpeechConfig
+	3,  // 12: google.cloud.dialogflow.v2.ListConversationProfilesResponse.conversation_profiles:type_name -> google.cloud.dialogflow.v2.ConversationProfile
+	3,  // 13: google.cloud.dialogflow.v2.CreateConversationProfileRequest.conversation_profile:type_name -> google.cloud.dialogflow.v2.ConversationProfile
+	3,  // 14: google.cloud.dialogflow.v2.UpdateConversationProfileRequest.conversation_profile:type_name -> google.cloud.dialogflow.v2.ConversationProfile
+	39, // 15: google.cloud.dialogflow.v2.UpdateConversationProfileRequest.update_mask:type_name -> google.protobuf.FieldMask
+	40, // 16: google.cloud.dialogflow.v2.AutomatedAgentConfig.session_ttl:type_name -> google.protobuf.Duration
+	13, // 17: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.notification_config:type_name -> google.cloud.dialogflow.v2.NotificationConfig
+	23, // 18: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.human_agent_suggestion_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig
+	23, // 19: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.end_user_suggestion_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig
+	27, // 20: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.message_analysis_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.MessageAnalysisConfig
+	34, // 21: google.cloud.dialogflow.v2.HumanAgentHandoffConfig.live_person_config:type_name -> google.cloud.dialogflow.v2.HumanAgentHandoffConfig.LivePersonConfig
+	35, // 22: google.cloud.dialogflow.v2.HumanAgentHandoffConfig.salesforce_live_agent_config:type_name -> google.cloud.dialogflow.v2.HumanAgentHandoffConfig.SalesforceLiveAgentConfig
+	1,  // 23: google.cloud.dialogflow.v2.NotificationConfig.message_format:type_name -> google.cloud.dialogflow.v2.NotificationConfig.MessageFormat
+	40, // 24: google.cloud.dialogflow.v2.SipConfig.max_audio_recording_duration:type_name -> google.protobuf.Duration
+	2,  // 25: google.cloud.dialogflow.v2.SuggestionFeature.type:type_name -> google.cloud.dialogflow.v2.SuggestionFeature.Type
+	41, // 26: google.cloud.dialogflow.v2.SetSuggestionFeatureConfigRequest.participant_role:type_name -> google.cloud.dialogflow.v2.Participant.Role
+	22, // 27: google.cloud.dialogflow.v2.SetSuggestionFeatureConfigRequest.suggestion_feature_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig
+	41, // 28: google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigRequest.participant_role:type_name -> google.cloud.dialogflow.v2.Participant.Role
+	2,  // 29: google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigRequest.suggestion_feature_type:type_name -> google.cloud.dialogflow.v2.SuggestionFeature.Type
+	41, // 30: google.cloud.dialogflow.v2.SetSuggestionFeatureConfigOperationMetadata.participant_role:type_name -> google.cloud.dialogflow.v2.Participant.Role
+	2,  // 31: google.cloud.dialogflow.v2.SetSuggestionFeatureConfigOperationMetadata.suggestion_feature_type:type_name -> google.cloud.dialogflow.v2.SuggestionFeature.Type
+	36, // 32: google.cloud.dialogflow.v2.SetSuggestionFeatureConfigOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	41, // 33: google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigOperationMetadata.participant_role:type_name -> google.cloud.dialogflow.v2.Participant.Role
+	2,  // 34: google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigOperationMetadata.suggestion_feature_type:type_name -> google.cloud.dialogflow.v2.SuggestionFeature.Type
+	36, // 35: google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	16, // 36: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig.suggestion_feature:type_name -> google.cloud.dialogflow.v2.SuggestionFeature
+	42, // 37: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig.rai_settings:type_name -> google.cloud.dialogflow.v2.RaiSettings
+	43, // 38: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig.suggestion_trigger_event:type_name -> google.cloud.dialogflow.v2.TriggerEvent
+	21, // 39: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig.suggestion_trigger_settings:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionTriggerSettings
+	24, // 40: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig.query_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig
+	25, // 41: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig.conversation_model_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.ConversationModelConfig
+	26, // 42: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig.conversation_process_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.ConversationProcessConfig
+	22, // 43: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig.feature_configs:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionFeatureConfig
+	28, // 44: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.knowledge_base_query_source:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.KnowledgeBaseQuerySource
+	29, // 45: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.document_query_source:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DocumentQuerySource
+	30, // 46: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.dialogflow_query_source:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DialogflowQuerySource
+	31, // 47: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.context_filter_settings:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.ContextFilterSettings
+	32, // 48: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.sections:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.Sections
+	33, // 49: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DialogflowQuerySource.human_agent_side_config:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.DialogflowQuerySource.HumanAgentSideConfig
+	0,  // 50: google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.Sections.section_types:type_name -> google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionQueryConfig.Sections.SectionType
+	4,  // 51: google.cloud.dialogflow.v2.ConversationProfiles.ListConversationProfiles:input_type -> google.cloud.dialogflow.v2.ListConversationProfilesRequest
+	6,  // 52: google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile:input_type -> google.cloud.dialogflow.v2.GetConversationProfileRequest
+	7,  // 53: google.cloud.dialogflow.v2.ConversationProfiles.CreateConversationProfile:input_type -> google.cloud.dialogflow.v2.CreateConversationProfileRequest
+	8,  // 54: google.cloud.dialogflow.v2.ConversationProfiles.UpdateConversationProfile:input_type -> google.cloud.dialogflow.v2.UpdateConversationProfileRequest
+	9,  // 55: google.cloud.dialogflow.v2.ConversationProfiles.DeleteConversationProfile:input_type -> google.cloud.dialogflow.v2.DeleteConversationProfileRequest
+	17, // 56: google.cloud.dialogflow.v2.ConversationProfiles.SetSuggestionFeatureConfig:input_type -> google.cloud.dialogflow.v2.SetSuggestionFeatureConfigRequest
+	18, // 57: google.cloud.dialogflow.v2.ConversationProfiles.ClearSuggestionFeatureConfig:input_type -> google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigRequest
+	5,  // 58: google.cloud.dialogflow.v2.ConversationProfiles.ListConversationProfiles:output_type -> google.cloud.dialogflow.v2.ListConversationProfilesResponse
+	3,  // 59: google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile:output_type -> google.cloud.dialogflow.v2.ConversationProfile
+	3,  // 60: google.cloud.dialogflow.v2.ConversationProfiles.CreateConversationProfile:output_type -> google.cloud.dialogflow.v2.ConversationProfile
+	3,  // 61: google.cloud.dialogflow.v2.ConversationProfiles.UpdateConversationProfile:output_type -> google.cloud.dialogflow.v2.ConversationProfile
+	44, // 62: google.cloud.dialogflow.v2.ConversationProfiles.DeleteConversationProfile:output_type -> google.protobuf.Empty
+	45, // 63: google.cloud.dialogflow.v2.ConversationProfiles.SetSuggestionFeatureConfig:output_type -> google.longrunning.Operation
+	45, // 64: google.cloud.dialogflow.v2.ConversationProfiles.ClearSuggestionFeatureConfig:output_type -> google.longrunning.Operation
+	58, // [58:65] is the sub-list for method output_type
+	51, // [51:58] is the sub-list for method input_type
+	51, // [51:51] is the sub-list for extension type_name
+	51, // [51:51] is the sub-list for extension extendee
+	0,  // [0:51] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dialogflow_v2_conversation_profile_proto_init() }
@@ -3034,7 +3193,7 @@ func file_google_cloud_dialogflow_v2_conversation_profile_proto_init() {
 		(*HumanAgentHandoffConfig_LivePersonConfig_)(nil),
 		(*HumanAgentHandoffConfig_SalesforceLiveAgentConfig_)(nil),
 	}
-	file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[20].OneofWrappers = []any{
+	file_google_cloud_dialogflow_v2_conversation_profile_proto_msgTypes[21].OneofWrappers = []any{
 		(*HumanAgentAssistantConfig_SuggestionQueryConfig_KnowledgeBaseQuerySource_)(nil),
 		(*HumanAgentAssistantConfig_SuggestionQueryConfig_DocumentQuerySource_)(nil),
 		(*HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource_)(nil),
@@ -3045,7 +3204,7 @@ func file_google_cloud_dialogflow_v2_conversation_profile_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDesc), len(file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   32,
+			NumMessages:   33,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

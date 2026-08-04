@@ -28,8 +28,12 @@ import (
 
 	cloudtaskspb "cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -60,10 +64,15 @@ type CallOptions struct {
 	ListTasks          []gax.CallOption
 	GetTask            []gax.CallOption
 	CreateTask         []gax.CallOption
+	BatchCreateTasks   []gax.CallOption
 	DeleteTask         []gax.CallOption
+	BatchDeleteTasks   []gax.CallOption
 	RunTask            []gax.CallOption
+	UpdateCmekConfig   []gax.CallOption
+	GetCmekConfig      []gax.CallOption
 	GetLocation        []gax.CallOption
 	ListLocations      []gax.CallOption
+	GetOperation       []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -196,6 +205,7 @@ func defaultCallOptions() *CallOptions {
 		CreateTask: []gax.CallOption{
 			gax.WithTimeout(20000 * time.Millisecond),
 		},
+		BatchCreateTasks: []gax.CallOption{},
 		DeleteTask: []gax.CallOption{
 			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -209,11 +219,39 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		BatchDeleteTasks: []gax.CallOption{},
 		RunTask: []gax.CallOption{
 			gax.WithTimeout(20000 * time.Millisecond),
 		},
+		UpdateCmekConfig: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetCmekConfig: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:   []gax.CallOption{},
 		ListLocations: []gax.CallOption{},
+		GetOperation:  []gax.CallOption{},
 	}
 }
 
@@ -324,6 +362,7 @@ func defaultRESTCallOptions() *CallOptions {
 		CreateTask: []gax.CallOption{
 			gax.WithTimeout(20000 * time.Millisecond),
 		},
+		BatchCreateTasks: []gax.CallOption{},
 		DeleteTask: []gax.CallOption{
 			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -336,11 +375,37 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		BatchDeleteTasks: []gax.CallOption{},
 		RunTask: []gax.CallOption{
 			gax.WithTimeout(20000 * time.Millisecond),
 		},
+		UpdateCmekConfig: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetCmekConfig: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:   []gax.CallOption{},
 		ListLocations: []gax.CallOption{},
+		GetOperation:  []gax.CallOption{},
 	}
 }
 
@@ -363,10 +428,17 @@ type internalClient interface {
 	ListTasks(context.Context, *cloudtaskspb.ListTasksRequest, ...gax.CallOption) *TaskIterator
 	GetTask(context.Context, *cloudtaskspb.GetTaskRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
 	CreateTask(context.Context, *cloudtaskspb.CreateTaskRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
+	BatchCreateTasks(context.Context, *cloudtaskspb.BatchCreateTasksRequest, ...gax.CallOption) (*BatchCreateTasksOperation, error)
+	BatchCreateTasksOperation(name string) *BatchCreateTasksOperation
 	DeleteTask(context.Context, *cloudtaskspb.DeleteTaskRequest, ...gax.CallOption) error
+	BatchDeleteTasks(context.Context, *cloudtaskspb.BatchDeleteTasksRequest, ...gax.CallOption) (*BatchDeleteTasksOperation, error)
+	BatchDeleteTasksOperation(name string) *BatchDeleteTasksOperation
 	RunTask(context.Context, *cloudtaskspb.RunTaskRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
+	UpdateCmekConfig(context.Context, *cloudtaskspb.UpdateCmekConfigRequest, ...gax.CallOption) (*cloudtaskspb.CmekConfig, error)
+	GetCmekConfig(context.Context, *cloudtaskspb.GetCmekConfigRequest, ...gax.CallOption) (*cloudtaskspb.CmekConfig, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // Client is a client for interacting with Cloud Tasks API.
@@ -380,6 +452,11 @@ type Client struct {
 
 	// The call options for this service.
 	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -456,8 +533,15 @@ func (c *Client) UpdateQueue(ctx context.Context, req *cloudtaskspb.UpdateQueueR
 //
 // This command will delete the queue even if it has tasks in it.
 //
-// Note: If you delete a queue, a queue with the same name can’t be created
-// for 7 days.
+// Note : If you delete a queue, you may be prevented from creating a new
+// queue with the same name as the deleted queue for a tombstone window of up
+// to 3 days. During this window, the CreateQueue operation may appear to
+// recreate the queue, but this can be misleading. If you attempt to create
+// a queue with the same name as one that is in the tombstone window, run
+// GetQueue to confirm that the queue creation was successful. If GetQueue
+// returns 200 response code, your queue was successfully created with the
+// name of the previously deleted queue. Otherwise, your queue did not
+// successfully recreate.
 //
 // WARNING: Using this method may have unintended side effects if you are
 // using an App Engine queue.yaml or queue.xml file to manage your queues.
@@ -564,6 +648,10 @@ func (c *Client) ListTasks(ctx context.Context, req *cloudtaskspb.ListTasksReque
 }
 
 // GetTask gets a task.
+//
+// After a task is successfully executed or has exhausted its retry attempts,
+// the task is deleted. A GetTask request for a deleted task returns a
+// NOT_FOUND error.
 func (c *Client) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	return c.internalClient.GetTask(ctx, req, opts...)
 }
@@ -577,6 +665,21 @@ func (c *Client) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTaskReq
 	return c.internalClient.CreateTask(ctx, req, opts...)
 }
 
+// BatchCreateTasks creates a batch of tasks and adds them to a queue.
+// This call is not atomic.
+//
+// All tasks must be for the same queue.
+// A maximum of 100 tasks can be created in a single batch.
+func (c *Client) BatchCreateTasks(ctx context.Context, req *cloudtaskspb.BatchCreateTasksRequest, opts ...gax.CallOption) (*BatchCreateTasksOperation, error) {
+	return c.internalClient.BatchCreateTasks(ctx, req, opts...)
+}
+
+// BatchCreateTasksOperation returns a new BatchCreateTasksOperation from a given name.
+// The name must be that of a previously created BatchCreateTasksOperation, possibly from a different process.
+func (c *Client) BatchCreateTasksOperation(name string) *BatchCreateTasksOperation {
+	return c.internalClient.BatchCreateTasksOperation(name)
+}
+
 // DeleteTask deletes a task.
 //
 // A task can be deleted if it is scheduled or dispatched. A task
@@ -584,6 +687,21 @@ func (c *Client) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTaskReq
 // failed.
 func (c *Client) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteTask(ctx, req, opts...)
+}
+
+// BatchDeleteTasks deletes a batch of tasks.
+// This is a non-atomic operation: if deletion fails for some tasks, it
+// can still succeed for others. The metadata field of
+// google.longrunning.Operation contains details of failed deletions.
+// A maximum of 1000 tasks can be deleted in a batch.
+func (c *Client) BatchDeleteTasks(ctx context.Context, req *cloudtaskspb.BatchDeleteTasksRequest, opts ...gax.CallOption) (*BatchDeleteTasksOperation, error) {
+	return c.internalClient.BatchDeleteTasks(ctx, req, opts...)
+}
+
+// BatchDeleteTasksOperation returns a new BatchDeleteTasksOperation from a given name.
+// The name must be that of a previously created BatchDeleteTasksOperation, possibly from a different process.
+func (c *Client) BatchDeleteTasksOperation(name string) *BatchDeleteTasksOperation {
+	return c.internalClient.BatchDeleteTasksOperation(name)
 }
 
 // RunTask forces a task to run now.
@@ -599,8 +717,8 @@ func (c *Client) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTaskReq
 // a task to be dispatched now.
 //
 // The dispatched task is returned. That is, the task that is returned
-// contains the status after the task is dispatched but
-// before the task is received by its target.
+// contains the status after
+// the task is dispatched but before the task is received by its target.
 //
 // If Cloud Tasks receives a successful response from the task’s
 // target, then the task will be deleted; otherwise the task’s
@@ -617,14 +735,52 @@ func (c *Client) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskRequest, 
 	return c.internalClient.RunTask(ctx, req, opts...)
 }
 
+// UpdateCmekConfig creates or Updates a CMEK config.
+//
+// Updates the Customer Managed Encryption Key associated with the Cloud Tasks
+// location (Creates if the key does not already exist). All new tasks created
+// in the location will be encrypted at-rest with the KMS-key provided in the
+// config.
+func (c *Client) UpdateCmekConfig(ctx context.Context, req *cloudtaskspb.UpdateCmekConfigRequest, opts ...gax.CallOption) (*cloudtaskspb.CmekConfig, error) {
+	return c.internalClient.UpdateCmekConfig(ctx, req, opts...)
+}
+
+// GetCmekConfig gets the CMEK config.
+//
+// Gets the Customer Managed Encryption Key configured with the Cloud Tasks
+// lcoation. By default there is no kms_key configured.
+func (c *Client) GetCmekConfig(ctx context.Context, req *cloudtaskspb.GetCmekConfigRequest, opts ...gax.CallOption) (*cloudtaskspb.CmekConfig, error) {
+	return c.internalClient.GetCmekConfig(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *Client) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Cloud Tasks API over gRPC transport.
@@ -639,6 +795,13 @@ type gRPCClient struct {
 
 	// The gRPC API client.
 	client cloudtaskspb.CloudTasksClient
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	locationsClient locationpb.LocationsClient
 
@@ -680,11 +843,12 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:        connPool,
-		client:          cloudtaskspb.NewCloudTasksClient(connPool),
-		CallOptions:     &client.CallOptions,
-		logger:          internaloption.GetLogger(opts),
-		locationsClient: locationpb.NewLocationsClient(connPool),
+		connPool:         connPool,
+		client:           cloudtaskspb.NewCloudTasksClient(connPool),
+		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
+		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 	if gax.IsFeatureEnabled("METRICS") {
@@ -713,14 +877,30 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListTasks = append(client.CallOptions.ListTasks, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetTask = append(client.CallOptions.GetTask, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateTask = append(client.CallOptions.CreateTask, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCreateTasks = append(client.CallOptions.BatchCreateTasks, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteTask = append(client.CallOptions.DeleteTask, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchDeleteTasks = append(client.CallOptions.BatchDeleteTasks, gax.WithClientMetrics(metrics))
 		client.CallOptions.RunTask = append(client.CallOptions.RunTask, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCmekConfig = append(client.CallOptions.UpdateCmekConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCmekConfig = append(client.CallOptions.GetCmekConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -756,6 +936,11 @@ type restClient struct {
 
 	// The http client.
 	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
@@ -822,11 +1007,26 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListTasks = append(callOpts.ListTasks, gax.WithClientMetrics(metrics))
 		callOpts.GetTask = append(callOpts.GetTask, gax.WithClientMetrics(metrics))
 		callOpts.CreateTask = append(callOpts.CreateTask, gax.WithClientMetrics(metrics))
+		callOpts.BatchCreateTasks = append(callOpts.BatchCreateTasks, gax.WithClientMetrics(metrics))
 		callOpts.DeleteTask = append(callOpts.DeleteTask, gax.WithClientMetrics(metrics))
+		callOpts.BatchDeleteTasks = append(callOpts.BatchDeleteTasks, gax.WithClientMetrics(metrics))
 		callOpts.RunTask = append(callOpts.RunTask, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCmekConfig = append(callOpts.UpdateCmekConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetCmekConfig = append(callOpts.GetCmekConfig, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 	}
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -1253,6 +1453,36 @@ func (c *gRPCClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTas
 	return resp, nil
 }
 
+func (c *gRPCClient) BatchCreateTasks(ctx context.Context, req *cloudtaskspb.BatchCreateTasksRequest, opts ...gax.CallOption) (*BatchCreateTasksOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta3.CloudTasks/BatchCreateTasks")
+	}
+	opts = append((*c.CallOptions).BatchCreateTasks[0:len((*c.CallOptions).BatchCreateTasks):len((*c.CallOptions).BatchCreateTasks)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.BatchCreateTasks, req, settings.GRPC, c.logger, "BatchCreateTasks")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudtasks.BatchCreateTasksOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &BatchCreateTasksOperation{
+		lro: lro,
+	}, nil
+}
+
 func (c *gRPCClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1273,6 +1503,36 @@ func (c *gRPCClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTas
 	return err
 }
 
+func (c *gRPCClient) BatchDeleteTasks(ctx context.Context, req *cloudtaskspb.BatchDeleteTasksRequest, opts ...gax.CallOption) (*BatchDeleteTasksOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta3.CloudTasks/BatchDeleteTasks")
+	}
+	opts = append((*c.CallOptions).BatchDeleteTasks[0:len((*c.CallOptions).BatchDeleteTasks):len((*c.CallOptions).BatchDeleteTasks)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.BatchDeleteTasks, req, settings.GRPC, c.logger, "BatchDeleteTasks")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudtasks.BatchDeleteTasksOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &BatchDeleteTasksOperation{
+		lro: lro,
+	}, nil
+}
+
 func (c *gRPCClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1289,6 +1549,51 @@ func (c *gRPCClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.client.RunTask, req, settings.GRPC, c.logger, "RunTask")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateCmekConfig(ctx context.Context, req *cloudtaskspb.UpdateCmekConfigRequest, opts ...gax.CallOption) (*cloudtaskspb.CmekConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "cmek_config.name", url.QueryEscape(req.GetCmekConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta3.CloudTasks/UpdateCmekConfig")
+	}
+	opts = append((*c.CallOptions).UpdateCmekConfig[0:len((*c.CallOptions).UpdateCmekConfig):len((*c.CallOptions).UpdateCmekConfig)], opts...)
+	var resp *cloudtaskspb.CmekConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateCmekConfig, req, settings.GRPC, c.logger, "UpdateCmekConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetCmekConfig(ctx context.Context, req *cloudtaskspb.GetCmekConfigRequest, opts ...gax.CallOption) (*cloudtaskspb.CmekConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta3.CloudTasks/GetCmekConfig")
+	}
+	opts = append((*c.CallOptions).GetCmekConfig[0:len((*c.CallOptions).GetCmekConfig):len((*c.CallOptions).GetCmekConfig)], opts...)
+	var resp *cloudtaskspb.CmekConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetCmekConfig, req, settings.GRPC, c.logger, "GetCmekConfig")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1365,6 +1670,27 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // ListQueues lists queues.
@@ -1682,8 +2008,15 @@ func (c *restClient) UpdateQueue(ctx context.Context, req *cloudtaskspb.UpdateQu
 //
 // This command will delete the queue even if it has tasks in it.
 //
-// Note: If you delete a queue, a queue with the same name can’t be created
-// for 7 days.
+// Note : If you delete a queue, you may be prevented from creating a new
+// queue with the same name as the deleted queue for a tombstone window of up
+// to 3 days. During this window, the CreateQueue operation may appear to
+// recreate the queue, but this can be misleading. If you attempt to create
+// a queue with the same name as one that is in the tombstone window, run
+// GetQueue to confirm that the queue creation was successful. If GetQueue
+// returns 200 response code, your queue was successfully created with the
+// name of the previously deleted queue. Otherwise, your queue did not
+// successfully recreate.
 //
 // WARNING: Using this method may have unintended side effects if you are
 // using an App Engine queue.yaml or queue.xml file to manage your queues.
@@ -2251,6 +2584,10 @@ func (c *restClient) ListTasks(ctx context.Context, req *cloudtaskspb.ListTasksR
 }
 
 // GetTask gets a task.
+//
+// After a task is successfully executed or has exhausted its retry attempts,
+// the task is deleted. A GetTask request for a deleted task returns a
+// NOT_FOUND error.
 func (c *restClient) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2377,6 +2714,80 @@ func (c *restClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTas
 	return resp, nil
 }
 
+// BatchCreateTasks creates a batch of tasks and adds them to a queue.
+// This call is not atomic.
+//
+// All tasks must be for the same queue.
+// A maximum of 100 tasks can be created in a single batch.
+func (c *restClient) BatchCreateTasks(ctx context.Context, req *cloudtaskspb.BatchCreateTasksRequest, opts ...gax.CallOption) (*BatchCreateTasksOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta3/%v/tasks:batchCreate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta3.CloudTasks/BatchCreateTasks")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta3/{parent=projects/*/locations/*/queues/*}/tasks:batchCreate")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateTasks")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2beta3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudtasks.BatchCreateTasksOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &BatchCreateTasksOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
 // DeleteTask deletes a task.
 //
 // A task can be deleted if it is scheduled or dispatched. A task
@@ -2423,6 +2834,80 @@ func (c *restClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTas
 	}, opts...)
 }
 
+// BatchDeleteTasks deletes a batch of tasks.
+// This is a non-atomic operation: if deletion fails for some tasks, it
+// can still succeed for others. The metadata field of
+// google.longrunning.Operation contains details of failed deletions.
+// A maximum of 1000 tasks can be deleted in a batch.
+func (c *restClient) BatchDeleteTasks(ctx context.Context, req *cloudtaskspb.BatchDeleteTasksRequest, opts ...gax.CallOption) (*BatchDeleteTasksOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta3/%v/tasks:batchDelete", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta3.CloudTasks/BatchDeleteTasks")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta3/{parent=projects/*/locations/*/queues/*}/tasks:batchDelete")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchDeleteTasks")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2beta3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudtasks.BatchDeleteTasksOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &BatchDeleteTasksOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
 // RunTask forces a task to run now.
 //
 // When this method is called, Cloud Tasks will dispatch the task, even if
@@ -2436,8 +2921,8 @@ func (c *restClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTas
 // a task to be dispatched now.
 //
 // The dispatched task is returned. That is, the task that is returned
-// contains the status after the task is dispatched but
-// before the task is received by its target.
+// contains the status after
+// the task is dispatched but before the task is received by its target.
 //
 // If Cloud Tasks receives a successful response from the task’s
 // target, then the task will be deleted; otherwise the task’s
@@ -2512,6 +2997,139 @@ func (c *restClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 	return resp, nil
 }
 
+// UpdateCmekConfig creates or Updates a CMEK config.
+//
+// Updates the Customer Managed Encryption Key associated with the Cloud Tasks
+// location (Creates if the key does not already exist). All new tasks created
+// in the location will be encrypted at-rest with the KMS-key provided in the
+// config.
+func (c *restClient) UpdateCmekConfig(ctx context.Context, req *cloudtaskspb.UpdateCmekConfigRequest, opts ...gax.CallOption) (*cloudtaskspb.CmekConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCmekConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta3/%v", req.GetCmekConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "cmek_config.name", url.QueryEscape(req.GetCmekConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta3.CloudTasks/UpdateCmekConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta3/{cmek_config.name=projects/*/locations/*/cmekConfig}")
+	}
+	opts = append((*c.CallOptions).UpdateCmekConfig[0:len((*c.CallOptions).UpdateCmekConfig):len((*c.CallOptions).UpdateCmekConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cloudtaskspb.CmekConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateCmekConfig")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetCmekConfig gets the CMEK config.
+//
+// Gets the Customer Managed Encryption Key configured with the Cloud Tasks
+// lcoation. By default there is no kms_key configured.
+func (c *restClient) GetCmekConfig(ctx context.Context, req *cloudtaskspb.GetCmekConfigRequest, opts ...gax.CallOption) (*cloudtaskspb.CmekConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudtasks.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tasks.v2beta3.CloudTasks/GetCmekConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta3/{name=projects/*/locations/*/cmekConfig}")
+	}
+	opts = append((*c.CallOptions).GetCmekConfig[0:len((*c.CallOptions).GetCmekConfig):len((*c.CallOptions).GetCmekConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cloudtaskspb.CmekConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetCmekConfig")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2567,6 +3185,21 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.CloneOf(req)
@@ -2645,4 +3278,94 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta3/{name=projects/*/locations/*/operations/*}")
+	}
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// BatchCreateTasksOperation returns a new BatchCreateTasksOperation from a given name.
+// The name must be that of a previously created BatchCreateTasksOperation, possibly from a different process.
+func (c *gRPCClient) BatchCreateTasksOperation(name string) *BatchCreateTasksOperation {
+	return &BatchCreateTasksOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudtasks.BatchCreateTasksOperation"),
+	}
+}
+
+// BatchCreateTasksOperation returns a new BatchCreateTasksOperation from a given name.
+// The name must be that of a previously created BatchCreateTasksOperation, possibly from a different process.
+func (c *restClient) BatchCreateTasksOperation(name string) *BatchCreateTasksOperation {
+	override := fmt.Sprintf("/v2beta3/%s", name)
+	return &BatchCreateTasksOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudtasks.BatchCreateTasksOperation"),
+		pollPath: override,
+	}
+}
+
+// BatchDeleteTasksOperation returns a new BatchDeleteTasksOperation from a given name.
+// The name must be that of a previously created BatchDeleteTasksOperation, possibly from a different process.
+func (c *gRPCClient) BatchDeleteTasksOperation(name string) *BatchDeleteTasksOperation {
+	return &BatchDeleteTasksOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudtasks.BatchDeleteTasksOperation"),
+	}
+}
+
+// BatchDeleteTasksOperation returns a new BatchDeleteTasksOperation from a given name.
+// The name must be that of a previously created BatchDeleteTasksOperation, possibly from a different process.
+func (c *restClient) BatchDeleteTasksOperation(name string) *BatchDeleteTasksOperation {
+	override := fmt.Sprintf("/v2beta3/%s", name)
+	return &BatchDeleteTasksOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudtasks.BatchDeleteTasksOperation"),
+		pollPath: override,
+	}
 }

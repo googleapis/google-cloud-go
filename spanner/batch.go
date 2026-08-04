@@ -72,7 +72,7 @@ type Partition struct {
 
 // PartitionOptions specifies options for a PartitionQueryRequest and
 // PartitionReadRequest. See
-// https://godoc.org/google.golang.org/genproto/googleapis/spanner/v1#PartitionOptions
+// https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#PartitionOptions
 // for more details.
 type PartitionOptions struct {
 	// The desired data size for each partition generated.

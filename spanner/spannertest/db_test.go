@@ -775,3 +775,107 @@ func TestCreateAndManageChangeStream(t *testing.T) {
 		t.Errorf("Generated SQL statement incorrect.\n got %v\nwant %v", got, want)
 	}
 }
+
+func TestUUIDColumn(t *testing.T) {
+	uuidTable := &spansql.CreateTable{
+		Name: "Tasks",
+		Columns: []spansql.ColumnDef{
+			{Name: "TaskId", Type: spansql.Type{Base: spansql.UUID}, NotNull: true},
+			{Name: "Data", Type: spansql.Type{Base: spansql.String}},
+		},
+		PrimaryKey: []spansql.KeyPart{{Column: "TaskId"}},
+	}
+
+	var db database
+	if st := db.ApplyDDL(uuidTable); st.Code() != codes.OK {
+		t.Fatalf("Creating table: %v", st.Err())
+	}
+
+	tx := db.NewTransaction()
+	tx.Start()
+	uuidVal := "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+	upperUUIDVal := "A0EEBC99-9C0B-4EF8-BB6D-6BB9BD380A22"
+	normalizedUpperUUIDVal := "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22"
+
+	err := db.Insert(tx, "Tasks", []spansql.ID{"TaskId", "Data"}, []*structpb.ListValue{
+		listV(stringV(uuidVal), stringV("some-data")),
+		listV(stringV(upperUUIDVal), stringV("upper-data")),
+	})
+	if err != nil {
+		t.Fatalf("Inserting data: %v", err)
+	}
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Committing changes: %v", err)
+	}
+
+	queryTests := []struct {
+		name string
+		sql  string
+		want [][]interface{}
+	}{
+		{
+			name: "all rows",
+			sql:  `SELECT * FROM Tasks`,
+			want: [][]interface{}{
+				{uuidVal, "some-data"},
+				{normalizedUpperUUIDVal, "upper-data"},
+			},
+		},
+		{
+			name: "uppercase literal filter for uppercase-inserted row",
+			sql:  `SELECT * FROM Tasks WHERE TaskId = 'A0EEBC99-9C0B-4EF8-BB6D-6BB9BD380A22'`,
+			want: [][]interface{}{
+				{normalizedUpperUUIDVal, "upper-data"},
+			},
+		},
+		{
+			name: "lowercase literal filter for uppercase-inserted row",
+			sql:  `SELECT * FROM Tasks WHERE TaskId = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22'`,
+			want: [][]interface{}{
+				{normalizedUpperUUIDVal, "upper-data"},
+			},
+		},
+		{
+			name: "uppercase literal filter for lowercase-inserted row",
+			sql:  `SELECT * FROM Tasks WHERE TaskId = 'A0EEBC99-9C0B-4EF8-BB6D-6BB9BD380A11'`,
+			want: [][]interface{}{
+				{uuidVal, "some-data"},
+			},
+		},
+	}
+
+	for _, tc := range queryTests {
+		q, err := spansql.ParseQuery(tc.sql)
+		if err != nil {
+			t.Fatalf("ParseQuery(%s) [%s]: %v", tc.sql, tc.name, err)
+		}
+		ri, err := db.Query(q, nil)
+		if err != nil {
+			t.Fatalf("Query(%s) [%s]: %v", tc.sql, tc.name, err)
+		}
+		got := slurp(t, ri)
+		if !reflect.DeepEqual(got, tc.want) {
+			t.Errorf("[%s] Query(%s) got %v, want %v", tc.name, tc.sql, got, tc.want)
+		}
+	}
+
+	// Test invalid UUID insertions
+	invalidUUIDs := []string{
+		"not-a-uuid",
+		"a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a1",   // too short (35 chars)
+		"a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a111", // too long (37 chars)
+		"a0eebc999c0b4ef8bb6d6bb9bd380a11",      // missing hyphens
+		"g0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",  // non-hex char
+	}
+	for _, badUUID := range invalidUUIDs {
+		txBad := db.NewTransaction()
+		txBad.Start()
+		errBad := db.Insert(txBad, "Tasks", []spansql.ID{"TaskId", "Data"}, []*structpb.ListValue{
+			listV(stringV(badUUID), stringV("bad")),
+		})
+		if errBad == nil {
+			t.Errorf("db.Insert succeeded for invalid UUID %q, want error", badUUID)
+		}
+		txBad.Rollback()
+	}
+}

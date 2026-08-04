@@ -266,53 +266,6 @@ func (x *GoldengateConnectionType) GetTechnologyTypes() []string {
 	return nil
 }
 
-// Message for getting a GoldengateConnectionType.
-type GetGoldengateConnectionTypeRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Name of the resource in the format:
-	// projects/{project}/locations/{location}/goldengateConnectionTypes/{goldengate_connection_type}
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetGoldengateConnectionTypeRequest) Reset() {
-	*x = GetGoldengateConnectionTypeRequest{}
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetGoldengateConnectionTypeRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetGoldengateConnectionTypeRequest) ProtoMessage() {}
-
-func (x *GetGoldengateConnectionTypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetGoldengateConnectionTypeRequest.ProtoReflect.Descriptor instead.
-func (*GetGoldengateConnectionTypeRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *GetGoldengateConnectionTypeRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
 // Message for listing GoldengateConnectionTypes.
 type ListGoldengateConnectionTypesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -334,7 +287,7 @@ type ListGoldengateConnectionTypesRequest struct {
 
 func (x *ListGoldengateConnectionTypesRequest) Reset() {
 	*x = ListGoldengateConnectionTypesRequest{}
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_msgTypes[2]
+	mi := &file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -346,7 +299,7 @@ func (x *ListGoldengateConnectionTypesRequest) String() string {
 func (*ListGoldengateConnectionTypesRequest) ProtoMessage() {}
 
 func (x *ListGoldengateConnectionTypesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_msgTypes[2]
+	mi := &file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -359,7 +312,7 @@ func (x *ListGoldengateConnectionTypesRequest) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use ListGoldengateConnectionTypesRequest.ProtoReflect.Descriptor instead.
 func (*ListGoldengateConnectionTypesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ListGoldengateConnectionTypesRequest) GetParent() string {
@@ -406,7 +359,7 @@ type ListGoldengateConnectionTypesResponse struct {
 
 func (x *ListGoldengateConnectionTypesResponse) Reset() {
 	*x = ListGoldengateConnectionTypesResponse{}
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_msgTypes[3]
+	mi := &file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -418,7 +371,7 @@ func (x *ListGoldengateConnectionTypesResponse) String() string {
 func (*ListGoldengateConnectionTypesResponse) ProtoMessage() {}
 
 func (x *ListGoldengateConnectionTypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_msgTypes[3]
+	mi := &file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -431,7 +384,7 @@ func (x *ListGoldengateConnectionTypesResponse) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use ListGoldengateConnectionTypesResponse.ProtoReflect.Descriptor instead.
 func (*ListGoldengateConnectionTypesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ListGoldengateConnectionTypesResponse) GetGoldengateConnectionTypes() []*GoldengateConnectionType {
@@ -500,10 +453,7 @@ const file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_rawDe
 	"\rGOOGLE_PUBSUB\x10\x1b\x12\x14\n" +
 	"\x10MICROSOFT_FABRIC\x10\x1c\x12\v\n" +
 	"\aICEBERG\x10\x1d:\xd1\x01\xeaA\xcd\x01\n" +
-	"6oracledatabase.googleapis.com/GoldengateConnectionType\x12^projects/{project}/locations/{location}/goldengateConnectionTypes/{goldengate_connection_type}*\x19goldengateConnectionTypes2\x18goldengateConnectionType\"x\n" +
-	"\"GetGoldengateConnectionTypeRequest\x12R\n" +
-	"\x04name\x18\x01 \x01(\tB>\xe0A\x02\xfaA8\n" +
-	"6oracledatabase.googleapis.com/GoldengateConnectionTypeR\x04name\"\xe1\x01\n" +
+	"6oracledatabase.googleapis.com/GoldengateConnectionType\x12^projects/{project}/locations/{location}/goldengateConnectionTypes/{goldengate_connection_type}*\x19goldengateConnectionTypes2\x18goldengateConnectionType\"\xe1\x01\n" +
 	"$ListGoldengateConnectionTypesRequest\x12V\n" +
 	"\x06parent\x18\x01 \x01(\tB>\xe0A\x02\xfaA8\x126oracledatabase.googleapis.com/GoldengateConnectionTypeR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
@@ -529,13 +479,12 @@ func file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_rawDes
 }
 
 var file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_goTypes = []any{
 	(GoldengateConnectionType_ConnectionType)(0),  // 0: google.cloud.oracledatabase.v1.GoldengateConnectionType.ConnectionType
 	(*GoldengateConnectionType)(nil),              // 1: google.cloud.oracledatabase.v1.GoldengateConnectionType
-	(*GetGoldengateConnectionTypeRequest)(nil),    // 2: google.cloud.oracledatabase.v1.GetGoldengateConnectionTypeRequest
-	(*ListGoldengateConnectionTypesRequest)(nil),  // 3: google.cloud.oracledatabase.v1.ListGoldengateConnectionTypesRequest
-	(*ListGoldengateConnectionTypesResponse)(nil), // 4: google.cloud.oracledatabase.v1.ListGoldengateConnectionTypesResponse
+	(*ListGoldengateConnectionTypesRequest)(nil),  // 2: google.cloud.oracledatabase.v1.ListGoldengateConnectionTypesRequest
+	(*ListGoldengateConnectionTypesResponse)(nil), // 3: google.cloud.oracledatabase.v1.ListGoldengateConnectionTypesResponse
 }
 var file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_depIdxs = []int32{
 	0, // 0: google.cloud.oracledatabase.v1.GoldengateConnectionType.connection_type:type_name -> google.cloud.oracledatabase.v1.GoldengateConnectionType.ConnectionType
@@ -558,7 +507,7 @@ func file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_init()
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_rawDesc), len(file_google_cloud_oracledatabase_v1_goldengate_connection_type_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   4,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

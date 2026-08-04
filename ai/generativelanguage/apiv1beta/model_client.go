@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -303,6 +304,16 @@ func (c *ModelClient) Close() error {
 // use by Google-written clients.
 func (c *ModelClient) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// SetGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+//
+// SetGoogleClientInfo is not concurrency-safe and should only be invoked
+// sequentially before concurrent operations begin.
+func (c *ModelClient) SetGoogleClientInfo(keyval ...string) {
+	c.setGoogleClientInfo(keyval...)
 }
 
 // Connection returns a connection to the API service.
@@ -797,8 +808,12 @@ func (c *modelGRPCClient) CreateTunedModel(ctx context.Context, req *generativel
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*generativelanguage.CreateTunedModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTunedModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1290,8 +1305,12 @@ func (c *modelRESTClient) CreateTunedModel(ctx context.Context, req *generativel
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*generativelanguage.CreateTunedModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTunedModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1626,7 +1645,7 @@ func (c *modelRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 // The name must be that of a previously created CreateTunedModelOperation, possibly from a different process.
 func (c *modelGRPCClient) CreateTunedModelOperation(name string) *CreateTunedModelOperation {
 	return &CreateTunedModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*generativelanguage.CreateTunedModelOperation"),
 	}
 }
 
@@ -1635,7 +1654,7 @@ func (c *modelGRPCClient) CreateTunedModelOperation(name string) *CreateTunedMod
 func (c *modelRESTClient) CreateTunedModelOperation(name string) *CreateTunedModelOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateTunedModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*generativelanguage.CreateTunedModelOperation"),
 		pollPath: override,
 	}
 }

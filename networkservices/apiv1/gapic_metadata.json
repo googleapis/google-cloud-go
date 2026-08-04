@@ -319,6 +319,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateAgentGateway": {
+              "methods": [
+                "CreateAgentGateway"
+              ]
+            },
             "CreateEndpointPolicy": {
               "methods": [
                 "CreateEndpointPolicy"
@@ -372,6 +377,11 @@
             "CreateWasmPluginVersion": {
               "methods": [
                 "CreateWasmPluginVersion"
+              ]
+            },
+            "DeleteAgentGateway": {
+              "methods": [
+                "DeleteAgentGateway"
               ]
             },
             "DeleteEndpointPolicy": {
@@ -432,6 +442,11 @@
             "DeleteWasmPluginVersion": {
               "methods": [
                 "DeleteWasmPluginVersion"
+              ]
+            },
+            "GetAgentGateway": {
+              "methods": [
+                "GetAgentGateway"
               ]
             },
             "GetEndpointPolicy": {
@@ -512,6 +527,11 @@
             "GetWasmPluginVersion": {
               "methods": [
                 "GetWasmPluginVersion"
+              ]
+            },
+            "ListAgentGateways": {
+              "methods": [
+                "ListAgentGateways"
               ]
             },
             "ListEndpointPolicies": {
@@ -597,6 +617,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateAgentGateway": {
+              "methods": [
+                "UpdateAgentGateway"
               ]
             },
             "UpdateEndpointPolicy": {
@@ -659,6 +684,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateAgentGateway": {
+              "methods": [
+                "CreateAgentGateway"
+              ]
+            },
             "CreateEndpointPolicy": {
               "methods": [
                 "CreateEndpointPolicy"
@@ -712,6 +742,11 @@
             "CreateWasmPluginVersion": {
               "methods": [
                 "CreateWasmPluginVersion"
+              ]
+            },
+            "DeleteAgentGateway": {
+              "methods": [
+                "DeleteAgentGateway"
               ]
             },
             "DeleteEndpointPolicy": {
@@ -772,6 +807,11 @@
             "DeleteWasmPluginVersion": {
               "methods": [
                 "DeleteWasmPluginVersion"
+              ]
+            },
+            "GetAgentGateway": {
+              "methods": [
+                "GetAgentGateway"
               ]
             },
             "GetEndpointPolicy": {
@@ -852,6 +892,11 @@
             "GetWasmPluginVersion": {
               "methods": [
                 "GetWasmPluginVersion"
+              ]
+            },
+            "ListAgentGateways": {
+              "methods": [
+                "ListAgentGateways"
               ]
             },
             "ListEndpointPolicies": {
@@ -937,6 +982,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateAgentGateway": {
+              "methods": [
+                "UpdateAgentGateway"
               ]
             },
             "UpdateEndpointPolicy": {

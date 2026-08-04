@@ -15,6 +15,11 @@
                 "CancelOperation"
               ]
             },
+            "ConfigureExascaleCloudExadataInfrastructure": {
+              "methods": [
+                "ConfigureExascaleCloudExadataInfrastructure"
+              ]
+            },
             "CreateAutonomousDatabase": {
               "methods": [
                 "CreateAutonomousDatabase"
@@ -185,29 +190,9 @@
                 "GetGoldengateConnectionAssignment"
               ]
             },
-            "GetGoldengateConnectionType": {
-              "methods": [
-                "GetGoldengateConnectionType"
-              ]
-            },
             "GetGoldengateDeployment": {
               "methods": [
                 "GetGoldengateDeployment"
-              ]
-            },
-            "GetGoldengateDeploymentEnvironment": {
-              "methods": [
-                "GetGoldengateDeploymentEnvironment"
-              ]
-            },
-            "GetGoldengateDeploymentType": {
-              "methods": [
-                "GetGoldengateDeploymentType"
-              ]
-            },
-            "GetGoldengateDeploymentVersion": {
-              "methods": [
-                "GetGoldengateDeploymentVersion"
               ]
             },
             "GetLocation": {
@@ -455,6 +440,11 @@
                 "CancelOperation"
               ]
             },
+            "ConfigureExascaleCloudExadataInfrastructure": {
+              "methods": [
+                "ConfigureExascaleCloudExadataInfrastructure"
+              ]
+            },
             "CreateAutonomousDatabase": {
               "methods": [
                 "CreateAutonomousDatabase"
@@ -625,29 +615,9 @@
                 "GetGoldengateConnectionAssignment"
               ]
             },
-            "GetGoldengateConnectionType": {
-              "methods": [
-                "GetGoldengateConnectionType"
-              ]
-            },
             "GetGoldengateDeployment": {
               "methods": [
                 "GetGoldengateDeployment"
-              ]
-            },
-            "GetGoldengateDeploymentEnvironment": {
-              "methods": [
-                "GetGoldengateDeploymentEnvironment"
-              ]
-            },
-            "GetGoldengateDeploymentType": {
-              "methods": [
-                "GetGoldengateDeploymentType"
-              ]
-            },
-            "GetGoldengateDeploymentVersion": {
-              "methods": [
-                "GetGoldengateDeploymentVersion"
               ]
             },
             "GetLocation": {

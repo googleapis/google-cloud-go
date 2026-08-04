@@ -98,7 +98,7 @@ func assertResultIds(t *testing.T, snapshot *PipelineSnapshot, ids ...string) {
 	}
 }
 
-func TestIntegration_PipelineSearch(t *testing.T) {
+func testIntegrationPipelineSearch(t *testing.T) {
 	skipIfEdition(t, "Pipeline queries", editionStandard)
 	if useEmulator {
 		t.Skip("Search queries are not supported in the emulator.")
@@ -206,5 +206,36 @@ func TestIntegration_PipelineSearch(t *testing.T) {
 		)
 		snapshot := pipeline.Execute(ctx)
 		assertResultIds(t, snapshot, "solTacos", "lotusBlossomThai", "mileHighCatch")
+	})
+
+	t.Run("limit", func(t *testing.T) {
+		pipeline := client.Pipeline().Collection(collectionName).Search(
+			WithSearchQuery(DocumentMatches("tacos")),
+			WithSearchSort(Score().Descending()),
+			WithSearchLimit(1),
+		)
+		snapshot := pipeline.Execute(ctx)
+		assertResultIds(t, snapshot, "eastsideTacos")
+	})
+
+	t.Run("offset", func(t *testing.T) {
+		pipeline := client.Pipeline().Collection(collectionName).Search(
+			WithSearchQuery(DocumentMatches("tacos")),
+			WithSearchSort(Score().Descending()),
+			WithSearchOffset(1),
+			WithSearchLimit(10), // offset cannot be used without limit
+		)
+		snapshot := pipeline.Execute(ctx)
+		assertResultIds(t, snapshot, "solTacos")
+	})
+
+	t.Run("languageCode", func(t *testing.T) {
+		pipeline := client.Pipeline().Collection(collectionName).Search(
+			WithSearchQuery(DocumentMatches("tacos")),
+			WithSearchSort(Score().Descending()),
+			WithSearchLanguageCode("en"),
+		)
+		snapshot := pipeline.Execute(ctx)
+		assertResultIds(t, snapshot, "eastsideTacos", "solTacos")
 	})
 }

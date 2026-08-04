@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,11 +26,14 @@ import (
 	unsafe "unsafe"
 
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -39,6 +42,149 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// The state of the batch delete operation.
+// This enum is not frozen and new values may be added in the future.
+type BatchDeleteTasksMetadata_State int32
+
+const (
+	// The default value. This value is used if the state is omitted.
+	BatchDeleteTasksMetadata_STATE_UNSPECIFIED BatchDeleteTasksMetadata_State = 0
+	// The batch delete is running.
+	BatchDeleteTasksMetadata_RUNNING BatchDeleteTasksMetadata_State = 1
+	// The batch delete has finished and all tasks were successfully deleted.
+	BatchDeleteTasksMetadata_SUCCEEDED BatchDeleteTasksMetadata_State = 2
+	// The batch delete has finished with partial success.
+	// The tasks that failed to be deleted are reported in
+	// [failed_requests][google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.failed_requests].
+	// When all requests in the batch fail,
+	// [google.longrunning.Operation.error][google.longrunning.Operation.error]
+	// will be set with `code` = `google.rpc.Code.ABORTED` and `message` = "None
+	// of the requests succeeded, refer to
+	// BatchDeleteTasksMetadata.failed_requests for individual error details".
+	BatchDeleteTasksMetadata_PARTIALLY_SUCCEEDED BatchDeleteTasksMetadata_State = 3
+	// The batch delete has failed.
+	// This means the overall batch delete operation failed to complete.
+	// This can happen due to an internal error preventing the operation from
+	// finishing.
+	BatchDeleteTasksMetadata_FAILED BatchDeleteTasksMetadata_State = 4
+)
+
+// Enum value maps for BatchDeleteTasksMetadata_State.
+var (
+	BatchDeleteTasksMetadata_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "RUNNING",
+		2: "SUCCEEDED",
+		3: "PARTIALLY_SUCCEEDED",
+		4: "FAILED",
+	}
+	BatchDeleteTasksMetadata_State_value = map[string]int32{
+		"STATE_UNSPECIFIED":   0,
+		"RUNNING":             1,
+		"SUCCEEDED":           2,
+		"PARTIALLY_SUCCEEDED": 3,
+		"FAILED":              4,
+	}
+)
+
+func (x BatchDeleteTasksMetadata_State) Enum() *BatchDeleteTasksMetadata_State {
+	p := new(BatchDeleteTasksMetadata_State)
+	*p = x
+	return p
+}
+
+func (x BatchDeleteTasksMetadata_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (BatchDeleteTasksMetadata_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_enumTypes[0].Descriptor()
+}
+
+func (BatchDeleteTasksMetadata_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_tasks_v2beta3_cloudtasks_proto_enumTypes[0]
+}
+
+func (x BatchDeleteTasksMetadata_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use BatchDeleteTasksMetadata_State.Descriptor instead.
+func (BatchDeleteTasksMetadata_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP(), []int{16, 0}
+}
+
+// The state of the batch create operation.
+type BatchCreateTasksMetadata_State int32
+
+const (
+	// The default value. This value is used if the state is omitted.
+	BatchCreateTasksMetadata_STATE_UNSPECIFIED BatchCreateTasksMetadata_State = 0
+	// The batch create is running.
+	BatchCreateTasksMetadata_RUNNING BatchCreateTasksMetadata_State = 1
+	// The batch create has finished.
+	// All tasks in the request were successfully created.
+	BatchCreateTasksMetadata_SUCCEEDED BatchCreateTasksMetadata_State = 2
+	// The batch create has finished with partial success.
+	// The tasks that failed to be created are reported in
+	// [failed_requests][google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.failed_requests].
+	BatchCreateTasksMetadata_PARTIALLY_SUCCEEDED BatchCreateTasksMetadata_State = 5
+	// The batch create has failed.
+	// This means the overall batch create operation failed to complete.
+	// This can happen due to an internal error preventing the operation from
+	// finishing.
+	BatchCreateTasksMetadata_FAILED BatchCreateTasksMetadata_State = 3
+	// The batch create was cancelled.
+	BatchCreateTasksMetadata_CANCELLED BatchCreateTasksMetadata_State = 4
+)
+
+// Enum value maps for BatchCreateTasksMetadata_State.
+var (
+	BatchCreateTasksMetadata_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "RUNNING",
+		2: "SUCCEEDED",
+		5: "PARTIALLY_SUCCEEDED",
+		3: "FAILED",
+		4: "CANCELLED",
+	}
+	BatchCreateTasksMetadata_State_value = map[string]int32{
+		"STATE_UNSPECIFIED":   0,
+		"RUNNING":             1,
+		"SUCCEEDED":           2,
+		"PARTIALLY_SUCCEEDED": 5,
+		"FAILED":              3,
+		"CANCELLED":           4,
+	}
+)
+
+func (x BatchCreateTasksMetadata_State) Enum() *BatchCreateTasksMetadata_State {
+	p := new(BatchCreateTasksMetadata_State)
+	*p = x
+	return p
+}
+
+func (x BatchCreateTasksMetadata_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (BatchCreateTasksMetadata_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_enumTypes[1].Descriptor()
+}
+
+func (BatchCreateTasksMetadata_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_tasks_v2beta3_cloudtasks_proto_enumTypes[1]
+}
+
+func (x BatchCreateTasksMetadata_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use BatchCreateTasksMetadata_State.Descriptor instead.
+func (BatchCreateTasksMetadata_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP(), []int{19, 0}
+}
 
 // Request message for
 // [ListQueues][google.cloud.tasks.v2beta3.CloudTasks.ListQueues].
@@ -859,11 +1005,10 @@ type CreateTaskRequest struct {
 	// a task's ID is identical to that of an existing task or a task
 	// that was deleted or executed recently then the call will fail
 	// with [ALREADY_EXISTS][google.rpc.Code.ALREADY_EXISTS].
-	// If the task's queue was created using Cloud Tasks, then another task with
-	// the same name can't be created for ~1 hour after the original task was
-	// deleted or executed. If the task's queue was created using queue.yaml or
-	// queue.xml, then another task with the same name can't be created
-	// for ~9 days after the original task was deleted or executed.
+	// The IDs of deleted tasks are not immediately available for reuse.  It can
+	// take up to 24 hours (or 9 days if the task's queue was created using a
+	// queue.yaml or queue.xml) for the task ID to be released and made available
+	// again.
 	//
 	// Because there is an extra lookup cost to identify duplicate task
 	// names, these [CreateTask][google.cloud.tasks.v2beta3.CloudTasks.CreateTask]
@@ -944,6 +1089,81 @@ func (x *CreateTaskRequest) GetResponseView() Task_View {
 	return Task_VIEW_UNSPECIFIED
 }
 
+// Request message for [BatchCreateTasks].
+type BatchCreateTasksRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The queue name. For example:
+	// `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`
+	//
+	// The queue must already exist.
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The list of requests to create tasks.
+	// The queue specified in parent field of each CreateTaskRequest will be
+	// the same. This validation happens on the client side as well as in the
+	// handler.
+	// BatchCreateTasksRequest.parent will also be the same value as the
+	// individual CreateTaskRequest.parent .
+	// The maximum number of requests is 100.
+	Requests []*CreateTaskRequest `protobuf:"bytes,2,rep,name=requests,proto3" json:"requests,omitempty"`
+	// Optional. This field will be used to identify the long running operation,
+	// avoiding duplication when user retries. If not provided, then a UUID will
+	// be generated at server side.
+	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchCreateTasksRequest) Reset() {
+	*x = BatchCreateTasksRequest{}
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchCreateTasksRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchCreateTasksRequest) ProtoMessage() {}
+
+func (x *BatchCreateTasksRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchCreateTasksRequest.ProtoReflect.Descriptor instead.
+func (*BatchCreateTasksRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *BatchCreateTasksRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *BatchCreateTasksRequest) GetRequests() []*CreateTaskRequest {
+	if x != nil {
+		return x.Requests
+	}
+	return nil
+}
+
+func (x *BatchCreateTasksRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
 // Request message for deleting a task using
 // [DeleteTask][google.cloud.tasks.v2beta3.CloudTasks.DeleteTask].
 type DeleteTaskRequest struct {
@@ -957,7 +1177,7 @@ type DeleteTaskRequest struct {
 
 func (x *DeleteTaskRequest) Reset() {
 	*x = DeleteTaskRequest{}
-	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[13]
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -969,7 +1189,7 @@ func (x *DeleteTaskRequest) String() string {
 func (*DeleteTaskRequest) ProtoMessage() {}
 
 func (x *DeleteTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[13]
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -982,7 +1202,7 @@ func (x *DeleteTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTaskRequest.ProtoReflect.Descriptor instead.
 func (*DeleteTaskRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DeleteTaskRequest) GetName() string {
@@ -990,6 +1210,156 @@ func (x *DeleteTaskRequest) GetName() string {
 		return x.Name
 	}
 	return ""
+}
+
+// Request message for deleting a batch of tasks using
+// [BatchDeleteTasks][google.cloud.tasks.v2beta3.CloudTasks.BatchDeleteTasks].
+type BatchDeleteTasksRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The queue name. For example:
+	// Format: `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The names of the tasks to delete.
+	// A maximum of 1000 tasks can be deleted in a batch.
+	// For example:
+	// Format:
+	// `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID`
+	Names []string `protobuf:"bytes,2,rep,name=names,proto3" json:"names,omitempty"`
+	// Optional. This field will be used to identify the long running operation,
+	// avoiding duplication when user retries. If not provided, then a UUID will
+	// be generated at server side.
+	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchDeleteTasksRequest) Reset() {
+	*x = BatchDeleteTasksRequest{}
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchDeleteTasksRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchDeleteTasksRequest) ProtoMessage() {}
+
+func (x *BatchDeleteTasksRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchDeleteTasksRequest.ProtoReflect.Descriptor instead.
+func (*BatchDeleteTasksRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *BatchDeleteTasksRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *BatchDeleteTasksRequest) GetNames() []string {
+	if x != nil {
+		return x.Names
+	}
+	return nil
+}
+
+func (x *BatchDeleteTasksRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+// Metadata for the long-running operation returned by
+// [BatchDeleteTasks][google.cloud.tasks.v2beta3.CloudTasks.BatchDeleteTasks].
+// This message is used to hold metadata information about the
+// batch delete tasks operation; that is, it is put in
+// [google.longrunning.Operation.metadata][google.longrunning.Operation.metadata].
+type BatchDeleteTasksMetadata struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The time when the batch delete started.
+	StartTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	// Output only. The time when the batch delete finished.
+	EndTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
+	// Output only. The state of the batch delete operation.
+	State BatchDeleteTasksMetadata_State `protobuf:"varint,3,opt,name=state,proto3,enum=google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata_State" json:"state,omitempty"`
+	// Output only. A map of failed requests, where the key is the index of the
+	// request in BatchDeleteTasksRequest.names and the value is the error status.
+	FailedRequests map[int32]*status.Status `protobuf:"bytes,4,rep,name=failed_requests,json=failedRequests,proto3" json:"failed_requests,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *BatchDeleteTasksMetadata) Reset() {
+	*x = BatchDeleteTasksMetadata{}
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchDeleteTasksMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchDeleteTasksMetadata) ProtoMessage() {}
+
+func (x *BatchDeleteTasksMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchDeleteTasksMetadata.ProtoReflect.Descriptor instead.
+func (*BatchDeleteTasksMetadata) Descriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *BatchDeleteTasksMetadata) GetStartTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.StartTime
+	}
+	return nil
+}
+
+func (x *BatchDeleteTasksMetadata) GetEndTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.EndTime
+	}
+	return nil
+}
+
+func (x *BatchDeleteTasksMetadata) GetState() BatchDeleteTasksMetadata_State {
+	if x != nil {
+		return x.State
+	}
+	return BatchDeleteTasksMetadata_STATE_UNSPECIFIED
+}
+
+func (x *BatchDeleteTasksMetadata) GetFailedRequests() map[int32]*status.Status {
+	if x != nil {
+		return x.FailedRequests
+	}
+	return nil
 }
 
 // Request message for forcing a task to run now using
@@ -1019,7 +1389,7 @@ type RunTaskRequest struct {
 
 func (x *RunTaskRequest) Reset() {
 	*x = RunTaskRequest{}
-	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[14]
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1031,7 +1401,7 @@ func (x *RunTaskRequest) String() string {
 func (*RunTaskRequest) ProtoMessage() {}
 
 func (x *RunTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[14]
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1044,7 +1414,7 @@ func (x *RunTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunTaskRequest.ProtoReflect.Descriptor instead.
 func (*RunTaskRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *RunTaskRequest) GetName() string {
@@ -1061,11 +1431,235 @@ func (x *RunTaskRequest) GetResponseView() Task_View {
 	return Task_VIEW_UNSPECIFIED
 }
 
+// Response message for [BatchCreateTasks].
+type BatchCreateTasksResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The tasks that were successfully created.
+	Tasks         []*Task `protobuf:"bytes,1,rep,name=tasks,proto3" json:"tasks,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchCreateTasksResponse) Reset() {
+	*x = BatchCreateTasksResponse{}
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchCreateTasksResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchCreateTasksResponse) ProtoMessage() {}
+
+func (x *BatchCreateTasksResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchCreateTasksResponse.ProtoReflect.Descriptor instead.
+func (*BatchCreateTasksResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *BatchCreateTasksResponse) GetTasks() []*Task {
+	if x != nil {
+		return x.Tasks
+	}
+	return nil
+}
+
+// Metadata message for [BatchCreateTasks].
+type BatchCreateTasksMetadata struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The time when the batch create started.
+	StartTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	// The time when the batch create finished.
+	EndTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
+	// Output only. The state of the batch create operation.
+	State BatchCreateTasksMetadata_State `protobuf:"varint,3,opt,name=state,proto3,enum=google.cloud.tasks.v2beta3.BatchCreateTasksMetadata_State" json:"state,omitempty"`
+	// A map of failed requests, where the key is the index of the request in
+	// BatchCreateTasksRequest.requests and the value is the error status.
+	FailedRequests map[int32]*status.Status `protobuf:"bytes,4,rep,name=failed_requests,json=failedRequests,proto3" json:"failed_requests,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *BatchCreateTasksMetadata) Reset() {
+	*x = BatchCreateTasksMetadata{}
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchCreateTasksMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchCreateTasksMetadata) ProtoMessage() {}
+
+func (x *BatchCreateTasksMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchCreateTasksMetadata.ProtoReflect.Descriptor instead.
+func (*BatchCreateTasksMetadata) Descriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *BatchCreateTasksMetadata) GetStartTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.StartTime
+	}
+	return nil
+}
+
+func (x *BatchCreateTasksMetadata) GetEndTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.EndTime
+	}
+	return nil
+}
+
+func (x *BatchCreateTasksMetadata) GetState() BatchCreateTasksMetadata_State {
+	if x != nil {
+		return x.State
+	}
+	return BatchCreateTasksMetadata_STATE_UNSPECIFIED
+}
+
+func (x *BatchCreateTasksMetadata) GetFailedRequests() map[int32]*status.Status {
+	if x != nil {
+		return x.FailedRequests
+	}
+	return nil
+}
+
+// Request message for
+// [UpdateCmekConfig][google.cloud.tasks.v2beta3.CloudTasks.UpdateCmekConfig].
+type UpdateCmekConfigRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The config to update.  Its name attribute distinguishes it.
+	CmekConfig *CmekConfig `protobuf:"bytes,1,opt,name=cmek_config,json=cmekConfig,proto3" json:"cmek_config,omitempty"`
+	// List of fields to be updated in this request.
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCmekConfigRequest) Reset() {
+	*x = UpdateCmekConfigRequest{}
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCmekConfigRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCmekConfigRequest) ProtoMessage() {}
+
+func (x *UpdateCmekConfigRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCmekConfigRequest.ProtoReflect.Descriptor instead.
+func (*UpdateCmekConfigRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *UpdateCmekConfigRequest) GetCmekConfig() *CmekConfig {
+	if x != nil {
+		return x.CmekConfig
+	}
+	return nil
+}
+
+func (x *UpdateCmekConfigRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+// Request message for
+// [GetCmekConfig][google.cloud.tasks.v2beta3.CloudTasks.GetCmekConfig].
+type GetCmekConfigRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The config resource name. For example:
+	// projects/PROJECT_ID/locations/LOCATION_ID/cmekConfig`
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCmekConfigRequest) Reset() {
+	*x = GetCmekConfigRequest{}
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCmekConfigRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCmekConfigRequest) ProtoMessage() {}
+
+func (x *GetCmekConfigRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCmekConfigRequest.ProtoReflect.Descriptor instead.
+func (*GetCmekConfigRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *GetCmekConfigRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 var File_google_cloud_tasks_v2beta3_cloudtasks_proto protoreflect.FileDescriptor
 
 const file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/tasks/v2beta3/cloudtasks.proto\x12\x1agoogle.cloud.tasks.v2beta3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/tasks/v2beta3/queue.proto\x1a%google/cloud/tasks/v2beta3/task.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xe6\x01\n" +
+	"+google/cloud/tasks/v2beta3/cloudtasks.proto\x12\x1agoogle.cloud.tasks.v2beta3\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/tasks/v2beta3/cmek_config.proto\x1a&google/cloud/tasks/v2beta3/queue.proto\x1a%google/cloud/tasks/v2beta3/task.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xe6\x01\n" +
 	"\x11ListQueuesRequest\x12?\n" +
 	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fcloudtasks.googleapis.com/QueueR\x06parent\x12\x16\n" +
 	"\x06filter\x18\x02 \x01(\tR\x06filter\x12\x1b\n" +
@@ -1115,14 +1709,70 @@ const file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDesc = "" +
 	"\x11CreateTaskRequest\x12>\n" +
 	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1ecloudtasks.googleapis.com/TaskR\x06parent\x129\n" +
 	"\x04task\x18\x02 \x01(\v2 .google.cloud.tasks.v2beta3.TaskB\x03\xe0A\x02R\x04task\x12J\n" +
-	"\rresponse_view\x18\x03 \x01(\x0e2%.google.cloud.tasks.v2beta3.Task.ViewR\fresponseView\"O\n" +
+	"\rresponse_view\x18\x03 \x01(\x0e2%.google.cloud.tasks.v2beta3.Task.ViewR\fresponseView\"\xd6\x01\n" +
+	"\x17BatchCreateTasksRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x1fcloudtasks.googleapis.com/QueueR\x06parent\x12N\n" +
+	"\brequests\x18\x02 \x03(\v2-.google.cloud.tasks.v2beta3.CreateTaskRequestB\x03\xe0A\x02R\brequests\x12*\n" +
+	"\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"O\n" +
 	"\x11DeleteTaskRequest\x12:\n" +
 	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1ecloudtasks.googleapis.com/TaskR\x04name\"\x98\x01\n" +
+	"\x1ecloudtasks.googleapis.com/TaskR\x04name\"\xc4\x01\n" +
+	"\x17BatchDeleteTasksRequest\x12?\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x1fcloudtasks.googleapis.com/QueueR\x06parent\x12<\n" +
+	"\x05names\x18\x02 \x03(\tB&\xe0A\x02\xfaA \n" +
+	"\x1ecloudtasks.googleapis.com/TaskR\x05names\x12*\n" +
+	"\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9d\x04\n" +
+	"\x18BatchDeleteTasksMetadata\x12>\n" +
+	"\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x12U\n" +
+	"\x05state\x18\x03 \x01(\x0e2:.google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.StateB\x03\xe0A\x03R\x05state\x12v\n" +
+	"\x0ffailed_requests\x18\x04 \x03(\v2H.google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.FailedRequestsEntryB\x03\xe0A\x03R\x0efailedRequests\x1aU\n" +
+	"\x13FailedRequestsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x05value:\x028\x01\"_\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aRUNNING\x10\x01\x12\r\n" +
+	"\tSUCCEEDED\x10\x02\x12\x17\n" +
+	"\x13PARTIALLY_SUCCEEDED\x10\x03\x12\n" +
+	"\n" +
+	"\x06FAILED\x10\x04\"\x98\x01\n" +
 	"\x0eRunTaskRequest\x12:\n" +
 	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
 	"\x1ecloudtasks.googleapis.com/TaskR\x04name\x12J\n" +
-	"\rresponse_view\x18\x02 \x01(\x0e2%.google.cloud.tasks.v2beta3.Task.ViewR\fresponseView2\xa5\x16\n" +
+	"\rresponse_view\x18\x02 \x01(\x0e2%.google.cloud.tasks.v2beta3.Task.ViewR\fresponseView\"R\n" +
+	"\x18BatchCreateTasksResponse\x126\n" +
+	"\x05tasks\x18\x01 \x03(\v2 .google.cloud.tasks.v2beta3.TaskR\x05tasks\"\x9d\x04\n" +
+	"\x18BatchCreateTasksMetadata\x129\n" +
+	"\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12U\n" +
+	"\x05state\x18\x03 \x01(\x0e2:.google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.StateB\x03\xe0A\x03R\x05state\x12q\n" +
+	"\x0ffailed_requests\x18\x04 \x03(\v2H.google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.FailedRequestsEntryR\x0efailedRequests\x1aU\n" +
+	"\x13FailedRequestsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x05value:\x028\x01\"n\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aRUNNING\x10\x01\x12\r\n" +
+	"\tSUCCEEDED\x10\x02\x12\x17\n" +
+	"\x13PARTIALLY_SUCCEEDED\x10\x05\x12\n" +
+	"\n" +
+	"\x06FAILED\x10\x03\x12\r\n" +
+	"\tCANCELLED\x10\x04\"\xa4\x01\n" +
+	"\x17UpdateCmekConfigRequest\x12L\n" +
+	"\vcmek_config\x18\x01 \x01(\v2&.google.cloud.tasks.v2beta3.CmekConfigB\x03\xe0A\x02R\n" +
+	"cmekConfig\x12;\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
+	"updateMask\"X\n" +
+	"\x14GetCmekConfigRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"$cloudtasks.googleapis.com/CmekConfigR\x04name2\xb3\x1d\n" +
 	"\n" +
 	"CloudTasks\x12\xad\x01\n" +
 	"\n" +
@@ -1142,10 +1792,16 @@ const file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDesc = "" +
 	"\tListTasks\x12,.google.cloud.tasks.v2beta3.ListTasksRequest\x1a-.google.cloud.tasks.v2beta3.ListTasksResponse\"H\xdaA\x06parent\x82\xd3\xe4\x93\x029\x127/v2beta3/{parent=projects/*/locations/*/queues/*}/tasks\x12\x9f\x01\n" +
 	"\aGetTask\x12*.google.cloud.tasks.v2beta3.GetTaskRequest\x1a .google.cloud.tasks.v2beta3.Task\"F\xdaA\x04name\x82\xd3\xe4\x93\x029\x127/v2beta3/{name=projects/*/locations/*/queues/*/tasks/*}\x12\xaf\x01\n" +
 	"\n" +
-	"CreateTask\x12-.google.cloud.tasks.v2beta3.CreateTaskRequest\x1a .google.cloud.tasks.v2beta3.Task\"P\xdaA\vparent,task\x82\xd3\xe4\x93\x02<:\x01*\"7/v2beta3/{parent=projects/*/locations/*/queues/*}/tasks\x12\x9b\x01\n" +
+	"CreateTask\x12-.google.cloud.tasks.v2beta3.CreateTaskRequest\x1a .google.cloud.tasks.v2beta3.Task\"P\xdaA\vparent,task\x82\xd3\xe4\x93\x02<:\x01*\"7/v2beta3/{parent=projects/*/locations/*/queues/*}/tasks\x12\x80\x02\n" +
+	"\x10BatchCreateTasks\x123.google.cloud.tasks.v2beta3.BatchCreateTasksRequest\x1a\x1d.google.longrunning.Operation\"\x97\x01\xcaA4\n" +
+	"\x18BatchCreateTasksResponse\x12\x18BatchCreateTasksMetadata\xdaA\x0fparent,requests\x82\xd3\xe4\x93\x02H:\x01*\"C/v2beta3/{parent=projects/*/locations/*/queues/*}/tasks:batchCreate\x12\x9b\x01\n" +
 	"\n" +
-	"DeleteTask\x12-.google.cloud.tasks.v2beta3.DeleteTaskRequest\x1a\x16.google.protobuf.Empty\"F\xdaA\x04name\x82\xd3\xe4\x93\x029*7/v2beta3/{name=projects/*/locations/*/queues/*/tasks/*}\x12\xa6\x01\n" +
-	"\aRunTask\x12*.google.cloud.tasks.v2beta3.RunTaskRequest\x1a .google.cloud.tasks.v2beta3.Task\"M\xdaA\x04name\x82\xd3\xe4\x93\x02@:\x01*\";/v2beta3/{name=projects/*/locations/*/queues/*/tasks/*}:run\x1aM\xcaA\x19cloudtasks.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x80\x01\n" +
+	"DeleteTask\x12-.google.cloud.tasks.v2beta3.DeleteTaskRequest\x1a\x16.google.protobuf.Empty\"F\xdaA\x04name\x82\xd3\xe4\x93\x029*7/v2beta3/{name=projects/*/locations/*/queues/*/tasks/*}\x12\xfa\x01\n" +
+	"\x10BatchDeleteTasks\x123.google.cloud.tasks.v2beta3.BatchDeleteTasksRequest\x1a\x1d.google.longrunning.Operation\"\x91\x01\xcaA1\n" +
+	"\x15google.protobuf.Empty\x12\x18BatchDeleteTasksMetadata\xdaA\fparent,names\x82\xd3\xe4\x93\x02H:\x01*\"C/v2beta3/{parent=projects/*/locations/*/queues/*}/tasks:batchDelete\x12\xa6\x01\n" +
+	"\aRunTask\x12*.google.cloud.tasks.v2beta3.RunTaskRequest\x1a .google.cloud.tasks.v2beta3.Task\"M\xdaA\x04name\x82\xd3\xe4\x93\x02@:\x01*\";/v2beta3/{name=projects/*/locations/*/queues/*/tasks/*}:run\x12\xdd\x01\n" +
+	"\x10UpdateCmekConfig\x123.google.cloud.tasks.v2beta3.UpdateCmekConfigRequest\x1a&.google.cloud.tasks.v2beta3.CmekConfig\"l\xdaA\x17cmek_config,update_mask\x82\xd3\xe4\x93\x02L:\vcmek_config2=/v2beta3/{cmek_config.name=projects/*/locations/*/cmekConfig}\x12\xab\x01\n" +
+	"\rGetCmekConfig\x120.google.cloud.tasks.v2beta3.GetCmekConfigRequest\x1a&.google.cloud.tasks.v2beta3.CmekConfig\"@\xdaA\x04name\x82\xd3\xe4\x93\x023\x121/v2beta3/{name=projects/*/locations/*/cmekConfig}\x1aM\xcaA\x19cloudtasks.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x80\x01\n" +
 	"\x1ecom.google.cloud.tasks.v2beta3B\x0fCloudTasksProtoP\x01ZCcloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb;cloudtaskspb\xa2\x02\x05TASKSb\x06proto3"
 
 var (
@@ -1160,84 +1816,122 @@ func file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP() []byte {
 	return file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescData
 }
 
-var file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_google_cloud_tasks_v2beta3_cloudtasks_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_google_cloud_tasks_v2beta3_cloudtasks_proto_goTypes = []any{
-	(*ListQueuesRequest)(nil),                // 0: google.cloud.tasks.v2beta3.ListQueuesRequest
-	(*ListQueuesResponse)(nil),               // 1: google.cloud.tasks.v2beta3.ListQueuesResponse
-	(*GetQueueRequest)(nil),                  // 2: google.cloud.tasks.v2beta3.GetQueueRequest
-	(*CreateQueueRequest)(nil),               // 3: google.cloud.tasks.v2beta3.CreateQueueRequest
-	(*UpdateQueueRequest)(nil),               // 4: google.cloud.tasks.v2beta3.UpdateQueueRequest
-	(*DeleteQueueRequest)(nil),               // 5: google.cloud.tasks.v2beta3.DeleteQueueRequest
-	(*PurgeQueueRequest)(nil),                // 6: google.cloud.tasks.v2beta3.PurgeQueueRequest
-	(*PauseQueueRequest)(nil),                // 7: google.cloud.tasks.v2beta3.PauseQueueRequest
-	(*ResumeQueueRequest)(nil),               // 8: google.cloud.tasks.v2beta3.ResumeQueueRequest
-	(*ListTasksRequest)(nil),                 // 9: google.cloud.tasks.v2beta3.ListTasksRequest
-	(*ListTasksResponse)(nil),                // 10: google.cloud.tasks.v2beta3.ListTasksResponse
-	(*GetTaskRequest)(nil),                   // 11: google.cloud.tasks.v2beta3.GetTaskRequest
-	(*CreateTaskRequest)(nil),                // 12: google.cloud.tasks.v2beta3.CreateTaskRequest
-	(*DeleteTaskRequest)(nil),                // 13: google.cloud.tasks.v2beta3.DeleteTaskRequest
-	(*RunTaskRequest)(nil),                   // 14: google.cloud.tasks.v2beta3.RunTaskRequest
-	(*fieldmaskpb.FieldMask)(nil),            // 15: google.protobuf.FieldMask
-	(*Queue)(nil),                            // 16: google.cloud.tasks.v2beta3.Queue
-	(Task_View)(0),                           // 17: google.cloud.tasks.v2beta3.Task.View
-	(*Task)(nil),                             // 18: google.cloud.tasks.v2beta3.Task
-	(*iampb.GetIamPolicyRequest)(nil),        // 19: google.iam.v1.GetIamPolicyRequest
-	(*iampb.SetIamPolicyRequest)(nil),        // 20: google.iam.v1.SetIamPolicyRequest
-	(*iampb.TestIamPermissionsRequest)(nil),  // 21: google.iam.v1.TestIamPermissionsRequest
-	(*emptypb.Empty)(nil),                    // 22: google.protobuf.Empty
-	(*iampb.Policy)(nil),                     // 23: google.iam.v1.Policy
-	(*iampb.TestIamPermissionsResponse)(nil), // 24: google.iam.v1.TestIamPermissionsResponse
+	(BatchDeleteTasksMetadata_State)(0),      // 0: google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.State
+	(BatchCreateTasksMetadata_State)(0),      // 1: google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.State
+	(*ListQueuesRequest)(nil),                // 2: google.cloud.tasks.v2beta3.ListQueuesRequest
+	(*ListQueuesResponse)(nil),               // 3: google.cloud.tasks.v2beta3.ListQueuesResponse
+	(*GetQueueRequest)(nil),                  // 4: google.cloud.tasks.v2beta3.GetQueueRequest
+	(*CreateQueueRequest)(nil),               // 5: google.cloud.tasks.v2beta3.CreateQueueRequest
+	(*UpdateQueueRequest)(nil),               // 6: google.cloud.tasks.v2beta3.UpdateQueueRequest
+	(*DeleteQueueRequest)(nil),               // 7: google.cloud.tasks.v2beta3.DeleteQueueRequest
+	(*PurgeQueueRequest)(nil),                // 8: google.cloud.tasks.v2beta3.PurgeQueueRequest
+	(*PauseQueueRequest)(nil),                // 9: google.cloud.tasks.v2beta3.PauseQueueRequest
+	(*ResumeQueueRequest)(nil),               // 10: google.cloud.tasks.v2beta3.ResumeQueueRequest
+	(*ListTasksRequest)(nil),                 // 11: google.cloud.tasks.v2beta3.ListTasksRequest
+	(*ListTasksResponse)(nil),                // 12: google.cloud.tasks.v2beta3.ListTasksResponse
+	(*GetTaskRequest)(nil),                   // 13: google.cloud.tasks.v2beta3.GetTaskRequest
+	(*CreateTaskRequest)(nil),                // 14: google.cloud.tasks.v2beta3.CreateTaskRequest
+	(*BatchCreateTasksRequest)(nil),          // 15: google.cloud.tasks.v2beta3.BatchCreateTasksRequest
+	(*DeleteTaskRequest)(nil),                // 16: google.cloud.tasks.v2beta3.DeleteTaskRequest
+	(*BatchDeleteTasksRequest)(nil),          // 17: google.cloud.tasks.v2beta3.BatchDeleteTasksRequest
+	(*BatchDeleteTasksMetadata)(nil),         // 18: google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata
+	(*RunTaskRequest)(nil),                   // 19: google.cloud.tasks.v2beta3.RunTaskRequest
+	(*BatchCreateTasksResponse)(nil),         // 20: google.cloud.tasks.v2beta3.BatchCreateTasksResponse
+	(*BatchCreateTasksMetadata)(nil),         // 21: google.cloud.tasks.v2beta3.BatchCreateTasksMetadata
+	(*UpdateCmekConfigRequest)(nil),          // 22: google.cloud.tasks.v2beta3.UpdateCmekConfigRequest
+	(*GetCmekConfigRequest)(nil),             // 23: google.cloud.tasks.v2beta3.GetCmekConfigRequest
+	nil,                                      // 24: google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.FailedRequestsEntry
+	nil,                                      // 25: google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.FailedRequestsEntry
+	(*fieldmaskpb.FieldMask)(nil),            // 26: google.protobuf.FieldMask
+	(*Queue)(nil),                            // 27: google.cloud.tasks.v2beta3.Queue
+	(Task_View)(0),                           // 28: google.cloud.tasks.v2beta3.Task.View
+	(*Task)(nil),                             // 29: google.cloud.tasks.v2beta3.Task
+	(*timestamppb.Timestamp)(nil),            // 30: google.protobuf.Timestamp
+	(*CmekConfig)(nil),                       // 31: google.cloud.tasks.v2beta3.CmekConfig
+	(*status.Status)(nil),                    // 32: google.rpc.Status
+	(*iampb.GetIamPolicyRequest)(nil),        // 33: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),        // 34: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 35: google.iam.v1.TestIamPermissionsRequest
+	(*emptypb.Empty)(nil),                    // 36: google.protobuf.Empty
+	(*iampb.Policy)(nil),                     // 37: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 38: google.iam.v1.TestIamPermissionsResponse
+	(*longrunningpb.Operation)(nil),          // 39: google.longrunning.Operation
 }
 var file_google_cloud_tasks_v2beta3_cloudtasks_proto_depIdxs = []int32{
-	15, // 0: google.cloud.tasks.v2beta3.ListQueuesRequest.read_mask:type_name -> google.protobuf.FieldMask
-	16, // 1: google.cloud.tasks.v2beta3.ListQueuesResponse.queues:type_name -> google.cloud.tasks.v2beta3.Queue
-	15, // 2: google.cloud.tasks.v2beta3.GetQueueRequest.read_mask:type_name -> google.protobuf.FieldMask
-	16, // 3: google.cloud.tasks.v2beta3.CreateQueueRequest.queue:type_name -> google.cloud.tasks.v2beta3.Queue
-	16, // 4: google.cloud.tasks.v2beta3.UpdateQueueRequest.queue:type_name -> google.cloud.tasks.v2beta3.Queue
-	15, // 5: google.cloud.tasks.v2beta3.UpdateQueueRequest.update_mask:type_name -> google.protobuf.FieldMask
-	17, // 6: google.cloud.tasks.v2beta3.ListTasksRequest.response_view:type_name -> google.cloud.tasks.v2beta3.Task.View
-	18, // 7: google.cloud.tasks.v2beta3.ListTasksResponse.tasks:type_name -> google.cloud.tasks.v2beta3.Task
-	17, // 8: google.cloud.tasks.v2beta3.GetTaskRequest.response_view:type_name -> google.cloud.tasks.v2beta3.Task.View
-	18, // 9: google.cloud.tasks.v2beta3.CreateTaskRequest.task:type_name -> google.cloud.tasks.v2beta3.Task
-	17, // 10: google.cloud.tasks.v2beta3.CreateTaskRequest.response_view:type_name -> google.cloud.tasks.v2beta3.Task.View
-	17, // 11: google.cloud.tasks.v2beta3.RunTaskRequest.response_view:type_name -> google.cloud.tasks.v2beta3.Task.View
-	0,  // 12: google.cloud.tasks.v2beta3.CloudTasks.ListQueues:input_type -> google.cloud.tasks.v2beta3.ListQueuesRequest
-	2,  // 13: google.cloud.tasks.v2beta3.CloudTasks.GetQueue:input_type -> google.cloud.tasks.v2beta3.GetQueueRequest
-	3,  // 14: google.cloud.tasks.v2beta3.CloudTasks.CreateQueue:input_type -> google.cloud.tasks.v2beta3.CreateQueueRequest
-	4,  // 15: google.cloud.tasks.v2beta3.CloudTasks.UpdateQueue:input_type -> google.cloud.tasks.v2beta3.UpdateQueueRequest
-	5,  // 16: google.cloud.tasks.v2beta3.CloudTasks.DeleteQueue:input_type -> google.cloud.tasks.v2beta3.DeleteQueueRequest
-	6,  // 17: google.cloud.tasks.v2beta3.CloudTasks.PurgeQueue:input_type -> google.cloud.tasks.v2beta3.PurgeQueueRequest
-	7,  // 18: google.cloud.tasks.v2beta3.CloudTasks.PauseQueue:input_type -> google.cloud.tasks.v2beta3.PauseQueueRequest
-	8,  // 19: google.cloud.tasks.v2beta3.CloudTasks.ResumeQueue:input_type -> google.cloud.tasks.v2beta3.ResumeQueueRequest
-	19, // 20: google.cloud.tasks.v2beta3.CloudTasks.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
-	20, // 21: google.cloud.tasks.v2beta3.CloudTasks.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
-	21, // 22: google.cloud.tasks.v2beta3.CloudTasks.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
-	9,  // 23: google.cloud.tasks.v2beta3.CloudTasks.ListTasks:input_type -> google.cloud.tasks.v2beta3.ListTasksRequest
-	11, // 24: google.cloud.tasks.v2beta3.CloudTasks.GetTask:input_type -> google.cloud.tasks.v2beta3.GetTaskRequest
-	12, // 25: google.cloud.tasks.v2beta3.CloudTasks.CreateTask:input_type -> google.cloud.tasks.v2beta3.CreateTaskRequest
-	13, // 26: google.cloud.tasks.v2beta3.CloudTasks.DeleteTask:input_type -> google.cloud.tasks.v2beta3.DeleteTaskRequest
-	14, // 27: google.cloud.tasks.v2beta3.CloudTasks.RunTask:input_type -> google.cloud.tasks.v2beta3.RunTaskRequest
-	1,  // 28: google.cloud.tasks.v2beta3.CloudTasks.ListQueues:output_type -> google.cloud.tasks.v2beta3.ListQueuesResponse
-	16, // 29: google.cloud.tasks.v2beta3.CloudTasks.GetQueue:output_type -> google.cloud.tasks.v2beta3.Queue
-	16, // 30: google.cloud.tasks.v2beta3.CloudTasks.CreateQueue:output_type -> google.cloud.tasks.v2beta3.Queue
-	16, // 31: google.cloud.tasks.v2beta3.CloudTasks.UpdateQueue:output_type -> google.cloud.tasks.v2beta3.Queue
-	22, // 32: google.cloud.tasks.v2beta3.CloudTasks.DeleteQueue:output_type -> google.protobuf.Empty
-	16, // 33: google.cloud.tasks.v2beta3.CloudTasks.PurgeQueue:output_type -> google.cloud.tasks.v2beta3.Queue
-	16, // 34: google.cloud.tasks.v2beta3.CloudTasks.PauseQueue:output_type -> google.cloud.tasks.v2beta3.Queue
-	16, // 35: google.cloud.tasks.v2beta3.CloudTasks.ResumeQueue:output_type -> google.cloud.tasks.v2beta3.Queue
-	23, // 36: google.cloud.tasks.v2beta3.CloudTasks.GetIamPolicy:output_type -> google.iam.v1.Policy
-	23, // 37: google.cloud.tasks.v2beta3.CloudTasks.SetIamPolicy:output_type -> google.iam.v1.Policy
-	24, // 38: google.cloud.tasks.v2beta3.CloudTasks.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
-	10, // 39: google.cloud.tasks.v2beta3.CloudTasks.ListTasks:output_type -> google.cloud.tasks.v2beta3.ListTasksResponse
-	18, // 40: google.cloud.tasks.v2beta3.CloudTasks.GetTask:output_type -> google.cloud.tasks.v2beta3.Task
-	18, // 41: google.cloud.tasks.v2beta3.CloudTasks.CreateTask:output_type -> google.cloud.tasks.v2beta3.Task
-	22, // 42: google.cloud.tasks.v2beta3.CloudTasks.DeleteTask:output_type -> google.protobuf.Empty
-	18, // 43: google.cloud.tasks.v2beta3.CloudTasks.RunTask:output_type -> google.cloud.tasks.v2beta3.Task
-	28, // [28:44] is the sub-list for method output_type
-	12, // [12:28] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	26, // 0: google.cloud.tasks.v2beta3.ListQueuesRequest.read_mask:type_name -> google.protobuf.FieldMask
+	27, // 1: google.cloud.tasks.v2beta3.ListQueuesResponse.queues:type_name -> google.cloud.tasks.v2beta3.Queue
+	26, // 2: google.cloud.tasks.v2beta3.GetQueueRequest.read_mask:type_name -> google.protobuf.FieldMask
+	27, // 3: google.cloud.tasks.v2beta3.CreateQueueRequest.queue:type_name -> google.cloud.tasks.v2beta3.Queue
+	27, // 4: google.cloud.tasks.v2beta3.UpdateQueueRequest.queue:type_name -> google.cloud.tasks.v2beta3.Queue
+	26, // 5: google.cloud.tasks.v2beta3.UpdateQueueRequest.update_mask:type_name -> google.protobuf.FieldMask
+	28, // 6: google.cloud.tasks.v2beta3.ListTasksRequest.response_view:type_name -> google.cloud.tasks.v2beta3.Task.View
+	29, // 7: google.cloud.tasks.v2beta3.ListTasksResponse.tasks:type_name -> google.cloud.tasks.v2beta3.Task
+	28, // 8: google.cloud.tasks.v2beta3.GetTaskRequest.response_view:type_name -> google.cloud.tasks.v2beta3.Task.View
+	29, // 9: google.cloud.tasks.v2beta3.CreateTaskRequest.task:type_name -> google.cloud.tasks.v2beta3.Task
+	28, // 10: google.cloud.tasks.v2beta3.CreateTaskRequest.response_view:type_name -> google.cloud.tasks.v2beta3.Task.View
+	14, // 11: google.cloud.tasks.v2beta3.BatchCreateTasksRequest.requests:type_name -> google.cloud.tasks.v2beta3.CreateTaskRequest
+	30, // 12: google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.start_time:type_name -> google.protobuf.Timestamp
+	30, // 13: google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.end_time:type_name -> google.protobuf.Timestamp
+	0,  // 14: google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.state:type_name -> google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.State
+	24, // 15: google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.failed_requests:type_name -> google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.FailedRequestsEntry
+	28, // 16: google.cloud.tasks.v2beta3.RunTaskRequest.response_view:type_name -> google.cloud.tasks.v2beta3.Task.View
+	29, // 17: google.cloud.tasks.v2beta3.BatchCreateTasksResponse.tasks:type_name -> google.cloud.tasks.v2beta3.Task
+	30, // 18: google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.start_time:type_name -> google.protobuf.Timestamp
+	30, // 19: google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.end_time:type_name -> google.protobuf.Timestamp
+	1,  // 20: google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.state:type_name -> google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.State
+	25, // 21: google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.failed_requests:type_name -> google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.FailedRequestsEntry
+	31, // 22: google.cloud.tasks.v2beta3.UpdateCmekConfigRequest.cmek_config:type_name -> google.cloud.tasks.v2beta3.CmekConfig
+	26, // 23: google.cloud.tasks.v2beta3.UpdateCmekConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	32, // 24: google.cloud.tasks.v2beta3.BatchDeleteTasksMetadata.FailedRequestsEntry.value:type_name -> google.rpc.Status
+	32, // 25: google.cloud.tasks.v2beta3.BatchCreateTasksMetadata.FailedRequestsEntry.value:type_name -> google.rpc.Status
+	2,  // 26: google.cloud.tasks.v2beta3.CloudTasks.ListQueues:input_type -> google.cloud.tasks.v2beta3.ListQueuesRequest
+	4,  // 27: google.cloud.tasks.v2beta3.CloudTasks.GetQueue:input_type -> google.cloud.tasks.v2beta3.GetQueueRequest
+	5,  // 28: google.cloud.tasks.v2beta3.CloudTasks.CreateQueue:input_type -> google.cloud.tasks.v2beta3.CreateQueueRequest
+	6,  // 29: google.cloud.tasks.v2beta3.CloudTasks.UpdateQueue:input_type -> google.cloud.tasks.v2beta3.UpdateQueueRequest
+	7,  // 30: google.cloud.tasks.v2beta3.CloudTasks.DeleteQueue:input_type -> google.cloud.tasks.v2beta3.DeleteQueueRequest
+	8,  // 31: google.cloud.tasks.v2beta3.CloudTasks.PurgeQueue:input_type -> google.cloud.tasks.v2beta3.PurgeQueueRequest
+	9,  // 32: google.cloud.tasks.v2beta3.CloudTasks.PauseQueue:input_type -> google.cloud.tasks.v2beta3.PauseQueueRequest
+	10, // 33: google.cloud.tasks.v2beta3.CloudTasks.ResumeQueue:input_type -> google.cloud.tasks.v2beta3.ResumeQueueRequest
+	33, // 34: google.cloud.tasks.v2beta3.CloudTasks.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
+	34, // 35: google.cloud.tasks.v2beta3.CloudTasks.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
+	35, // 36: google.cloud.tasks.v2beta3.CloudTasks.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
+	11, // 37: google.cloud.tasks.v2beta3.CloudTasks.ListTasks:input_type -> google.cloud.tasks.v2beta3.ListTasksRequest
+	13, // 38: google.cloud.tasks.v2beta3.CloudTasks.GetTask:input_type -> google.cloud.tasks.v2beta3.GetTaskRequest
+	14, // 39: google.cloud.tasks.v2beta3.CloudTasks.CreateTask:input_type -> google.cloud.tasks.v2beta3.CreateTaskRequest
+	15, // 40: google.cloud.tasks.v2beta3.CloudTasks.BatchCreateTasks:input_type -> google.cloud.tasks.v2beta3.BatchCreateTasksRequest
+	16, // 41: google.cloud.tasks.v2beta3.CloudTasks.DeleteTask:input_type -> google.cloud.tasks.v2beta3.DeleteTaskRequest
+	17, // 42: google.cloud.tasks.v2beta3.CloudTasks.BatchDeleteTasks:input_type -> google.cloud.tasks.v2beta3.BatchDeleteTasksRequest
+	19, // 43: google.cloud.tasks.v2beta3.CloudTasks.RunTask:input_type -> google.cloud.tasks.v2beta3.RunTaskRequest
+	22, // 44: google.cloud.tasks.v2beta3.CloudTasks.UpdateCmekConfig:input_type -> google.cloud.tasks.v2beta3.UpdateCmekConfigRequest
+	23, // 45: google.cloud.tasks.v2beta3.CloudTasks.GetCmekConfig:input_type -> google.cloud.tasks.v2beta3.GetCmekConfigRequest
+	3,  // 46: google.cloud.tasks.v2beta3.CloudTasks.ListQueues:output_type -> google.cloud.tasks.v2beta3.ListQueuesResponse
+	27, // 47: google.cloud.tasks.v2beta3.CloudTasks.GetQueue:output_type -> google.cloud.tasks.v2beta3.Queue
+	27, // 48: google.cloud.tasks.v2beta3.CloudTasks.CreateQueue:output_type -> google.cloud.tasks.v2beta3.Queue
+	27, // 49: google.cloud.tasks.v2beta3.CloudTasks.UpdateQueue:output_type -> google.cloud.tasks.v2beta3.Queue
+	36, // 50: google.cloud.tasks.v2beta3.CloudTasks.DeleteQueue:output_type -> google.protobuf.Empty
+	27, // 51: google.cloud.tasks.v2beta3.CloudTasks.PurgeQueue:output_type -> google.cloud.tasks.v2beta3.Queue
+	27, // 52: google.cloud.tasks.v2beta3.CloudTasks.PauseQueue:output_type -> google.cloud.tasks.v2beta3.Queue
+	27, // 53: google.cloud.tasks.v2beta3.CloudTasks.ResumeQueue:output_type -> google.cloud.tasks.v2beta3.Queue
+	37, // 54: google.cloud.tasks.v2beta3.CloudTasks.GetIamPolicy:output_type -> google.iam.v1.Policy
+	37, // 55: google.cloud.tasks.v2beta3.CloudTasks.SetIamPolicy:output_type -> google.iam.v1.Policy
+	38, // 56: google.cloud.tasks.v2beta3.CloudTasks.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
+	12, // 57: google.cloud.tasks.v2beta3.CloudTasks.ListTasks:output_type -> google.cloud.tasks.v2beta3.ListTasksResponse
+	29, // 58: google.cloud.tasks.v2beta3.CloudTasks.GetTask:output_type -> google.cloud.tasks.v2beta3.Task
+	29, // 59: google.cloud.tasks.v2beta3.CloudTasks.CreateTask:output_type -> google.cloud.tasks.v2beta3.Task
+	39, // 60: google.cloud.tasks.v2beta3.CloudTasks.BatchCreateTasks:output_type -> google.longrunning.Operation
+	36, // 61: google.cloud.tasks.v2beta3.CloudTasks.DeleteTask:output_type -> google.protobuf.Empty
+	39, // 62: google.cloud.tasks.v2beta3.CloudTasks.BatchDeleteTasks:output_type -> google.longrunning.Operation
+	29, // 63: google.cloud.tasks.v2beta3.CloudTasks.RunTask:output_type -> google.cloud.tasks.v2beta3.Task
+	31, // 64: google.cloud.tasks.v2beta3.CloudTasks.UpdateCmekConfig:output_type -> google.cloud.tasks.v2beta3.CmekConfig
+	31, // 65: google.cloud.tasks.v2beta3.CloudTasks.GetCmekConfig:output_type -> google.cloud.tasks.v2beta3.CmekConfig
+	46, // [46:66] is the sub-list for method output_type
+	26, // [26:46] is the sub-list for method input_type
+	26, // [26:26] is the sub-list for extension type_name
+	26, // [26:26] is the sub-list for extension extendee
+	0,  // [0:26] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_tasks_v2beta3_cloudtasks_proto_init() }
@@ -1245,6 +1939,7 @@ func file_google_cloud_tasks_v2beta3_cloudtasks_proto_init() {
 	if File_google_cloud_tasks_v2beta3_cloudtasks_proto != nil {
 		return
 	}
+	file_google_cloud_tasks_v2beta3_cmek_config_proto_init()
 	file_google_cloud_tasks_v2beta3_queue_proto_init()
 	file_google_cloud_tasks_v2beta3_task_proto_init()
 	type x struct{}
@@ -1252,13 +1947,14 @@ func file_google_cloud_tasks_v2beta3_cloudtasks_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDesc), len(file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   15,
+			NumEnums:      2,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_google_cloud_tasks_v2beta3_cloudtasks_proto_goTypes,
 		DependencyIndexes: file_google_cloud_tasks_v2beta3_cloudtasks_proto_depIdxs,
+		EnumInfos:         file_google_cloud_tasks_v2beta3_cloudtasks_proto_enumTypes,
 		MessageInfos:      file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes,
 	}.Build()
 	File_google_cloud_tasks_v2beta3_cloudtasks_proto = out.File

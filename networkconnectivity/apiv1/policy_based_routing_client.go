@@ -31,6 +31,7 @@ import (
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -506,8 +507,12 @@ func (c *policyBasedRoutingGRPCClient) CreatePolicyBasedRoute(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreatePolicyBasedRouteOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePolicyBasedRouteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -532,8 +537,12 @@ func (c *policyBasedRoutingGRPCClient) DeletePolicyBasedRoute(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeletePolicyBasedRouteOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePolicyBasedRouteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -787,7 +796,7 @@ func (c *policyBasedRoutingGRPCClient) ListOperations(ctx context.Context, req *
 // The name must be that of a previously created CreatePolicyBasedRouteOperation, possibly from a different process.
 func (c *policyBasedRoutingGRPCClient) CreatePolicyBasedRouteOperation(name string) *CreatePolicyBasedRouteOperation {
 	return &CreatePolicyBasedRouteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreatePolicyBasedRouteOperation"),
 	}
 }
 
@@ -795,6 +804,6 @@ func (c *policyBasedRoutingGRPCClient) CreatePolicyBasedRouteOperation(name stri
 // The name must be that of a previously created DeletePolicyBasedRouteOperation, possibly from a different process.
 func (c *policyBasedRoutingGRPCClient) DeletePolicyBasedRouteOperation(name string) *DeletePolicyBasedRouteOperation {
 	return &DeletePolicyBasedRouteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeletePolicyBasedRouteOperation"),
 	}
 }

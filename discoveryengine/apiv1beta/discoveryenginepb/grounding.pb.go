@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -155,8 +155,14 @@ type FactChunk struct {
 	Index int32 `protobuf:"varint,4,opt,name=index,proto3" json:"index,omitempty"`
 	// More fine-grained information for the source reference.
 	SourceMetadata map[string]string `protobuf:"bytes,3,rep,name=source_metadata,json=sourceMetadata,proto3" json:"source_metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// The URI of the source.
+	Uri string `protobuf:"bytes,5,opt,name=uri,proto3" json:"uri,omitempty"`
+	// The title of the source.
+	Title string `protobuf:"bytes,6,opt,name=title,proto3" json:"title,omitempty"`
+	// The domain of the source.
+	Domain        string `protobuf:"bytes,7,opt,name=domain,proto3" json:"domain,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *FactChunk) Reset() {
@@ -217,6 +223,27 @@ func (x *FactChunk) GetSourceMetadata() map[string]string {
 	return nil
 }
 
+func (x *FactChunk) GetUri() string {
+	if x != nil {
+		return x.Uri
+	}
+	return ""
+}
+
+func (x *FactChunk) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *FactChunk) GetDomain() string {
+	if x != nil {
+		return x.Domain
+	}
+	return ""
+}
+
 var File_google_cloud_discoveryengine_v1beta_grounding_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1beta_grounding_proto_rawDesc = "" +
@@ -232,13 +259,16 @@ const file_google_cloud_discoveryengine_v1beta_grounding_proto_rawDesc = "" +
 	"attributes\x1a=\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x88\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc8\x02\n" +
 	"\tFactChunk\x12\x1d\n" +
 	"\n" +
 	"chunk_text\x18\x01 \x01(\tR\tchunkText\x12\x16\n" +
 	"\x06source\x18\x02 \x01(\tR\x06source\x12\x14\n" +
 	"\x05index\x18\x04 \x01(\x05R\x05index\x12k\n" +
-	"\x0fsource_metadata\x18\x03 \x03(\v2B.google.cloud.discoveryengine.v1beta.FactChunk.SourceMetadataEntryR\x0esourceMetadata\x1aA\n" +
+	"\x0fsource_metadata\x18\x03 \x03(\v2B.google.cloud.discoveryengine.v1beta.FactChunk.SourceMetadataEntryR\x0esourceMetadata\x12\x10\n" +
+	"\x03uri\x18\x05 \x01(\tR\x03uri\x12\x14\n" +
+	"\x05title\x18\x06 \x01(\tR\x05title\x12\x16\n" +
+	"\x06domain\x18\a \x01(\tR\x06domain\x1aA\n" +
 	"\x13SourceMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x95\x02\n" +

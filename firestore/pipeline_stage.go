@@ -687,6 +687,33 @@ func (s *searchStage) toProto() (*pb.Pipeline_Stage, error) {
 				return nil, fmt.Errorf("firestore: invalid type for Search retrieval_depth: %T", v)
 			}
 
+		case "limit":
+			switch limit := v.(type) {
+			case int64:
+				optionsPb[k] = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: limit}}
+			case int:
+				optionsPb[k] = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(limit)}}
+			default:
+				return nil, fmt.Errorf("firestore: invalid type for Search limit: %T", v)
+			}
+
+		case "offset":
+			switch offset := v.(type) {
+			case int64:
+				optionsPb[k] = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: offset}}
+			case int:
+				optionsPb[k] = &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(offset)}}
+			default:
+				return nil, fmt.Errorf("firestore: invalid type for Search offset: %T", v)
+			}
+
+		case "language_code":
+			s, ok := v.(string)
+			if !ok {
+				return nil, fmt.Errorf("firestore: invalid type for Search language_code: %T", v)
+			}
+			optionsPb[k] = &pb.Value{ValueType: &pb.Value_StringValue{StringValue: s}}
+
 		default:
 			valPb, _, err := toProtoValue(reflect.ValueOf(v))
 			if err != nil {

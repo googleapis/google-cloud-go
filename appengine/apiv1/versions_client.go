@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -581,8 +582,12 @@ func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *appenginepb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.CreateVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -604,8 +609,12 @@ func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *appenginepb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.UpdateVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -627,8 +636,12 @@ func (c *versionsGRPCClient) DeleteVersion(ctx context.Context, req *appenginepb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.DeleteVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -830,8 +843,12 @@ func (c *versionsRESTClient) CreateVersion(ctx context.Context, req *appenginepb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.CreateVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -945,8 +962,12 @@ func (c *versionsRESTClient) UpdateVersion(ctx context.Context, req *appenginepb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.UpdateVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1002,8 +1023,12 @@ func (c *versionsRESTClient) DeleteVersion(ctx context.Context, req *appenginepb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.DeleteVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1012,7 +1037,7 @@ func (c *versionsRESTClient) DeleteVersion(ctx context.Context, req *appenginepb
 // The name must be that of a previously created CreateVersionOperation, possibly from a different process.
 func (c *versionsGRPCClient) CreateVersionOperation(name string) *CreateVersionOperation {
 	return &CreateVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.CreateVersionOperation"),
 	}
 }
 
@@ -1021,7 +1046,7 @@ func (c *versionsGRPCClient) CreateVersionOperation(name string) *CreateVersionO
 func (c *versionsRESTClient) CreateVersionOperation(name string) *CreateVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.CreateVersionOperation"),
 		pollPath: override,
 	}
 }
@@ -1030,7 +1055,7 @@ func (c *versionsRESTClient) CreateVersionOperation(name string) *CreateVersionO
 // The name must be that of a previously created DeleteVersionOperation, possibly from a different process.
 func (c *versionsGRPCClient) DeleteVersionOperation(name string) *DeleteVersionOperation {
 	return &DeleteVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.DeleteVersionOperation"),
 	}
 }
 
@@ -1039,7 +1064,7 @@ func (c *versionsGRPCClient) DeleteVersionOperation(name string) *DeleteVersionO
 func (c *versionsRESTClient) DeleteVersionOperation(name string) *DeleteVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.DeleteVersionOperation"),
 		pollPath: override,
 	}
 }
@@ -1048,7 +1073,7 @@ func (c *versionsRESTClient) DeleteVersionOperation(name string) *DeleteVersionO
 // The name must be that of a previously created UpdateVersionOperation, possibly from a different process.
 func (c *versionsGRPCClient) UpdateVersionOperation(name string) *UpdateVersionOperation {
 	return &UpdateVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.UpdateVersionOperation"),
 	}
 }
 
@@ -1057,7 +1082,7 @@ func (c *versionsGRPCClient) UpdateVersionOperation(name string) *UpdateVersionO
 func (c *versionsRESTClient) UpdateVersionOperation(name string) *UpdateVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.UpdateVersionOperation"),
 		pollPath: override,
 	}
 }

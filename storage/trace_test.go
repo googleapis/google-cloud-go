@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal"
@@ -186,4 +187,166 @@ func otAttrs(attrMap map[string]interface{}) []attribute.KeyValue {
 		attrs = append(attrs, a)
 	}
 	return attrs
+}
+
+func TestStartSpanWithBucket(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	fetcher := &mockMetadataFetcher{
+		fetchFunc: func(ctx context.Context, bucket string) (resource string, location string, err error) {
+			return "projects/p1/buckets/" + bucket, "us-west1", nil
+		},
+	}
+
+	tests := []struct {
+		name         string
+		bucket       string
+		setupCache   func(*bucketMetadataCache)
+		wantResource string
+		wantLocation string
+		verifyCache  bool
+	}{
+		{
+			name:   "Cache Miss (Placeholder)",
+			bucket: "bucket-miss",
+			setupCache: func(c *bucketMetadataCache) {
+				// empty cache
+			},
+			wantResource: "projects/_/buckets/bucket-miss",
+			wantLocation: "global",
+			verifyCache:  true,
+		},
+		{
+			name:   "Cache Hit (Resolved)",
+			bucket: "bucket-hit",
+			setupCache: func(c *bucketMetadataCache) {
+				c.put("bucket-hit", bucketMetadata{resource: "projects/p1/buckets/bucket-hit", location: "us-west1"})
+			},
+			wantResource: "projects/p1/buckets/bucket-hit",
+			wantLocation: "us-west1",
+			verifyCache:  false,
+		},
+	}
+
+	for i, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			cache := newBucketMetadataCache(10, fetcher)
+			tc.setupCache(cache)
+			doneChan := make(chan struct{}, 1)
+			if tc.verifyCache {
+				cache.fetchDone = doneChan
+			}
+			client := &Client{bucketMetadataCache: cache}
+
+			ctx1, _ := startSpanWithBucket(ctx, client, tc.bucket, "TestSpan")
+			endSpan(ctx1, nil)
+
+			spans := te.Spans()
+			if len(spans) != i+1 {
+				t.Fatalf("expected %d spans, got %d", i+1, len(spans))
+			}
+			gotSpan := spans[i]
+
+			verifySpanAttributes(t, gotSpan, tc.wantResource, tc.wantLocation)
+
+			if tc.verifyCache {
+				// Wait for background fetch to complete and populate cache.
+				select {
+				case <-doneChan:
+				case <-time.After(fetchBackgroundTimeout):
+					t.Fatalf("timeout waiting for fetchBackground completion")
+				}
+				_, found := cache.get(tc.bucket)
+				if !found {
+					t.Fatalf("expected entry to be populated in cache")
+				}
+			}
+		})
+	}
+}
+
+func verifySpanAttributes(t *testing.T, span tracetest.SpanStub, wantResource, wantLocation string) {
+	t.Helper()
+	var gotResource, gotLocation string
+	for _, attr := range span.Attributes {
+		if attr.Key == "gcp.resource.destination.id" {
+			gotResource = attr.Value.AsString()
+		}
+		if attr.Key == "gcp.resource.destination.location" {
+			gotLocation = attr.Value.AsString()
+		}
+	}
+
+	if gotResource != wantResource {
+		t.Errorf("got resource %q, want %q", gotResource, wantResource)
+	}
+
+	if gotLocation != wantLocation {
+		t.Errorf("got location %q, want %q", gotLocation, wantLocation)
+	}
+}
+
+func TestEndSpanEviction(t *testing.T) {
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	bucketName := "evict-bucket"
+	tests := []struct {
+		name      string
+		spanName  string
+		err       error
+		wantEvict bool
+	}{
+		{
+			name:      "Evict on ErrBucketNotExist",
+			spanName:  "Bucket.Attrs",
+			err:       ErrBucketNotExist,
+			wantEvict: true,
+		},
+		{
+			name:      "Evict on googleapi.Error 404",
+			spanName:  "Bucket.Attrs",
+			err:       &googleapi.Error{Code: http.StatusNotFound},
+			wantEvict: true,
+		},
+		{
+			name:      "No Evict on 500",
+			spanName:  "Bucket.Attrs",
+			err:       &googleapi.Error{Code: http.StatusInternalServerError},
+			wantEvict: false,
+		},
+		{
+			name:      "No Evict on Object 404",
+			spanName:  "Object.Attrs",
+			err:       ErrObjectNotExist,
+			wantEvict: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			fetcher := &mockMetadataFetcher{}
+			cache := newBucketMetadataCache(10, fetcher)
+			client := &Client{bucketMetadataCache: cache}
+
+			// Populate cache.
+			cache.put(bucketName, bucketMetadata{resource: "res", location: "loc"})
+
+			ctx, _ := startSpanWithBucket(context.Background(), client, bucketName, tc.spanName)
+			endSpan(ctx, tc.err)
+
+			_, found := cache.get(bucketName)
+			if tc.wantEvict && found {
+				t.Errorf("expected bucket to be evicted")
+			}
+			if !tc.wantEvict && !found {
+				t.Errorf("expected bucket to remain in cache")
+			}
+		})
+	}
 }

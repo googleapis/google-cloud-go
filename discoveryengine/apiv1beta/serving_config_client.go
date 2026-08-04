@@ -45,6 +45,8 @@ var newServingConfigClientHook clientHook
 
 // ServingConfigCallOptions contains the retry settings for each method of ServingConfigClient.
 type ServingConfigCallOptions struct {
+	CreateServingConfig []gax.CallOption
+	DeleteServingConfig []gax.CallOption
 	UpdateServingConfig []gax.CallOption
 	GetServingConfig    []gax.CallOption
 	ListServingConfigs  []gax.CallOption
@@ -70,6 +72,8 @@ func defaultServingConfigGRPCClientOptions() []option.ClientOption {
 
 func defaultServingConfigCallOptions() *ServingConfigCallOptions {
 	return &ServingConfigCallOptions{
+		CreateServingConfig: []gax.CallOption{},
+		DeleteServingConfig: []gax.CallOption{},
 		UpdateServingConfig: []gax.CallOption{},
 		GetServingConfig:    []gax.CallOption{},
 		ListServingConfigs:  []gax.CallOption{},
@@ -114,6 +118,8 @@ func defaultServingConfigCallOptions() *ServingConfigCallOptions {
 
 func defaultServingConfigRESTCallOptions() *ServingConfigCallOptions {
 	return &ServingConfigCallOptions{
+		CreateServingConfig: []gax.CallOption{},
+		DeleteServingConfig: []gax.CallOption{},
 		UpdateServingConfig: []gax.CallOption{},
 		GetServingConfig:    []gax.CallOption{},
 		ListServingConfigs:  []gax.CallOption{},
@@ -158,6 +164,8 @@ type internalServingConfigClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	CreateServingConfig(context.Context, *discoveryenginepb.CreateServingConfigRequest, ...gax.CallOption) (*discoveryenginepb.ServingConfig, error)
+	DeleteServingConfig(context.Context, *discoveryenginepb.DeleteServingConfigRequest, ...gax.CallOption) error
 	UpdateServingConfig(context.Context, *discoveryenginepb.UpdateServingConfigRequest, ...gax.CallOption) (*discoveryenginepb.ServingConfig, error)
 	GetServingConfig(context.Context, *discoveryenginepb.GetServingConfigRequest, ...gax.CallOption) (*discoveryenginepb.ServingConfig, error)
 	ListServingConfigs(context.Context, *discoveryenginepb.ListServingConfigsRequest, ...gax.CallOption) *ServingConfigIterator
@@ -200,6 +208,26 @@ func (c *ServingConfigClient) setGoogleClientInfo(keyval ...string) {
 // return the same resource.
 func (c *ServingConfigClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
+}
+
+// CreateServingConfig creates a ServingConfig.
+//
+// Note: The Google Cloud console works only with the default serving config.
+// Additional ServingConfigs can be created and managed only via the API.
+//
+// A maximum of 100
+// ServingConfigs are
+// allowed in an Engine,
+// otherwise a RESOURCE_EXHAUSTED error is returned.
+func (c *ServingConfigClient) CreateServingConfig(ctx context.Context, req *discoveryenginepb.CreateServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
+	return c.internalClient.CreateServingConfig(ctx, req, opts...)
+}
+
+// DeleteServingConfig deletes a ServingConfig.
+//
+// Returns a NOT_FOUND error if the ServingConfig does not exist.
+func (c *ServingConfigClient) DeleteServingConfig(ctx context.Context, req *discoveryenginepb.DeleteServingConfigRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteServingConfig(ctx, req, opts...)
 }
 
 // UpdateServingConfig updates a ServingConfig.
@@ -308,6 +336,8 @@ func NewServingConfigClient(ctx context.Context, opts ...option.ClientOption) (*
 			}),
 		)
 
+		client.CallOptions.CreateServingConfig = append(client.CallOptions.CreateServingConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteServingConfig = append(client.CallOptions.DeleteServingConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateServingConfig = append(client.CallOptions.UpdateServingConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetServingConfig = append(client.CallOptions.GetServingConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListServingConfigs = append(client.CallOptions.ListServingConfigs, gax.WithClientMetrics(metrics))
@@ -405,6 +435,8 @@ func NewServingConfigRESTClient(ctx context.Context, opts ...option.ClientOption
 			}),
 		)
 
+		callOpts.CreateServingConfig = append(callOpts.CreateServingConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteServingConfig = append(callOpts.DeleteServingConfig, gax.WithClientMetrics(metrics))
 		callOpts.UpdateServingConfig = append(callOpts.UpdateServingConfig, gax.WithClientMetrics(metrics))
 		callOpts.GetServingConfig = append(callOpts.GetServingConfig, gax.WithClientMetrics(metrics))
 		callOpts.ListServingConfigs = append(callOpts.ListServingConfigs, gax.WithClientMetrics(metrics))
@@ -453,6 +485,50 @@ func (c *servingConfigRESTClient) Close() error {
 func (c *servingConfigRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
+func (c *servingConfigGRPCClient) CreateServingConfig(ctx context.Context, req *discoveryenginepb.CreateServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ServingConfigService/CreateServingConfig")
+	}
+	opts = append((*c.CallOptions).CreateServingConfig[0:len((*c.CallOptions).CreateServingConfig):len((*c.CallOptions).CreateServingConfig)], opts...)
+	var resp *discoveryenginepb.ServingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.servingConfigClient.CreateServingConfig, req, settings.GRPC, c.logger, "CreateServingConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *servingConfigGRPCClient) DeleteServingConfig(ctx context.Context, req *discoveryenginepb.DeleteServingConfigRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ServingConfigService/DeleteServingConfig")
+	}
+	opts = append((*c.CallOptions).DeleteServingConfig[0:len((*c.CallOptions).DeleteServingConfig):len((*c.CallOptions).DeleteServingConfig)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.servingConfigClient.DeleteServingConfig, req, settings.GRPC, c.logger, "DeleteServingConfig")
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *servingConfigGRPCClient) UpdateServingConfig(ctx context.Context, req *discoveryenginepb.UpdateServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "serving_config.name", url.QueryEscape(req.GetServingConfig().GetName()))}
 
@@ -635,6 +711,123 @@ func (c *servingConfigGRPCClient) ListOperations(ctx context.Context, req *longr
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CreateServingConfig creates a ServingConfig.
+//
+// Note: The Google Cloud console works only with the default serving config.
+// Additional ServingConfigs can be created and managed only via the API.
+//
+// A maximum of 100
+// ServingConfigs are
+// allowed in an Engine,
+// otherwise a RESOURCE_EXHAUSTED error is returned.
+func (c *servingConfigRESTClient) CreateServingConfig(ctx context.Context, req *discoveryenginepb.CreateServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetServingConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/servingConfigs", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("servingConfigId", fmt.Sprintf("%v", req.GetServingConfigId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ServingConfigService/CreateServingConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/dataStores/*}/servingConfigs")
+	}
+	opts = append((*c.CallOptions).CreateServingConfig[0:len((*c.CallOptions).CreateServingConfig):len((*c.CallOptions).CreateServingConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.ServingConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateServingConfig")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteServingConfig deletes a ServingConfig.
+//
+// Returns a NOT_FOUND error if the ServingConfig does not exist.
+func (c *servingConfigRESTClient) DeleteServingConfig(ctx context.Context, req *discoveryenginepb.DeleteServingConfigRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.ServingConfigService/DeleteServingConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/dataStores/*/servingConfigs/*}")
+	}
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteServingConfig")
+		return err
+	}, opts...)
 }
 
 // UpdateServingConfig updates a ServingConfig.

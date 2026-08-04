@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -623,7 +623,7 @@ const file_google_cloud_discoveryengine_v1beta_schema_service_proto_rawDesc = ""
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"updateTime2\x89\x0e\n" +
+	"updateTime2\x87\x0f\n" +
 	"\rSchemaService\x12\x8c\x02\n" +
 	"\tGetSchema\x125.google.cloud.discoveryengine.v1beta.GetSchemaRequest\x1a+.google.cloud.discoveryengine.v1beta.Schema\"\x9a\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\x8c\x01ZL\x12J/v1beta/{name=projects/*/locations/*/collections/*/dataStores/*/schemas/*}\x12</v1beta/{name=projects/*/locations/*/dataStores/*/schemas/*}\x12\x9f\x02\n" +
 	"\vListSchemas\x127.google.cloud.discoveryengine.v1beta.ListSchemasRequest\x1a8.google.cloud.discoveryengine.v1beta.ListSchemasResponse\"\x9c\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\x8c\x01ZL\x12J/v1beta/{parent=projects/*/locations/*/collections/*/dataStores/*}/schemas\x12</v1beta/{parent=projects/*/locations/*/dataStores/*}/schemas\x12\x90\x03\n" +
@@ -632,7 +632,7 @@ const file_google_cloud_discoveryengine_v1beta_schema_service_proto_rawDesc = ""
 	"\fUpdateSchema\x128.google.cloud.discoveryengine.v1beta.UpdateSchemaRequest\x1a\x1d.google.longrunning.Operation\"\x9a\x02\xcaAf\n" +
 	"*google.cloud.discoveryengine.v1beta.Schema\x128google.cloud.discoveryengine.v1beta.UpdateSchemaMetadata\x82\xd3\xe4\x93\x02\xaa\x01:\x06schemaZ[:\x06schema2Q/v1beta/{schema.name=projects/*/locations/*/collections/*/dataStores/*/schemas/*}2C/v1beta/{schema.name=projects/*/locations/*/dataStores/*/schemas/*}\x12\xd8\x02\n" +
 	"\fDeleteSchema\x128.google.cloud.discoveryengine.v1beta.DeleteSchemaRequest\x1a\x1d.google.longrunning.Operation\"\xee\x01\xcaAQ\n" +
-	"\x15google.protobuf.Empty\x128google.cloud.discoveryengine.v1beta.DeleteSchemaMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02\x8c\x01ZL*J/v1beta/{name=projects/*/locations/*/collections/*/dataStores/*/schemas/*}*</v1beta/{name=projects/*/locations/*/dataStores/*/schemas/*}\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x99\x02\n" +
+	"\x15google.protobuf.Empty\x128google.cloud.discoveryengine.v1beta.DeleteSchemaMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02\x8c\x01ZL*J/v1beta/{name=projects/*/locations/*/collections/*/dataStores/*/schemas/*}*</v1beta/{name=projects/*/locations/*/dataStores/*/schemas/*}\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x99\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\x12SchemaServiceProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
 
 var (

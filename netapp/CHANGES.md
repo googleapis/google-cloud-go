@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.17.0...netapp/v1.18.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.17.0) (2026-05-07)
 
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.16.0) (2026-04-30)

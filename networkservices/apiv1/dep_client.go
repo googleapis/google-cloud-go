@@ -33,6 +33,7 @@ import (
 	networkservicespb "cloud.google.com/go/networkservices/apiv1/networkservicespb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -956,8 +957,12 @@ func (c *depGRPCClient) CreateLbTrafficExtension(ctx context.Context, req *netwo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.CreateLbTrafficExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateLbTrafficExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -979,8 +984,12 @@ func (c *depGRPCClient) UpdateLbTrafficExtension(ctx context.Context, req *netwo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.UpdateLbTrafficExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateLbTrafficExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1005,8 +1014,12 @@ func (c *depGRPCClient) DeleteLbTrafficExtension(ctx context.Context, req *netwo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.DeleteLbTrafficExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteLbTrafficExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1107,8 +1120,12 @@ func (c *depGRPCClient) CreateLbRouteExtension(ctx context.Context, req *network
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.CreateLbRouteExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateLbRouteExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1130,8 +1147,12 @@ func (c *depGRPCClient) UpdateLbRouteExtension(ctx context.Context, req *network
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.UpdateLbRouteExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateLbRouteExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1156,8 +1177,12 @@ func (c *depGRPCClient) DeleteLbRouteExtension(ctx context.Context, req *network
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.DeleteLbRouteExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteLbRouteExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1258,8 +1283,12 @@ func (c *depGRPCClient) CreateLbEdgeExtension(ctx context.Context, req *networks
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.CreateLbEdgeExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateLbEdgeExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1281,8 +1310,12 @@ func (c *depGRPCClient) UpdateLbEdgeExtension(ctx context.Context, req *networks
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.UpdateLbEdgeExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateLbEdgeExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1307,8 +1340,12 @@ func (c *depGRPCClient) DeleteLbEdgeExtension(ctx context.Context, req *networks
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.DeleteLbEdgeExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteLbEdgeExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1409,8 +1446,12 @@ func (c *depGRPCClient) CreateAuthzExtension(ctx context.Context, req *networkse
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.CreateAuthzExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAuthzExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1432,8 +1473,12 @@ func (c *depGRPCClient) UpdateAuthzExtension(ctx context.Context, req *networkse
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.UpdateAuthzExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAuthzExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1458,8 +1503,12 @@ func (c *depGRPCClient) DeleteAuthzExtension(ctx context.Context, req *networkse
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.DeleteAuthzExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAuthzExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1916,8 +1965,12 @@ func (c *depRESTClient) CreateLbTrafficExtension(ctx context.Context, req *netwo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.CreateLbTrafficExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateLbTrafficExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1990,8 +2043,12 @@ func (c *depRESTClient) UpdateLbTrafficExtension(ctx context.Context, req *netwo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.UpdateLbTrafficExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateLbTrafficExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2053,8 +2110,12 @@ func (c *depRESTClient) DeleteLbTrafficExtension(ctx context.Context, req *netwo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.DeleteLbTrafficExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteLbTrafficExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2265,8 +2326,12 @@ func (c *depRESTClient) CreateLbRouteExtension(ctx context.Context, req *network
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.CreateLbRouteExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateLbRouteExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2339,8 +2404,12 @@ func (c *depRESTClient) UpdateLbRouteExtension(ctx context.Context, req *network
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.UpdateLbRouteExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateLbRouteExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2402,8 +2471,12 @@ func (c *depRESTClient) DeleteLbRouteExtension(ctx context.Context, req *network
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.DeleteLbRouteExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteLbRouteExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2614,8 +2687,12 @@ func (c *depRESTClient) CreateLbEdgeExtension(ctx context.Context, req *networks
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.CreateLbEdgeExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateLbEdgeExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2688,8 +2765,12 @@ func (c *depRESTClient) UpdateLbEdgeExtension(ctx context.Context, req *networks
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.UpdateLbEdgeExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateLbEdgeExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2751,8 +2832,12 @@ func (c *depRESTClient) DeleteLbEdgeExtension(ctx context.Context, req *networks
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.DeleteLbEdgeExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteLbEdgeExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2964,8 +3049,12 @@ func (c *depRESTClient) CreateAuthzExtension(ctx context.Context, req *networkse
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.CreateAuthzExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAuthzExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3039,8 +3128,12 @@ func (c *depRESTClient) UpdateAuthzExtension(ctx context.Context, req *networkse
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.UpdateAuthzExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAuthzExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3102,8 +3195,12 @@ func (c *depRESTClient) DeleteAuthzExtension(ctx context.Context, req *networkse
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkservices.DeleteAuthzExtensionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAuthzExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3666,7 +3763,7 @@ func (c *depRESTClient) ListOperations(ctx context.Context, req *longrunningpb.L
 // The name must be that of a previously created CreateAuthzExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) CreateAuthzExtensionOperation(name string) *CreateAuthzExtensionOperation {
 	return &CreateAuthzExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.CreateAuthzExtensionOperation"),
 	}
 }
 
@@ -3675,7 +3772,7 @@ func (c *depGRPCClient) CreateAuthzExtensionOperation(name string) *CreateAuthzE
 func (c *depRESTClient) CreateAuthzExtensionOperation(name string) *CreateAuthzExtensionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAuthzExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.CreateAuthzExtensionOperation"),
 		pollPath: override,
 	}
 }
@@ -3684,7 +3781,7 @@ func (c *depRESTClient) CreateAuthzExtensionOperation(name string) *CreateAuthzE
 // The name must be that of a previously created CreateLbEdgeExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) CreateLbEdgeExtensionOperation(name string) *CreateLbEdgeExtensionOperation {
 	return &CreateLbEdgeExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.CreateLbEdgeExtensionOperation"),
 	}
 }
 
@@ -3693,7 +3790,7 @@ func (c *depGRPCClient) CreateLbEdgeExtensionOperation(name string) *CreateLbEdg
 func (c *depRESTClient) CreateLbEdgeExtensionOperation(name string) *CreateLbEdgeExtensionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateLbEdgeExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.CreateLbEdgeExtensionOperation"),
 		pollPath: override,
 	}
 }
@@ -3702,7 +3799,7 @@ func (c *depRESTClient) CreateLbEdgeExtensionOperation(name string) *CreateLbEdg
 // The name must be that of a previously created CreateLbRouteExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) CreateLbRouteExtensionOperation(name string) *CreateLbRouteExtensionOperation {
 	return &CreateLbRouteExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.CreateLbRouteExtensionOperation"),
 	}
 }
 
@@ -3711,7 +3808,7 @@ func (c *depGRPCClient) CreateLbRouteExtensionOperation(name string) *CreateLbRo
 func (c *depRESTClient) CreateLbRouteExtensionOperation(name string) *CreateLbRouteExtensionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateLbRouteExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.CreateLbRouteExtensionOperation"),
 		pollPath: override,
 	}
 }
@@ -3720,7 +3817,7 @@ func (c *depRESTClient) CreateLbRouteExtensionOperation(name string) *CreateLbRo
 // The name must be that of a previously created CreateLbTrafficExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) CreateLbTrafficExtensionOperation(name string) *CreateLbTrafficExtensionOperation {
 	return &CreateLbTrafficExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.CreateLbTrafficExtensionOperation"),
 	}
 }
 
@@ -3729,7 +3826,7 @@ func (c *depGRPCClient) CreateLbTrafficExtensionOperation(name string) *CreateLb
 func (c *depRESTClient) CreateLbTrafficExtensionOperation(name string) *CreateLbTrafficExtensionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateLbTrafficExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.CreateLbTrafficExtensionOperation"),
 		pollPath: override,
 	}
 }
@@ -3738,7 +3835,7 @@ func (c *depRESTClient) CreateLbTrafficExtensionOperation(name string) *CreateLb
 // The name must be that of a previously created DeleteAuthzExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) DeleteAuthzExtensionOperation(name string) *DeleteAuthzExtensionOperation {
 	return &DeleteAuthzExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.DeleteAuthzExtensionOperation"),
 	}
 }
 
@@ -3747,7 +3844,7 @@ func (c *depGRPCClient) DeleteAuthzExtensionOperation(name string) *DeleteAuthzE
 func (c *depRESTClient) DeleteAuthzExtensionOperation(name string) *DeleteAuthzExtensionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAuthzExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.DeleteAuthzExtensionOperation"),
 		pollPath: override,
 	}
 }
@@ -3756,7 +3853,7 @@ func (c *depRESTClient) DeleteAuthzExtensionOperation(name string) *DeleteAuthzE
 // The name must be that of a previously created DeleteLbEdgeExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) DeleteLbEdgeExtensionOperation(name string) *DeleteLbEdgeExtensionOperation {
 	return &DeleteLbEdgeExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.DeleteLbEdgeExtensionOperation"),
 	}
 }
 
@@ -3765,7 +3862,7 @@ func (c *depGRPCClient) DeleteLbEdgeExtensionOperation(name string) *DeleteLbEdg
 func (c *depRESTClient) DeleteLbEdgeExtensionOperation(name string) *DeleteLbEdgeExtensionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteLbEdgeExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.DeleteLbEdgeExtensionOperation"),
 		pollPath: override,
 	}
 }
@@ -3774,7 +3871,7 @@ func (c *depRESTClient) DeleteLbEdgeExtensionOperation(name string) *DeleteLbEdg
 // The name must be that of a previously created DeleteLbRouteExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) DeleteLbRouteExtensionOperation(name string) *DeleteLbRouteExtensionOperation {
 	return &DeleteLbRouteExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.DeleteLbRouteExtensionOperation"),
 	}
 }
 
@@ -3783,7 +3880,7 @@ func (c *depGRPCClient) DeleteLbRouteExtensionOperation(name string) *DeleteLbRo
 func (c *depRESTClient) DeleteLbRouteExtensionOperation(name string) *DeleteLbRouteExtensionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteLbRouteExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.DeleteLbRouteExtensionOperation"),
 		pollPath: override,
 	}
 }
@@ -3792,7 +3889,7 @@ func (c *depRESTClient) DeleteLbRouteExtensionOperation(name string) *DeleteLbRo
 // The name must be that of a previously created DeleteLbTrafficExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) DeleteLbTrafficExtensionOperation(name string) *DeleteLbTrafficExtensionOperation {
 	return &DeleteLbTrafficExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.DeleteLbTrafficExtensionOperation"),
 	}
 }
 
@@ -3801,7 +3898,7 @@ func (c *depGRPCClient) DeleteLbTrafficExtensionOperation(name string) *DeleteLb
 func (c *depRESTClient) DeleteLbTrafficExtensionOperation(name string) *DeleteLbTrafficExtensionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteLbTrafficExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.DeleteLbTrafficExtensionOperation"),
 		pollPath: override,
 	}
 }
@@ -3810,7 +3907,7 @@ func (c *depRESTClient) DeleteLbTrafficExtensionOperation(name string) *DeleteLb
 // The name must be that of a previously created UpdateAuthzExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) UpdateAuthzExtensionOperation(name string) *UpdateAuthzExtensionOperation {
 	return &UpdateAuthzExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.UpdateAuthzExtensionOperation"),
 	}
 }
 
@@ -3819,7 +3916,7 @@ func (c *depGRPCClient) UpdateAuthzExtensionOperation(name string) *UpdateAuthzE
 func (c *depRESTClient) UpdateAuthzExtensionOperation(name string) *UpdateAuthzExtensionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateAuthzExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.UpdateAuthzExtensionOperation"),
 		pollPath: override,
 	}
 }
@@ -3828,7 +3925,7 @@ func (c *depRESTClient) UpdateAuthzExtensionOperation(name string) *UpdateAuthzE
 // The name must be that of a previously created UpdateLbEdgeExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) UpdateLbEdgeExtensionOperation(name string) *UpdateLbEdgeExtensionOperation {
 	return &UpdateLbEdgeExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.UpdateLbEdgeExtensionOperation"),
 	}
 }
 
@@ -3837,7 +3934,7 @@ func (c *depGRPCClient) UpdateLbEdgeExtensionOperation(name string) *UpdateLbEdg
 func (c *depRESTClient) UpdateLbEdgeExtensionOperation(name string) *UpdateLbEdgeExtensionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateLbEdgeExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.UpdateLbEdgeExtensionOperation"),
 		pollPath: override,
 	}
 }
@@ -3846,7 +3943,7 @@ func (c *depRESTClient) UpdateLbEdgeExtensionOperation(name string) *UpdateLbEdg
 // The name must be that of a previously created UpdateLbRouteExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) UpdateLbRouteExtensionOperation(name string) *UpdateLbRouteExtensionOperation {
 	return &UpdateLbRouteExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.UpdateLbRouteExtensionOperation"),
 	}
 }
 
@@ -3855,7 +3952,7 @@ func (c *depGRPCClient) UpdateLbRouteExtensionOperation(name string) *UpdateLbRo
 func (c *depRESTClient) UpdateLbRouteExtensionOperation(name string) *UpdateLbRouteExtensionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateLbRouteExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.UpdateLbRouteExtensionOperation"),
 		pollPath: override,
 	}
 }
@@ -3864,7 +3961,7 @@ func (c *depRESTClient) UpdateLbRouteExtensionOperation(name string) *UpdateLbRo
 // The name must be that of a previously created UpdateLbTrafficExtensionOperation, possibly from a different process.
 func (c *depGRPCClient) UpdateLbTrafficExtensionOperation(name string) *UpdateLbTrafficExtensionOperation {
 	return &UpdateLbTrafficExtensionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.UpdateLbTrafficExtensionOperation"),
 	}
 }
 
@@ -3873,7 +3970,7 @@ func (c *depGRPCClient) UpdateLbTrafficExtensionOperation(name string) *UpdateLb
 func (c *depRESTClient) UpdateLbTrafficExtensionOperation(name string) *UpdateLbTrafficExtensionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateLbTrafficExtensionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkservices.UpdateLbTrafficExtensionOperation"),
 		pollPath: override,
 	}
 }

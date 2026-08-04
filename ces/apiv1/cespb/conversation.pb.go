@@ -110,6 +110,9 @@ const (
 	Conversation_SIMULATOR Conversation_Source = 2
 	// The conversation is from the evaluation.
 	Conversation_EVAL Conversation_Source = 3
+	// The conversation is from an agent tool. Agent tool runs the agent in a
+	// separate session, which is persisted for testing and debugging purposes.
+	Conversation_AGENT_TOOL Conversation_Source = 4
 )
 
 // Enum value maps for Conversation_Source.
@@ -119,12 +122,14 @@ var (
 		1: "LIVE",
 		2: "SIMULATOR",
 		3: "EVAL",
+		4: "AGENT_TOOL",
 	}
 	Conversation_Source_value = map[string]int32{
 		"SOURCE_UNSPECIFIED": 0,
 		"LIVE":               1,
 		"SIMULATOR":          2,
 		"EVAL":               3,
+		"AGENT_TOOL":         4,
 	}
 )
 
@@ -161,17 +166,19 @@ type Conversation_InputType int32
 const (
 	// Unspecified input type.
 	Conversation_INPUT_TYPE_UNSPECIFIED Conversation_InputType = 0
-	// The input message is text.
+	// Text input.
 	Conversation_INPUT_TYPE_TEXT Conversation_InputType = 1
-	// The input message is audio.
+	// Event input.
+	Conversation_INPUT_TYPE_EVENT Conversation_InputType = 7
+	// Audio input.
 	Conversation_INPUT_TYPE_AUDIO Conversation_InputType = 2
-	// The input message is image.
+	// Image input.
 	Conversation_INPUT_TYPE_IMAGE Conversation_InputType = 3
-	// The input message is blob file.
+	// Blob input.
 	Conversation_INPUT_TYPE_BLOB Conversation_InputType = 4
-	// The input message is client function tool response.
+	// Client function tool response input.
 	Conversation_INPUT_TYPE_TOOL_RESPONSE Conversation_InputType = 5
-	// The input message are variables.
+	// Variables input.
 	Conversation_INPUT_TYPE_VARIABLES Conversation_InputType = 6
 )
 
@@ -180,6 +187,7 @@ var (
 	Conversation_InputType_name = map[int32]string{
 		0: "INPUT_TYPE_UNSPECIFIED",
 		1: "INPUT_TYPE_TEXT",
+		7: "INPUT_TYPE_EVENT",
 		2: "INPUT_TYPE_AUDIO",
 		3: "INPUT_TYPE_IMAGE",
 		4: "INPUT_TYPE_BLOB",
@@ -189,6 +197,7 @@ var (
 	Conversation_InputType_value = map[string]int32{
 		"INPUT_TYPE_UNSPECIFIED":   0,
 		"INPUT_TYPE_TEXT":          1,
+		"INPUT_TYPE_EVENT":         7,
 		"INPUT_TYPE_AUDIO":         2,
 		"INPUT_TYPE_IMAGE":         3,
 		"INPUT_TYPE_BLOB":          4,
@@ -453,7 +462,7 @@ var File_google_cloud_ces_v1_conversation_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_conversation_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/ces/v1/conversation.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/cloud/ces/v1/common.proto\x1a!google/cloud/ces/v1/example.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9e\v\n" +
+	"&google/cloud/ces/v1/conversation.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/cloud/ces/v1/common.proto\x1a!google/cloud/ces/v1/example.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc4\v\n" +
 	"\fConversation\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12>\n" +
 	"\n" +
@@ -487,15 +496,18 @@ const file_google_cloud_ces_v1_conversation_proto_rawDesc = "" +
 	"\x04TEXT\x10\x01\x12\t\n" +
 	"\x05AUDIO\x10\x02\x12\x0e\n" +
 	"\n" +
-	"MULTIMODAL\x10\x03\"C\n" +
+	"MULTIMODAL\x10\x03\"S\n" +
 	"\x06Source\x12\x16\n" +
 	"\x12SOURCE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04LIVE\x10\x01\x12\r\n" +
 	"\tSIMULATOR\x10\x02\x12\b\n" +
-	"\x04EVAL\x10\x03\"\xb5\x01\n" +
+	"\x04EVAL\x10\x03\x12\x0e\n" +
+	"\n" +
+	"AGENT_TOOL\x10\x04\"\xcb\x01\n" +
 	"\tInputType\x12\x1a\n" +
 	"\x16INPUT_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fINPUT_TYPE_TEXT\x10\x01\x12\x14\n" +
+	"\x10INPUT_TYPE_EVENT\x10\a\x12\x14\n" +
 	"\x10INPUT_TYPE_AUDIO\x10\x02\x12\x14\n" +
 	"\x10INPUT_TYPE_IMAGE\x10\x03\x12\x13\n" +
 	"\x0fINPUT_TYPE_BLOB\x10\x04\x12\x1c\n" +

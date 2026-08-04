@@ -534,6 +534,29 @@ func ExampleIcebergCatalogClient_RegisterIcebergTable() {
 	_ = resp
 }
 
+func ExampleIcebergCatalogClient_ReportIcebergTableMetrics() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := biglake.NewIcebergCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &biglakepb.ReportIcebergTableMetricsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/biglake/apiv1/biglakepb#ReportIcebergTableMetricsRequest.
+	}
+	err = c.ReportIcebergTableMetrics(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleIcebergCatalogClient_UpdateIcebergCatalog() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/hypercomputecluster/v1.0.0...hypercomputecluster/v1.1.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/hypercomputecluster%2Fv1.0.0) (2026-05-08)
 
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/hypercomputecluster%2Fv0.7.0) (2026-05-07)
@@ -28,4 +35,3 @@
 ### Features
 
 * add new client (#13423) ([945efa9](https://github.com/googleapis/google-cloud-go/commit/945efa94b87d0abeb4220a1cef4d682e8e200059))
-

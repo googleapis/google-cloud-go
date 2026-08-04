@@ -35,87 +35,84 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	OracleDatabase_ListCloudExadataInfrastructures_FullMethodName      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListCloudExadataInfrastructures"
-	OracleDatabase_GetCloudExadataInfrastructure_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/GetCloudExadataInfrastructure"
-	OracleDatabase_CreateCloudExadataInfrastructure_FullMethodName     = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudExadataInfrastructure"
-	OracleDatabase_DeleteCloudExadataInfrastructure_FullMethodName     = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudExadataInfrastructure"
-	OracleDatabase_ListCloudVmClusters_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/ListCloudVmClusters"
-	OracleDatabase_GetCloudVmCluster_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/GetCloudVmCluster"
-	OracleDatabase_CreateCloudVmCluster_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudVmCluster"
-	OracleDatabase_DeleteCloudVmCluster_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudVmCluster"
-	OracleDatabase_ListEntitlements_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/ListEntitlements"
-	OracleDatabase_ListDbServers_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbServers"
-	OracleDatabase_ListDbNodes_FullMethodName                          = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbNodes"
-	OracleDatabase_ListGiVersions_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGiVersions"
-	OracleDatabase_ListMinorVersions_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/ListMinorVersions"
-	OracleDatabase_ListDbSystemShapes_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemShapes"
-	OracleDatabase_ListAutonomousDatabases_FullMethodName              = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabases"
-	OracleDatabase_GetAutonomousDatabase_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/GetAutonomousDatabase"
-	OracleDatabase_CreateAutonomousDatabase_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateAutonomousDatabase"
-	OracleDatabase_UpdateAutonomousDatabase_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/UpdateAutonomousDatabase"
-	OracleDatabase_DeleteAutonomousDatabase_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteAutonomousDatabase"
-	OracleDatabase_RestoreAutonomousDatabase_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/RestoreAutonomousDatabase"
-	OracleDatabase_GenerateAutonomousDatabaseWallet_FullMethodName     = "/google.cloud.oracledatabase.v1.OracleDatabase/GenerateAutonomousDatabaseWallet"
-	OracleDatabase_ListAutonomousDbVersions_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDbVersions"
-	OracleDatabase_ListAutonomousDatabaseCharacterSets_FullMethodName  = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabaseCharacterSets"
-	OracleDatabase_ListAutonomousDatabaseBackups_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabaseBackups"
-	OracleDatabase_StopAutonomousDatabase_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/StopAutonomousDatabase"
-	OracleDatabase_StartAutonomousDatabase_FullMethodName              = "/google.cloud.oracledatabase.v1.OracleDatabase/StartAutonomousDatabase"
-	OracleDatabase_RestartAutonomousDatabase_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/RestartAutonomousDatabase"
-	OracleDatabase_SwitchoverAutonomousDatabase_FullMethodName         = "/google.cloud.oracledatabase.v1.OracleDatabase/SwitchoverAutonomousDatabase"
-	OracleDatabase_FailoverAutonomousDatabase_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/FailoverAutonomousDatabase"
-	OracleDatabase_ListOdbNetworks_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbNetworks"
-	OracleDatabase_GetOdbNetwork_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbNetwork"
-	OracleDatabase_CreateOdbNetwork_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbNetwork"
-	OracleDatabase_DeleteOdbNetwork_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbNetwork"
-	OracleDatabase_ListOdbSubnets_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbSubnets"
-	OracleDatabase_GetOdbSubnet_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbSubnet"
-	OracleDatabase_CreateOdbSubnet_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbSubnet"
-	OracleDatabase_DeleteOdbSubnet_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbSubnet"
-	OracleDatabase_ListExadbVmClusters_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExadbVmClusters"
-	OracleDatabase_GetExadbVmCluster_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExadbVmCluster"
-	OracleDatabase_CreateExadbVmCluster_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExadbVmCluster"
-	OracleDatabase_DeleteExadbVmCluster_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteExadbVmCluster"
-	OracleDatabase_UpdateExadbVmCluster_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/UpdateExadbVmCluster"
-	OracleDatabase_RemoveVirtualMachineExadbVmCluster_FullMethodName   = "/google.cloud.oracledatabase.v1.OracleDatabase/RemoveVirtualMachineExadbVmCluster"
-	OracleDatabase_ListExascaleDbStorageVaults_FullMethodName          = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExascaleDbStorageVaults"
-	OracleDatabase_GetExascaleDbStorageVault_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExascaleDbStorageVault"
-	OracleDatabase_CreateExascaleDbStorageVault_FullMethodName         = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExascaleDbStorageVault"
-	OracleDatabase_DeleteExascaleDbStorageVault_FullMethodName         = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteExascaleDbStorageVault"
-	OracleDatabase_ListDbSystemInitialStorageSizes_FullMethodName      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemInitialStorageSizes"
-	OracleDatabase_ListDatabases_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabases"
-	OracleDatabase_GetDatabase_FullMethodName                          = "/google.cloud.oracledatabase.v1.OracleDatabase/GetDatabase"
-	OracleDatabase_ListPluggableDatabases_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListPluggableDatabases"
-	OracleDatabase_GetPluggableDatabase_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/GetPluggableDatabase"
-	OracleDatabase_ListDbSystems_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystems"
-	OracleDatabase_GetDbSystem_FullMethodName                          = "/google.cloud.oracledatabase.v1.OracleDatabase/GetDbSystem"
-	OracleDatabase_CreateDbSystem_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateDbSystem"
-	OracleDatabase_DeleteDbSystem_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteDbSystem"
-	OracleDatabase_ListGoldengateDeployments_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeployments"
-	OracleDatabase_GetGoldengateDeployment_FullMethodName              = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeployment"
-	OracleDatabase_CreateGoldengateDeployment_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateDeployment"
-	OracleDatabase_DeleteGoldengateDeployment_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateDeployment"
-	OracleDatabase_StopGoldengateDeployment_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/StopGoldengateDeployment"
-	OracleDatabase_StartGoldengateDeployment_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/StartGoldengateDeployment"
-	OracleDatabase_ListGoldengateConnections_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnections"
-	OracleDatabase_GetGoldengateConnection_FullMethodName              = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnection"
-	OracleDatabase_CreateGoldengateConnection_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnection"
-	OracleDatabase_DeleteGoldengateConnection_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnection"
-	OracleDatabase_GetGoldengateDeploymentVersion_FullMethodName       = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeploymentVersion"
-	OracleDatabase_ListGoldengateDeploymentVersions_FullMethodName     = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentVersions"
-	OracleDatabase_GetGoldengateDeploymentType_FullMethodName          = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeploymentType"
-	OracleDatabase_ListGoldengateDeploymentTypes_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentTypes"
-	OracleDatabase_GetGoldengateDeploymentEnvironment_FullMethodName   = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeploymentEnvironment"
-	OracleDatabase_ListGoldengateDeploymentEnvironments_FullMethodName = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentEnvironments"
-	OracleDatabase_GetGoldengateConnectionType_FullMethodName          = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnectionType"
-	OracleDatabase_ListGoldengateConnectionTypes_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnectionTypes"
-	OracleDatabase_ListDbVersions_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbVersions"
-	OracleDatabase_ListDatabaseCharacterSets_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabaseCharacterSets"
-	OracleDatabase_ListGoldengateConnectionAssignments_FullMethodName  = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnectionAssignments"
-	OracleDatabase_GetGoldengateConnectionAssignment_FullMethodName    = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnectionAssignment"
-	OracleDatabase_CreateGoldengateConnectionAssignment_FullMethodName = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnectionAssignment"
-	OracleDatabase_DeleteGoldengateConnectionAssignment_FullMethodName = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnectionAssignment"
-	OracleDatabase_TestGoldengateConnectionAssignment_FullMethodName   = "/google.cloud.oracledatabase.v1.OracleDatabase/TestGoldengateConnectionAssignment"
+	OracleDatabase_ListCloudExadataInfrastructures_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListCloudExadataInfrastructures"
+	OracleDatabase_GetCloudExadataInfrastructure_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/GetCloudExadataInfrastructure"
+	OracleDatabase_CreateCloudExadataInfrastructure_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudExadataInfrastructure"
+	OracleDatabase_DeleteCloudExadataInfrastructure_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudExadataInfrastructure"
+	OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_FullMethodName = "/google.cloud.oracledatabase.v1.OracleDatabase/ConfigureExascaleCloudExadataInfrastructure"
+	OracleDatabase_ListCloudVmClusters_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListCloudVmClusters"
+	OracleDatabase_GetCloudVmCluster_FullMethodName                           = "/google.cloud.oracledatabase.v1.OracleDatabase/GetCloudVmCluster"
+	OracleDatabase_CreateCloudVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudVmCluster"
+	OracleDatabase_DeleteCloudVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudVmCluster"
+	OracleDatabase_ListEntitlements_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/ListEntitlements"
+	OracleDatabase_ListDbServers_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbServers"
+	OracleDatabase_ListDbNodes_FullMethodName                                 = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbNodes"
+	OracleDatabase_ListGiVersions_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGiVersions"
+	OracleDatabase_ListMinorVersions_FullMethodName                           = "/google.cloud.oracledatabase.v1.OracleDatabase/ListMinorVersions"
+	OracleDatabase_ListDbSystemShapes_FullMethodName                          = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemShapes"
+	OracleDatabase_ListAutonomousDatabases_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabases"
+	OracleDatabase_GetAutonomousDatabase_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/GetAutonomousDatabase"
+	OracleDatabase_CreateAutonomousDatabase_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateAutonomousDatabase"
+	OracleDatabase_UpdateAutonomousDatabase_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/UpdateAutonomousDatabase"
+	OracleDatabase_DeleteAutonomousDatabase_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteAutonomousDatabase"
+	OracleDatabase_RestoreAutonomousDatabase_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/RestoreAutonomousDatabase"
+	OracleDatabase_GenerateAutonomousDatabaseWallet_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/GenerateAutonomousDatabaseWallet"
+	OracleDatabase_ListAutonomousDbVersions_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDbVersions"
+	OracleDatabase_ListAutonomousDatabaseCharacterSets_FullMethodName         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabaseCharacterSets"
+	OracleDatabase_ListAutonomousDatabaseBackups_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabaseBackups"
+	OracleDatabase_StopAutonomousDatabase_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/StopAutonomousDatabase"
+	OracleDatabase_StartAutonomousDatabase_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/StartAutonomousDatabase"
+	OracleDatabase_RestartAutonomousDatabase_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/RestartAutonomousDatabase"
+	OracleDatabase_SwitchoverAutonomousDatabase_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/SwitchoverAutonomousDatabase"
+	OracleDatabase_FailoverAutonomousDatabase_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/FailoverAutonomousDatabase"
+	OracleDatabase_ListOdbNetworks_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbNetworks"
+	OracleDatabase_GetOdbNetwork_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbNetwork"
+	OracleDatabase_CreateOdbNetwork_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbNetwork"
+	OracleDatabase_DeleteOdbNetwork_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbNetwork"
+	OracleDatabase_ListOdbSubnets_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbSubnets"
+	OracleDatabase_GetOdbSubnet_FullMethodName                                = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbSubnet"
+	OracleDatabase_CreateOdbSubnet_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbSubnet"
+	OracleDatabase_DeleteOdbSubnet_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbSubnet"
+	OracleDatabase_ListExadbVmClusters_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExadbVmClusters"
+	OracleDatabase_GetExadbVmCluster_FullMethodName                           = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExadbVmCluster"
+	OracleDatabase_CreateExadbVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExadbVmCluster"
+	OracleDatabase_DeleteExadbVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteExadbVmCluster"
+	OracleDatabase_UpdateExadbVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/UpdateExadbVmCluster"
+	OracleDatabase_RemoveVirtualMachineExadbVmCluster_FullMethodName          = "/google.cloud.oracledatabase.v1.OracleDatabase/RemoveVirtualMachineExadbVmCluster"
+	OracleDatabase_ListExascaleDbStorageVaults_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExascaleDbStorageVaults"
+	OracleDatabase_GetExascaleDbStorageVault_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExascaleDbStorageVault"
+	OracleDatabase_CreateExascaleDbStorageVault_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExascaleDbStorageVault"
+	OracleDatabase_DeleteExascaleDbStorageVault_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteExascaleDbStorageVault"
+	OracleDatabase_ListDbSystemInitialStorageSizes_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemInitialStorageSizes"
+	OracleDatabase_ListDatabases_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabases"
+	OracleDatabase_GetDatabase_FullMethodName                                 = "/google.cloud.oracledatabase.v1.OracleDatabase/GetDatabase"
+	OracleDatabase_ListPluggableDatabases_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListPluggableDatabases"
+	OracleDatabase_GetPluggableDatabase_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/GetPluggableDatabase"
+	OracleDatabase_ListDbSystems_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystems"
+	OracleDatabase_GetDbSystem_FullMethodName                                 = "/google.cloud.oracledatabase.v1.OracleDatabase/GetDbSystem"
+	OracleDatabase_CreateDbSystem_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateDbSystem"
+	OracleDatabase_DeleteDbSystem_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteDbSystem"
+	OracleDatabase_ListGoldengateDeployments_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeployments"
+	OracleDatabase_GetGoldengateDeployment_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeployment"
+	OracleDatabase_CreateGoldengateDeployment_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateDeployment"
+	OracleDatabase_DeleteGoldengateDeployment_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateDeployment"
+	OracleDatabase_StopGoldengateDeployment_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/StopGoldengateDeployment"
+	OracleDatabase_StartGoldengateDeployment_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/StartGoldengateDeployment"
+	OracleDatabase_ListGoldengateConnections_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnections"
+	OracleDatabase_GetGoldengateConnection_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnection"
+	OracleDatabase_CreateGoldengateConnection_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnection"
+	OracleDatabase_DeleteGoldengateConnection_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnection"
+	OracleDatabase_ListGoldengateDeploymentVersions_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentVersions"
+	OracleDatabase_ListGoldengateDeploymentTypes_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentTypes"
+	OracleDatabase_ListGoldengateDeploymentEnvironments_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentEnvironments"
+	OracleDatabase_ListGoldengateConnectionTypes_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnectionTypes"
+	OracleDatabase_ListDbVersions_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbVersions"
+	OracleDatabase_ListDatabaseCharacterSets_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabaseCharacterSets"
+	OracleDatabase_ListGoldengateConnectionAssignments_FullMethodName         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnectionAssignments"
+	OracleDatabase_GetGoldengateConnectionAssignment_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnectionAssignment"
+	OracleDatabase_CreateGoldengateConnectionAssignment_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnectionAssignment"
+	OracleDatabase_DeleteGoldengateConnectionAssignment_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnectionAssignment"
+	OracleDatabase_TestGoldengateConnectionAssignment_FullMethodName          = "/google.cloud.oracledatabase.v1.OracleDatabase/TestGoldengateConnectionAssignment"
 )
 
 // OracleDatabaseClient is the client API for OracleDatabase service.
@@ -130,6 +127,8 @@ type OracleDatabaseClient interface {
 	CreateCloudExadataInfrastructure(ctx context.Context, in *CreateCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Exadata Infrastructure.
 	DeleteCloudExadataInfrastructure(ctx context.Context, in *DeleteCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Configures Exascale for a single Exadata Infrastructure.
+	ConfigureExascaleCloudExadataInfrastructure(ctx context.Context, in *ConfigureExascaleCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists the VM Clusters in a given project and location.
 	ListCloudVmClusters(ctx context.Context, in *ListCloudVmClustersRequest, opts ...grpc.CallOption) (*ListCloudVmClustersResponse, error)
 	// Gets details of a single VM Cluster.
@@ -264,20 +263,12 @@ type OracleDatabaseClient interface {
 	CreateGoldengateConnection(ctx context.Context, in *CreateGoldengateConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single GoldengateConnection.
 	DeleteGoldengateConnection(ctx context.Context, in *DeleteGoldengateConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Gets details of a single GoldengateDeploymentVersion.
-	GetGoldengateDeploymentVersion(ctx context.Context, in *GetGoldengateDeploymentVersionRequest, opts ...grpc.CallOption) (*GoldengateDeploymentVersion, error)
 	// Lists GoldengateDeploymentVersions in a given project and location.
 	ListGoldengateDeploymentVersions(ctx context.Context, in *ListGoldengateDeploymentVersionsRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentVersionsResponse, error)
-	// Gets details of a single GoldenGateDeploymentType.
-	GetGoldengateDeploymentType(ctx context.Context, in *GetGoldengateDeploymentTypeRequest, opts ...grpc.CallOption) (*GoldengateDeploymentType, error)
 	// Lists GoldenGateDeploymentTypes in a given project and location.
 	ListGoldengateDeploymentTypes(ctx context.Context, in *ListGoldengateDeploymentTypesRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentTypesResponse, error)
-	// Gets details of a single GoldengateDeploymentEnvironment.
-	GetGoldengateDeploymentEnvironment(ctx context.Context, in *GetGoldengateDeploymentEnvironmentRequest, opts ...grpc.CallOption) (*GoldengateDeploymentEnvironment, error)
 	// Lists GoldengateDeploymentEnvironments in a given project and location.
 	ListGoldengateDeploymentEnvironments(ctx context.Context, in *ListGoldengateDeploymentEnvironmentsRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentEnvironmentsResponse, error)
-	// Gets details of a single GoldengateConnectionType.
-	GetGoldengateConnectionType(ctx context.Context, in *GetGoldengateConnectionTypeRequest, opts ...grpc.CallOption) (*GoldengateConnectionType, error)
 	// Lists GoldengateConnectionTypes in a given project and location.
 	ListGoldengateConnectionTypes(ctx context.Context, in *ListGoldengateConnectionTypesRequest, opts ...grpc.CallOption) (*ListGoldengateConnectionTypesResponse, error)
 	// List DbVersions for the given project and location.
@@ -335,6 +326,15 @@ func (c *oracleDatabaseClient) CreateCloudExadataInfrastructure(ctx context.Cont
 func (c *oracleDatabaseClient) DeleteCloudExadataInfrastructure(ctx context.Context, in *DeleteCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, OracleDatabase_DeleteCloudExadataInfrastructure_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ConfigureExascaleCloudExadataInfrastructure(ctx context.Context, in *ConfigureExascaleCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -899,27 +899,9 @@ func (c *oracleDatabaseClient) DeleteGoldengateConnection(ctx context.Context, i
 	return out, nil
 }
 
-func (c *oracleDatabaseClient) GetGoldengateDeploymentVersion(ctx context.Context, in *GetGoldengateDeploymentVersionRequest, opts ...grpc.CallOption) (*GoldengateDeploymentVersion, error) {
-	out := new(GoldengateDeploymentVersion)
-	err := c.cc.Invoke(ctx, OracleDatabase_GetGoldengateDeploymentVersion_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *oracleDatabaseClient) ListGoldengateDeploymentVersions(ctx context.Context, in *ListGoldengateDeploymentVersionsRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentVersionsResponse, error) {
 	out := new(ListGoldengateDeploymentVersionsResponse)
 	err := c.cc.Invoke(ctx, OracleDatabase_ListGoldengateDeploymentVersions_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *oracleDatabaseClient) GetGoldengateDeploymentType(ctx context.Context, in *GetGoldengateDeploymentTypeRequest, opts ...grpc.CallOption) (*GoldengateDeploymentType, error) {
-	out := new(GoldengateDeploymentType)
-	err := c.cc.Invoke(ctx, OracleDatabase_GetGoldengateDeploymentType_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -935,27 +917,9 @@ func (c *oracleDatabaseClient) ListGoldengateDeploymentTypes(ctx context.Context
 	return out, nil
 }
 
-func (c *oracleDatabaseClient) GetGoldengateDeploymentEnvironment(ctx context.Context, in *GetGoldengateDeploymentEnvironmentRequest, opts ...grpc.CallOption) (*GoldengateDeploymentEnvironment, error) {
-	out := new(GoldengateDeploymentEnvironment)
-	err := c.cc.Invoke(ctx, OracleDatabase_GetGoldengateDeploymentEnvironment_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *oracleDatabaseClient) ListGoldengateDeploymentEnvironments(ctx context.Context, in *ListGoldengateDeploymentEnvironmentsRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentEnvironmentsResponse, error) {
 	out := new(ListGoldengateDeploymentEnvironmentsResponse)
 	err := c.cc.Invoke(ctx, OracleDatabase_ListGoldengateDeploymentEnvironments_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *oracleDatabaseClient) GetGoldengateConnectionType(ctx context.Context, in *GetGoldengateConnectionTypeRequest, opts ...grpc.CallOption) (*GoldengateConnectionType, error) {
-	out := new(GoldengateConnectionType)
-	err := c.cc.Invoke(ctx, OracleDatabase_GetGoldengateConnectionType_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1046,6 +1010,8 @@ type OracleDatabaseServer interface {
 	CreateCloudExadataInfrastructure(context.Context, *CreateCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Exadata Infrastructure.
 	DeleteCloudExadataInfrastructure(context.Context, *DeleteCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error)
+	// Configures Exascale for a single Exadata Infrastructure.
+	ConfigureExascaleCloudExadataInfrastructure(context.Context, *ConfigureExascaleCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error)
 	// Lists the VM Clusters in a given project and location.
 	ListCloudVmClusters(context.Context, *ListCloudVmClustersRequest) (*ListCloudVmClustersResponse, error)
 	// Gets details of a single VM Cluster.
@@ -1180,20 +1146,12 @@ type OracleDatabaseServer interface {
 	CreateGoldengateConnection(context.Context, *CreateGoldengateConnectionRequest) (*longrunningpb.Operation, error)
 	// Deletes a single GoldengateConnection.
 	DeleteGoldengateConnection(context.Context, *DeleteGoldengateConnectionRequest) (*longrunningpb.Operation, error)
-	// Gets details of a single GoldengateDeploymentVersion.
-	GetGoldengateDeploymentVersion(context.Context, *GetGoldengateDeploymentVersionRequest) (*GoldengateDeploymentVersion, error)
 	// Lists GoldengateDeploymentVersions in a given project and location.
 	ListGoldengateDeploymentVersions(context.Context, *ListGoldengateDeploymentVersionsRequest) (*ListGoldengateDeploymentVersionsResponse, error)
-	// Gets details of a single GoldenGateDeploymentType.
-	GetGoldengateDeploymentType(context.Context, *GetGoldengateDeploymentTypeRequest) (*GoldengateDeploymentType, error)
 	// Lists GoldenGateDeploymentTypes in a given project and location.
 	ListGoldengateDeploymentTypes(context.Context, *ListGoldengateDeploymentTypesRequest) (*ListGoldengateDeploymentTypesResponse, error)
-	// Gets details of a single GoldengateDeploymentEnvironment.
-	GetGoldengateDeploymentEnvironment(context.Context, *GetGoldengateDeploymentEnvironmentRequest) (*GoldengateDeploymentEnvironment, error)
 	// Lists GoldengateDeploymentEnvironments in a given project and location.
 	ListGoldengateDeploymentEnvironments(context.Context, *ListGoldengateDeploymentEnvironmentsRequest) (*ListGoldengateDeploymentEnvironmentsResponse, error)
-	// Gets details of a single GoldengateConnectionType.
-	GetGoldengateConnectionType(context.Context, *GetGoldengateConnectionTypeRequest) (*GoldengateConnectionType, error)
 	// Lists GoldengateConnectionTypes in a given project and location.
 	ListGoldengateConnectionTypes(context.Context, *ListGoldengateConnectionTypesRequest) (*ListGoldengateConnectionTypesResponse, error)
 	// List DbVersions for the given project and location.
@@ -1228,6 +1186,9 @@ func (UnimplementedOracleDatabaseServer) CreateCloudExadataInfrastructure(contex
 }
 func (UnimplementedOracleDatabaseServer) DeleteCloudExadataInfrastructure(context.Context, *DeleteCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCloudExadataInfrastructure not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ConfigureExascaleCloudExadataInfrastructure(context.Context, *ConfigureExascaleCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConfigureExascaleCloudExadataInfrastructure not implemented")
 }
 func (UnimplementedOracleDatabaseServer) ListCloudVmClusters(context.Context, *ListCloudVmClustersRequest) (*ListCloudVmClustersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListCloudVmClusters not implemented")
@@ -1415,26 +1376,14 @@ func (UnimplementedOracleDatabaseServer) CreateGoldengateConnection(context.Cont
 func (UnimplementedOracleDatabaseServer) DeleteGoldengateConnection(context.Context, *DeleteGoldengateConnectionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteGoldengateConnection not implemented")
 }
-func (UnimplementedOracleDatabaseServer) GetGoldengateDeploymentVersion(context.Context, *GetGoldengateDeploymentVersionRequest) (*GoldengateDeploymentVersion, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGoldengateDeploymentVersion not implemented")
-}
 func (UnimplementedOracleDatabaseServer) ListGoldengateDeploymentVersions(context.Context, *ListGoldengateDeploymentVersionsRequest) (*ListGoldengateDeploymentVersionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateDeploymentVersions not implemented")
-}
-func (UnimplementedOracleDatabaseServer) GetGoldengateDeploymentType(context.Context, *GetGoldengateDeploymentTypeRequest) (*GoldengateDeploymentType, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGoldengateDeploymentType not implemented")
 }
 func (UnimplementedOracleDatabaseServer) ListGoldengateDeploymentTypes(context.Context, *ListGoldengateDeploymentTypesRequest) (*ListGoldengateDeploymentTypesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateDeploymentTypes not implemented")
 }
-func (UnimplementedOracleDatabaseServer) GetGoldengateDeploymentEnvironment(context.Context, *GetGoldengateDeploymentEnvironmentRequest) (*GoldengateDeploymentEnvironment, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGoldengateDeploymentEnvironment not implemented")
-}
 func (UnimplementedOracleDatabaseServer) ListGoldengateDeploymentEnvironments(context.Context, *ListGoldengateDeploymentEnvironmentsRequest) (*ListGoldengateDeploymentEnvironmentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateDeploymentEnvironments not implemented")
-}
-func (UnimplementedOracleDatabaseServer) GetGoldengateConnectionType(context.Context, *GetGoldengateConnectionTypeRequest) (*GoldengateConnectionType, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGoldengateConnectionType not implemented")
 }
 func (UnimplementedOracleDatabaseServer) ListGoldengateConnectionTypes(context.Context, *ListGoldengateConnectionTypesRequest) (*ListGoldengateConnectionTypesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateConnectionTypes not implemented")
@@ -1540,6 +1489,24 @@ func _OracleDatabase_DeleteCloudExadataInfrastructure_Handler(srv interface{}, c
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OracleDatabaseServer).DeleteCloudExadataInfrastructure(ctx, req.(*DeleteCloudExadataInfrastructureRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfigureExascaleCloudExadataInfrastructureRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ConfigureExascaleCloudExadataInfrastructure(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ConfigureExascaleCloudExadataInfrastructure(ctx, req.(*ConfigureExascaleCloudExadataInfrastructureRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2660,24 +2627,6 @@ func _OracleDatabase_DeleteGoldengateConnection_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _OracleDatabase_GetGoldengateDeploymentVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetGoldengateDeploymentVersionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OracleDatabaseServer).GetGoldengateDeploymentVersion(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: OracleDatabase_GetGoldengateDeploymentVersion_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OracleDatabaseServer).GetGoldengateDeploymentVersion(ctx, req.(*GetGoldengateDeploymentVersionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _OracleDatabase_ListGoldengateDeploymentVersions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListGoldengateDeploymentVersionsRequest)
 	if err := dec(in); err != nil {
@@ -2692,24 +2641,6 @@ func _OracleDatabase_ListGoldengateDeploymentVersions_Handler(srv interface{}, c
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OracleDatabaseServer).ListGoldengateDeploymentVersions(ctx, req.(*ListGoldengateDeploymentVersionsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _OracleDatabase_GetGoldengateDeploymentType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetGoldengateDeploymentTypeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OracleDatabaseServer).GetGoldengateDeploymentType(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: OracleDatabase_GetGoldengateDeploymentType_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OracleDatabaseServer).GetGoldengateDeploymentType(ctx, req.(*GetGoldengateDeploymentTypeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2732,24 +2663,6 @@ func _OracleDatabase_ListGoldengateDeploymentTypes_Handler(srv interface{}, ctx 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _OracleDatabase_GetGoldengateDeploymentEnvironment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetGoldengateDeploymentEnvironmentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OracleDatabaseServer).GetGoldengateDeploymentEnvironment(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: OracleDatabase_GetGoldengateDeploymentEnvironment_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OracleDatabaseServer).GetGoldengateDeploymentEnvironment(ctx, req.(*GetGoldengateDeploymentEnvironmentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _OracleDatabase_ListGoldengateDeploymentEnvironments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListGoldengateDeploymentEnvironmentsRequest)
 	if err := dec(in); err != nil {
@@ -2764,24 +2677,6 @@ func _OracleDatabase_ListGoldengateDeploymentEnvironments_Handler(srv interface{
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OracleDatabaseServer).ListGoldengateDeploymentEnvironments(ctx, req.(*ListGoldengateDeploymentEnvironmentsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _OracleDatabase_GetGoldengateConnectionType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetGoldengateConnectionTypeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OracleDatabaseServer).GetGoldengateConnectionType(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: OracleDatabase_GetGoldengateConnectionType_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OracleDatabaseServer).GetGoldengateConnectionType(ctx, req.(*GetGoldengateConnectionTypeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2952,6 +2847,10 @@ var OracleDatabase_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteCloudExadataInfrastructure",
 			Handler:    _OracleDatabase_DeleteCloudExadataInfrastructure_Handler,
+		},
+		{
+			MethodName: "ConfigureExascaleCloudExadataInfrastructure",
+			Handler:    _OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_Handler,
 		},
 		{
 			MethodName: "ListCloudVmClusters",
@@ -3202,32 +3101,16 @@ var OracleDatabase_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _OracleDatabase_DeleteGoldengateConnection_Handler,
 		},
 		{
-			MethodName: "GetGoldengateDeploymentVersion",
-			Handler:    _OracleDatabase_GetGoldengateDeploymentVersion_Handler,
-		},
-		{
 			MethodName: "ListGoldengateDeploymentVersions",
 			Handler:    _OracleDatabase_ListGoldengateDeploymentVersions_Handler,
-		},
-		{
-			MethodName: "GetGoldengateDeploymentType",
-			Handler:    _OracleDatabase_GetGoldengateDeploymentType_Handler,
 		},
 		{
 			MethodName: "ListGoldengateDeploymentTypes",
 			Handler:    _OracleDatabase_ListGoldengateDeploymentTypes_Handler,
 		},
 		{
-			MethodName: "GetGoldengateDeploymentEnvironment",
-			Handler:    _OracleDatabase_GetGoldengateDeploymentEnvironment_Handler,
-		},
-		{
 			MethodName: "ListGoldengateDeploymentEnvironments",
 			Handler:    _OracleDatabase_ListGoldengateDeploymentEnvironments_Handler,
-		},
-		{
-			MethodName: "GetGoldengateConnectionType",
-			Handler:    _OracleDatabase_GetGoldengateConnectionType_Handler,
 		},
 		{
 			MethodName: "ListGoldengateConnectionTypes",

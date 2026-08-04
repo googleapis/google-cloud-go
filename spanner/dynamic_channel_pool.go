@@ -85,11 +85,11 @@ type DynamicChannelPoolConfig struct {
 func DefaultDynamicChannelPoolConfig() DynamicChannelPoolConfig {
 	return DynamicChannelPoolConfig{
 		DCPInitialChannels:                   4,
-		DCPMinChannels:                       4,
-		DCPMaxChannels:                       256,
-		DCPMaxRPCPerChannel:                  50,
-		DCPMinRPCPerChannel:                  5,
-		DCPScaleDownCheckInterval:            30 * time.Second,
+		DCPMinChannels:                       2,
+		DCPMaxChannels:                       10,
+		DCPMaxRPCPerChannel:                  25,
+		DCPMinRPCPerChannel:                  15,
+		DCPScaleDownCheckInterval:            3 * time.Minute,
 		DCPScaleUpCooldown:                   10 * time.Second,
 		DCPDownscaleConsecutiveLowLoadChecks: 3,
 		DCPMaxScaleUpPercent:                 30,

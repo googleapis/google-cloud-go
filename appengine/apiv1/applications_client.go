@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -489,8 +490,12 @@ func (c *applicationsGRPCClient) CreateApplication(ctx context.Context, req *app
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.CreateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -512,8 +517,12 @@ func (c *applicationsGRPCClient) UpdateApplication(ctx context.Context, req *app
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.UpdateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -535,8 +544,12 @@ func (c *applicationsGRPCClient) RepairApplication(ctx context.Context, req *app
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.RepairApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RepairApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -656,8 +669,12 @@ func (c *applicationsRESTClient) CreateApplication(ctx context.Context, req *app
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.CreateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -734,8 +751,12 @@ func (c *applicationsRESTClient) UpdateApplication(ctx context.Context, req *app
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.UpdateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -806,8 +827,12 @@ func (c *applicationsRESTClient) RepairApplication(ctx context.Context, req *app
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.RepairApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RepairApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -816,7 +841,7 @@ func (c *applicationsRESTClient) RepairApplication(ctx context.Context, req *app
 // The name must be that of a previously created CreateApplicationOperation, possibly from a different process.
 func (c *applicationsGRPCClient) CreateApplicationOperation(name string) *CreateApplicationOperation {
 	return &CreateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.CreateApplicationOperation"),
 	}
 }
 
@@ -825,7 +850,7 @@ func (c *applicationsGRPCClient) CreateApplicationOperation(name string) *Create
 func (c *applicationsRESTClient) CreateApplicationOperation(name string) *CreateApplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.CreateApplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -834,7 +859,7 @@ func (c *applicationsRESTClient) CreateApplicationOperation(name string) *Create
 // The name must be that of a previously created RepairApplicationOperation, possibly from a different process.
 func (c *applicationsGRPCClient) RepairApplicationOperation(name string) *RepairApplicationOperation {
 	return &RepairApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.RepairApplicationOperation"),
 	}
 }
 
@@ -843,7 +868,7 @@ func (c *applicationsGRPCClient) RepairApplicationOperation(name string) *Repair
 func (c *applicationsRESTClient) RepairApplicationOperation(name string) *RepairApplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RepairApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.RepairApplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -852,7 +877,7 @@ func (c *applicationsRESTClient) RepairApplicationOperation(name string) *Repair
 // The name must be that of a previously created UpdateApplicationOperation, possibly from a different process.
 func (c *applicationsGRPCClient) UpdateApplicationOperation(name string) *UpdateApplicationOperation {
 	return &UpdateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.UpdateApplicationOperation"),
 	}
 }
 
@@ -861,7 +886,7 @@ func (c *applicationsGRPCClient) UpdateApplicationOperation(name string) *Update
 func (c *applicationsRESTClient) UpdateApplicationOperation(name string) *UpdateApplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.UpdateApplicationOperation"),
 		pollPath: override,
 	}
 }

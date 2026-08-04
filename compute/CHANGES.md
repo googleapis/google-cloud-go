@@ -1,5 +1,12 @@
 # Changes
 
+## [1.65.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.64.0...compute/v1.65.0) (2026-07-20)
+
+
+### Features
+
+* Update API sources and regenerate ([#20159](https://github.com/googleapis/google-cloud-go/issues/20159)) ([6395ba5](https://github.com/googleapis/google-cloud-go/commit/6395ba5d059d7e0d6ccfbf57b15d8d5ffcd70d0e))
+
 ## [1.64.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.64.0) (2026-05-21)
 
 ### Features

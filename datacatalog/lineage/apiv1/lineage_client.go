@@ -34,6 +34,7 @@ import (
 	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1226,8 +1227,12 @@ func (c *gRPCClient) DeleteProcess(ctx context.Context, req *lineagepb.DeletePro
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lineage.DeleteProcessOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProcessOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1376,8 +1381,12 @@ func (c *gRPCClient) DeleteRun(ctx context.Context, req *lineagepb.DeleteRunRequ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lineage.DeleteRunOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRunOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2148,8 +2157,12 @@ func (c *restClient) DeleteProcess(ctx context.Context, req *lineagepb.DeletePro
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lineage.DeleteProcessOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProcessOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2488,8 +2501,12 @@ func (c *restClient) DeleteRun(ctx context.Context, req *lineagepb.DeleteRunRequ
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lineage.DeleteRunOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRunOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3284,7 +3301,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created DeleteProcessOperation, possibly from a different process.
 func (c *gRPCClient) DeleteProcessOperation(name string) *DeleteProcessOperation {
 	return &DeleteProcessOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lineage.DeleteProcessOperation"),
 	}
 }
 
@@ -3293,7 +3310,7 @@ func (c *gRPCClient) DeleteProcessOperation(name string) *DeleteProcessOperation
 func (c *restClient) DeleteProcessOperation(name string) *DeleteProcessOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteProcessOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lineage.DeleteProcessOperation"),
 		pollPath: override,
 	}
 }
@@ -3302,7 +3319,7 @@ func (c *restClient) DeleteProcessOperation(name string) *DeleteProcessOperation
 // The name must be that of a previously created DeleteRunOperation, possibly from a different process.
 func (c *gRPCClient) DeleteRunOperation(name string) *DeleteRunOperation {
 	return &DeleteRunOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lineage.DeleteRunOperation"),
 	}
 }
 
@@ -3311,7 +3328,7 @@ func (c *gRPCClient) DeleteRunOperation(name string) *DeleteRunOperation {
 func (c *restClient) DeleteRunOperation(name string) *DeleteRunOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteRunOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lineage.DeleteRunOperation"),
 		pollPath: override,
 	}
 }

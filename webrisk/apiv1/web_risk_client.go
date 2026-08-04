@@ -32,6 +32,7 @@ import (
 	webriskpb "cloud.google.com/go/webrisk/apiv1/webriskpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -664,8 +665,12 @@ func (c *gRPCClient) SubmitUri(ctx context.Context, req *webriskpb.SubmitUriRequ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*webrisk.SubmitUriOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SubmitUriOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1107,8 +1112,12 @@ func (c *restClient) SubmitUri(ctx context.Context, req *webriskpb.SubmitUriRequ
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*webrisk.SubmitUriOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SubmitUriOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1339,7 +1348,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created SubmitUriOperation, possibly from a different process.
 func (c *gRPCClient) SubmitUriOperation(name string) *SubmitUriOperation {
 	return &SubmitUriOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*webrisk.SubmitUriOperation"),
 	}
 }
 
@@ -1348,7 +1357,7 @@ func (c *gRPCClient) SubmitUriOperation(name string) *SubmitUriOperation {
 func (c *restClient) SubmitUriOperation(name string) *SubmitUriOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &SubmitUriOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*webrisk.SubmitUriOperation"),
 		pollPath: override,
 	}
 }

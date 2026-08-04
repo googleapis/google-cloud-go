@@ -132,6 +132,64 @@ func (WidgetTool_WidgetType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_ces_v1_widget_tool_proto_rawDescGZIP(), []int{0, 0}
 }
 
+// Defines how the text response is produced.
+type WidgetTool_TextResponseConfig_Type int32
+
+const (
+	// Unspecified type.
+	WidgetTool_TextResponseConfig_TYPE_UNSPECIFIED WidgetTool_TextResponseConfig_Type = 0
+	// The LLM dynamically decides whether to generate a text response
+	// alongside the widget based on the conversation context.
+	WidgetTool_TextResponseConfig_NONE WidgetTool_TextResponseConfig_Type = 1
+	// The LLM is explicitly required to generate a text response.
+	WidgetTool_TextResponseConfig_LLM_GENERATED WidgetTool_TextResponseConfig_Type = 2
+	// A pre-defined static text response is always used.
+	WidgetTool_TextResponseConfig_STATIC WidgetTool_TextResponseConfig_Type = 3
+)
+
+// Enum value maps for WidgetTool_TextResponseConfig_Type.
+var (
+	WidgetTool_TextResponseConfig_Type_name = map[int32]string{
+		0: "TYPE_UNSPECIFIED",
+		1: "NONE",
+		2: "LLM_GENERATED",
+		3: "STATIC",
+	}
+	WidgetTool_TextResponseConfig_Type_value = map[string]int32{
+		"TYPE_UNSPECIFIED": 0,
+		"NONE":             1,
+		"LLM_GENERATED":    2,
+		"STATIC":           3,
+	}
+)
+
+func (x WidgetTool_TextResponseConfig_Type) Enum() *WidgetTool_TextResponseConfig_Type {
+	p := new(WidgetTool_TextResponseConfig_Type)
+	*p = x
+	return p
+}
+
+func (x WidgetTool_TextResponseConfig_Type) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (WidgetTool_TextResponseConfig_Type) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1_widget_tool_proto_enumTypes[1].Descriptor()
+}
+
+func (WidgetTool_TextResponseConfig_Type) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1_widget_tool_proto_enumTypes[1]
+}
+
+func (x WidgetTool_TextResponseConfig_Type) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use WidgetTool_TextResponseConfig_Type.Descriptor instead.
+func (WidgetTool_TextResponseConfig_Type) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1_widget_tool_proto_rawDescGZIP(), []int{0, 0, 0}
+}
+
 // The strategy used to map data from the source tool to the widget.
 type WidgetTool_DataMapping_Mode int32
 
@@ -169,11 +227,11 @@ func (x WidgetTool_DataMapping_Mode) String() string {
 }
 
 func (WidgetTool_DataMapping_Mode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_ces_v1_widget_tool_proto_enumTypes[1].Descriptor()
+	return file_google_cloud_ces_v1_widget_tool_proto_enumTypes[2].Descriptor()
 }
 
 func (WidgetTool_DataMapping_Mode) Type() protoreflect.EnumType {
-	return &file_google_cloud_ces_v1_widget_tool_proto_enumTypes[1]
+	return &file_google_cloud_ces_v1_widget_tool_proto_enumTypes[2]
 }
 
 func (x WidgetTool_DataMapping_Mode) Number() protoreflect.EnumNumber {
@@ -182,7 +240,7 @@ func (x WidgetTool_DataMapping_Mode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WidgetTool_DataMapping_Mode.Descriptor instead.
 func (WidgetTool_DataMapping_Mode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1_widget_tool_proto_rawDescGZIP(), []int{0, 0, 0}
+	return file_google_cloud_ces_v1_widget_tool_proto_rawDescGZIP(), []int{0, 1, 0}
 }
 
 // Represents a widget tool that the agent can invoke. When the tool is chosen
@@ -208,9 +266,11 @@ type WidgetTool struct {
 	UiConfig *structpb.Struct `protobuf:"bytes,5,opt,name=ui_config,json=uiConfig,proto3" json:"ui_config,omitempty"`
 	// Optional. The mapping that defines how data from a source tool is mapped to
 	// the widget's input parameters.
-	DataMapping   *WidgetTool_DataMapping `protobuf:"bytes,6,opt,name=data_mapping,json=dataMapping,proto3" json:"data_mapping,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	DataMapping *WidgetTool_DataMapping `protobuf:"bytes,6,opt,name=data_mapping,json=dataMapping,proto3" json:"data_mapping,omitempty"`
+	// Optional. Configuration for always-included text responses.
+	TextResponseConfig *WidgetTool_TextResponseConfig `protobuf:"bytes,7,opt,name=text_response_config,json=textResponseConfig,proto3" json:"text_response_config,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *WidgetTool) Reset() {
@@ -294,6 +354,13 @@ func (x *WidgetTool) GetDataMapping() *WidgetTool_DataMapping {
 	return nil
 }
 
+func (x *WidgetTool) GetTextResponseConfig() *WidgetTool_TextResponseConfig {
+	if x != nil {
+		return x.TextResponseConfig
+	}
+	return nil
+}
+
 type isWidgetTool_Input interface {
 	isWidgetTool_Input()
 }
@@ -304,6 +371,72 @@ type WidgetTool_Parameters struct {
 }
 
 func (*WidgetTool_Parameters) isWidgetTool_Input() {}
+
+// Configuration for the text response returned with the widget.
+type WidgetTool_TextResponseConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The strategy for providing the text response.
+	Type WidgetTool_TextResponseConfig_Type `protobuf:"varint,1,opt,name=type,proto3,enum=google.cloud.ces.v1.WidgetTool_TextResponseConfig_Type" json:"type,omitempty"`
+	// Optional. The static text response to return when type is STATIC.
+	StaticText string `protobuf:"bytes,2,opt,name=static_text,json=staticText,proto3" json:"static_text,omitempty"`
+	// Optional. Instruction for the LLM on how to generate the text response.
+	// Used as the description for the text response parameter if type is
+	// LLM_GENERATED.
+	TextResponseInstruction string `protobuf:"bytes,3,opt,name=text_response_instruction,json=textResponseInstruction,proto3" json:"text_response_instruction,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *WidgetTool_TextResponseConfig) Reset() {
+	*x = WidgetTool_TextResponseConfig{}
+	mi := &file_google_cloud_ces_v1_widget_tool_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WidgetTool_TextResponseConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WidgetTool_TextResponseConfig) ProtoMessage() {}
+
+func (x *WidgetTool_TextResponseConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1_widget_tool_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WidgetTool_TextResponseConfig.ProtoReflect.Descriptor instead.
+func (*WidgetTool_TextResponseConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1_widget_tool_proto_rawDescGZIP(), []int{0, 0}
+}
+
+func (x *WidgetTool_TextResponseConfig) GetType() WidgetTool_TextResponseConfig_Type {
+	if x != nil {
+		return x.Type
+	}
+	return WidgetTool_TextResponseConfig_TYPE_UNSPECIFIED
+}
+
+func (x *WidgetTool_TextResponseConfig) GetStaticText() string {
+	if x != nil {
+		return x.StaticText
+	}
+	return ""
+}
+
+func (x *WidgetTool_TextResponseConfig) GetTextResponseInstruction() string {
+	if x != nil {
+		return x.TextResponseInstruction
+	}
+	return ""
+}
 
 // Configuration for mapping data from a source tool to the widget's input
 // parameters.
@@ -331,7 +464,7 @@ type WidgetTool_DataMapping struct {
 
 func (x *WidgetTool_DataMapping) Reset() {
 	*x = WidgetTool_DataMapping{}
-	mi := &file_google_cloud_ces_v1_widget_tool_proto_msgTypes[1]
+	mi := &file_google_cloud_ces_v1_widget_tool_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -343,7 +476,7 @@ func (x *WidgetTool_DataMapping) String() string {
 func (*WidgetTool_DataMapping) ProtoMessage() {}
 
 func (x *WidgetTool_DataMapping) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1_widget_tool_proto_msgTypes[1]
+	mi := &file_google_cloud_ces_v1_widget_tool_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -356,7 +489,7 @@ func (x *WidgetTool_DataMapping) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WidgetTool_DataMapping.ProtoReflect.Descriptor instead.
 func (*WidgetTool_DataMapping) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1_widget_tool_proto_rawDescGZIP(), []int{0, 0}
+	return file_google_cloud_ces_v1_widget_tool_proto_rawDescGZIP(), []int{0, 1}
 }
 
 func (x *WidgetTool_DataMapping) GetSourceToolName() string {
@@ -399,7 +532,7 @@ var File_google_cloud_ces_v1_widget_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_widget_tool_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/ces/v1/widget_tool.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a)google/cloud/ces/v1/python_function.proto\x1a google/cloud/ces/v1/schema.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xa2\t\n" +
+	"%google/cloud/ces/v1/widget_tool.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a)google/cloud/ces/v1/python_function.proto\x1a google/cloud/ces/v1/schema.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xa4\f\n" +
 	"\n" +
 	"WidgetTool\x12B\n" +
 	"\n" +
@@ -410,7 +543,19 @@ const file_google_cloud_ces_v1_widget_tool_proto_rawDesc = "" +
 	"\vwidget_type\x18\x03 \x01(\x0e2*.google.cloud.ces.v1.WidgetTool.WidgetTypeB\x03\xe0A\x01R\n" +
 	"widgetType\x129\n" +
 	"\tui_config\x18\x05 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\buiConfig\x12S\n" +
-	"\fdata_mapping\x18\x06 \x01(\v2+.google.cloud.ces.v1.WidgetTool.DataMappingB\x03\xe0A\x01R\vdataMapping\x1a\xf5\x03\n" +
+	"\fdata_mapping\x18\x06 \x01(\v2+.google.cloud.ces.v1.WidgetTool.DataMappingB\x03\xe0A\x01R\vdataMapping\x12i\n" +
+	"\x14text_response_config\x18\a \x01(\v22.google.cloud.ces.v1.WidgetTool.TextResponseConfigB\x03\xe0A\x01R\x12textResponseConfig\x1a\x94\x02\n" +
+	"\x12TextResponseConfig\x12P\n" +
+	"\x04type\x18\x01 \x01(\x0e27.google.cloud.ces.v1.WidgetTool.TextResponseConfig.TypeB\x03\xe0A\x01R\x04type\x12$\n" +
+	"\vstatic_text\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
+	"staticText\x12?\n" +
+	"\x19text_response_instruction\x18\x03 \x01(\tB\x03\xe0A\x01R\x17textResponseInstruction\"E\n" +
+	"\x04Type\x12\x14\n" +
+	"\x10TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
+	"\x04NONE\x10\x01\x12\x11\n" +
+	"\rLLM_GENERATED\x10\x02\x12\n" +
+	"\n" +
+	"\x06STATIC\x10\x03\x1a\xf5\x03\n" +
 	"\vDataMapping\x12-\n" +
 	"\x10source_tool_name\x18\x01 \x01(\tB\x03\xe0A\x01R\x0esourceToolName\x12j\n" +
 	"\x0efield_mappings\x18\x02 \x03(\v2>.google.cloud.ces.v1.WidgetTool.DataMapping.FieldMappingsEntryB\x03\xe0A\x01R\rfieldMappings\x12Q\n" +
@@ -457,31 +602,35 @@ func file_google_cloud_ces_v1_widget_tool_proto_rawDescGZIP() []byte {
 	return file_google_cloud_ces_v1_widget_tool_proto_rawDescData
 }
 
-var file_google_cloud_ces_v1_widget_tool_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_ces_v1_widget_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_google_cloud_ces_v1_widget_tool_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_google_cloud_ces_v1_widget_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_google_cloud_ces_v1_widget_tool_proto_goTypes = []any{
-	(WidgetTool_WidgetType)(0),       // 0: google.cloud.ces.v1.WidgetTool.WidgetType
-	(WidgetTool_DataMapping_Mode)(0), // 1: google.cloud.ces.v1.WidgetTool.DataMapping.Mode
-	(*WidgetTool)(nil),               // 2: google.cloud.ces.v1.WidgetTool
-	(*WidgetTool_DataMapping)(nil),   // 3: google.cloud.ces.v1.WidgetTool.DataMapping
-	nil,                              // 4: google.cloud.ces.v1.WidgetTool.DataMapping.FieldMappingsEntry
-	(*Schema)(nil),                   // 5: google.cloud.ces.v1.Schema
-	(*structpb.Struct)(nil),          // 6: google.protobuf.Struct
-	(*PythonFunction)(nil),           // 7: google.cloud.ces.v1.PythonFunction
+	(WidgetTool_WidgetType)(0),              // 0: google.cloud.ces.v1.WidgetTool.WidgetType
+	(WidgetTool_TextResponseConfig_Type)(0), // 1: google.cloud.ces.v1.WidgetTool.TextResponseConfig.Type
+	(WidgetTool_DataMapping_Mode)(0),        // 2: google.cloud.ces.v1.WidgetTool.DataMapping.Mode
+	(*WidgetTool)(nil),                      // 3: google.cloud.ces.v1.WidgetTool
+	(*WidgetTool_TextResponseConfig)(nil),   // 4: google.cloud.ces.v1.WidgetTool.TextResponseConfig
+	(*WidgetTool_DataMapping)(nil),          // 5: google.cloud.ces.v1.WidgetTool.DataMapping
+	nil,                                     // 6: google.cloud.ces.v1.WidgetTool.DataMapping.FieldMappingsEntry
+	(*Schema)(nil),                          // 7: google.cloud.ces.v1.Schema
+	(*structpb.Struct)(nil),                 // 8: google.protobuf.Struct
+	(*PythonFunction)(nil),                  // 9: google.cloud.ces.v1.PythonFunction
 }
 var file_google_cloud_ces_v1_widget_tool_proto_depIdxs = []int32{
-	5, // 0: google.cloud.ces.v1.WidgetTool.parameters:type_name -> google.cloud.ces.v1.Schema
+	7, // 0: google.cloud.ces.v1.WidgetTool.parameters:type_name -> google.cloud.ces.v1.Schema
 	0, // 1: google.cloud.ces.v1.WidgetTool.widget_type:type_name -> google.cloud.ces.v1.WidgetTool.WidgetType
-	6, // 2: google.cloud.ces.v1.WidgetTool.ui_config:type_name -> google.protobuf.Struct
-	3, // 3: google.cloud.ces.v1.WidgetTool.data_mapping:type_name -> google.cloud.ces.v1.WidgetTool.DataMapping
-	4, // 4: google.cloud.ces.v1.WidgetTool.DataMapping.field_mappings:type_name -> google.cloud.ces.v1.WidgetTool.DataMapping.FieldMappingsEntry
-	7, // 5: google.cloud.ces.v1.WidgetTool.DataMapping.python_function:type_name -> google.cloud.ces.v1.PythonFunction
-	1, // 6: google.cloud.ces.v1.WidgetTool.DataMapping.mode:type_name -> google.cloud.ces.v1.WidgetTool.DataMapping.Mode
-	7, // [7:7] is the sub-list for method output_type
-	7, // [7:7] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	8, // 2: google.cloud.ces.v1.WidgetTool.ui_config:type_name -> google.protobuf.Struct
+	5, // 3: google.cloud.ces.v1.WidgetTool.data_mapping:type_name -> google.cloud.ces.v1.WidgetTool.DataMapping
+	4, // 4: google.cloud.ces.v1.WidgetTool.text_response_config:type_name -> google.cloud.ces.v1.WidgetTool.TextResponseConfig
+	1, // 5: google.cloud.ces.v1.WidgetTool.TextResponseConfig.type:type_name -> google.cloud.ces.v1.WidgetTool.TextResponseConfig.Type
+	6, // 6: google.cloud.ces.v1.WidgetTool.DataMapping.field_mappings:type_name -> google.cloud.ces.v1.WidgetTool.DataMapping.FieldMappingsEntry
+	9, // 7: google.cloud.ces.v1.WidgetTool.DataMapping.python_function:type_name -> google.cloud.ces.v1.PythonFunction
+	2, // 8: google.cloud.ces.v1.WidgetTool.DataMapping.mode:type_name -> google.cloud.ces.v1.WidgetTool.DataMapping.Mode
+	9, // [9:9] is the sub-list for method output_type
+	9, // [9:9] is the sub-list for method input_type
+	9, // [9:9] is the sub-list for extension type_name
+	9, // [9:9] is the sub-list for extension extendee
+	0, // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1_widget_tool_proto_init() }
@@ -499,8 +648,8 @@ func file_google_cloud_ces_v1_widget_tool_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1_widget_tool_proto_rawDesc), len(file_google_cloud_ces_v1_widget_tool_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   3,
+			NumEnums:      3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

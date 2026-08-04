@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1176,8 +1177,12 @@ func (c *gRPCClient) CreateResourceBundle(ctx context.Context, req *configdelive
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.CreateResourceBundleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateResourceBundleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1199,8 +1204,12 @@ func (c *gRPCClient) UpdateResourceBundle(ctx context.Context, req *configdelive
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.UpdateResourceBundleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateResourceBundleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1225,8 +1234,12 @@ func (c *gRPCClient) DeleteResourceBundle(ctx context.Context, req *configdelive
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.DeleteResourceBundleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteResourceBundleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1327,8 +1340,12 @@ func (c *gRPCClient) CreateFleetPackage(ctx context.Context, req *configdelivery
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.CreateFleetPackageOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateFleetPackageOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1350,8 +1367,12 @@ func (c *gRPCClient) UpdateFleetPackage(ctx context.Context, req *configdelivery
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.UpdateFleetPackageOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateFleetPackageOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1376,8 +1397,12 @@ func (c *gRPCClient) DeleteFleetPackage(ctx context.Context, req *configdelivery
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.DeleteFleetPackageOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFleetPackageOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1478,8 +1503,12 @@ func (c *gRPCClient) CreateRelease(ctx context.Context, req *configdeliverypb.Cr
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.CreateReleaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateReleaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1501,8 +1530,12 @@ func (c *gRPCClient) UpdateRelease(ctx context.Context, req *configdeliverypb.Up
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.UpdateReleaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateReleaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1527,8 +1560,12 @@ func (c *gRPCClient) DeleteRelease(ctx context.Context, req *configdeliverypb.De
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.DeleteReleaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteReleaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1629,8 +1666,12 @@ func (c *gRPCClient) CreateVariant(ctx context.Context, req *configdeliverypb.Cr
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.CreateVariantOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVariantOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1652,8 +1693,12 @@ func (c *gRPCClient) UpdateVariant(ctx context.Context, req *configdeliverypb.Up
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.UpdateVariantOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVariantOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1678,8 +1723,12 @@ func (c *gRPCClient) DeleteVariant(ctx context.Context, req *configdeliverypb.De
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.DeleteVariantOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVariantOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1780,8 +1829,12 @@ func (c *gRPCClient) SuspendRollout(ctx context.Context, req *configdeliverypb.S
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.SuspendRolloutOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SuspendRolloutOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1806,8 +1859,12 @@ func (c *gRPCClient) ResumeRollout(ctx context.Context, req *configdeliverypb.Re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.ResumeRolloutOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResumeRolloutOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1832,8 +1889,12 @@ func (c *gRPCClient) AbortRollout(ctx context.Context, req *configdeliverypb.Abo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.AbortRolloutOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AbortRolloutOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2217,8 +2278,12 @@ func (c *restClient) CreateResourceBundle(ctx context.Context, req *configdelive
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.CreateResourceBundleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateResourceBundleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2291,8 +2356,12 @@ func (c *restClient) UpdateResourceBundle(ctx context.Context, req *configdelive
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.UpdateResourceBundleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateResourceBundleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2357,8 +2426,12 @@ func (c *restClient) DeleteResourceBundle(ctx context.Context, req *configdelive
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.DeleteResourceBundleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteResourceBundleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2569,8 +2642,12 @@ func (c *restClient) CreateFleetPackage(ctx context.Context, req *configdelivery
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.CreateFleetPackageOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateFleetPackageOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2643,8 +2720,12 @@ func (c *restClient) UpdateFleetPackage(ctx context.Context, req *configdelivery
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.UpdateFleetPackageOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateFleetPackageOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2712,8 +2793,12 @@ func (c *restClient) DeleteFleetPackage(ctx context.Context, req *configdelivery
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.DeleteFleetPackageOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFleetPackageOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2924,8 +3009,12 @@ func (c *restClient) CreateRelease(ctx context.Context, req *configdeliverypb.Cr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.CreateReleaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateReleaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2998,8 +3087,12 @@ func (c *restClient) UpdateRelease(ctx context.Context, req *configdeliverypb.Up
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.UpdateReleaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateReleaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3064,8 +3157,12 @@ func (c *restClient) DeleteRelease(ctx context.Context, req *configdeliverypb.De
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.DeleteReleaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteReleaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3277,8 +3374,12 @@ func (c *restClient) CreateVariant(ctx context.Context, req *configdeliverypb.Cr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.CreateVariantOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVariantOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3351,8 +3452,12 @@ func (c *restClient) UpdateVariant(ctx context.Context, req *configdeliverypb.Up
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.UpdateVariantOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVariantOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3414,8 +3519,12 @@ func (c *restClient) DeleteVariant(ctx context.Context, req *configdeliverypb.De
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.DeleteVariantOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVariantOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3621,8 +3730,12 @@ func (c *restClient) SuspendRollout(ctx context.Context, req *configdeliverypb.S
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.SuspendRolloutOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SuspendRolloutOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3687,8 +3800,12 @@ func (c *restClient) ResumeRollout(ctx context.Context, req *configdeliverypb.Re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.ResumeRolloutOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResumeRolloutOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3753,8 +3870,12 @@ func (c *restClient) AbortRollout(ctx context.Context, req *configdeliverypb.Abo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*configdelivery.AbortRolloutOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AbortRolloutOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4120,7 +4241,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created AbortRolloutOperation, possibly from a different process.
 func (c *gRPCClient) AbortRolloutOperation(name string) *AbortRolloutOperation {
 	return &AbortRolloutOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.AbortRolloutOperation"),
 	}
 }
 
@@ -4129,7 +4250,7 @@ func (c *gRPCClient) AbortRolloutOperation(name string) *AbortRolloutOperation {
 func (c *restClient) AbortRolloutOperation(name string) *AbortRolloutOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &AbortRolloutOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.AbortRolloutOperation"),
 		pollPath: override,
 	}
 }
@@ -4138,7 +4259,7 @@ func (c *restClient) AbortRolloutOperation(name string) *AbortRolloutOperation {
 // The name must be that of a previously created CreateFleetPackageOperation, possibly from a different process.
 func (c *gRPCClient) CreateFleetPackageOperation(name string) *CreateFleetPackageOperation {
 	return &CreateFleetPackageOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.CreateFleetPackageOperation"),
 	}
 }
 
@@ -4147,7 +4268,7 @@ func (c *gRPCClient) CreateFleetPackageOperation(name string) *CreateFleetPackag
 func (c *restClient) CreateFleetPackageOperation(name string) *CreateFleetPackageOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateFleetPackageOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.CreateFleetPackageOperation"),
 		pollPath: override,
 	}
 }
@@ -4156,7 +4277,7 @@ func (c *restClient) CreateFleetPackageOperation(name string) *CreateFleetPackag
 // The name must be that of a previously created CreateReleaseOperation, possibly from a different process.
 func (c *gRPCClient) CreateReleaseOperation(name string) *CreateReleaseOperation {
 	return &CreateReleaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.CreateReleaseOperation"),
 	}
 }
 
@@ -4165,7 +4286,7 @@ func (c *gRPCClient) CreateReleaseOperation(name string) *CreateReleaseOperation
 func (c *restClient) CreateReleaseOperation(name string) *CreateReleaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateReleaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.CreateReleaseOperation"),
 		pollPath: override,
 	}
 }
@@ -4174,7 +4295,7 @@ func (c *restClient) CreateReleaseOperation(name string) *CreateReleaseOperation
 // The name must be that of a previously created CreateResourceBundleOperation, possibly from a different process.
 func (c *gRPCClient) CreateResourceBundleOperation(name string) *CreateResourceBundleOperation {
 	return &CreateResourceBundleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.CreateResourceBundleOperation"),
 	}
 }
 
@@ -4183,7 +4304,7 @@ func (c *gRPCClient) CreateResourceBundleOperation(name string) *CreateResourceB
 func (c *restClient) CreateResourceBundleOperation(name string) *CreateResourceBundleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateResourceBundleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.CreateResourceBundleOperation"),
 		pollPath: override,
 	}
 }
@@ -4192,7 +4313,7 @@ func (c *restClient) CreateResourceBundleOperation(name string) *CreateResourceB
 // The name must be that of a previously created CreateVariantOperation, possibly from a different process.
 func (c *gRPCClient) CreateVariantOperation(name string) *CreateVariantOperation {
 	return &CreateVariantOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.CreateVariantOperation"),
 	}
 }
 
@@ -4201,7 +4322,7 @@ func (c *gRPCClient) CreateVariantOperation(name string) *CreateVariantOperation
 func (c *restClient) CreateVariantOperation(name string) *CreateVariantOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateVariantOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.CreateVariantOperation"),
 		pollPath: override,
 	}
 }
@@ -4210,7 +4331,7 @@ func (c *restClient) CreateVariantOperation(name string) *CreateVariantOperation
 // The name must be that of a previously created DeleteFleetPackageOperation, possibly from a different process.
 func (c *gRPCClient) DeleteFleetPackageOperation(name string) *DeleteFleetPackageOperation {
 	return &DeleteFleetPackageOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.DeleteFleetPackageOperation"),
 	}
 }
 
@@ -4219,7 +4340,7 @@ func (c *gRPCClient) DeleteFleetPackageOperation(name string) *DeleteFleetPackag
 func (c *restClient) DeleteFleetPackageOperation(name string) *DeleteFleetPackageOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteFleetPackageOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.DeleteFleetPackageOperation"),
 		pollPath: override,
 	}
 }
@@ -4228,7 +4349,7 @@ func (c *restClient) DeleteFleetPackageOperation(name string) *DeleteFleetPackag
 // The name must be that of a previously created DeleteReleaseOperation, possibly from a different process.
 func (c *gRPCClient) DeleteReleaseOperation(name string) *DeleteReleaseOperation {
 	return &DeleteReleaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.DeleteReleaseOperation"),
 	}
 }
 
@@ -4237,7 +4358,7 @@ func (c *gRPCClient) DeleteReleaseOperation(name string) *DeleteReleaseOperation
 func (c *restClient) DeleteReleaseOperation(name string) *DeleteReleaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteReleaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.DeleteReleaseOperation"),
 		pollPath: override,
 	}
 }
@@ -4246,7 +4367,7 @@ func (c *restClient) DeleteReleaseOperation(name string) *DeleteReleaseOperation
 // The name must be that of a previously created DeleteResourceBundleOperation, possibly from a different process.
 func (c *gRPCClient) DeleteResourceBundleOperation(name string) *DeleteResourceBundleOperation {
 	return &DeleteResourceBundleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.DeleteResourceBundleOperation"),
 	}
 }
 
@@ -4255,7 +4376,7 @@ func (c *gRPCClient) DeleteResourceBundleOperation(name string) *DeleteResourceB
 func (c *restClient) DeleteResourceBundleOperation(name string) *DeleteResourceBundleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteResourceBundleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.DeleteResourceBundleOperation"),
 		pollPath: override,
 	}
 }
@@ -4264,7 +4385,7 @@ func (c *restClient) DeleteResourceBundleOperation(name string) *DeleteResourceB
 // The name must be that of a previously created DeleteVariantOperation, possibly from a different process.
 func (c *gRPCClient) DeleteVariantOperation(name string) *DeleteVariantOperation {
 	return &DeleteVariantOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.DeleteVariantOperation"),
 	}
 }
 
@@ -4273,7 +4394,7 @@ func (c *gRPCClient) DeleteVariantOperation(name string) *DeleteVariantOperation
 func (c *restClient) DeleteVariantOperation(name string) *DeleteVariantOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteVariantOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.DeleteVariantOperation"),
 		pollPath: override,
 	}
 }
@@ -4282,7 +4403,7 @@ func (c *restClient) DeleteVariantOperation(name string) *DeleteVariantOperation
 // The name must be that of a previously created ResumeRolloutOperation, possibly from a different process.
 func (c *gRPCClient) ResumeRolloutOperation(name string) *ResumeRolloutOperation {
 	return &ResumeRolloutOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.ResumeRolloutOperation"),
 	}
 }
 
@@ -4291,7 +4412,7 @@ func (c *gRPCClient) ResumeRolloutOperation(name string) *ResumeRolloutOperation
 func (c *restClient) ResumeRolloutOperation(name string) *ResumeRolloutOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ResumeRolloutOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.ResumeRolloutOperation"),
 		pollPath: override,
 	}
 }
@@ -4300,7 +4421,7 @@ func (c *restClient) ResumeRolloutOperation(name string) *ResumeRolloutOperation
 // The name must be that of a previously created SuspendRolloutOperation, possibly from a different process.
 func (c *gRPCClient) SuspendRolloutOperation(name string) *SuspendRolloutOperation {
 	return &SuspendRolloutOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.SuspendRolloutOperation"),
 	}
 }
 
@@ -4309,7 +4430,7 @@ func (c *gRPCClient) SuspendRolloutOperation(name string) *SuspendRolloutOperati
 func (c *restClient) SuspendRolloutOperation(name string) *SuspendRolloutOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &SuspendRolloutOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.SuspendRolloutOperation"),
 		pollPath: override,
 	}
 }
@@ -4318,7 +4439,7 @@ func (c *restClient) SuspendRolloutOperation(name string) *SuspendRolloutOperati
 // The name must be that of a previously created UpdateFleetPackageOperation, possibly from a different process.
 func (c *gRPCClient) UpdateFleetPackageOperation(name string) *UpdateFleetPackageOperation {
 	return &UpdateFleetPackageOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.UpdateFleetPackageOperation"),
 	}
 }
 
@@ -4327,7 +4448,7 @@ func (c *gRPCClient) UpdateFleetPackageOperation(name string) *UpdateFleetPackag
 func (c *restClient) UpdateFleetPackageOperation(name string) *UpdateFleetPackageOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateFleetPackageOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.UpdateFleetPackageOperation"),
 		pollPath: override,
 	}
 }
@@ -4336,7 +4457,7 @@ func (c *restClient) UpdateFleetPackageOperation(name string) *UpdateFleetPackag
 // The name must be that of a previously created UpdateReleaseOperation, possibly from a different process.
 func (c *gRPCClient) UpdateReleaseOperation(name string) *UpdateReleaseOperation {
 	return &UpdateReleaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.UpdateReleaseOperation"),
 	}
 }
 
@@ -4345,7 +4466,7 @@ func (c *gRPCClient) UpdateReleaseOperation(name string) *UpdateReleaseOperation
 func (c *restClient) UpdateReleaseOperation(name string) *UpdateReleaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateReleaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.UpdateReleaseOperation"),
 		pollPath: override,
 	}
 }
@@ -4354,7 +4475,7 @@ func (c *restClient) UpdateReleaseOperation(name string) *UpdateReleaseOperation
 // The name must be that of a previously created UpdateResourceBundleOperation, possibly from a different process.
 func (c *gRPCClient) UpdateResourceBundleOperation(name string) *UpdateResourceBundleOperation {
 	return &UpdateResourceBundleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.UpdateResourceBundleOperation"),
 	}
 }
 
@@ -4363,7 +4484,7 @@ func (c *gRPCClient) UpdateResourceBundleOperation(name string) *UpdateResourceB
 func (c *restClient) UpdateResourceBundleOperation(name string) *UpdateResourceBundleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateResourceBundleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.UpdateResourceBundleOperation"),
 		pollPath: override,
 	}
 }
@@ -4372,7 +4493,7 @@ func (c *restClient) UpdateResourceBundleOperation(name string) *UpdateResourceB
 // The name must be that of a previously created UpdateVariantOperation, possibly from a different process.
 func (c *gRPCClient) UpdateVariantOperation(name string) *UpdateVariantOperation {
 	return &UpdateVariantOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.UpdateVariantOperation"),
 	}
 }
 
@@ -4381,7 +4502,7 @@ func (c *gRPCClient) UpdateVariantOperation(name string) *UpdateVariantOperation
 func (c *restClient) UpdateVariantOperation(name string) *UpdateVariantOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateVariantOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*configdelivery.UpdateVariantOperation"),
 		pollPath: override,
 	}
 }

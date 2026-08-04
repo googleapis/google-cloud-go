@@ -32,6 +32,7 @@ import (
 	shellpb "cloud.google.com/go/shell/apiv1/shellpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -545,8 +546,12 @@ func (c *cloudShellGRPCClient) StartEnvironment(ctx context.Context, req *shellp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.StartEnvironmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -568,8 +573,12 @@ func (c *cloudShellGRPCClient) AuthorizeEnvironment(ctx context.Context, req *sh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.AuthorizeEnvironmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AuthorizeEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -591,8 +600,12 @@ func (c *cloudShellGRPCClient) AddPublicKey(ctx context.Context, req *shellpb.Ad
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.AddPublicKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddPublicKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -614,8 +627,12 @@ func (c *cloudShellGRPCClient) RemovePublicKey(ctx context.Context, req *shellpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.RemovePublicKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemovePublicKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -738,8 +755,12 @@ func (c *cloudShellRESTClient) StartEnvironment(ctx context.Context, req *shellp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.StartEnvironmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartEnvironmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -804,8 +825,12 @@ func (c *cloudShellRESTClient) AuthorizeEnvironment(ctx context.Context, req *sh
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.AuthorizeEnvironmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AuthorizeEnvironmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -869,8 +894,12 @@ func (c *cloudShellRESTClient) AddPublicKey(ctx context.Context, req *shellpb.Ad
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.AddPublicKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddPublicKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -935,8 +964,12 @@ func (c *cloudShellRESTClient) RemovePublicKey(ctx context.Context, req *shellpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*shell.RemovePublicKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemovePublicKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -945,7 +978,7 @@ func (c *cloudShellRESTClient) RemovePublicKey(ctx context.Context, req *shellpb
 // The name must be that of a previously created AddPublicKeyOperation, possibly from a different process.
 func (c *cloudShellGRPCClient) AddPublicKeyOperation(name string) *AddPublicKeyOperation {
 	return &AddPublicKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.AddPublicKeyOperation"),
 	}
 }
 
@@ -954,7 +987,7 @@ func (c *cloudShellGRPCClient) AddPublicKeyOperation(name string) *AddPublicKeyO
 func (c *cloudShellRESTClient) AddPublicKeyOperation(name string) *AddPublicKeyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &AddPublicKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.AddPublicKeyOperation"),
 		pollPath: override,
 	}
 }
@@ -963,7 +996,7 @@ func (c *cloudShellRESTClient) AddPublicKeyOperation(name string) *AddPublicKeyO
 // The name must be that of a previously created AuthorizeEnvironmentOperation, possibly from a different process.
 func (c *cloudShellGRPCClient) AuthorizeEnvironmentOperation(name string) *AuthorizeEnvironmentOperation {
 	return &AuthorizeEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.AuthorizeEnvironmentOperation"),
 	}
 }
 
@@ -972,7 +1005,7 @@ func (c *cloudShellGRPCClient) AuthorizeEnvironmentOperation(name string) *Autho
 func (c *cloudShellRESTClient) AuthorizeEnvironmentOperation(name string) *AuthorizeEnvironmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &AuthorizeEnvironmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.AuthorizeEnvironmentOperation"),
 		pollPath: override,
 	}
 }
@@ -981,7 +1014,7 @@ func (c *cloudShellRESTClient) AuthorizeEnvironmentOperation(name string) *Autho
 // The name must be that of a previously created RemovePublicKeyOperation, possibly from a different process.
 func (c *cloudShellGRPCClient) RemovePublicKeyOperation(name string) *RemovePublicKeyOperation {
 	return &RemovePublicKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.RemovePublicKeyOperation"),
 	}
 }
 
@@ -990,7 +1023,7 @@ func (c *cloudShellGRPCClient) RemovePublicKeyOperation(name string) *RemovePubl
 func (c *cloudShellRESTClient) RemovePublicKeyOperation(name string) *RemovePublicKeyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RemovePublicKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.RemovePublicKeyOperation"),
 		pollPath: override,
 	}
 }
@@ -999,7 +1032,7 @@ func (c *cloudShellRESTClient) RemovePublicKeyOperation(name string) *RemovePubl
 // The name must be that of a previously created StartEnvironmentOperation, possibly from a different process.
 func (c *cloudShellGRPCClient) StartEnvironmentOperation(name string) *StartEnvironmentOperation {
 	return &StartEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.StartEnvironmentOperation"),
 	}
 }
 
@@ -1008,7 +1041,7 @@ func (c *cloudShellGRPCClient) StartEnvironmentOperation(name string) *StartEnvi
 func (c *cloudShellRESTClient) StartEnvironmentOperation(name string) *StartEnvironmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StartEnvironmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*shell.StartEnvironmentOperation"),
 		pollPath: override,
 	}
 }

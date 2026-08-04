@@ -28,6 +28,8 @@ import (
 	"testing"
 	"time"
 
+	metrics "cloud.google.com/go/bigtable/internal/metrics"
+
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/civil"
 	"github.com/google/go-cmp/cmp"
@@ -273,7 +275,7 @@ func TestApplyErrors(t *testing.T) {
 		c: &Client{
 			project:              "P",
 			instance:             "I",
-			metricsTracerFactory: &builtinMetricsTracerFactory{},
+			metricsTracerFactory: &metrics.Factory{},
 		},
 		table: "t",
 	}
@@ -2387,9 +2389,12 @@ func newUnaryClientInterceptor(prepReqCount *int, respPtrs *[]prepareQueryResp, 
 	return func(ctx context.Context, method string, req, reply interface{},
 		cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		err := invoker(ctx, method, req, reply, cc, opts...)
-		defer func() { *prepReqCount++ }()
 		_, isPrepReq := req.(*btpb.PrepareQueryRequest)
-		if !isPrepReq || (err != nil && !strings.Contains(err.Error(), emulatorUnsupported)) {
+		if !isPrepReq {
+			return err
+		}
+		defer func() { *prepReqCount++ }()
+		if err != nil && !strings.Contains(err.Error(), emulatorUnsupported) {
 			return err
 		}
 

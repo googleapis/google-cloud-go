@@ -29,6 +29,12 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *AgentGatewayIterator) All() iter.Seq2[*networkservicespb.AgentGateway, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *AuthzExtensionIterator) All() iter.Seq2[*networkservicespb.AuthzExtension, error] {
 	return iterator.RangeAdapter(it.Next)
 }

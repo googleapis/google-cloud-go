@@ -32,6 +32,7 @@ import (
 	visionpb "cloud.google.com/go/vision/v2/apiv1/visionpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -599,8 +600,12 @@ func (c *imageAnnotatorGRPCClient) AsyncBatchAnnotateImages(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vision.AsyncBatchAnnotateImagesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AsyncBatchAnnotateImagesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -622,8 +627,12 @@ func (c *imageAnnotatorGRPCClient) AsyncBatchAnnotateFiles(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vision.AsyncBatchAnnotateFilesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AsyncBatchAnnotateFilesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -839,8 +848,12 @@ func (c *imageAnnotatorRESTClient) AsyncBatchAnnotateImages(ctx context.Context,
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vision.AsyncBatchAnnotateImagesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AsyncBatchAnnotateImagesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -907,8 +920,12 @@ func (c *imageAnnotatorRESTClient) AsyncBatchAnnotateFiles(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vision.AsyncBatchAnnotateFilesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AsyncBatchAnnotateFilesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -971,7 +988,7 @@ func (c *imageAnnotatorRESTClient) GetOperation(ctx context.Context, req *longru
 // The name must be that of a previously created AsyncBatchAnnotateFilesOperation, possibly from a different process.
 func (c *imageAnnotatorGRPCClient) AsyncBatchAnnotateFilesOperation(name string) *AsyncBatchAnnotateFilesOperation {
 	return &AsyncBatchAnnotateFilesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vision.AsyncBatchAnnotateFilesOperation"),
 	}
 }
 
@@ -980,7 +997,7 @@ func (c *imageAnnotatorGRPCClient) AsyncBatchAnnotateFilesOperation(name string)
 func (c *imageAnnotatorRESTClient) AsyncBatchAnnotateFilesOperation(name string) *AsyncBatchAnnotateFilesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &AsyncBatchAnnotateFilesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vision.AsyncBatchAnnotateFilesOperation"),
 		pollPath: override,
 	}
 }
@@ -989,7 +1006,7 @@ func (c *imageAnnotatorRESTClient) AsyncBatchAnnotateFilesOperation(name string)
 // The name must be that of a previously created AsyncBatchAnnotateImagesOperation, possibly from a different process.
 func (c *imageAnnotatorGRPCClient) AsyncBatchAnnotateImagesOperation(name string) *AsyncBatchAnnotateImagesOperation {
 	return &AsyncBatchAnnotateImagesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vision.AsyncBatchAnnotateImagesOperation"),
 	}
 }
 
@@ -998,7 +1015,7 @@ func (c *imageAnnotatorGRPCClient) AsyncBatchAnnotateImagesOperation(name string
 func (c *imageAnnotatorRESTClient) AsyncBatchAnnotateImagesOperation(name string) *AsyncBatchAnnotateImagesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &AsyncBatchAnnotateImagesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vision.AsyncBatchAnnotateImagesOperation"),
 		pollPath: override,
 	}
 }

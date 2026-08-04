@@ -31,6 +31,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -806,8 +807,12 @@ func (c *bigtableInstanceAdminGRPCClient) CreateInstance(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -898,8 +903,12 @@ func (c *bigtableInstanceAdminGRPCClient) PartialUpdateInstance(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.PartialUpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PartialUpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -944,8 +953,12 @@ func (c *bigtableInstanceAdminGRPCClient) CreateCluster(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1018,8 +1031,12 @@ func (c *bigtableInstanceAdminGRPCClient) UpdateCluster(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1041,8 +1058,12 @@ func (c *bigtableInstanceAdminGRPCClient) PartialUpdateCluster(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.PartialUpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PartialUpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1184,8 +1205,12 @@ func (c *bigtableInstanceAdminGRPCClient) UpdateAppProfile(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.UpdateAppProfileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAppProfileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1354,8 +1379,12 @@ func (c *bigtableInstanceAdminGRPCClient) CreateLogicalView(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.CreateLogicalViewOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateLogicalViewOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1453,8 +1482,12 @@ func (c *bigtableInstanceAdminGRPCClient) UpdateLogicalView(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.UpdateLogicalViewOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateLogicalViewOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1499,8 +1532,12 @@ func (c *bigtableInstanceAdminGRPCClient) CreateMaterializedView(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.CreateMaterializedViewOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMaterializedViewOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1598,8 +1635,12 @@ func (c *bigtableInstanceAdminGRPCClient) UpdateMaterializedView(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.UpdateMaterializedViewOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateMaterializedViewOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1627,7 +1668,7 @@ func (c *bigtableInstanceAdminGRPCClient) DeleteMaterializedView(ctx context.Con
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
 func (c *bigtableInstanceAdminGRPCClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.CreateClusterOperation"),
 	}
 }
 
@@ -1635,7 +1676,7 @@ func (c *bigtableInstanceAdminGRPCClient) CreateClusterOperation(name string) *C
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *bigtableInstanceAdminGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.CreateInstanceOperation"),
 	}
 }
 
@@ -1643,7 +1684,7 @@ func (c *bigtableInstanceAdminGRPCClient) CreateInstanceOperation(name string) *
 // The name must be that of a previously created CreateLogicalViewOperation, possibly from a different process.
 func (c *bigtableInstanceAdminGRPCClient) CreateLogicalViewOperation(name string) *CreateLogicalViewOperation {
 	return &CreateLogicalViewOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.CreateLogicalViewOperation"),
 	}
 }
 
@@ -1651,7 +1692,7 @@ func (c *bigtableInstanceAdminGRPCClient) CreateLogicalViewOperation(name string
 // The name must be that of a previously created CreateMaterializedViewOperation, possibly from a different process.
 func (c *bigtableInstanceAdminGRPCClient) CreateMaterializedViewOperation(name string) *CreateMaterializedViewOperation {
 	return &CreateMaterializedViewOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.CreateMaterializedViewOperation"),
 	}
 }
 
@@ -1659,7 +1700,7 @@ func (c *bigtableInstanceAdminGRPCClient) CreateMaterializedViewOperation(name s
 // The name must be that of a previously created PartialUpdateClusterOperation, possibly from a different process.
 func (c *bigtableInstanceAdminGRPCClient) PartialUpdateClusterOperation(name string) *PartialUpdateClusterOperation {
 	return &PartialUpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.PartialUpdateClusterOperation"),
 	}
 }
 
@@ -1667,7 +1708,7 @@ func (c *bigtableInstanceAdminGRPCClient) PartialUpdateClusterOperation(name str
 // The name must be that of a previously created PartialUpdateInstanceOperation, possibly from a different process.
 func (c *bigtableInstanceAdminGRPCClient) PartialUpdateInstanceOperation(name string) *PartialUpdateInstanceOperation {
 	return &PartialUpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.PartialUpdateInstanceOperation"),
 	}
 }
 
@@ -1675,7 +1716,7 @@ func (c *bigtableInstanceAdminGRPCClient) PartialUpdateInstanceOperation(name st
 // The name must be that of a previously created UpdateAppProfileOperation, possibly from a different process.
 func (c *bigtableInstanceAdminGRPCClient) UpdateAppProfileOperation(name string) *UpdateAppProfileOperation {
 	return &UpdateAppProfileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.UpdateAppProfileOperation"),
 	}
 }
 
@@ -1683,7 +1724,7 @@ func (c *bigtableInstanceAdminGRPCClient) UpdateAppProfileOperation(name string)
 // The name must be that of a previously created UpdateClusterOperation, possibly from a different process.
 func (c *bigtableInstanceAdminGRPCClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.UpdateClusterOperation"),
 	}
 }
 
@@ -1691,7 +1732,7 @@ func (c *bigtableInstanceAdminGRPCClient) UpdateClusterOperation(name string) *U
 // The name must be that of a previously created UpdateLogicalViewOperation, possibly from a different process.
 func (c *bigtableInstanceAdminGRPCClient) UpdateLogicalViewOperation(name string) *UpdateLogicalViewOperation {
 	return &UpdateLogicalViewOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.UpdateLogicalViewOperation"),
 	}
 }
 
@@ -1699,6 +1740,6 @@ func (c *bigtableInstanceAdminGRPCClient) UpdateLogicalViewOperation(name string
 // The name must be that of a previously created UpdateMaterializedViewOperation, possibly from a different process.
 func (c *bigtableInstanceAdminGRPCClient) UpdateMaterializedViewOperation(name string) *UpdateMaterializedViewOperation {
 	return &UpdateMaterializedViewOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.UpdateMaterializedViewOperation"),
 	}
 }

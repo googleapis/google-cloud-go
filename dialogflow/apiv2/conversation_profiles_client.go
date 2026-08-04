@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -418,14 +419,13 @@ func (c *ConversationProfilesClient) GetLocation(ctx context.Context, req *locat
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -873,8 +873,12 @@ func (c *conversationProfilesGRPCClient) SetSuggestionFeatureConfig(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.SetSuggestionFeatureConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SetSuggestionFeatureConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -896,8 +900,12 @@ func (c *conversationProfilesGRPCClient) ClearSuggestionFeatureConfig(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.ClearSuggestionFeatureConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ClearSuggestionFeatureConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1456,8 +1464,12 @@ func (c *conversationProfilesRESTClient) SetSuggestionFeatureConfig(ctx context.
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.SetSuggestionFeatureConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SetSuggestionFeatureConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1530,8 +1542,12 @@ func (c *conversationProfilesRESTClient) ClearSuggestionFeatureConfig(ctx contex
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.ClearSuggestionFeatureConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ClearSuggestionFeatureConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1593,14 +1609,13 @@ func (c *conversationProfilesRESTClient) GetLocation(ctx context.Context, req *l
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -1868,7 +1883,7 @@ func (c *conversationProfilesRESTClient) ListOperations(ctx context.Context, req
 // The name must be that of a previously created ClearSuggestionFeatureConfigOperation, possibly from a different process.
 func (c *conversationProfilesGRPCClient) ClearSuggestionFeatureConfigOperation(name string) *ClearSuggestionFeatureConfigOperation {
 	return &ClearSuggestionFeatureConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.ClearSuggestionFeatureConfigOperation"),
 	}
 }
 
@@ -1877,7 +1892,7 @@ func (c *conversationProfilesGRPCClient) ClearSuggestionFeatureConfigOperation(n
 func (c *conversationProfilesRESTClient) ClearSuggestionFeatureConfigOperation(name string) *ClearSuggestionFeatureConfigOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &ClearSuggestionFeatureConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.ClearSuggestionFeatureConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -1886,7 +1901,7 @@ func (c *conversationProfilesRESTClient) ClearSuggestionFeatureConfigOperation(n
 // The name must be that of a previously created SetSuggestionFeatureConfigOperation, possibly from a different process.
 func (c *conversationProfilesGRPCClient) SetSuggestionFeatureConfigOperation(name string) *SetSuggestionFeatureConfigOperation {
 	return &SetSuggestionFeatureConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.SetSuggestionFeatureConfigOperation"),
 	}
 }
 
@@ -1895,7 +1910,7 @@ func (c *conversationProfilesGRPCClient) SetSuggestionFeatureConfigOperation(nam
 func (c *conversationProfilesRESTClient) SetSuggestionFeatureConfigOperation(name string) *SetSuggestionFeatureConfigOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &SetSuggestionFeatureConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.SetSuggestionFeatureConfigOperation"),
 		pollPath: override,
 	}
 }
