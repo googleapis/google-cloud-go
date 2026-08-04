@@ -464,14 +464,12 @@ func TestGRPCMetricsRecording(t *testing.T) {
 	if err != nil {
 		t.Fatalf("streamInt pipelined: %v", err)
 	}
-	// 2 consecutive sends
 	clientStreamBidiPipelined.SendMsg(nil)
 	clientStreamBidiPipelined.SendMsg(nil)
-	// 2 consecutive recvs
+
 	clientStreamBidiPipelined.RecvMsg(nil)
 	clientStreamBidiPipelined.RecvMsg(nil)
 
-	// Terminate stream
 	clientStreamBidiPipelined.(*wrappedClientStream).record(io.EOF)
 
 	// Collect metrics.
