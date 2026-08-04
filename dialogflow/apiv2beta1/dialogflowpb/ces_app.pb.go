@@ -45,8 +45,18 @@ type CesAppSpec struct {
 	CesApp string `protobuf:"bytes,1,opt,name=ces_app,json=cesApp,proto3" json:"ces_app,omitempty"`
 	// Optional. Indicates whether the app requires human confirmation.
 	ConfirmationRequirement Tool_ConfirmationRequirement `protobuf:"varint,2,opt,name=confirmation_requirement,json=confirmationRequirement,proto3,enum=google.cloud.dialogflow.v2beta1.Tool_ConfirmationRequirement" json:"confirmation_requirement,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// Optional. Only applicable for CompanionAgent.
+	// Indicates whether the ces app is enabled in proactive mode.
+	// At least one of `proactive_enabled` or `reactive_enabled` should be
+	// true; otherwise, the ces app will be ignored.
+	ProactiveEnabled *bool `protobuf:"varint,3,opt,name=proactive_enabled,json=proactiveEnabled,proto3,oneof" json:"proactive_enabled,omitempty"`
+	// Optional. Only applicable for CompanionAgent.
+	// Indicates whether the ces app is enabled in reactive mode.
+	// At least one of `proactive_enabled` or `reactive_enabled` should be
+	// true; otherwise, the ces app will be ignored.
+	ReactiveEnabled *bool `protobuf:"varint,4,opt,name=reactive_enabled,json=reactiveEnabled,proto3,oneof" json:"reactive_enabled,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *CesAppSpec) Reset() {
@@ -93,16 +103,34 @@ func (x *CesAppSpec) GetConfirmationRequirement() Tool_ConfirmationRequirement {
 	return Tool_CONFIRMATION_REQUIREMENT_UNSPECIFIED
 }
 
+func (x *CesAppSpec) GetProactiveEnabled() bool {
+	if x != nil && x.ProactiveEnabled != nil {
+		return *x.ProactiveEnabled
+	}
+	return false
+}
+
+func (x *CesAppSpec) GetReactiveEnabled() bool {
+	if x != nil && x.ReactiveEnabled != nil {
+		return *x.ReactiveEnabled
+	}
+	return false
+}
+
 var File_google_cloud_dialogflow_v2beta1_ces_app_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2beta1_ces_app_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/dialogflow/v2beta1/ces_app.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/dialogflow/v2beta1/tool.proto\"\xc4\x01\n" +
+	"-google/cloud/dialogflow/v2beta1/ces_app.proto\x12\x1fgoogle.cloud.dialogflow.v2beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a*google/cloud/dialogflow/v2beta1/tool.proto\"\xdb\x02\n" +
 	"\n" +
 	"CesAppSpec\x127\n" +
 	"\aces_app\x18\x01 \x01(\tB\x1e\xe0A\x01\xfaA\x18\n" +
 	"\x16ces.googleapis.com/AppR\x06cesApp\x12}\n" +
-	"\x18confirmation_requirement\x18\x02 \x01(\x0e2=.google.cloud.dialogflow.v2beta1.Tool.ConfirmationRequirementB\x03\xe0A\x01R\x17confirmationRequirementB\xef\x01\xeaAL\n" +
+	"\x18confirmation_requirement\x18\x02 \x01(\x0e2=.google.cloud.dialogflow.v2beta1.Tool.ConfirmationRequirementB\x03\xe0A\x01R\x17confirmationRequirement\x125\n" +
+	"\x11proactive_enabled\x18\x03 \x01(\bB\x03\xe0A\x01H\x00R\x10proactiveEnabled\x88\x01\x01\x123\n" +
+	"\x10reactive_enabled\x18\x04 \x01(\bB\x03\xe0A\x01H\x01R\x0freactiveEnabled\x88\x01\x01B\x14\n" +
+	"\x12_proactive_enabledB\x13\n" +
+	"\x11_reactive_enabledB\xef\x01\xeaAL\n" +
 	"\x16ces.googleapis.com/App\x122projects/{project}/locations/{location}/apps/{app}\n" +
 	"#com.google.cloud.dialogflow.v2beta1B\vCesAppProtoP\x01ZCcloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb;dialogflowpb\xa2\x02\x02DF\xaa\x02\x1fGoogle.Cloud.Dialogflow.V2Beta1b\x06proto3"
 
@@ -138,6 +166,7 @@ func file_google_cloud_dialogflow_v2beta1_ces_app_proto_init() {
 		return
 	}
 	file_google_cloud_dialogflow_v2beta1_tool_proto_init()
+	file_google_cloud_dialogflow_v2beta1_ces_app_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

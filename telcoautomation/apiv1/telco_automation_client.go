@@ -31,6 +31,7 @@ import (
 	telcoautomationpb "cloud.google.com/go/telcoautomation/apiv1/telcoautomationpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -963,8 +964,12 @@ func (c *gRPCClient) CreateOrchestrationCluster(ctx context.Context, req *telcoa
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*telcoautomation.CreateOrchestrationClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateOrchestrationClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -989,8 +994,12 @@ func (c *gRPCClient) DeleteOrchestrationCluster(ctx context.Context, req *telcoa
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*telcoautomation.DeleteOrchestrationClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteOrchestrationClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1091,8 +1100,12 @@ func (c *gRPCClient) CreateEdgeSlm(ctx context.Context, req *telcoautomationpb.C
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*telcoautomation.CreateEdgeSlmOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEdgeSlmOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1117,8 +1130,12 @@ func (c *gRPCClient) DeleteEdgeSlm(ctx context.Context, req *telcoautomationpb.D
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*telcoautomation.DeleteEdgeSlmOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEdgeSlmOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2381,8 +2398,12 @@ func (c *restClient) CreateOrchestrationCluster(ctx context.Context, req *telcoa
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*telcoautomation.CreateOrchestrationClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateOrchestrationClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2444,8 +2465,12 @@ func (c *restClient) DeleteOrchestrationCluster(ctx context.Context, req *telcoa
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*telcoautomation.DeleteOrchestrationClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteOrchestrationClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2656,8 +2681,12 @@ func (c *restClient) CreateEdgeSlm(ctx context.Context, req *telcoautomationpb.C
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*telcoautomation.CreateEdgeSlmOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEdgeSlmOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2719,8 +2748,12 @@ func (c *restClient) DeleteEdgeSlm(ctx context.Context, req *telcoautomationpb.D
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*telcoautomation.DeleteEdgeSlmOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEdgeSlmOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4948,7 +4981,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateEdgeSlmOperation, possibly from a different process.
 func (c *gRPCClient) CreateEdgeSlmOperation(name string) *CreateEdgeSlmOperation {
 	return &CreateEdgeSlmOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*telcoautomation.CreateEdgeSlmOperation"),
 	}
 }
 
@@ -4957,7 +4990,7 @@ func (c *gRPCClient) CreateEdgeSlmOperation(name string) *CreateEdgeSlmOperation
 func (c *restClient) CreateEdgeSlmOperation(name string) *CreateEdgeSlmOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEdgeSlmOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*telcoautomation.CreateEdgeSlmOperation"),
 		pollPath: override,
 	}
 }
@@ -4966,7 +4999,7 @@ func (c *restClient) CreateEdgeSlmOperation(name string) *CreateEdgeSlmOperation
 // The name must be that of a previously created CreateOrchestrationClusterOperation, possibly from a different process.
 func (c *gRPCClient) CreateOrchestrationClusterOperation(name string) *CreateOrchestrationClusterOperation {
 	return &CreateOrchestrationClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*telcoautomation.CreateOrchestrationClusterOperation"),
 	}
 }
 
@@ -4975,7 +5008,7 @@ func (c *gRPCClient) CreateOrchestrationClusterOperation(name string) *CreateOrc
 func (c *restClient) CreateOrchestrationClusterOperation(name string) *CreateOrchestrationClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateOrchestrationClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*telcoautomation.CreateOrchestrationClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -4984,7 +5017,7 @@ func (c *restClient) CreateOrchestrationClusterOperation(name string) *CreateOrc
 // The name must be that of a previously created DeleteEdgeSlmOperation, possibly from a different process.
 func (c *gRPCClient) DeleteEdgeSlmOperation(name string) *DeleteEdgeSlmOperation {
 	return &DeleteEdgeSlmOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*telcoautomation.DeleteEdgeSlmOperation"),
 	}
 }
 
@@ -4993,7 +5026,7 @@ func (c *gRPCClient) DeleteEdgeSlmOperation(name string) *DeleteEdgeSlmOperation
 func (c *restClient) DeleteEdgeSlmOperation(name string) *DeleteEdgeSlmOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEdgeSlmOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*telcoautomation.DeleteEdgeSlmOperation"),
 		pollPath: override,
 	}
 }
@@ -5002,7 +5035,7 @@ func (c *restClient) DeleteEdgeSlmOperation(name string) *DeleteEdgeSlmOperation
 // The name must be that of a previously created DeleteOrchestrationClusterOperation, possibly from a different process.
 func (c *gRPCClient) DeleteOrchestrationClusterOperation(name string) *DeleteOrchestrationClusterOperation {
 	return &DeleteOrchestrationClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*telcoautomation.DeleteOrchestrationClusterOperation"),
 	}
 }
 
@@ -5011,7 +5044,7 @@ func (c *gRPCClient) DeleteOrchestrationClusterOperation(name string) *DeleteOrc
 func (c *restClient) DeleteOrchestrationClusterOperation(name string) *DeleteOrchestrationClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteOrchestrationClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*telcoautomation.DeleteOrchestrationClusterOperation"),
 		pollPath: override,
 	}
 }

@@ -38,7 +38,7 @@ func TestConnectionRecycler_CheckRecycle(t *testing.T) {
 			MaxJitter: 0,
 		}
 
-		pool, err := NewBigtableChannelPool(ctx, 1, btopt.RoundRobin, dialFunc, time.Now())
+		pool, err := NewBigtableChannelPool(ctx, 1, btopt.RoundRobin, dialFunc, time.Now(), WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)))
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
 		}
@@ -70,7 +70,7 @@ func TestConnectionRecycler_CheckRecycle(t *testing.T) {
 			MaxJitter: 0,
 		}
 
-		pool, err := NewBigtableChannelPool(ctx, 1, btopt.RoundRobin, dialFunc, time.Now())
+		pool, err := NewBigtableChannelPool(ctx, 1, btopt.RoundRobin, dialFunc, time.Now(), WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)))
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
 		}
@@ -99,7 +99,7 @@ func TestConnectionRecycler_CheckRecycle(t *testing.T) {
 		}
 		// 5 conns
 		poolSize := 5
-		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, time.Now())
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, time.Now(), WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)))
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
 		}

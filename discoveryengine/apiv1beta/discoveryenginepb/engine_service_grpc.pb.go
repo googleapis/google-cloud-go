@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ package discoveryenginepb
 import (
 	context "context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -43,35 +44,59 @@ const (
 	EngineService_PauseEngine_FullMethodName  = "/google.cloud.discoveryengine.v1beta.EngineService/PauseEngine"
 	EngineService_ResumeEngine_FullMethodName = "/google.cloud.discoveryengine.v1beta.EngineService/ResumeEngine"
 	EngineService_TuneEngine_FullMethodName   = "/google.cloud.discoveryengine.v1beta.EngineService/TuneEngine"
+	EngineService_GetIamPolicy_FullMethodName = "/google.cloud.discoveryengine.v1beta.EngineService/GetIamPolicy"
+	EngineService_SetIamPolicy_FullMethodName = "/google.cloud.discoveryengine.v1beta.EngineService/SetIamPolicy"
 )
 
 // EngineServiceClient is the client API for EngineService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type EngineServiceClient interface {
-	// Creates a [Engine][google.cloud.discoveryengine.v1beta.Engine].
+	// Creates an [Engine][google.cloud.discoveryengine.v1beta.Engine].
 	CreateEngine(ctx context.Context, in *CreateEngineRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Deletes a [Engine][google.cloud.discoveryengine.v1beta.Engine].
+	// Deletes an [Engine][google.cloud.discoveryengine.v1beta.Engine].
 	DeleteEngine(ctx context.Context, in *DeleteEngineRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates an [Engine][google.cloud.discoveryengine.v1beta.Engine]
 	UpdateEngine(ctx context.Context, in *UpdateEngineRequest, opts ...grpc.CallOption) (*Engine, error)
-	// Gets a [Engine][google.cloud.discoveryengine.v1beta.Engine].
+	// Gets an [Engine][google.cloud.discoveryengine.v1beta.Engine].
 	GetEngine(ctx context.Context, in *GetEngineRequest, opts ...grpc.CallOption) (*Engine, error)
 	// Lists all the [Engine][google.cloud.discoveryengine.v1beta.Engine]s
 	// associated with the project.
 	ListEngines(ctx context.Context, in *ListEnginesRequest, opts ...grpc.CallOption) (*ListEnginesResponse, error)
-	// Pauses the training of an existing engine. Only applicable if
+	// Pauses the training of an existing
+	// [Engine][google.cloud.discoveryengine.v1beta.Engine]. Only applicable if
 	// [SolutionType][google.cloud.discoveryengine.v1beta.SolutionType] is
 	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.discoveryengine.v1beta.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
 	PauseEngine(ctx context.Context, in *PauseEngineRequest, opts ...grpc.CallOption) (*Engine, error)
-	// Resumes the training of an existing engine. Only applicable if
+	// Resumes the training of an existing
+	// [Engine][google.cloud.discoveryengine.v1beta.Engine]. Only applicable if
 	// [SolutionType][google.cloud.discoveryengine.v1beta.SolutionType] is
 	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.discoveryengine.v1beta.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
 	ResumeEngine(ctx context.Context, in *ResumeEngineRequest, opts ...grpc.CallOption) (*Engine, error)
-	// Tunes an existing engine. Only applicable if
+	// Tunes an existing [Engine][google.cloud.discoveryengine.v1beta.Engine].
+	// Only applicable if
 	// [SolutionType][google.cloud.discoveryengine.v1beta.SolutionType] is
 	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.discoveryengine.v1beta.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
 	TuneEngine(ctx context.Context, in *TuneEngineRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets the IAM access control policy for an
+	// [Engine][google.cloud.discoveryengine.v1beta.Engine]. A `NOT_FOUND` error
+	// is returned if the resource does not exist. An empty policy is returned if
+	// the resource exists but does not have a policy set on it.
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
+	// Sets the IAM access control policy for an
+	// [Engine][google.cloud.discoveryengine.v1beta.Engine]. A `NOT_FOUND` error
+	// is returned if the resource does not exist.
+	//
+	// **Important:** When setting a policy directly on an Engine resource,
+	// the only recommended roles in the bindings are:
+	// `roles/discoveryengine.admin`,
+	// `roles/discoveryengine.agentspaceAdmin`,
+	// `roles/discoveryengine.user`,
+	// `roles/discoveryengine.agentspaceUser`,
+	// `roles/discoveryengine.viewer`,
+	// `roles/discoveryengine.agentspaceViewer`.
+	// Attempting to grant any other role will result in a warning in logging.
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 }
 
 type engineServiceClient struct {
@@ -154,33 +179,73 @@ func (c *engineServiceClient) TuneEngine(ctx context.Context, in *TuneEngineRequ
 	return out, nil
 }
 
+func (c *engineServiceClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
+	err := c.cc.Invoke(ctx, EngineService_GetIamPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *engineServiceClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
+	err := c.cc.Invoke(ctx, EngineService_SetIamPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EngineServiceServer is the server API for EngineService service.
 // All implementations should embed UnimplementedEngineServiceServer
 // for forward compatibility
 type EngineServiceServer interface {
-	// Creates a [Engine][google.cloud.discoveryengine.v1beta.Engine].
+	// Creates an [Engine][google.cloud.discoveryengine.v1beta.Engine].
 	CreateEngine(context.Context, *CreateEngineRequest) (*longrunningpb.Operation, error)
-	// Deletes a [Engine][google.cloud.discoveryengine.v1beta.Engine].
+	// Deletes an [Engine][google.cloud.discoveryengine.v1beta.Engine].
 	DeleteEngine(context.Context, *DeleteEngineRequest) (*longrunningpb.Operation, error)
 	// Updates an [Engine][google.cloud.discoveryengine.v1beta.Engine]
 	UpdateEngine(context.Context, *UpdateEngineRequest) (*Engine, error)
-	// Gets a [Engine][google.cloud.discoveryengine.v1beta.Engine].
+	// Gets an [Engine][google.cloud.discoveryengine.v1beta.Engine].
 	GetEngine(context.Context, *GetEngineRequest) (*Engine, error)
 	// Lists all the [Engine][google.cloud.discoveryengine.v1beta.Engine]s
 	// associated with the project.
 	ListEngines(context.Context, *ListEnginesRequest) (*ListEnginesResponse, error)
-	// Pauses the training of an existing engine. Only applicable if
+	// Pauses the training of an existing
+	// [Engine][google.cloud.discoveryengine.v1beta.Engine]. Only applicable if
 	// [SolutionType][google.cloud.discoveryengine.v1beta.SolutionType] is
 	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.discoveryengine.v1beta.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
 	PauseEngine(context.Context, *PauseEngineRequest) (*Engine, error)
-	// Resumes the training of an existing engine. Only applicable if
+	// Resumes the training of an existing
+	// [Engine][google.cloud.discoveryengine.v1beta.Engine]. Only applicable if
 	// [SolutionType][google.cloud.discoveryengine.v1beta.SolutionType] is
 	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.discoveryengine.v1beta.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
 	ResumeEngine(context.Context, *ResumeEngineRequest) (*Engine, error)
-	// Tunes an existing engine. Only applicable if
+	// Tunes an existing [Engine][google.cloud.discoveryengine.v1beta.Engine].
+	// Only applicable if
 	// [SolutionType][google.cloud.discoveryengine.v1beta.SolutionType] is
 	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.discoveryengine.v1beta.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
 	TuneEngine(context.Context, *TuneEngineRequest) (*longrunningpb.Operation, error)
+	// Gets the IAM access control policy for an
+	// [Engine][google.cloud.discoveryengine.v1beta.Engine]. A `NOT_FOUND` error
+	// is returned if the resource does not exist. An empty policy is returned if
+	// the resource exists but does not have a policy set on it.
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
+	// Sets the IAM access control policy for an
+	// [Engine][google.cloud.discoveryengine.v1beta.Engine]. A `NOT_FOUND` error
+	// is returned if the resource does not exist.
+	//
+	// **Important:** When setting a policy directly on an Engine resource,
+	// the only recommended roles in the bindings are:
+	// `roles/discoveryengine.admin`,
+	// `roles/discoveryengine.agentspaceAdmin`,
+	// `roles/discoveryengine.user`,
+	// `roles/discoveryengine.agentspaceUser`,
+	// `roles/discoveryengine.viewer`,
+	// `roles/discoveryengine.agentspaceViewer`.
+	// Attempting to grant any other role will result in a warning in logging.
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 }
 
 // UnimplementedEngineServiceServer should be embedded to have forward compatible implementations.
@@ -210,6 +275,12 @@ func (UnimplementedEngineServiceServer) ResumeEngine(context.Context, *ResumeEng
 }
 func (UnimplementedEngineServiceServer) TuneEngine(context.Context, *TuneEngineRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TuneEngine not implemented")
+}
+func (UnimplementedEngineServiceServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
+}
+func (UnimplementedEngineServiceServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
 
 // UnsafeEngineServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -367,6 +438,42 @@ func _EngineService_TuneEngine_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EngineService_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(iampb.GetIamPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).GetIamPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EngineService_GetIamPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EngineService_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(iampb.SetIamPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EngineServiceServer).SetIamPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EngineService_SetIamPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EngineServiceServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EngineService_ServiceDesc is the grpc.ServiceDesc for EngineService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -405,6 +512,14 @@ var EngineService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TuneEngine",
 			Handler:    _EngineService_TuneEngine_Handler,
+		},
+		{
+			MethodName: "GetIamPolicy",
+			Handler:    _EngineService_GetIamPolicy_Handler,
+		},
+		{
+			MethodName: "SetIamPolicy",
+			Handler:    _EngineService_SetIamPolicy_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

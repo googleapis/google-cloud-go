@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1276,8 +1277,12 @@ func (c *aMLGRPCClient) CreateInstance(ctx context.Context, req *financialservic
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1299,8 +1304,12 @@ func (c *aMLGRPCClient) UpdateInstance(ctx context.Context, req *financialservic
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1325,8 +1334,12 @@ func (c *aMLGRPCClient) DeleteInstance(ctx context.Context, req *financialservic
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1351,8 +1364,12 @@ func (c *aMLGRPCClient) ImportRegisteredParties(ctx context.Context, req *financ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ImportRegisteredPartiesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportRegisteredPartiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1377,8 +1394,12 @@ func (c *aMLGRPCClient) ExportRegisteredParties(ctx context.Context, req *financ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportRegisteredPartiesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportRegisteredPartiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1479,8 +1500,12 @@ func (c *aMLGRPCClient) CreateDataset(ctx context.Context, req *financialservice
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1502,8 +1527,12 @@ func (c *aMLGRPCClient) UpdateDataset(ctx context.Context, req *financialservice
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1528,8 +1557,12 @@ func (c *aMLGRPCClient) DeleteDataset(ctx context.Context, req *financialservice
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1630,8 +1663,12 @@ func (c *aMLGRPCClient) CreateModel(ctx context.Context, req *financialservicesp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1653,8 +1690,12 @@ func (c *aMLGRPCClient) UpdateModel(ctx context.Context, req *financialservicesp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1679,8 +1720,12 @@ func (c *aMLGRPCClient) ExportModelMetadata(ctx context.Context, req *financials
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportModelMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportModelMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1705,8 +1750,12 @@ func (c *aMLGRPCClient) DeleteModel(ctx context.Context, req *financialservicesp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1807,8 +1856,12 @@ func (c *aMLGRPCClient) CreateEngineConfig(ctx context.Context, req *financialse
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateEngineConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEngineConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1830,8 +1883,12 @@ func (c *aMLGRPCClient) UpdateEngineConfig(ctx context.Context, req *financialse
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateEngineConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEngineConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1856,8 +1913,12 @@ func (c *aMLGRPCClient) ExportEngineConfigMetadata(ctx context.Context, req *fin
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportEngineConfigMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportEngineConfigMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1882,8 +1943,12 @@ func (c *aMLGRPCClient) DeleteEngineConfig(ctx context.Context, req *financialse
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteEngineConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEngineConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2060,8 +2125,12 @@ func (c *aMLGRPCClient) CreatePredictionResult(ctx context.Context, req *financi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreatePredictionResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePredictionResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2083,8 +2152,12 @@ func (c *aMLGRPCClient) UpdatePredictionResult(ctx context.Context, req *financi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdatePredictionResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePredictionResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2109,8 +2182,12 @@ func (c *aMLGRPCClient) ExportPredictionResultMetadata(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportPredictionResultMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportPredictionResultMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2135,8 +2212,12 @@ func (c *aMLGRPCClient) DeletePredictionResult(ctx context.Context, req *financi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeletePredictionResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePredictionResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2237,8 +2318,12 @@ func (c *aMLGRPCClient) CreateBacktestResult(ctx context.Context, req *financial
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateBacktestResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBacktestResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2260,8 +2345,12 @@ func (c *aMLGRPCClient) UpdateBacktestResult(ctx context.Context, req *financial
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateBacktestResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBacktestResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2286,8 +2375,12 @@ func (c *aMLGRPCClient) ExportBacktestResultMetadata(ctx context.Context, req *f
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportBacktestResultMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportBacktestResultMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2312,8 +2405,12 @@ func (c *aMLGRPCClient) DeleteBacktestResult(ctx context.Context, req *financial
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteBacktestResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBacktestResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2697,8 +2794,12 @@ func (c *aMLRESTClient) CreateInstance(ctx context.Context, req *financialservic
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2771,8 +2872,12 @@ func (c *aMLRESTClient) UpdateInstance(ctx context.Context, req *financialservic
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2834,8 +2939,12 @@ func (c *aMLRESTClient) DeleteInstance(ctx context.Context, req *financialservic
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2903,8 +3012,12 @@ func (c *aMLRESTClient) ImportRegisteredParties(ctx context.Context, req *financ
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ImportRegisteredPartiesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportRegisteredPartiesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2972,8 +3085,12 @@ func (c *aMLRESTClient) ExportRegisteredParties(ctx context.Context, req *financ
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportRegisteredPartiesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportRegisteredPartiesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3184,8 +3301,12 @@ func (c *aMLRESTClient) CreateDataset(ctx context.Context, req *financialservice
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3258,8 +3379,12 @@ func (c *aMLRESTClient) UpdateDataset(ctx context.Context, req *financialservice
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3321,8 +3446,12 @@ func (c *aMLRESTClient) DeleteDataset(ctx context.Context, req *financialservice
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3533,8 +3662,12 @@ func (c *aMLRESTClient) CreateModel(ctx context.Context, req *financialservicesp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3607,8 +3740,12 @@ func (c *aMLRESTClient) UpdateModel(ctx context.Context, req *financialservicesp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3676,8 +3813,12 @@ func (c *aMLRESTClient) ExportModelMetadata(ctx context.Context, req *financials
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportModelMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportModelMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3739,8 +3880,12 @@ func (c *aMLRESTClient) DeleteModel(ctx context.Context, req *financialservicesp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3951,8 +4096,12 @@ func (c *aMLRESTClient) CreateEngineConfig(ctx context.Context, req *financialse
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateEngineConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEngineConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4025,8 +4174,12 @@ func (c *aMLRESTClient) UpdateEngineConfig(ctx context.Context, req *financialse
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateEngineConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEngineConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4094,8 +4247,12 @@ func (c *aMLRESTClient) ExportEngineConfigMetadata(ctx context.Context, req *fin
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportEngineConfigMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportEngineConfigMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4157,8 +4314,12 @@ func (c *aMLRESTClient) DeleteEngineConfig(ctx context.Context, req *financialse
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteEngineConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEngineConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4510,8 +4671,12 @@ func (c *aMLRESTClient) CreatePredictionResult(ctx context.Context, req *financi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreatePredictionResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePredictionResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4584,8 +4749,12 @@ func (c *aMLRESTClient) UpdatePredictionResult(ctx context.Context, req *financi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdatePredictionResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePredictionResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4653,8 +4822,12 @@ func (c *aMLRESTClient) ExportPredictionResultMetadata(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportPredictionResultMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportPredictionResultMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4716,8 +4889,12 @@ func (c *aMLRESTClient) DeletePredictionResult(ctx context.Context, req *financi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeletePredictionResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePredictionResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4928,8 +5105,12 @@ func (c *aMLRESTClient) CreateBacktestResult(ctx context.Context, req *financial
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateBacktestResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBacktestResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5002,8 +5183,12 @@ func (c *aMLRESTClient) UpdateBacktestResult(ctx context.Context, req *financial
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateBacktestResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBacktestResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5071,8 +5256,12 @@ func (c *aMLRESTClient) ExportBacktestResultMetadata(ctx context.Context, req *f
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportBacktestResultMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportBacktestResultMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5134,8 +5323,12 @@ func (c *aMLRESTClient) DeleteBacktestResult(ctx context.Context, req *financial
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteBacktestResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBacktestResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5501,7 +5694,7 @@ func (c *aMLRESTClient) ListOperations(ctx context.Context, req *longrunningpb.L
 // The name must be that of a previously created CreateBacktestResultOperation, possibly from a different process.
 func (c *aMLGRPCClient) CreateBacktestResultOperation(name string) *CreateBacktestResultOperation {
 	return &CreateBacktestResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateBacktestResultOperation"),
 	}
 }
 
@@ -5510,7 +5703,7 @@ func (c *aMLGRPCClient) CreateBacktestResultOperation(name string) *CreateBackte
 func (c *aMLRESTClient) CreateBacktestResultOperation(name string) *CreateBacktestResultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBacktestResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateBacktestResultOperation"),
 		pollPath: override,
 	}
 }
@@ -5519,7 +5712,7 @@ func (c *aMLRESTClient) CreateBacktestResultOperation(name string) *CreateBackte
 // The name must be that of a previously created CreateDatasetOperation, possibly from a different process.
 func (c *aMLGRPCClient) CreateDatasetOperation(name string) *CreateDatasetOperation {
 	return &CreateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateDatasetOperation"),
 	}
 }
 
@@ -5528,7 +5721,7 @@ func (c *aMLGRPCClient) CreateDatasetOperation(name string) *CreateDatasetOperat
 func (c *aMLRESTClient) CreateDatasetOperation(name string) *CreateDatasetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateDatasetOperation"),
 		pollPath: override,
 	}
 }
@@ -5537,7 +5730,7 @@ func (c *aMLRESTClient) CreateDatasetOperation(name string) *CreateDatasetOperat
 // The name must be that of a previously created CreateEngineConfigOperation, possibly from a different process.
 func (c *aMLGRPCClient) CreateEngineConfigOperation(name string) *CreateEngineConfigOperation {
 	return &CreateEngineConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateEngineConfigOperation"),
 	}
 }
 
@@ -5546,7 +5739,7 @@ func (c *aMLGRPCClient) CreateEngineConfigOperation(name string) *CreateEngineCo
 func (c *aMLRESTClient) CreateEngineConfigOperation(name string) *CreateEngineConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEngineConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateEngineConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -5555,7 +5748,7 @@ func (c *aMLRESTClient) CreateEngineConfigOperation(name string) *CreateEngineCo
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *aMLGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateInstanceOperation"),
 	}
 }
 
@@ -5564,7 +5757,7 @@ func (c *aMLGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOper
 func (c *aMLRESTClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5573,7 +5766,7 @@ func (c *aMLRESTClient) CreateInstanceOperation(name string) *CreateInstanceOper
 // The name must be that of a previously created CreateModelOperation, possibly from a different process.
 func (c *aMLGRPCClient) CreateModelOperation(name string) *CreateModelOperation {
 	return &CreateModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateModelOperation"),
 	}
 }
 
@@ -5582,7 +5775,7 @@ func (c *aMLGRPCClient) CreateModelOperation(name string) *CreateModelOperation 
 func (c *aMLRESTClient) CreateModelOperation(name string) *CreateModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateModelOperation"),
 		pollPath: override,
 	}
 }
@@ -5591,7 +5784,7 @@ func (c *aMLRESTClient) CreateModelOperation(name string) *CreateModelOperation 
 // The name must be that of a previously created CreatePredictionResultOperation, possibly from a different process.
 func (c *aMLGRPCClient) CreatePredictionResultOperation(name string) *CreatePredictionResultOperation {
 	return &CreatePredictionResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreatePredictionResultOperation"),
 	}
 }
 
@@ -5600,7 +5793,7 @@ func (c *aMLGRPCClient) CreatePredictionResultOperation(name string) *CreatePred
 func (c *aMLRESTClient) CreatePredictionResultOperation(name string) *CreatePredictionResultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePredictionResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreatePredictionResultOperation"),
 		pollPath: override,
 	}
 }
@@ -5609,7 +5802,7 @@ func (c *aMLRESTClient) CreatePredictionResultOperation(name string) *CreatePred
 // The name must be that of a previously created DeleteBacktestResultOperation, possibly from a different process.
 func (c *aMLGRPCClient) DeleteBacktestResultOperation(name string) *DeleteBacktestResultOperation {
 	return &DeleteBacktestResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteBacktestResultOperation"),
 	}
 }
 
@@ -5618,7 +5811,7 @@ func (c *aMLGRPCClient) DeleteBacktestResultOperation(name string) *DeleteBackte
 func (c *aMLRESTClient) DeleteBacktestResultOperation(name string) *DeleteBacktestResultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBacktestResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteBacktestResultOperation"),
 		pollPath: override,
 	}
 }
@@ -5627,7 +5820,7 @@ func (c *aMLRESTClient) DeleteBacktestResultOperation(name string) *DeleteBackte
 // The name must be that of a previously created DeleteDatasetOperation, possibly from a different process.
 func (c *aMLGRPCClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 	return &DeleteDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteDatasetOperation"),
 	}
 }
 
@@ -5636,7 +5829,7 @@ func (c *aMLGRPCClient) DeleteDatasetOperation(name string) *DeleteDatasetOperat
 func (c *aMLRESTClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteDatasetOperation"),
 		pollPath: override,
 	}
 }
@@ -5645,7 +5838,7 @@ func (c *aMLRESTClient) DeleteDatasetOperation(name string) *DeleteDatasetOperat
 // The name must be that of a previously created DeleteEngineConfigOperation, possibly from a different process.
 func (c *aMLGRPCClient) DeleteEngineConfigOperation(name string) *DeleteEngineConfigOperation {
 	return &DeleteEngineConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteEngineConfigOperation"),
 	}
 }
 
@@ -5654,7 +5847,7 @@ func (c *aMLGRPCClient) DeleteEngineConfigOperation(name string) *DeleteEngineCo
 func (c *aMLRESTClient) DeleteEngineConfigOperation(name string) *DeleteEngineConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEngineConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteEngineConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -5663,7 +5856,7 @@ func (c *aMLRESTClient) DeleteEngineConfigOperation(name string) *DeleteEngineCo
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *aMLGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteInstanceOperation"),
 	}
 }
 
@@ -5672,7 +5865,7 @@ func (c *aMLGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOper
 func (c *aMLRESTClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5681,7 +5874,7 @@ func (c *aMLRESTClient) DeleteInstanceOperation(name string) *DeleteInstanceOper
 // The name must be that of a previously created DeleteModelOperation, possibly from a different process.
 func (c *aMLGRPCClient) DeleteModelOperation(name string) *DeleteModelOperation {
 	return &DeleteModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteModelOperation"),
 	}
 }
 
@@ -5690,7 +5883,7 @@ func (c *aMLGRPCClient) DeleteModelOperation(name string) *DeleteModelOperation 
 func (c *aMLRESTClient) DeleteModelOperation(name string) *DeleteModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteModelOperation"),
 		pollPath: override,
 	}
 }
@@ -5699,7 +5892,7 @@ func (c *aMLRESTClient) DeleteModelOperation(name string) *DeleteModelOperation 
 // The name must be that of a previously created DeletePredictionResultOperation, possibly from a different process.
 func (c *aMLGRPCClient) DeletePredictionResultOperation(name string) *DeletePredictionResultOperation {
 	return &DeletePredictionResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeletePredictionResultOperation"),
 	}
 }
 
@@ -5708,7 +5901,7 @@ func (c *aMLGRPCClient) DeletePredictionResultOperation(name string) *DeletePred
 func (c *aMLRESTClient) DeletePredictionResultOperation(name string) *DeletePredictionResultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePredictionResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeletePredictionResultOperation"),
 		pollPath: override,
 	}
 }
@@ -5717,7 +5910,7 @@ func (c *aMLRESTClient) DeletePredictionResultOperation(name string) *DeletePred
 // The name must be that of a previously created ExportBacktestResultMetadataOperation, possibly from a different process.
 func (c *aMLGRPCClient) ExportBacktestResultMetadataOperation(name string) *ExportBacktestResultMetadataOperation {
 	return &ExportBacktestResultMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportBacktestResultMetadataOperation"),
 	}
 }
 
@@ -5726,7 +5919,7 @@ func (c *aMLGRPCClient) ExportBacktestResultMetadataOperation(name string) *Expo
 func (c *aMLRESTClient) ExportBacktestResultMetadataOperation(name string) *ExportBacktestResultMetadataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportBacktestResultMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportBacktestResultMetadataOperation"),
 		pollPath: override,
 	}
 }
@@ -5735,7 +5928,7 @@ func (c *aMLRESTClient) ExportBacktestResultMetadataOperation(name string) *Expo
 // The name must be that of a previously created ExportEngineConfigMetadataOperation, possibly from a different process.
 func (c *aMLGRPCClient) ExportEngineConfigMetadataOperation(name string) *ExportEngineConfigMetadataOperation {
 	return &ExportEngineConfigMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportEngineConfigMetadataOperation"),
 	}
 }
 
@@ -5744,7 +5937,7 @@ func (c *aMLGRPCClient) ExportEngineConfigMetadataOperation(name string) *Export
 func (c *aMLRESTClient) ExportEngineConfigMetadataOperation(name string) *ExportEngineConfigMetadataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportEngineConfigMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportEngineConfigMetadataOperation"),
 		pollPath: override,
 	}
 }
@@ -5753,7 +5946,7 @@ func (c *aMLRESTClient) ExportEngineConfigMetadataOperation(name string) *Export
 // The name must be that of a previously created ExportModelMetadataOperation, possibly from a different process.
 func (c *aMLGRPCClient) ExportModelMetadataOperation(name string) *ExportModelMetadataOperation {
 	return &ExportModelMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportModelMetadataOperation"),
 	}
 }
 
@@ -5762,7 +5955,7 @@ func (c *aMLGRPCClient) ExportModelMetadataOperation(name string) *ExportModelMe
 func (c *aMLRESTClient) ExportModelMetadataOperation(name string) *ExportModelMetadataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportModelMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportModelMetadataOperation"),
 		pollPath: override,
 	}
 }
@@ -5771,7 +5964,7 @@ func (c *aMLRESTClient) ExportModelMetadataOperation(name string) *ExportModelMe
 // The name must be that of a previously created ExportPredictionResultMetadataOperation, possibly from a different process.
 func (c *aMLGRPCClient) ExportPredictionResultMetadataOperation(name string) *ExportPredictionResultMetadataOperation {
 	return &ExportPredictionResultMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportPredictionResultMetadataOperation"),
 	}
 }
 
@@ -5780,7 +5973,7 @@ func (c *aMLGRPCClient) ExportPredictionResultMetadataOperation(name string) *Ex
 func (c *aMLRESTClient) ExportPredictionResultMetadataOperation(name string) *ExportPredictionResultMetadataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportPredictionResultMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportPredictionResultMetadataOperation"),
 		pollPath: override,
 	}
 }
@@ -5789,7 +5982,7 @@ func (c *aMLRESTClient) ExportPredictionResultMetadataOperation(name string) *Ex
 // The name must be that of a previously created ExportRegisteredPartiesOperation, possibly from a different process.
 func (c *aMLGRPCClient) ExportRegisteredPartiesOperation(name string) *ExportRegisteredPartiesOperation {
 	return &ExportRegisteredPartiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportRegisteredPartiesOperation"),
 	}
 }
 
@@ -5798,7 +5991,7 @@ func (c *aMLGRPCClient) ExportRegisteredPartiesOperation(name string) *ExportReg
 func (c *aMLRESTClient) ExportRegisteredPartiesOperation(name string) *ExportRegisteredPartiesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportRegisteredPartiesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportRegisteredPartiesOperation"),
 		pollPath: override,
 	}
 }
@@ -5807,7 +6000,7 @@ func (c *aMLRESTClient) ExportRegisteredPartiesOperation(name string) *ExportReg
 // The name must be that of a previously created ImportRegisteredPartiesOperation, possibly from a different process.
 func (c *aMLGRPCClient) ImportRegisteredPartiesOperation(name string) *ImportRegisteredPartiesOperation {
 	return &ImportRegisteredPartiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ImportRegisteredPartiesOperation"),
 	}
 }
 
@@ -5816,7 +6009,7 @@ func (c *aMLGRPCClient) ImportRegisteredPartiesOperation(name string) *ImportReg
 func (c *aMLRESTClient) ImportRegisteredPartiesOperation(name string) *ImportRegisteredPartiesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportRegisteredPartiesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ImportRegisteredPartiesOperation"),
 		pollPath: override,
 	}
 }
@@ -5825,7 +6018,7 @@ func (c *aMLRESTClient) ImportRegisteredPartiesOperation(name string) *ImportReg
 // The name must be that of a previously created UpdateBacktestResultOperation, possibly from a different process.
 func (c *aMLGRPCClient) UpdateBacktestResultOperation(name string) *UpdateBacktestResultOperation {
 	return &UpdateBacktestResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateBacktestResultOperation"),
 	}
 }
 
@@ -5834,7 +6027,7 @@ func (c *aMLGRPCClient) UpdateBacktestResultOperation(name string) *UpdateBackte
 func (c *aMLRESTClient) UpdateBacktestResultOperation(name string) *UpdateBacktestResultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBacktestResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateBacktestResultOperation"),
 		pollPath: override,
 	}
 }
@@ -5843,7 +6036,7 @@ func (c *aMLRESTClient) UpdateBacktestResultOperation(name string) *UpdateBackte
 // The name must be that of a previously created UpdateDatasetOperation, possibly from a different process.
 func (c *aMLGRPCClient) UpdateDatasetOperation(name string) *UpdateDatasetOperation {
 	return &UpdateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateDatasetOperation"),
 	}
 }
 
@@ -5852,7 +6045,7 @@ func (c *aMLGRPCClient) UpdateDatasetOperation(name string) *UpdateDatasetOperat
 func (c *aMLRESTClient) UpdateDatasetOperation(name string) *UpdateDatasetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateDatasetOperation"),
 		pollPath: override,
 	}
 }
@@ -5861,7 +6054,7 @@ func (c *aMLRESTClient) UpdateDatasetOperation(name string) *UpdateDatasetOperat
 // The name must be that of a previously created UpdateEngineConfigOperation, possibly from a different process.
 func (c *aMLGRPCClient) UpdateEngineConfigOperation(name string) *UpdateEngineConfigOperation {
 	return &UpdateEngineConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateEngineConfigOperation"),
 	}
 }
 
@@ -5870,7 +6063,7 @@ func (c *aMLGRPCClient) UpdateEngineConfigOperation(name string) *UpdateEngineCo
 func (c *aMLRESTClient) UpdateEngineConfigOperation(name string) *UpdateEngineConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateEngineConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateEngineConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -5879,7 +6072,7 @@ func (c *aMLRESTClient) UpdateEngineConfigOperation(name string) *UpdateEngineCo
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *aMLGRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateInstanceOperation"),
 	}
 }
 
@@ -5888,7 +6081,7 @@ func (c *aMLGRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOper
 func (c *aMLRESTClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5897,7 +6090,7 @@ func (c *aMLRESTClient) UpdateInstanceOperation(name string) *UpdateInstanceOper
 // The name must be that of a previously created UpdateModelOperation, possibly from a different process.
 func (c *aMLGRPCClient) UpdateModelOperation(name string) *UpdateModelOperation {
 	return &UpdateModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateModelOperation"),
 	}
 }
 
@@ -5906,7 +6099,7 @@ func (c *aMLGRPCClient) UpdateModelOperation(name string) *UpdateModelOperation 
 func (c *aMLRESTClient) UpdateModelOperation(name string) *UpdateModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateModelOperation"),
 		pollPath: override,
 	}
 }
@@ -5915,7 +6108,7 @@ func (c *aMLRESTClient) UpdateModelOperation(name string) *UpdateModelOperation 
 // The name must be that of a previously created UpdatePredictionResultOperation, possibly from a different process.
 func (c *aMLGRPCClient) UpdatePredictionResultOperation(name string) *UpdatePredictionResultOperation {
 	return &UpdatePredictionResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdatePredictionResultOperation"),
 	}
 }
 
@@ -5924,7 +6117,7 @@ func (c *aMLGRPCClient) UpdatePredictionResultOperation(name string) *UpdatePred
 func (c *aMLRESTClient) UpdatePredictionResultOperation(name string) *UpdatePredictionResultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePredictionResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdatePredictionResultOperation"),
 		pollPath: override,
 	}
 }

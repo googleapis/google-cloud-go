@@ -783,6 +783,150 @@
         }
       }
     },
+    "FindingsRefinementService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FindingsRefinementClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "ComputeAllFindingsRefinementActivities": {
+              "methods": [
+                "ComputeAllFindingsRefinementActivities"
+              ]
+            },
+            "ComputeFindingsRefinementActivity": {
+              "methods": [
+                "ComputeFindingsRefinementActivity"
+              ]
+            },
+            "CreateFindingsRefinement": {
+              "methods": [
+                "CreateFindingsRefinement"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetFindingsRefinement": {
+              "methods": [
+                "GetFindingsRefinement"
+              ]
+            },
+            "GetFindingsRefinementDeployment": {
+              "methods": [
+                "GetFindingsRefinementDeployment"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAllFindingsRefinementDeployments": {
+              "methods": [
+                "ListAllFindingsRefinementDeployments"
+              ]
+            },
+            "ListFindingsRefinements": {
+              "methods": [
+                "ListFindingsRefinements"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateFindingsRefinement": {
+              "methods": [
+                "UpdateFindingsRefinement"
+              ]
+            },
+            "UpdateFindingsRefinementDeployment": {
+              "methods": [
+                "UpdateFindingsRefinementDeployment"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FindingsRefinementClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "ComputeAllFindingsRefinementActivities": {
+              "methods": [
+                "ComputeAllFindingsRefinementActivities"
+              ]
+            },
+            "ComputeFindingsRefinementActivity": {
+              "methods": [
+                "ComputeFindingsRefinementActivity"
+              ]
+            },
+            "CreateFindingsRefinement": {
+              "methods": [
+                "CreateFindingsRefinement"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetFindingsRefinement": {
+              "methods": [
+                "GetFindingsRefinement"
+              ]
+            },
+            "GetFindingsRefinementDeployment": {
+              "methods": [
+                "GetFindingsRefinementDeployment"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAllFindingsRefinementDeployments": {
+              "methods": [
+                "ListAllFindingsRefinementDeployments"
+              ]
+            },
+            "ListFindingsRefinements": {
+              "methods": [
+                "ListFindingsRefinements"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateFindingsRefinement": {
+              "methods": [
+                "UpdateFindingsRefinement"
+              ]
+            },
+            "UpdateFindingsRefinementDeployment": {
+              "methods": [
+                "UpdateFindingsRefinementDeployment"
+              ]
+            }
+          }
+        }
+      }
+    },
     "InstanceService": {
       "clients": {
         "grpc": {
@@ -1065,6 +1209,11 @@
               "methods": [
                 "UpdateReferenceList"
               ]
+            },
+            "VerifyReferenceList": {
+              "methods": [
+                "VerifyReferenceList"
+              ]
             }
           }
         },
@@ -1109,6 +1258,75 @@
             "UpdateReferenceList": {
               "methods": [
                 "UpdateReferenceList"
+              ]
+            },
+            "VerifyReferenceList": {
+              "methods": [
+                "VerifyReferenceList"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "RuleExecutionErrorService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "RuleExecutionErrorClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRuleExecutionErrors": {
+              "methods": [
+                "ListRuleExecutionErrors"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "RuleExecutionErrorClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRuleExecutionErrors": {
+              "methods": [
+                "ListRuleExecutionErrors"
               ]
             }
           }
@@ -1199,6 +1417,11 @@
               "methods": [
                 "UpdateRuleDeployment"
               ]
+            },
+            "VerifyRuleText": {
+              "methods": [
+                "VerifyRuleText"
+              ]
             }
           }
         },
@@ -1283,6 +1506,11 @@
             "UpdateRuleDeployment": {
               "methods": [
                 "UpdateRuleDeployment"
+              ]
+            },
+            "VerifyRuleText": {
+              "methods": [
+                "VerifyRuleText"
               ]
             }
           }

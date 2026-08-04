@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -158,6 +158,11 @@ type Operation struct {
 	LogEntries []*LogEntry `protobuf:"bytes,8,rep,name=log_entries,json=logEntries,proto3" json:"log_entries,omitempty"`
 	// DO NOT USE. This is an experimental field.
 	Importance Operation_Importance `protobuf:"varint,11,opt,name=importance,proto3,enum=google.api.servicecontrol.v1.Operation_Importance" json:"importance,omitempty"`
+	// Private Preview. This feature is only available for approved services.
+	//
+	// User defined labels for the resource that this operation is associated
+	// with.
+	UserLabels map[string]string `protobuf:"bytes,12,rep,name=user_labels,json=userLabels,proto3" json:"user_labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Unimplemented.
 	Extensions    []*anypb.Any `protobuf:"bytes,16,rep,name=extensions,proto3" json:"extensions,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -257,6 +262,13 @@ func (x *Operation) GetImportance() Operation_Importance {
 	return Operation_LOW
 }
 
+func (x *Operation) GetUserLabels() map[string]string {
+	if x != nil {
+		return x.UserLabels
+	}
+	return nil
+}
+
 func (x *Operation) GetExtensions() []*anypb.Any {
 	if x != nil {
 		return x.Extensions
@@ -268,7 +280,7 @@ var File_google_api_servicecontrol_v1_operation_proto protoreflect.FileDescripto
 
 const file_google_api_servicecontrol_v1_operation_proto_rawDesc = "" +
 	"\n" +
-	",google/api/servicecontrol/v1/operation.proto\x12\x1cgoogle.api.servicecontrol.v1\x1a,google/api/servicecontrol/v1/log_entry.proto\x1a/google/api/servicecontrol/v1/metric_value.proto\x1a\x19google/protobuf/any.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbe\x05\n" +
+	",google/api/servicecontrol/v1/operation.proto\x12\x1cgoogle.api.servicecontrol.v1\x1a,google/api/servicecontrol/v1/log_entry.proto\x1a/google/api/servicecontrol/v1/metric_value.proto\x1a\x19google/protobuf/any.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd7\x06\n" +
 	"\tOperation\x12!\n" +
 	"\foperation_id\x18\x01 \x01(\tR\voperationId\x12%\n" +
 	"\x0eoperation_name\x18\x02 \x01(\tR\roperationName\x12\x1f\n" +
@@ -283,18 +295,23 @@ const file_google_api_servicecontrol_v1_operation_proto_rawDesc = "" +
 	"logEntries\x12R\n" +
 	"\n" +
 	"importance\x18\v \x01(\x0e22.google.api.servicecontrol.v1.Operation.ImportanceR\n" +
-	"importance\x124\n" +
+	"importance\x12X\n" +
+	"\vuser_labels\x18\f \x03(\v27.google.api.servicecontrol.v1.Operation.UserLabelsEntryR\n" +
+	"userLabels\x124\n" +
 	"\n" +
 	"extensions\x18\x10 \x03(\v2\x14.google.protobuf.AnyR\n" +
 	"extensions\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a=\n" +
+	"\x0fUserLabelsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x1f\n" +
 	"\n" +
 	"Importance\x12\a\n" +
 	"\x03LOW\x10\x00\x12\b\n" +
-	"\x04HIGH\x10\x01B\xe9\x01\n" +
-	" com.google.api.servicecontrol.v1B\x0eOperationProtoP\x01ZJcloud.google.com/go/servicecontrol/apiv1/servicecontrolpb;servicecontrolpb\xf8\x01\x01\xaa\x02\x1eGoogle.Cloud.ServiceControl.V1\xca\x02\x1eGoogle\\Cloud\\ServiceControl\\V1\xea\x02!Google::Cloud::ServiceControl::V1b\x06proto3"
+	"\x04HIGH\x10\x01B\xe6\x01\n" +
+	" com.google.api.servicecontrol.v1B\x0eOperationProtoP\x01ZJcloud.google.com/go/servicecontrol/apiv1/servicecontrolpb;servicecontrolpb\xaa\x02\x1eGoogle.Cloud.ServiceControl.V1\xca\x02\x1eGoogle\\Cloud\\ServiceControl\\V1\xea\x02!Google::Cloud::ServiceControl::V1b\x06proto3"
 
 var (
 	file_google_api_servicecontrol_v1_operation_proto_rawDescOnce sync.Once
@@ -309,29 +326,31 @@ func file_google_api_servicecontrol_v1_operation_proto_rawDescGZIP() []byte {
 }
 
 var file_google_api_servicecontrol_v1_operation_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_api_servicecontrol_v1_operation_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_google_api_servicecontrol_v1_operation_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_google_api_servicecontrol_v1_operation_proto_goTypes = []any{
 	(Operation_Importance)(0),     // 0: google.api.servicecontrol.v1.Operation.Importance
 	(*Operation)(nil),             // 1: google.api.servicecontrol.v1.Operation
 	nil,                           // 2: google.api.servicecontrol.v1.Operation.LabelsEntry
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
-	(*MetricValueSet)(nil),        // 4: google.api.servicecontrol.v1.MetricValueSet
-	(*LogEntry)(nil),              // 5: google.api.servicecontrol.v1.LogEntry
-	(*anypb.Any)(nil),             // 6: google.protobuf.Any
+	nil,                           // 3: google.api.servicecontrol.v1.Operation.UserLabelsEntry
+	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
+	(*MetricValueSet)(nil),        // 5: google.api.servicecontrol.v1.MetricValueSet
+	(*LogEntry)(nil),              // 6: google.api.servicecontrol.v1.LogEntry
+	(*anypb.Any)(nil),             // 7: google.protobuf.Any
 }
 var file_google_api_servicecontrol_v1_operation_proto_depIdxs = []int32{
-	3, // 0: google.api.servicecontrol.v1.Operation.start_time:type_name -> google.protobuf.Timestamp
-	3, // 1: google.api.servicecontrol.v1.Operation.end_time:type_name -> google.protobuf.Timestamp
+	4, // 0: google.api.servicecontrol.v1.Operation.start_time:type_name -> google.protobuf.Timestamp
+	4, // 1: google.api.servicecontrol.v1.Operation.end_time:type_name -> google.protobuf.Timestamp
 	2, // 2: google.api.servicecontrol.v1.Operation.labels:type_name -> google.api.servicecontrol.v1.Operation.LabelsEntry
-	4, // 3: google.api.servicecontrol.v1.Operation.metric_value_sets:type_name -> google.api.servicecontrol.v1.MetricValueSet
-	5, // 4: google.api.servicecontrol.v1.Operation.log_entries:type_name -> google.api.servicecontrol.v1.LogEntry
+	5, // 3: google.api.servicecontrol.v1.Operation.metric_value_sets:type_name -> google.api.servicecontrol.v1.MetricValueSet
+	6, // 4: google.api.servicecontrol.v1.Operation.log_entries:type_name -> google.api.servicecontrol.v1.LogEntry
 	0, // 5: google.api.servicecontrol.v1.Operation.importance:type_name -> google.api.servicecontrol.v1.Operation.Importance
-	6, // 6: google.api.servicecontrol.v1.Operation.extensions:type_name -> google.protobuf.Any
-	7, // [7:7] is the sub-list for method output_type
-	7, // [7:7] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	3, // 6: google.api.servicecontrol.v1.Operation.user_labels:type_name -> google.api.servicecontrol.v1.Operation.UserLabelsEntry
+	7, // 7: google.api.servicecontrol.v1.Operation.extensions:type_name -> google.protobuf.Any
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	8, // [8:8] is the sub-list for extension type_name
+	8, // [8:8] is the sub-list for extension extendee
+	0, // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_google_api_servicecontrol_v1_operation_proto_init() }
@@ -347,7 +366,7 @@ func file_google_api_servicecontrol_v1_operation_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_api_servicecontrol_v1_operation_proto_rawDesc), len(file_google_api_servicecontrol_v1_operation_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

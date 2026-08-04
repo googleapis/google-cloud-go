@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1405,8 +1406,12 @@ func (c *alloyDBAdminGRPCClient) CreateCluster(ctx context.Context, req *alloydb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1428,8 +1433,12 @@ func (c *alloyDBAdminGRPCClient) UpdateCluster(ctx context.Context, req *alloydb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1454,8 +1463,12 @@ func (c *alloyDBAdminGRPCClient) ExportCluster(ctx context.Context, req *alloydb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.ExportClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1480,8 +1493,12 @@ func (c *alloyDBAdminGRPCClient) ImportCluster(ctx context.Context, req *alloydb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.ImportClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1506,8 +1523,12 @@ func (c *alloyDBAdminGRPCClient) UpgradeCluster(ctx context.Context, req *alloyd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpgradeClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpgradeClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1532,8 +1553,12 @@ func (c *alloyDBAdminGRPCClient) DeleteCluster(ctx context.Context, req *alloydb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1558,8 +1583,12 @@ func (c *alloyDBAdminGRPCClient) PromoteCluster(ctx context.Context, req *alloyd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.PromoteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PromoteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1584,8 +1613,12 @@ func (c *alloyDBAdminGRPCClient) SwitchoverCluster(ctx context.Context, req *all
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.SwitchoverClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SwitchoverClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1610,8 +1643,12 @@ func (c *alloyDBAdminGRPCClient) RestoreCluster(ctx context.Context, req *alloyd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.RestoreClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1636,8 +1673,12 @@ func (c *alloyDBAdminGRPCClient) CreateSecondaryCluster(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateSecondaryClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSecondaryClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1738,8 +1779,12 @@ func (c *alloyDBAdminGRPCClient) CreateInstance(ctx context.Context, req *alloyd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1764,8 +1809,12 @@ func (c *alloyDBAdminGRPCClient) CreateSecondaryInstance(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateSecondaryInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSecondaryInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1790,8 +1839,12 @@ func (c *alloyDBAdminGRPCClient) BatchCreateInstances(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.BatchCreateInstancesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchCreateInstancesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1813,8 +1866,12 @@ func (c *alloyDBAdminGRPCClient) UpdateInstance(ctx context.Context, req *alloyd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1839,8 +1896,12 @@ func (c *alloyDBAdminGRPCClient) DeleteInstance(ctx context.Context, req *alloyd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1865,8 +1926,12 @@ func (c *alloyDBAdminGRPCClient) FailoverInstance(ctx context.Context, req *allo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.FailoverInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &FailoverInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1891,8 +1956,12 @@ func (c *alloyDBAdminGRPCClient) InjectFault(ctx context.Context, req *alloydbpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.InjectFaultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &InjectFaultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1917,8 +1986,12 @@ func (c *alloyDBAdminGRPCClient) RestartInstance(ctx context.Context, req *alloy
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.RestartInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestartInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2043,8 +2116,12 @@ func (c *alloyDBAdminGRPCClient) CreateBackup(ctx context.Context, req *alloydbp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2066,8 +2143,12 @@ func (c *alloyDBAdminGRPCClient) UpdateBackup(ctx context.Context, req *alloydbp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpdateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2092,8 +2173,12 @@ func (c *alloyDBAdminGRPCClient) DeleteBackup(ctx context.Context, req *alloydbp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2776,8 +2861,12 @@ func (c *alloyDBAdminRESTClient) CreateCluster(ctx context.Context, req *alloydb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2856,8 +2945,12 @@ func (c *alloyDBAdminRESTClient) UpdateCluster(ctx context.Context, req *alloydb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2923,8 +3016,12 @@ func (c *alloyDBAdminRESTClient) ExportCluster(ctx context.Context, req *alloydb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.ExportClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2990,8 +3087,12 @@ func (c *alloyDBAdminRESTClient) ImportCluster(ctx context.Context, req *alloydb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.ImportClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3057,8 +3158,12 @@ func (c *alloyDBAdminRESTClient) UpgradeCluster(ctx context.Context, req *alloyd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpgradeClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpgradeClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3129,8 +3234,12 @@ func (c *alloyDBAdminRESTClient) DeleteCluster(ctx context.Context, req *alloydb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3198,8 +3307,12 @@ func (c *alloyDBAdminRESTClient) PromoteCluster(ctx context.Context, req *alloyd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.PromoteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PromoteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3266,8 +3379,12 @@ func (c *alloyDBAdminRESTClient) SwitchoverCluster(ctx context.Context, req *all
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.SwitchoverClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SwitchoverClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3334,8 +3451,12 @@ func (c *alloyDBAdminRESTClient) RestoreCluster(ctx context.Context, req *alloyd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.RestoreClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3409,8 +3530,12 @@ func (c *alloyDBAdminRESTClient) CreateSecondaryCluster(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateSecondaryClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSecondaryClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3627,8 +3752,12 @@ func (c *alloyDBAdminRESTClient) CreateInstance(ctx context.Context, req *alloyd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3701,8 +3830,12 @@ func (c *alloyDBAdminRESTClient) CreateSecondaryInstance(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateSecondaryInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSecondaryInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3780,8 +3913,12 @@ func (c *alloyDBAdminRESTClient) BatchCreateInstances(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.BatchCreateInstancesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchCreateInstancesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3860,8 +3997,12 @@ func (c *alloyDBAdminRESTClient) UpdateInstance(ctx context.Context, req *alloyd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3929,8 +4070,12 @@ func (c *alloyDBAdminRESTClient) DeleteInstance(ctx context.Context, req *alloyd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3997,8 +4142,12 @@ func (c *alloyDBAdminRESTClient) FailoverInstance(ctx context.Context, req *allo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.FailoverInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &FailoverInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4064,8 +4213,12 @@ func (c *alloyDBAdminRESTClient) InjectFault(ctx context.Context, req *alloydbpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.InjectFaultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &InjectFaultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4131,8 +4284,12 @@ func (c *alloyDBAdminRESTClient) RestartInstance(ctx context.Context, req *alloy
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.RestartInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestartInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4409,8 +4566,12 @@ func (c *alloyDBAdminRESTClient) CreateBackup(ctx context.Context, req *alloydbp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4489,8 +4650,12 @@ func (c *alloyDBAdminRESTClient) UpdateBackup(ctx context.Context, req *alloydbp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpdateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4558,8 +4723,12 @@ func (c *alloyDBAdminRESTClient) DeleteBackup(ctx context.Context, req *alloydbp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5551,7 +5720,7 @@ func (c *alloyDBAdminRESTClient) ListOperations(ctx context.Context, req *longru
 // The name must be that of a previously created BatchCreateInstancesOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) BatchCreateInstancesOperation(name string) *BatchCreateInstancesOperation {
 	return &BatchCreateInstancesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.BatchCreateInstancesOperation"),
 	}
 }
 
@@ -5560,7 +5729,7 @@ func (c *alloyDBAdminGRPCClient) BatchCreateInstancesOperation(name string) *Bat
 func (c *alloyDBAdminRESTClient) BatchCreateInstancesOperation(name string) *BatchCreateInstancesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BatchCreateInstancesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.BatchCreateInstancesOperation"),
 		pollPath: override,
 	}
 }
@@ -5569,7 +5738,7 @@ func (c *alloyDBAdminRESTClient) BatchCreateInstancesOperation(name string) *Bat
 // The name must be that of a previously created CreateBackupOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateBackupOperation"),
 	}
 }
 
@@ -5578,7 +5747,7 @@ func (c *alloyDBAdminGRPCClient) CreateBackupOperation(name string) *CreateBacku
 func (c *alloyDBAdminRESTClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -5587,7 +5756,7 @@ func (c *alloyDBAdminRESTClient) CreateBackupOperation(name string) *CreateBacku
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateClusterOperation"),
 	}
 }
 
@@ -5596,7 +5765,7 @@ func (c *alloyDBAdminGRPCClient) CreateClusterOperation(name string) *CreateClus
 func (c *alloyDBAdminRESTClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5605,7 +5774,7 @@ func (c *alloyDBAdminRESTClient) CreateClusterOperation(name string) *CreateClus
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateInstanceOperation"),
 	}
 }
 
@@ -5614,7 +5783,7 @@ func (c *alloyDBAdminGRPCClient) CreateInstanceOperation(name string) *CreateIns
 func (c *alloyDBAdminRESTClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5623,7 +5792,7 @@ func (c *alloyDBAdminRESTClient) CreateInstanceOperation(name string) *CreateIns
 // The name must be that of a previously created CreateSecondaryClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) CreateSecondaryClusterOperation(name string) *CreateSecondaryClusterOperation {
 	return &CreateSecondaryClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateSecondaryClusterOperation"),
 	}
 }
 
@@ -5632,7 +5801,7 @@ func (c *alloyDBAdminGRPCClient) CreateSecondaryClusterOperation(name string) *C
 func (c *alloyDBAdminRESTClient) CreateSecondaryClusterOperation(name string) *CreateSecondaryClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSecondaryClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateSecondaryClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5641,7 +5810,7 @@ func (c *alloyDBAdminRESTClient) CreateSecondaryClusterOperation(name string) *C
 // The name must be that of a previously created CreateSecondaryInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) CreateSecondaryInstanceOperation(name string) *CreateSecondaryInstanceOperation {
 	return &CreateSecondaryInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateSecondaryInstanceOperation"),
 	}
 }
 
@@ -5650,7 +5819,7 @@ func (c *alloyDBAdminGRPCClient) CreateSecondaryInstanceOperation(name string) *
 func (c *alloyDBAdminRESTClient) CreateSecondaryInstanceOperation(name string) *CreateSecondaryInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSecondaryInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateSecondaryInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5659,7 +5828,7 @@ func (c *alloyDBAdminRESTClient) CreateSecondaryInstanceOperation(name string) *
 // The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.DeleteBackupOperation"),
 	}
 }
 
@@ -5668,7 +5837,7 @@ func (c *alloyDBAdminGRPCClient) DeleteBackupOperation(name string) *DeleteBacku
 func (c *alloyDBAdminRESTClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.DeleteBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -5677,7 +5846,7 @@ func (c *alloyDBAdminRESTClient) DeleteBackupOperation(name string) *DeleteBacku
 // The name must be that of a previously created DeleteClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.DeleteClusterOperation"),
 	}
 }
 
@@ -5686,7 +5855,7 @@ func (c *alloyDBAdminGRPCClient) DeleteClusterOperation(name string) *DeleteClus
 func (c *alloyDBAdminRESTClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.DeleteClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5695,7 +5864,7 @@ func (c *alloyDBAdminRESTClient) DeleteClusterOperation(name string) *DeleteClus
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.DeleteInstanceOperation"),
 	}
 }
 
@@ -5704,7 +5873,7 @@ func (c *alloyDBAdminGRPCClient) DeleteInstanceOperation(name string) *DeleteIns
 func (c *alloyDBAdminRESTClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.DeleteInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5713,7 +5882,7 @@ func (c *alloyDBAdminRESTClient) DeleteInstanceOperation(name string) *DeleteIns
 // The name must be that of a previously created ExportClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) ExportClusterOperation(name string) *ExportClusterOperation {
 	return &ExportClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.ExportClusterOperation"),
 	}
 }
 
@@ -5722,7 +5891,7 @@ func (c *alloyDBAdminGRPCClient) ExportClusterOperation(name string) *ExportClus
 func (c *alloyDBAdminRESTClient) ExportClusterOperation(name string) *ExportClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.ExportClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5731,7 +5900,7 @@ func (c *alloyDBAdminRESTClient) ExportClusterOperation(name string) *ExportClus
 // The name must be that of a previously created FailoverInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) FailoverInstanceOperation(name string) *FailoverInstanceOperation {
 	return &FailoverInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.FailoverInstanceOperation"),
 	}
 }
 
@@ -5740,7 +5909,7 @@ func (c *alloyDBAdminGRPCClient) FailoverInstanceOperation(name string) *Failove
 func (c *alloyDBAdminRESTClient) FailoverInstanceOperation(name string) *FailoverInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &FailoverInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.FailoverInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5749,7 +5918,7 @@ func (c *alloyDBAdminRESTClient) FailoverInstanceOperation(name string) *Failove
 // The name must be that of a previously created ImportClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) ImportClusterOperation(name string) *ImportClusterOperation {
 	return &ImportClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.ImportClusterOperation"),
 	}
 }
 
@@ -5758,7 +5927,7 @@ func (c *alloyDBAdminGRPCClient) ImportClusterOperation(name string) *ImportClus
 func (c *alloyDBAdminRESTClient) ImportClusterOperation(name string) *ImportClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.ImportClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5767,7 +5936,7 @@ func (c *alloyDBAdminRESTClient) ImportClusterOperation(name string) *ImportClus
 // The name must be that of a previously created InjectFaultOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) InjectFaultOperation(name string) *InjectFaultOperation {
 	return &InjectFaultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.InjectFaultOperation"),
 	}
 }
 
@@ -5776,7 +5945,7 @@ func (c *alloyDBAdminGRPCClient) InjectFaultOperation(name string) *InjectFaultO
 func (c *alloyDBAdminRESTClient) InjectFaultOperation(name string) *InjectFaultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &InjectFaultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.InjectFaultOperation"),
 		pollPath: override,
 	}
 }
@@ -5785,7 +5954,7 @@ func (c *alloyDBAdminRESTClient) InjectFaultOperation(name string) *InjectFaultO
 // The name must be that of a previously created PromoteClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) PromoteClusterOperation(name string) *PromoteClusterOperation {
 	return &PromoteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.PromoteClusterOperation"),
 	}
 }
 
@@ -5794,7 +5963,7 @@ func (c *alloyDBAdminGRPCClient) PromoteClusterOperation(name string) *PromoteCl
 func (c *alloyDBAdminRESTClient) PromoteClusterOperation(name string) *PromoteClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &PromoteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.PromoteClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5803,7 +5972,7 @@ func (c *alloyDBAdminRESTClient) PromoteClusterOperation(name string) *PromoteCl
 // The name must be that of a previously created RestartInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) RestartInstanceOperation(name string) *RestartInstanceOperation {
 	return &RestartInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.RestartInstanceOperation"),
 	}
 }
 
@@ -5812,7 +5981,7 @@ func (c *alloyDBAdminGRPCClient) RestartInstanceOperation(name string) *RestartI
 func (c *alloyDBAdminRESTClient) RestartInstanceOperation(name string) *RestartInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RestartInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.RestartInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5821,7 +5990,7 @@ func (c *alloyDBAdminRESTClient) RestartInstanceOperation(name string) *RestartI
 // The name must be that of a previously created RestoreClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) RestoreClusterOperation(name string) *RestoreClusterOperation {
 	return &RestoreClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.RestoreClusterOperation"),
 	}
 }
 
@@ -5830,7 +5999,7 @@ func (c *alloyDBAdminGRPCClient) RestoreClusterOperation(name string) *RestoreCl
 func (c *alloyDBAdminRESTClient) RestoreClusterOperation(name string) *RestoreClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RestoreClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.RestoreClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5839,7 +6008,7 @@ func (c *alloyDBAdminRESTClient) RestoreClusterOperation(name string) *RestoreCl
 // The name must be that of a previously created SwitchoverClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) SwitchoverClusterOperation(name string) *SwitchoverClusterOperation {
 	return &SwitchoverClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.SwitchoverClusterOperation"),
 	}
 }
 
@@ -5848,7 +6017,7 @@ func (c *alloyDBAdminGRPCClient) SwitchoverClusterOperation(name string) *Switch
 func (c *alloyDBAdminRESTClient) SwitchoverClusterOperation(name string) *SwitchoverClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &SwitchoverClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.SwitchoverClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5857,7 +6026,7 @@ func (c *alloyDBAdminRESTClient) SwitchoverClusterOperation(name string) *Switch
 // The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 	return &UpdateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpdateBackupOperation"),
 	}
 }
 
@@ -5866,7 +6035,7 @@ func (c *alloyDBAdminGRPCClient) UpdateBackupOperation(name string) *UpdateBacku
 func (c *alloyDBAdminRESTClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpdateBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -5875,7 +6044,7 @@ func (c *alloyDBAdminRESTClient) UpdateBackupOperation(name string) *UpdateBacku
 // The name must be that of a previously created UpdateClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpdateClusterOperation"),
 	}
 }
 
@@ -5884,7 +6053,7 @@ func (c *alloyDBAdminGRPCClient) UpdateClusterOperation(name string) *UpdateClus
 func (c *alloyDBAdminRESTClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpdateClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5893,7 +6062,7 @@ func (c *alloyDBAdminRESTClient) UpdateClusterOperation(name string) *UpdateClus
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpdateInstanceOperation"),
 	}
 }
 
@@ -5902,7 +6071,7 @@ func (c *alloyDBAdminGRPCClient) UpdateInstanceOperation(name string) *UpdateIns
 func (c *alloyDBAdminRESTClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpdateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5911,7 +6080,7 @@ func (c *alloyDBAdminRESTClient) UpdateInstanceOperation(name string) *UpdateIns
 // The name must be that of a previously created UpgradeClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) UpgradeClusterOperation(name string) *UpgradeClusterOperation {
 	return &UpgradeClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpgradeClusterOperation"),
 	}
 }
 
@@ -5920,7 +6089,7 @@ func (c *alloyDBAdminGRPCClient) UpgradeClusterOperation(name string) *UpgradeCl
 func (c *alloyDBAdminRESTClient) UpgradeClusterOperation(name string) *UpgradeClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpgradeClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpgradeClusterOperation"),
 		pollPath: override,
 	}
 }

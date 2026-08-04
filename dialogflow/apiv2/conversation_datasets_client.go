@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -357,14 +358,13 @@ func (c *ConversationDatasetsClient) GetLocation(ctx context.Context, req *locat
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -671,8 +671,12 @@ func (c *conversationDatasetsGRPCClient) CreateConversationDataset(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.CreateConversationDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateConversationDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -773,8 +777,12 @@ func (c *conversationDatasetsGRPCClient) DeleteConversationDataset(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.DeleteConversationDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteConversationDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -799,8 +807,12 @@ func (c *conversationDatasetsGRPCClient) ImportConversationData(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.ImportConversationDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportConversationDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1029,8 +1041,12 @@ func (c *conversationDatasetsRESTClient) CreateConversationDataset(ctx context.C
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.CreateConversationDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateConversationDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1235,8 +1251,12 @@ func (c *conversationDatasetsRESTClient) DeleteConversationDataset(ctx context.C
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.DeleteConversationDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteConversationDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1313,8 +1333,12 @@ func (c *conversationDatasetsRESTClient) ImportConversationData(ctx context.Cont
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.ImportConversationDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportConversationDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1376,14 +1400,13 @@ func (c *conversationDatasetsRESTClient) GetLocation(ctx context.Context, req *l
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -1651,7 +1674,7 @@ func (c *conversationDatasetsRESTClient) ListOperations(ctx context.Context, req
 // The name must be that of a previously created CreateConversationDatasetOperation, possibly from a different process.
 func (c *conversationDatasetsGRPCClient) CreateConversationDatasetOperation(name string) *CreateConversationDatasetOperation {
 	return &CreateConversationDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.CreateConversationDatasetOperation"),
 	}
 }
 
@@ -1660,7 +1683,7 @@ func (c *conversationDatasetsGRPCClient) CreateConversationDatasetOperation(name
 func (c *conversationDatasetsRESTClient) CreateConversationDatasetOperation(name string) *CreateConversationDatasetOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateConversationDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.CreateConversationDatasetOperation"),
 		pollPath: override,
 	}
 }
@@ -1669,7 +1692,7 @@ func (c *conversationDatasetsRESTClient) CreateConversationDatasetOperation(name
 // The name must be that of a previously created DeleteConversationDatasetOperation, possibly from a different process.
 func (c *conversationDatasetsGRPCClient) DeleteConversationDatasetOperation(name string) *DeleteConversationDatasetOperation {
 	return &DeleteConversationDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.DeleteConversationDatasetOperation"),
 	}
 }
 
@@ -1678,7 +1701,7 @@ func (c *conversationDatasetsGRPCClient) DeleteConversationDatasetOperation(name
 func (c *conversationDatasetsRESTClient) DeleteConversationDatasetOperation(name string) *DeleteConversationDatasetOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteConversationDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.DeleteConversationDatasetOperation"),
 		pollPath: override,
 	}
 }
@@ -1687,7 +1710,7 @@ func (c *conversationDatasetsRESTClient) DeleteConversationDatasetOperation(name
 // The name must be that of a previously created ImportConversationDataOperation, possibly from a different process.
 func (c *conversationDatasetsGRPCClient) ImportConversationDataOperation(name string) *ImportConversationDataOperation {
 	return &ImportConversationDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.ImportConversationDataOperation"),
 	}
 }
 
@@ -1696,7 +1719,7 @@ func (c *conversationDatasetsGRPCClient) ImportConversationDataOperation(name st
 func (c *conversationDatasetsRESTClient) ImportConversationDataOperation(name string) *ImportConversationDataOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &ImportConversationDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.ImportConversationDataOperation"),
 		pollPath: override,
 	}
 }

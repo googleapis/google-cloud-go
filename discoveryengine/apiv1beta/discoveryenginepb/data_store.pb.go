@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -103,6 +103,112 @@ func (DataStore_ContentConfig) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{0, 0}
 }
 
+// Configuration for configurable billing approach.
+type DataStore_ConfigurableBillingApproach int32
+
+const (
+	// Default value. For Spark and non-Spark non-configurable billing approach.
+	DataStore_CONFIGURABLE_BILLING_APPROACH_UNSPECIFIED DataStore_ConfigurableBillingApproach = 0
+	// Use the subscription base + overage billing for indexing core for non
+	// embedding storage.
+	DataStore_CONFIGURABLE_SUBSCRIPTION_INDEXING_CORE DataStore_ConfigurableBillingApproach = 1
+	// Use the consumption pay-as-you-go billing for embedding storage add-on.
+	DataStore_CONFIGURABLE_CONSUMPTION_EMBEDDING DataStore_ConfigurableBillingApproach = 2
+)
+
+// Enum value maps for DataStore_ConfigurableBillingApproach.
+var (
+	DataStore_ConfigurableBillingApproach_name = map[int32]string{
+		0: "CONFIGURABLE_BILLING_APPROACH_UNSPECIFIED",
+		1: "CONFIGURABLE_SUBSCRIPTION_INDEXING_CORE",
+		2: "CONFIGURABLE_CONSUMPTION_EMBEDDING",
+	}
+	DataStore_ConfigurableBillingApproach_value = map[string]int32{
+		"CONFIGURABLE_BILLING_APPROACH_UNSPECIFIED": 0,
+		"CONFIGURABLE_SUBSCRIPTION_INDEXING_CORE":   1,
+		"CONFIGURABLE_CONSUMPTION_EMBEDDING":        2,
+	}
+)
+
+func (x DataStore_ConfigurableBillingApproach) Enum() *DataStore_ConfigurableBillingApproach {
+	p := new(DataStore_ConfigurableBillingApproach)
+	*p = x
+	return p
+}
+
+func (x DataStore_ConfigurableBillingApproach) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DataStore_ConfigurableBillingApproach) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_enumTypes[1].Descriptor()
+}
+
+func (DataStore_ConfigurableBillingApproach) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1beta_data_store_proto_enumTypes[1]
+}
+
+func (x DataStore_ConfigurableBillingApproach) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DataStore_ConfigurableBillingApproach.Descriptor instead.
+func (DataStore_ConfigurableBillingApproach) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{0, 1}
+}
+
+// Auth mode.
+type DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode int32
+
+const (
+	DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AUTH_MODE_UNSPECIFIED DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode = 0
+	// Uses P4SA when VAIS talks to AlloyDB.
+	DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AUTH_MODE_SERVICE_ACCOUNT DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode = 1
+	// Uses EUC when VAIS talks to AlloyDB.
+	DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AUTH_MODE_END_USER_ACCOUNT DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode = 2
+)
+
+// Enum value maps for DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode.
+var (
+	DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode_name = map[int32]string{
+		0: "AUTH_MODE_UNSPECIFIED",
+		1: "AUTH_MODE_SERVICE_ACCOUNT",
+		2: "AUTH_MODE_END_USER_ACCOUNT",
+	}
+	DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode_value = map[string]int32{
+		"AUTH_MODE_UNSPECIFIED":      0,
+		"AUTH_MODE_SERVICE_ACCOUNT":  1,
+		"AUTH_MODE_END_USER_ACCOUNT": 2,
+	}
+)
+
+func (x DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode) Enum() *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode {
+	p := new(DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode)
+	*p = x
+	return p
+}
+
+func (x DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_enumTypes[2].Descriptor()
+}
+
+func (DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1beta_data_store_proto_enumTypes[2]
+}
+
+func (x DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode.Descriptor instead.
+func (DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{0, 2, 0, 0, 0}
+}
+
 // Mode of Natural Language Query Understanding. When the
 // NaturalLanguageQueryUnderstandingConfig.Mode is ENABLED, the natural
 // language understanding capabilities will be enabled for a search request if
@@ -144,11 +250,11 @@ func (x NaturalLanguageQueryUnderstandingConfig_Mode) String() string {
 }
 
 func (NaturalLanguageQueryUnderstandingConfig_Mode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_discoveryengine_v1beta_data_store_proto_enumTypes[1].Descriptor()
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_enumTypes[3].Descriptor()
 }
 
 func (NaturalLanguageQueryUnderstandingConfig_Mode) Type() protoreflect.EnumType {
-	return &file_google_cloud_discoveryengine_v1beta_data_store_proto_enumTypes[1]
+	return &file_google_cloud_discoveryengine_v1beta_data_store_proto_enumTypes[3]
 }
 
 func (x NaturalLanguageQueryUnderstandingConfig_Mode) Number() protoreflect.EnumNumber {
@@ -157,7 +263,7 @@ func (x NaturalLanguageQueryUnderstandingConfig_Mode) Number() protoreflect.Enum
 
 // Deprecated: Use NaturalLanguageQueryUnderstandingConfig_Mode.Descriptor instead.
 func (NaturalLanguageQueryUnderstandingConfig_Mode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{2, 0}
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{3, 0}
 }
 
 // Specifies the type of Workspace App supported by this DataStore
@@ -180,6 +286,8 @@ const (
 	WorkspaceConfig_GOOGLE_GROUPS WorkspaceConfig_Type = 6
 	// Workspace Data Store contains Keep data
 	WorkspaceConfig_GOOGLE_KEEP WorkspaceConfig_Type = 7
+	// Workspace Data Store contains People data
+	WorkspaceConfig_GOOGLE_PEOPLE WorkspaceConfig_Type = 8
 )
 
 // Enum value maps for WorkspaceConfig_Type.
@@ -193,6 +301,7 @@ var (
 		5: "GOOGLE_CHAT",
 		6: "GOOGLE_GROUPS",
 		7: "GOOGLE_KEEP",
+		8: "GOOGLE_PEOPLE",
 	}
 	WorkspaceConfig_Type_value = map[string]int32{
 		"TYPE_UNSPECIFIED": 0,
@@ -203,6 +312,7 @@ var (
 		"GOOGLE_CHAT":      5,
 		"GOOGLE_GROUPS":    6,
 		"GOOGLE_KEEP":      7,
+		"GOOGLE_PEOPLE":    8,
 	}
 )
 
@@ -217,11 +327,11 @@ func (x WorkspaceConfig_Type) String() string {
 }
 
 func (WorkspaceConfig_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_discoveryengine_v1beta_data_store_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_enumTypes[4].Descriptor()
 }
 
 func (WorkspaceConfig_Type) Type() protoreflect.EnumType {
-	return &file_google_cloud_discoveryengine_v1beta_data_store_proto_enumTypes[2]
+	return &file_google_cloud_discoveryengine_v1beta_data_store_proto_enumTypes[4]
 }
 
 func (x WorkspaceConfig_Type) Number() protoreflect.EnumNumber {
@@ -230,13 +340,13 @@ func (x WorkspaceConfig_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WorkspaceConfig_Type.Descriptor instead.
 func (WorkspaceConfig_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{3, 0}
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{4, 0}
 }
 
 // DataStore captures global settings and configs at the DataStore level.
 type DataStore struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Immutable. The full resource name of the data store.
+	// Immutable. Identifier. The full resource name of the data store.
 	// Format:
 	// `projects/{project}/locations/{location}/collections/{collection_id}/dataStores/{data_store_id}`.
 	//
@@ -258,7 +368,7 @@ type DataStore struct {
 	//     solutions cannot be enrolled.
 	SolutionTypes []SolutionType `protobuf:"varint,5,rep,packed,name=solution_types,json=solutionTypes,proto3,enum=google.cloud.discoveryengine.v1beta.SolutionType" json:"solution_types,omitempty"`
 	// Output only. The id of the default
-	// [Schema][google.cloud.discoveryengine.v1beta.Schema] asscociated to this
+	// [Schema][google.cloud.discoveryengine.v1beta.Schema] associated to this
 	// data store.
 	DefaultSchemaId string `protobuf:"bytes,7,opt,name=default_schema_id,json=defaultSchemaId,proto3" json:"default_schema_id,omitempty"`
 	// Immutable. The content config of the data store. If this field is unset,
@@ -268,12 +378,43 @@ type DataStore struct {
 	// Output only. Timestamp the
 	// [DataStore][google.cloud.discoveryengine.v1beta.DataStore] was created at.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Optional. Configuration for advanced site search.
+	AdvancedSiteSearchConfig *AdvancedSiteSearchConfig `protobuf:"bytes,12,opt,name=advanced_site_search_config,json=advancedSiteSearchConfig,proto3" json:"advanced_site_search_config,omitempty"`
 	// Language info for DataStore.
 	LanguageInfo *LanguageInfo `protobuf:"bytes,14,opt,name=language_info,json=languageInfo,proto3" json:"language_info,omitempty"`
 	// Optional. Configuration for Natural Language Query Understanding.
 	NaturalLanguageQueryUnderstandingConfig *NaturalLanguageQueryUnderstandingConfig `protobuf:"bytes,34,opt,name=natural_language_query_understanding_config,json=naturalLanguageQueryUnderstandingConfig,proto3" json:"natural_language_query_understanding_config,omitempty"`
+	// Input only. The KMS key to be used to protect this DataStore at creation
+	// time.
+	//
+	// Must be set for requests that need to comply with CMEK Org Policy
+	// protections.
+	//
+	// If this field is set and processed successfully, the DataStore will be
+	// protected by the KMS key, as indicated in the cmek_config field.
+	KmsKeyName string `protobuf:"bytes,32,opt,name=kms_key_name,json=kmsKeyName,proto3" json:"kms_key_name,omitempty"`
+	// Output only. CMEK-related information for the DataStore.
+	CmekConfig *CmekConfig `protobuf:"bytes,18,opt,name=cmek_config,json=cmekConfig,proto3" json:"cmek_config,omitempty"`
 	// Output only. Data size estimation for billing.
 	BillingEstimation *DataStore_BillingEstimation `protobuf:"bytes,23,opt,name=billing_estimation,json=billingEstimation,proto3" json:"billing_estimation,omitempty"`
+	// Immutable. Whether data in the
+	// [DataStore][google.cloud.discoveryengine.v1beta.DataStore] has ACL
+	// information. If set to `true`, the source data must have ACL. ACL will be
+	// ingested when data is ingested by
+	// [DocumentService.ImportDocuments][google.cloud.discoveryengine.v1beta.DocumentService.ImportDocuments]
+	// methods.
+	//
+	// When ACL is enabled for the
+	// [DataStore][google.cloud.discoveryengine.v1beta.DataStore],
+	// [Document][google.cloud.discoveryengine.v1beta.Document] can't be accessed
+	// by calling
+	// [DocumentService.GetDocument][google.cloud.discoveryengine.v1beta.DocumentService.GetDocument]
+	// or
+	// [DocumentService.ListDocuments][google.cloud.discoveryengine.v1beta.DocumentService.ListDocuments].
+	//
+	// Currently ACL is only supported in `GENERIC` industry vertical with
+	// non-`PUBLIC_WEBSITE` content config.
+	AclEnabled bool `protobuf:"varint,24,opt,name=acl_enabled,json=aclEnabled,proto3" json:"acl_enabled,omitempty"`
 	// Config to store data store type configuration for workspace data. This
 	// must be set when
 	// [DataStore.content_config][google.cloud.discoveryengine.v1beta.DataStore.content_config]
@@ -287,9 +428,12 @@ type DataStore struct {
 	// provisioning it. If unset, a default vertical specialized schema will be
 	// used.
 	//
-	// This field is only used by [CreateDataStore][] API, and will be ignored if
-	// used in other APIs. This field will be omitted from all API responses
-	// including [CreateDataStore][] API. To retrieve a schema of a
+	// This field is only used by
+	// [CreateDataStore][google.cloud.discoveryengine.v1beta.DataStoreService.CreateDataStore]
+	// API, and will be ignored if used in other APIs. This field will be omitted
+	// from all API responses including
+	// [CreateDataStore][google.cloud.discoveryengine.v1beta.DataStoreService.CreateDataStore]
+	// API. To retrieve a schema of a
 	// [DataStore][google.cloud.discoveryengine.v1beta.DataStore], use
 	// [SchemaService.GetSchema][google.cloud.discoveryengine.v1beta.SchemaService.GetSchema]
 	// API instead.
@@ -298,10 +442,27 @@ type DataStore struct {
 	// Learn more from [this
 	// doc](https://cloud.google.com/generative-ai-app-builder/docs/provide-schema).
 	StartingSchema *Schema `protobuf:"bytes,28,opt,name=starting_schema,json=startingSchema,proto3" json:"starting_schema,omitempty"`
+	// Optional. Configuration for `HEALTHCARE_FHIR` vertical.
+	HealthcareFhirConfig *HealthcareFhirConfig `protobuf:"bytes,29,opt,name=healthcare_fhir_config,json=healthcareFhirConfig,proto3" json:"healthcare_fhir_config,omitempty"`
 	// Optional. Stores serving config at DataStore level.
 	ServingConfigDataStore *DataStore_ServingConfigDataStore `protobuf:"bytes,30,opt,name=serving_config_data_store,json=servingConfigDataStore,proto3" json:"serving_config_data_store,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// Immutable. The fully qualified resource name of the associated
+	// [IdentityMappingStore][google.cloud.discoveryengine.v1beta.IdentityMappingStore].
+	// This field can only be set for acl_enabled DataStores with `THIRD_PARTY` or
+	// `GSUITE` IdP. Format:
+	// `projects/{project}/locations/{location}/identityMappingStores/{identity_mapping_store}`.
+	IdentityMappingStore string `protobuf:"bytes,31,opt,name=identity_mapping_store,json=identityMappingStore,proto3" json:"identity_mapping_store,omitempty"`
+	// Optional. If set, this DataStore is an Infobot FAQ DataStore.
+	IsInfobotFaqDataStore bool `protobuf:"varint,37,opt,name=is_infobot_faq_data_store,json=isInfobotFaqDataStore,proto3" json:"is_infobot_faq_data_store,omitempty"`
+	// Optional. If set, this DataStore is a federated search DataStore.
+	FederatedSearchConfig *DataStore_FederatedSearchConfig `protobuf:"bytes,38,opt,name=federated_search_config,json=federatedSearchConfig,proto3" json:"federated_search_config,omitempty"`
+	// Optional. Configuration for configurable billing approach. See
+	ConfigurableBillingApproach DataStore_ConfigurableBillingApproach `protobuf:"varint,45,opt,name=configurable_billing_approach,json=configurableBillingApproach,proto3,enum=google.cloud.discoveryengine.v1beta.DataStore_ConfigurableBillingApproach" json:"configurable_billing_approach,omitempty"`
+	// Output only. The timestamp when configurable_billing_approach was last
+	// updated.
+	ConfigurableBillingApproachUpdateTime *timestamppb.Timestamp `protobuf:"bytes,46,opt,name=configurable_billing_approach_update_time,json=configurableBillingApproachUpdateTime,proto3" json:"configurable_billing_approach_update_time,omitempty"`
+	unknownFields                         protoimpl.UnknownFields
+	sizeCache                             protoimpl.SizeCache
 }
 
 func (x *DataStore) Reset() {
@@ -383,6 +544,13 @@ func (x *DataStore) GetCreateTime() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *DataStore) GetAdvancedSiteSearchConfig() *AdvancedSiteSearchConfig {
+	if x != nil {
+		return x.AdvancedSiteSearchConfig
+	}
+	return nil
+}
+
 func (x *DataStore) GetLanguageInfo() *LanguageInfo {
 	if x != nil {
 		return x.LanguageInfo
@@ -397,11 +565,32 @@ func (x *DataStore) GetNaturalLanguageQueryUnderstandingConfig() *NaturalLanguag
 	return nil
 }
 
+func (x *DataStore) GetKmsKeyName() string {
+	if x != nil {
+		return x.KmsKeyName
+	}
+	return ""
+}
+
+func (x *DataStore) GetCmekConfig() *CmekConfig {
+	if x != nil {
+		return x.CmekConfig
+	}
+	return nil
+}
+
 func (x *DataStore) GetBillingEstimation() *DataStore_BillingEstimation {
 	if x != nil {
 		return x.BillingEstimation
 	}
 	return nil
+}
+
+func (x *DataStore) GetAclEnabled() bool {
+	if x != nil {
+		return x.AclEnabled
+	}
+	return false
 }
 
 func (x *DataStore) GetWorkspaceConfig() *WorkspaceConfig {
@@ -425,11 +614,108 @@ func (x *DataStore) GetStartingSchema() *Schema {
 	return nil
 }
 
+func (x *DataStore) GetHealthcareFhirConfig() *HealthcareFhirConfig {
+	if x != nil {
+		return x.HealthcareFhirConfig
+	}
+	return nil
+}
+
 func (x *DataStore) GetServingConfigDataStore() *DataStore_ServingConfigDataStore {
 	if x != nil {
 		return x.ServingConfigDataStore
 	}
 	return nil
+}
+
+func (x *DataStore) GetIdentityMappingStore() string {
+	if x != nil {
+		return x.IdentityMappingStore
+	}
+	return ""
+}
+
+func (x *DataStore) GetIsInfobotFaqDataStore() bool {
+	if x != nil {
+		return x.IsInfobotFaqDataStore
+	}
+	return false
+}
+
+func (x *DataStore) GetFederatedSearchConfig() *DataStore_FederatedSearchConfig {
+	if x != nil {
+		return x.FederatedSearchConfig
+	}
+	return nil
+}
+
+func (x *DataStore) GetConfigurableBillingApproach() DataStore_ConfigurableBillingApproach {
+	if x != nil {
+		return x.ConfigurableBillingApproach
+	}
+	return DataStore_CONFIGURABLE_BILLING_APPROACH_UNSPECIFIED
+}
+
+func (x *DataStore) GetConfigurableBillingApproachUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ConfigurableBillingApproachUpdateTime
+	}
+	return nil
+}
+
+// Configuration data for advance site search.
+type AdvancedSiteSearchConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// If set true, initial indexing is disabled for the DataStore.
+	DisableInitialIndex *bool `protobuf:"varint,3,opt,name=disable_initial_index,json=disableInitialIndex,proto3,oneof" json:"disable_initial_index,omitempty"`
+	// If set true, automatic refresh is disabled for the DataStore.
+	DisableAutomaticRefresh *bool `protobuf:"varint,4,opt,name=disable_automatic_refresh,json=disableAutomaticRefresh,proto3,oneof" json:"disable_automatic_refresh,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *AdvancedSiteSearchConfig) Reset() {
+	*x = AdvancedSiteSearchConfig{}
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdvancedSiteSearchConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdvancedSiteSearchConfig) ProtoMessage() {}
+
+func (x *AdvancedSiteSearchConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdvancedSiteSearchConfig.ProtoReflect.Descriptor instead.
+func (*AdvancedSiteSearchConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *AdvancedSiteSearchConfig) GetDisableInitialIndex() bool {
+	if x != nil && x.DisableInitialIndex != nil {
+		return *x.DisableInitialIndex
+	}
+	return false
+}
+
+func (x *AdvancedSiteSearchConfig) GetDisableAutomaticRefresh() bool {
+	if x != nil && x.DisableAutomaticRefresh != nil {
+		return *x.DisableAutomaticRefresh
+	}
+	return false
 }
 
 // Language info for DataStore.
@@ -453,7 +739,7 @@ type LanguageInfo struct {
 
 func (x *LanguageInfo) Reset() {
 	*x = LanguageInfo{}
-	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[1]
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -465,7 +751,7 @@ func (x *LanguageInfo) String() string {
 func (*LanguageInfo) ProtoMessage() {}
 
 func (x *LanguageInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[1]
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -478,7 +764,7 @@ func (x *LanguageInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LanguageInfo.ProtoReflect.Descriptor instead.
 func (*LanguageInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{1}
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *LanguageInfo) GetLanguageCode() string {
@@ -522,7 +808,7 @@ type NaturalLanguageQueryUnderstandingConfig struct {
 
 func (x *NaturalLanguageQueryUnderstandingConfig) Reset() {
 	*x = NaturalLanguageQueryUnderstandingConfig{}
-	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[2]
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -534,7 +820,7 @@ func (x *NaturalLanguageQueryUnderstandingConfig) String() string {
 func (*NaturalLanguageQueryUnderstandingConfig) ProtoMessage() {}
 
 func (x *NaturalLanguageQueryUnderstandingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[2]
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -547,7 +833,7 @@ func (x *NaturalLanguageQueryUnderstandingConfig) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use NaturalLanguageQueryUnderstandingConfig.ProtoReflect.Descriptor instead.
 func (*NaturalLanguageQueryUnderstandingConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *NaturalLanguageQueryUnderstandingConfig) GetMode() NaturalLanguageQueryUnderstandingConfig_Mode {
@@ -562,7 +848,9 @@ type WorkspaceConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The Google Workspace data source.
 	Type WorkspaceConfig_Type `protobuf:"varint,1,opt,name=type,proto3,enum=google.cloud.discoveryengine.v1beta.WorkspaceConfig_Type" json:"type,omitempty"`
-	// Obfuscated Dasher customer ID.
+	// Output only. Obfuscated Dasher customer ID. Derived by the server from
+	// the project's GCP organization at data store creation time; any value
+	// supplied in the request payload is ignored.
 	DasherCustomerId string `protobuf:"bytes,2,opt,name=dasher_customer_id,json=dasherCustomerId,proto3" json:"dasher_customer_id,omitempty"`
 	// Optional. The super admin service account for the workspace that will be
 	// used for access token generation. For now we only use it for Native Google
@@ -578,7 +866,7 @@ type WorkspaceConfig struct {
 
 func (x *WorkspaceConfig) Reset() {
 	*x = WorkspaceConfig{}
-	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[3]
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -590,7 +878,7 @@ func (x *WorkspaceConfig) String() string {
 func (*WorkspaceConfig) ProtoMessage() {}
 
 func (x *WorkspaceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[3]
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -603,7 +891,7 @@ func (x *WorkspaceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkspaceConfig.ProtoReflect.Descriptor instead.
 func (*WorkspaceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *WorkspaceConfig) GetType() WorkspaceConfig_Type {
@@ -655,7 +943,7 @@ type DataStore_BillingEstimation struct {
 
 func (x *DataStore_BillingEstimation) Reset() {
 	*x = DataStore_BillingEstimation{}
-	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[4]
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -667,7 +955,7 @@ func (x *DataStore_BillingEstimation) String() string {
 func (*DataStore_BillingEstimation) ProtoMessage() {}
 
 func (x *DataStore_BillingEstimation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[4]
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -728,8 +1016,8 @@ func (x *DataStore_BillingEstimation) GetWebsiteDataUpdateTime() *timestamppb.Ti
 // Stores information regarding the serving configurations at DataStore level.
 type DataStore_ServingConfigDataStore struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// If set true, the DataStore will not be available for serving search
-	// requests.
+	// Optional. If set true, the DataStore will not be available for serving
+	// search requests.
 	DisabledForServing bool `protobuf:"varint,1,opt,name=disabled_for_serving,json=disabledForServing,proto3" json:"disabled_for_serving,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
@@ -737,7 +1025,7 @@ type DataStore_ServingConfigDataStore struct {
 
 func (x *DataStore_ServingConfigDataStore) Reset() {
 	*x = DataStore_ServingConfigDataStore{}
-	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[5]
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -749,7 +1037,7 @@ func (x *DataStore_ServingConfigDataStore) String() string {
 func (*DataStore_ServingConfigDataStore) ProtoMessage() {}
 
 func (x *DataStore_ServingConfigDataStore) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[5]
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -772,44 +1060,522 @@ func (x *DataStore_ServingConfigDataStore) GetDisabledForServing() bool {
 	return false
 }
 
+// Stores information for federated search.
+type DataStore_FederatedSearchConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Configuration for the data source this data store is connected to.
+	//
+	// Types that are valid to be assigned to DataSourceConfig:
+	//
+	//	*DataStore_FederatedSearchConfig_AlloyDbConfig_
+	//	*DataStore_FederatedSearchConfig_ThirdPartyOauthConfig_
+	//	*DataStore_FederatedSearchConfig_NotebooklmConfig_
+	DataSourceConfig isDataStore_FederatedSearchConfig_DataSourceConfig `protobuf_oneof:"data_source_config"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *DataStore_FederatedSearchConfig) Reset() {
+	*x = DataStore_FederatedSearchConfig{}
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataStore_FederatedSearchConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataStore_FederatedSearchConfig) ProtoMessage() {}
+
+func (x *DataStore_FederatedSearchConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataStore_FederatedSearchConfig.ProtoReflect.Descriptor instead.
+func (*DataStore_FederatedSearchConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{0, 2}
+}
+
+func (x *DataStore_FederatedSearchConfig) GetDataSourceConfig() isDataStore_FederatedSearchConfig_DataSourceConfig {
+	if x != nil {
+		return x.DataSourceConfig
+	}
+	return nil
+}
+
+func (x *DataStore_FederatedSearchConfig) GetAlloyDbConfig() *DataStore_FederatedSearchConfig_AlloyDbConfig {
+	if x != nil {
+		if x, ok := x.DataSourceConfig.(*DataStore_FederatedSearchConfig_AlloyDbConfig_); ok {
+			return x.AlloyDbConfig
+		}
+	}
+	return nil
+}
+
+func (x *DataStore_FederatedSearchConfig) GetThirdPartyOauthConfig() *DataStore_FederatedSearchConfig_ThirdPartyOauthConfig {
+	if x != nil {
+		if x, ok := x.DataSourceConfig.(*DataStore_FederatedSearchConfig_ThirdPartyOauthConfig_); ok {
+			return x.ThirdPartyOauthConfig
+		}
+	}
+	return nil
+}
+
+func (x *DataStore_FederatedSearchConfig) GetNotebooklmConfig() *DataStore_FederatedSearchConfig_NotebooklmConfig {
+	if x != nil {
+		if x, ok := x.DataSourceConfig.(*DataStore_FederatedSearchConfig_NotebooklmConfig_); ok {
+			return x.NotebooklmConfig
+		}
+	}
+	return nil
+}
+
+type isDataStore_FederatedSearchConfig_DataSourceConfig interface {
+	isDataStore_FederatedSearchConfig_DataSourceConfig()
+}
+
+type DataStore_FederatedSearchConfig_AlloyDbConfig_ struct {
+	// AlloyDB config. If set, this DataStore is connected to AlloyDB.
+	AlloyDbConfig *DataStore_FederatedSearchConfig_AlloyDbConfig `protobuf:"bytes,1,opt,name=alloy_db_config,json=alloyDbConfig,proto3,oneof"`
+}
+
+type DataStore_FederatedSearchConfig_ThirdPartyOauthConfig_ struct {
+	// Third Party OAuth config. If set, this DataStore is connected to a
+	// third party application.
+	ThirdPartyOauthConfig *DataStore_FederatedSearchConfig_ThirdPartyOauthConfig `protobuf:"bytes,2,opt,name=third_party_oauth_config,json=thirdPartyOauthConfig,proto3,oneof"`
+}
+
+type DataStore_FederatedSearchConfig_NotebooklmConfig_ struct {
+	// NotebookLM config. If set, this DataStore is connected to
+	// NotebookLM Enterprise.
+	NotebooklmConfig *DataStore_FederatedSearchConfig_NotebooklmConfig `protobuf:"bytes,3,opt,name=notebooklm_config,json=notebooklmConfig,proto3,oneof"`
+}
+
+func (*DataStore_FederatedSearchConfig_AlloyDbConfig_) isDataStore_FederatedSearchConfig_DataSourceConfig() {
+}
+
+func (*DataStore_FederatedSearchConfig_ThirdPartyOauthConfig_) isDataStore_FederatedSearchConfig_DataSourceConfig() {
+}
+
+func (*DataStore_FederatedSearchConfig_NotebooklmConfig_) isDataStore_FederatedSearchConfig_DataSourceConfig() {
+}
+
+// Stores information for connecting to AlloyDB.
+type DataStore_FederatedSearchConfig_AlloyDbConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Configuration for connecting to AlloyDB.
+	AlloydbConnectionConfig *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig `protobuf:"bytes,1,opt,name=alloydb_connection_config,json=alloydbConnectionConfig,proto3" json:"alloydb_connection_config,omitempty"`
+	// Optional. Configuration for Magic.
+	AlloydbAiNlConfig *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbAiNaturalLanguageConfig `protobuf:"bytes,2,opt,name=alloydb_ai_nl_config,json=alloydbAiNlConfig,proto3" json:"alloydb_ai_nl_config,omitempty"`
+	// Optional. Fields to be returned in the search results. If empty, all
+	// fields will be returned.
+	ReturnedFields []string `protobuf:"bytes,3,rep,name=returned_fields,json=returnedFields,proto3" json:"returned_fields,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig) Reset() {
+	*x = DataStore_FederatedSearchConfig_AlloyDbConfig{}
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataStore_FederatedSearchConfig_AlloyDbConfig) ProtoMessage() {}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataStore_FederatedSearchConfig_AlloyDbConfig.ProtoReflect.Descriptor instead.
+func (*DataStore_FederatedSearchConfig_AlloyDbConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{0, 2, 0}
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig) GetAlloydbConnectionConfig() *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig {
+	if x != nil {
+		return x.AlloydbConnectionConfig
+	}
+	return nil
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig) GetAlloydbAiNlConfig() *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbAiNaturalLanguageConfig {
+	if x != nil {
+		return x.AlloydbAiNlConfig
+	}
+	return nil
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig) GetReturnedFields() []string {
+	if x != nil {
+		return x.ReturnedFields
+	}
+	return nil
+}
+
+// Stores information for third party applicationOAuth.
+type DataStore_FederatedSearchConfig_ThirdPartyOauthConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The type of the application. E.g., "jira", "box", etc.
+	AppName string `protobuf:"bytes,1,opt,name=app_name,json=appName,proto3" json:"app_name,omitempty"`
+	// Optional. The instance name identifying the 3P app, e.g.,
+	// "vaissptbots-my". This is different from the instance_uri which is the
+	// full URL of the 3P app e.g., "https://vaissptbots-my.sharepoint.com".
+	InstanceName  string `protobuf:"bytes,2,opt,name=instance_name,json=instanceName,proto3" json:"instance_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataStore_FederatedSearchConfig_ThirdPartyOauthConfig) Reset() {
+	*x = DataStore_FederatedSearchConfig_ThirdPartyOauthConfig{}
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataStore_FederatedSearchConfig_ThirdPartyOauthConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataStore_FederatedSearchConfig_ThirdPartyOauthConfig) ProtoMessage() {}
+
+func (x *DataStore_FederatedSearchConfig_ThirdPartyOauthConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataStore_FederatedSearchConfig_ThirdPartyOauthConfig.ProtoReflect.Descriptor instead.
+func (*DataStore_FederatedSearchConfig_ThirdPartyOauthConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{0, 2, 1}
+}
+
+func (x *DataStore_FederatedSearchConfig_ThirdPartyOauthConfig) GetAppName() string {
+	if x != nil {
+		return x.AppName
+	}
+	return ""
+}
+
+func (x *DataStore_FederatedSearchConfig_ThirdPartyOauthConfig) GetInstanceName() string {
+	if x != nil {
+		return x.InstanceName
+	}
+	return ""
+}
+
+// Config for connecting to NotebookLM Enterprise.
+type DataStore_FederatedSearchConfig_NotebooklmConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Search config name.
+	//
+	// Format: projects/*/locations/global/notebookLmSearchConfigs/*
+	SearchConfig  string `protobuf:"bytes,1,opt,name=search_config,json=searchConfig,proto3" json:"search_config,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataStore_FederatedSearchConfig_NotebooklmConfig) Reset() {
+	*x = DataStore_FederatedSearchConfig_NotebooklmConfig{}
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataStore_FederatedSearchConfig_NotebooklmConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataStore_FederatedSearchConfig_NotebooklmConfig) ProtoMessage() {}
+
+func (x *DataStore_FederatedSearchConfig_NotebooklmConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataStore_FederatedSearchConfig_NotebooklmConfig.ProtoReflect.Descriptor instead.
+func (*DataStore_FederatedSearchConfig_NotebooklmConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{0, 2, 2}
+}
+
+func (x *DataStore_FederatedSearchConfig_NotebooklmConfig) GetSearchConfig() string {
+	if x != nil {
+		return x.SearchConfig
+	}
+	return ""
+}
+
+// Configuration for connecting to AlloyDB.
+type DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The AlloyDB instance to connect to.
+	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
+	// Required. The AlloyDB database to connect to.
+	Database string `protobuf:"bytes,2,opt,name=database,proto3" json:"database,omitempty"`
+	// Required. Database user.
+	//
+	// If auth_mode = END_USER_ACCOUNT, it can be unset. In that case,
+	// the user will be inferred on the AlloyDB side, based on the
+	// authenticated user.
+	User string `protobuf:"bytes,3,opt,name=user,proto3" json:"user,omitempty"`
+	// Required. Database password.
+	//
+	// If auth_mode = END_USER_ACCOUNT, it can be unset. In that case,
+	// the password will be inferred on the AlloyDB side, based on the
+	// authenticated user.
+	Password string `protobuf:"bytes,4,opt,name=password,proto3" json:"password,omitempty"`
+	// Optional. Auth mode.
+	AuthMode DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode `protobuf:"varint,5,opt,name=auth_mode,json=authMode,proto3,enum=google.cloud.discoveryengine.v1beta.DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode" json:"auth_mode,omitempty"`
+	// Optional. If true, enable PSVS for AlloyDB.
+	EnablePsvs    bool `protobuf:"varint,6,opt,name=enable_psvs,json=enablePsvs,proto3" json:"enable_psvs,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig) Reset() {
+	*x = DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig{}
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig) ProtoMessage() {}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig.ProtoReflect.Descriptor instead.
+func (*DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{0, 2, 0, 0}
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig) GetInstance() string {
+	if x != nil {
+		return x.Instance
+	}
+	return ""
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig) GetDatabase() string {
+	if x != nil {
+		return x.Database
+	}
+	return ""
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig) GetUser() string {
+	if x != nil {
+		return x.User
+	}
+	return ""
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig) GetAuthMode() DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode {
+	if x != nil {
+		return x.AuthMode
+	}
+	return DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AUTH_MODE_UNSPECIFIED
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig) GetEnablePsvs() bool {
+	if x != nil {
+		return x.EnablePsvs
+	}
+	return false
+}
+
+// Configuration for AlloyDB AI Natural Language.
+type DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbAiNaturalLanguageConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. AlloyDb AI NL config id, i.e. the value that was used for
+	// calling `SELECT alloydb_ai_nl.g_create_configuration(...)`. Can be
+	// empty.
+	NlConfigId    string `protobuf:"bytes,1,opt,name=nl_config_id,json=nlConfigId,proto3" json:"nl_config_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbAiNaturalLanguageConfig) Reset() {
+	*x = DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbAiNaturalLanguageConfig{}
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbAiNaturalLanguageConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbAiNaturalLanguageConfig) ProtoMessage() {}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbAiNaturalLanguageConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbAiNaturalLanguageConfig.ProtoReflect.Descriptor instead.
+func (*DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbAiNaturalLanguageConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP(), []int{0, 2, 0, 1}
+}
+
+func (x *DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbAiNaturalLanguageConfig) GetNlConfigId() string {
+	if x != nil {
+		return x.NlConfigId
+	}
+	return ""
+}
+
 var File_google_cloud_discoveryengine_v1beta_data_store_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/discoveryengine/v1beta/data_store.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1aDgoogle/cloud/discoveryengine/v1beta/document_processing_config.proto\x1a0google/cloud/discoveryengine/v1beta/schema.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfa\x10\n" +
-	"\tDataStore\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
+	"4google/cloud/discoveryengine/v1beta/data_store.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a=google/cloud/discoveryengine/v1beta/cmek_config_service.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1aDgoogle/cloud/discoveryengine/v1beta/document_processing_config.proto\x1a0google/cloud/discoveryengine/v1beta/schema.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x96&\n" +
+	"\tDataStore\x12\x1a\n" +
+	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x05\xe0A\bR\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12g\n" +
 	"\x11industry_vertical\x18\x03 \x01(\x0e25.google.cloud.discoveryengine.v1beta.IndustryVerticalB\x03\xe0A\x05R\x10industryVertical\x12X\n" +
 	"\x0esolution_types\x18\x05 \x03(\x0e21.google.cloud.discoveryengine.v1beta.SolutionTypeR\rsolutionTypes\x12/\n" +
 	"\x11default_schema_id\x18\a \x01(\tB\x03\xe0A\x03R\x0fdefaultSchemaId\x12h\n" +
 	"\x0econtent_config\x18\x06 \x01(\x0e2<.google.cloud.discoveryengine.v1beta.DataStore.ContentConfigB\x03\xe0A\x05R\rcontentConfig\x12@\n" +
 	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12V\n" +
+	"createTime\x12\x81\x01\n" +
+	"\x1badvanced_site_search_config\x18\f \x01(\v2=.google.cloud.discoveryengine.v1beta.AdvancedSiteSearchConfigB\x03\xe0A\x01R\x18advancedSiteSearchConfig\x12V\n" +
 	"\rlanguage_info\x18\x0e \x01(\v21.google.cloud.discoveryengine.v1beta.LanguageInfoR\flanguageInfo\x12\xaf\x01\n" +
-	"+natural_language_query_understanding_config\x18\" \x01(\v2L.google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfigB\x03\xe0A\x01R'naturalLanguageQueryUnderstandingConfig\x12t\n" +
-	"\x12billing_estimation\x18\x17 \x01(\v2@.google.cloud.discoveryengine.v1beta.DataStore.BillingEstimationB\x03\xe0A\x03R\x11billingEstimation\x12_\n" +
+	"+natural_language_query_understanding_config\x18\" \x01(\v2L.google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfigB\x03\xe0A\x01R'naturalLanguageQueryUnderstandingConfig\x12%\n" +
+	"\fkms_key_name\x18  \x01(\tB\x03\xe0A\x04R\n" +
+	"kmsKeyName\x12U\n" +
+	"\vcmek_config\x18\x12 \x01(\v2/.google.cloud.discoveryengine.v1beta.CmekConfigB\x03\xe0A\x03R\n" +
+	"cmekConfig\x12t\n" +
+	"\x12billing_estimation\x18\x17 \x01(\v2@.google.cloud.discoveryengine.v1beta.DataStore.BillingEstimationB\x03\xe0A\x03R\x11billingEstimation\x12$\n" +
+	"\vacl_enabled\x18\x18 \x01(\bB\x03\xe0A\x05R\n" +
+	"aclEnabled\x12_\n" +
 	"\x10workspace_config\x18\x19 \x01(\v24.google.cloud.discoveryengine.v1beta.WorkspaceConfigR\x0fworkspaceConfig\x12{\n" +
 	"\x1adocument_processing_config\x18\x1b \x01(\v2=.google.cloud.discoveryengine.v1beta.DocumentProcessingConfigR\x18documentProcessingConfig\x12T\n" +
-	"\x0fstarting_schema\x18\x1c \x01(\v2+.google.cloud.discoveryengine.v1beta.SchemaR\x0estartingSchema\x12\x85\x01\n" +
-	"\x19serving_config_data_store\x18\x1e \x01(\v2E.google.cloud.discoveryengine.v1beta.DataStore.ServingConfigDataStoreB\x03\xe0A\x01R\x16servingConfigDataStore\x1a\xb6\x03\n" +
+	"\x0fstarting_schema\x18\x1c \x01(\v2+.google.cloud.discoveryengine.v1beta.SchemaR\x0estartingSchema\x12t\n" +
+	"\x16healthcare_fhir_config\x18\x1d \x01(\v29.google.cloud.discoveryengine.v1beta.HealthcareFhirConfigB\x03\xe0A\x01R\x14healthcareFhirConfig\x12\x85\x01\n" +
+	"\x19serving_config_data_store\x18\x1e \x01(\v2E.google.cloud.discoveryengine.v1beta.DataStore.ServingConfigDataStoreB\x03\xe0A\x01R\x16servingConfigDataStore\x12q\n" +
+	"\x16identity_mapping_store\x18\x1f \x01(\tB;\xe0A\x05\xfaA5\n" +
+	"3discoveryengine.googleapis.com/IdentityMappingStoreR\x14identityMappingStore\x12=\n" +
+	"\x19is_infobot_faq_data_store\x18% \x01(\bB\x03\xe0A\x01R\x15isInfobotFaqDataStore\x12\x81\x01\n" +
+	"\x17federated_search_config\x18& \x01(\v2D.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfigB\x03\xe0A\x01R\x15federatedSearchConfig\x12\x93\x01\n" +
+	"\x1dconfigurable_billing_approach\x18- \x01(\x0e2J.google.cloud.discoveryengine.v1beta.DataStore.ConfigurableBillingApproachB\x03\xe0A\x01R\x1bconfigurableBillingApproach\x12y\n" +
+	")configurable_billing_approach_update_time\x18. \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R%configurableBillingApproachUpdateTime\x1a\xb6\x03\n" +
 	"\x11BillingEstimation\x120\n" +
 	"\x14structured_data_size\x18\x01 \x01(\x03R\x12structuredDataSize\x124\n" +
 	"\x16unstructured_data_size\x18\x02 \x01(\x03R\x14unstructuredDataSize\x12*\n" +
 	"\x11website_data_size\x18\x03 \x01(\x03R\x0fwebsiteDataSize\x12Y\n" +
 	"\x1bstructured_data_update_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x18structuredDataUpdateTime\x12]\n" +
 	"\x1dunstructured_data_update_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x1aunstructuredDataUpdateTime\x12S\n" +
-	"\x18website_data_update_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x15websiteDataUpdateTime\x1aJ\n" +
-	"\x16ServingConfigDataStore\x120\n" +
-	"\x14disabled_for_serving\x18\x01 \x01(\bR\x12disabledForServing\"\x7f\n" +
+	"\x18website_data_update_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x15websiteDataUpdateTime\x1aO\n" +
+	"\x16ServingConfigDataStore\x125\n" +
+	"\x14disabled_for_serving\x18\x01 \x01(\bB\x03\xe0A\x01R\x12disabledForServing\x1a\x88\f\n" +
+	"\x15FederatedSearchConfig\x12|\n" +
+	"\x0falloy_db_config\x18\x01 \x01(\v2R.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfigH\x00R\ralloyDbConfig\x12\x95\x01\n" +
+	"\x18third_party_oauth_config\x18\x02 \x01(\v2Z.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.ThirdPartyOauthConfigH\x00R\x15thirdPartyOauthConfig\x12\x84\x01\n" +
+	"\x11notebooklm_config\x18\x03 \x01(\v2U.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.NotebooklmConfigH\x00R\x10notebooklmConfig\x1a\x9a\a\n" +
+	"\rAlloyDbConfig\x12\xab\x01\n" +
+	"\x19alloydb_connection_config\x18\x01 \x01(\v2j.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbConnectionConfigB\x03\xe0A\x02R\x17alloydbConnectionConfig\x12\xa7\x01\n" +
+	"\x14alloydb_ai_nl_config\x18\x02 \x01(\v2q.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbAiNaturalLanguageConfigB\x03\xe0A\x01R\x11alloydbAiNlConfig\x12,\n" +
+	"\x0freturned_fields\x18\x03 \x03(\tB\x03\xe0A\x01R\x0ereturnedFields\x1a\xb9\x03\n" +
+	"\x17AlloyDbConnectionConfig\x12\x1f\n" +
+	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1f\n" +
+	"\bdatabase\x18\x02 \x01(\tB\x03\xe0A\x02R\bdatabase\x12\x17\n" +
+	"\x04user\x18\x03 \x01(\tB\x03\xe0A\x02R\x04user\x12\x1f\n" +
+	"\bpassword\x18\x04 \x01(\tB\x03\xe0A\x02R\bpassword\x12\x95\x01\n" +
+	"\tauth_mode\x18\x05 \x01(\x0e2s.google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbConnectionConfig.AuthModeB\x03\xe0A\x01R\bauthMode\x12$\n" +
+	"\venable_psvs\x18\x06 \x01(\bB\x03\xe0A\x01R\n" +
+	"enablePsvs\"d\n" +
+	"\bAuthMode\x12\x19\n" +
+	"\x15AUTH_MODE_UNSPECIFIED\x10\x00\x12\x1d\n" +
+	"\x19AUTH_MODE_SERVICE_ACCOUNT\x10\x01\x12\x1e\n" +
+	"\x1aAUTH_MODE_END_USER_ACCOUNT\x10\x02\x1aG\n" +
+	"\x1eAlloyDbAiNaturalLanguageConfig\x12%\n" +
+	"\fnl_config_id\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
+	"nlConfigId\x1aa\n" +
+	"\x15ThirdPartyOauthConfig\x12\x1e\n" +
+	"\bapp_name\x18\x01 \x01(\tB\x03\xe0A\x01R\aappName\x12(\n" +
+	"\rinstance_name\x18\x02 \x01(\tB\x03\xe0A\x01R\finstanceName\x1a<\n" +
+	"\x10NotebooklmConfig\x12(\n" +
+	"\rsearch_config\x18\x01 \x01(\tB\x03\xe0A\x02R\fsearchConfigB\x14\n" +
+	"\x12data_source_config\"\x7f\n" +
 	"\rContentConfig\x12\x1e\n" +
 	"\x1aCONTENT_CONFIG_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"NO_CONTENT\x10\x01\x12\x14\n" +
 	"\x10CONTENT_REQUIRED\x10\x02\x12\x12\n" +
 	"\x0ePUBLIC_WEBSITE\x10\x03\x12\x14\n" +
-	"\x10GOOGLE_WORKSPACE\x10\x04:\xc9\x01\xeaA\xc5\x01\n" +
-	"(discoveryengine.googleapis.com/DataStore\x12?projects/{project}/locations/{location}/dataStores/{data_store}\x12Xprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}\"\xb0\x01\n" +
+	"\x10GOOGLE_WORKSPACE\x10\x04\"\xa1\x01\n" +
+	"\x1bConfigurableBillingApproach\x12-\n" +
+	")CONFIGURABLE_BILLING_APPROACH_UNSPECIFIED\x10\x00\x12+\n" +
+	"'CONFIGURABLE_SUBSCRIPTION_INDEXING_CORE\x10\x01\x12&\n" +
+	"\"CONFIGURABLE_CONSUMPTION_EMBEDDING\x10\x02:\xc9\x01\xeaA\xc5\x01\n" +
+	"(discoveryengine.googleapis.com/DataStore\x12?projects/{project}/locations/{location}/dataStores/{data_store}\x12Xprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}\"\xcc\x01\n" +
+	"\x18AdvancedSiteSearchConfig\x127\n" +
+	"\x15disable_initial_index\x18\x03 \x01(\bH\x00R\x13disableInitialIndex\x88\x01\x01\x12?\n" +
+	"\x19disable_automatic_refresh\x18\x04 \x01(\bH\x01R\x17disableAutomaticRefresh\x88\x01\x01B\x18\n" +
+	"\x16_disable_initial_indexB\x1c\n" +
+	"\x1a_disable_automatic_refresh\"\xb0\x01\n" +
 	"\fLanguageInfo\x12#\n" +
 	"\rlanguage_code\x18\x01 \x01(\tR\flanguageCode\x12=\n" +
 	"\x18normalized_language_code\x18\x02 \x01(\tB\x03\xe0A\x03R\x16normalizedLanguageCode\x12\x1f\n" +
@@ -820,12 +1586,12 @@ const file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDesc = "" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\v\n" +
-	"\aENABLED\x10\x02\"\xb0\x03\n" +
+	"\aENABLED\x10\x02\"\xc8\x03\n" +
 	"\x0fWorkspaceConfig\x12M\n" +
-	"\x04type\x18\x01 \x01(\x0e29.google.cloud.discoveryengine.v1beta.WorkspaceConfig.TypeR\x04type\x12,\n" +
-	"\x12dasher_customer_id\x18\x02 \x01(\tR\x10dasherCustomerId\x12B\n" +
+	"\x04type\x18\x01 \x01(\x0e29.google.cloud.discoveryengine.v1beta.WorkspaceConfig.TypeR\x04type\x121\n" +
+	"\x12dasher_customer_id\x18\x02 \x01(\tB\x03\xe0A\x03R\x10dasherCustomerId\x12B\n" +
 	"\x1bsuper_admin_service_account\x18\x04 \x01(\tB\x03\xe0A\x01R\x18superAdminServiceAccount\x12>\n" +
-	"\x19super_admin_email_address\x18\x05 \x01(\tB\x03\xe0A\x01R\x16superAdminEmailAddress\"\x9b\x01\n" +
+	"\x19super_admin_email_address\x18\x05 \x01(\tB\x03\xe0A\x01R\x16superAdminEmailAddress\"\xae\x01\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fGOOGLE_DRIVE\x10\x01\x12\x0f\n" +
@@ -834,7 +1600,8 @@ const file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDesc = "" +
 	"\x0fGOOGLE_CALENDAR\x10\x04\x12\x0f\n" +
 	"\vGOOGLE_CHAT\x10\x05\x12\x11\n" +
 	"\rGOOGLE_GROUPS\x10\x06\x12\x0f\n" +
-	"\vGOOGLE_KEEP\x10\aB\x95\x02\n" +
+	"\vGOOGLE_KEEP\x10\a\x12\x11\n" +
+	"\rGOOGLE_PEOPLE\x10\bB\x95\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\x0eDataStoreProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
 
 var (
@@ -849,46 +1616,69 @@ func file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescGZIP() []b
 	return file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1beta_data_store_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_google_cloud_discoveryengine_v1beta_data_store_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_google_cloud_discoveryengine_v1beta_data_store_proto_goTypes = []any{
-	(DataStore_ContentConfig)(0),                      // 0: google.cloud.discoveryengine.v1beta.DataStore.ContentConfig
-	(NaturalLanguageQueryUnderstandingConfig_Mode)(0), // 1: google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfig.Mode
-	(WorkspaceConfig_Type)(0),                         // 2: google.cloud.discoveryengine.v1beta.WorkspaceConfig.Type
-	(*DataStore)(nil),                                 // 3: google.cloud.discoveryengine.v1beta.DataStore
-	(*LanguageInfo)(nil),                              // 4: google.cloud.discoveryengine.v1beta.LanguageInfo
-	(*NaturalLanguageQueryUnderstandingConfig)(nil),   // 5: google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfig
-	(*WorkspaceConfig)(nil),                           // 6: google.cloud.discoveryengine.v1beta.WorkspaceConfig
-	(*DataStore_BillingEstimation)(nil),               // 7: google.cloud.discoveryengine.v1beta.DataStore.BillingEstimation
-	(*DataStore_ServingConfigDataStore)(nil),          // 8: google.cloud.discoveryengine.v1beta.DataStore.ServingConfigDataStore
-	(IndustryVertical)(0),                             // 9: google.cloud.discoveryengine.v1beta.IndustryVertical
-	(SolutionType)(0),                                 // 10: google.cloud.discoveryengine.v1beta.SolutionType
-	(*timestamppb.Timestamp)(nil),                     // 11: google.protobuf.Timestamp
-	(*DocumentProcessingConfig)(nil),                  // 12: google.cloud.discoveryengine.v1beta.DocumentProcessingConfig
-	(*Schema)(nil),                                    // 13: google.cloud.discoveryengine.v1beta.Schema
+	(DataStore_ContentConfig)(0),                                                         // 0: google.cloud.discoveryengine.v1beta.DataStore.ContentConfig
+	(DataStore_ConfigurableBillingApproach)(0),                                           // 1: google.cloud.discoveryengine.v1beta.DataStore.ConfigurableBillingApproach
+	(DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig_AuthMode)(0),  // 2: google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbConnectionConfig.AuthMode
+	(NaturalLanguageQueryUnderstandingConfig_Mode)(0),                                    // 3: google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfig.Mode
+	(WorkspaceConfig_Type)(0),                                                            // 4: google.cloud.discoveryengine.v1beta.WorkspaceConfig.Type
+	(*DataStore)(nil),                                                                    // 5: google.cloud.discoveryengine.v1beta.DataStore
+	(*AdvancedSiteSearchConfig)(nil),                                                     // 6: google.cloud.discoveryengine.v1beta.AdvancedSiteSearchConfig
+	(*LanguageInfo)(nil),                                                                 // 7: google.cloud.discoveryengine.v1beta.LanguageInfo
+	(*NaturalLanguageQueryUnderstandingConfig)(nil),                                      // 8: google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfig
+	(*WorkspaceConfig)(nil),                                                              // 9: google.cloud.discoveryengine.v1beta.WorkspaceConfig
+	(*DataStore_BillingEstimation)(nil),                                                  // 10: google.cloud.discoveryengine.v1beta.DataStore.BillingEstimation
+	(*DataStore_ServingConfigDataStore)(nil),                                             // 11: google.cloud.discoveryengine.v1beta.DataStore.ServingConfigDataStore
+	(*DataStore_FederatedSearchConfig)(nil),                                              // 12: google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig
+	(*DataStore_FederatedSearchConfig_AlloyDbConfig)(nil),                                // 13: google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig
+	(*DataStore_FederatedSearchConfig_ThirdPartyOauthConfig)(nil),                        // 14: google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.ThirdPartyOauthConfig
+	(*DataStore_FederatedSearchConfig_NotebooklmConfig)(nil),                             // 15: google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.NotebooklmConfig
+	(*DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbConnectionConfig)(nil),        // 16: google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbConnectionConfig
+	(*DataStore_FederatedSearchConfig_AlloyDbConfig_AlloyDbAiNaturalLanguageConfig)(nil), // 17: google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbAiNaturalLanguageConfig
+	(IndustryVertical)(0),                                                                // 18: google.cloud.discoveryengine.v1beta.IndustryVertical
+	(SolutionType)(0),                                                                    // 19: google.cloud.discoveryengine.v1beta.SolutionType
+	(*timestamppb.Timestamp)(nil),                                                        // 20: google.protobuf.Timestamp
+	(*CmekConfig)(nil),                                                                   // 21: google.cloud.discoveryengine.v1beta.CmekConfig
+	(*DocumentProcessingConfig)(nil),                                                     // 22: google.cloud.discoveryengine.v1beta.DocumentProcessingConfig
+	(*Schema)(nil),                                                                       // 23: google.cloud.discoveryengine.v1beta.Schema
+	(*HealthcareFhirConfig)(nil),                                                         // 24: google.cloud.discoveryengine.v1beta.HealthcareFhirConfig
 }
 var file_google_cloud_discoveryengine_v1beta_data_store_proto_depIdxs = []int32{
-	9,  // 0: google.cloud.discoveryengine.v1beta.DataStore.industry_vertical:type_name -> google.cloud.discoveryengine.v1beta.IndustryVertical
-	10, // 1: google.cloud.discoveryengine.v1beta.DataStore.solution_types:type_name -> google.cloud.discoveryengine.v1beta.SolutionType
+	18, // 0: google.cloud.discoveryengine.v1beta.DataStore.industry_vertical:type_name -> google.cloud.discoveryengine.v1beta.IndustryVertical
+	19, // 1: google.cloud.discoveryengine.v1beta.DataStore.solution_types:type_name -> google.cloud.discoveryengine.v1beta.SolutionType
 	0,  // 2: google.cloud.discoveryengine.v1beta.DataStore.content_config:type_name -> google.cloud.discoveryengine.v1beta.DataStore.ContentConfig
-	11, // 3: google.cloud.discoveryengine.v1beta.DataStore.create_time:type_name -> google.protobuf.Timestamp
-	4,  // 4: google.cloud.discoveryengine.v1beta.DataStore.language_info:type_name -> google.cloud.discoveryengine.v1beta.LanguageInfo
-	5,  // 5: google.cloud.discoveryengine.v1beta.DataStore.natural_language_query_understanding_config:type_name -> google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfig
-	7,  // 6: google.cloud.discoveryengine.v1beta.DataStore.billing_estimation:type_name -> google.cloud.discoveryengine.v1beta.DataStore.BillingEstimation
-	6,  // 7: google.cloud.discoveryengine.v1beta.DataStore.workspace_config:type_name -> google.cloud.discoveryengine.v1beta.WorkspaceConfig
-	12, // 8: google.cloud.discoveryengine.v1beta.DataStore.document_processing_config:type_name -> google.cloud.discoveryengine.v1beta.DocumentProcessingConfig
-	13, // 9: google.cloud.discoveryengine.v1beta.DataStore.starting_schema:type_name -> google.cloud.discoveryengine.v1beta.Schema
-	8,  // 10: google.cloud.discoveryengine.v1beta.DataStore.serving_config_data_store:type_name -> google.cloud.discoveryengine.v1beta.DataStore.ServingConfigDataStore
-	1,  // 11: google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfig.mode:type_name -> google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfig.Mode
-	2,  // 12: google.cloud.discoveryengine.v1beta.WorkspaceConfig.type:type_name -> google.cloud.discoveryengine.v1beta.WorkspaceConfig.Type
-	11, // 13: google.cloud.discoveryengine.v1beta.DataStore.BillingEstimation.structured_data_update_time:type_name -> google.protobuf.Timestamp
-	11, // 14: google.cloud.discoveryengine.v1beta.DataStore.BillingEstimation.unstructured_data_update_time:type_name -> google.protobuf.Timestamp
-	11, // 15: google.cloud.discoveryengine.v1beta.DataStore.BillingEstimation.website_data_update_time:type_name -> google.protobuf.Timestamp
-	16, // [16:16] is the sub-list for method output_type
-	16, // [16:16] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	20, // 3: google.cloud.discoveryengine.v1beta.DataStore.create_time:type_name -> google.protobuf.Timestamp
+	6,  // 4: google.cloud.discoveryengine.v1beta.DataStore.advanced_site_search_config:type_name -> google.cloud.discoveryengine.v1beta.AdvancedSiteSearchConfig
+	7,  // 5: google.cloud.discoveryengine.v1beta.DataStore.language_info:type_name -> google.cloud.discoveryengine.v1beta.LanguageInfo
+	8,  // 6: google.cloud.discoveryengine.v1beta.DataStore.natural_language_query_understanding_config:type_name -> google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfig
+	21, // 7: google.cloud.discoveryengine.v1beta.DataStore.cmek_config:type_name -> google.cloud.discoveryengine.v1beta.CmekConfig
+	10, // 8: google.cloud.discoveryengine.v1beta.DataStore.billing_estimation:type_name -> google.cloud.discoveryengine.v1beta.DataStore.BillingEstimation
+	9,  // 9: google.cloud.discoveryengine.v1beta.DataStore.workspace_config:type_name -> google.cloud.discoveryengine.v1beta.WorkspaceConfig
+	22, // 10: google.cloud.discoveryengine.v1beta.DataStore.document_processing_config:type_name -> google.cloud.discoveryengine.v1beta.DocumentProcessingConfig
+	23, // 11: google.cloud.discoveryengine.v1beta.DataStore.starting_schema:type_name -> google.cloud.discoveryengine.v1beta.Schema
+	24, // 12: google.cloud.discoveryengine.v1beta.DataStore.healthcare_fhir_config:type_name -> google.cloud.discoveryengine.v1beta.HealthcareFhirConfig
+	11, // 13: google.cloud.discoveryengine.v1beta.DataStore.serving_config_data_store:type_name -> google.cloud.discoveryengine.v1beta.DataStore.ServingConfigDataStore
+	12, // 14: google.cloud.discoveryengine.v1beta.DataStore.federated_search_config:type_name -> google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig
+	1,  // 15: google.cloud.discoveryengine.v1beta.DataStore.configurable_billing_approach:type_name -> google.cloud.discoveryengine.v1beta.DataStore.ConfigurableBillingApproach
+	20, // 16: google.cloud.discoveryengine.v1beta.DataStore.configurable_billing_approach_update_time:type_name -> google.protobuf.Timestamp
+	3,  // 17: google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfig.mode:type_name -> google.cloud.discoveryengine.v1beta.NaturalLanguageQueryUnderstandingConfig.Mode
+	4,  // 18: google.cloud.discoveryengine.v1beta.WorkspaceConfig.type:type_name -> google.cloud.discoveryengine.v1beta.WorkspaceConfig.Type
+	20, // 19: google.cloud.discoveryengine.v1beta.DataStore.BillingEstimation.structured_data_update_time:type_name -> google.protobuf.Timestamp
+	20, // 20: google.cloud.discoveryengine.v1beta.DataStore.BillingEstimation.unstructured_data_update_time:type_name -> google.protobuf.Timestamp
+	20, // 21: google.cloud.discoveryengine.v1beta.DataStore.BillingEstimation.website_data_update_time:type_name -> google.protobuf.Timestamp
+	13, // 22: google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.alloy_db_config:type_name -> google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig
+	14, // 23: google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.third_party_oauth_config:type_name -> google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.ThirdPartyOauthConfig
+	15, // 24: google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.notebooklm_config:type_name -> google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.NotebooklmConfig
+	16, // 25: google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.alloydb_connection_config:type_name -> google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbConnectionConfig
+	17, // 26: google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.alloydb_ai_nl_config:type_name -> google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbAiNaturalLanguageConfig
+	2,  // 27: google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbConnectionConfig.auth_mode:type_name -> google.cloud.discoveryengine.v1beta.DataStore.FederatedSearchConfig.AlloyDbConfig.AlloyDbConnectionConfig.AuthMode
+	28, // [28:28] is the sub-list for method output_type
+	28, // [28:28] is the sub-list for method input_type
+	28, // [28:28] is the sub-list for extension type_name
+	28, // [28:28] is the sub-list for extension extendee
+	0,  // [0:28] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1beta_data_store_proto_init() }
@@ -896,16 +1686,23 @@ func file_google_cloud_discoveryengine_v1beta_data_store_proto_init() {
 	if File_google_cloud_discoveryengine_v1beta_data_store_proto != nil {
 		return
 	}
+	file_google_cloud_discoveryengine_v1beta_cmek_config_service_proto_init()
 	file_google_cloud_discoveryengine_v1beta_common_proto_init()
 	file_google_cloud_discoveryengine_v1beta_document_processing_config_proto_init()
 	file_google_cloud_discoveryengine_v1beta_schema_proto_init()
+	file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[1].OneofWrappers = []any{}
+	file_google_cloud_discoveryengine_v1beta_data_store_proto_msgTypes[7].OneofWrappers = []any{
+		(*DataStore_FederatedSearchConfig_AlloyDbConfig_)(nil),
+		(*DataStore_FederatedSearchConfig_ThirdPartyOauthConfig_)(nil),
+		(*DataStore_FederatedSearchConfig_NotebooklmConfig_)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDesc), len(file_google_cloud_discoveryengine_v1beta_data_store_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   6,
+			NumEnums:      5,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

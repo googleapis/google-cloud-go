@@ -344,54 +344,6 @@ func (x *GoldengateDeploymentVersionProperties) GetSupportEndTime() *timestamppb
 	return nil
 }
 
-// Message for getting a GoldengateDeploymentVersion.
-type GetGoldengateDeploymentVersionRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The name of the GoldengateDeploymentVersion to retrieve.
-	// Format:
-	// projects/{project}/locations/{location}/goldengateDeploymentVersions/{goldengate_deployment_version}
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetGoldengateDeploymentVersionRequest) Reset() {
-	*x = GetGoldengateDeploymentVersionRequest{}
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetGoldengateDeploymentVersionRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetGoldengateDeploymentVersionRequest) ProtoMessage() {}
-
-func (x *GetGoldengateDeploymentVersionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetGoldengateDeploymentVersionRequest.ProtoReflect.Descriptor instead.
-func (*GetGoldengateDeploymentVersionRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *GetGoldengateDeploymentVersionRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
 // Message for listing GoldengateDeploymentVersions.
 type ListGoldengateDeploymentVersionsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -414,7 +366,7 @@ type ListGoldengateDeploymentVersionsRequest struct {
 
 func (x *ListGoldengateDeploymentVersionsRequest) Reset() {
 	*x = ListGoldengateDeploymentVersionsRequest{}
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_msgTypes[3]
+	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -426,7 +378,7 @@ func (x *ListGoldengateDeploymentVersionsRequest) String() string {
 func (*ListGoldengateDeploymentVersionsRequest) ProtoMessage() {}
 
 func (x *ListGoldengateDeploymentVersionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_msgTypes[3]
+	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -439,7 +391,7 @@ func (x *ListGoldengateDeploymentVersionsRequest) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use ListGoldengateDeploymentVersionsRequest.ProtoReflect.Descriptor instead.
 func (*ListGoldengateDeploymentVersionsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ListGoldengateDeploymentVersionsRequest) GetParent() string {
@@ -486,7 +438,7 @@ type ListGoldengateDeploymentVersionsResponse struct {
 
 func (x *ListGoldengateDeploymentVersionsResponse) Reset() {
 	*x = ListGoldengateDeploymentVersionsResponse{}
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_msgTypes[4]
+	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -498,7 +450,7 @@ func (x *ListGoldengateDeploymentVersionsResponse) String() string {
 func (*ListGoldengateDeploymentVersionsResponse) ProtoMessage() {}
 
 func (x *ListGoldengateDeploymentVersionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_msgTypes[4]
+	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -511,7 +463,7 @@ func (x *ListGoldengateDeploymentVersionsResponse) ProtoReflect() protoreflect.M
 
 // Deprecated: Use ListGoldengateDeploymentVersionsResponse.ProtoReflect.Descriptor instead.
 func (*ListGoldengateDeploymentVersionsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ListGoldengateDeploymentVersionsResponse) GetGoldengateDeploymentVersions() []*GoldengateDeploymentVersion {
@@ -573,10 +525,7 @@ const file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_ra
 	"\x05MAJOR\x10\x01\x12\n" +
 	"\n" +
 	"\x06BUNDLE\x10\x02\x12\t\n" +
-	"\x05MINOR\x10\x03\"~\n" +
-	"%GetGoldengateDeploymentVersionRequest\x12U\n" +
-	"\x04name\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\n" +
-	"9oracledatabase.googleapis.com/GoldengateDeploymentVersionR\x04name\"\xe7\x01\n" +
+	"\x05MINOR\x10\x03\"\xe7\x01\n" +
 	"'ListGoldengateDeploymentVersionsRequest\x12Y\n" +
 	"\x06parent\x18\x01 \x01(\tBA\xe0A\x02\xfaA;\x129oracledatabase.googleapis.com/GoldengateDeploymentVersionR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
@@ -602,23 +551,22 @@ func file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_raw
 }
 
 var file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_goTypes = []any{
 	(GoldengateDeploymentVersionProperties_DeploymentType)(0),        // 0: google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties.DeploymentType
 	(GoldengateDeploymentVersionProperties_DeploymentReleaseType)(0), // 1: google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties.DeploymentReleaseType
 	(*GoldengateDeploymentVersion)(nil),                              // 2: google.cloud.oracledatabase.v1.GoldengateDeploymentVersion
 	(*GoldengateDeploymentVersionProperties)(nil),                    // 3: google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties
-	(*GetGoldengateDeploymentVersionRequest)(nil),                    // 4: google.cloud.oracledatabase.v1.GetGoldengateDeploymentVersionRequest
-	(*ListGoldengateDeploymentVersionsRequest)(nil),                  // 5: google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsRequest
-	(*ListGoldengateDeploymentVersionsResponse)(nil),                 // 6: google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsResponse
-	(*timestamppb.Timestamp)(nil),                                    // 7: google.protobuf.Timestamp
+	(*ListGoldengateDeploymentVersionsRequest)(nil),                  // 4: google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsRequest
+	(*ListGoldengateDeploymentVersionsResponse)(nil),                 // 5: google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsResponse
+	(*timestamppb.Timestamp)(nil),                                    // 6: google.protobuf.Timestamp
 }
 var file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_depIdxs = []int32{
 	3, // 0: google.cloud.oracledatabase.v1.GoldengateDeploymentVersion.properties:type_name -> google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties
 	0, // 1: google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties.deployment_type:type_name -> google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties.DeploymentType
 	1, // 2: google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties.release_type:type_name -> google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties.DeploymentReleaseType
-	7, // 3: google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties.release_time:type_name -> google.protobuf.Timestamp
-	7, // 4: google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties.support_end_time:type_name -> google.protobuf.Timestamp
+	6, // 3: google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties.release_time:type_name -> google.protobuf.Timestamp
+	6, // 4: google.cloud.oracledatabase.v1.GoldengateDeploymentVersionProperties.support_end_time:type_name -> google.protobuf.Timestamp
 	2, // 5: google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsResponse.goldengate_deployment_versions:type_name -> google.cloud.oracledatabase.v1.GoldengateDeploymentVersion
 	6, // [6:6] is the sub-list for method output_type
 	6, // [6:6] is the sub-list for method input_type
@@ -638,7 +586,7 @@ func file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_ini
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_rawDesc), len(file_google_cloud_oracledatabase_v1_goldengate_deployment_version_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   5,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

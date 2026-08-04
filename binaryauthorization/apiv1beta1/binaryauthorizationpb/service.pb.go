@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,8 +41,9 @@ const (
 // Request message for [BinauthzManagementService.GetPolicy][].
 type GetPolicyRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The resource name of the [policy][google.cloud.binaryauthorization.v1beta1.Policy] to retrieve,
-	// in the format `projects/*/policy`.
+	// Required. The resource name of the
+	// [policy][google.cloud.binaryauthorization.v1beta1.Policy] to retrieve, in
+	// the format `projects/*/policy`.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -88,9 +89,11 @@ func (x *GetPolicyRequest) GetName() string {
 // Request message for [BinauthzManagementService.UpdatePolicy][].
 type UpdatePolicyRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. A new or updated [policy][google.cloud.binaryauthorization.v1beta1.Policy] value. The service will
-	// overwrite the [policy name][google.cloud.binaryauthorization.v1beta1.Policy.name] field with the resource name in
-	// the request URL, in the format `projects/*/policy`.
+	// Required. A new or updated
+	// [policy][google.cloud.binaryauthorization.v1beta1.Policy] value. The
+	// service will overwrite the [policy
+	// name][google.cloud.binaryauthorization.v1beta1.Policy.name] field with the
+	// resource name in the request URL, in the format `projects/*/policy`.
 	Policy        *Policy `protobuf:"bytes,1,opt,name=policy,proto3" json:"policy,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -136,13 +139,17 @@ func (x *UpdatePolicyRequest) GetPolicy() *Policy {
 // Request message for [BinauthzManagementService.CreateAttestor][].
 type CreateAttestorRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The parent of this [attestor][google.cloud.binaryauthorization.v1beta1.Attestor].
+	// Required. The parent of this
+	// [attestor][google.cloud.binaryauthorization.v1beta1.Attestor].
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The [attestors][google.cloud.binaryauthorization.v1beta1.Attestor] ID.
+	// Required. The
+	// [attestors][google.cloud.binaryauthorization.v1beta1.Attestor] ID.
 	AttestorId string `protobuf:"bytes,2,opt,name=attestor_id,json=attestorId,proto3" json:"attestor_id,omitempty"`
-	// Required. The initial [attestor][google.cloud.binaryauthorization.v1beta1.Attestor] value. The service will
-	// overwrite the [attestor name][google.cloud.binaryauthorization.v1beta1.Attestor.name] field with the resource name,
-	// in the format `projects/*/attestors/*`.
+	// Required. The initial
+	// [attestor][google.cloud.binaryauthorization.v1beta1.Attestor] value. The
+	// service will overwrite the [attestor
+	// name][google.cloud.binaryauthorization.v1beta1.Attestor.name] field with
+	// the resource name, in the format `projects/*/attestors/*`.
 	Attestor      *Attestor `protobuf:"bytes,3,opt,name=attestor,proto3" json:"attestor,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -202,8 +209,9 @@ func (x *CreateAttestorRequest) GetAttestor() *Attestor {
 // Request message for [BinauthzManagementService.GetAttestor][].
 type GetAttestorRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The name of the [attestor][google.cloud.binaryauthorization.v1beta1.Attestor] to retrieve, in the format
-	// `projects/*/attestors/*`.
+	// Required. The name of the
+	// [attestor][google.cloud.binaryauthorization.v1beta1.Attestor] to retrieve,
+	// in the format `projects/*/attestors/*`.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -249,9 +257,12 @@ func (x *GetAttestorRequest) GetName() string {
 // Request message for [BinauthzManagementService.UpdateAttestor][].
 type UpdateAttestorRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The updated [attestor][google.cloud.binaryauthorization.v1beta1.Attestor] value. The service will
-	// overwrite the [attestor name][google.cloud.binaryauthorization.v1beta1.Attestor.name] field with the resource name
-	// in the request URL, in the format `projects/*/attestors/*`.
+	// Required. The updated
+	// [attestor][google.cloud.binaryauthorization.v1beta1.Attestor] value. The
+	// service will overwrite the [attestor
+	// name][google.cloud.binaryauthorization.v1beta1.Attestor.name] field with
+	// the resource name in the request URL, in the format
+	// `projects/*/attestors/*`.
 	Attestor      *Attestor `protobuf:"bytes,1,opt,name=attestor,proto3" json:"attestor,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -298,14 +309,16 @@ func (x *UpdateAttestorRequest) GetAttestor() *Attestor {
 type ListAttestorsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The resource name of the project associated with the
-	// [attestors][google.cloud.binaryauthorization.v1beta1.Attestor], in the format `projects/*`.
+	// [attestors][google.cloud.binaryauthorization.v1beta1.Attestor], in the
+	// format `projects/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Requested page size. The server may return fewer results than requested. If
 	// unspecified, the server will pick an appropriate default.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A token identifying a page of results the server should return. Typically,
-	// this is the value of [ListAttestorsResponse.next_page_token][google.cloud.binaryauthorization.v1beta1.ListAttestorsResponse.next_page_token] returned
-	// from the previous call to the `ListAttestors` method.
+	// this is the value of
+	// [ListAttestorsResponse.next_page_token][google.cloud.binaryauthorization.v1beta1.ListAttestorsResponse.next_page_token]
+	// returned from the previous call to the `ListAttestors` method.
 	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -368,8 +381,9 @@ type ListAttestorsResponse struct {
 	// The list of [attestors][google.cloud.binaryauthorization.v1beta1.Attestor].
 	Attestors []*Attestor `protobuf:"bytes,1,rep,name=attestors,proto3" json:"attestors,omitempty"`
 	// A token to retrieve the next page of results. Pass this value in the
-	// [ListAttestorsRequest.page_token][google.cloud.binaryauthorization.v1beta1.ListAttestorsRequest.page_token] field in the subsequent call to the
-	// `ListAttestors` method to retrieve the next page of results.
+	// [ListAttestorsRequest.page_token][google.cloud.binaryauthorization.v1beta1.ListAttestorsRequest.page_token]
+	// field in the subsequent call to the `ListAttestors` method to retrieve the
+	// next page of results.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -422,8 +436,9 @@ func (x *ListAttestorsResponse) GetNextPageToken() string {
 // Request message for [BinauthzManagementService.DeleteAttestor][].
 type DeleteAttestorRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The name of the [attestors][google.cloud.binaryauthorization.v1beta1.Attestor] to delete, in the format
-	// `projects/*/attestors/*`.
+	// Required. The name of the
+	// [attestors][google.cloud.binaryauthorization.v1beta1.Attestor] to delete,
+	// in the format `projects/*/attestors/*`.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -558,8 +573,8 @@ const file_google_cloud_binaryauthorization_v1beta1_service_proto_rawDesc = "" +
 	"\rListAttestors\x12>.google.cloud.binaryauthorization.v1beta1.ListAttestorsRequest\x1a?.google.cloud.binaryauthorization.v1beta1.ListAttestorsResponse\"7\xdaA\x06parent\x82\xd3\xe4\x93\x02(\x12&/v1beta1/{parent=projects/*}/attestors\x12\xa0\x01\n" +
 	"\x0eDeleteAttestor\x12?.google.cloud.binaryauthorization.v1beta1.DeleteAttestorRequest\x1a\x16.google.protobuf.Empty\"5\xdaA\x04name\x82\xd3\xe4\x93\x02(*&/v1beta1/{name=projects/*/attestors/*}\x1aV\xcaA\"binaryauthorization.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platform2\xa8\x02\n" +
 	"\x13SystemPolicyV1Beta1\x12\xb8\x01\n" +
-	"\x0fGetSystemPolicy\x12@.google.cloud.binaryauthorization.v1beta1.GetSystemPolicyRequest\x1a0.google.cloud.binaryauthorization.v1beta1.Policy\"1\xdaA\x04name\x82\xd3\xe4\x93\x02$\x12\"/v1beta1/{name=locations/*/policy}\x1aV\xcaA\"binaryauthorization.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xb8\x02\n" +
-	",com.google.cloud.binaryauthorization.v1beta1B\x1fBinaryAuthorizationServiceProtoP\x01Z^cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb;binaryauthorizationpb\xf8\x01\x01\xaa\x02(Google.Cloud.BinaryAuthorization.V1Beta1\xca\x02(Google\\Cloud\\BinaryAuthorization\\V1beta1\xea\x02+Google::Cloud::BinaryAuthorization::V1beta1b\x06proto3"
+	"\x0fGetSystemPolicy\x12@.google.cloud.binaryauthorization.v1beta1.GetSystemPolicyRequest\x1a0.google.cloud.binaryauthorization.v1beta1.Policy\"1\xdaA\x04name\x82\xd3\xe4\x93\x02$\x12\"/v1beta1/{name=locations/*/policy}\x1aV\xcaA\"binaryauthorization.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xb5\x02\n" +
+	",com.google.cloud.binaryauthorization.v1beta1B\x1fBinaryAuthorizationServiceProtoP\x01Z^cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb;binaryauthorizationpb\xaa\x02(Google.Cloud.BinaryAuthorization.V1Beta1\xca\x02(Google\\Cloud\\BinaryAuthorization\\V1beta1\xea\x02+Google::Cloud::BinaryAuthorization::V1beta1b\x06proto3"
 
 var (
 	file_google_cloud_binaryauthorization_v1beta1_service_proto_rawDescOnce sync.Once

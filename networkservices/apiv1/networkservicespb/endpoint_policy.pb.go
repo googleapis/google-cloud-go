@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ func (EndpointPolicy_EndpointPolicyType) EnumDescriptor() ([]byte, []int) {
 type EndpointPolicy struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Identifier. Name of the EndpointPolicy resource. It matches pattern
-	// `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}`.
+	// `projects/{project}/locations/*/endpointPolicies/{endpoint_policy}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The timestamp when the resource was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -130,14 +130,17 @@ type EndpointPolicy struct {
 	// inbound traffic at the identified backends. If this field is not set,
 	// authentication is disabled(open) for this endpoint.
 	ServerTlsPolicy string `protobuf:"bytes,12,opt,name=server_tls_policy,json=serverTlsPolicy,proto3" json:"server_tls_policy,omitempty"`
-	// Optional. A URL referring to a ClientTlsPolicy resource. ClientTlsPolicy
-	// can be set to specify the authentication for traffic from the proxy to the
-	// actual endpoints. More specifically, it is applied to the outgoing traffic
-	// from the proxy to the endpoint. This is typically used for sidecar model
-	// where the proxy identifies itself as endpoint to the control plane, with
-	// the connection between sidecar and endpoint requiring authentication. If
-	// this field is not set, authentication is disabled(open). Applicable only
-	// when EndpointPolicyType is SIDECAR_PROXY.
+	// Optional. Deprecated: This field is not used and is a no-op.
+	// A URL referring to a ClientTlsPolicy resource. ClientTlsPolicy can be set
+	// to specify the authentication for traffic from the proxy to the actual
+	// endpoints. More specifically, it is applied to the outgoing traffic from
+	// the proxy to the endpoint. This is typically used for sidecar model where
+	// the proxy identifies itself as endpoint to the control plane, with the
+	// connection between sidecar and endpoint requiring authentication. If this
+	// field is not set, authentication is disabled(open). Applicable only when
+	// EndpointPolicyType is SIDECAR_PROXY.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/networkservices/v1/endpoint_policy.proto.
 	ClientTlsPolicy string `protobuf:"bytes,13,opt,name=client_tls_policy,json=clientTlsPolicy,proto3" json:"client_tls_policy,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
@@ -243,6 +246,7 @@ func (x *EndpointPolicy) GetServerTlsPolicy() string {
 	return ""
 }
 
+// Deprecated: Marked as deprecated in google/cloud/networkservices/v1/endpoint_policy.proto.
 func (x *EndpointPolicy) GetClientTlsPolicy() string {
 	if x != nil {
 		return x.ClientTlsPolicy
@@ -254,7 +258,7 @@ func (x *EndpointPolicy) GetClientTlsPolicy() string {
 type ListEndpointPoliciesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The project and location from which the EndpointPolicies should
-	// be listed, specified in the format `projects/*/locations/global`.
+	// be listed, specified in the format `projects/*/locations/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Maximum number of EndpointPolicies to return per call.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -402,7 +406,7 @@ func (x *ListEndpointPoliciesResponse) GetUnreachable() []string {
 type GetEndpointPolicyRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. A name of the EndpointPolicy to get. Must be in the format
-	// `projects/*/locations/global/endpointPolicies/*`.
+	// `projects/*/locations/*/endpointPolicies/*`.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -449,7 +453,7 @@ func (x *GetEndpointPolicyRequest) GetName() string {
 type CreateEndpointPolicyRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The parent resource of the EndpointPolicy. Must be in the
-	// format `projects/*/locations/global`.
+	// format `projects/*/locations/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. Short name of the EndpointPolicy resource to be created.
 	// E.g. "CustomECS".
@@ -574,7 +578,7 @@ func (x *UpdateEndpointPolicyRequest) GetEndpointPolicy() *EndpointPolicy {
 type DeleteEndpointPolicyRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. A name of the EndpointPolicy to delete. Must be in the format
-	// `projects/*/locations/global/endpointPolicies/*`.
+	// `projects/*/locations/*/endpointPolicies/*`.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -621,7 +625,7 @@ var File_google_cloud_networkservices_v1_endpoint_policy_proto protoreflect.File
 
 const file_google_cloud_networkservices_v1_endpoint_policy_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/networkservices/v1/endpoint_policy.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networkservices/v1/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xae\t\n" +
+	"5google/cloud/networkservices/v1/endpoint_policy.proto\x12\x1fgoogle.cloud.networkservices.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a,google/cloud/networkservices/v1/common.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb0\t\n" +
 	"\x0eEndpointPolicy\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -637,9 +641,9 @@ const file_google_cloud_networkservices_v1_endpoint_policy_proto_rawDesc = "" +
 	" \x01(\v24.google.cloud.networkservices.v1.TrafficPortSelectorB\x03\xe0A\x01R\x13trafficPortSelector\x12%\n" +
 	"\vdescription\x18\v \x01(\tB\x03\xe0A\x01R\vdescription\x12b\n" +
 	"\x11server_tls_policy\x18\f \x01(\tB6\xe0A\x01\xfaA0\n" +
-	".networksecurity.googleapis.com/ServerTlsPolicyR\x0fserverTlsPolicy\x12b\n" +
-	"\x11client_tls_policy\x18\r \x01(\tB6\xe0A\x01\xfaA0\n" +
-	".networksecurity.googleapis.com/ClientTlsPolicyR\x0fclientTlsPolicy\x1a9\n" +
+	".networksecurity.googleapis.com/ServerTlsPolicyR\x0fserverTlsPolicy\x12d\n" +
+	"\x11client_tls_policy\x18\r \x01(\tB8\xe0A\x01\xfaA0\n" +
+	".networksecurity.googleapis.com/ClientTlsPolicy\x18\x01R\x0fclientTlsPolicy\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"^\n" +

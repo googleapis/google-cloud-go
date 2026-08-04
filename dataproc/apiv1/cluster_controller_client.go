@@ -33,6 +33,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -747,8 +748,12 @@ func (c *clusterControllerGRPCClient) CreateCluster(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -770,8 +775,12 @@ func (c *clusterControllerGRPCClient) UpdateCluster(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -793,8 +802,12 @@ func (c *clusterControllerGRPCClient) StopCluster(ctx context.Context, req *data
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.StopClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -816,8 +829,12 @@ func (c *clusterControllerGRPCClient) StartCluster(ctx context.Context, req *dat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.StartClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -839,8 +856,12 @@ func (c *clusterControllerGRPCClient) DeleteCluster(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -932,8 +953,12 @@ func (c *clusterControllerGRPCClient) DiagnoseCluster(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.DiagnoseClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DiagnoseClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1179,8 +1204,12 @@ func (c *clusterControllerRESTClient) CreateCluster(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1265,8 +1294,12 @@ func (c *clusterControllerRESTClient) UpdateCluster(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1328,8 +1361,12 @@ func (c *clusterControllerRESTClient) StopCluster(ctx context.Context, req *data
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.StopClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1391,8 +1428,12 @@ func (c *clusterControllerRESTClient) StartCluster(ctx context.Context, req *dat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.StartClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1456,8 +1497,12 @@ func (c *clusterControllerRESTClient) DeleteCluster(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1660,8 +1705,12 @@ func (c *clusterControllerRESTClient) DiagnoseCluster(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.DiagnoseClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DiagnoseClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2086,7 +2135,7 @@ func (c *clusterControllerRESTClient) ListOperations(ctx context.Context, req *l
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
 func (c *clusterControllerGRPCClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.CreateClusterOperation"),
 	}
 }
 
@@ -2095,7 +2144,7 @@ func (c *clusterControllerGRPCClient) CreateClusterOperation(name string) *Creat
 func (c *clusterControllerRESTClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.CreateClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -2104,7 +2153,7 @@ func (c *clusterControllerRESTClient) CreateClusterOperation(name string) *Creat
 // The name must be that of a previously created DeleteClusterOperation, possibly from a different process.
 func (c *clusterControllerGRPCClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.DeleteClusterOperation"),
 	}
 }
 
@@ -2113,7 +2162,7 @@ func (c *clusterControllerGRPCClient) DeleteClusterOperation(name string) *Delet
 func (c *clusterControllerRESTClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.DeleteClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -2122,7 +2171,7 @@ func (c *clusterControllerRESTClient) DeleteClusterOperation(name string) *Delet
 // The name must be that of a previously created DiagnoseClusterOperation, possibly from a different process.
 func (c *clusterControllerGRPCClient) DiagnoseClusterOperation(name string) *DiagnoseClusterOperation {
 	return &DiagnoseClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.DiagnoseClusterOperation"),
 	}
 }
 
@@ -2131,7 +2180,7 @@ func (c *clusterControllerGRPCClient) DiagnoseClusterOperation(name string) *Dia
 func (c *clusterControllerRESTClient) DiagnoseClusterOperation(name string) *DiagnoseClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DiagnoseClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.DiagnoseClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -2140,7 +2189,7 @@ func (c *clusterControllerRESTClient) DiagnoseClusterOperation(name string) *Dia
 // The name must be that of a previously created StartClusterOperation, possibly from a different process.
 func (c *clusterControllerGRPCClient) StartClusterOperation(name string) *StartClusterOperation {
 	return &StartClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.StartClusterOperation"),
 	}
 }
 
@@ -2149,7 +2198,7 @@ func (c *clusterControllerGRPCClient) StartClusterOperation(name string) *StartC
 func (c *clusterControllerRESTClient) StartClusterOperation(name string) *StartClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StartClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.StartClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -2158,7 +2207,7 @@ func (c *clusterControllerRESTClient) StartClusterOperation(name string) *StartC
 // The name must be that of a previously created StopClusterOperation, possibly from a different process.
 func (c *clusterControllerGRPCClient) StopClusterOperation(name string) *StopClusterOperation {
 	return &StopClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.StopClusterOperation"),
 	}
 }
 
@@ -2167,7 +2216,7 @@ func (c *clusterControllerGRPCClient) StopClusterOperation(name string) *StopClu
 func (c *clusterControllerRESTClient) StopClusterOperation(name string) *StopClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StopClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.StopClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -2176,7 +2225,7 @@ func (c *clusterControllerRESTClient) StopClusterOperation(name string) *StopClu
 // The name must be that of a previously created UpdateClusterOperation, possibly from a different process.
 func (c *clusterControllerGRPCClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.UpdateClusterOperation"),
 	}
 }
 
@@ -2185,7 +2234,7 @@ func (c *clusterControllerGRPCClient) UpdateClusterOperation(name string) *Updat
 func (c *clusterControllerRESTClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.UpdateClusterOperation"),
 		pollPath: override,
 	}
 }

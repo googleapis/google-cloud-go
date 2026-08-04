@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1330,8 +1331,12 @@ func (c *gRPCClient) CreateNetwork(ctx context.Context, req *edgenetworkpb.Creat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.CreateNetworkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateNetworkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1356,8 +1361,12 @@ func (c *gRPCClient) DeleteNetwork(ctx context.Context, req *edgenetworkpb.Delet
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.DeleteNetworkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteNetworkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1458,8 +1467,12 @@ func (c *gRPCClient) CreateSubnet(ctx context.Context, req *edgenetworkpb.Create
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.CreateSubnetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSubnetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1481,8 +1494,12 @@ func (c *gRPCClient) UpdateSubnet(ctx context.Context, req *edgenetworkpb.Update
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.UpdateSubnetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSubnetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1507,8 +1524,12 @@ func (c *gRPCClient) DeleteSubnet(ctx context.Context, req *edgenetworkpb.Delete
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.DeleteSubnetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSubnetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1709,8 +1730,12 @@ func (c *gRPCClient) CreateInterconnectAttachment(ctx context.Context, req *edge
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.CreateInterconnectAttachmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInterconnectAttachmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1735,8 +1760,12 @@ func (c *gRPCClient) DeleteInterconnectAttachment(ctx context.Context, req *edge
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.DeleteInterconnectAttachmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInterconnectAttachmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1861,8 +1890,12 @@ func (c *gRPCClient) CreateRouter(ctx context.Context, req *edgenetworkpb.Create
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.CreateRouterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRouterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1884,8 +1917,12 @@ func (c *gRPCClient) UpdateRouter(ctx context.Context, req *edgenetworkpb.Update
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.UpdateRouterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRouterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1910,8 +1947,12 @@ func (c *gRPCClient) DeleteRouter(ctx context.Context, req *edgenetworkpb.Delete
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.DeleteRouterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRouterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2562,8 +2603,12 @@ func (c *restClient) CreateNetwork(ctx context.Context, req *edgenetworkpb.Creat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.CreateNetworkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateNetworkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2625,8 +2670,12 @@ func (c *restClient) DeleteNetwork(ctx context.Context, req *edgenetworkpb.Delet
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.DeleteNetworkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteNetworkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2837,8 +2886,12 @@ func (c *restClient) CreateSubnet(ctx context.Context, req *edgenetworkpb.Create
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.CreateSubnetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSubnetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2911,8 +2964,12 @@ func (c *restClient) UpdateSubnet(ctx context.Context, req *edgenetworkpb.Update
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.UpdateSubnetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSubnetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2974,8 +3031,12 @@ func (c *restClient) DeleteSubnet(ctx context.Context, req *edgenetworkpb.Delete
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.DeleteSubnetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSubnetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3384,8 +3445,12 @@ func (c *restClient) CreateInterconnectAttachment(ctx context.Context, req *edge
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.CreateInterconnectAttachmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInterconnectAttachmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3447,8 +3512,12 @@ func (c *restClient) DeleteInterconnectAttachment(ctx context.Context, req *edge
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.DeleteInterconnectAttachmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInterconnectAttachmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3716,8 +3785,12 @@ func (c *restClient) CreateRouter(ctx context.Context, req *edgenetworkpb.Create
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.CreateRouterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRouterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3790,8 +3863,12 @@ func (c *restClient) UpdateRouter(ctx context.Context, req *edgenetworkpb.Update
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.UpdateRouterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRouterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3853,8 +3930,12 @@ func (c *restClient) DeleteRouter(ctx context.Context, req *edgenetworkpb.Delete
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgenetwork.DeleteRouterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRouterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4220,7 +4301,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateInterconnectAttachmentOperation, possibly from a different process.
 func (c *gRPCClient) CreateInterconnectAttachmentOperation(name string) *CreateInterconnectAttachmentOperation {
 	return &CreateInterconnectAttachmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.CreateInterconnectAttachmentOperation"),
 	}
 }
 
@@ -4229,7 +4310,7 @@ func (c *gRPCClient) CreateInterconnectAttachmentOperation(name string) *CreateI
 func (c *restClient) CreateInterconnectAttachmentOperation(name string) *CreateInterconnectAttachmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInterconnectAttachmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.CreateInterconnectAttachmentOperation"),
 		pollPath: override,
 	}
 }
@@ -4238,7 +4319,7 @@ func (c *restClient) CreateInterconnectAttachmentOperation(name string) *CreateI
 // The name must be that of a previously created CreateNetworkOperation, possibly from a different process.
 func (c *gRPCClient) CreateNetworkOperation(name string) *CreateNetworkOperation {
 	return &CreateNetworkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.CreateNetworkOperation"),
 	}
 }
 
@@ -4247,7 +4328,7 @@ func (c *gRPCClient) CreateNetworkOperation(name string) *CreateNetworkOperation
 func (c *restClient) CreateNetworkOperation(name string) *CreateNetworkOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateNetworkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.CreateNetworkOperation"),
 		pollPath: override,
 	}
 }
@@ -4256,7 +4337,7 @@ func (c *restClient) CreateNetworkOperation(name string) *CreateNetworkOperation
 // The name must be that of a previously created CreateRouterOperation, possibly from a different process.
 func (c *gRPCClient) CreateRouterOperation(name string) *CreateRouterOperation {
 	return &CreateRouterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.CreateRouterOperation"),
 	}
 }
 
@@ -4265,7 +4346,7 @@ func (c *gRPCClient) CreateRouterOperation(name string) *CreateRouterOperation {
 func (c *restClient) CreateRouterOperation(name string) *CreateRouterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateRouterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.CreateRouterOperation"),
 		pollPath: override,
 	}
 }
@@ -4274,7 +4355,7 @@ func (c *restClient) CreateRouterOperation(name string) *CreateRouterOperation {
 // The name must be that of a previously created CreateSubnetOperation, possibly from a different process.
 func (c *gRPCClient) CreateSubnetOperation(name string) *CreateSubnetOperation {
 	return &CreateSubnetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.CreateSubnetOperation"),
 	}
 }
 
@@ -4283,7 +4364,7 @@ func (c *gRPCClient) CreateSubnetOperation(name string) *CreateSubnetOperation {
 func (c *restClient) CreateSubnetOperation(name string) *CreateSubnetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSubnetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.CreateSubnetOperation"),
 		pollPath: override,
 	}
 }
@@ -4292,7 +4373,7 @@ func (c *restClient) CreateSubnetOperation(name string) *CreateSubnetOperation {
 // The name must be that of a previously created DeleteInterconnectAttachmentOperation, possibly from a different process.
 func (c *gRPCClient) DeleteInterconnectAttachmentOperation(name string) *DeleteInterconnectAttachmentOperation {
 	return &DeleteInterconnectAttachmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.DeleteInterconnectAttachmentOperation"),
 	}
 }
 
@@ -4301,7 +4382,7 @@ func (c *gRPCClient) DeleteInterconnectAttachmentOperation(name string) *DeleteI
 func (c *restClient) DeleteInterconnectAttachmentOperation(name string) *DeleteInterconnectAttachmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInterconnectAttachmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.DeleteInterconnectAttachmentOperation"),
 		pollPath: override,
 	}
 }
@@ -4310,7 +4391,7 @@ func (c *restClient) DeleteInterconnectAttachmentOperation(name string) *DeleteI
 // The name must be that of a previously created DeleteNetworkOperation, possibly from a different process.
 func (c *gRPCClient) DeleteNetworkOperation(name string) *DeleteNetworkOperation {
 	return &DeleteNetworkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.DeleteNetworkOperation"),
 	}
 }
 
@@ -4319,7 +4400,7 @@ func (c *gRPCClient) DeleteNetworkOperation(name string) *DeleteNetworkOperation
 func (c *restClient) DeleteNetworkOperation(name string) *DeleteNetworkOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteNetworkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.DeleteNetworkOperation"),
 		pollPath: override,
 	}
 }
@@ -4328,7 +4409,7 @@ func (c *restClient) DeleteNetworkOperation(name string) *DeleteNetworkOperation
 // The name must be that of a previously created DeleteRouterOperation, possibly from a different process.
 func (c *gRPCClient) DeleteRouterOperation(name string) *DeleteRouterOperation {
 	return &DeleteRouterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.DeleteRouterOperation"),
 	}
 }
 
@@ -4337,7 +4418,7 @@ func (c *gRPCClient) DeleteRouterOperation(name string) *DeleteRouterOperation {
 func (c *restClient) DeleteRouterOperation(name string) *DeleteRouterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteRouterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.DeleteRouterOperation"),
 		pollPath: override,
 	}
 }
@@ -4346,7 +4427,7 @@ func (c *restClient) DeleteRouterOperation(name string) *DeleteRouterOperation {
 // The name must be that of a previously created DeleteSubnetOperation, possibly from a different process.
 func (c *gRPCClient) DeleteSubnetOperation(name string) *DeleteSubnetOperation {
 	return &DeleteSubnetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.DeleteSubnetOperation"),
 	}
 }
 
@@ -4355,7 +4436,7 @@ func (c *gRPCClient) DeleteSubnetOperation(name string) *DeleteSubnetOperation {
 func (c *restClient) DeleteSubnetOperation(name string) *DeleteSubnetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteSubnetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.DeleteSubnetOperation"),
 		pollPath: override,
 	}
 }
@@ -4364,7 +4445,7 @@ func (c *restClient) DeleteSubnetOperation(name string) *DeleteSubnetOperation {
 // The name must be that of a previously created UpdateRouterOperation, possibly from a different process.
 func (c *gRPCClient) UpdateRouterOperation(name string) *UpdateRouterOperation {
 	return &UpdateRouterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.UpdateRouterOperation"),
 	}
 }
 
@@ -4373,7 +4454,7 @@ func (c *gRPCClient) UpdateRouterOperation(name string) *UpdateRouterOperation {
 func (c *restClient) UpdateRouterOperation(name string) *UpdateRouterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateRouterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.UpdateRouterOperation"),
 		pollPath: override,
 	}
 }
@@ -4382,7 +4463,7 @@ func (c *restClient) UpdateRouterOperation(name string) *UpdateRouterOperation {
 // The name must be that of a previously created UpdateSubnetOperation, possibly from a different process.
 func (c *gRPCClient) UpdateSubnetOperation(name string) *UpdateSubnetOperation {
 	return &UpdateSubnetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.UpdateSubnetOperation"),
 	}
 }
 
@@ -4391,7 +4472,7 @@ func (c *gRPCClient) UpdateSubnetOperation(name string) *UpdateSubnetOperation {
 func (c *restClient) UpdateSubnetOperation(name string) *UpdateSubnetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateSubnetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgenetwork.UpdateSubnetOperation"),
 		pollPath: override,
 	}
 }

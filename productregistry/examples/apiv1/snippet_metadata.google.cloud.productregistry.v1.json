@@ -1,0 +1,337 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.productregistry.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/productregistry/apiv1",
+    "version": "0.1.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadClient",
+          "shortName": "CloudProductRegistryReadClient"
+        },
+        "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadClient.GetLogicalProduct",
+        "method": {
+          "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadService.GetLogicalProduct",
+          "service": {
+            "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadService",
+            "shortName": "CloudProductRegistryReadService"
+          },
+          "shortName": "GetLogicalProduct"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "productregistrypb.GetLogicalProductRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*productregistrypb.LogicalProduct",
+        "shortName": "GetLogicalProduct"
+      },
+      "description": "GetLogicalProduct gets details of a LogicalProduct.",
+      "file": "CloudProductRegistryReadClient/GetLogicalProduct/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudproductregistry_v1_generated_CloudProductRegistryReadService_GetLogicalProduct_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudproductregistry GetLogicalProduct Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadClient",
+          "shortName": "CloudProductRegistryReadClient"
+        },
+        "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadClient.GetLogicalProductVariant",
+        "method": {
+          "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadService.GetLogicalProductVariant",
+          "service": {
+            "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadService",
+            "shortName": "CloudProductRegistryReadService"
+          },
+          "shortName": "GetLogicalProductVariant"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "productregistrypb.GetLogicalProductVariantRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*productregistrypb.LogicalProductVariant",
+        "shortName": "GetLogicalProductVariant"
+      },
+      "description": "GetLogicalProductVariant get details of a LogicalProductVariant.",
+      "file": "CloudProductRegistryReadClient/GetLogicalProductVariant/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudproductregistry_v1_generated_CloudProductRegistryReadService_GetLogicalProductVariant_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudproductregistry GetLogicalProductVariant Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadClient",
+          "shortName": "CloudProductRegistryReadClient"
+        },
+        "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadClient.GetProductSuite",
+        "method": {
+          "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadService.GetProductSuite",
+          "service": {
+            "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadService",
+            "shortName": "CloudProductRegistryReadService"
+          },
+          "shortName": "GetProductSuite"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "productregistrypb.GetProductSuiteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*productregistrypb.ProductSuite",
+        "shortName": "GetProductSuite"
+      },
+      "description": "GetProductSuite get details of a ProductSuite.",
+      "file": "CloudProductRegistryReadClient/GetProductSuite/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudproductregistry_v1_generated_CloudProductRegistryReadService_GetProductSuite_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudproductregistry GetProductSuite Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadClient",
+          "shortName": "CloudProductRegistryReadClient"
+        },
+        "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadClient.ListLogicalProductVariants",
+        "method": {
+          "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadService.ListLogicalProductVariants",
+          "service": {
+            "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadService",
+            "shortName": "CloudProductRegistryReadService"
+          },
+          "shortName": "ListLogicalProductVariants"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "productregistrypb.ListLogicalProductVariantsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LogicalProductVariantIterator",
+        "shortName": "ListLogicalProductVariants"
+      },
+      "description": "ListLogicalProductVariants lists LogicalProductVariants matching given criteria.",
+      "file": "CloudProductRegistryReadClient/ListLogicalProductVariants/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudproductregistry_v1_generated_CloudProductRegistryReadService_ListLogicalProductVariants_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudproductregistry ListLogicalProductVariants Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadClient",
+          "shortName": "CloudProductRegistryReadClient"
+        },
+        "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadClient.ListLogicalProducts",
+        "method": {
+          "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadService.ListLogicalProducts",
+          "service": {
+            "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadService",
+            "shortName": "CloudProductRegistryReadService"
+          },
+          "shortName": "ListLogicalProducts"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "productregistrypb.ListLogicalProductsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LogicalProductIterator",
+        "shortName": "ListLogicalProducts"
+      },
+      "description": "ListLogicalProducts lists LogicalProducts matching given criteria.",
+      "file": "CloudProductRegistryReadClient/ListLogicalProducts/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudproductregistry_v1_generated_CloudProductRegistryReadService_ListLogicalProducts_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudproductregistry ListLogicalProducts Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadClient",
+          "shortName": "CloudProductRegistryReadClient"
+        },
+        "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadClient.ListProductSuites",
+        "method": {
+          "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadService.ListProductSuites",
+          "service": {
+            "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadService",
+            "shortName": "CloudProductRegistryReadService"
+          },
+          "shortName": "ListProductSuites"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "productregistrypb.ListProductSuitesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ProductSuiteIterator",
+        "shortName": "ListProductSuites"
+      },
+      "description": "ListProductSuites lists ProductSuites.",
+      "file": "CloudProductRegistryReadClient/ListProductSuites/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudproductregistry_v1_generated_CloudProductRegistryReadService_ListProductSuites_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudproductregistry ListProductSuites Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadClient",
+          "shortName": "CloudProductRegistryReadClient"
+        },
+        "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadClient.LookupEntity",
+        "method": {
+          "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadService.LookupEntity",
+          "service": {
+            "fullName": "google.cloud.productregistry.v1.CloudProductRegistryReadService",
+            "shortName": "CloudProductRegistryReadService"
+          },
+          "shortName": "LookupEntity"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "productregistrypb.LookupEntityRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*productregistrypb.LookupEntityResponse",
+        "shortName": "LookupEntity"
+      },
+      "description": "LookupEntity look up entities.",
+      "file": "CloudProductRegistryReadClient/LookupEntity/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudproductregistry_v1_generated_CloudProductRegistryReadService_LookupEntity_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudproductregistry LookupEntity Sample"
+    }
+  ]
+}

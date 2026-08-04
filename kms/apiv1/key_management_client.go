@@ -33,6 +33,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -49,45 +50,47 @@ var newKeyManagementClientHook clientHook
 
 // KeyManagementCallOptions contains the retry settings for each method of KeyManagementClient.
 type KeyManagementCallOptions struct {
-	ListKeyRings                  []gax.CallOption
-	ListCryptoKeys                []gax.CallOption
-	ListCryptoKeyVersions         []gax.CallOption
-	ListImportJobs                []gax.CallOption
-	ListRetiredResources          []gax.CallOption
-	GetKeyRing                    []gax.CallOption
-	GetCryptoKey                  []gax.CallOption
-	GetCryptoKeyVersion           []gax.CallOption
-	GetPublicKey                  []gax.CallOption
-	GetImportJob                  []gax.CallOption
-	GetRetiredResource            []gax.CallOption
-	CreateKeyRing                 []gax.CallOption
-	CreateCryptoKey               []gax.CallOption
-	CreateCryptoKeyVersion        []gax.CallOption
-	DeleteCryptoKey               []gax.CallOption
-	DeleteCryptoKeyVersion        []gax.CallOption
-	ImportCryptoKeyVersion        []gax.CallOption
-	CreateImportJob               []gax.CallOption
-	UpdateCryptoKey               []gax.CallOption
-	UpdateCryptoKeyVersion        []gax.CallOption
-	UpdateCryptoKeyPrimaryVersion []gax.CallOption
-	DestroyCryptoKeyVersion       []gax.CallOption
-	RestoreCryptoKeyVersion       []gax.CallOption
-	Encrypt                       []gax.CallOption
-	Decrypt                       []gax.CallOption
-	RawEncrypt                    []gax.CallOption
-	RawDecrypt                    []gax.CallOption
-	AsymmetricSign                []gax.CallOption
-	AsymmetricDecrypt             []gax.CallOption
-	MacSign                       []gax.CallOption
-	MacVerify                     []gax.CallOption
-	Decapsulate                   []gax.CallOption
-	GenerateRandomBytes           []gax.CallOption
-	GetLocation                   []gax.CallOption
-	ListLocations                 []gax.CallOption
-	GetIamPolicy                  []gax.CallOption
-	SetIamPolicy                  []gax.CallOption
-	TestIamPermissions            []gax.CallOption
-	GetOperation                  []gax.CallOption
+	ListKeyRings                            []gax.CallOption
+	ListCryptoKeys                          []gax.CallOption
+	ListCryptoKeyVersions                   []gax.CallOption
+	ListImportJobs                          []gax.CallOption
+	ListRetiredResources                    []gax.CallOption
+	GetKeyRing                              []gax.CallOption
+	GetCryptoKey                            []gax.CallOption
+	GetCryptoKeyVersion                     []gax.CallOption
+	GetPublicKey                            []gax.CallOption
+	GetImportJob                            []gax.CallOption
+	GetRetiredResource                      []gax.CallOption
+	CreateKeyRing                           []gax.CallOption
+	CreateCryptoKey                         []gax.CallOption
+	CreateCryptoKeyVersion                  []gax.CallOption
+	DeleteCryptoKey                         []gax.CallOption
+	DeleteCryptoKeyVersion                  []gax.CallOption
+	ImportCryptoKeyVersion                  []gax.CallOption
+	ImportTrustedKeyWrappedCryptoKeyVersion []gax.CallOption
+	ExportTrustedKeyWrappedCryptoKeyVersion []gax.CallOption
+	CreateImportJob                         []gax.CallOption
+	UpdateCryptoKey                         []gax.CallOption
+	UpdateCryptoKeyVersion                  []gax.CallOption
+	UpdateCryptoKeyPrimaryVersion           []gax.CallOption
+	DestroyCryptoKeyVersion                 []gax.CallOption
+	RestoreCryptoKeyVersion                 []gax.CallOption
+	Encrypt                                 []gax.CallOption
+	Decrypt                                 []gax.CallOption
+	RawEncrypt                              []gax.CallOption
+	RawDecrypt                              []gax.CallOption
+	AsymmetricSign                          []gax.CallOption
+	AsymmetricDecrypt                       []gax.CallOption
+	MacSign                                 []gax.CallOption
+	MacVerify                               []gax.CallOption
+	Decapsulate                             []gax.CallOption
+	GenerateRandomBytes                     []gax.CallOption
+	GetLocation                             []gax.CallOption
+	ListLocations                           []gax.CallOption
+	GetIamPolicy                            []gax.CallOption
+	SetIamPolicy                            []gax.CallOption
+	TestIamPermissions                      []gax.CallOption
+	GetOperation                            []gax.CallOption
 }
 
 func defaultKeyManagementGRPCClientOptions() []option.ClientOption {
@@ -309,6 +312,8 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		ImportCryptoKeyVersion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ImportTrustedKeyWrappedCryptoKeyVersion: []gax.CallOption{},
+		ExportTrustedKeyWrappedCryptoKeyVersion: []gax.CallOption{},
 		CreateImportJob: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -678,6 +683,8 @@ func defaultKeyManagementRESTCallOptions() *KeyManagementCallOptions {
 		ImportCryptoKeyVersion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ImportTrustedKeyWrappedCryptoKeyVersion: []gax.CallOption{},
+		ExportTrustedKeyWrappedCryptoKeyVersion: []gax.CallOption{},
 		CreateImportJob: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -870,6 +877,8 @@ type internalKeyManagementClient interface {
 	DeleteCryptoKeyVersion(context.Context, *kmspb.DeleteCryptoKeyVersionRequest, ...gax.CallOption) (*DeleteCryptoKeyVersionOperation, error)
 	DeleteCryptoKeyVersionOperation(name string) *DeleteCryptoKeyVersionOperation
 	ImportCryptoKeyVersion(context.Context, *kmspb.ImportCryptoKeyVersionRequest, ...gax.CallOption) (*kmspb.CryptoKeyVersion, error)
+	ImportTrustedKeyWrappedCryptoKeyVersion(context.Context, *kmspb.ImportTrustedKeyWrappedCryptoKeyVersionRequest, ...gax.CallOption) (*kmspb.CryptoKeyVersion, error)
+	ExportTrustedKeyWrappedCryptoKeyVersion(context.Context, *kmspb.ExportTrustedKeyWrappedCryptoKeyVersionRequest, ...gax.CallOption) (*kmspb.ExportTrustedKeyWrappedCryptoKeyVersionResponse, error)
 	CreateImportJob(context.Context, *kmspb.CreateImportJobRequest, ...gax.CallOption) (*kmspb.ImportJob, error)
 	UpdateCryptoKey(context.Context, *kmspb.UpdateCryptoKeyRequest, ...gax.CallOption) (*kmspb.CryptoKey, error)
 	UpdateCryptoKeyVersion(context.Context, *kmspb.UpdateCryptoKeyVersionRequest, ...gax.CallOption) (*kmspb.CryptoKeyVersion, error)
@@ -1090,6 +1099,37 @@ func (c *KeyManagementClient) ImportCryptoKeyVersion(ctx context.Context, req *k
 	return c.internalClient.ImportCryptoKeyVersion(ctx, req, opts...)
 }
 
+// ImportTrustedKeyWrappedCryptoKeyVersion import wrapped key material into a
+// CryptoKeyVersion with a trusted
+// key.
+//
+// All requests must specify a CryptoKey. If
+// a CryptoKeyVersion is additionally
+// specified in the request, key material will be reimported into that
+// version. Otherwise, a new version will be created, and will be assigned the
+// next sequential id within the CryptoKey.
+//
+// The CryptoKeyVersion will have
+// trusted_wrapping_enabled set to true.
+func (c *KeyManagementClient) ImportTrustedKeyWrappedCryptoKeyVersion(ctx context.Context, req *kmspb.ImportTrustedKeyWrappedCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
+	return c.internalClient.ImportTrustedKeyWrappedCryptoKeyVersion(ctx, req, opts...)
+}
+
+// ExportTrustedKeyWrappedCryptoKeyVersion exports a CryptoKeyVersion with a
+// trusted key.
+//
+// The CryptoKeyVersion must have
+// trusted_wrapping_enabled set to true. The
+// CryptoKeyVersion of the
+// [wrapping_key] must have the
+// AES_WRAPPING
+// purpose. The [wrapping_key] must have the
+// AES_256_KWP
+// algorithm.
+func (c *KeyManagementClient) ExportTrustedKeyWrappedCryptoKeyVersion(ctx context.Context, req *kmspb.ExportTrustedKeyWrappedCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.ExportTrustedKeyWrappedCryptoKeyVersionResponse, error) {
+	return c.internalClient.ExportTrustedKeyWrappedCryptoKeyVersion(ctx, req, opts...)
+}
+
 // CreateImportJob create a new ImportJob within a
 // KeyRing.
 //
@@ -1258,14 +1298,13 @@ func (c *KeyManagementClient) GetLocation(ctx context.Context, req *locationpb.G
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -1420,6 +1459,8 @@ func NewKeyManagementClient(ctx context.Context, opts ...option.ClientOption) (*
 		client.CallOptions.DeleteCryptoKey = append(client.CallOptions.DeleteCryptoKey, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteCryptoKeyVersion = append(client.CallOptions.DeleteCryptoKeyVersion, gax.WithClientMetrics(metrics))
 		client.CallOptions.ImportCryptoKeyVersion = append(client.CallOptions.ImportCryptoKeyVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportTrustedKeyWrappedCryptoKeyVersion = append(client.CallOptions.ImportTrustedKeyWrappedCryptoKeyVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportTrustedKeyWrappedCryptoKeyVersion = append(client.CallOptions.ExportTrustedKeyWrappedCryptoKeyVersion, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateImportJob = append(client.CallOptions.CreateImportJob, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateCryptoKey = append(client.CallOptions.UpdateCryptoKey, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateCryptoKeyVersion = append(client.CallOptions.UpdateCryptoKeyVersion, gax.WithClientMetrics(metrics))
@@ -1579,6 +1620,8 @@ func NewKeyManagementRESTClient(ctx context.Context, opts ...option.ClientOption
 		callOpts.DeleteCryptoKey = append(callOpts.DeleteCryptoKey, gax.WithClientMetrics(metrics))
 		callOpts.DeleteCryptoKeyVersion = append(callOpts.DeleteCryptoKeyVersion, gax.WithClientMetrics(metrics))
 		callOpts.ImportCryptoKeyVersion = append(callOpts.ImportCryptoKeyVersion, gax.WithClientMetrics(metrics))
+		callOpts.ImportTrustedKeyWrappedCryptoKeyVersion = append(callOpts.ImportTrustedKeyWrappedCryptoKeyVersion, gax.WithClientMetrics(metrics))
+		callOpts.ExportTrustedKeyWrappedCryptoKeyVersion = append(callOpts.ExportTrustedKeyWrappedCryptoKeyVersion, gax.WithClientMetrics(metrics))
 		callOpts.CreateImportJob = append(callOpts.CreateImportJob, gax.WithClientMetrics(metrics))
 		callOpts.UpdateCryptoKey = append(callOpts.UpdateCryptoKey, gax.WithClientMetrics(metrics))
 		callOpts.UpdateCryptoKeyVersion = append(callOpts.UpdateCryptoKeyVersion, gax.WithClientMetrics(metrics))
@@ -2150,8 +2193,12 @@ func (c *keyManagementGRPCClient) DeleteCryptoKey(ctx context.Context, req *kmsp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.DeleteCryptoKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCryptoKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2176,8 +2223,12 @@ func (c *keyManagementGRPCClient) DeleteCryptoKeyVersion(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.DeleteCryptoKeyVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCryptoKeyVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2197,6 +2248,51 @@ func (c *keyManagementGRPCClient) ImportCryptoKeyVersion(ctx context.Context, re
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.keyManagementClient.ImportCryptoKeyVersion, req, settings.GRPC, c.logger, "ImportCryptoKeyVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *keyManagementGRPCClient) ImportTrustedKeyWrappedCryptoKeyVersion(ctx context.Context, req *kmspb.ImportTrustedKeyWrappedCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.kms.v1.KeyManagementService/ImportTrustedKeyWrappedCryptoKeyVersion")
+	}
+	opts = append((*c.CallOptions).ImportTrustedKeyWrappedCryptoKeyVersion[0:len((*c.CallOptions).ImportTrustedKeyWrappedCryptoKeyVersion):len((*c.CallOptions).ImportTrustedKeyWrappedCryptoKeyVersion)], opts...)
+	var resp *kmspb.CryptoKeyVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.keyManagementClient.ImportTrustedKeyWrappedCryptoKeyVersion, req, settings.GRPC, c.logger, "ImportTrustedKeyWrappedCryptoKeyVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *keyManagementGRPCClient) ExportTrustedKeyWrappedCryptoKeyVersion(ctx context.Context, req *kmspb.ExportTrustedKeyWrappedCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.ExportTrustedKeyWrappedCryptoKeyVersionResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudkms.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.kms.v1.KeyManagementService/ExportTrustedKeyWrappedCryptoKeyVersion")
+	}
+	opts = append((*c.CallOptions).ExportTrustedKeyWrappedCryptoKeyVersion[0:len((*c.CallOptions).ExportTrustedKeyWrappedCryptoKeyVersion):len((*c.CallOptions).ExportTrustedKeyWrappedCryptoKeyVersion)], opts...)
+	var resp *kmspb.ExportTrustedKeyWrappedCryptoKeyVersionResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.keyManagementClient.ExportTrustedKeyWrappedCryptoKeyVersion, req, settings.GRPC, c.logger, "ExportTrustedKeyWrappedCryptoKeyVersion")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3408,6 +3504,9 @@ func (c *keyManagementRESTClient) GetImportJob(ctx context.Context, req *kmspb.G
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetPublicKeyFormat() != 0 {
+		params.Add("publicKeyFormat", fmt.Sprintf("%v", req.GetPublicKeyFormat()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3606,6 +3705,9 @@ func (c *keyManagementRESTClient) CreateCryptoKey(ctx context.Context, req *kmsp
 	if req.GetSkipInitialVersionCreation() {
 		params.Add("skipInitialVersionCreation", fmt.Sprintf("%v", req.GetSkipInitialVersionCreation()))
 	}
+	if req.GetTrustedWrappingEnabled() {
+		params.Add("trustedWrappingEnabled", fmt.Sprintf("%v", req.GetTrustedWrappingEnabled()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3781,8 +3883,12 @@ func (c *keyManagementRESTClient) DeleteCryptoKey(ctx context.Context, req *kmsp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.DeleteCryptoKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCryptoKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3851,8 +3957,12 @@ func (c *keyManagementRESTClient) DeleteCryptoKeyVersion(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.DeleteCryptoKeyVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCryptoKeyVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3911,6 +4021,145 @@ func (c *keyManagementRESTClient) ImportCryptoKeyVersion(ctx context.Context, re
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportCryptoKeyVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ImportTrustedKeyWrappedCryptoKeyVersion import wrapped key material into a
+// CryptoKeyVersion with a trusted
+// key.
+//
+// All requests must specify a CryptoKey. If
+// a CryptoKeyVersion is additionally
+// specified in the request, key material will be reimported into that
+// version. Otherwise, a new version will be created, and will be assigned the
+// next sequential id within the CryptoKey.
+//
+// The CryptoKeyVersion will have
+// trusted_wrapping_enabled set to true.
+func (c *keyManagementRESTClient) ImportTrustedKeyWrappedCryptoKeyVersion(ctx context.Context, req *kmspb.ImportTrustedKeyWrappedCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/cryptoKeyVersions:importTrustedKeyWrappedCryptoKeyVersion", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.kms.v1.KeyManagementService/ImportTrustedKeyWrappedCryptoKeyVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/keyRings/*/cryptoKeys/*}/cryptoKeyVersions:importTrustedKeyWrappedCryptoKeyVersion")
+	}
+	opts = append((*c.CallOptions).ImportTrustedKeyWrappedCryptoKeyVersion[0:len((*c.CallOptions).ImportTrustedKeyWrappedCryptoKeyVersion):len((*c.CallOptions).ImportTrustedKeyWrappedCryptoKeyVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &kmspb.CryptoKeyVersion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ImportTrustedKeyWrappedCryptoKeyVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ExportTrustedKeyWrappedCryptoKeyVersion exports a CryptoKeyVersion with a
+// trusted key.
+//
+// The CryptoKeyVersion must have
+// trusted_wrapping_enabled set to true. The
+// CryptoKeyVersion of the
+// [wrapping_key] must have the
+// AES_WRAPPING
+// purpose. The [wrapping_key] must have the
+// AES_256_KWP
+// algorithm.
+func (c *keyManagementRESTClient) ExportTrustedKeyWrappedCryptoKeyVersion(ctx context.Context, req *kmspb.ExportTrustedKeyWrappedCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.ExportTrustedKeyWrappedCryptoKeyVersionResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:exportTrustedKeyWrappedCryptoKeyVersion", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("wrappingKey", fmt.Sprintf("%v", req.GetWrappingKey()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudkms.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.kms.v1.KeyManagementService/ExportTrustedKeyWrappedCryptoKeyVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/keyRings/*/cryptoKeys/*/cryptoKeyVersions/*}:exportTrustedKeyWrappedCryptoKeyVersion")
+	}
+	opts = append((*c.CallOptions).ExportTrustedKeyWrappedCryptoKeyVersion[0:len((*c.CallOptions).ExportTrustedKeyWrappedCryptoKeyVersion):len((*c.CallOptions).ExportTrustedKeyWrappedCryptoKeyVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &kmspb.ExportTrustedKeyWrappedCryptoKeyVersionResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ExportTrustedKeyWrappedCryptoKeyVersion")
 		if err != nil {
 			return err
 		}
@@ -5075,14 +5324,13 @@ func (c *keyManagementRESTClient) GetLocation(ctx context.Context, req *location
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -5424,7 +5672,7 @@ func (c *keyManagementRESTClient) GetOperation(ctx context.Context, req *longrun
 // The name must be that of a previously created DeleteCryptoKeyOperation, possibly from a different process.
 func (c *keyManagementGRPCClient) DeleteCryptoKeyOperation(name string) *DeleteCryptoKeyOperation {
 	return &DeleteCryptoKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.DeleteCryptoKeyOperation"),
 	}
 }
 
@@ -5433,7 +5681,7 @@ func (c *keyManagementGRPCClient) DeleteCryptoKeyOperation(name string) *DeleteC
 func (c *keyManagementRESTClient) DeleteCryptoKeyOperation(name string) *DeleteCryptoKeyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCryptoKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.DeleteCryptoKeyOperation"),
 		pollPath: override,
 	}
 }
@@ -5442,7 +5690,7 @@ func (c *keyManagementRESTClient) DeleteCryptoKeyOperation(name string) *DeleteC
 // The name must be that of a previously created DeleteCryptoKeyVersionOperation, possibly from a different process.
 func (c *keyManagementGRPCClient) DeleteCryptoKeyVersionOperation(name string) *DeleteCryptoKeyVersionOperation {
 	return &DeleteCryptoKeyVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.DeleteCryptoKeyVersionOperation"),
 	}
 }
 
@@ -5451,7 +5699,7 @@ func (c *keyManagementGRPCClient) DeleteCryptoKeyVersionOperation(name string) *
 func (c *keyManagementRESTClient) DeleteCryptoKeyVersionOperation(name string) *DeleteCryptoKeyVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCryptoKeyVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.DeleteCryptoKeyVersionOperation"),
 		pollPath: override,
 	}
 }

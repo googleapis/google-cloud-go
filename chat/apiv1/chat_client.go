@@ -76,6 +76,11 @@ type CallOptions struct {
 	GetSpaceReadState              []gax.CallOption
 	UpdateSpaceReadState           []gax.CallOption
 	GetThreadReadState             []gax.CallOption
+	GetAvailability                []gax.CallOption
+	MarkAsActive                   []gax.CallOption
+	MarkAsAway                     []gax.CallOption
+	MarkAsDoNotDisturb             []gax.CallOption
+	UpdateAvailability             []gax.CallOption
 	GetSpaceEvent                  []gax.CallOption
 	ListSpaceEvents                []gax.CallOption
 	GetSpaceNotificationSetting    []gax.CallOption
@@ -479,6 +484,66 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetThreadReadState: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetAvailability: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		MarkAsActive: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		MarkAsAway: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		MarkAsDoNotDisturb: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateAvailability: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -979,6 +1044,61 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetAvailability: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		MarkAsActive: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		MarkAsAway: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		MarkAsDoNotDisturb: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateAvailability: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetSpaceEvent: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1140,6 +1260,11 @@ type internalClient interface {
 	GetSpaceReadState(context.Context, *chatpb.GetSpaceReadStateRequest, ...gax.CallOption) (*chatpb.SpaceReadState, error)
 	UpdateSpaceReadState(context.Context, *chatpb.UpdateSpaceReadStateRequest, ...gax.CallOption) (*chatpb.SpaceReadState, error)
 	GetThreadReadState(context.Context, *chatpb.GetThreadReadStateRequest, ...gax.CallOption) (*chatpb.ThreadReadState, error)
+	GetAvailability(context.Context, *chatpb.GetAvailabilityRequest, ...gax.CallOption) (*chatpb.Availability, error)
+	MarkAsActive(context.Context, *chatpb.MarkAsActiveRequest, ...gax.CallOption) (*chatpb.Availability, error)
+	MarkAsAway(context.Context, *chatpb.MarkAsAwayRequest, ...gax.CallOption) (*chatpb.Availability, error)
+	MarkAsDoNotDisturb(context.Context, *chatpb.MarkAsDoNotDisturbRequest, ...gax.CallOption) (*chatpb.Availability, error)
+	UpdateAvailability(context.Context, *chatpb.UpdateAvailabilityRequest, ...gax.CallOption) (*chatpb.Availability, error)
 	GetSpaceEvent(context.Context, *chatpb.GetSpaceEventRequest, ...gax.CallOption) (*chatpb.SpaceEvent, error)
 	ListSpaceEvents(context.Context, *chatpb.ListSpaceEventsRequest, ...gax.CallOption) *SpaceEventIterator
 	GetSpaceNotificationSetting(context.Context, *chatpb.GetSpaceNotificationSettingRequest, ...gax.CallOption) (*chatpb.SpaceNotificationSetting, error)
@@ -2179,6 +2304,93 @@ func (c *Client) GetThreadReadState(ctx context.Context, req *chatpb.GetThreadRe
 	return c.internalClient.GetThreadReadState(ctx, req, opts...)
 }
 
+// GetAvailability returns availability information for a human user in Google Chat. For
+// example, this can be used to check if a user is online or away, or to
+// retrieve their custom status message.
+//
+// This method only retrieves the authenticated user’s availability.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with one of the following authorization
+// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.availability.readonly
+//
+//	https://www.googleapis.com/auth/chat.users.availability
+func (c *Client) GetAvailability(ctx context.Context, req *chatpb.GetAvailabilityRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	return c.internalClient.GetAvailability(ctx, req, opts...)
+}
+
+// MarkAsActive marks user as ACTIVE in Google Chat.
+//
+// Sets the user’s availability state to ACTIVE. The ACTIVE state
+// lasts until the specified expiration, at which point the user’s state
+// becomes AWAY. Note that if the user is actively using Chat, the ACTIVE
+// state duration may extend beyond the provided expiration.
+//
+// This method only updates the authenticated user’s availability.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.availability
+func (c *Client) MarkAsActive(ctx context.Context, req *chatpb.MarkAsActiveRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	return c.internalClient.MarkAsActive(ctx, req, opts...)
+}
+
+// MarkAsAway marks user as AWAY in Google Chat.
+//
+// Sets the user’s state to away and is not affected by the user’s
+// activity.
+//
+// This method only updates the authenticated user’s availability.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.availability
+func (c *Client) MarkAsAway(ctx context.Context, req *chatpb.MarkAsAwayRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	return c.internalClient.MarkAsAway(ctx, req, opts...)
+}
+
+// MarkAsDoNotDisturb marks user as DO_NOT_DISTURB in Google Chat.
+//
+// Sets a user’s availability state to DO_NOT_DISTURB until a specified
+// expiration time.
+// When in DO_NOT_DISTURB, users typically won’t receive notifications.
+//
+// This method only updates the authenticated user’s availability.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.availability
+func (c *Client) MarkAsDoNotDisturb(ctx context.Context, req *chatpb.MarkAsDoNotDisturbRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	return c.internalClient.MarkAsDoNotDisturb(ctx, req, opts...)
+}
+
+// UpdateAvailability updates availability information for a human user. Only the custom_status
+// field can be updated through this method.
+//
+// This method only updates the authenticated user’s availability.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with one of the following authorization
+// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.availability
+func (c *Client) UpdateAvailability(ctx context.Context, req *chatpb.UpdateAvailabilityRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	return c.internalClient.UpdateAvailability(ctx, req, opts...)
+}
+
 // GetSpaceEvent returns an event from a Google Chat space. The event
 // payload (at https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces.spaceEvents#SpaceEvent.FIELDS.oneof_payload)
 // contains the most recent version of the resource that changed. For example,
@@ -2539,6 +2751,11 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetSpaceReadState = append(client.CallOptions.GetSpaceReadState, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateSpaceReadState = append(client.CallOptions.UpdateSpaceReadState, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetThreadReadState = append(client.CallOptions.GetThreadReadState, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAvailability = append(client.CallOptions.GetAvailability, gax.WithClientMetrics(metrics))
+		client.CallOptions.MarkAsActive = append(client.CallOptions.MarkAsActive, gax.WithClientMetrics(metrics))
+		client.CallOptions.MarkAsAway = append(client.CallOptions.MarkAsAway, gax.WithClientMetrics(metrics))
+		client.CallOptions.MarkAsDoNotDisturb = append(client.CallOptions.MarkAsDoNotDisturb, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAvailability = append(client.CallOptions.UpdateAvailability, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetSpaceEvent = append(client.CallOptions.GetSpaceEvent, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListSpaceEvents = append(client.CallOptions.ListSpaceEvents, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetSpaceNotificationSetting = append(client.CallOptions.GetSpaceNotificationSetting, gax.WithClientMetrics(metrics))
@@ -2673,6 +2890,11 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetSpaceReadState = append(callOpts.GetSpaceReadState, gax.WithClientMetrics(metrics))
 		callOpts.UpdateSpaceReadState = append(callOpts.UpdateSpaceReadState, gax.WithClientMetrics(metrics))
 		callOpts.GetThreadReadState = append(callOpts.GetThreadReadState, gax.WithClientMetrics(metrics))
+		callOpts.GetAvailability = append(callOpts.GetAvailability, gax.WithClientMetrics(metrics))
+		callOpts.MarkAsActive = append(callOpts.MarkAsActive, gax.WithClientMetrics(metrics))
+		callOpts.MarkAsAway = append(callOpts.MarkAsAway, gax.WithClientMetrics(metrics))
+		callOpts.MarkAsDoNotDisturb = append(callOpts.MarkAsDoNotDisturb, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAvailability = append(callOpts.UpdateAvailability, gax.WithClientMetrics(metrics))
 		callOpts.GetSpaceEvent = append(callOpts.GetSpaceEvent, gax.WithClientMetrics(metrics))
 		callOpts.ListSpaceEvents = append(callOpts.ListSpaceEvents, gax.WithClientMetrics(metrics))
 		callOpts.GetSpaceNotificationSetting = append(callOpts.GetSpaceNotificationSetting, gax.WithClientMetrics(metrics))
@@ -3606,6 +3828,123 @@ func (c *gRPCClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.client.GetThreadReadState, req, settings.GRPC, c.logger, "GetThreadReadState")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetAvailability(ctx context.Context, req *chatpb.GetAvailabilityRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetAvailability")
+	}
+	opts = append((*c.CallOptions).GetAvailability[0:len((*c.CallOptions).GetAvailability):len((*c.CallOptions).GetAvailability)], opts...)
+	var resp *chatpb.Availability
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetAvailability, req, settings.GRPC, c.logger, "GetAvailability")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) MarkAsActive(ctx context.Context, req *chatpb.MarkAsActiveRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/MarkAsActive")
+	}
+	opts = append((*c.CallOptions).MarkAsActive[0:len((*c.CallOptions).MarkAsActive):len((*c.CallOptions).MarkAsActive)], opts...)
+	var resp *chatpb.Availability
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.MarkAsActive, req, settings.GRPC, c.logger, "MarkAsActive")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) MarkAsAway(ctx context.Context, req *chatpb.MarkAsAwayRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/MarkAsAway")
+	}
+	opts = append((*c.CallOptions).MarkAsAway[0:len((*c.CallOptions).MarkAsAway):len((*c.CallOptions).MarkAsAway)], opts...)
+	var resp *chatpb.Availability
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.MarkAsAway, req, settings.GRPC, c.logger, "MarkAsAway")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) MarkAsDoNotDisturb(ctx context.Context, req *chatpb.MarkAsDoNotDisturbRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/MarkAsDoNotDisturb")
+	}
+	opts = append((*c.CallOptions).MarkAsDoNotDisturb[0:len((*c.CallOptions).MarkAsDoNotDisturb):len((*c.CallOptions).MarkAsDoNotDisturb)], opts...)
+	var resp *chatpb.Availability
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.MarkAsDoNotDisturb, req, settings.GRPC, c.logger, "MarkAsDoNotDisturb")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateAvailability(ctx context.Context, req *chatpb.UpdateAvailabilityRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "availability.name", url.QueryEscape(req.GetAvailability().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UpdateAvailability")
+	}
+	opts = append((*c.CallOptions).UpdateAvailability[0:len((*c.CallOptions).UpdateAvailability):len((*c.CallOptions).UpdateAvailability)], opts...)
+	var resp *chatpb.Availability
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateAvailability, req, settings.GRPC, c.logger, "UpdateAvailability")
 		return err
 	}, opts...)
 	if err != nil {
@@ -6841,6 +7180,382 @@ func (c *restClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetThreadReadState")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetAvailability returns availability information for a human user in Google Chat. For
+// example, this can be used to check if a user is online or away, or to
+// retrieve their custom status message.
+//
+// This method only retrieves the authenticated user’s availability.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with one of the following authorization
+// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.availability.readonly
+//
+//	https://www.googleapis.com/auth/chat.users.availability
+func (c *restClient) GetAvailability(ctx context.Context, req *chatpb.GetAvailabilityRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/GetAvailability")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/availability}")
+	}
+	opts = append((*c.CallOptions).GetAvailability[0:len((*c.CallOptions).GetAvailability):len((*c.CallOptions).GetAvailability)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.Availability{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAvailability")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// MarkAsActive marks user as ACTIVE in Google Chat.
+//
+// Sets the user’s availability state to ACTIVE. The ACTIVE state
+// lasts until the specified expiration, at which point the user’s state
+// becomes AWAY. Note that if the user is actively using Chat, the ACTIVE
+// state duration may extend beyond the provided expiration.
+//
+// This method only updates the authenticated user’s availability.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.availability
+func (c *restClient) MarkAsActive(ctx context.Context, req *chatpb.MarkAsActiveRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:markAsActive", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/MarkAsActive")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/availability}:markAsActive")
+	}
+	opts = append((*c.CallOptions).MarkAsActive[0:len((*c.CallOptions).MarkAsActive):len((*c.CallOptions).MarkAsActive)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.Availability{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MarkAsActive")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// MarkAsAway marks user as AWAY in Google Chat.
+//
+// Sets the user’s state to away and is not affected by the user’s
+// activity.
+//
+// This method only updates the authenticated user’s availability.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.availability
+func (c *restClient) MarkAsAway(ctx context.Context, req *chatpb.MarkAsAwayRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:markAsAway", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/MarkAsAway")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/availability}:markAsAway")
+	}
+	opts = append((*c.CallOptions).MarkAsAway[0:len((*c.CallOptions).MarkAsAway):len((*c.CallOptions).MarkAsAway)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.Availability{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MarkAsAway")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// MarkAsDoNotDisturb marks user as DO_NOT_DISTURB in Google Chat.
+//
+// Sets a user’s availability state to DO_NOT_DISTURB until a specified
+// expiration time.
+// When in DO_NOT_DISTURB, users typically won’t receive notifications.
+//
+// This method only updates the authenticated user’s availability.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with authorization
+// scope (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.availability
+func (c *restClient) MarkAsDoNotDisturb(ctx context.Context, req *chatpb.MarkAsDoNotDisturbRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:markAsDoNotDisturb", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/MarkAsDoNotDisturb")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/availability}:markAsDoNotDisturb")
+	}
+	opts = append((*c.CallOptions).MarkAsDoNotDisturb[0:len((*c.CallOptions).MarkAsDoNotDisturb):len((*c.CallOptions).MarkAsDoNotDisturb)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.Availability{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MarkAsDoNotDisturb")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateAvailability updates availability information for a human user. Only the custom_status
+// field can be updated through this method.
+//
+// This method only updates the authenticated user’s availability.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with one of the following authorization
+// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.users.availability
+func (c *restClient) UpdateAvailability(ctx context.Context, req *chatpb.UpdateAvailabilityRequest, opts ...gax.CallOption) (*chatpb.Availability, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAvailability()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAvailability().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "availability.name", url.QueryEscape(req.GetAvailability().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/UpdateAvailability")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{availability.name=users/*/availability}")
+	}
+	opts = append((*c.CallOptions).UpdateAvailability[0:len((*c.CallOptions).UpdateAvailability):len((*c.CallOptions).UpdateAvailability)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.Availability{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAvailability")
 		if err != nil {
 			return err
 		}

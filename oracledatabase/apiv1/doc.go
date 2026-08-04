@@ -57,11 +57,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &oracledatabasepb.CreateAutonomousDatabaseRequest{
+//	req := &oracledatabasepb.ConfigureExascaleCloudExadataInfrastructureRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/oracledatabase/apiv1/oracledatabasepb#CreateAutonomousDatabaseRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/oracledatabase/apiv1/oracledatabasepb#ConfigureExascaleCloudExadataInfrastructureRequest.
 //	}
-//	op, err := c.CreateAutonomousDatabase(ctx, req)
+//	op, err := c.ConfigureExascaleCloudExadataInfrastructure(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

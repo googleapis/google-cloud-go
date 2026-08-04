@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ const (
 	ReferenceListService_ListReferenceLists_FullMethodName  = "/google.cloud.chronicle.v1.ReferenceListService/ListReferenceLists"
 	ReferenceListService_CreateReferenceList_FullMethodName = "/google.cloud.chronicle.v1.ReferenceListService/CreateReferenceList"
 	ReferenceListService_UpdateReferenceList_FullMethodName = "/google.cloud.chronicle.v1.ReferenceListService/UpdateReferenceList"
+	ReferenceListService_VerifyReferenceList_FullMethodName = "/google.cloud.chronicle.v1.ReferenceListService/VerifyReferenceList"
 )
 
 // ReferenceListServiceClient is the client API for ReferenceListService service.
@@ -52,6 +53,8 @@ type ReferenceListServiceClient interface {
 	CreateReferenceList(ctx context.Context, in *CreateReferenceListRequest, opts ...grpc.CallOption) (*ReferenceList, error)
 	// Updates an existing reference list.
 	UpdateReferenceList(ctx context.Context, in *UpdateReferenceListRequest, opts ...grpc.CallOption) (*ReferenceList, error)
+	// VerifyReferenceList validates list content and returns line errors, if any.
+	VerifyReferenceList(ctx context.Context, in *VerifyReferenceListRequest, opts ...grpc.CallOption) (*VerifyReferenceListResponse, error)
 }
 
 type referenceListServiceClient struct {
@@ -98,6 +101,15 @@ func (c *referenceListServiceClient) UpdateReferenceList(ctx context.Context, in
 	return out, nil
 }
 
+func (c *referenceListServiceClient) VerifyReferenceList(ctx context.Context, in *VerifyReferenceListRequest, opts ...grpc.CallOption) (*VerifyReferenceListResponse, error) {
+	out := new(VerifyReferenceListResponse)
+	err := c.cc.Invoke(ctx, ReferenceListService_VerifyReferenceList_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ReferenceListServiceServer is the server API for ReferenceListService service.
 // All implementations should embed UnimplementedReferenceListServiceServer
 // for forward compatibility
@@ -110,6 +122,8 @@ type ReferenceListServiceServer interface {
 	CreateReferenceList(context.Context, *CreateReferenceListRequest) (*ReferenceList, error)
 	// Updates an existing reference list.
 	UpdateReferenceList(context.Context, *UpdateReferenceListRequest) (*ReferenceList, error)
+	// VerifyReferenceList validates list content and returns line errors, if any.
+	VerifyReferenceList(context.Context, *VerifyReferenceListRequest) (*VerifyReferenceListResponse, error)
 }
 
 // UnimplementedReferenceListServiceServer should be embedded to have forward compatible implementations.
@@ -127,6 +141,9 @@ func (UnimplementedReferenceListServiceServer) CreateReferenceList(context.Conte
 }
 func (UnimplementedReferenceListServiceServer) UpdateReferenceList(context.Context, *UpdateReferenceListRequest) (*ReferenceList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateReferenceList not implemented")
+}
+func (UnimplementedReferenceListServiceServer) VerifyReferenceList(context.Context, *VerifyReferenceListRequest) (*VerifyReferenceListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyReferenceList not implemented")
 }
 
 // UnsafeReferenceListServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -212,6 +229,24 @@ func _ReferenceListService_UpdateReferenceList_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ReferenceListService_VerifyReferenceList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyReferenceListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReferenceListServiceServer).VerifyReferenceList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReferenceListService_VerifyReferenceList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReferenceListServiceServer).VerifyReferenceList(ctx, req.(*VerifyReferenceListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ReferenceListService_ServiceDesc is the grpc.ServiceDesc for ReferenceListService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -234,6 +269,10 @@ var ReferenceListService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateReferenceList",
 			Handler:    _ReferenceListService_UpdateReferenceList_Handler,
+		},
+		{
+			MethodName: "VerifyReferenceList",
+			Handler:    _ReferenceListService_VerifyReferenceList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

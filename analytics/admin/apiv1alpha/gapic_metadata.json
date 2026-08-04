@@ -765,6 +765,11 @@
                 "UpdateReportingDataAnnotation"
               ]
             },
+            "UpdateReportingIdentitySettings": {
+              "methods": [
+                "UpdateReportingIdentitySettings"
+              ]
+            },
             "UpdateSKAdNetworkConversionValueSchema": {
               "methods": [
                 "UpdateSKAdNetworkConversionValueSchema"
@@ -1543,6 +1548,11 @@
             "UpdateReportingDataAnnotation": {
               "methods": [
                 "UpdateReportingDataAnnotation"
+              ]
+            },
+            "UpdateReportingIdentitySettings": {
+              "methods": [
+                "UpdateReportingIdentitySettings"
               ]
             },
             "UpdateSKAdNetworkConversionValueSchema": {

@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -583,8 +584,12 @@ func (c *policyBindingsGRPCClient) CreatePolicyBinding(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.CreatePolicyBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePolicyBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -630,8 +635,12 @@ func (c *policyBindingsGRPCClient) UpdatePolicyBinding(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.UpdatePolicyBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePolicyBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -656,8 +665,12 @@ func (c *policyBindingsGRPCClient) DeletePolicyBinding(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.DeletePolicyBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePolicyBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -853,8 +866,12 @@ func (c *policyBindingsRESTClient) CreatePolicyBinding(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.CreatePolicyBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePolicyBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -988,8 +1005,12 @@ func (c *policyBindingsRESTClient) UpdatePolicyBinding(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.UpdatePolicyBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePolicyBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1056,8 +1077,12 @@ func (c *policyBindingsRESTClient) DeletePolicyBinding(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.DeletePolicyBindingOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePolicyBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1281,7 +1306,7 @@ func (c *policyBindingsRESTClient) GetOperation(ctx context.Context, req *longru
 // The name must be that of a previously created CreatePolicyBindingOperation, possibly from a different process.
 func (c *policyBindingsGRPCClient) CreatePolicyBindingOperation(name string) *CreatePolicyBindingOperation {
 	return &CreatePolicyBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.CreatePolicyBindingOperation"),
 	}
 }
 
@@ -1290,7 +1315,7 @@ func (c *policyBindingsGRPCClient) CreatePolicyBindingOperation(name string) *Cr
 func (c *policyBindingsRESTClient) CreatePolicyBindingOperation(name string) *CreatePolicyBindingOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &CreatePolicyBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.CreatePolicyBindingOperation"),
 		pollPath: override,
 	}
 }
@@ -1299,7 +1324,7 @@ func (c *policyBindingsRESTClient) CreatePolicyBindingOperation(name string) *Cr
 // The name must be that of a previously created DeletePolicyBindingOperation, possibly from a different process.
 func (c *policyBindingsGRPCClient) DeletePolicyBindingOperation(name string) *DeletePolicyBindingOperation {
 	return &DeletePolicyBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.DeletePolicyBindingOperation"),
 	}
 }
 
@@ -1308,7 +1333,7 @@ func (c *policyBindingsGRPCClient) DeletePolicyBindingOperation(name string) *De
 func (c *policyBindingsRESTClient) DeletePolicyBindingOperation(name string) *DeletePolicyBindingOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &DeletePolicyBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.DeletePolicyBindingOperation"),
 		pollPath: override,
 	}
 }
@@ -1317,7 +1342,7 @@ func (c *policyBindingsRESTClient) DeletePolicyBindingOperation(name string) *De
 // The name must be that of a previously created UpdatePolicyBindingOperation, possibly from a different process.
 func (c *policyBindingsGRPCClient) UpdatePolicyBindingOperation(name string) *UpdatePolicyBindingOperation {
 	return &UpdatePolicyBindingOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.UpdatePolicyBindingOperation"),
 	}
 }
 
@@ -1326,7 +1351,7 @@ func (c *policyBindingsGRPCClient) UpdatePolicyBindingOperation(name string) *Up
 func (c *policyBindingsRESTClient) UpdatePolicyBindingOperation(name string) *UpdatePolicyBindingOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &UpdatePolicyBindingOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.UpdatePolicyBindingOperation"),
 		pollPath: override,
 	}
 }

@@ -33,6 +33,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -897,8 +898,12 @@ func (c *gkeHubMembershipGRPCClient) CreateMembership(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkehub.CreateMembershipOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMembershipOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -923,8 +928,12 @@ func (c *gkeHubMembershipGRPCClient) DeleteMembership(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkehub.DeleteMembershipOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteMembershipOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -949,8 +958,12 @@ func (c *gkeHubMembershipGRPCClient) UpdateMembership(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkehub.UpdateMembershipOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateMembershipOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1482,8 +1495,12 @@ func (c *gkeHubMembershipRESTClient) CreateMembership(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkehub.CreateMembershipOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMembershipOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1552,8 +1569,12 @@ func (c *gkeHubMembershipRESTClient) DeleteMembership(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkehub.DeleteMembershipOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteMembershipOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1629,8 +1650,12 @@ func (c *gkeHubMembershipRESTClient) UpdateMembership(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkehub.UpdateMembershipOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateMembershipOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2410,7 +2435,7 @@ func (c *gkeHubMembershipRESTClient) ListOperations(ctx context.Context, req *lo
 // The name must be that of a previously created CreateMembershipOperation, possibly from a different process.
 func (c *gkeHubMembershipGRPCClient) CreateMembershipOperation(name string) *CreateMembershipOperation {
 	return &CreateMembershipOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkehub.CreateMembershipOperation"),
 	}
 }
 
@@ -2419,7 +2444,7 @@ func (c *gkeHubMembershipGRPCClient) CreateMembershipOperation(name string) *Cre
 func (c *gkeHubMembershipRESTClient) CreateMembershipOperation(name string) *CreateMembershipOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &CreateMembershipOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkehub.CreateMembershipOperation"),
 		pollPath: override,
 	}
 }
@@ -2428,7 +2453,7 @@ func (c *gkeHubMembershipRESTClient) CreateMembershipOperation(name string) *Cre
 // The name must be that of a previously created DeleteMembershipOperation, possibly from a different process.
 func (c *gkeHubMembershipGRPCClient) DeleteMembershipOperation(name string) *DeleteMembershipOperation {
 	return &DeleteMembershipOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkehub.DeleteMembershipOperation"),
 	}
 }
 
@@ -2437,7 +2462,7 @@ func (c *gkeHubMembershipGRPCClient) DeleteMembershipOperation(name string) *Del
 func (c *gkeHubMembershipRESTClient) DeleteMembershipOperation(name string) *DeleteMembershipOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &DeleteMembershipOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkehub.DeleteMembershipOperation"),
 		pollPath: override,
 	}
 }
@@ -2446,7 +2471,7 @@ func (c *gkeHubMembershipRESTClient) DeleteMembershipOperation(name string) *Del
 // The name must be that of a previously created UpdateMembershipOperation, possibly from a different process.
 func (c *gkeHubMembershipGRPCClient) UpdateMembershipOperation(name string) *UpdateMembershipOperation {
 	return &UpdateMembershipOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkehub.UpdateMembershipOperation"),
 	}
 }
 
@@ -2455,7 +2480,7 @@ func (c *gkeHubMembershipGRPCClient) UpdateMembershipOperation(name string) *Upd
 func (c *gkeHubMembershipRESTClient) UpdateMembershipOperation(name string) *UpdateMembershipOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &UpdateMembershipOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkehub.UpdateMembershipOperation"),
 		pollPath: override,
 	}
 }

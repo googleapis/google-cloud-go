@@ -125,6 +125,8 @@ const (
 	// Unsupported linked account for data partner authorization.
 	ErrorReason_UNSUPPORTED_LINKED_ACCOUNT_FOR_DATA_PARTNER ErrorReason = 38
 	// Events data contains no user identifiers or ad identifiers.
+	// For Floodlight Event ingestion this error indicates requests contains no ad
+	// identifiers.
 	ErrorReason_NO_IDENTIFIERS_PROVIDED ErrorReason = 39
 	// The property type is not supported.
 	ErrorReason_INVALID_PROPERTY_TYPE ErrorReason = 40

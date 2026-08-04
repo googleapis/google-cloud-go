@@ -191,13 +191,23 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 		chunkCRCPresent = true
 		chunkCRC = *msg.GetChecksummedData().Crc32C
 	}
+	startOffset := params.offset
+	if params.offset < 0 {
+		startOffset = size + params.offset
+	}
+	// If caller has specified a negative start offset that's larger than the
+	// reported size, start at the beginning of the object.
+	if startOffset < 0 {
+		startOffset = 0
+	}
+
 	var (
 		wantCRC  uint32
 		checkCRC bool
 	)
 	if checksums := msg.GetObjectChecksums(); checksums != nil && checksums.Crc32C != nil {
 		if !params.disableCRCCheck &&
-			params.offset == 0 &&
+			startOffset == 0 &&
 			(params.length < 0 || (obj != nil && params.length >= size)) {
 			checkCRC = true
 		}

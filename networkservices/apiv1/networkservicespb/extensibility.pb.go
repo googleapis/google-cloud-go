@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -332,22 +332,37 @@ type WasmPluginVersion struct {
 	// Optional. Set of labels associated with the `WasmPluginVersion`
 	// resource.
 	Labels map[string]string `protobuf:"bytes,6,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// Optional. URI of the container image containing the plugin, stored in the
+	// Optional. URI of the image containing the Wasm module, stored in
 	// Artifact Registry.
-	// When a new `WasmPluginVersion` resource is created, the digest
-	// of the container image is saved in the `image_digest` field.
-	// When downloading an image, the digest value is used instead of an
-	// image tag.
+	//
+	// The URI can refer to one of the following repository formats:
+	//
+	// * Container images: the `image_uri` must point to a container that
+	// contains a single file with the name `plugin.wasm`.
+	// When a new `WasmPluginVersion` resource is created, the digest of the
+	// image is saved in the `image_digest` field.
+	// When pulling a container image from Artifact Registry, the digest value
+	// is used instead of an image tag.
+	//
+	// * Generic artifacts: the `image_uri` must be in this format:
+	// `projects/{project}/locations/{location}/repositories/{repository}/
+	// genericArtifacts/{package}:{version}`.
+	// The specified package and version must contain a file with the name
+	// `plugin.wasm`. When a new `WasmPluginVersion` resource is created, the
+	// checksum of the contents of the file is saved in the `image_digest`
+	// field.
 	ImageUri string `protobuf:"bytes,8,opt,name=image_uri,json=imageUri,proto3" json:"image_uri,omitempty"`
-	// Output only. The resolved digest for the image specified in the `image`
-	// field. The digest is resolved during the creation of `WasmPluginVersion`
-	// resource. This field holds the digest value, regardless of whether a tag or
-	// digest was originally specified in the `image` field.
+	// Output only. This field holds the digest (usually checksum) value for the
+	// plugin image. The value is calculated based on the `image_uri` field. If
+	// the `image_uri` field refers to a container image, the digest value is
+	// obtained from the container image. If the `image_uri` field refers to
+	// a generic artifact, the digest value is calculated based on the
+	// contents of the file.
 	ImageDigest string `protobuf:"bytes,9,opt,name=image_digest,json=imageDigest,proto3" json:"image_digest,omitempty"`
 	// Output only. This field holds the digest (usually checksum) value for the
 	// plugin configuration. The value is calculated based on the contents of
-	// `plugin_config_data` or the container image defined by
-	// the `plugin_config_uri` field.
+	// `plugin_config_data` field or the image defined by the
+	// `plugin_config_uri` field.
 	PluginConfigDigest string `protobuf:"bytes,14,opt,name=plugin_config_digest,json=pluginConfigDigest,proto3" json:"plugin_config_digest,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
@@ -480,10 +495,24 @@ type WasmPluginVersion_PluginConfigData struct {
 type WasmPluginVersion_PluginConfigUri struct {
 	// URI of the plugin configuration stored in the Artifact Registry.
 	// The configuration is provided to the plugin at runtime through
-	// the `ON_CONFIGURE` callback. The container image must contain
-	// only a single file with the name `plugin.config`. When a
-	// new `WasmPluginVersion` resource is created, the digest of the
-	// container image is saved in the `plugin_config_digest` field.
+	// the `ON_CONFIGURE` callback.
+	//
+	// The URI can refer to one of the following repository formats:
+	//
+	// * Container images: the `plugin_config_uri` must point to a container
+	// that contains a single file with the name `plugin.config`.
+	// When a new `WasmPluginVersion` resource is created, the digest of the
+	// image is saved in the `plugin_config_digest` field.
+	// When pulling a container image from Artifact Registry, the digest
+	// value is used instead of an image tag.
+	//
+	// * Generic artifacts: the `plugin_config_uri` must be in this format:
+	// `projects/{project}/locations/{location}/repositories/{repository}/
+	// genericArtifacts/{package}:{version}`.
+	// The specified package and version must contain a file with the name
+	// `plugin.config`. When a new `WasmPluginVersion` resource is
+	// created, the checksum of the contents of the file is saved in the
+	// `plugin_config_digest` field.
 	PluginConfigUri string `protobuf:"bytes,13,opt,name=plugin_config_uri,json=pluginConfigUri,proto3,oneof"`
 }
 
@@ -1186,21 +1215,36 @@ type WasmPlugin_VersionDetails struct {
 	// Optional. Set of labels associated with the `WasmPluginVersion`
 	// resource.
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// Optional. URI of the container image containing the Wasm module, stored
-	// in the Artifact Registry. The container image must contain only a single
-	// file with the name `plugin.wasm`. When a new `WasmPluginVersion` resource
-	// is created, the URI gets resolved to an image digest and saved in the
-	// `image_digest` field.
+	// Optional. URI of the image containing the Wasm module, stored in
+	// Artifact Registry.
+	//
+	// The URI can refer to one of the following repository formats:
+	//
+	// * Container images: the `image_uri` must point to a container that
+	// contains a single file with the name `plugin.wasm`.
+	// When a new `WasmPluginVersion` resource is created, the digest of the
+	// image is saved in the `image_digest` field.
+	// When pulling a container image from Artifact Registry, the digest value
+	// is used instead of an image tag.
+	//
+	// * Generic artifacts: the `image_uri` must be in this format:
+	// `projects/{project}/locations/{location}/repositories/{repository}/
+	// genericArtifacts/{package}:{version}`.
+	// The specified package and version must contain a file with the name
+	// `plugin.wasm`. When a new `WasmPluginVersion` resource is created, the
+	// checksum of the contents of the file is saved in the `image_digest`
+	// field.
 	ImageUri string `protobuf:"bytes,5,opt,name=image_uri,json=imageUri,proto3" json:"image_uri,omitempty"`
-	// Output only. The resolved digest for the image specified in `image`.
-	// The digest is resolved during the creation of a
-	// `WasmPluginVersion` resource.
-	// This field holds the digest value regardless of whether a tag or
-	// digest was originally specified in the `image` field.
+	// Output only. This field holds the digest (usually checksum) value for the
+	// plugin image. The value is calculated based on the `image_uri` field. If
+	// the `image_uri` field refers to a container image, the digest value is
+	// obtained from the container image. If the `image_uri` field refers to
+	// a generic artifact, the digest value is calculated based on the
+	// contents of the file.
 	ImageDigest string `protobuf:"bytes,6,opt,name=image_digest,json=imageDigest,proto3" json:"image_digest,omitempty"`
 	// Output only. This field holds the digest (usually checksum) value for the
 	// plugin configuration. The value is calculated based on the contents of
-	// the `plugin_config_data` field or the container image defined by the
+	// `plugin_config_data` field or the image defined by the
 	// `plugin_config_uri` field.
 	PluginConfigDigest string `protobuf:"bytes,11,opt,name=plugin_config_digest,json=pluginConfigDigest,proto3" json:"plugin_config_digest,omitempty"`
 	unknownFields      protoimpl.UnknownFields
@@ -1327,10 +1371,23 @@ type WasmPlugin_VersionDetails_PluginConfigData struct {
 type WasmPlugin_VersionDetails_PluginConfigUri struct {
 	// URI of the plugin configuration stored in the Artifact Registry.
 	// The configuration is provided to the plugin at runtime through
-	// the `ON_CONFIGURE` callback. The container image must
-	// contain only a single file with the name
-	// `plugin.config`. When a new `WasmPluginVersion`
-	// resource is created, the digest of the container image is saved in the
+	// the `ON_CONFIGURE` callback.
+	//
+	// The URI can refer to one of the following repository formats:
+	//
+	// * Container images: the `plugin_config_uri` must point to a container
+	// that contains a single file with the name `plugin.config`.
+	// When a new `WasmPluginVersion` resource is created, the digest of the
+	// image is saved in the `plugin_config_digest` field.
+	// When pulling a container image from Artifact Registry, the digest
+	// value is used instead of an image tag.
+	//
+	// * Generic artifacts: the `plugin_config_uri` must be in this format:
+	// `projects/{project}/locations/{location}/repositories/{repository}/
+	// genericArtifacts/{package}:{version}`.
+	// The specified package and version must contain a file with the name
+	// `plugin.config`. When a new `WasmPluginVersion` resource is
+	// created, the checksum of the contents of the file is saved in the
 	// `plugin_config_digest` field.
 	PluginConfigUri string `protobuf:"bytes,10,opt,name=plugin_config_uri,json=pluginConfigUri,proto3,oneof"`
 }
@@ -1359,9 +1416,9 @@ type WasmPlugin_LogConfig struct {
 	//
 	// This field can be specified only if logging is enabled for this plugin.
 	SampleRate float32 `protobuf:"fixed32,2,opt,name=sample_rate,json=sampleRate,proto3" json:"sample_rate,omitempty"`
-	// Non-empty default. Specificies the lowest level of the plugin logs that
-	// are exported to Cloud Logging. This setting relates to the logs generated
-	// by using logging statements in your Wasm code.
+	// Non-empty default. Specifies the lowest level of the plugin logs that are
+	// exported to Cloud Logging. This setting relates to the logs generated by
+	// using logging statements in your Wasm code.
 	//
 	// This field is can be set only if logging is enabled for the plugin.
 	//

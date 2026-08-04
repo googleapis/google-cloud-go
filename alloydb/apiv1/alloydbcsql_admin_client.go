@@ -31,6 +31,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -462,8 +463,12 @@ func (c *alloyDBCSQLAdminGRPCClient) RestoreFromCloudSQL(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.RestoreFromCloudSQLOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreFromCloudSQLOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -701,8 +706,12 @@ func (c *alloyDBCSQLAdminRESTClient) RestoreFromCloudSQL(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.RestoreFromCloudSQLOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreFromCloudSQLOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1068,7 +1077,7 @@ func (c *alloyDBCSQLAdminRESTClient) ListOperations(ctx context.Context, req *lo
 // The name must be that of a previously created RestoreFromCloudSQLOperation, possibly from a different process.
 func (c *alloyDBCSQLAdminGRPCClient) RestoreFromCloudSQLOperation(name string) *RestoreFromCloudSQLOperation {
 	return &RestoreFromCloudSQLOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.RestoreFromCloudSQLOperation"),
 	}
 }
 
@@ -1077,7 +1086,7 @@ func (c *alloyDBCSQLAdminGRPCClient) RestoreFromCloudSQLOperation(name string) *
 func (c *alloyDBCSQLAdminRESTClient) RestoreFromCloudSQLOperation(name string) *RestoreFromCloudSQLOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RestoreFromCloudSQLOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.RestoreFromCloudSQLOperation"),
 		pollPath: override,
 	}
 }

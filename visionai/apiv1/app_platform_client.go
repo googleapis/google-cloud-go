@@ -31,6 +31,7 @@ import (
 	visionaipb "cloud.google.com/go/visionai/apiv1/visionaipb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -941,8 +942,12 @@ func (c *appPlatformGRPCClient) CreateApplication(ctx context.Context, req *visi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -964,8 +969,12 @@ func (c *appPlatformGRPCClient) UpdateApplication(ctx context.Context, req *visi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -990,8 +999,12 @@ func (c *appPlatformGRPCClient) DeleteApplication(ctx context.Context, req *visi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1016,8 +1029,12 @@ func (c *appPlatformGRPCClient) DeployApplication(ctx context.Context, req *visi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeployApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeployApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1042,8 +1059,12 @@ func (c *appPlatformGRPCClient) UndeployApplication(ctx context.Context, req *vi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UndeployApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeployApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1068,8 +1089,12 @@ func (c *appPlatformGRPCClient) AddApplicationStreamInput(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.AddApplicationStreamInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddApplicationStreamInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1094,8 +1119,12 @@ func (c *appPlatformGRPCClient) RemoveApplicationStreamInput(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.RemoveApplicationStreamInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveApplicationStreamInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1120,8 +1149,12 @@ func (c *appPlatformGRPCClient) UpdateApplicationStreamInput(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateApplicationStreamInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApplicationStreamInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1222,8 +1255,12 @@ func (c *appPlatformGRPCClient) CreateApplicationInstances(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateApplicationInstancesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApplicationInstancesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1248,8 +1285,12 @@ func (c *appPlatformGRPCClient) DeleteApplicationInstances(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteApplicationInstancesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteApplicationInstancesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1274,8 +1315,12 @@ func (c *appPlatformGRPCClient) UpdateApplicationInstances(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateApplicationInstancesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApplicationInstancesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1376,8 +1421,12 @@ func (c *appPlatformGRPCClient) CreateDraft(ctx context.Context, req *visionaipb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateDraftOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDraftOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1399,8 +1448,12 @@ func (c *appPlatformGRPCClient) UpdateDraft(ctx context.Context, req *visionaipb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateDraftOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDraftOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1425,8 +1478,12 @@ func (c *appPlatformGRPCClient) DeleteDraft(ctx context.Context, req *visionaipb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteDraftOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDraftOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1551,8 +1608,12 @@ func (c *appPlatformGRPCClient) CreateProcessor(ctx context.Context, req *vision
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateProcessorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateProcessorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1574,8 +1635,12 @@ func (c *appPlatformGRPCClient) UpdateProcessor(ctx context.Context, req *vision
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateProcessorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateProcessorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1600,8 +1665,12 @@ func (c *appPlatformGRPCClient) DeleteProcessor(ctx context.Context, req *vision
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteProcessorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProcessorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1985,8 +2054,12 @@ func (c *appPlatformRESTClient) CreateApplication(ctx context.Context, req *visi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2059,8 +2132,12 @@ func (c *appPlatformRESTClient) UpdateApplication(ctx context.Context, req *visi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2125,8 +2202,12 @@ func (c *appPlatformRESTClient) DeleteApplication(ctx context.Context, req *visi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2191,8 +2272,12 @@ func (c *appPlatformRESTClient) DeployApplication(ctx context.Context, req *visi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeployApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeployApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2257,8 +2342,12 @@ func (c *appPlatformRESTClient) UndeployApplication(ctx context.Context, req *vi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UndeployApplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeployApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2326,8 +2415,12 @@ func (c *appPlatformRESTClient) AddApplicationStreamInput(ctx context.Context, r
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.AddApplicationStreamInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddApplicationStreamInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2394,8 +2487,12 @@ func (c *appPlatformRESTClient) RemoveApplicationStreamInput(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.RemoveApplicationStreamInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveApplicationStreamInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2462,8 +2559,12 @@ func (c *appPlatformRESTClient) UpdateApplicationStreamInput(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateApplicationStreamInputOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApplicationStreamInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2672,8 +2773,12 @@ func (c *appPlatformRESTClient) CreateApplicationInstances(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateApplicationInstancesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApplicationInstancesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2740,8 +2845,12 @@ func (c *appPlatformRESTClient) DeleteApplicationInstances(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteApplicationInstancesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteApplicationInstancesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2809,8 +2918,12 @@ func (c *appPlatformRESTClient) UpdateApplicationInstances(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateApplicationInstancesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApplicationInstancesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3021,8 +3134,12 @@ func (c *appPlatformRESTClient) CreateDraft(ctx context.Context, req *visionaipb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateDraftOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDraftOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3098,8 +3215,12 @@ func (c *appPlatformRESTClient) UpdateDraft(ctx context.Context, req *visionaipb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateDraftOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDraftOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3161,8 +3282,12 @@ func (c *appPlatformRESTClient) DeleteDraft(ctx context.Context, req *visionaipb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteDraftOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDraftOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3437,8 +3562,12 @@ func (c *appPlatformRESTClient) CreateProcessor(ctx context.Context, req *vision
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateProcessorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateProcessorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3511,8 +3640,12 @@ func (c *appPlatformRESTClient) UpdateProcessor(ctx context.Context, req *vision
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateProcessorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateProcessorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3574,8 +3707,12 @@ func (c *appPlatformRESTClient) DeleteProcessor(ctx context.Context, req *vision
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteProcessorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProcessorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3941,7 +4078,7 @@ func (c *appPlatformRESTClient) ListOperations(ctx context.Context, req *longrun
 // The name must be that of a previously created AddApplicationStreamInputOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) AddApplicationStreamInputOperation(name string) *AddApplicationStreamInputOperation {
 	return &AddApplicationStreamInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.AddApplicationStreamInputOperation"),
 	}
 }
 
@@ -3950,7 +4087,7 @@ func (c *appPlatformGRPCClient) AddApplicationStreamInputOperation(name string) 
 func (c *appPlatformRESTClient) AddApplicationStreamInputOperation(name string) *AddApplicationStreamInputOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &AddApplicationStreamInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.AddApplicationStreamInputOperation"),
 		pollPath: override,
 	}
 }
@@ -3959,7 +4096,7 @@ func (c *appPlatformRESTClient) AddApplicationStreamInputOperation(name string) 
 // The name must be that of a previously created CreateApplicationOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) CreateApplicationOperation(name string) *CreateApplicationOperation {
 	return &CreateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateApplicationOperation"),
 	}
 }
 
@@ -3968,7 +4105,7 @@ func (c *appPlatformGRPCClient) CreateApplicationOperation(name string) *CreateA
 func (c *appPlatformRESTClient) CreateApplicationOperation(name string) *CreateApplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateApplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -3977,7 +4114,7 @@ func (c *appPlatformRESTClient) CreateApplicationOperation(name string) *CreateA
 // The name must be that of a previously created CreateApplicationInstancesOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) CreateApplicationInstancesOperation(name string) *CreateApplicationInstancesOperation {
 	return &CreateApplicationInstancesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateApplicationInstancesOperation"),
 	}
 }
 
@@ -3986,7 +4123,7 @@ func (c *appPlatformGRPCClient) CreateApplicationInstancesOperation(name string)
 func (c *appPlatformRESTClient) CreateApplicationInstancesOperation(name string) *CreateApplicationInstancesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateApplicationInstancesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateApplicationInstancesOperation"),
 		pollPath: override,
 	}
 }
@@ -3995,7 +4132,7 @@ func (c *appPlatformRESTClient) CreateApplicationInstancesOperation(name string)
 // The name must be that of a previously created CreateDraftOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) CreateDraftOperation(name string) *CreateDraftOperation {
 	return &CreateDraftOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateDraftOperation"),
 	}
 }
 
@@ -4004,7 +4141,7 @@ func (c *appPlatformGRPCClient) CreateDraftOperation(name string) *CreateDraftOp
 func (c *appPlatformRESTClient) CreateDraftOperation(name string) *CreateDraftOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDraftOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateDraftOperation"),
 		pollPath: override,
 	}
 }
@@ -4013,7 +4150,7 @@ func (c *appPlatformRESTClient) CreateDraftOperation(name string) *CreateDraftOp
 // The name must be that of a previously created CreateProcessorOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) CreateProcessorOperation(name string) *CreateProcessorOperation {
 	return &CreateProcessorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateProcessorOperation"),
 	}
 }
 
@@ -4022,7 +4159,7 @@ func (c *appPlatformGRPCClient) CreateProcessorOperation(name string) *CreatePro
 func (c *appPlatformRESTClient) CreateProcessorOperation(name string) *CreateProcessorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateProcessorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateProcessorOperation"),
 		pollPath: override,
 	}
 }
@@ -4031,7 +4168,7 @@ func (c *appPlatformRESTClient) CreateProcessorOperation(name string) *CreatePro
 // The name must be that of a previously created DeleteApplicationOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) DeleteApplicationOperation(name string) *DeleteApplicationOperation {
 	return &DeleteApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteApplicationOperation"),
 	}
 }
 
@@ -4040,7 +4177,7 @@ func (c *appPlatformGRPCClient) DeleteApplicationOperation(name string) *DeleteA
 func (c *appPlatformRESTClient) DeleteApplicationOperation(name string) *DeleteApplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteApplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -4049,7 +4186,7 @@ func (c *appPlatformRESTClient) DeleteApplicationOperation(name string) *DeleteA
 // The name must be that of a previously created DeleteApplicationInstancesOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) DeleteApplicationInstancesOperation(name string) *DeleteApplicationInstancesOperation {
 	return &DeleteApplicationInstancesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteApplicationInstancesOperation"),
 	}
 }
 
@@ -4058,7 +4195,7 @@ func (c *appPlatformGRPCClient) DeleteApplicationInstancesOperation(name string)
 func (c *appPlatformRESTClient) DeleteApplicationInstancesOperation(name string) *DeleteApplicationInstancesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteApplicationInstancesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteApplicationInstancesOperation"),
 		pollPath: override,
 	}
 }
@@ -4067,7 +4204,7 @@ func (c *appPlatformRESTClient) DeleteApplicationInstancesOperation(name string)
 // The name must be that of a previously created DeleteDraftOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) DeleteDraftOperation(name string) *DeleteDraftOperation {
 	return &DeleteDraftOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteDraftOperation"),
 	}
 }
 
@@ -4076,7 +4213,7 @@ func (c *appPlatformGRPCClient) DeleteDraftOperation(name string) *DeleteDraftOp
 func (c *appPlatformRESTClient) DeleteDraftOperation(name string) *DeleteDraftOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDraftOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteDraftOperation"),
 		pollPath: override,
 	}
 }
@@ -4085,7 +4222,7 @@ func (c *appPlatformRESTClient) DeleteDraftOperation(name string) *DeleteDraftOp
 // The name must be that of a previously created DeleteProcessorOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) DeleteProcessorOperation(name string) *DeleteProcessorOperation {
 	return &DeleteProcessorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteProcessorOperation"),
 	}
 }
 
@@ -4094,7 +4231,7 @@ func (c *appPlatformGRPCClient) DeleteProcessorOperation(name string) *DeletePro
 func (c *appPlatformRESTClient) DeleteProcessorOperation(name string) *DeleteProcessorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteProcessorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteProcessorOperation"),
 		pollPath: override,
 	}
 }
@@ -4103,7 +4240,7 @@ func (c *appPlatformRESTClient) DeleteProcessorOperation(name string) *DeletePro
 // The name must be that of a previously created DeployApplicationOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) DeployApplicationOperation(name string) *DeployApplicationOperation {
 	return &DeployApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeployApplicationOperation"),
 	}
 }
 
@@ -4112,7 +4249,7 @@ func (c *appPlatformGRPCClient) DeployApplicationOperation(name string) *DeployA
 func (c *appPlatformRESTClient) DeployApplicationOperation(name string) *DeployApplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeployApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeployApplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -4121,7 +4258,7 @@ func (c *appPlatformRESTClient) DeployApplicationOperation(name string) *DeployA
 // The name must be that of a previously created RemoveApplicationStreamInputOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) RemoveApplicationStreamInputOperation(name string) *RemoveApplicationStreamInputOperation {
 	return &RemoveApplicationStreamInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.RemoveApplicationStreamInputOperation"),
 	}
 }
 
@@ -4130,7 +4267,7 @@ func (c *appPlatformGRPCClient) RemoveApplicationStreamInputOperation(name strin
 func (c *appPlatformRESTClient) RemoveApplicationStreamInputOperation(name string) *RemoveApplicationStreamInputOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RemoveApplicationStreamInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.RemoveApplicationStreamInputOperation"),
 		pollPath: override,
 	}
 }
@@ -4139,7 +4276,7 @@ func (c *appPlatformRESTClient) RemoveApplicationStreamInputOperation(name strin
 // The name must be that of a previously created UndeployApplicationOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) UndeployApplicationOperation(name string) *UndeployApplicationOperation {
 	return &UndeployApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UndeployApplicationOperation"),
 	}
 }
 
@@ -4148,7 +4285,7 @@ func (c *appPlatformGRPCClient) UndeployApplicationOperation(name string) *Undep
 func (c *appPlatformRESTClient) UndeployApplicationOperation(name string) *UndeployApplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UndeployApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UndeployApplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -4157,7 +4294,7 @@ func (c *appPlatformRESTClient) UndeployApplicationOperation(name string) *Undep
 // The name must be that of a previously created UpdateApplicationOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) UpdateApplicationOperation(name string) *UpdateApplicationOperation {
 	return &UpdateApplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateApplicationOperation"),
 	}
 }
 
@@ -4166,7 +4303,7 @@ func (c *appPlatformGRPCClient) UpdateApplicationOperation(name string) *UpdateA
 func (c *appPlatformRESTClient) UpdateApplicationOperation(name string) *UpdateApplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateApplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateApplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -4175,7 +4312,7 @@ func (c *appPlatformRESTClient) UpdateApplicationOperation(name string) *UpdateA
 // The name must be that of a previously created UpdateApplicationInstancesOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) UpdateApplicationInstancesOperation(name string) *UpdateApplicationInstancesOperation {
 	return &UpdateApplicationInstancesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateApplicationInstancesOperation"),
 	}
 }
 
@@ -4184,7 +4321,7 @@ func (c *appPlatformGRPCClient) UpdateApplicationInstancesOperation(name string)
 func (c *appPlatformRESTClient) UpdateApplicationInstancesOperation(name string) *UpdateApplicationInstancesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateApplicationInstancesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateApplicationInstancesOperation"),
 		pollPath: override,
 	}
 }
@@ -4193,7 +4330,7 @@ func (c *appPlatformRESTClient) UpdateApplicationInstancesOperation(name string)
 // The name must be that of a previously created UpdateApplicationStreamInputOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) UpdateApplicationStreamInputOperation(name string) *UpdateApplicationStreamInputOperation {
 	return &UpdateApplicationStreamInputOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateApplicationStreamInputOperation"),
 	}
 }
 
@@ -4202,7 +4339,7 @@ func (c *appPlatformGRPCClient) UpdateApplicationStreamInputOperation(name strin
 func (c *appPlatformRESTClient) UpdateApplicationStreamInputOperation(name string) *UpdateApplicationStreamInputOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateApplicationStreamInputOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateApplicationStreamInputOperation"),
 		pollPath: override,
 	}
 }
@@ -4211,7 +4348,7 @@ func (c *appPlatformRESTClient) UpdateApplicationStreamInputOperation(name strin
 // The name must be that of a previously created UpdateDraftOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) UpdateDraftOperation(name string) *UpdateDraftOperation {
 	return &UpdateDraftOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateDraftOperation"),
 	}
 }
 
@@ -4220,7 +4357,7 @@ func (c *appPlatformGRPCClient) UpdateDraftOperation(name string) *UpdateDraftOp
 func (c *appPlatformRESTClient) UpdateDraftOperation(name string) *UpdateDraftOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDraftOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateDraftOperation"),
 		pollPath: override,
 	}
 }
@@ -4229,7 +4366,7 @@ func (c *appPlatformRESTClient) UpdateDraftOperation(name string) *UpdateDraftOp
 // The name must be that of a previously created UpdateProcessorOperation, possibly from a different process.
 func (c *appPlatformGRPCClient) UpdateProcessorOperation(name string) *UpdateProcessorOperation {
 	return &UpdateProcessorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateProcessorOperation"),
 	}
 }
 
@@ -4238,7 +4375,7 @@ func (c *appPlatformGRPCClient) UpdateProcessorOperation(name string) *UpdatePro
 func (c *appPlatformRESTClient) UpdateProcessorOperation(name string) *UpdateProcessorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateProcessorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateProcessorOperation"),
 		pollPath: override,
 	}
 }

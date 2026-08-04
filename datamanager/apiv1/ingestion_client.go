@@ -43,6 +43,7 @@ type IngestionCallOptions struct {
 	IngestAudienceMembers []gax.CallOption
 	RemoveAudienceMembers []gax.CallOption
 	IngestEvents          []gax.CallOption
+	IngestAdEvents        []gax.CallOption
 	RetrieveRequestStatus []gax.CallOption
 }
 
@@ -66,6 +67,7 @@ func defaultIngestionCallOptions() *IngestionCallOptions {
 		IngestAudienceMembers: []gax.CallOption{},
 		RemoveAudienceMembers: []gax.CallOption{},
 		IngestEvents:          []gax.CallOption{},
+		IngestAdEvents:        []gax.CallOption{},
 		RetrieveRequestStatus: []gax.CallOption{},
 	}
 }
@@ -75,6 +77,7 @@ func defaultIngestionRESTCallOptions() *IngestionCallOptions {
 		IngestAudienceMembers: []gax.CallOption{},
 		RemoveAudienceMembers: []gax.CallOption{},
 		IngestEvents:          []gax.CallOption{},
+		IngestAdEvents:        []gax.CallOption{},
 		RetrieveRequestStatus: []gax.CallOption{},
 	}
 }
@@ -87,6 +90,7 @@ type internalIngestionClient interface {
 	IngestAudienceMembers(context.Context, *datamanagerpb.IngestAudienceMembersRequest, ...gax.CallOption) (*datamanagerpb.IngestAudienceMembersResponse, error)
 	RemoveAudienceMembers(context.Context, *datamanagerpb.RemoveAudienceMembersRequest, ...gax.CallOption) (*datamanagerpb.RemoveAudienceMembersResponse, error)
 	IngestEvents(context.Context, *datamanagerpb.IngestEventsRequest, ...gax.CallOption) (*datamanagerpb.IngestEventsResponse, error)
+	IngestAdEvents(context.Context, *datamanagerpb.IngestAdEventsRequest, ...gax.CallOption) (*datamanagerpb.IngestAdEventsResponse, error)
 	RetrieveRequestStatus(context.Context, *datamanagerpb.RetrieveRequestStatusRequest, ...gax.CallOption) (*datamanagerpb.RetrieveRequestStatusResponse, error)
 }
 
@@ -144,6 +148,15 @@ func (c *IngestionClient) RemoveAudienceMembers(ctx context.Context, req *datama
 // the provided Destination.
 func (c *IngestionClient) IngestEvents(ctx context.Context, req *datamanagerpb.IngestEventsRequest, opts ...gax.CallOption) (*datamanagerpb.IngestEventsResponse, error) {
 	return c.internalClient.IngestEvents(ctx, req, opts...)
+}
+
+// IngestAdEvents uploads a list of
+// AdEvent resources to Google
+// Analytics.
+//
+// This feature is only available to accounts on an allowlist.
+func (c *IngestionClient) IngestAdEvents(ctx context.Context, req *datamanagerpb.IngestAdEventsRequest, opts ...gax.CallOption) (*datamanagerpb.IngestAdEventsResponse, error) {
+	return c.internalClient.IngestAdEvents(ctx, req, opts...)
 }
 
 // RetrieveRequestStatus gets the status of a request given request id.
@@ -222,6 +235,7 @@ func NewIngestionClient(ctx context.Context, opts ...option.ClientOption) (*Inge
 		client.CallOptions.IngestAudienceMembers = append(client.CallOptions.IngestAudienceMembers, gax.WithClientMetrics(metrics))
 		client.CallOptions.RemoveAudienceMembers = append(client.CallOptions.RemoveAudienceMembers, gax.WithClientMetrics(metrics))
 		client.CallOptions.IngestEvents = append(client.CallOptions.IngestEvents, gax.WithClientMetrics(metrics))
+		client.CallOptions.IngestAdEvents = append(client.CallOptions.IngestAdEvents, gax.WithClientMetrics(metrics))
 		client.CallOptions.RetrieveRequestStatus = append(client.CallOptions.RetrieveRequestStatus, gax.WithClientMetrics(metrics))
 	}
 
@@ -316,6 +330,7 @@ func NewIngestionRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.IngestAudienceMembers = append(callOpts.IngestAudienceMembers, gax.WithClientMetrics(metrics))
 		callOpts.RemoveAudienceMembers = append(callOpts.RemoveAudienceMembers, gax.WithClientMetrics(metrics))
 		callOpts.IngestEvents = append(callOpts.IngestEvents, gax.WithClientMetrics(metrics))
+		callOpts.IngestAdEvents = append(callOpts.IngestAdEvents, gax.WithClientMetrics(metrics))
 		callOpts.RetrieveRequestStatus = append(callOpts.RetrieveRequestStatus, gax.WithClientMetrics(metrics))
 	}
 
@@ -405,6 +420,24 @@ func (c *ingestionGRPCClient) IngestEvents(ctx context.Context, req *datamanager
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.ingestionClient.IngestEvents, req, settings.GRPC, c.logger, "IngestEvents")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *ingestionGRPCClient) IngestAdEvents(ctx context.Context, req *datamanagerpb.IngestAdEventsRequest, opts ...gax.CallOption) (*datamanagerpb.IngestAdEventsResponse, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/IngestAdEvents")
+	}
+	opts = append((*c.CallOptions).IngestAdEvents[0:len((*c.CallOptions).IngestAdEvents):len((*c.CallOptions).IngestAdEvents)], opts...)
+	var resp *datamanagerpb.IngestAdEventsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.ingestionClient.IngestAdEvents, req, settings.GRPC, c.logger, "IngestAdEvents")
 		return err
 	}, opts...)
 	if err != nil {
@@ -592,6 +625,67 @@ func (c *ingestionRESTClient) IngestEvents(ctx context.Context, req *datamanager
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "IngestEvents")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// IngestAdEvents uploads a list of
+// AdEvent resources to Google
+// Analytics.
+//
+// This feature is only available to accounts on an allowlist.
+func (c *ingestionRESTClient) IngestAdEvents(ctx context.Context, req *datamanagerpb.IngestAdEventsRequest, opts ...gax.CallOption) (*datamanagerpb.IngestAdEventsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/adEvents:ingest")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/IngestAdEvents")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/adEvents:ingest")
+	}
+	opts = append((*c.CallOptions).IngestAdEvents[0:len((*c.CallOptions).IngestAdEvents):len((*c.CallOptions).IngestAdEvents)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &datamanagerpb.IngestAdEventsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "IngestAdEvents")
 		if err != nil {
 			return err
 		}

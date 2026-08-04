@@ -36,6 +36,7 @@ import (
 	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -62,6 +63,7 @@ type StorageControlCallOptions struct {
 	DeleteManagedFolder                  []gax.CallOption
 	GetManagedFolder                     []gax.CallOption
 	ListManagedFolders                   []gax.CallOption
+	UpdateManagedFolder                  []gax.CallOption
 	CreateAnywhereCache                  []gax.CallOption
 	UpdateAnywhereCache                  []gax.CallOption
 	DisableAnywhereCache                 []gax.CallOption
@@ -69,6 +71,10 @@ type StorageControlCallOptions struct {
 	ResumeAnywhereCache                  []gax.CallOption
 	GetAnywhereCache                     []gax.CallOption
 	ListAnywhereCaches                   []gax.CallOption
+	CreateRapidCache                     []gax.CallOption
+	UpdateRapidCache                     []gax.CallOption
+	GetRapidCache                        []gax.CallOption
+	ListRapidCaches                      []gax.CallOption
 	GetProjectIntelligenceConfig         []gax.CallOption
 	UpdateProjectIntelligenceConfig      []gax.CallOption
 	GetFolderIntelligenceConfig          []gax.CallOption
@@ -108,7 +114,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -127,7 +132,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -143,7 +147,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -159,7 +162,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -175,7 +177,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -191,7 +192,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -213,7 +213,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -229,7 +228,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -239,13 +237,15 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				})
 			}),
 		},
+		UpdateManagedFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		CreateAnywhereCache: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -261,7 +261,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -277,7 +276,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -293,7 +291,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -309,7 +306,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -325,7 +321,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -341,7 +336,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -351,13 +345,24 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				})
 			}),
 		},
+		CreateRapidCache: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateRapidCache: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRapidCache: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListRapidCaches: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetProjectIntelligenceConfig: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -373,7 +378,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -389,7 +393,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -405,7 +408,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -421,7 +423,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -437,7 +438,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -462,7 +462,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -478,7 +477,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -494,7 +492,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -510,7 +507,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -526,7 +522,6 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 					codes.Internal,
 					codes.Unknown,
 				}, gax.Backoff{
@@ -551,7 +546,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -569,7 +563,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -584,7 +577,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -599,7 +591,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -614,7 +605,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -629,7 +619,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -650,7 +639,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -665,10 +653,12 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
+		},
+		UpdateManagedFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		CreateAnywhereCache: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -680,7 +670,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -695,7 +684,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -710,7 +698,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -725,7 +712,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -740,7 +726,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -755,7 +740,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -770,10 +754,21 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
+		},
+		CreateRapidCache: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateRapidCache: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRapidCache: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListRapidCaches: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetProjectIntelligenceConfig: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -785,7 +780,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -800,7 +794,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -815,7 +808,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -830,7 +822,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -845,7 +836,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -860,7 +850,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -884,7 +873,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -899,7 +887,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -914,7 +901,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -929,7 +915,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -944,7 +929,6 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 				},
 					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
-					http.StatusGatewayTimeout,
 					http.StatusInternalServerError,
 					http.StatusInternalServerError)
 			}),
@@ -970,6 +954,7 @@ type internalStorageControlClient interface {
 	DeleteManagedFolder(context.Context, *controlpb.DeleteManagedFolderRequest, ...gax.CallOption) error
 	GetManagedFolder(context.Context, *controlpb.GetManagedFolderRequest, ...gax.CallOption) (*controlpb.ManagedFolder, error)
 	ListManagedFolders(context.Context, *controlpb.ListManagedFoldersRequest, ...gax.CallOption) *ManagedFolderIterator
+	UpdateManagedFolder(context.Context, *controlpb.UpdateManagedFolderRequest, ...gax.CallOption) (*controlpb.ManagedFolder, error)
 	CreateAnywhereCache(context.Context, *controlpb.CreateAnywhereCacheRequest, ...gax.CallOption) (*CreateAnywhereCacheOperation, error)
 	CreateAnywhereCacheOperation(name string) *CreateAnywhereCacheOperation
 	UpdateAnywhereCache(context.Context, *controlpb.UpdateAnywhereCacheRequest, ...gax.CallOption) (*UpdateAnywhereCacheOperation, error)
@@ -979,6 +964,12 @@ type internalStorageControlClient interface {
 	ResumeAnywhereCache(context.Context, *controlpb.ResumeAnywhereCacheRequest, ...gax.CallOption) (*controlpb.AnywhereCache, error)
 	GetAnywhereCache(context.Context, *controlpb.GetAnywhereCacheRequest, ...gax.CallOption) (*controlpb.AnywhereCache, error)
 	ListAnywhereCaches(context.Context, *controlpb.ListAnywhereCachesRequest, ...gax.CallOption) *AnywhereCacheIterator
+	CreateRapidCache(context.Context, *controlpb.CreateRapidCacheRequest, ...gax.CallOption) (*CreateRapidCacheOperation, error)
+	CreateRapidCacheOperation(name string) *CreateRapidCacheOperation
+	UpdateRapidCache(context.Context, *controlpb.UpdateRapidCacheRequest, ...gax.CallOption) (*UpdateRapidCacheOperation, error)
+	UpdateRapidCacheOperation(name string) *UpdateRapidCacheOperation
+	GetRapidCache(context.Context, *controlpb.GetRapidCacheRequest, ...gax.CallOption) (*controlpb.RapidCache, error)
+	ListRapidCaches(context.Context, *controlpb.ListRapidCachesRequest, ...gax.CallOption) *RapidCacheIterator
 	GetProjectIntelligenceConfig(context.Context, *controlpb.GetProjectIntelligenceConfigRequest, ...gax.CallOption) (*controlpb.IntelligenceConfig, error)
 	UpdateProjectIntelligenceConfig(context.Context, *controlpb.UpdateProjectIntelligenceConfigRequest, ...gax.CallOption) (*controlpb.IntelligenceConfig, error)
 	GetFolderIntelligenceConfig(context.Context, *controlpb.GetFolderIntelligenceConfigRequest, ...gax.CallOption) (*controlpb.IntelligenceConfig, error)
@@ -1110,6 +1101,12 @@ func (c *StorageControlClient) ListManagedFolders(ctx context.Context, req *cont
 	return c.internalClient.ListManagedFolders(ctx, req, opts...)
 }
 
+// UpdateManagedFolder updates a managed folder. Currently, this RPC only supports updating the
+// rapid_cache_config field.
+func (c *StorageControlClient) UpdateManagedFolder(ctx context.Context, req *controlpb.UpdateManagedFolderRequest, opts ...gax.CallOption) (*controlpb.ManagedFolder, error) {
+	return c.internalClient.UpdateManagedFolder(ctx, req, opts...)
+}
+
 // CreateAnywhereCache creates an Anywhere Cache instance.
 func (c *StorageControlClient) CreateAnywhereCache(ctx context.Context, req *controlpb.CreateAnywhereCacheRequest, opts ...gax.CallOption) (*CreateAnywhereCacheOperation, error) {
 	return c.internalClient.CreateAnywhereCache(ctx, req, opts...)
@@ -1159,6 +1156,38 @@ func (c *StorageControlClient) GetAnywhereCache(ctx context.Context, req *contro
 // ListAnywhereCaches lists Anywhere Cache instances for a given bucket.
 func (c *StorageControlClient) ListAnywhereCaches(ctx context.Context, req *controlpb.ListAnywhereCachesRequest, opts ...gax.CallOption) *AnywhereCacheIterator {
 	return c.internalClient.ListAnywhereCaches(ctx, req, opts...)
+}
+
+// CreateRapidCache creates a Rapid Cache instance.
+func (c *StorageControlClient) CreateRapidCache(ctx context.Context, req *controlpb.CreateRapidCacheRequest, opts ...gax.CallOption) (*CreateRapidCacheOperation, error) {
+	return c.internalClient.CreateRapidCache(ctx, req, opts...)
+}
+
+// CreateRapidCacheOperation returns a new CreateRapidCacheOperation from a given name.
+// The name must be that of a previously created CreateRapidCacheOperation, possibly from a different process.
+func (c *StorageControlClient) CreateRapidCacheOperation(name string) *CreateRapidCacheOperation {
+	return c.internalClient.CreateRapidCacheOperation(name)
+}
+
+// UpdateRapidCache updates a Rapid Cache instance.
+func (c *StorageControlClient) UpdateRapidCache(ctx context.Context, req *controlpb.UpdateRapidCacheRequest, opts ...gax.CallOption) (*UpdateRapidCacheOperation, error) {
+	return c.internalClient.UpdateRapidCache(ctx, req, opts...)
+}
+
+// UpdateRapidCacheOperation returns a new UpdateRapidCacheOperation from a given name.
+// The name must be that of a previously created UpdateRapidCacheOperation, possibly from a different process.
+func (c *StorageControlClient) UpdateRapidCacheOperation(name string) *UpdateRapidCacheOperation {
+	return c.internalClient.UpdateRapidCacheOperation(name)
+}
+
+// GetRapidCache gets a Rapid Cache instance.
+func (c *StorageControlClient) GetRapidCache(ctx context.Context, req *controlpb.GetRapidCacheRequest, opts ...gax.CallOption) (*controlpb.RapidCache, error) {
+	return c.internalClient.GetRapidCache(ctx, req, opts...)
+}
+
+// ListRapidCaches lists Rapid Cache instances for a given bucket.
+func (c *StorageControlClient) ListRapidCaches(ctx context.Context, req *controlpb.ListRapidCachesRequest, opts ...gax.CallOption) *RapidCacheIterator {
+	return c.internalClient.ListRapidCaches(ctx, req, opts...)
 }
 
 // GetProjectIntelligenceConfig returns the Project scoped singleton IntelligenceConfig resource.
@@ -1225,13 +1254,13 @@ func (c *StorageControlClient) GetIntelligenceFinding(ctx context.Context, req *
 	return c.internalClient.GetIntelligenceFinding(ctx, req, opts...)
 }
 
-// ListIntelligenceFindings lists the IntelligenceFinding resources for the specified project.
+// ListIntelligenceFindings lists the IntelligenceFinding resources for the specified the project.
 func (c *StorageControlClient) ListIntelligenceFindings(ctx context.Context, req *controlpb.ListIntelligenceFindingsRequest, opts ...gax.CallOption) *IntelligenceFindingIterator {
 	return c.internalClient.ListIntelligenceFindings(ctx, req, opts...)
 }
 
-// SummarizeIntelligenceFindings summarize the intelligence findings for the specified scope(org, folder or
-// project).
+// SummarizeIntelligenceFindings summarizes the intelligence findings for the specified scope (organization,
+// folder or project).
 func (c *StorageControlClient) SummarizeIntelligenceFindings(ctx context.Context, req *controlpb.SummarizeIntelligenceFindingsRequest, opts ...gax.CallOption) *FindingSummaryIterator {
 	return c.internalClient.SummarizeIntelligenceFindings(ctx, req, opts...)
 }
@@ -1330,6 +1359,7 @@ func NewStorageControlClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.DeleteManagedFolder = append(client.CallOptions.DeleteManagedFolder, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetManagedFolder = append(client.CallOptions.GetManagedFolder, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListManagedFolders = append(client.CallOptions.ListManagedFolders, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateManagedFolder = append(client.CallOptions.UpdateManagedFolder, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateAnywhereCache = append(client.CallOptions.CreateAnywhereCache, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateAnywhereCache = append(client.CallOptions.UpdateAnywhereCache, gax.WithClientMetrics(metrics))
 		client.CallOptions.DisableAnywhereCache = append(client.CallOptions.DisableAnywhereCache, gax.WithClientMetrics(metrics))
@@ -1337,6 +1367,10 @@ func NewStorageControlClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.ResumeAnywhereCache = append(client.CallOptions.ResumeAnywhereCache, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetAnywhereCache = append(client.CallOptions.GetAnywhereCache, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListAnywhereCaches = append(client.CallOptions.ListAnywhereCaches, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRapidCache = append(client.CallOptions.CreateRapidCache, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRapidCache = append(client.CallOptions.UpdateRapidCache, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRapidCache = append(client.CallOptions.GetRapidCache, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRapidCaches = append(client.CallOptions.ListRapidCaches, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetProjectIntelligenceConfig = append(client.CallOptions.GetProjectIntelligenceConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateProjectIntelligenceConfig = append(client.CallOptions.UpdateProjectIntelligenceConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetFolderIntelligenceConfig = append(client.CallOptions.GetFolderIntelligenceConfig, gax.WithClientMetrics(metrics))
@@ -1468,6 +1502,7 @@ func NewStorageControlRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.DeleteManagedFolder = append(callOpts.DeleteManagedFolder, gax.WithClientMetrics(metrics))
 		callOpts.GetManagedFolder = append(callOpts.GetManagedFolder, gax.WithClientMetrics(metrics))
 		callOpts.ListManagedFolders = append(callOpts.ListManagedFolders, gax.WithClientMetrics(metrics))
+		callOpts.UpdateManagedFolder = append(callOpts.UpdateManagedFolder, gax.WithClientMetrics(metrics))
 		callOpts.CreateAnywhereCache = append(callOpts.CreateAnywhereCache, gax.WithClientMetrics(metrics))
 		callOpts.UpdateAnywhereCache = append(callOpts.UpdateAnywhereCache, gax.WithClientMetrics(metrics))
 		callOpts.DisableAnywhereCache = append(callOpts.DisableAnywhereCache, gax.WithClientMetrics(metrics))
@@ -1475,6 +1510,10 @@ func NewStorageControlRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.ResumeAnywhereCache = append(callOpts.ResumeAnywhereCache, gax.WithClientMetrics(metrics))
 		callOpts.GetAnywhereCache = append(callOpts.GetAnywhereCache, gax.WithClientMetrics(metrics))
 		callOpts.ListAnywhereCaches = append(callOpts.ListAnywhereCaches, gax.WithClientMetrics(metrics))
+		callOpts.CreateRapidCache = append(callOpts.CreateRapidCache, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRapidCache = append(callOpts.UpdateRapidCache, gax.WithClientMetrics(metrics))
+		callOpts.GetRapidCache = append(callOpts.GetRapidCache, gax.WithClientMetrics(metrics))
+		callOpts.ListRapidCaches = append(callOpts.ListRapidCaches, gax.WithClientMetrics(metrics))
 		callOpts.GetProjectIntelligenceConfig = append(callOpts.GetProjectIntelligenceConfig, gax.WithClientMetrics(metrics))
 		callOpts.UpdateProjectIntelligenceConfig = append(callOpts.UpdateProjectIntelligenceConfig, gax.WithClientMetrics(metrics))
 		callOpts.GetFolderIntelligenceConfig = append(callOpts.GetFolderIntelligenceConfig, gax.WithClientMetrics(metrics))
@@ -1739,8 +1778,12 @@ func (c *storageControlGRPCClient) RenameFolder(ctx context.Context, req *contro
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.RenameFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RenameFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1777,8 +1820,12 @@ func (c *storageControlGRPCClient) DeleteFolderRecursive(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.DeleteFolderRecursiveOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFolderRecursiveOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1983,6 +2030,36 @@ func (c *storageControlGRPCClient) ListManagedFolders(ctx context.Context, req *
 	return it
 }
 
+func (c *storageControlGRPCClient) UpdateManagedFolder(ctx context.Context, req *controlpb.UpdateManagedFolderRequest, opts ...gax.CallOption) (*controlpb.ManagedFolder, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetManagedFolder().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetManagedFolder().GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetManagedFolder().GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/UpdateManagedFolder")
+	}
+	opts = append((*c.CallOptions).UpdateManagedFolder[0:len((*c.CallOptions).UpdateManagedFolder):len((*c.CallOptions).UpdateManagedFolder)], opts...)
+	var resp *controlpb.ManagedFolder
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.UpdateManagedFolder, req, settings.GRPC, c.logger, "UpdateManagedFolder")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *storageControlGRPCClient) CreateAnywhereCache(ctx context.Context, req *controlpb.CreateAnywhereCacheRequest, opts ...gax.CallOption) (*CreateAnywhereCacheOperation, error) {
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
@@ -2016,8 +2093,12 @@ func (c *storageControlGRPCClient) CreateAnywhereCache(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.CreateAnywhereCacheOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAnywhereCacheOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2051,8 +2132,12 @@ func (c *storageControlGRPCClient) UpdateAnywhereCache(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.UpdateAnywhereCacheOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAnywhereCacheOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2244,6 +2329,175 @@ func (c *storageControlGRPCClient) ListAnywhereCaches(ctx context.Context, req *
 
 		it.Response = resp
 		return resp.GetAnywhereCaches(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *storageControlGRPCClient) CreateRapidCache(ctx context.Context, req *controlpb.CreateRapidCacheRequest, opts ...gax.CallOption) (*CreateRapidCacheOperation, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/CreateRapidCache")
+	}
+	opts = append((*c.CallOptions).CreateRapidCache[0:len((*c.CallOptions).CreateRapidCache):len((*c.CallOptions).CreateRapidCache)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.CreateRapidCache, req, settings.GRPC, c.logger, "CreateRapidCache")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.CreateRapidCacheOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &CreateRapidCacheOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *storageControlGRPCClient) UpdateRapidCache(ctx context.Context, req *controlpb.UpdateRapidCacheRequest, opts ...gax.CallOption) (*UpdateRapidCacheOperation, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetRapidCache().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetRapidCache().GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetRapidCache().GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/UpdateRapidCache")
+	}
+	opts = append((*c.CallOptions).UpdateRapidCache[0:len((*c.CallOptions).UpdateRapidCache):len((*c.CallOptions).UpdateRapidCache)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.UpdateRapidCache, req, settings.GRPC, c.logger, "UpdateRapidCache")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.UpdateRapidCacheOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &UpdateRapidCacheOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *storageControlGRPCClient) GetRapidCache(ctx context.Context, req *controlpb.GetRapidCacheRequest, opts ...gax.CallOption) (*controlpb.RapidCache, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetRapidCache")
+	}
+	opts = append((*c.CallOptions).GetRapidCache[0:len((*c.CallOptions).GetRapidCache):len((*c.CallOptions).GetRapidCache)], opts...)
+	var resp *controlpb.RapidCache
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.GetRapidCache, req, settings.GRPC, c.logger, "GetRapidCache")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) ListRapidCaches(ctx context.Context, req *controlpb.ListRapidCachesRequest, opts ...gax.CallOption) *RapidCacheIterator {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ListRapidCaches")
+	}
+	opts = append((*c.CallOptions).ListRapidCaches[0:len((*c.CallOptions).ListRapidCaches):len((*c.CallOptions).ListRapidCaches)], opts...)
+	it := &RapidCacheIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.RapidCache, string, error) {
+		resp := &controlpb.ListRapidCachesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.storageControlClient.ListRapidCaches, req, settings.GRPC, c.logger, "ListRapidCaches")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetRapidCaches(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -2714,39 +2968,22 @@ func (c *storageControlRESTClient) CreateFolder(ctx context.Context, req *contro
 	if req != nil && req.GetRequestId() == "" {
 		req.RequestId = uuid.NewString()
 	}
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetFolder()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/v2/%v/folders", req.GetParent())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	if req.GetFolder().GetCreateTime() != nil {
-		field, err := protojson.Marshal(req.GetFolder().GetCreateTime())
-		if err != nil {
-			return nil, err
-		}
-		params.Add("folder.createTime", string(field[1:len(field)-1]))
-	}
-	if req.GetFolder().GetMetageneration() != 0 {
-		params.Add("folder.metageneration", fmt.Sprintf("%v", req.GetFolder().GetMetageneration()))
-	}
-	if req.GetFolder().GetName() != "" {
-		params.Add("folder.name", fmt.Sprintf("%v", req.GetFolder().GetName()))
-	}
-	if req.GetFolder().GetPendingRenameInfo().GetOperation() != "" {
-		params.Add("folder.pendingRenameInfo.operation", fmt.Sprintf("%v", req.GetFolder().GetPendingRenameInfo().GetOperation()))
-	}
-	if req.GetFolder().GetUpdateTime() != nil {
-		field, err := protojson.Marshal(req.GetFolder().GetUpdateTime())
-		if err != nil {
-			return nil, err
-		}
-		params.Add("folder.updateTime", string(field[1:len(field)-1]))
-	}
 	params.Add("folderId", fmt.Sprintf("%v", req.GetFolderId()))
-	params.Add("parent", fmt.Sprintf("%v", req.GetParent()))
 	if req.GetRecursive() {
 		params.Add("recursive", fmt.Sprintf("%v", req.GetRecursive()))
 	}
@@ -2776,6 +3013,7 @@ func (c *storageControlRESTClient) CreateFolder(ctx context.Context, req *contro
 	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/CreateFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/buckets/*}/folders")
 	}
 	opts = append((*c.CallOptions).CreateFolder[0:len((*c.CallOptions).CreateFolder):len((*c.CallOptions).CreateFolder)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -2784,14 +3022,14 @@ func (c *storageControlRESTClient) CreateFolder(ctx context.Context, req *contro
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
-		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CreateFolder")
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateFolder")
 		if err != nil {
 			return err
 		}
@@ -2818,7 +3056,7 @@ func (c *storageControlRESTClient) DeleteFolder(ctx context.Context, req *contro
 	if err != nil {
 		return err
 	}
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
@@ -2828,7 +3066,6 @@ func (c *storageControlRESTClient) DeleteFolder(ctx context.Context, req *contro
 	if req != nil && req.IfMetagenerationNotMatch != nil {
 		params.Add("ifMetagenerationNotMatch", fmt.Sprintf("%v", req.GetIfMetagenerationNotMatch()))
 	}
-	params.Add("name", fmt.Sprintf("%v", req.GetName()))
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2855,12 +3092,13 @@ func (c *storageControlRESTClient) DeleteFolder(ctx context.Context, req *contro
 	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DeleteFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/buckets/*/folders/**}")
 	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
-		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}
@@ -2882,7 +3120,7 @@ func (c *storageControlRESTClient) GetFolder(ctx context.Context, req *controlpb
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
@@ -2892,7 +3130,6 @@ func (c *storageControlRESTClient) GetFolder(ctx context.Context, req *controlpb
 	if req != nil && req.IfMetagenerationNotMatch != nil {
 		params.Add("ifMetagenerationNotMatch", fmt.Sprintf("%v", req.GetIfMetagenerationNotMatch()))
 	}
-	params.Add("name", fmt.Sprintf("%v", req.GetName()))
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2919,6 +3156,7 @@ func (c *storageControlRESTClient) GetFolder(ctx context.Context, req *controlpb
 	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/buckets/*/folders/**}")
 	}
 	opts = append((*c.CallOptions).GetFolder[0:len((*c.CallOptions).GetFolder):len((*c.CallOptions).GetFolder)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -2927,7 +3165,7 @@ func (c *storageControlRESTClient) GetFolder(ctx context.Context, req *controlpb
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
-		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}
@@ -2971,7 +3209,7 @@ func (c *storageControlRESTClient) ListFolders(ctx context.Context, req *control
 		if err != nil {
 			return nil, "", err
 		}
-		baseUrl.Path += fmt.Sprintf("")
+		baseUrl.Path += fmt.Sprintf("/v2/%v/folders", req.GetParent())
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
@@ -2990,7 +3228,6 @@ func (c *storageControlRESTClient) ListFolders(ctx context.Context, req *control
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		params.Add("parent", fmt.Sprintf("%v", req.GetParent()))
 		if req.GetPrefix() != "" {
 			params.Add("prefix", fmt.Sprintf("%v", req.GetPrefix()))
 		}
@@ -3007,7 +3244,7 @@ func (c *storageControlRESTClient) ListFolders(ctx context.Context, req *control
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
 			}
-			httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
 			}
@@ -3054,25 +3291,20 @@ func (c *storageControlRESTClient) RenameFolder(ctx context.Context, req *contro
 	if req != nil && req.GetRequestId() == "" {
 		req.RequestId = uuid.NewString()
 	}
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/v2/%v:rename", req.GetName())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	params.Add("destinationFolderId", fmt.Sprintf("%v", req.GetDestinationFolderId()))
-	if req != nil && req.IfMetagenerationMatch != nil {
-		params.Add("ifMetagenerationMatch", fmt.Sprintf("%v", req.GetIfMetagenerationMatch()))
-	}
-	if req != nil && req.IfMetagenerationNotMatch != nil {
-		params.Add("ifMetagenerationNotMatch", fmt.Sprintf("%v", req.GetIfMetagenerationNotMatch()))
-	}
-	params.Add("name", fmt.Sprintf("%v", req.GetName()))
-	if req.GetRequestId() != "" {
-		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
-	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3096,6 +3328,7 @@ func (c *storageControlRESTClient) RenameFolder(ctx context.Context, req *contro
 	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/RenameFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/buckets/*/folders/**}:rename")
 	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -3103,14 +3336,14 @@ func (c *storageControlRESTClient) RenameFolder(ctx context.Context, req *contro
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
-		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "RenameFolder")
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RenameFolder")
 		if err != nil {
 			return err
 		}
@@ -3125,8 +3358,12 @@ func (c *storageControlRESTClient) RenameFolder(ctx context.Context, req *contro
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.RenameFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RenameFolderOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3137,24 +3374,20 @@ func (c *storageControlRESTClient) DeleteFolderRecursive(ctx context.Context, re
 	if req != nil && req.GetRequestId() == "" {
 		req.RequestId = uuid.NewString()
 	}
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/v2/%v:deleteRecursive", req.GetName())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	if req != nil && req.IfMetagenerationMatch != nil {
-		params.Add("ifMetagenerationMatch", fmt.Sprintf("%v", req.GetIfMetagenerationMatch()))
-	}
-	if req != nil && req.IfMetagenerationNotMatch != nil {
-		params.Add("ifMetagenerationNotMatch", fmt.Sprintf("%v", req.GetIfMetagenerationNotMatch()))
-	}
-	params.Add("name", fmt.Sprintf("%v", req.GetName()))
-	if req.GetRequestId() != "" {
-		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
-	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3178,6 +3411,7 @@ func (c *storageControlRESTClient) DeleteFolderRecursive(ctx context.Context, re
 	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DeleteFolderRecursive")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/buckets/*/folders/**}:deleteRecursive")
 	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -3185,14 +3419,14 @@ func (c *storageControlRESTClient) DeleteFolderRecursive(ctx context.Context, re
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
-		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFolderRecursive")
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeleteFolderRecursive")
 		if err != nil {
 			return err
 		}
@@ -3207,8 +3441,12 @@ func (c *storageControlRESTClient) DeleteFolderRecursive(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.DeleteFolderRecursiveOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFolderRecursiveOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3222,11 +3460,10 @@ func (c *storageControlRESTClient) GetStorageLayout(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	params.Add("name", fmt.Sprintf("%v", req.GetName()))
 	if req.GetPrefix() != "" {
 		params.Add("prefix", fmt.Sprintf("%v", req.GetPrefix()))
 	}
@@ -3256,6 +3493,7 @@ func (c *storageControlRESTClient) GetStorageLayout(ctx context.Context, req *co
 	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetStorageLayout")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/buckets/*/storageLayout}")
 	}
 	opts = append((*c.CallOptions).GetStorageLayout[0:len((*c.CallOptions).GetStorageLayout):len((*c.CallOptions).GetStorageLayout)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -3264,7 +3502,7 @@ func (c *storageControlRESTClient) GetStorageLayout(ctx context.Context, req *co
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
-		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}
@@ -3610,6 +3848,105 @@ func (c *storageControlRESTClient) ListManagedFolders(ctx context.Context, req *
 	return it
 }
 
+// UpdateManagedFolder updates a managed folder. Currently, this RPC only supports updating the
+// rapid_cache_config field.
+func (c *storageControlRESTClient) UpdateManagedFolder(ctx context.Context, req *controlpb.UpdateManagedFolderRequest, opts ...gax.CallOption) (*controlpb.ManagedFolder, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req != nil && req.IfMetagenerationMatch != nil {
+		params.Add("ifMetagenerationMatch", fmt.Sprintf("%v", req.GetIfMetagenerationMatch()))
+	}
+	if req != nil && req.IfMetagenerationNotMatch != nil {
+		params.Add("ifMetagenerationNotMatch", fmt.Sprintf("%v", req.GetIfMetagenerationNotMatch()))
+	}
+	if req.GetManagedFolder().GetCreateTime() != nil {
+		field, err := protojson.Marshal(req.GetManagedFolder().GetCreateTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("managedFolder.createTime", string(field[1:len(field)-1]))
+	}
+	if req.GetManagedFolder().GetMetageneration() != 0 {
+		params.Add("managedFolder.metageneration", fmt.Sprintf("%v", req.GetManagedFolder().GetMetageneration()))
+	}
+	if req.GetManagedFolder().GetName() != "" {
+		params.Add("managedFolder.name", fmt.Sprintf("%v", req.GetManagedFolder().GetName()))
+	}
+	if req.GetManagedFolder().GetUpdateTime() != nil {
+		field, err := protojson.Marshal(req.GetManagedFolder().GetUpdateTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("managedFolder.updateTime", string(field[1:len(field)-1]))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetManagedFolder().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetManagedFolder().GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetManagedFolder().GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/UpdateManagedFolder")
+	}
+	opts = append((*c.CallOptions).UpdateManagedFolder[0:len((*c.CallOptions).UpdateManagedFolder):len((*c.CallOptions).UpdateManagedFolder)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &controlpb.ManagedFolder{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "UpdateManagedFolder")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // CreateAnywhereCache creates an Anywhere Cache instance.
 func (c *storageControlRESTClient) CreateAnywhereCache(ctx context.Context, req *controlpb.CreateAnywhereCacheRequest, opts ...gax.CallOption) (*CreateAnywhereCacheOperation, error) {
 	if req != nil && req.GetRequestId() == "" {
@@ -3632,6 +3969,9 @@ func (c *storageControlRESTClient) CreateAnywhereCache(ctx context.Context, req 
 			return nil, err
 		}
 		params.Add("anywhereCache.createTime", string(field[1:len(field)-1]))
+	}
+	if req.GetAnywhereCache() != nil && req.GetAnywhereCache().IngestOnWrite != nil {
+		params.Add("anywhereCache.ingestOnWrite", fmt.Sprintf("%v", req.GetAnywhereCache().GetIngestOnWrite()))
 	}
 	if req.GetAnywhereCache().GetName() != "" {
 		params.Add("anywhereCache.name", fmt.Sprintf("%v", req.GetAnywhereCache().GetName()))
@@ -3715,8 +4055,12 @@ func (c *storageControlRESTClient) CreateAnywhereCache(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.CreateAnywhereCacheOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAnywhereCacheOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3744,6 +4088,9 @@ func (c *storageControlRESTClient) UpdateAnywhereCache(ctx context.Context, req 
 			return nil, err
 		}
 		params.Add("anywhereCache.createTime", string(field[1:len(field)-1]))
+	}
+	if req.GetAnywhereCache() != nil && req.GetAnywhereCache().IngestOnWrite != nil {
+		params.Add("anywhereCache.ingestOnWrite", fmt.Sprintf("%v", req.GetAnywhereCache().GetIngestOnWrite()))
 	}
 	if req.GetAnywhereCache().GetName() != "" {
 		params.Add("anywhereCache.name", fmt.Sprintf("%v", req.GetAnywhereCache().GetName()))
@@ -3830,8 +4177,12 @@ func (c *storageControlRESTClient) UpdateAnywhereCache(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.UpdateAnywhereCacheOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAnywhereCacheOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4191,6 +4542,390 @@ func (c *storageControlRESTClient) ListAnywhereCaches(ctx context.Context, req *
 		}
 		it.Response = resp
 		return resp.GetAnywhereCaches(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateRapidCache creates a Rapid Cache instance.
+func (c *storageControlRESTClient) CreateRapidCache(ctx context.Context, req *controlpb.CreateRapidCacheRequest, opts ...gax.CallOption) (*CreateRapidCacheOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("parent", fmt.Sprintf("%v", req.GetParent()))
+	if req.GetRapidCache().GetAdmissionPolicy() != "" {
+		params.Add("rapidCache.admissionPolicy", fmt.Sprintf("%v", req.GetRapidCache().GetAdmissionPolicy()))
+	}
+	if req.GetRapidCache().GetCacheType() != "" {
+		params.Add("rapidCache.cacheType", fmt.Sprintf("%v", req.GetRapidCache().GetCacheType()))
+	}
+	if req.GetRapidCache().GetCreateTime() != nil {
+		field, err := protojson.Marshal(req.GetRapidCache().GetCreateTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("rapidCache.createTime", string(field[1:len(field)-1]))
+	}
+	if req.GetRapidCache().GetName() != "" {
+		params.Add("rapidCache.name", fmt.Sprintf("%v", req.GetRapidCache().GetName()))
+	}
+	if req.GetRapidCache().GetPendingUpdate() {
+		params.Add("rapidCache.pendingUpdate", fmt.Sprintf("%v", req.GetRapidCache().GetPendingUpdate()))
+	}
+	if req.GetRapidCache().GetState() != "" {
+		params.Add("rapidCache.state", fmt.Sprintf("%v", req.GetRapidCache().GetState()))
+	}
+	if req.GetRapidCache().GetTtl() != nil {
+		field, err := protojson.Marshal(req.GetRapidCache().GetTtl())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("rapidCache.ttl", string(field[1:len(field)-1]))
+	}
+	if req.GetRapidCache().GetUpdateTime() != nil {
+		field, err := protojson.Marshal(req.GetRapidCache().GetUpdateTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("rapidCache.updateTime", string(field[1:len(field)-1]))
+	}
+	if req.GetRapidCache().GetZone() != "" {
+		params.Add("rapidCache.zone", fmt.Sprintf("%v", req.GetRapidCache().GetZone()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/CreateRapidCache")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "CreateRapidCache")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.CreateRapidCacheOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &CreateRapidCacheOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// UpdateRapidCache updates a Rapid Cache instance.
+func (c *storageControlRESTClient) UpdateRapidCache(ctx context.Context, req *controlpb.UpdateRapidCacheRequest, opts ...gax.CallOption) (*UpdateRapidCacheOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRapidCache().GetAdmissionPolicy() != "" {
+		params.Add("rapidCache.admissionPolicy", fmt.Sprintf("%v", req.GetRapidCache().GetAdmissionPolicy()))
+	}
+	if req.GetRapidCache().GetCacheType() != "" {
+		params.Add("rapidCache.cacheType", fmt.Sprintf("%v", req.GetRapidCache().GetCacheType()))
+	}
+	if req.GetRapidCache().GetCreateTime() != nil {
+		field, err := protojson.Marshal(req.GetRapidCache().GetCreateTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("rapidCache.createTime", string(field[1:len(field)-1]))
+	}
+	if req.GetRapidCache().GetName() != "" {
+		params.Add("rapidCache.name", fmt.Sprintf("%v", req.GetRapidCache().GetName()))
+	}
+	if req.GetRapidCache().GetPendingUpdate() {
+		params.Add("rapidCache.pendingUpdate", fmt.Sprintf("%v", req.GetRapidCache().GetPendingUpdate()))
+	}
+	if req.GetRapidCache().GetState() != "" {
+		params.Add("rapidCache.state", fmt.Sprintf("%v", req.GetRapidCache().GetState()))
+	}
+	if req.GetRapidCache().GetTtl() != nil {
+		field, err := protojson.Marshal(req.GetRapidCache().GetTtl())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("rapidCache.ttl", string(field[1:len(field)-1]))
+	}
+	if req.GetRapidCache().GetUpdateTime() != nil {
+		field, err := protojson.Marshal(req.GetRapidCache().GetUpdateTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("rapidCache.updateTime", string(field[1:len(field)-1]))
+	}
+	if req.GetRapidCache().GetZone() != "" {
+		params.Add("rapidCache.zone", fmt.Sprintf("%v", req.GetRapidCache().GetZone()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetRapidCache().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetRapidCache().GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetRapidCache().GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/UpdateRapidCache")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "UpdateRapidCache")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.UpdateRapidCacheOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &UpdateRapidCacheOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// GetRapidCache gets a Rapid Cache instance.
+func (c *storageControlRESTClient) GetRapidCache(ctx context.Context, req *controlpb.GetRapidCacheRequest, opts ...gax.CallOption) (*controlpb.RapidCache, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("name", fmt.Sprintf("%v", req.GetName()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetRapidCache")
+	}
+	opts = append((*c.CallOptions).GetRapidCache[0:len((*c.CallOptions).GetRapidCache):len((*c.CallOptions).GetRapidCache)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &controlpb.RapidCache{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRapidCache")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListRapidCaches lists Rapid Cache instances for a given bucket.
+func (c *storageControlRESTClient) ListRapidCaches(ctx context.Context, req *controlpb.ListRapidCachesRequest, opts ...gax.CallOption) *RapidCacheIterator {
+	it := &RapidCacheIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.RapidCache, string, error) {
+		resp := &controlpb.ListRapidCachesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("")
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		params.Add("parent", fmt.Sprintf("%v", req.GetParent()))
+		if req.GetRequestId() != "" {
+			params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRapidCaches")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetRapidCaches(), resp.GetNextPageToken(), nil
 	}
 
 	fetch := func(pageSize int, pageToken string) (string, error) {
@@ -4895,7 +5630,7 @@ func (c *storageControlRESTClient) GetIntelligenceFinding(ctx context.Context, r
 	return resp, nil
 }
 
-// ListIntelligenceFindings lists the IntelligenceFinding resources for the specified project.
+// ListIntelligenceFindings lists the IntelligenceFinding resources for the specified the project.
 func (c *storageControlRESTClient) ListIntelligenceFindings(ctx context.Context, req *controlpb.ListIntelligenceFindingsRequest, opts ...gax.CallOption) *IntelligenceFindingIterator {
 	it := &IntelligenceFindingIterator{}
 	req = proto.CloneOf(req)
@@ -4976,8 +5711,8 @@ func (c *storageControlRESTClient) ListIntelligenceFindings(ctx context.Context,
 	return it
 }
 
-// SummarizeIntelligenceFindings summarize the intelligence findings for the specified scope(org, folder or
-// project).
+// SummarizeIntelligenceFindings summarizes the intelligence findings for the specified scope (organization,
+// folder or project).
 func (c *storageControlRESTClient) SummarizeIntelligenceFindings(ctx context.Context, req *controlpb.SummarizeIntelligenceFindingsRequest, opts ...gax.CallOption) *FindingSummaryIterator {
 	it := &FindingSummaryIterator{}
 	req = proto.CloneOf(req)
@@ -5200,7 +5935,7 @@ func (c *storageControlRESTClient) ListIntelligenceFindingRevisions(ctx context.
 // The name must be that of a previously created CreateAnywhereCacheOperation, possibly from a different process.
 func (c *storageControlGRPCClient) CreateAnywhereCacheOperation(name string) *CreateAnywhereCacheOperation {
 	return &CreateAnywhereCacheOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.CreateAnywhereCacheOperation"),
 	}
 }
 
@@ -5209,7 +5944,25 @@ func (c *storageControlGRPCClient) CreateAnywhereCacheOperation(name string) *Cr
 func (c *storageControlRESTClient) CreateAnywhereCacheOperation(name string) *CreateAnywhereCacheOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateAnywhereCacheOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.CreateAnywhereCacheOperation"),
+		pollPath: override,
+	}
+}
+
+// CreateRapidCacheOperation returns a new CreateRapidCacheOperation from a given name.
+// The name must be that of a previously created CreateRapidCacheOperation, possibly from a different process.
+func (c *storageControlGRPCClient) CreateRapidCacheOperation(name string) *CreateRapidCacheOperation {
+	return &CreateRapidCacheOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.CreateRapidCacheOperation"),
+	}
+}
+
+// CreateRapidCacheOperation returns a new CreateRapidCacheOperation from a given name.
+// The name must be that of a previously created CreateRapidCacheOperation, possibly from a different process.
+func (c *storageControlRESTClient) CreateRapidCacheOperation(name string) *CreateRapidCacheOperation {
+	override := fmt.Sprintf("/v2/%s", name)
+	return &CreateRapidCacheOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.CreateRapidCacheOperation"),
 		pollPath: override,
 	}
 }
@@ -5218,7 +5971,7 @@ func (c *storageControlRESTClient) CreateAnywhereCacheOperation(name string) *Cr
 // The name must be that of a previously created DeleteFolderRecursiveOperation, possibly from a different process.
 func (c *storageControlGRPCClient) DeleteFolderRecursiveOperation(name string) *DeleteFolderRecursiveOperation {
 	return &DeleteFolderRecursiveOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.DeleteFolderRecursiveOperation"),
 	}
 }
 
@@ -5227,7 +5980,7 @@ func (c *storageControlGRPCClient) DeleteFolderRecursiveOperation(name string) *
 func (c *storageControlRESTClient) DeleteFolderRecursiveOperation(name string) *DeleteFolderRecursiveOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteFolderRecursiveOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.DeleteFolderRecursiveOperation"),
 		pollPath: override,
 	}
 }
@@ -5236,7 +5989,7 @@ func (c *storageControlRESTClient) DeleteFolderRecursiveOperation(name string) *
 // The name must be that of a previously created RenameFolderOperation, possibly from a different process.
 func (c *storageControlGRPCClient) RenameFolderOperation(name string) *RenameFolderOperation {
 	return &RenameFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.RenameFolderOperation"),
 	}
 }
 
@@ -5245,7 +5998,7 @@ func (c *storageControlGRPCClient) RenameFolderOperation(name string) *RenameFol
 func (c *storageControlRESTClient) RenameFolderOperation(name string) *RenameFolderOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &RenameFolderOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.RenameFolderOperation"),
 		pollPath: override,
 	}
 }
@@ -5254,7 +6007,7 @@ func (c *storageControlRESTClient) RenameFolderOperation(name string) *RenameFol
 // The name must be that of a previously created UpdateAnywhereCacheOperation, possibly from a different process.
 func (c *storageControlGRPCClient) UpdateAnywhereCacheOperation(name string) *UpdateAnywhereCacheOperation {
 	return &UpdateAnywhereCacheOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.UpdateAnywhereCacheOperation"),
 	}
 }
 
@@ -5263,7 +6016,25 @@ func (c *storageControlGRPCClient) UpdateAnywhereCacheOperation(name string) *Up
 func (c *storageControlRESTClient) UpdateAnywhereCacheOperation(name string) *UpdateAnywhereCacheOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateAnywhereCacheOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.UpdateAnywhereCacheOperation"),
+		pollPath: override,
+	}
+}
+
+// UpdateRapidCacheOperation returns a new UpdateRapidCacheOperation from a given name.
+// The name must be that of a previously created UpdateRapidCacheOperation, possibly from a different process.
+func (c *storageControlGRPCClient) UpdateRapidCacheOperation(name string) *UpdateRapidCacheOperation {
+	return &UpdateRapidCacheOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.UpdateRapidCacheOperation"),
+	}
+}
+
+// UpdateRapidCacheOperation returns a new UpdateRapidCacheOperation from a given name.
+// The name must be that of a previously created UpdateRapidCacheOperation, possibly from a different process.
+func (c *storageControlRESTClient) UpdateRapidCacheOperation(name string) *UpdateRapidCacheOperation {
+	override := fmt.Sprintf("/v2/%s", name)
+	return &UpdateRapidCacheOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.UpdateRapidCacheOperation"),
 		pollPath: override,
 	}
 }

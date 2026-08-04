@@ -80,6 +80,11 @@
                 "DeleteFolder"
               ]
             },
+            "DeleteFolderTree": {
+              "methods": [
+                "DeleteFolderTree"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -95,9 +100,19 @@
                 "DeleteRepository"
               ]
             },
+            "DeleteRepositoryLongRunning": {
+              "methods": [
+                "DeleteRepositoryLongRunning"
+              ]
+            },
             "DeleteTeamFolder": {
               "methods": [
                 "DeleteTeamFolder"
+              ]
+            },
+            "DeleteTeamFolderTree": {
+              "methods": [
+                "DeleteTeamFolderTree"
               ]
             },
             "DeleteWorkflowConfig": {
@@ -470,6 +485,11 @@
                 "DeleteFolder"
               ]
             },
+            "DeleteFolderTree": {
+              "methods": [
+                "DeleteFolderTree"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -485,9 +505,19 @@
                 "DeleteRepository"
               ]
             },
+            "DeleteRepositoryLongRunning": {
+              "methods": [
+                "DeleteRepositoryLongRunning"
+              ]
+            },
             "DeleteTeamFolder": {
               "methods": [
                 "DeleteTeamFolder"
+              ]
+            },
+            "DeleteTeamFolderTree": {
+              "methods": [
+                "DeleteTeamFolderTree"
               ]
             },
             "DeleteWorkflowConfig": {

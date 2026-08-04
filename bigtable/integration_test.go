@@ -41,6 +41,7 @@ import (
 
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	"cloud.google.com/go/bigtable/bttest"
+	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
@@ -520,10 +521,10 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		Nanos:   int32(testStartTime.Nanosecond()),
 	}
 
-	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = 1 * time.Minute
+	origSamplePeriod := metrics.DefaultSamplePeriod
+	metrics.DefaultSamplePeriod = 1 * time.Minute
 	t.Cleanup(func() {
-		defaultSamplePeriod = origSamplePeriod
+		metrics.DefaultSamplePeriod = origSamplePeriod
 	})
 
 	ctx := context.Background()
@@ -537,7 +538,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		t.Skip("Skip long running tests in short mode or non-prod environments")
 	}
 
-	client, err := testEnv.NewClient()
+	client, err := newClientWithRetry(ctx, testEnv)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -579,10 +580,10 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		t.Errorf("Failed to create metric client: %v", err)
 	}
 	metricNamesValidate := []string{
-		metricNameOperationLatencies,
-		metricNameAttemptLatencies,
-		metricNameServerLatencies,
-		metricNameFirstRespLatencies,
+		metrics.MetricNameOperationLatencies,
+		metrics.MetricNameAttemptLatencies,
+		metrics.MetricNameServerLatencies,
+		metrics.MetricNameFirstRespLatencies,
 	}
 
 	// Try for 5m with 10s sleep between retries
@@ -4182,6 +4183,26 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
 		t.Fatalf("Restored TableInfo: %v", err)
+	}
+
+	// Test V2 client RestoreTable
+	restoredTableV2 := tblConf.TableID + "-restored-v2"
+	t.Cleanup(func() { deleteTable(context.Background(), t, adminClient, restoredTableV2) })
+
+	v2Client := adminClient.TableAdminClientV2()
+	parentPath := fmt.Sprintf("projects/%s/instances/%s", testEnv.Config().Project, testEnv.Config().Instance)
+	backupPath := fmt.Sprintf("%s/clusters/%s/backups/%s", parentPath, sourceCluster, stdBkpName)
+
+	req := &btapb.RestoreTableRequest{
+		Parent:  parentPath,
+		TableId: restoredTableV2,
+		Source:  &btapb.RestoreTableRequest_Backup{Backup: backupPath},
+	}
+	if err = v2Client.RestoreTable(ctx, req); err != nil {
+		t.Fatalf("V2 RestoreTable: %v", err)
+	}
+	if _, err := adminClient.TableInfo(ctx, restoredTableV2); err != nil {
+		t.Fatalf("V2 Restored TableInfo: %v", err)
 	}
 
 	// If 'it.run-create-instance-tests' flag is set while running the tests,

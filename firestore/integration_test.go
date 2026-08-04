@@ -66,7 +66,6 @@ func (s firestoreEdition) String() string {
 const (
 	envProjID              = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envPrivateKey          = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
-	envDatabases           = "GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES"
 	envEnterpriseDatabases = "GCLOUD_TESTS_GOLANG_FIRESTORE_ENTERPRISE_DATABASES"
 	envEmulator            = "FIRESTORE_EMULATOR_HOST"
 	indexBuilding          = "index is currently building"
@@ -76,19 +75,59 @@ const (
 )
 
 func TestMain(m *testing.M) {
+	flag.Parse()
 	testParams = make(map[string]interface{})
-	for databaseID, edition := range parseDatabases() {
-		testParams[databaseIDKey] = databaseID
-		testParams[firestoreEditionKey] = edition
-		initIntegrationTest()
-		status := m.Run()
-		cleanupIntegrationTest()
-		if status != 0 {
-			os.Exit(status)
+
+	if addr := os.Getenv(envEmulator); addr != "" {
+		useEmulator = true
+	}
+
+	testProjectID := os.Getenv(envProjID)
+	var defaultColl *CollectionRef
+	if testProjectID != "" {
+		// 1. Initialize Default Client
+		c, err := createClient(testProjectID, DefaultDatabaseID)
+		if err != nil {
+			log.Fatalf("failed to create default client: %v", err)
+		}
+		defaultClient = c
+
+		// 2. Initialize Enterprise Clients
+		if dbStr := os.Getenv(envEnterpriseDatabases); dbStr != "" {
+			for _, dbID := range strings.Split(dbStr, ",") {
+				dbID = strings.TrimSpace(dbID)
+				if dbID == "" {
+					continue
+				}
+				c, err := createClient(testProjectID, dbID)
+				if err != nil {
+					log.Fatalf("failed to create enterprise client for %s: %v", dbID, err)
+				}
+				enterpriseClients[dbID] = c
+			}
+		}
+
+		// Setup initial globals for Default Client
+		defaultColl = defaultClient.Collection(collectionIDs.New())
+		updateGlobals(defaultClient, defaultColl, editionStandard)
+	} else {
+		log.Println("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+
+	status := m.Run()
+
+	if defaultClient != nil {
+		// Clean up Default DB collection and close clients
+		if defaultColl != nil {
+			deleteCollection(context.Background(), defaultColl)
+		}
+		defaultClient.Close()
+		for _, c := range enterpriseClients {
+			c.Close()
 		}
 	}
 
-	os.Exit(0)
+	os.Exit(status)
 }
 
 func skipIfEdition(t *testing.T, featureName string, edition firestoreEdition) {
@@ -97,65 +136,26 @@ func skipIfEdition(t *testing.T, featureName string, edition firestoreEdition) {
 	}
 }
 
-func parseDatabases() map[string]firestoreEdition {
-	databases := map[string]firestoreEdition{
-		DefaultDatabaseID: editionStandard,
-	}
-
-	if os.Getenv(envEmulator) != "" {
-		return databases
-	}
-
-	databasesStr, ok := os.LookupEnv(envDatabases)
-	if ok {
-		for _, databaseID := range strings.Split(databasesStr, ",") {
-			databases[databaseID] = editionStandard
-		}
-	}
-
-	databasesStr, ok = os.LookupEnv(envEnterpriseDatabases)
-	if ok {
-		for _, databaseID := range strings.Split(databasesStr, ",") {
-			databases[databaseID] = editionEnterprise
-		}
-	}
-	return databases
-}
-
 var (
-	iClient          *Client
-	iColl            *CollectionRef
-	collectionIDs    = uid.NewSpace("go-integration-test", nil)
-	wantDBPath       string
-	testParams       map[string]interface{}
-	seededFirstIndex bool
-	useEmulator      bool
+	defaultClient     *Client
+	enterpriseClients = make(map[string]*Client)
+
+	iClient       *Client
+	iColl         *CollectionRef
+	collectionIDs = uid.NewSpace("go-integration-test", nil)
+	wantDBPath    string
+	testParams    map[string]interface{}
+	useEmulator   bool
 )
 
-func initIntegrationTest() {
-	databaseID := testParams[databaseIDKey].(string)
-	log.Printf("Setting up tests to run on databaseID: %q\n", databaseID)
-	flag.Parse() // needed for testing.Short()
-	if testing.Short() {
-		return
-	}
-	if addr := os.Getenv(envEmulator); addr != "" {
-		useEmulator = true
-	}
+func createClient(projectID, databaseID string) (*Client, error) {
 	ctx := context.Background()
-	testProjectID := os.Getenv(envProjID)
-	if testProjectID == "" {
-		log.Println("Integration tests skipped. See CONTRIBUTING.md for details")
-		return
-	}
 	ts := testutil.TokenSourceEnv(ctx, envPrivateKey,
 		"https://www.googleapis.com/auth/cloud-platform",
 		"https://www.googleapis.com/auth/datastore")
 	if ts == nil {
-		log.Fatal("The project key must be set. See CONTRIBUTING.md for details")
+		return nil, fmt.Errorf("token source nil: the project key must be set; see CONTRIBUTING.md for details")
 	}
-	projectPath := "projects/" + testProjectID
-	wantDBPath = projectPath + "/databases/" + databaseID
 
 	ti := &testutil.HeadersEnforcer{
 		Checkers: []*testutil.HeaderChecker{
@@ -176,17 +176,26 @@ func initIntegrationTest() {
 		},
 	}
 	copts := append(ti.CallOptions(), option.WithTokenSource(ts))
-	c, err := NewClientWithDatabase(ctx, testProjectID, databaseID, copts...)
+	c, err := NewClientWithDatabase(ctx, projectID, databaseID, copts...)
 	if err != nil {
-		log.Fatalf("NewClient: %v", err)
+		return nil, err
 	}
-	iClient = c
-	iColl = c.Collection(collectionIDs.New())
+	return c, nil
+}
 
+func updateGlobals(client *Client, coll *CollectionRef, edition firestoreEdition) {
+	iClient = client
+	iColl = coll
 	refDoc := iColl.NewDoc()
 	integrationTestMap["ref"] = refDoc
 	wantIntegrationTestMap["ref"] = refDoc
 	integrationTestStruct.Ref = refDoc
+
+	testProjectID := os.Getenv(envProjID)
+	wantDBPath = "projects/" + testProjectID + "/databases/" + client.databaseID
+
+	testParams[databaseIDKey] = client.databaseID
+	testParams[firestoreEditionKey] = edition
 }
 
 // deleteCollection recursively deletes the documents in the specified collection
@@ -375,7 +384,7 @@ var (
 	}
 )
 
-func TestIntegration_Create(t *testing.T) {
+func testIntegrationCreate(t *testing.T) {
 	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	emptyDoc := integrationColl(t).NewDoc()
@@ -394,7 +403,7 @@ func TestIntegration_Create(t *testing.T) {
 	codeEq(t, "Create empty doc", codes.OK, err)
 }
 
-func TestIntegration_Get(t *testing.T) {
+func testIntegrationGet(t *testing.T) {
 	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	emptyDoc := integrationColl(t).NewDoc()
@@ -439,7 +448,7 @@ func TestIntegration_Get(t *testing.T) {
 	}
 }
 
-func TestIntegration_GetAll(t *testing.T) {
+func testIntegrationGetAll(t *testing.T) {
 	type getAll struct{ N int }
 
 	h := testHelper{t}
@@ -559,7 +568,7 @@ func contains[T comparable](s []T, e T) bool {
 	return false
 }
 
-func TestIntegration_GetAll_WithRunOptions(t *testing.T) {
+func testIntegrationGetAllWithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -613,7 +622,7 @@ func TestIntegration_GetAll_WithRunOptions(t *testing.T) {
 	}
 }
 
-func TestIntegration_Query_WithRunOptions(t *testing.T) {
+func testIntegrationQueryWithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -660,7 +669,7 @@ func TestIntegration_Query_WithRunOptions(t *testing.T) {
 
 	}
 }
-func TestIntegration_Add(t *testing.T) {
+func testIntegrationAdd(t *testing.T) {
 	start := time.Now()
 	docRef, wr, err := integrationColl(t).Add(context.Background(), integrationTestMap)
 	if err != nil {
@@ -673,7 +682,7 @@ func TestIntegration_Add(t *testing.T) {
 	checkTimeBetween(t, wr.UpdateTime, start, end)
 }
 
-func TestIntegration_Set(t *testing.T) {
+func testIntegrationSet(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
 	ctx := context.Background()
@@ -768,7 +777,7 @@ func TestIntegration_Set(t *testing.T) {
 	}
 }
 
-func TestIntegration_Delete(t *testing.T) {
+func testIntegrationDelete(t *testing.T) {
 	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
@@ -792,7 +801,7 @@ func TestIntegration_Delete(t *testing.T) {
 		er(doc.Delete(ctx, LastUpdateTime(wr.UpdateTime))))
 }
 
-func TestIntegration_Update(t *testing.T) {
+func testIntegrationUpdate(t *testing.T) {
 	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
@@ -843,7 +852,7 @@ func TestIntegration_Update(t *testing.T) {
 	}
 }
 
-func TestIntegration_Collections(t *testing.T) {
+func testIntegrationCollections(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 
@@ -874,7 +883,7 @@ func TestIntegration_Collections(t *testing.T) {
 	}
 }
 
-func TestIntegration_ServerTimestamp(t *testing.T) {
+func testIntegrationServerTimestamp(t *testing.T) {
 	type S struct {
 		A int
 		B time.Time
@@ -915,7 +924,7 @@ func TestIntegration_ServerTimestamp(t *testing.T) {
 	}
 }
 
-func TestIntegration_MergeServerTimestamp(t *testing.T) {
+func testIntegrationMergeServerTimestamp(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
@@ -942,7 +951,7 @@ func TestIntegration_MergeServerTimestamp(t *testing.T) {
 	}
 }
 
-func TestIntegration_MergeNestedServerTimestamp(t *testing.T) {
+func testIntegrationMergeNestedServerTimestamp(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
@@ -1001,7 +1010,7 @@ func (z isZeroerStruct) IsZero() bool {
 	return z.X == 0
 }
 
-func TestIntegration_OmitZero(t *testing.T) {
+func testIntegrationOmitZero(t *testing.T) {
 	h := testHelper{t}
 	coll := integrationColl(t)
 	doc1 := coll.NewDoc()
@@ -1094,7 +1103,7 @@ func TestIntegration_OmitZero(t *testing.T) {
 	}
 }
 
-func TestIntegration_WriteBatch(t *testing.T) {
+func testIntegrationWriteBatch(t *testing.T) {
 	ctx := context.Background()
 	b := integrationClient(t).Batch()
 	h := testHelper{t}
@@ -1130,7 +1139,7 @@ func TestIntegration_WriteBatch(t *testing.T) {
 	// TODO(jba): test verify when it is supported.
 }
 
-func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
+func testIntegrationQueryDocumentsWhereEntity(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t).NewDoc().Collection(indexedCollection)
 
@@ -1300,7 +1309,7 @@ func reverseSlice(s []map[string]interface{}) []map[string]interface{} {
 	return reversed
 }
 
-func TestIntegration_QueryDocuments(t *testing.T) {
+func testIntegrationQueryDocuments(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	h := testHelper{t}
@@ -1416,7 +1425,7 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 	}
 }
 
-func TestIntegration_QueryDocuments_LimitToLast_Fail(t *testing.T) {
+func testIntegrationQueryDocumentsLimitToLastFail(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	q := coll.Select("q").OrderBy("q", Asc).LimitToLast(1)
@@ -1427,7 +1436,7 @@ func TestIntegration_QueryDocuments_LimitToLast_Fail(t *testing.T) {
 }
 
 // Test unary filters.
-func TestIntegration_QueryUnary(t *testing.T) {
+func testIntegrationQueryUnary(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t).NewDoc().Collection(indexedCollection)
 
@@ -1474,7 +1483,7 @@ func TestIntegration_QueryUnary(t *testing.T) {
 }
 
 // Test the special DocumentID field in queries.
-func TestIntegration_QueryName(t *testing.T) {
+func testIntegrationQueryName(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 
@@ -1518,7 +1527,7 @@ func TestIntegration_QueryName(t *testing.T) {
 	checkIDs(q.EndAt(wantIDs[1]), wantIDs[:2])
 }
 
-func TestIntegration_QueryNested(t *testing.T) {
+func testIntegrationQueryNested(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 	coll1 := integrationColl(t)
@@ -1543,7 +1552,7 @@ func TestIntegration_QueryNested(t *testing.T) {
 	}
 }
 
-func TestIntegration_RunTransaction(t *testing.T) {
+func testIntegrationRunTransaction(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 
@@ -1617,7 +1626,7 @@ func TestIntegration_RunTransaction(t *testing.T) {
 	}
 }
 
-func TestIntegration_RunTransaction_WithRunOptions(t *testing.T) {
+func testIntegrationRunTransactionWithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -1672,7 +1681,7 @@ func TestIntegration_RunTransaction_WithRunOptions(t *testing.T) {
 
 }
 
-func TestIntegration_TransactionGetAll(t *testing.T) {
+func testIntegrationTransactionGetAll(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 	type Player struct {
@@ -1711,7 +1720,7 @@ func TestIntegration_TransactionGetAll(t *testing.T) {
 	}
 }
 
-func TestIntegration_WatchDocument(t *testing.T) {
+func testIntegrationWatchDocument(t *testing.T) {
 	skipIfEdition(t, "Listen queries", editionEnterprise)
 	coll := integrationColl(t)
 	ctx := context.Background()
@@ -1762,7 +1771,7 @@ func TestIntegration_WatchDocument(t *testing.T) {
 	}
 }
 
-func TestIntegration_ArrayUnion_Create(t *testing.T) {
+func testIntegrationArrayUnionCreate(t *testing.T) {
 	path := "somePath"
 	data := map[string]interface{}{
 		path: ArrayUnion("a", "b"),
@@ -1791,7 +1800,7 @@ func TestIntegration_ArrayUnion_Create(t *testing.T) {
 	}
 }
 
-func TestIntegration_ArrayUnion_Update(t *testing.T) {
+func testIntegrationArrayUnionUpdate(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
@@ -1826,7 +1835,7 @@ func TestIntegration_ArrayUnion_Update(t *testing.T) {
 	}
 }
 
-func TestIntegration_ArrayUnion_Set(t *testing.T) {
+func testIntegrationArrayUnionSet(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
 	path := "somePath"
@@ -1856,7 +1865,7 @@ func TestIntegration_ArrayUnion_Set(t *testing.T) {
 	}
 }
 
-func TestIntegration_ArrayRemove_Create(t *testing.T) {
+func testIntegrationArrayRemoveCreate(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
@@ -1884,7 +1893,7 @@ func TestIntegration_ArrayRemove_Create(t *testing.T) {
 	}
 }
 
-func TestIntegration_ArrayRemove_Update(t *testing.T) {
+func testIntegrationArrayRemoveUpdate(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
@@ -1919,7 +1928,7 @@ func TestIntegration_ArrayRemove_Update(t *testing.T) {
 	}
 }
 
-func TestIntegration_ArrayRemove_Set(t *testing.T) {
+func testIntegrationArrayRemoveSet(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
 	path := "somePath"
@@ -1959,7 +1968,7 @@ func makeFieldTransform(transform string, value interface{}) interface{} {
 	panic(fmt.Sprintf("Invalid transform %v", transform))
 }
 
-func TestIntegration_FieldTransforms_Create(t *testing.T) {
+func testIntegrationFieldTransformsCreate(t *testing.T) {
 	for _, transform := range []string{"inc", "max", "min"} {
 		t.Run(transform, func(t *testing.T) {
 			doc := integrationColl(t).NewDoc()
@@ -1991,7 +2000,7 @@ func TestIntegration_FieldTransforms_Create(t *testing.T) {
 }
 
 // Also checks that all appropriate types are supported.
-func TestIntegration_FieldTransforms_Update(t *testing.T) {
+func testIntegrationFieldTransformsUpdate(t *testing.T) {
 	type MyInt = int // Test a custom type.
 	for _, tc := range []struct {
 		// All three should be same type.
@@ -2098,7 +2107,7 @@ func TestIntegration_FieldTransforms_Update(t *testing.T) {
 	}
 }
 
-func TestIntegration_FieldTransforms_Set(t *testing.T) {
+func testIntegrationFieldTransformsSet(t *testing.T) {
 	for _, transform := range []string{"inc", "max", "min"} {
 		t.Run(transform, func(t *testing.T) {
 			coll := integrationColl(t)
@@ -2132,7 +2141,7 @@ func TestIntegration_FieldTransforms_Set(t *testing.T) {
 
 type imap map[string]interface{}
 
-func TestIntegration_Serialize_Deserialize_WatchQuery(t *testing.T) {
+func testIntegrationSerializeDeserializeWatchQuery(t *testing.T) {
 	skipIfEdition(t, "PartitionQuery", editionEnterprise)
 	h := testHelper{t}
 	collID := collectionIDs.New()
@@ -2182,7 +2191,7 @@ func TestIntegration_Serialize_Deserialize_WatchQuery(t *testing.T) {
 	}
 }
 
-func TestIntegration_WatchQuery(t *testing.T) {
+func testIntegrationWatchQuery(t *testing.T) {
 	skipIfEdition(t, "Listen queries", editionEnterprise)
 	ctx := context.Background()
 	coll := integrationColl(t)
@@ -2270,7 +2279,7 @@ func TestIntegration_WatchQuery(t *testing.T) {
 	})
 }
 
-func TestIntegration_WatchQueryCancel(t *testing.T) {
+func testIntegrationWatchQueryCancel(t *testing.T) {
 	skipIfEdition(t, "Listen queries", editionEnterprise)
 	ctx := context.Background()
 	coll := integrationColl(t)
@@ -2290,7 +2299,7 @@ func TestIntegration_WatchQueryCancel(t *testing.T) {
 	codeEq(t, "after cancel", codes.Canceled, err)
 }
 
-func TestIntegration_MissingDocs(t *testing.T) {
+func testIntegrationMissingDocs(t *testing.T) {
 	skipIfEdition(t, "show_missing", editionEnterprise)
 	ctx := context.Background()
 	h := testHelper{t}
@@ -2327,7 +2336,7 @@ func TestIntegration_MissingDocs(t *testing.T) {
 	})
 }
 
-func TestIntegration_CollectionGroupQueries(t *testing.T) {
+func testIntegrationCollectionGroupQueries(t *testing.T) {
 	shouldBeFoundID := collectionIDs.New()
 	shouldNotBeFoundID := collectionIDs.New()
 
@@ -2501,7 +2510,7 @@ func TestDetectProjectID(t *testing.T) {
 	}
 }
 
-func TestIntegration_ColGroupRefPartitions(t *testing.T) {
+func testIntegrationColGroupRefPartitions(t *testing.T) {
 	skipIfEdition(t, "PartitionQuery", editionEnterprise)
 	h := testHelper{t}
 	client := integrationClient(t)
@@ -2551,7 +2560,7 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 
 }
 
-func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
+func testIntegrationColGroupRefPartitionsLarge(t *testing.T) {
 	skipIfEdition(t, "PartitionQuery", editionEnterprise)
 	// Create collection with enough documents to have multiple partitions.
 	client := integrationClient(t)
@@ -2630,7 +2639,7 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	}
 }
 
-func TestIntegration_NewClientWithDatabase(t *testing.T) {
+func testIntegrationNewClientWithDatabase(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -2670,8 +2679,8 @@ func TestIntegration_NewClientWithDatabase(t *testing.T) {
 	}
 }
 
-// TestIntegration_BulkWriter_Set tests setting values and serverTimeStamp in single write.
-func TestIntegration_BulkWriter_Set(t *testing.T) {
+// testIntegrationBulkWriterSet tests setting values and serverTimeStamp in single write.
+func testIntegrationBulkWriterSet(t *testing.T) {
 	doc := iColl.NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
@@ -2689,7 +2698,7 @@ func TestIntegration_BulkWriter_Set(t *testing.T) {
 	bw.End()
 }
 
-func TestIntegration_BulkWriter_Create(t *testing.T) {
+func testIntegrationBulkWriterCreate(t *testing.T) {
 	c := integrationClient(t)
 	ctx := context.Background()
 
@@ -2750,7 +2759,7 @@ func TestIntegration_BulkWriter_Create(t *testing.T) {
 	}
 }
 
-func TestIntegration_BulkWriter(t *testing.T) {
+func testIntegrationBulkWriter(t *testing.T) {
 	doc := iColl.NewDoc()
 	docRefs := []*DocumentRef{doc}
 	t.Cleanup(func() {
@@ -2833,7 +2842,7 @@ func aggResultsEquals(r *testutil.R, m1, m2 AggregationResult) bool {
 	return true
 }
 
-func TestIntegration_AggregationQueries(t *testing.T) {
+func testIntegrationAggregationQueries(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t).NewDoc().Collection(indexedCollection)
 	client := integrationClient(t)
@@ -3191,7 +3200,7 @@ func getCurrentEdition() firestoreEdition {
 	return testParams[firestoreEditionKey].(firestoreEdition)
 }
 
-func TestIntegration_AggregationQueries_WithRunOptions(t *testing.T) {
+func testIntegrationAggregationQueriesWithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -3352,7 +3361,7 @@ func cmpExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
 	return nil
 }
 
-func TestIntegration_CountAggregationQuery(t *testing.T) {
+func testIntegrationCountAggregationQuery(t *testing.T) {
 	str := uid.NewSpace("firestore-count", &uid.Options{})
 	datum := str.New()
 
@@ -3406,7 +3415,7 @@ func TestIntegration_CountAggregationQuery(t *testing.T) {
 	}
 }
 
-func TestIntegration_ClientReadTime(t *testing.T) {
+func testIntegrationClientReadTime(t *testing.T) {
 	docs := []*DocumentRef{
 		iColl.NewDoc(),
 		iColl.NewDoc(),
@@ -3450,16 +3459,17 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	wantReadTime := tm.Truncate(time.Second)
+	wantReadTime := tm.Truncate(time.Microsecond)
 	for _, d := range ds {
-		if !wantReadTime.Equal(d.ReadTime) {
+		gotTrunc := d.ReadTime.Truncate(time.Microsecond)
+		if !wantReadTime.Equal(gotTrunc) {
 			t.Errorf("wanted read time: %v; got: %v",
-				tm.UnixNano(), d.ReadTime.UnixNano())
+				wantReadTime, gotTrunc)
 		}
 	}
 }
 
-func TestIntegration_FindNearest(t *testing.T) {
+func testIntegrationFindNearest(t *testing.T) {
 	collRef := integrationColl(t).NewDoc().Collection(indexedCollection)
 	queryField := "EmbeddedField64"
 	resultField := "vector_distance"
@@ -3588,7 +3598,79 @@ func TestIntegration_FindNearest(t *testing.T) {
 	}
 }
 
-func TestIntegration_TransactionReadTime(t *testing.T) {
+func testIntegrationBSONTypes(t *testing.T) {
+	skipIfEdition(t, "BSON types", editionStandard)
+	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
+	ctx := context.Background()
+	coll := integrationColl(t)
+	doc := coll.NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
+
+	oid := BSONObjectID("0123456789abcdef01234567")
+
+	data := map[string]interface{}{
+		"oid":        oid,
+		"regex":      BSONRegex{Pattern: "foo", Options: "im"},
+		"timestamp":  BSONTimestamp{Seconds: 123, Increment: 456},
+		"decimal128": BSONDecimal128("123.45"),
+		"minkey":     BSONMinKey{},
+		"maxkey":     BSONMaxKey{},
+		"binary":     BSONBinary{Subtype: 0x02, Data: []byte{1, 2, 3}},
+		"bson_int":   BSONInt32(42),
+	}
+
+	_, err := doc.Create(ctx, data)
+	if err != nil {
+		t.Fatalf("failed to create doc with BSON types: %v", err)
+	}
+
+	// If write succeeded, we try to read back and verify.
+	ds, err := doc.Get(ctx)
+	if err != nil {
+		t.Fatalf("failed to get doc: %v", err)
+	}
+
+	got := ds.Data()
+	if !testEqual(got, data) {
+		t.Errorf("got vs want diff:\n%s", testDiff(got, data))
+	}
+
+	// Also test decoding into a struct.
+	type bsonStruct struct {
+		Oid        BSONObjectID   `firestore:"oid"`
+		Regex      BSONRegex      `firestore:"regex"`
+		Timestamp  BSONTimestamp  `firestore:"timestamp"`
+		Decimal128 BSONDecimal128 `firestore:"decimal128"`
+		MinKey     BSONMinKey     `firestore:"minkey"`
+		MaxKey     BSONMaxKey     `firestore:"maxkey"`
+		Binary     BSONBinary     `firestore:"binary"`
+		BsonInt    BSONInt32      `firestore:"bson_int"`
+	}
+
+	var gotStruct bsonStruct
+	if err := ds.DataTo(&gotStruct); err != nil {
+		t.Fatalf("DataTo failed: %v", err)
+	}
+
+	wantStruct := bsonStruct{
+		Oid:        oid,
+		Regex:      BSONRegex{Pattern: "foo", Options: "im"},
+		Timestamp:  BSONTimestamp{Seconds: 123, Increment: 456},
+		Decimal128: BSONDecimal128("123.45"),
+		MinKey:     BSONMinKey{},
+		MaxKey:     BSONMaxKey{},
+		Binary:     BSONBinary{Subtype: 0x02, Data: []byte{1, 2, 3}},
+		BsonInt:    BSONInt32(42),
+	}
+
+	if !testEqual(gotStruct, wantStruct) {
+		t.Errorf("got struct vs want struct diff:\n%s", testDiff(gotStruct, wantStruct))
+	}
+}
+
+func testIntegrationTransactionReadTime(t *testing.T) {
 	ctx := context.Background()
 	c := integrationClient(t)
 
@@ -3655,7 +3737,7 @@ func TestIntegration_TransactionReadTime(t *testing.T) {
 	}
 }
 
-func TestIntegration_TransactionWithReadOptionsError(t *testing.T) {
+func testIntegrationTransactionWithReadOptionsError(t *testing.T) {
 	ctx := context.Background()
 	c := integrationClient(t)
 
@@ -3668,7 +3750,294 @@ func TestIntegration_TransactionWithReadOptionsError(t *testing.T) {
 	}
 }
 
-func TestIntegration_VerifyGRPCLimits(t *testing.T) {
+func testIntegrationBSONQueries(t *testing.T) {
+	skipIfEdition(t, "BSON types", editionStandard)
+	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
+	ctx := context.Background()
+	client := integrationClient(t)
+	h := testHelper{t}
+
+	t.Run("canFilterAndOrderObjectId", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		oid1 := BSONObjectID("507f191e810c19729de860ea")
+		oid2 := BSONObjectID("507f191e810c19729de860eb")
+		oid3 := BSONObjectID("507f191e810c19729de860ec")
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": oid1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": oid2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": oid3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qOid1 := coll.Where("key", ">", oid1).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qOid1, []string{"doc3", "doc2"})
+
+		qOid2 := coll.Where("key", "in", []interface{}{oid1, oid2}).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qOid2, []string{"doc2", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderInt32", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		i1 := BSONInt32(-1)
+		i2 := BSONInt32(1)
+		i3 := BSONInt32(2)
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": i1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": i2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": i3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qInt1 := coll.Where("key", ">=", i2).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qInt1, []string{"doc3", "doc2"})
+
+		qInt2 := coll.Where("key", "not-in", []interface{}{i2}).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qInt2, []string{"doc3", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderDecimal128", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		d1 := BSONDecimal128("-1.2e3")
+		d2 := BSONDecimal128("0")
+		d3 := BSONDecimal128("1.2e-3")
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": d1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": d2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": d3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qDec1 := coll.Where("key", ">=", BSONDecimal128("-1.1")).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qDec1, []string{"doc3", "doc2"})
+
+		qDec2 := coll.Where("key", "not-in", []interface{}{BSONDecimal128("1.2e-3")}).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qDec2, []string{"doc2", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderBsonTimestamp", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		bt1 := BSONTimestamp{Seconds: 1, Increment: 1}
+		bt2 := BSONTimestamp{Seconds: 1, Increment: 2}
+		bt3 := BSONTimestamp{Seconds: 2, Increment: 1}
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": bt1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": bt2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": bt3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qBt1 := coll.Where("key", ">", bt1).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBt1, []string{"doc3", "doc2"})
+
+		qBt2 := coll.Where("key", "!=", bt1).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBt2, []string{"doc3", "doc2"})
+	})
+
+	t.Run("canFilterAndOrderBsonBinaryData", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		bb1 := BSONBinary{Subtype: 1, Data: []byte{1, 2, 3}}
+		bb2 := BSONBinary{Subtype: 1, Data: []byte{1, 2, 4}}
+		bb3 := BSONBinary{Subtype: 2, Data: []byte{1, 2, 3}}
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": bb1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": bb2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": bb3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qBb1 := coll.Where("key", ">", bb1).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBb1, []string{"doc3", "doc2"})
+
+		qBb2 := coll.Where("key", ">=", bb1).Where("key", "<", bb3).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBb2, []string{"doc2", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderRegexValues", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		br1 := BSONRegex{Pattern: "^bar", Options: "i"}
+		br2 := BSONRegex{Pattern: "^bar", Options: "x"}
+		br3 := BSONRegex{Pattern: "^baz", Options: "i"}
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": br1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": br2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": br3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qBr1 := coll.WhereEntity(OrFilter{
+			Filters: []EntityFilter{
+				PropertyFilter{Path: "key", Operator: ">", Value: BSONRegex{Pattern: "^bar", Options: "x"}},
+				PropertyFilter{Path: "key", Operator: "!=", Value: BSONRegex{Pattern: "^bar", Options: "x"}},
+			},
+		}).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBr1, []string{"doc3", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderMinKeys", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": BSONMinKey{}})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": BSONMinKey{}})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": BSONMaxKey{}})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qMin1 := coll.Where("key", "==", BSONMinKey{}).OrderBy("key", Desc)
+		// MinKeys are equal, would sort by documentId as secondary order
+		assertQueryOrder(ctx, t, qMin1, []string{"doc2", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderMaxKeys", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": BSONMinKey{}})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": BSONMaxKey{}})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": BSONMaxKey{}})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qMax1 := coll.Where("key", "==", BSONMaxKey{}).OrderBy("key", Desc)
+		// MaxKeys are equal, would sort by documentId as secondary order
+		assertQueryOrder(ctx, t, qMax1, []string{"doc3", "doc2"})
+	})
+}
+
+func testIntegrationBSONCrossTypeOrder(t *testing.T) {
+	skipIfEdition(t, "BSON types", editionStandard)
+	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
+	ctx := context.Background()
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
+	h := testHelper{t}
+
+	data := map[string]interface{}{
+		"t": nil,
+		"u": BSONMinKey{},
+		"c": true,
+		"d": math.NaN(),
+		"e": BSONInt32(1),
+		"f": 2.0,
+		"g": BSONDecimal128("2.01e-5"),
+		"h": 3,
+		"i": time.Unix(100, 123456000).UTC(),
+		"j": BSONTimestamp{Seconds: 1, Increment: 2},
+		"k": "string",
+		"l": []byte{0, 1, 3},
+		"m": BSONBinary{Subtype: 1, Data: []byte{1, 2, 3}},
+		"n": coll.Doc("doc_ref_target"),
+		"o": BSONObjectID("507f191e810c19729de860ea"),
+		"p": &latlng.LatLng{Latitude: 0, Longitude: 0},
+		"q": BSONRegex{Pattern: "^foo", Options: "i"},
+		"r": []interface{}{1, 2},
+		"s": Vector64{1.0, 2.0},
+		"a": map[string]interface{}{"a": 1},
+		"b": BSONMaxKey{},
+	}
+
+	var docRefs []*DocumentRef
+	for id, val := range data {
+		docRef := coll.Doc(id)
+		docRefs = append(docRefs, docRef)
+		h.mustCreate(docRef, map[string]interface{}{"key": val})
+	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
+
+	expectedResult := []string{
+		"b", "a", "s", "r", "q", "p", "o", "n", "m", "l", "k", "j", "i", "h", "f", "e", "g", "d", "c", "u", "t",
+	}
+
+	q := coll.OrderBy("key", Desc)
+	assertQueryOrder(ctx, t, q, expectedResult)
+}
+
+func testIntegrationBSONValidationRejection(t *testing.T) {
+	skipIfEdition(t, "BSON types", editionStandard)
+	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
+	ctx := context.Background()
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
+
+	t.Run("invalidRegexGetsRejected", func(t *testing.T) {
+		doc := coll.NewDoc()
+		// "a" is an invalid option. Valid are "i", "m", "s", "u", "x"
+		_, err := doc.Create(ctx, map[string]interface{}{
+			"key": BSONRegex{Pattern: "foo", Options: "a"},
+		})
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+		if !strings.Contains(err.Error(), "Invalid regex option") {
+			t.Errorf("unexpected error message: %v", err)
+		}
+	})
+
+	t.Run("invalidBsonObjectIdGetsRejected", func(t *testing.T) {
+		doc := coll.NewDoc()
+		// Object ID must be 24 hex characters
+		_, err := doc.Create(ctx, map[string]interface{}{
+			"key": BSONObjectID("foobar"),
+		})
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+		if !strings.Contains(err.Error(), "Object ID hex string has incorrect length") {
+			t.Errorf("unexpected error message: %v", err)
+		}
+	})
+}
+
+func assertQueryOrder(ctx context.Context, t *testing.T, q Query, wantDocIDs []string) {
+	t.Helper()
+	// Test server-side query
+	iter := q.Documents(ctx)
+	defer iter.Stop()
+	docs, err := iter.GetAll()
+	if err != nil {
+		t.Fatalf("Query.Documents failed: %v", err)
+	}
+	gotDocIDs := docIDs(docs)
+	if !testEqual(gotDocIDs, wantDocIDs) {
+		t.Errorf("Server query got %v, want %v", gotDocIDs, wantDocIDs)
+	}
+
+	// Test client-side sorting (Watch stream)
+	watchDocs, err := getFirstSnapshot(ctx, q)
+	if err != nil {
+		t.Fatalf("getFirstSnapshot failed: %v", err)
+	}
+	gotWatchDocIDs := docIDs(watchDocs)
+	if !testEqual(gotWatchDocIDs, wantDocIDs) {
+		t.Errorf("Watch snapshot got %v, want %v", gotWatchDocIDs, wantDocIDs)
+	}
+}
+
+func getFirstSnapshot(ctx context.Context, q Query) ([]*DocumentSnapshot, error) {
+	it := q.Snapshots(ctx)
+	defer it.Stop()
+	snap, err := it.Next()
+	if err != nil {
+		return nil, err
+	}
+	return snap.Documents.GetAll()
+}
+
+func docIDs(docs []*DocumentSnapshot) []string {
+	var ids []string
+	for _, doc := range docs {
+		ids = append(ids, doc.Ref.ID)
+	}
+	return ids
+}
+
+func testIntegrationVerifyGRPCLimits(t *testing.T) {
 	skipIfEdition(t, "16MB Documents", editionStandard)
 	t.Skip("Temporarily skipped. Not yet in production.")
 	ctx := context.Background()
@@ -3703,5 +4072,102 @@ func TestIntegration_VerifyGRPCLimits(t *testing.T) {
 	gotData := snap.Data()["payload"].([]byte)
 	if len(gotData) != size {
 		t.Errorf("Got data size %d, want %d", len(gotData), size)
+	}
+}
+
+func TestIntegration_DefaultDB(t *testing.T) {
+	if defaultClient == nil {
+		t.Skip("Default client not initialized")
+	}
+
+	t.Run("Create", testIntegrationCreate)
+	t.Run("Get", testIntegrationGet)
+	t.Run("GetAll", testIntegrationGetAll)
+	t.Run("GetAll_WithRunOptions", testIntegrationGetAllWithRunOptions)
+	t.Run("Query_WithRunOptions", testIntegrationQueryWithRunOptions)
+	t.Run("Add", testIntegrationAdd)
+	t.Run("Set", testIntegrationSet)
+	t.Run("Delete", testIntegrationDelete)
+	t.Run("Update", testIntegrationUpdate)
+	t.Run("Collections", testIntegrationCollections)
+	t.Run("ServerTimestamp", testIntegrationServerTimestamp)
+	t.Run("MergeServerTimestamp", testIntegrationMergeServerTimestamp)
+	t.Run("MergeNestedServerTimestamp", testIntegrationMergeNestedServerTimestamp)
+	t.Run("OmitZero", testIntegrationOmitZero)
+	t.Run("WriteBatch", testIntegrationWriteBatch)
+	t.Run("QueryDocuments_WhereEntity", testIntegrationQueryDocumentsWhereEntity)
+	t.Run("QueryDocuments", testIntegrationQueryDocuments)
+	t.Run("QueryDocuments_LimitToLast_Fail", testIntegrationQueryDocumentsLimitToLastFail)
+	t.Run("QueryUnary", testIntegrationQueryUnary)
+	t.Run("QueryName", testIntegrationQueryName)
+	t.Run("QueryNested", testIntegrationQueryNested)
+	t.Run("RunTransaction", testIntegrationRunTransaction)
+	t.Run("RunTransaction_WithRunOptions", testIntegrationRunTransactionWithRunOptions)
+	t.Run("TransactionGetAll", testIntegrationTransactionGetAll)
+	t.Run("WatchDocument", testIntegrationWatchDocument)
+	t.Run("ArrayUnion_Create", testIntegrationArrayUnionCreate)
+	t.Run("ArrayUnion_Update", testIntegrationArrayUnionUpdate)
+	t.Run("ArrayUnion_Set", testIntegrationArrayUnionSet)
+	t.Run("ArrayRemove_Create", testIntegrationArrayRemoveCreate)
+	t.Run("ArrayRemove_Update", testIntegrationArrayRemoveUpdate)
+	t.Run("ArrayRemove_Set", testIntegrationArrayRemoveSet)
+	t.Run("FieldTransforms_Create", testIntegrationFieldTransformsCreate)
+	t.Run("FieldTransforms_Update", testIntegrationFieldTransformsUpdate)
+	t.Run("FieldTransforms_Set", testIntegrationFieldTransformsSet)
+	t.Run("Serialize_Deserialize_WatchQuery", testIntegrationSerializeDeserializeWatchQuery)
+	t.Run("WatchQuery", testIntegrationWatchQuery)
+	t.Run("WatchQueryCancel", testIntegrationWatchQueryCancel)
+	t.Run("MissingDocs", testIntegrationMissingDocs)
+	t.Run("CollectionGroupQueries", testIntegrationCollectionGroupQueries)
+	t.Run("ColGroupRefPartitions", testIntegrationColGroupRefPartitions)
+	t.Run("ColGroupRefPartitionsLarge", testIntegrationColGroupRefPartitionsLarge)
+	t.Run("NewClientWithDatabase", testIntegrationNewClientWithDatabase)
+	t.Run("BulkWriter_Set", testIntegrationBulkWriterSet)
+	t.Run("BulkWriter_Create", testIntegrationBulkWriterCreate)
+	t.Run("BulkWriter", testIntegrationBulkWriter)
+	t.Run("AggregationQueries", testIntegrationAggregationQueries)
+	t.Run("AggregationQueries_WithRunOptions", testIntegrationAggregationQueriesWithRunOptions)
+	t.Run("CountAggregationQuery", testIntegrationCountAggregationQuery)
+	t.Run("ClientReadTime", testIntegrationClientReadTime)
+	t.Run("FindNearest", testIntegrationFindNearest)
+	t.Run("TransactionReadTime", testIntegrationTransactionReadTime)
+	t.Run("TransactionWithReadOptionsError", testIntegrationTransactionWithReadOptionsError)
+}
+
+func TestIntegration_EnterpriseDB(t *testing.T) {
+	if len(enterpriseClients) == 0 {
+		t.Skip("Enterprise clients not initialized")
+	}
+	for dbID, client := range enterpriseClients {
+		t.Run(dbID, func(t *testing.T) {
+			oldClient := iClient
+			oldColl := iColl
+			oldEdition := getCurrentEdition()
+
+			newColl := client.Collection(collectionIDs.New())
+			updateGlobals(client, newColl, editionEnterprise)
+
+			t.Cleanup(func() {
+				deleteCollection(context.Background(), newColl)
+				updateGlobals(oldClient, oldColl, oldEdition)
+			})
+
+			t.Run("Create", testIntegrationCreate)
+			t.Run("Get", testIntegrationGet)
+			t.Run("NewClientWithDatabase", testIntegrationNewClientWithDatabase)
+			t.Run("VerifyGRPCLimits", testIntegrationVerifyGRPCLimits)
+
+			t.Run("PipelineExecute", testIntegrationPipelineExecute)
+			t.Run("PipelineStages", testIntegrationPipelineStages)
+			t.Run("PipelineFunctions", testIntegrationPipelineFunctions)
+			t.Run("Query_Pipeline", testIntegrationQueryPipeline)
+			t.Run("AggregationQuery_Pipeline", testIntegrationAggregationQueryPipeline)
+			t.Run("PipelineSubqueriesAndVariables", testIntegrationPipelineSubqueriesAndVariables)
+			t.Run("PipelineSearch", testIntegrationPipelineSearch)
+			t.Run("BSONTypes", testIntegrationBSONTypes)
+			t.Run("BSONQueries", testIntegrationBSONQueries)
+			t.Run("BSONCrossTypeOrder", testIntegrationBSONCrossTypeOrder)
+			t.Run("BSONValidationRejection", testIntegrationBSONValidationRejection)
+		})
 	}
 }

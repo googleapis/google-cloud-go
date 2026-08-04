@@ -145,6 +145,7 @@ type EncryptionInfo struct {
 	//
 	//	*EncryptionInfo_GcpWrappedKeyInfo
 	//	*EncryptionInfo_AwsWrappedKeyInfo
+	//	*EncryptionInfo_CoordinatorKeyInfo
 	WrappedKey    isEncryptionInfo_WrappedKey `protobuf_oneof:"wrapped_key"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -205,6 +206,15 @@ func (x *EncryptionInfo) GetAwsWrappedKeyInfo() *AwsWrappedKeyInfo {
 	return nil
 }
 
+func (x *EncryptionInfo) GetCoordinatorKeyInfo() *CoordinatorKeyInfo {
+	if x != nil {
+		if x, ok := x.WrappedKey.(*EncryptionInfo_CoordinatorKeyInfo); ok {
+			return x.CoordinatorKeyInfo
+		}
+	}
+	return nil
+}
+
 type isEncryptionInfo_WrappedKey interface {
 	isEncryptionInfo_WrappedKey()
 }
@@ -219,9 +229,23 @@ type EncryptionInfo_AwsWrappedKeyInfo struct {
 	AwsWrappedKeyInfo *AwsWrappedKeyInfo `protobuf:"bytes,2,opt,name=aws_wrapped_key_info,json=awsWrappedKeyInfo,proto3,oneof"`
 }
 
+type EncryptionInfo_CoordinatorKeyInfo struct {
+	// Key information for the chosen coordinator key.
+	//
+	// This is not supported for the
+	// [IngestEvents][google.ads.datamanager.v1.IngestionService.IngestEvents],
+	// [IngestAudienceMembers][google.ads.datamanager.v1.IngestionService.IngestAudienceMembers],
+	// and
+	// [RemoveAudienceMembers][google.ads.datamanager.v1.IngestionService.RemoveAudienceMembers]
+	// methods.
+	CoordinatorKeyInfo *CoordinatorKeyInfo `protobuf:"bytes,3,opt,name=coordinator_key_info,json=coordinatorKeyInfo,proto3,oneof"`
+}
+
 func (*EncryptionInfo_GcpWrappedKeyInfo) isEncryptionInfo_WrappedKey() {}
 
 func (*EncryptionInfo_AwsWrappedKeyInfo) isEncryptionInfo_WrappedKey() {}
+
+func (*EncryptionInfo_CoordinatorKeyInfo) isEncryptionInfo_WrappedKey() {}
 
 // Information about the Google Cloud Platform wrapped
 // key.
@@ -381,14 +405,61 @@ func (x *AwsWrappedKeyInfo) GetEncryptedDek() string {
 	return ""
 }
 
+// Information about the coordinator key.
+type CoordinatorKeyInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The ID of the chosen coordinator key.
+	KeyId         string `protobuf:"bytes,1,opt,name=key_id,json=keyId,proto3" json:"key_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CoordinatorKeyInfo) Reset() {
+	*x = CoordinatorKeyInfo{}
+	mi := &file_google_ads_datamanager_v1_encryption_info_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CoordinatorKeyInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CoordinatorKeyInfo) ProtoMessage() {}
+
+func (x *CoordinatorKeyInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_ads_datamanager_v1_encryption_info_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CoordinatorKeyInfo.ProtoReflect.Descriptor instead.
+func (*CoordinatorKeyInfo) Descriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_encryption_info_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *CoordinatorKeyInfo) GetKeyId() string {
+	if x != nil {
+		return x.KeyId
+	}
+	return ""
+}
+
 var File_google_ads_datamanager_v1_encryption_info_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_encryption_info_proto_rawDesc = "" +
 	"\n" +
-	"/google/ads/datamanager/v1/encryption_info.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xe1\x01\n" +
+	"/google/ads/datamanager/v1/encryption_info.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xc4\x02\n" +
 	"\x0eEncryptionInfo\x12_\n" +
 	"\x14gcp_wrapped_key_info\x18\x01 \x01(\v2,.google.ads.datamanager.v1.GcpWrappedKeyInfoH\x00R\x11gcpWrappedKeyInfo\x12_\n" +
-	"\x14aws_wrapped_key_info\x18\x02 \x01(\v2,.google.ads.datamanager.v1.AwsWrappedKeyInfoH\x00R\x11awsWrappedKeyInfoB\r\n" +
+	"\x14aws_wrapped_key_info\x18\x02 \x01(\v2,.google.ads.datamanager.v1.AwsWrappedKeyInfoH\x00R\x11awsWrappedKeyInfo\x12a\n" +
+	"\x14coordinator_key_info\x18\x03 \x01(\v2-.google.ads.datamanager.v1.CoordinatorKeyInfoH\x00R\x12coordinatorKeyInfoB\r\n" +
 	"\vwrapped_key\"\x96\x02\n" +
 	"\x11GcpWrappedKeyInfo\x12T\n" +
 	"\bkey_type\x18\x01 \x01(\x0e24.google.ads.datamanager.v1.GcpWrappedKeyInfo.KeyTypeB\x03\xe0A\x02R\akeyType\x12&\n" +
@@ -405,7 +476,9 @@ const file_google_ads_datamanager_v1_encryption_info_proto_rawDesc = "" +
 	"\rencrypted_dek\x18\x04 \x01(\tB\x03\xe0A\x02R\fencryptedDek\";\n" +
 	"\aKeyType\x12\x18\n" +
 	"\x14KEY_TYPE_UNSPECIFIED\x10\x00\x12\x16\n" +
-	"\x12XCHACHA20_POLY1305\x10\x01B\xd0\x01\n" +
+	"\x12XCHACHA20_POLY1305\x10\x01\"0\n" +
+	"\x12CoordinatorKeyInfo\x12\x1a\n" +
+	"\x06key_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x05keyIdB\xd0\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\x13EncryptionInfoProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (
@@ -421,24 +494,26 @@ func file_google_ads_datamanager_v1_encryption_info_proto_rawDescGZIP() []byte {
 }
 
 var file_google_ads_datamanager_v1_encryption_info_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_ads_datamanager_v1_encryption_info_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_google_ads_datamanager_v1_encryption_info_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_google_ads_datamanager_v1_encryption_info_proto_goTypes = []any{
 	(GcpWrappedKeyInfo_KeyType)(0), // 0: google.ads.datamanager.v1.GcpWrappedKeyInfo.KeyType
 	(AwsWrappedKeyInfo_KeyType)(0), // 1: google.ads.datamanager.v1.AwsWrappedKeyInfo.KeyType
 	(*EncryptionInfo)(nil),         // 2: google.ads.datamanager.v1.EncryptionInfo
 	(*GcpWrappedKeyInfo)(nil),      // 3: google.ads.datamanager.v1.GcpWrappedKeyInfo
 	(*AwsWrappedKeyInfo)(nil),      // 4: google.ads.datamanager.v1.AwsWrappedKeyInfo
+	(*CoordinatorKeyInfo)(nil),     // 5: google.ads.datamanager.v1.CoordinatorKeyInfo
 }
 var file_google_ads_datamanager_v1_encryption_info_proto_depIdxs = []int32{
 	3, // 0: google.ads.datamanager.v1.EncryptionInfo.gcp_wrapped_key_info:type_name -> google.ads.datamanager.v1.GcpWrappedKeyInfo
 	4, // 1: google.ads.datamanager.v1.EncryptionInfo.aws_wrapped_key_info:type_name -> google.ads.datamanager.v1.AwsWrappedKeyInfo
-	0, // 2: google.ads.datamanager.v1.GcpWrappedKeyInfo.key_type:type_name -> google.ads.datamanager.v1.GcpWrappedKeyInfo.KeyType
-	1, // 3: google.ads.datamanager.v1.AwsWrappedKeyInfo.key_type:type_name -> google.ads.datamanager.v1.AwsWrappedKeyInfo.KeyType
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	5, // 2: google.ads.datamanager.v1.EncryptionInfo.coordinator_key_info:type_name -> google.ads.datamanager.v1.CoordinatorKeyInfo
+	0, // 3: google.ads.datamanager.v1.GcpWrappedKeyInfo.key_type:type_name -> google.ads.datamanager.v1.GcpWrappedKeyInfo.KeyType
+	1, // 4: google.ads.datamanager.v1.AwsWrappedKeyInfo.key_type:type_name -> google.ads.datamanager.v1.AwsWrappedKeyInfo.KeyType
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_google_ads_datamanager_v1_encryption_info_proto_init() }
@@ -449,6 +524,7 @@ func file_google_ads_datamanager_v1_encryption_info_proto_init() {
 	file_google_ads_datamanager_v1_encryption_info_proto_msgTypes[0].OneofWrappers = []any{
 		(*EncryptionInfo_GcpWrappedKeyInfo)(nil),
 		(*EncryptionInfo_AwsWrappedKeyInfo)(nil),
+		(*EncryptionInfo_CoordinatorKeyInfo)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -456,7 +532,7 @@ func file_google_ads_datamanager_v1_encryption_info_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_ads_datamanager_v1_encryption_info_proto_rawDesc), len(file_google_ads_datamanager_v1_encryption_info_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

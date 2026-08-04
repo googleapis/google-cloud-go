@@ -32,6 +32,7 @@ import (
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -764,8 +765,12 @@ func (c *projectGRPCClient) EnrollSolution(ctx context.Context, req *retailpb.En
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.EnrollSolutionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EnrollSolutionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1146,8 +1151,12 @@ func (c *projectRESTClient) EnrollSolution(ctx context.Context, req *retailpb.En
 	}
 
 	override := fmt.Sprintf("/v2alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.EnrollSolutionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EnrollSolutionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1604,7 +1613,7 @@ func (c *projectRESTClient) ListOperations(ctx context.Context, req *longrunning
 // The name must be that of a previously created EnrollSolutionOperation, possibly from a different process.
 func (c *projectGRPCClient) EnrollSolutionOperation(name string) *EnrollSolutionOperation {
 	return &EnrollSolutionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.EnrollSolutionOperation"),
 	}
 }
 
@@ -1613,7 +1622,7 @@ func (c *projectGRPCClient) EnrollSolutionOperation(name string) *EnrollSolution
 func (c *projectRESTClient) EnrollSolutionOperation(name string) *EnrollSolutionOperation {
 	override := fmt.Sprintf("/v2alpha/%s", name)
 	return &EnrollSolutionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.EnrollSolutionOperation"),
 		pollPath: override,
 	}
 }

@@ -30,6 +30,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -488,8 +489,12 @@ func (c *attachedClustersGRPCClient) CreateAttachedCluster(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.CreateAttachedClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAttachedClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -511,8 +516,12 @@ func (c *attachedClustersGRPCClient) UpdateAttachedCluster(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.UpdateAttachedClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAttachedClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -537,8 +546,12 @@ func (c *attachedClustersGRPCClient) ImportAttachedCluster(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.ImportAttachedClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportAttachedClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -639,8 +652,12 @@ func (c *attachedClustersGRPCClient) DeleteAttachedCluster(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.DeleteAttachedClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAttachedClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -824,7 +841,7 @@ func (c *attachedClustersGRPCClient) ListOperations(ctx context.Context, req *lo
 // The name must be that of a previously created CreateAttachedClusterOperation, possibly from a different process.
 func (c *attachedClustersGRPCClient) CreateAttachedClusterOperation(name string) *CreateAttachedClusterOperation {
 	return &CreateAttachedClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.CreateAttachedClusterOperation"),
 	}
 }
 
@@ -832,7 +849,7 @@ func (c *attachedClustersGRPCClient) CreateAttachedClusterOperation(name string)
 // The name must be that of a previously created DeleteAttachedClusterOperation, possibly from a different process.
 func (c *attachedClustersGRPCClient) DeleteAttachedClusterOperation(name string) *DeleteAttachedClusterOperation {
 	return &DeleteAttachedClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.DeleteAttachedClusterOperation"),
 	}
 }
 
@@ -840,7 +857,7 @@ func (c *attachedClustersGRPCClient) DeleteAttachedClusterOperation(name string)
 // The name must be that of a previously created ImportAttachedClusterOperation, possibly from a different process.
 func (c *attachedClustersGRPCClient) ImportAttachedClusterOperation(name string) *ImportAttachedClusterOperation {
 	return &ImportAttachedClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.ImportAttachedClusterOperation"),
 	}
 }
 
@@ -848,6 +865,6 @@ func (c *attachedClustersGRPCClient) ImportAttachedClusterOperation(name string)
 // The name must be that of a previously created UpdateAttachedClusterOperation, possibly from a different process.
 func (c *attachedClustersGRPCClient) UpdateAttachedClusterOperation(name string) *UpdateAttachedClusterOperation {
 	return &UpdateAttachedClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.UpdateAttachedClusterOperation"),
 	}
 }

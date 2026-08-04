@@ -100,6 +100,11 @@
                 "RegisterIcebergTable"
               ]
             },
+            "ReportIcebergTableMetrics": {
+              "methods": [
+                "ReportIcebergTableMetrics"
+              ]
+            },
             "UpdateIcebergCatalog": {
               "methods": [
                 "UpdateIcebergCatalog"
@@ -208,6 +213,11 @@
             "RegisterIcebergTable": {
               "methods": [
                 "RegisterIcebergTable"
+              ]
+            },
+            "ReportIcebergTableMetrics": {
+              "methods": [
+                "ReportIcebergTableMetrics"
               ]
             },
             "UpdateIcebergCatalog": {

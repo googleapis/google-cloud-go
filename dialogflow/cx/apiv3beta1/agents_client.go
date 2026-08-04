@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -532,14 +533,13 @@ func (c *AgentsClient) GetLocation(ctx context.Context, req *locationpb.GetLocat
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -996,8 +996,12 @@ func (c *agentsGRPCClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgen
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ExportAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1022,8 +1026,12 @@ func (c *agentsGRPCClient) RestoreAgent(ctx context.Context, req *cxpb.RestoreAg
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.RestoreAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1664,8 +1672,12 @@ func (c *agentsRESTClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgen
 	}
 
 	override := fmt.Sprintf("/v3beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ExportAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1747,8 +1759,12 @@ func (c *agentsRESTClient) RestoreAgent(ctx context.Context, req *cxpb.RestoreAg
 	}
 
 	override := fmt.Sprintf("/v3beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.RestoreAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2062,14 +2078,13 @@ func (c *agentsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetL
 // ListLocations lists information about the supported locations for this service.
 //
 // This method lists locations based on the resource scope provided in
-// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)] field:
-//
-//	Global locations: If name is empty, the method lists the
-//	public locations available to all projects. * Project-specific
-//	locations: If name follows the format
-//	projects/{project}, the method lists locations visible to that
-//	specific project. This includes public, private, or other
-//	project-specific locations enabled for the project.
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
 // For gRPC and client library implementations, the resource name is
 // passed as the name field. For direct service calls, the resource
@@ -2337,7 +2352,7 @@ func (c *agentsRESTClient) ListOperations(ctx context.Context, req *longrunningp
 // The name must be that of a previously created ExportAgentOperation, possibly from a different process.
 func (c *agentsGRPCClient) ExportAgentOperation(name string) *ExportAgentOperation {
 	return &ExportAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ExportAgentOperation"),
 	}
 }
 
@@ -2346,7 +2361,7 @@ func (c *agentsGRPCClient) ExportAgentOperation(name string) *ExportAgentOperati
 func (c *agentsRESTClient) ExportAgentOperation(name string) *ExportAgentOperation {
 	override := fmt.Sprintf("/v3beta1/%s", name)
 	return &ExportAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ExportAgentOperation"),
 		pollPath: override,
 	}
 }
@@ -2355,7 +2370,7 @@ func (c *agentsRESTClient) ExportAgentOperation(name string) *ExportAgentOperati
 // The name must be that of a previously created RestoreAgentOperation, possibly from a different process.
 func (c *agentsGRPCClient) RestoreAgentOperation(name string) *RestoreAgentOperation {
 	return &RestoreAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.RestoreAgentOperation"),
 	}
 }
 
@@ -2364,7 +2379,7 @@ func (c *agentsGRPCClient) RestoreAgentOperation(name string) *RestoreAgentOpera
 func (c *agentsRESTClient) RestoreAgentOperation(name string) *RestoreAgentOperation {
 	override := fmt.Sprintf("/v3beta1/%s", name)
 	return &RestoreAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.RestoreAgentOperation"),
 		pollPath: override,
 	}
 }

@@ -32,6 +32,7 @@ import (
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -540,8 +541,12 @@ func (c *completionGRPCClient) ImportCompletionData(ctx context.Context, req *re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.ImportCompletionDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportCompletionDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -767,8 +772,12 @@ func (c *completionRESTClient) ImportCompletionData(ctx context.Context, req *re
 	}
 
 	override := fmt.Sprintf("/v2alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.ImportCompletionDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportCompletionDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -915,7 +924,7 @@ func (c *completionRESTClient) ListOperations(ctx context.Context, req *longrunn
 // The name must be that of a previously created ImportCompletionDataOperation, possibly from a different process.
 func (c *completionGRPCClient) ImportCompletionDataOperation(name string) *ImportCompletionDataOperation {
 	return &ImportCompletionDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.ImportCompletionDataOperation"),
 	}
 }
 
@@ -924,7 +933,7 @@ func (c *completionGRPCClient) ImportCompletionDataOperation(name string) *Impor
 func (c *completionRESTClient) ImportCompletionDataOperation(name string) *ImportCompletionDataOperation {
 	override := fmt.Sprintf("/v2alpha/%s", name)
 	return &ImportCompletionDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.ImportCompletionDataOperation"),
 		pollPath: override,
 	}
 }

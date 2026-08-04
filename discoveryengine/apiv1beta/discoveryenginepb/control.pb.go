@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,6 +38,119 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// The attribute(or function) for which the custom ranking is to be
+// applied.
+type Control_BoostAction_InterpolationBoostSpec_AttributeType int32
+
+const (
+	// Unspecified AttributeType.
+	Control_BoostAction_InterpolationBoostSpec_ATTRIBUTE_TYPE_UNSPECIFIED Control_BoostAction_InterpolationBoostSpec_AttributeType = 0
+	// The value of the numerical field will be used to dynamically update
+	// the boost amount. In this case, the attribute_value (the x value)
+	// of the control point will be the actual value of the numerical
+	// field for which the boost_amount is specified.
+	Control_BoostAction_InterpolationBoostSpec_NUMERICAL Control_BoostAction_InterpolationBoostSpec_AttributeType = 1
+	// For the freshness use case the attribute value will be the duration
+	// between the current time and the date in the datetime field
+	// specified. The value must be formatted as an XSD `dayTimeDuration`
+	// value (a restricted subset of an ISO 8601 duration value). The
+	// pattern for this is: `[nD][T[nH][nM][nS]]`.
+	// For example, `5D`, `3DT12H30M`, `T24H`.
+	Control_BoostAction_InterpolationBoostSpec_FRESHNESS Control_BoostAction_InterpolationBoostSpec_AttributeType = 2
+)
+
+// Enum value maps for Control_BoostAction_InterpolationBoostSpec_AttributeType.
+var (
+	Control_BoostAction_InterpolationBoostSpec_AttributeType_name = map[int32]string{
+		0: "ATTRIBUTE_TYPE_UNSPECIFIED",
+		1: "NUMERICAL",
+		2: "FRESHNESS",
+	}
+	Control_BoostAction_InterpolationBoostSpec_AttributeType_value = map[string]int32{
+		"ATTRIBUTE_TYPE_UNSPECIFIED": 0,
+		"NUMERICAL":                  1,
+		"FRESHNESS":                  2,
+	}
+)
+
+func (x Control_BoostAction_InterpolationBoostSpec_AttributeType) Enum() *Control_BoostAction_InterpolationBoostSpec_AttributeType {
+	p := new(Control_BoostAction_InterpolationBoostSpec_AttributeType)
+	*p = x
+	return p
+}
+
+func (x Control_BoostAction_InterpolationBoostSpec_AttributeType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Control_BoostAction_InterpolationBoostSpec_AttributeType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1beta_control_proto_enumTypes[0].Descriptor()
+}
+
+func (Control_BoostAction_InterpolationBoostSpec_AttributeType) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1beta_control_proto_enumTypes[0]
+}
+
+func (x Control_BoostAction_InterpolationBoostSpec_AttributeType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Control_BoostAction_InterpolationBoostSpec_AttributeType.Descriptor instead.
+func (Control_BoostAction_InterpolationBoostSpec_AttributeType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_control_proto_rawDescGZIP(), []int{1, 0, 0, 0}
+}
+
+// The interpolation type to be applied. Default will be linear
+// (Piecewise Linear).
+type Control_BoostAction_InterpolationBoostSpec_InterpolationType int32
+
+const (
+	// Interpolation type is unspecified. In this case, it defaults to
+	// Linear.
+	Control_BoostAction_InterpolationBoostSpec_INTERPOLATION_TYPE_UNSPECIFIED Control_BoostAction_InterpolationBoostSpec_InterpolationType = 0
+	// Piecewise linear interpolation will be applied.
+	Control_BoostAction_InterpolationBoostSpec_LINEAR Control_BoostAction_InterpolationBoostSpec_InterpolationType = 1
+)
+
+// Enum value maps for Control_BoostAction_InterpolationBoostSpec_InterpolationType.
+var (
+	Control_BoostAction_InterpolationBoostSpec_InterpolationType_name = map[int32]string{
+		0: "INTERPOLATION_TYPE_UNSPECIFIED",
+		1: "LINEAR",
+	}
+	Control_BoostAction_InterpolationBoostSpec_InterpolationType_value = map[string]int32{
+		"INTERPOLATION_TYPE_UNSPECIFIED": 0,
+		"LINEAR":                         1,
+	}
+)
+
+func (x Control_BoostAction_InterpolationBoostSpec_InterpolationType) Enum() *Control_BoostAction_InterpolationBoostSpec_InterpolationType {
+	p := new(Control_BoostAction_InterpolationBoostSpec_InterpolationType)
+	*p = x
+	return p
+}
+
+func (x Control_BoostAction_InterpolationBoostSpec_InterpolationType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Control_BoostAction_InterpolationBoostSpec_InterpolationType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1beta_control_proto_enumTypes[1].Descriptor()
+}
+
+func (Control_BoostAction_InterpolationBoostSpec_InterpolationType) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1beta_control_proto_enumTypes[1]
+}
+
+func (x Control_BoostAction_InterpolationBoostSpec_InterpolationType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Control_BoostAction_InterpolationBoostSpec_InterpolationType.Descriptor instead.
+func (Control_BoostAction_InterpolationBoostSpec_InterpolationType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_control_proto_rawDescGZIP(), []int{1, 0, 0, 1}
+}
+
 // Defines circumstances to be checked before allowing a behavior
 type Condition struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -56,7 +169,7 @@ type Condition struct {
 	// Optional. Query regex to match the whole search query.
 	// Cannot be set when
 	// [Condition.query_terms][google.cloud.discoveryengine.v1beta.Condition.query_terms]
-	// is set. This is currently supporting promotion use case.
+	// is set. Only supported for Basic Site Search promotion serving controls.
 	QueryRegex    string `protobuf:"bytes,4,opt,name=query_regex,json=queryRegex,proto3" json:"query_regex,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -119,16 +232,13 @@ func (x *Condition) GetQueryRegex() string {
 // considered at serving time. Permitted actions dependent on `SolutionType`.
 type Control struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Actions are restricted by Vertical and Solution
-	//
-	// Required.
-	//
 	// Types that are valid to be assigned to Action:
 	//
 	//	*Control_BoostAction_
 	//	*Control_FilterAction_
 	//	*Control_RedirectAction_
 	//	*Control_SynonymsAction_
+	//	*Control_PromoteAction_
 	Action isControl_Action `protobuf_oneof:"action"`
 	// Immutable. Fully qualified name
 	// `projects/*/locations/global/dataStore/*/controls/*`
@@ -238,6 +348,15 @@ func (x *Control) GetSynonymsAction() *Control_SynonymsAction {
 	return nil
 }
 
+func (x *Control) GetPromoteAction() *Control_PromoteAction {
+	if x != nil {
+		if x, ok := x.Action.(*Control_PromoteAction_); ok {
+			return x.PromoteAction
+		}
+	}
+	return nil
+}
+
 func (x *Control) GetName() string {
 	if x != nil {
 		return x.Name
@@ -305,6 +424,11 @@ type Control_SynonymsAction_ struct {
 	SynonymsAction *Control_SynonymsAction `protobuf:"bytes,10,opt,name=synonyms_action,json=synonymsAction,proto3,oneof"`
 }
 
+type Control_PromoteAction_ struct {
+	// Promote certain links based on predefined trigger queries.
+	PromoteAction *Control_PromoteAction `protobuf:"bytes,15,opt,name=promote_action,json=promoteAction,proto3,oneof"`
+}
+
 func (*Control_BoostAction_) isControl_Action() {}
 
 func (*Control_FilterAction_) isControl_Action() {}
@@ -312,6 +436,8 @@ func (*Control_FilterAction_) isControl_Action() {}
 func (*Control_RedirectAction_) isControl_Action() {}
 
 func (*Control_SynonymsAction_) isControl_Action() {}
+
+func (*Control_PromoteAction_) isControl_Action() {}
 
 // Matcher for search request query
 type Condition_QueryTerm struct {
@@ -436,8 +562,17 @@ func (x *Condition_TimeRange) GetEndTime() *timestamppb.Timestamp {
 // Adjusts order of products in returned list.
 type Control_BoostAction struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Strength of the boost, which should be in [-1, 1]. Negative
+	// Constant value boost or custom ranking based boost specifications.
+	//
+	// Types that are valid to be assigned to BoostSpec:
+	//
+	//	*Control_BoostAction_FixedBoost
+	//	*Control_BoostAction_InterpolationBoostSpec_
+	BoostSpec isControl_BoostAction_BoostSpec `protobuf_oneof:"boost_spec"`
+	// Strength of the boost, which should be in [-1, 1]. Negative
 	// boost means demotion. Default is 0.0 (No-op).
+	//
+	// Deprecated: Marked as deprecated in google/cloud/discoveryengine/v1beta/control.proto.
 	Boost float32 `protobuf:"fixed32,1,opt,name=boost,proto3" json:"boost,omitempty"`
 	// Required. Specifies which products to apply the boost to.
 	//
@@ -485,6 +620,32 @@ func (*Control_BoostAction) Descriptor() ([]byte, []int) {
 	return file_google_cloud_discoveryengine_v1beta_control_proto_rawDescGZIP(), []int{1, 0}
 }
 
+func (x *Control_BoostAction) GetBoostSpec() isControl_BoostAction_BoostSpec {
+	if x != nil {
+		return x.BoostSpec
+	}
+	return nil
+}
+
+func (x *Control_BoostAction) GetFixedBoost() float32 {
+	if x != nil {
+		if x, ok := x.BoostSpec.(*Control_BoostAction_FixedBoost); ok {
+			return x.FixedBoost
+		}
+	}
+	return 0
+}
+
+func (x *Control_BoostAction) GetInterpolationBoostSpec() *Control_BoostAction_InterpolationBoostSpec {
+	if x != nil {
+		if x, ok := x.BoostSpec.(*Control_BoostAction_InterpolationBoostSpec_); ok {
+			return x.InterpolationBoostSpec
+		}
+	}
+	return nil
+}
+
+// Deprecated: Marked as deprecated in google/cloud/discoveryengine/v1beta/control.proto.
 func (x *Control_BoostAction) GetBoost() float32 {
 	if x != nil {
 		return x.Boost
@@ -505,6 +666,26 @@ func (x *Control_BoostAction) GetDataStore() string {
 	}
 	return ""
 }
+
+type isControl_BoostAction_BoostSpec interface {
+	isControl_BoostAction_BoostSpec()
+}
+
+type Control_BoostAction_FixedBoost struct {
+	// Optional. Strength of the boost, which should be in [-1, 1]. Negative
+	// boost means demotion. Default is 0.0 (No-op).
+	FixedBoost float32 `protobuf:"fixed32,4,opt,name=fixed_boost,json=fixedBoost,proto3,oneof"`
+}
+
+type Control_BoostAction_InterpolationBoostSpec_ struct {
+	// Optional. Complex specification for custom ranking based on customer
+	// defined attribute value.
+	InterpolationBoostSpec *Control_BoostAction_InterpolationBoostSpec `protobuf:"bytes,5,opt,name=interpolation_boost_spec,json=interpolationBoostSpec,proto3,oneof"`
+}
+
+func (*Control_BoostAction_FixedBoost) isControl_BoostAction_BoostSpec() {}
+
+func (*Control_BoostAction_InterpolationBoostSpec_) isControl_BoostAction_BoostSpec() {}
 
 // Specified which products may be included in results.
 // Uses same filter as boost.
@@ -672,6 +853,210 @@ func (x *Control_SynonymsAction) GetSynonyms() []string {
 	return nil
 }
 
+// Promote certain links based on some trigger queries.
+//
+// Example: Promote shoe store link when searching for `shoe` keyword.
+// The link can be outside of associated data store.
+type Control_PromoteAction struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Data store with which this promotion is attached to.
+	DataStore string `protobuf:"bytes,1,opt,name=data_store,json=dataStore,proto3" json:"data_store,omitempty"`
+	// Required. Promotion attached to this action.
+	SearchLinkPromotion *SearchLinkPromotion `protobuf:"bytes,2,opt,name=search_link_promotion,json=searchLinkPromotion,proto3" json:"search_link_promotion,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *Control_PromoteAction) Reset() {
+	*x = Control_PromoteAction{}
+	mi := &file_google_cloud_discoveryengine_v1beta_control_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Control_PromoteAction) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Control_PromoteAction) ProtoMessage() {}
+
+func (x *Control_PromoteAction) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_control_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Control_PromoteAction.ProtoReflect.Descriptor instead.
+func (*Control_PromoteAction) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_control_proto_rawDescGZIP(), []int{1, 4}
+}
+
+func (x *Control_PromoteAction) GetDataStore() string {
+	if x != nil {
+		return x.DataStore
+	}
+	return ""
+}
+
+func (x *Control_PromoteAction) GetSearchLinkPromotion() *SearchLinkPromotion {
+	if x != nil {
+		return x.SearchLinkPromotion
+	}
+	return nil
+}
+
+// Specification for custom ranking based on customer specified attribute
+// value. It provides more controls for customized ranking than the simple
+// (condition, boost) combination above.
+type Control_BoostAction_InterpolationBoostSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The name of the field whose value will be used to determine
+	// the boost amount.
+	FieldName string `protobuf:"bytes,1,opt,name=field_name,json=fieldName,proto3" json:"field_name,omitempty"`
+	// Optional. The attribute type to be used to determine the boost amount.
+	// The attribute value can be derived from the field value of the
+	// specified field_name. In the case of numerical it is straightforward
+	// i.e. attribute_value = numerical_field_value. In the case of freshness
+	// however, attribute_value = (time.now() - datetime_field_value).
+	AttributeType Control_BoostAction_InterpolationBoostSpec_AttributeType `protobuf:"varint,2,opt,name=attribute_type,json=attributeType,proto3,enum=google.cloud.discoveryengine.v1beta.Control_BoostAction_InterpolationBoostSpec_AttributeType" json:"attribute_type,omitempty"`
+	// Optional. The interpolation type to be applied to connect the control
+	// points listed below.
+	InterpolationType Control_BoostAction_InterpolationBoostSpec_InterpolationType `protobuf:"varint,3,opt,name=interpolation_type,json=interpolationType,proto3,enum=google.cloud.discoveryengine.v1beta.Control_BoostAction_InterpolationBoostSpec_InterpolationType" json:"interpolation_type,omitempty"`
+	// Optional. The control points used to define the curve. The monotonic
+	// function (defined through the interpolation_type above) passes through
+	// the control points listed here.
+	ControlPoints []*Control_BoostAction_InterpolationBoostSpec_ControlPoint `protobuf:"bytes,4,rep,name=control_points,json=controlPoints,proto3" json:"control_points,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Control_BoostAction_InterpolationBoostSpec) Reset() {
+	*x = Control_BoostAction_InterpolationBoostSpec{}
+	mi := &file_google_cloud_discoveryengine_v1beta_control_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Control_BoostAction_InterpolationBoostSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Control_BoostAction_InterpolationBoostSpec) ProtoMessage() {}
+
+func (x *Control_BoostAction_InterpolationBoostSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_control_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Control_BoostAction_InterpolationBoostSpec.ProtoReflect.Descriptor instead.
+func (*Control_BoostAction_InterpolationBoostSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_control_proto_rawDescGZIP(), []int{1, 0, 0}
+}
+
+func (x *Control_BoostAction_InterpolationBoostSpec) GetFieldName() string {
+	if x != nil {
+		return x.FieldName
+	}
+	return ""
+}
+
+func (x *Control_BoostAction_InterpolationBoostSpec) GetAttributeType() Control_BoostAction_InterpolationBoostSpec_AttributeType {
+	if x != nil {
+		return x.AttributeType
+	}
+	return Control_BoostAction_InterpolationBoostSpec_ATTRIBUTE_TYPE_UNSPECIFIED
+}
+
+func (x *Control_BoostAction_InterpolationBoostSpec) GetInterpolationType() Control_BoostAction_InterpolationBoostSpec_InterpolationType {
+	if x != nil {
+		return x.InterpolationType
+	}
+	return Control_BoostAction_InterpolationBoostSpec_INTERPOLATION_TYPE_UNSPECIFIED
+}
+
+func (x *Control_BoostAction_InterpolationBoostSpec) GetControlPoints() []*Control_BoostAction_InterpolationBoostSpec_ControlPoint {
+	if x != nil {
+		return x.ControlPoints
+	}
+	return nil
+}
+
+// The control points used to define the curve. The curve defined
+// through these control points can only be monotonically increasing
+// or decreasing(constant values are acceptable).
+type Control_BoostAction_InterpolationBoostSpec_ControlPoint struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Can be one of:
+	// 1. The numerical field value.
+	// 2. The duration spec for freshness:
+	// The value must be formatted as an XSD `dayTimeDuration` value (a
+	// restricted subset of an ISO 8601 duration value). The pattern for
+	// this is: `[nD][T[nH][nM][nS]]`.
+	AttributeValue string `protobuf:"bytes,1,opt,name=attribute_value,json=attributeValue,proto3" json:"attribute_value,omitempty"`
+	// Optional. The value between -1 to 1 by which to boost the score if
+	// the attribute_value evaluates to the value specified above.
+	BoostAmount   float32 `protobuf:"fixed32,2,opt,name=boost_amount,json=boostAmount,proto3" json:"boost_amount,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Control_BoostAction_InterpolationBoostSpec_ControlPoint) Reset() {
+	*x = Control_BoostAction_InterpolationBoostSpec_ControlPoint{}
+	mi := &file_google_cloud_discoveryengine_v1beta_control_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Control_BoostAction_InterpolationBoostSpec_ControlPoint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Control_BoostAction_InterpolationBoostSpec_ControlPoint) ProtoMessage() {}
+
+func (x *Control_BoostAction_InterpolationBoostSpec_ControlPoint) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_control_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Control_BoostAction_InterpolationBoostSpec_ControlPoint.ProtoReflect.Descriptor instead.
+func (*Control_BoostAction_InterpolationBoostSpec_ControlPoint) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_control_proto_rawDescGZIP(), []int{1, 0, 0, 0}
+}
+
+func (x *Control_BoostAction_InterpolationBoostSpec_ControlPoint) GetAttributeValue() string {
+	if x != nil {
+		return x.AttributeValue
+	}
+	return ""
+}
+
+func (x *Control_BoostAction_InterpolationBoostSpec_ControlPoint) GetBoostAmount() float32 {
+	if x != nil {
+		return x.BoostAmount
+	}
+	return 0
+}
+
 var File_google_cloud_discoveryengine_v1beta_control_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1beta_control_proto_rawDesc = "" +
@@ -690,13 +1075,14 @@ const file_google_cloud_discoveryengine_v1beta_control_proto_rawDesc = "" +
 	"\tTimeRange\x129\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\x83\f\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xee\x15\n" +
 	"\aControl\x12]\n" +
 	"\fboost_action\x18\x06 \x01(\v28.google.cloud.discoveryengine.v1beta.Control.BoostActionH\x00R\vboostAction\x12`\n" +
 	"\rfilter_action\x18\a \x01(\v29.google.cloud.discoveryengine.v1beta.Control.FilterActionH\x00R\ffilterAction\x12f\n" +
 	"\x0fredirect_action\x18\t \x01(\v2;.google.cloud.discoveryengine.v1beta.Control.RedirectActionH\x00R\x0eredirectAction\x12f\n" +
 	"\x0fsynonyms_action\x18\n" +
-	" \x01(\v2;.google.cloud.discoveryengine.v1beta.Control.SynonymsActionH\x00R\x0esynonymsAction\x12\x17\n" +
+	" \x01(\v2;.google.cloud.discoveryengine.v1beta.Control.SynonymsActionH\x00R\x0esynonymsAction\x12c\n" +
+	"\x0epromote_action\x18\x0f \x01(\v2:.google.cloud.discoveryengine.v1beta.Control.PromoteActionH\x00R\rpromoteAction\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12F\n" +
 	"\x1dassociated_serving_config_ids\x18\x03 \x03(\tB\x03\xe0A\x03R\x1aassociatedServingConfigIds\x12^\n" +
@@ -704,13 +1090,35 @@ const file_google_cloud_discoveryengine_v1beta_control_proto_rawDesc = "" +
 	"\tuse_cases\x18\b \x03(\x0e22.google.cloud.discoveryengine.v1beta.SearchUseCaseR\buseCases\x12N\n" +
 	"\n" +
 	"conditions\x18\x05 \x03(\v2..google.cloud.discoveryengine.v1beta.ConditionR\n" +
-	"conditions\x1a\x96\x01\n" +
-	"\vBoostAction\x12\x19\n" +
-	"\x05boost\x18\x01 \x01(\x02B\x03\xe0A\x02R\x05boost\x12\x1b\n" +
+	"conditions\x1a\xc6\b\n" +
+	"\vBoostAction\x12&\n" +
+	"\vfixed_boost\x18\x04 \x01(\x02B\x03\xe0A\x01H\x00R\n" +
+	"fixedBoost\x12\x90\x01\n" +
+	"\x18interpolation_boost_spec\x18\x05 \x01(\v2O.google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpecB\x03\xe0A\x01H\x00R\x16interpolationBoostSpec\x12\x18\n" +
+	"\x05boost\x18\x01 \x01(\x02B\x02\x18\x01R\x05boost\x12\x1b\n" +
 	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x02R\x06filter\x12O\n" +
 	"\n" +
 	"data_store\x18\x03 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x1a|\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x1a\xe5\x05\n" +
+	"\x16InterpolationBoostSpec\x12\"\n" +
+	"\n" +
+	"field_name\x18\x01 \x01(\tB\x03\xe0A\x01R\tfieldName\x12\x89\x01\n" +
+	"\x0eattribute_type\x18\x02 \x01(\x0e2].google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpec.AttributeTypeB\x03\xe0A\x01R\rattributeType\x12\x95\x01\n" +
+	"\x12interpolation_type\x18\x03 \x01(\x0e2a.google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpec.InterpolationTypeB\x03\xe0A\x01R\x11interpolationType\x12\x88\x01\n" +
+	"\x0econtrol_points\x18\x04 \x03(\v2\\.google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpec.ControlPointB\x03\xe0A\x01R\rcontrolPoints\x1ad\n" +
+	"\fControlPoint\x12,\n" +
+	"\x0fattribute_value\x18\x01 \x01(\tB\x03\xe0A\x01R\x0eattributeValue\x12&\n" +
+	"\fboost_amount\x18\x02 \x01(\x02B\x03\xe0A\x01R\vboostAmount\"M\n" +
+	"\rAttributeType\x12\x1e\n" +
+	"\x1aATTRIBUTE_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tNUMERICAL\x10\x01\x12\r\n" +
+	"\tFRESHNESS\x10\x02\"C\n" +
+	"\x11InterpolationType\x12\"\n" +
+	"\x1eINTERPOLATION_TYPE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06LINEAR\x10\x01B\f\n" +
+	"\n" +
+	"boost_spec\x1a|\n" +
 	"\fFilterAction\x12\x1b\n" +
 	"\x06filter\x18\x01 \x01(\tB\x03\xe0A\x02R\x06filter\x12O\n" +
 	"\n" +
@@ -719,7 +1127,12 @@ const file_google_cloud_discoveryengine_v1beta_control_proto_rawDesc = "" +
 	"\x0eRedirectAction\x12&\n" +
 	"\fredirect_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\vredirectUri\x1a,\n" +
 	"\x0eSynonymsAction\x12\x1a\n" +
-	"\bsynonyms\x18\x01 \x03(\tR\bsynonyms:\xd3\x02\xeaA\xcf\x02\n" +
+	"\bsynonyms\x18\x01 \x03(\tR\bsynonyms\x1a\xd3\x01\n" +
+	"\rPromoteAction\x12O\n" +
+	"\n" +
+	"data_store\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"(discoveryengine.googleapis.com/DataStoreR\tdataStore\x12q\n" +
+	"\x15search_link_promotion\x18\x02 \x01(\v28.google.cloud.discoveryengine.v1beta.SearchLinkPromotionB\x03\xe0A\x02R\x13searchLinkPromotion:\xd3\x02\xeaA\xcf\x02\n" +
 	"&discoveryengine.googleapis.com/Control\x12Rprojects/{project}/locations/{location}/dataStores/{data_store}/controls/{control}\x12kprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/controls/{control}\x12dprojects/{project}/locations/{location}/collections/{collection}/engines/{engine}/controls/{control}B\b\n" +
 	"\x06actionB\x93\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\fControlProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
@@ -736,37 +1149,50 @@ func file_google_cloud_discoveryengine_v1beta_control_proto_rawDescGZIP() []byte
 	return file_google_cloud_discoveryengine_v1beta_control_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1beta_control_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_google_cloud_discoveryengine_v1beta_control_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_google_cloud_discoveryengine_v1beta_control_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_google_cloud_discoveryengine_v1beta_control_proto_goTypes = []any{
-	(*Condition)(nil),              // 0: google.cloud.discoveryengine.v1beta.Condition
-	(*Control)(nil),                // 1: google.cloud.discoveryengine.v1beta.Control
-	(*Condition_QueryTerm)(nil),    // 2: google.cloud.discoveryengine.v1beta.Condition.QueryTerm
-	(*Condition_TimeRange)(nil),    // 3: google.cloud.discoveryengine.v1beta.Condition.TimeRange
-	(*Control_BoostAction)(nil),    // 4: google.cloud.discoveryengine.v1beta.Control.BoostAction
-	(*Control_FilterAction)(nil),   // 5: google.cloud.discoveryengine.v1beta.Control.FilterAction
-	(*Control_RedirectAction)(nil), // 6: google.cloud.discoveryengine.v1beta.Control.RedirectAction
-	(*Control_SynonymsAction)(nil), // 7: google.cloud.discoveryengine.v1beta.Control.SynonymsAction
-	(SolutionType)(0),              // 8: google.cloud.discoveryengine.v1beta.SolutionType
-	(SearchUseCase)(0),             // 9: google.cloud.discoveryengine.v1beta.SearchUseCase
-	(*timestamppb.Timestamp)(nil),  // 10: google.protobuf.Timestamp
+	(Control_BoostAction_InterpolationBoostSpec_AttributeType)(0),     // 0: google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpec.AttributeType
+	(Control_BoostAction_InterpolationBoostSpec_InterpolationType)(0), // 1: google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpec.InterpolationType
+	(*Condition)(nil),                                               // 2: google.cloud.discoveryengine.v1beta.Condition
+	(*Control)(nil),                                                 // 3: google.cloud.discoveryengine.v1beta.Control
+	(*Condition_QueryTerm)(nil),                                     // 4: google.cloud.discoveryengine.v1beta.Condition.QueryTerm
+	(*Condition_TimeRange)(nil),                                     // 5: google.cloud.discoveryengine.v1beta.Condition.TimeRange
+	(*Control_BoostAction)(nil),                                     // 6: google.cloud.discoveryengine.v1beta.Control.BoostAction
+	(*Control_FilterAction)(nil),                                    // 7: google.cloud.discoveryengine.v1beta.Control.FilterAction
+	(*Control_RedirectAction)(nil),                                  // 8: google.cloud.discoveryengine.v1beta.Control.RedirectAction
+	(*Control_SynonymsAction)(nil),                                  // 9: google.cloud.discoveryengine.v1beta.Control.SynonymsAction
+	(*Control_PromoteAction)(nil),                                   // 10: google.cloud.discoveryengine.v1beta.Control.PromoteAction
+	(*Control_BoostAction_InterpolationBoostSpec)(nil),              // 11: google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpec
+	(*Control_BoostAction_InterpolationBoostSpec_ControlPoint)(nil), // 12: google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpec.ControlPoint
+	(SolutionType)(0),                                               // 13: google.cloud.discoveryengine.v1beta.SolutionType
+	(SearchUseCase)(0),                                              // 14: google.cloud.discoveryengine.v1beta.SearchUseCase
+	(*timestamppb.Timestamp)(nil),                                   // 15: google.protobuf.Timestamp
+	(*SearchLinkPromotion)(nil),                                     // 16: google.cloud.discoveryengine.v1beta.SearchLinkPromotion
 }
 var file_google_cloud_discoveryengine_v1beta_control_proto_depIdxs = []int32{
-	2,  // 0: google.cloud.discoveryengine.v1beta.Condition.query_terms:type_name -> google.cloud.discoveryengine.v1beta.Condition.QueryTerm
-	3,  // 1: google.cloud.discoveryengine.v1beta.Condition.active_time_range:type_name -> google.cloud.discoveryengine.v1beta.Condition.TimeRange
-	4,  // 2: google.cloud.discoveryengine.v1beta.Control.boost_action:type_name -> google.cloud.discoveryengine.v1beta.Control.BoostAction
-	5,  // 3: google.cloud.discoveryengine.v1beta.Control.filter_action:type_name -> google.cloud.discoveryengine.v1beta.Control.FilterAction
-	6,  // 4: google.cloud.discoveryengine.v1beta.Control.redirect_action:type_name -> google.cloud.discoveryengine.v1beta.Control.RedirectAction
-	7,  // 5: google.cloud.discoveryengine.v1beta.Control.synonyms_action:type_name -> google.cloud.discoveryengine.v1beta.Control.SynonymsAction
-	8,  // 6: google.cloud.discoveryengine.v1beta.Control.solution_type:type_name -> google.cloud.discoveryengine.v1beta.SolutionType
-	9,  // 7: google.cloud.discoveryengine.v1beta.Control.use_cases:type_name -> google.cloud.discoveryengine.v1beta.SearchUseCase
-	0,  // 8: google.cloud.discoveryengine.v1beta.Control.conditions:type_name -> google.cloud.discoveryengine.v1beta.Condition
-	10, // 9: google.cloud.discoveryengine.v1beta.Condition.TimeRange.start_time:type_name -> google.protobuf.Timestamp
-	10, // 10: google.cloud.discoveryengine.v1beta.Condition.TimeRange.end_time:type_name -> google.protobuf.Timestamp
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	4,  // 0: google.cloud.discoveryengine.v1beta.Condition.query_terms:type_name -> google.cloud.discoveryengine.v1beta.Condition.QueryTerm
+	5,  // 1: google.cloud.discoveryengine.v1beta.Condition.active_time_range:type_name -> google.cloud.discoveryengine.v1beta.Condition.TimeRange
+	6,  // 2: google.cloud.discoveryengine.v1beta.Control.boost_action:type_name -> google.cloud.discoveryengine.v1beta.Control.BoostAction
+	7,  // 3: google.cloud.discoveryengine.v1beta.Control.filter_action:type_name -> google.cloud.discoveryengine.v1beta.Control.FilterAction
+	8,  // 4: google.cloud.discoveryengine.v1beta.Control.redirect_action:type_name -> google.cloud.discoveryengine.v1beta.Control.RedirectAction
+	9,  // 5: google.cloud.discoveryengine.v1beta.Control.synonyms_action:type_name -> google.cloud.discoveryengine.v1beta.Control.SynonymsAction
+	10, // 6: google.cloud.discoveryengine.v1beta.Control.promote_action:type_name -> google.cloud.discoveryengine.v1beta.Control.PromoteAction
+	13, // 7: google.cloud.discoveryengine.v1beta.Control.solution_type:type_name -> google.cloud.discoveryengine.v1beta.SolutionType
+	14, // 8: google.cloud.discoveryengine.v1beta.Control.use_cases:type_name -> google.cloud.discoveryengine.v1beta.SearchUseCase
+	2,  // 9: google.cloud.discoveryengine.v1beta.Control.conditions:type_name -> google.cloud.discoveryengine.v1beta.Condition
+	15, // 10: google.cloud.discoveryengine.v1beta.Condition.TimeRange.start_time:type_name -> google.protobuf.Timestamp
+	15, // 11: google.cloud.discoveryengine.v1beta.Condition.TimeRange.end_time:type_name -> google.protobuf.Timestamp
+	11, // 12: google.cloud.discoveryengine.v1beta.Control.BoostAction.interpolation_boost_spec:type_name -> google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpec
+	16, // 13: google.cloud.discoveryengine.v1beta.Control.PromoteAction.search_link_promotion:type_name -> google.cloud.discoveryengine.v1beta.SearchLinkPromotion
+	0,  // 14: google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpec.attribute_type:type_name -> google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpec.AttributeType
+	1,  // 15: google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpec.interpolation_type:type_name -> google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpec.InterpolationType
+	12, // 16: google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpec.control_points:type_name -> google.cloud.discoveryengine.v1beta.Control.BoostAction.InterpolationBoostSpec.ControlPoint
+	17, // [17:17] is the sub-list for method output_type
+	17, // [17:17] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1beta_control_proto_init() }
@@ -780,19 +1206,25 @@ func file_google_cloud_discoveryengine_v1beta_control_proto_init() {
 		(*Control_FilterAction_)(nil),
 		(*Control_RedirectAction_)(nil),
 		(*Control_SynonymsAction_)(nil),
+		(*Control_PromoteAction_)(nil),
+	}
+	file_google_cloud_discoveryengine_v1beta_control_proto_msgTypes[4].OneofWrappers = []any{
+		(*Control_BoostAction_FixedBoost)(nil),
+		(*Control_BoostAction_InterpolationBoostSpec_)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1beta_control_proto_rawDesc), len(file_google_cloud_discoveryengine_v1beta_control_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   8,
+			NumEnums:      2,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_google_cloud_discoveryengine_v1beta_control_proto_goTypes,
 		DependencyIndexes: file_google_cloud_discoveryengine_v1beta_control_proto_depIdxs,
+		EnumInfos:         file_google_cloud_discoveryengine_v1beta_control_proto_enumTypes,
 		MessageInfos:      file_google_cloud_discoveryengine_v1beta_control_proto_msgTypes,
 	}.Build()
 	File_google_cloud_discoveryengine_v1beta_control_proto = out.File

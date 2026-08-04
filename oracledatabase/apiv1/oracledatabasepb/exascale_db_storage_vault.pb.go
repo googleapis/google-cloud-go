@@ -186,9 +186,14 @@ type ExascaleDbStorageVault struct {
 	// ExascaleDbStorageVault.
 	EntitlementId string `protobuf:"bytes,6,opt,name=entitlement_id,json=entitlementId,proto3" json:"entitlement_id,omitempty"`
 	// Optional. The labels or tags associated with the ExascaleDbStorageVault.
-	Labels        map[string]string `protobuf:"bytes,7,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Labels map[string]string `protobuf:"bytes,7,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. The Exadata Infrastructure resource on which
+	// ExascaleDbStorageVault
+	// resource is created, in the following format:
+	// projects/{project}/locations/{region}/cloudExadataInfrastuctures/{cloud_extradata_infrastructure}
+	ExadataInfrastructure string `protobuf:"bytes,8,opt,name=exadata_infrastructure,json=exadataInfrastructure,proto3" json:"exadata_infrastructure,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *ExascaleDbStorageVault) Reset() {
@@ -268,6 +273,13 @@ func (x *ExascaleDbStorageVault) GetLabels() map[string]string {
 		return x.Labels
 	}
 	return nil
+}
+
+func (x *ExascaleDbStorageVault) GetExadataInfrastructure() string {
+	if x != nil {
+		return x.ExadataInfrastructure
+	}
+	return ""
 }
 
 // The properties of the ExascaleDbStorageVault.
@@ -827,7 +839,7 @@ var File_google_cloud_oracledatabase_v1_exascale_db_storage_vault_proto protoref
 
 const file_google_cloud_oracledatabase_v1_exascale_db_storage_vault_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/oracledatabase/v1/exascale_db_storage_vault.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\"\xc2\x05\n" +
+	">google/cloud/oracledatabase/v1/exascale_db_storage_vault.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\"\xbb\x06\n" +
 	"\x16ExascaleDbStorageVault\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12+\n" +
@@ -838,7 +850,9 @@ const file_google_cloud_oracledatabase_v1_exascale_db_storage_vault_proto_rawDes
 	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12*\n" +
 	"\x0eentitlement_id\x18\x06 \x01(\tB\x03\xe0A\x03R\rentitlementId\x12_\n" +
-	"\x06labels\x18\a \x03(\v2B.google.cloud.oracledatabase.v1.ExascaleDbStorageVault.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a9\n" +
+	"\x06labels\x18\a \x03(\v2B.google.cloud.oracledatabase.v1.ExascaleDbStorageVault.LabelsEntryB\x03\xe0A\x01R\x06labels\x12w\n" +
+	"\x16exadata_infrastructure\x18\b \x01(\tB@\xe0A\x01\xfaA:\n" +
+	"8oracledatabase.googleapis.com/CloudExadataInfrastructureR\x15exadataInfrastructure\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xc8\x01\xeaA\xc4\x01\n" +

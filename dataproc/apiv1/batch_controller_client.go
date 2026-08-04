@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -520,8 +521,12 @@ func (c *batchControllerGRPCClient) CreateBatch(ctx context.Context, req *datapr
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.CreateBatchOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBatchOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -864,8 +869,12 @@ func (c *batchControllerRESTClient) CreateBatch(ctx context.Context, req *datapr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.CreateBatchOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBatchOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1476,7 +1485,7 @@ func (c *batchControllerRESTClient) ListOperations(ctx context.Context, req *lon
 // The name must be that of a previously created CreateBatchOperation, possibly from a different process.
 func (c *batchControllerGRPCClient) CreateBatchOperation(name string) *CreateBatchOperation {
 	return &CreateBatchOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.CreateBatchOperation"),
 	}
 }
 
@@ -1485,7 +1494,7 @@ func (c *batchControllerGRPCClient) CreateBatchOperation(name string) *CreateBat
 func (c *batchControllerRESTClient) CreateBatchOperation(name string) *CreateBatchOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBatchOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.CreateBatchOperation"),
 		pollPath: override,
 	}
 }

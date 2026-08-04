@@ -15,8 +15,16 @@
 package storage
 
 import (
+	"context"
 	"errors"
+	"net/http"
+	"reflect"
 	"testing"
+
+	"cloud.google.com/go/storage/experimental"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func TestRetryContextSignatures(t *testing.T) {
@@ -114,5 +122,210 @@ func TestLegacySignatureStillWorks(t *testing.T) {
 
 	if !called {
 		t.Error("Legacy error function was not called")
+	}
+}
+
+// TestHTTPRetryContextMetadataReaderReopen verifies that the RetryContext is correctly
+// populated for HTTP range reader reopen retry logic.
+func TestHTTPRetryContextMetadataReaderReopen(t *testing.T) {
+	t.Parallel()
+
+	transport := &mockTransport{}
+	// First request returns 503 Service Unavailable (retriable)
+	transport.addResult(&http.Response{
+		StatusCode: http.StatusServiceUnavailable,
+		Body:       bodyReader("Service Unavailable"),
+	}, nil)
+	// Second request also returns 503 Service Unavailable
+	transport.addResult(&http.Response{
+		StatusCode: http.StatusServiceUnavailable,
+		Body:       bodyReader("Service Unavailable"),
+	}, nil)
+	client := mockClient(t, transport)
+	defer client.Close()
+
+	var capturedCtx *RetryContext
+	var attempts []int
+	reader, err := client.Bucket("test-bucket").Object("test-object").Retryer(
+		WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool {
+			capturedCtx = ctx
+			attempts = append(attempts, ctx.Attempt)
+			return ctx.Attempt < 2 // Retry once
+		}),
+	).NewReader(context.Background())
+
+	// We expect NewReader to fail because of the mocked 503s and our policy stopping retries.
+	if err == nil {
+		if reader != nil {
+			reader.Close()
+		}
+		t.Fatalf("expected NewReader to fail, but got success")
+	}
+	if capturedCtx == nil {
+		t.Fatal("expected RetryContext to be captured in shouldRetry, but it was nil")
+	}
+	if capturedCtx.Operation != "ReadObject" {
+		t.Errorf("Operation: got %q, want %q", capturedCtx.Operation, "ReadObject")
+	}
+	if capturedCtx.Bucket != "test-bucket" {
+		t.Errorf("Bucket: got %q, want %q", capturedCtx.Bucket, "test-bucket")
+	}
+	if capturedCtx.Object != "test-object" {
+		t.Errorf("Object: got %q, want %q", capturedCtx.Object, "test-object")
+	}
+	wantAttempts := []int{1, 2}
+	if !reflect.DeepEqual(attempts, wantAttempts) {
+		t.Errorf("Attempt sequence: got %v, want %v", attempts, wantAttempts)
+	}
+}
+
+// TestGRPCRetryContextMetadataListObjects verifies that the RetryContext is correctly
+// populated with metadata for gRPC ListObjects operation retries.
+func TestGRPCRetryContextMetadataListObjects(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	// Points to an invalid address to trigger connection failure (Unavailable error)
+	client, err := NewGRPCClient(ctx,
+		option.WithEndpoint("localhost:1"),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+	)
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
+	defer client.Close()
+	var capturedCtx *RetryContext
+	var attempts []int
+	it := client.Bucket("test-bucket").Retryer(
+		WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool {
+			capturedCtx = ctx
+			attempts = append(attempts, ctx.Attempt)
+			return ctx.Attempt < 3 // Retry up to 3 attempts
+		}),
+	).Objects(ctx, &Query{Prefix: "test-prefix"})
+
+	// it.Next() triggers the fetch, which triggers ListObjects call
+	_, err = it.Next()
+
+	if err == nil {
+		t.Fatalf("expected call to fail due to invalid address, but got success")
+	}
+	if capturedCtx == nil {
+		t.Fatal("expected RetryContext to be captured, but got nil")
+	}
+	if capturedCtx.Operation != "ListObjects" {
+		t.Errorf("Operation: got %q, want %q", capturedCtx.Operation, "ListObjects")
+	}
+	if capturedCtx.Bucket != "test-bucket" {
+		t.Errorf("Bucket: got %q, want %q", capturedCtx.Bucket, "test-bucket")
+	}
+	if capturedCtx.Object != "test-prefix" {
+		t.Errorf("Object: got %q, want %q", capturedCtx.Object, "test-prefix")
+	}
+	wantAttempts := []int{1, 2, 3}
+	if !reflect.DeepEqual(attempts, wantAttempts) {
+		t.Errorf("Attempt sequence: got %v, want %v", attempts, wantAttempts)
+	}
+}
+
+// TestGRPCRetryContextMetadataNewReader verifies that the RetryContext is correctly
+// populated with metadata for gRPC NewRangeReader operation retries.
+func TestGRPCRetryContextMetadataNewReader(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	client, err := NewGRPCClient(ctx,
+		option.WithEndpoint("localhost:1"),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+	)
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
+	defer client.Close()
+
+	var capturedCtx *RetryContext
+	var attempts []int
+	reader, err := client.Bucket("test-bucket").Object("test-object").Retryer(
+		WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool {
+			capturedCtx = ctx
+			attempts = append(attempts, ctx.Attempt)
+			return ctx.Attempt < 3
+		}),
+	).NewReader(ctx)
+
+	if err == nil {
+		if reader != nil {
+			reader.Close()
+		}
+		t.Fatalf("expected NewReader to fail due to connection error, but got success")
+	}
+	if capturedCtx == nil {
+		t.Fatal("expected RetryContext to be captured, but got nil")
+	}
+	if capturedCtx.Operation != "ReadObject" {
+		t.Errorf("Operation: got %q, want %q", capturedCtx.Operation, "ReadObject")
+	}
+	if capturedCtx.Bucket != "test-bucket" {
+		t.Errorf("Bucket: got %q, want %q", capturedCtx.Bucket, "test-bucket")
+	}
+	if capturedCtx.Object != "test-object" {
+		t.Errorf("Object: got %q, want %q", capturedCtx.Object, "test-object")
+	}
+	wantAttempts := []int{1, 2, 3}
+	if !reflect.DeepEqual(attempts, wantAttempts) {
+		t.Errorf("Attempt sequence: got %v, want %v", attempts, wantAttempts)
+	}
+}
+
+// TestGRPCRetryContextMetadataMultiRangeDownloader verifies that the RetryContext is
+// correctly populated for gRPC MultiRangeDownloader session establishment retries.
+func TestGRPCRetryContextMetadataMultiRangeDownloader(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	client, err := NewGRPCClient(ctx,
+		option.WithEndpoint("localhost:1"),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		experimental.WithGRPCBidiReads(),
+	)
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
+	defer client.Close()
+
+	var capturedCtx *RetryContext
+	var attempts []int
+	mrd, err := client.Bucket("test-bucket").Object("test-object").Retryer(
+		WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool {
+			capturedCtx = ctx
+			attempts = append(attempts, ctx.Attempt)
+			return ctx.Attempt < 3
+		}),
+	).NewMultiRangeDownloader(ctx)
+
+	if err == nil {
+		if mrd != nil {
+			mrd.Close()
+		}
+		t.Fatalf("expected NewMultiRangeDownloader to fail, but got success")
+	}
+	if capturedCtx == nil {
+		t.Fatal("expected RetryContext to be captured, but got nil")
+	}
+	if capturedCtx.Operation != "ReadObject" {
+		t.Errorf("Operation: got %q, want %q", capturedCtx.Operation, "ReadObject")
+	}
+	if capturedCtx.Bucket != "test-bucket" {
+		t.Errorf("Bucket: got %q, want %q", capturedCtx.Bucket, "test-bucket")
+	}
+	if capturedCtx.Object != "test-object" {
+		t.Errorf("Object: got %q, want %q", capturedCtx.Object, "test-object")
+	}
+	wantAttempts := []int{1, 2, 3}
+	if !reflect.DeepEqual(attempts, wantAttempts) {
+		t.Errorf("Attempt sequence: got %v, want %v", attempts, wantAttempts)
 	}
 }

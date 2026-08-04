@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -443,7 +443,7 @@ func (x CompilationDiagnostic_Severity) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CompilationDiagnostic_Severity.Descriptor instead.
 func (CompilationDiagnostic_Severity) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{20, 0}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{22, 0}
 }
 
 // The Rule resource represents a user-created rule.
@@ -1302,6 +1302,119 @@ func (x *DeleteRuleRequest) GetForce() bool {
 	return false
 }
 
+// Request message for VerifyRuleText method.
+type VerifyRuleTextRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the parent resource, which is the SecOps instance
+	// associated with the request. Format:
+	// `projects/{project}/locations/{location}/instances/{instance}`
+	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
+	// Required. The rule text to verify as a UTF-8 string.
+	RuleText      string `protobuf:"bytes,2,opt,name=rule_text,json=ruleText,proto3" json:"rule_text,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *VerifyRuleTextRequest) Reset() {
+	*x = VerifyRuleTextRequest{}
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VerifyRuleTextRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VerifyRuleTextRequest) ProtoMessage() {}
+
+func (x *VerifyRuleTextRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VerifyRuleTextRequest.ProtoReflect.Descriptor instead.
+func (*VerifyRuleTextRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *VerifyRuleTextRequest) GetInstance() string {
+	if x != nil {
+		return x.Instance
+	}
+	return ""
+}
+
+func (x *VerifyRuleTextRequest) GetRuleText() string {
+	if x != nil {
+		return x.RuleText
+	}
+	return ""
+}
+
+// Response message for VerifyRuleText method.
+type VerifyRuleTextResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Whether or not the rule text was successfully verified.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// A list of a rule's corresponding compilation diagnostic messages
+	// such as compilation errors and compilation warnings.
+	CompilationDiagnostics []*CompilationDiagnostic `protobuf:"bytes,3,rep,name=compilation_diagnostics,json=compilationDiagnostics,proto3" json:"compilation_diagnostics,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *VerifyRuleTextResponse) Reset() {
+	*x = VerifyRuleTextResponse{}
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VerifyRuleTextResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VerifyRuleTextResponse) ProtoMessage() {}
+
+func (x *VerifyRuleTextResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VerifyRuleTextResponse.ProtoReflect.Descriptor instead.
+func (*VerifyRuleTextResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *VerifyRuleTextResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *VerifyRuleTextResponse) GetCompilationDiagnostics() []*CompilationDiagnostic {
+	if x != nil {
+		return x.CompilationDiagnostics
+	}
+	return nil
+}
+
 // Request message for ListRuleRevisions method.
 type ListRuleRevisionsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1329,7 +1442,7 @@ type ListRuleRevisionsRequest struct {
 
 func (x *ListRuleRevisionsRequest) Reset() {
 	*x = ListRuleRevisionsRequest{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[9]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1341,7 +1454,7 @@ func (x *ListRuleRevisionsRequest) String() string {
 func (*ListRuleRevisionsRequest) ProtoMessage() {}
 
 func (x *ListRuleRevisionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[9]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1354,7 +1467,7 @@ func (x *ListRuleRevisionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRuleRevisionsRequest.ProtoReflect.Descriptor instead.
 func (*ListRuleRevisionsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ListRuleRevisionsRequest) GetName() string {
@@ -1399,7 +1512,7 @@ type ListRuleRevisionsResponse struct {
 
 func (x *ListRuleRevisionsResponse) Reset() {
 	*x = ListRuleRevisionsResponse{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[10]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1411,7 +1524,7 @@ func (x *ListRuleRevisionsResponse) String() string {
 func (*ListRuleRevisionsResponse) ProtoMessage() {}
 
 func (x *ListRuleRevisionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[10]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1424,7 +1537,7 @@ func (x *ListRuleRevisionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRuleRevisionsResponse.ProtoReflect.Descriptor instead.
 func (*ListRuleRevisionsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ListRuleRevisionsResponse) GetRules() []*Rule {
@@ -1456,7 +1569,7 @@ type CreateRetrohuntRequest struct {
 
 func (x *CreateRetrohuntRequest) Reset() {
 	*x = CreateRetrohuntRequest{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[11]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1468,7 +1581,7 @@ func (x *CreateRetrohuntRequest) String() string {
 func (*CreateRetrohuntRequest) ProtoMessage() {}
 
 func (x *CreateRetrohuntRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[11]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1481,7 +1594,7 @@ func (x *CreateRetrohuntRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRetrohuntRequest.ProtoReflect.Descriptor instead.
 func (*CreateRetrohuntRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *CreateRetrohuntRequest) GetParent() string {
@@ -1511,7 +1624,7 @@ type GetRetrohuntRequest struct {
 
 func (x *GetRetrohuntRequest) Reset() {
 	*x = GetRetrohuntRequest{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[12]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1523,7 +1636,7 @@ func (x *GetRetrohuntRequest) String() string {
 func (*GetRetrohuntRequest) ProtoMessage() {}
 
 func (x *GetRetrohuntRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[12]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1536,7 +1649,7 @@ func (x *GetRetrohuntRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRetrohuntRequest.ProtoReflect.Descriptor instead.
 func (*GetRetrohuntRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetRetrohuntRequest) GetName() string {
@@ -1574,7 +1687,7 @@ type ListRetrohuntsRequest struct {
 
 func (x *ListRetrohuntsRequest) Reset() {
 	*x = ListRetrohuntsRequest{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[13]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1586,7 +1699,7 @@ func (x *ListRetrohuntsRequest) String() string {
 func (*ListRetrohuntsRequest) ProtoMessage() {}
 
 func (x *ListRetrohuntsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[13]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1599,7 +1712,7 @@ func (x *ListRetrohuntsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRetrohuntsRequest.ProtoReflect.Descriptor instead.
 func (*ListRetrohuntsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ListRetrohuntsRequest) GetParent() string {
@@ -1644,7 +1757,7 @@ type ListRetrohuntsResponse struct {
 
 func (x *ListRetrohuntsResponse) Reset() {
 	*x = ListRetrohuntsResponse{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[14]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1656,7 +1769,7 @@ func (x *ListRetrohuntsResponse) String() string {
 func (*ListRetrohuntsResponse) ProtoMessage() {}
 
 func (x *ListRetrohuntsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[14]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1669,7 +1782,7 @@ func (x *ListRetrohuntsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRetrohuntsResponse.ProtoReflect.Descriptor instead.
 func (*ListRetrohuntsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ListRetrohuntsResponse) GetRetrohunts() []*Retrohunt {
@@ -1699,7 +1812,7 @@ type GetRuleDeploymentRequest struct {
 
 func (x *GetRuleDeploymentRequest) Reset() {
 	*x = GetRuleDeploymentRequest{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[15]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1711,7 +1824,7 @@ func (x *GetRuleDeploymentRequest) String() string {
 func (*GetRuleDeploymentRequest) ProtoMessage() {}
 
 func (x *GetRuleDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[15]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1724,7 +1837,7 @@ func (x *GetRuleDeploymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRuleDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*GetRuleDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *GetRuleDeploymentRequest) GetName() string {
@@ -1763,7 +1876,7 @@ type ListRuleDeploymentsRequest struct {
 
 func (x *ListRuleDeploymentsRequest) Reset() {
 	*x = ListRuleDeploymentsRequest{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[16]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1775,7 +1888,7 @@ func (x *ListRuleDeploymentsRequest) String() string {
 func (*ListRuleDeploymentsRequest) ProtoMessage() {}
 
 func (x *ListRuleDeploymentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[16]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1788,7 +1901,7 @@ func (x *ListRuleDeploymentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRuleDeploymentsRequest.ProtoReflect.Descriptor instead.
 func (*ListRuleDeploymentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ListRuleDeploymentsRequest) GetParent() string {
@@ -1833,7 +1946,7 @@ type ListRuleDeploymentsResponse struct {
 
 func (x *ListRuleDeploymentsResponse) Reset() {
 	*x = ListRuleDeploymentsResponse{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[17]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1845,7 +1958,7 @@ func (x *ListRuleDeploymentsResponse) String() string {
 func (*ListRuleDeploymentsResponse) ProtoMessage() {}
 
 func (x *ListRuleDeploymentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[17]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1858,7 +1971,7 @@ func (x *ListRuleDeploymentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRuleDeploymentsResponse.ProtoReflect.Descriptor instead.
 func (*ListRuleDeploymentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ListRuleDeploymentsResponse) GetRuleDeployments() []*RuleDeployment {
@@ -1892,7 +2005,7 @@ type UpdateRuleDeploymentRequest struct {
 
 func (x *UpdateRuleDeploymentRequest) Reset() {
 	*x = UpdateRuleDeploymentRequest{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[18]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1904,7 +2017,7 @@ func (x *UpdateRuleDeploymentRequest) String() string {
 func (*UpdateRuleDeploymentRequest) ProtoMessage() {}
 
 func (x *UpdateRuleDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[18]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1917,7 +2030,7 @@ func (x *UpdateRuleDeploymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRuleDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRuleDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *UpdateRuleDeploymentRequest) GetRuleDeployment() *RuleDeployment {
@@ -1952,7 +2065,7 @@ type CompilationPosition struct {
 
 func (x *CompilationPosition) Reset() {
 	*x = CompilationPosition{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[19]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1964,7 +2077,7 @@ func (x *CompilationPosition) String() string {
 func (*CompilationPosition) ProtoMessage() {}
 
 func (x *CompilationPosition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[19]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1977,7 +2090,7 @@ func (x *CompilationPosition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompilationPosition.ProtoReflect.Descriptor instead.
 func (*CompilationPosition) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *CompilationPosition) GetStartLine() int32 {
@@ -2030,7 +2143,7 @@ type CompilationDiagnostic struct {
 
 func (x *CompilationDiagnostic) Reset() {
 	*x = CompilationDiagnostic{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[20]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2042,7 +2155,7 @@ func (x *CompilationDiagnostic) String() string {
 func (*CompilationDiagnostic) ProtoMessage() {}
 
 func (x *CompilationDiagnostic) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[20]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2055,7 +2168,7 @@ func (x *CompilationDiagnostic) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompilationDiagnostic.ProtoReflect.Descriptor instead.
 func (*CompilationDiagnostic) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *CompilationDiagnostic) GetMessage() string {
@@ -2098,7 +2211,7 @@ type Severity struct {
 
 func (x *Severity) Reset() {
 	*x = Severity{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[21]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2110,7 +2223,7 @@ func (x *Severity) String() string {
 func (*Severity) ProtoMessage() {}
 
 func (x *Severity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[21]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2123,7 +2236,7 @@ func (x *Severity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Severity.ProtoReflect.Descriptor instead.
 func (*Severity) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *Severity) GetDisplayName() string {
@@ -2151,7 +2264,7 @@ type RetrohuntMetadata struct {
 
 func (x *RetrohuntMetadata) Reset() {
 	*x = RetrohuntMetadata{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[22]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2163,7 +2276,7 @@ func (x *RetrohuntMetadata) String() string {
 func (*RetrohuntMetadata) ProtoMessage() {}
 
 func (x *RetrohuntMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[22]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2176,7 +2289,7 @@ func (x *RetrohuntMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RetrohuntMetadata.ProtoReflect.Descriptor instead.
 func (*RetrohuntMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *RetrohuntMetadata) GetRetrohunt() string {
@@ -2217,7 +2330,7 @@ type InputsUsed struct {
 
 func (x *InputsUsed) Reset() {
 	*x = InputsUsed{}
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[23]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2229,7 +2342,7 @@ func (x *InputsUsed) String() string {
 func (*InputsUsed) ProtoMessage() {}
 
 func (x *InputsUsed) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[23]
+	mi := &file_google_cloud_chronicle_v1_rule_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2242,7 +2355,7 @@ func (x *InputsUsed) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InputsUsed.ProtoReflect.Descriptor instead.
 func (*InputsUsed) Descriptor() ([]byte, []int) {
-	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *InputsUsed) GetUsesUdm() bool {
@@ -2362,7 +2475,14 @@ const file_google_cloud_chronicle_v1_rule_proto_rawDesc = "" +
 	"\x11DeleteRuleRequest\x129\n" +
 	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
 	"\x1dchronicle.googleapis.com/RuleR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xca\x01\n" +
+	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\x80\x01\n" +
+	"\x15VerifyRuleTextRequest\x12E\n" +
+	"\binstance\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"!chronicle.googleapis.com/InstanceR\binstance\x12 \n" +
+	"\trule_text\x18\x02 \x01(\tB\x03\xe0A\x02R\bruleText\"\x9d\x01\n" +
+	"\x16VerifyRuleTextResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12i\n" +
+	"\x17compilation_diagnostics\x18\x03 \x03(\v20.google.cloud.chronicle.v1.CompilationDiagnosticR\x16compilationDiagnostics\"\xca\x01\n" +
 	"\x18ListRuleRevisionsRequest\x129\n" +
 	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
 	"\x1dchronicle.googleapis.com/RuleR\x04name\x12\x1b\n" +
@@ -2449,7 +2569,7 @@ const file_google_cloud_chronicle_v1_rule_proto_rawDesc = "" +
 	"\x15RULE_VIEW_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\b\n" +
 	"\x04FULL\x10\x02\x12\x1a\n" +
-	"\x16REVISION_METADATA_ONLY\x10\x032\xa9\x13\n" +
+	"\x16REVISION_METADATA_ONLY\x10\x032\xe2\x15\n" +
 	"\vRuleService\x12\xae\x01\n" +
 	"\n" +
 	"CreateRule\x12,.google.cloud.chronicle.v1.CreateRuleRequest\x1a\x1f.google.cloud.chronicle.v1.Rule\"Q\xdaA\vparent,rule\x82\xd3\xe4\x93\x02=:\x04rule\"5/v1/{parent=projects/*/locations/*/instances/*}/rules\x12\x9b\x01\n" +
@@ -2458,7 +2578,8 @@ const file_google_cloud_chronicle_v1_rule_proto_rawDesc = "" +
 	"\n" +
 	"UpdateRule\x12,.google.cloud.chronicle.v1.UpdateRuleRequest\x1a\x1f.google.cloud.chronicle.v1.Rule\"[\xdaA\x10rule,update_mask\x82\xd3\xe4\x93\x02B:\x04rule2:/v1/{rule.name=projects/*/locations/*/instances/*/rules/*}\x12\x98\x01\n" +
 	"\n" +
-	"DeleteRule\x12,.google.cloud.chronicle.v1.DeleteRuleRequest\x1a\x16.google.protobuf.Empty\"D\xdaA\x04name\x82\xd3\xe4\x93\x027*5/v1/{name=projects/*/locations/*/instances/*/rules/*}\x12\xd2\x01\n" +
+	"DeleteRule\x12,.google.cloud.chronicle.v1.DeleteRuleRequest\x1a\x16.google.protobuf.Empty\"D\xdaA\x04name\x82\xd3\xe4\x93\x027*5/v1/{name=projects/*/locations/*/instances/*/rules/*}\x12\xd7\x01\n" +
+	"\x0eVerifyRuleText\x120.google.cloud.chronicle.v1.VerifyRuleTextRequest\x1a1.google.cloud.chronicle.v1.VerifyRuleTextResponse\"`\xdaA\x12instance,rule_text\x82\xd3\xe4\x93\x02E:\x01*\"@/v1/{instance=projects/*/locations/*/instances/*}:verifyRuleText\x12\xd2\x01\n" +
 	"\x11ListRuleRevisions\x123.google.cloud.chronicle.v1.ListRuleRevisionsRequest\x1a4.google.cloud.chronicle.v1.ListRuleRevisionsResponse\"R\xdaA\x04name\x82\xd3\xe4\x93\x02E\x12C/v1/{name=projects/*/locations/*/instances/*/rules/*}:listRevisions\x12\xef\x01\n" +
 	"\x0fCreateRetrohunt\x121.google.cloud.chronicle.v1.CreateRetrohuntRequest\x1a\x1d.google.longrunning.Operation\"\x89\x01\xcaA\x1e\n" +
 	"\tRetrohunt\x12\x11RetrohuntMetadata\xdaA\x10parent,retrohunt\x82\xd3\xe4\x93\x02O:\tretrohunt\"B/v1/{parent=projects/*/locations/*/instances/*/rules/*}/retrohunts\x12\xb7\x01\n" +
@@ -2466,7 +2587,7 @@ const file_google_cloud_chronicle_v1_rule_proto_rawDesc = "" +
 	"\x0eListRetrohunts\x120.google.cloud.chronicle.v1.ListRetrohuntsRequest\x1a1.google.cloud.chronicle.v1.ListRetrohuntsResponse\"S\xdaA\x06parent\x82\xd3\xe4\x93\x02D\x12B/v1/{parent=projects/*/locations/*/instances/*/rules/*}/retrohunts\x12\xc4\x01\n" +
 	"\x11GetRuleDeployment\x123.google.cloud.chronicle.v1.GetRuleDeploymentRequest\x1a).google.cloud.chronicle.v1.RuleDeployment\"O\xdaA\x04name\x82\xd3\xe4\x93\x02B\x12@/v1/{name=projects/*/locations/*/instances/*/rules/*/deployment}\x12\xda\x01\n" +
 	"\x13ListRuleDeployments\x125.google.cloud.chronicle.v1.ListRuleDeploymentsRequest\x1a6.google.cloud.chronicle.v1.ListRuleDeploymentsResponse\"T\xdaA\x06parent\x82\xd3\xe4\x93\x02E\x12C/v1/{parent=projects/*/locations/*/instances/*/rules/*}/deployments\x12\x83\x02\n" +
-	"\x14UpdateRuleDeployment\x126.google.cloud.chronicle.v1.UpdateRuleDeploymentRequest\x1a).google.cloud.chronicle.v1.RuleDeployment\"\x87\x01\xdaA\x1brule_deployment,update_mask\x82\xd3\xe4\x93\x02c:\x0frule_deployment2P/v1/{rule_deployment.name=projects/*/locations/*/instances/*/rules/*/deployment}\x1aL\xcaA\x18chronicle.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xc0\x01\n" +
+	"\x14UpdateRuleDeployment\x126.google.cloud.chronicle.v1.UpdateRuleDeploymentRequest\x1a).google.cloud.chronicle.v1.RuleDeployment\"\x87\x01\xdaA\x1brule_deployment,update_mask\x82\xd3\xe4\x93\x02c:\x0frule_deployment2P/v1/{rule_deployment.name=projects/*/locations/*/instances/*/rules/*/deployment}\x1a\xaa\x01\xcaA\x18chronicle.googleapis.com\xd2A\x8b\x01https://www.googleapis.com/auth/chronicle,https://www.googleapis.com/auth/chronicle.readonly,https://www.googleapis.com/auth/cloud-platformB\xc0\x01\n" +
 	"\x1dcom.google.cloud.chronicle.v1B\tRuleProtoP\x01Z;cloud.google.com/go/chronicle/apiv1/chroniclepb;chroniclepb\xaa\x02\x19Google.Cloud.Chronicle.V1\xca\x02\x19Google\\Cloud\\Chronicle\\V1\xea\x02\x1cGoogle::Cloud::Chronicle::V1b\x06proto3"
 
 var (
@@ -2482,7 +2603,7 @@ func file_google_cloud_chronicle_v1_rule_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_chronicle_v1_rule_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
-var file_google_cloud_chronicle_v1_rule_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_google_cloud_chronicle_v1_rule_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_google_cloud_chronicle_v1_rule_proto_goTypes = []any{
 	(RunFrequency)(0),                   // 0: google.cloud.chronicle.v1.RunFrequency
 	(RuleType)(0),                       // 1: google.cloud.chronicle.v1.RuleType
@@ -2500,90 +2621,95 @@ var file_google_cloud_chronicle_v1_rule_proto_goTypes = []any{
 	(*ListRulesResponse)(nil),           // 13: google.cloud.chronicle.v1.ListRulesResponse
 	(*UpdateRuleRequest)(nil),           // 14: google.cloud.chronicle.v1.UpdateRuleRequest
 	(*DeleteRuleRequest)(nil),           // 15: google.cloud.chronicle.v1.DeleteRuleRequest
-	(*ListRuleRevisionsRequest)(nil),    // 16: google.cloud.chronicle.v1.ListRuleRevisionsRequest
-	(*ListRuleRevisionsResponse)(nil),   // 17: google.cloud.chronicle.v1.ListRuleRevisionsResponse
-	(*CreateRetrohuntRequest)(nil),      // 18: google.cloud.chronicle.v1.CreateRetrohuntRequest
-	(*GetRetrohuntRequest)(nil),         // 19: google.cloud.chronicle.v1.GetRetrohuntRequest
-	(*ListRetrohuntsRequest)(nil),       // 20: google.cloud.chronicle.v1.ListRetrohuntsRequest
-	(*ListRetrohuntsResponse)(nil),      // 21: google.cloud.chronicle.v1.ListRetrohuntsResponse
-	(*GetRuleDeploymentRequest)(nil),    // 22: google.cloud.chronicle.v1.GetRuleDeploymentRequest
-	(*ListRuleDeploymentsRequest)(nil),  // 23: google.cloud.chronicle.v1.ListRuleDeploymentsRequest
-	(*ListRuleDeploymentsResponse)(nil), // 24: google.cloud.chronicle.v1.ListRuleDeploymentsResponse
-	(*UpdateRuleDeploymentRequest)(nil), // 25: google.cloud.chronicle.v1.UpdateRuleDeploymentRequest
-	(*CompilationPosition)(nil),         // 26: google.cloud.chronicle.v1.CompilationPosition
-	(*CompilationDiagnostic)(nil),       // 27: google.cloud.chronicle.v1.CompilationDiagnostic
-	(*Severity)(nil),                    // 28: google.cloud.chronicle.v1.Severity
-	(*RetrohuntMetadata)(nil),           // 29: google.cloud.chronicle.v1.RetrohuntMetadata
-	(*InputsUsed)(nil),                  // 30: google.cloud.chronicle.v1.InputsUsed
-	nil,                                 // 31: google.cloud.chronicle.v1.Rule.MetadataEntry
-	(*timestamppb.Timestamp)(nil),       // 32: google.protobuf.Timestamp
-	(*interval.Interval)(nil),           // 33: google.type.Interval
-	(*fieldmaskpb.FieldMask)(nil),       // 34: google.protobuf.FieldMask
-	(*emptypb.Empty)(nil),               // 35: google.protobuf.Empty
-	(*longrunningpb.Operation)(nil),     // 36: google.longrunning.Operation
+	(*VerifyRuleTextRequest)(nil),       // 16: google.cloud.chronicle.v1.VerifyRuleTextRequest
+	(*VerifyRuleTextResponse)(nil),      // 17: google.cloud.chronicle.v1.VerifyRuleTextResponse
+	(*ListRuleRevisionsRequest)(nil),    // 18: google.cloud.chronicle.v1.ListRuleRevisionsRequest
+	(*ListRuleRevisionsResponse)(nil),   // 19: google.cloud.chronicle.v1.ListRuleRevisionsResponse
+	(*CreateRetrohuntRequest)(nil),      // 20: google.cloud.chronicle.v1.CreateRetrohuntRequest
+	(*GetRetrohuntRequest)(nil),         // 21: google.cloud.chronicle.v1.GetRetrohuntRequest
+	(*ListRetrohuntsRequest)(nil),       // 22: google.cloud.chronicle.v1.ListRetrohuntsRequest
+	(*ListRetrohuntsResponse)(nil),      // 23: google.cloud.chronicle.v1.ListRetrohuntsResponse
+	(*GetRuleDeploymentRequest)(nil),    // 24: google.cloud.chronicle.v1.GetRuleDeploymentRequest
+	(*ListRuleDeploymentsRequest)(nil),  // 25: google.cloud.chronicle.v1.ListRuleDeploymentsRequest
+	(*ListRuleDeploymentsResponse)(nil), // 26: google.cloud.chronicle.v1.ListRuleDeploymentsResponse
+	(*UpdateRuleDeploymentRequest)(nil), // 27: google.cloud.chronicle.v1.UpdateRuleDeploymentRequest
+	(*CompilationPosition)(nil),         // 28: google.cloud.chronicle.v1.CompilationPosition
+	(*CompilationDiagnostic)(nil),       // 29: google.cloud.chronicle.v1.CompilationDiagnostic
+	(*Severity)(nil),                    // 30: google.cloud.chronicle.v1.Severity
+	(*RetrohuntMetadata)(nil),           // 31: google.cloud.chronicle.v1.RetrohuntMetadata
+	(*InputsUsed)(nil),                  // 32: google.cloud.chronicle.v1.InputsUsed
+	nil,                                 // 33: google.cloud.chronicle.v1.Rule.MetadataEntry
+	(*timestamppb.Timestamp)(nil),       // 34: google.protobuf.Timestamp
+	(*interval.Interval)(nil),           // 35: google.type.Interval
+	(*fieldmaskpb.FieldMask)(nil),       // 36: google.protobuf.FieldMask
+	(*emptypb.Empty)(nil),               // 37: google.protobuf.Empty
+	(*longrunningpb.Operation)(nil),     // 38: google.longrunning.Operation
 }
 var file_google_cloud_chronicle_v1_rule_proto_depIdxs = []int32{
-	28, // 0: google.cloud.chronicle.v1.Rule.severity:type_name -> google.cloud.chronicle.v1.Severity
-	31, // 1: google.cloud.chronicle.v1.Rule.metadata:type_name -> google.cloud.chronicle.v1.Rule.MetadataEntry
-	32, // 2: google.cloud.chronicle.v1.Rule.create_time:type_name -> google.protobuf.Timestamp
-	32, // 3: google.cloud.chronicle.v1.Rule.revision_create_time:type_name -> google.protobuf.Timestamp
+	30, // 0: google.cloud.chronicle.v1.Rule.severity:type_name -> google.cloud.chronicle.v1.Severity
+	33, // 1: google.cloud.chronicle.v1.Rule.metadata:type_name -> google.cloud.chronicle.v1.Rule.MetadataEntry
+	34, // 2: google.cloud.chronicle.v1.Rule.create_time:type_name -> google.protobuf.Timestamp
+	34, // 3: google.cloud.chronicle.v1.Rule.revision_create_time:type_name -> google.protobuf.Timestamp
 	3,  // 4: google.cloud.chronicle.v1.Rule.compilation_state:type_name -> google.cloud.chronicle.v1.Rule.CompilationState
 	1,  // 5: google.cloud.chronicle.v1.Rule.type:type_name -> google.cloud.chronicle.v1.RuleType
 	0,  // 6: google.cloud.chronicle.v1.Rule.allowed_run_frequencies:type_name -> google.cloud.chronicle.v1.RunFrequency
-	27, // 7: google.cloud.chronicle.v1.Rule.compilation_diagnostics:type_name -> google.cloud.chronicle.v1.CompilationDiagnostic
-	30, // 8: google.cloud.chronicle.v1.Rule.inputs_used:type_name -> google.cloud.chronicle.v1.InputsUsed
-	32, // 9: google.cloud.chronicle.v1.RuleDeployment.archive_time:type_name -> google.protobuf.Timestamp
+	29, // 7: google.cloud.chronicle.v1.Rule.compilation_diagnostics:type_name -> google.cloud.chronicle.v1.CompilationDiagnostic
+	32, // 8: google.cloud.chronicle.v1.Rule.inputs_used:type_name -> google.cloud.chronicle.v1.InputsUsed
+	34, // 9: google.cloud.chronicle.v1.RuleDeployment.archive_time:type_name -> google.protobuf.Timestamp
 	0,  // 10: google.cloud.chronicle.v1.RuleDeployment.run_frequency:type_name -> google.cloud.chronicle.v1.RunFrequency
 	4,  // 11: google.cloud.chronicle.v1.RuleDeployment.execution_state:type_name -> google.cloud.chronicle.v1.RuleDeployment.ExecutionState
-	32, // 12: google.cloud.chronicle.v1.RuleDeployment.last_alert_status_change_time:type_name -> google.protobuf.Timestamp
-	33, // 13: google.cloud.chronicle.v1.Retrohunt.process_interval:type_name -> google.type.Interval
-	33, // 14: google.cloud.chronicle.v1.Retrohunt.execution_interval:type_name -> google.type.Interval
+	34, // 12: google.cloud.chronicle.v1.RuleDeployment.last_alert_status_change_time:type_name -> google.protobuf.Timestamp
+	35, // 13: google.cloud.chronicle.v1.Retrohunt.process_interval:type_name -> google.type.Interval
+	35, // 14: google.cloud.chronicle.v1.Retrohunt.execution_interval:type_name -> google.type.Interval
 	5,  // 15: google.cloud.chronicle.v1.Retrohunt.state:type_name -> google.cloud.chronicle.v1.Retrohunt.State
 	7,  // 16: google.cloud.chronicle.v1.CreateRuleRequest.rule:type_name -> google.cloud.chronicle.v1.Rule
 	2,  // 17: google.cloud.chronicle.v1.GetRuleRequest.view:type_name -> google.cloud.chronicle.v1.RuleView
 	2,  // 18: google.cloud.chronicle.v1.ListRulesRequest.view:type_name -> google.cloud.chronicle.v1.RuleView
 	7,  // 19: google.cloud.chronicle.v1.ListRulesResponse.rules:type_name -> google.cloud.chronicle.v1.Rule
 	7,  // 20: google.cloud.chronicle.v1.UpdateRuleRequest.rule:type_name -> google.cloud.chronicle.v1.Rule
-	34, // 21: google.cloud.chronicle.v1.UpdateRuleRequest.update_mask:type_name -> google.protobuf.FieldMask
-	2,  // 22: google.cloud.chronicle.v1.ListRuleRevisionsRequest.view:type_name -> google.cloud.chronicle.v1.RuleView
-	7,  // 23: google.cloud.chronicle.v1.ListRuleRevisionsResponse.rules:type_name -> google.cloud.chronicle.v1.Rule
-	9,  // 24: google.cloud.chronicle.v1.CreateRetrohuntRequest.retrohunt:type_name -> google.cloud.chronicle.v1.Retrohunt
-	9,  // 25: google.cloud.chronicle.v1.ListRetrohuntsResponse.retrohunts:type_name -> google.cloud.chronicle.v1.Retrohunt
-	8,  // 26: google.cloud.chronicle.v1.ListRuleDeploymentsResponse.rule_deployments:type_name -> google.cloud.chronicle.v1.RuleDeployment
-	8,  // 27: google.cloud.chronicle.v1.UpdateRuleDeploymentRequest.rule_deployment:type_name -> google.cloud.chronicle.v1.RuleDeployment
-	34, // 28: google.cloud.chronicle.v1.UpdateRuleDeploymentRequest.update_mask:type_name -> google.protobuf.FieldMask
-	26, // 29: google.cloud.chronicle.v1.CompilationDiagnostic.position:type_name -> google.cloud.chronicle.v1.CompilationPosition
-	6,  // 30: google.cloud.chronicle.v1.CompilationDiagnostic.severity:type_name -> google.cloud.chronicle.v1.CompilationDiagnostic.Severity
-	33, // 31: google.cloud.chronicle.v1.RetrohuntMetadata.execution_interval:type_name -> google.type.Interval
-	10, // 32: google.cloud.chronicle.v1.RuleService.CreateRule:input_type -> google.cloud.chronicle.v1.CreateRuleRequest
-	11, // 33: google.cloud.chronicle.v1.RuleService.GetRule:input_type -> google.cloud.chronicle.v1.GetRuleRequest
-	12, // 34: google.cloud.chronicle.v1.RuleService.ListRules:input_type -> google.cloud.chronicle.v1.ListRulesRequest
-	14, // 35: google.cloud.chronicle.v1.RuleService.UpdateRule:input_type -> google.cloud.chronicle.v1.UpdateRuleRequest
-	15, // 36: google.cloud.chronicle.v1.RuleService.DeleteRule:input_type -> google.cloud.chronicle.v1.DeleteRuleRequest
-	16, // 37: google.cloud.chronicle.v1.RuleService.ListRuleRevisions:input_type -> google.cloud.chronicle.v1.ListRuleRevisionsRequest
-	18, // 38: google.cloud.chronicle.v1.RuleService.CreateRetrohunt:input_type -> google.cloud.chronicle.v1.CreateRetrohuntRequest
-	19, // 39: google.cloud.chronicle.v1.RuleService.GetRetrohunt:input_type -> google.cloud.chronicle.v1.GetRetrohuntRequest
-	20, // 40: google.cloud.chronicle.v1.RuleService.ListRetrohunts:input_type -> google.cloud.chronicle.v1.ListRetrohuntsRequest
-	22, // 41: google.cloud.chronicle.v1.RuleService.GetRuleDeployment:input_type -> google.cloud.chronicle.v1.GetRuleDeploymentRequest
-	23, // 42: google.cloud.chronicle.v1.RuleService.ListRuleDeployments:input_type -> google.cloud.chronicle.v1.ListRuleDeploymentsRequest
-	25, // 43: google.cloud.chronicle.v1.RuleService.UpdateRuleDeployment:input_type -> google.cloud.chronicle.v1.UpdateRuleDeploymentRequest
-	7,  // 44: google.cloud.chronicle.v1.RuleService.CreateRule:output_type -> google.cloud.chronicle.v1.Rule
-	7,  // 45: google.cloud.chronicle.v1.RuleService.GetRule:output_type -> google.cloud.chronicle.v1.Rule
-	13, // 46: google.cloud.chronicle.v1.RuleService.ListRules:output_type -> google.cloud.chronicle.v1.ListRulesResponse
-	7,  // 47: google.cloud.chronicle.v1.RuleService.UpdateRule:output_type -> google.cloud.chronicle.v1.Rule
-	35, // 48: google.cloud.chronicle.v1.RuleService.DeleteRule:output_type -> google.protobuf.Empty
-	17, // 49: google.cloud.chronicle.v1.RuleService.ListRuleRevisions:output_type -> google.cloud.chronicle.v1.ListRuleRevisionsResponse
-	36, // 50: google.cloud.chronicle.v1.RuleService.CreateRetrohunt:output_type -> google.longrunning.Operation
-	9,  // 51: google.cloud.chronicle.v1.RuleService.GetRetrohunt:output_type -> google.cloud.chronicle.v1.Retrohunt
-	21, // 52: google.cloud.chronicle.v1.RuleService.ListRetrohunts:output_type -> google.cloud.chronicle.v1.ListRetrohuntsResponse
-	8,  // 53: google.cloud.chronicle.v1.RuleService.GetRuleDeployment:output_type -> google.cloud.chronicle.v1.RuleDeployment
-	24, // 54: google.cloud.chronicle.v1.RuleService.ListRuleDeployments:output_type -> google.cloud.chronicle.v1.ListRuleDeploymentsResponse
-	8,  // 55: google.cloud.chronicle.v1.RuleService.UpdateRuleDeployment:output_type -> google.cloud.chronicle.v1.RuleDeployment
-	44, // [44:56] is the sub-list for method output_type
-	32, // [32:44] is the sub-list for method input_type
-	32, // [32:32] is the sub-list for extension type_name
-	32, // [32:32] is the sub-list for extension extendee
-	0,  // [0:32] is the sub-list for field type_name
+	36, // 21: google.cloud.chronicle.v1.UpdateRuleRequest.update_mask:type_name -> google.protobuf.FieldMask
+	29, // 22: google.cloud.chronicle.v1.VerifyRuleTextResponse.compilation_diagnostics:type_name -> google.cloud.chronicle.v1.CompilationDiagnostic
+	2,  // 23: google.cloud.chronicle.v1.ListRuleRevisionsRequest.view:type_name -> google.cloud.chronicle.v1.RuleView
+	7,  // 24: google.cloud.chronicle.v1.ListRuleRevisionsResponse.rules:type_name -> google.cloud.chronicle.v1.Rule
+	9,  // 25: google.cloud.chronicle.v1.CreateRetrohuntRequest.retrohunt:type_name -> google.cloud.chronicle.v1.Retrohunt
+	9,  // 26: google.cloud.chronicle.v1.ListRetrohuntsResponse.retrohunts:type_name -> google.cloud.chronicle.v1.Retrohunt
+	8,  // 27: google.cloud.chronicle.v1.ListRuleDeploymentsResponse.rule_deployments:type_name -> google.cloud.chronicle.v1.RuleDeployment
+	8,  // 28: google.cloud.chronicle.v1.UpdateRuleDeploymentRequest.rule_deployment:type_name -> google.cloud.chronicle.v1.RuleDeployment
+	36, // 29: google.cloud.chronicle.v1.UpdateRuleDeploymentRequest.update_mask:type_name -> google.protobuf.FieldMask
+	28, // 30: google.cloud.chronicle.v1.CompilationDiagnostic.position:type_name -> google.cloud.chronicle.v1.CompilationPosition
+	6,  // 31: google.cloud.chronicle.v1.CompilationDiagnostic.severity:type_name -> google.cloud.chronicle.v1.CompilationDiagnostic.Severity
+	35, // 32: google.cloud.chronicle.v1.RetrohuntMetadata.execution_interval:type_name -> google.type.Interval
+	10, // 33: google.cloud.chronicle.v1.RuleService.CreateRule:input_type -> google.cloud.chronicle.v1.CreateRuleRequest
+	11, // 34: google.cloud.chronicle.v1.RuleService.GetRule:input_type -> google.cloud.chronicle.v1.GetRuleRequest
+	12, // 35: google.cloud.chronicle.v1.RuleService.ListRules:input_type -> google.cloud.chronicle.v1.ListRulesRequest
+	14, // 36: google.cloud.chronicle.v1.RuleService.UpdateRule:input_type -> google.cloud.chronicle.v1.UpdateRuleRequest
+	15, // 37: google.cloud.chronicle.v1.RuleService.DeleteRule:input_type -> google.cloud.chronicle.v1.DeleteRuleRequest
+	16, // 38: google.cloud.chronicle.v1.RuleService.VerifyRuleText:input_type -> google.cloud.chronicle.v1.VerifyRuleTextRequest
+	18, // 39: google.cloud.chronicle.v1.RuleService.ListRuleRevisions:input_type -> google.cloud.chronicle.v1.ListRuleRevisionsRequest
+	20, // 40: google.cloud.chronicle.v1.RuleService.CreateRetrohunt:input_type -> google.cloud.chronicle.v1.CreateRetrohuntRequest
+	21, // 41: google.cloud.chronicle.v1.RuleService.GetRetrohunt:input_type -> google.cloud.chronicle.v1.GetRetrohuntRequest
+	22, // 42: google.cloud.chronicle.v1.RuleService.ListRetrohunts:input_type -> google.cloud.chronicle.v1.ListRetrohuntsRequest
+	24, // 43: google.cloud.chronicle.v1.RuleService.GetRuleDeployment:input_type -> google.cloud.chronicle.v1.GetRuleDeploymentRequest
+	25, // 44: google.cloud.chronicle.v1.RuleService.ListRuleDeployments:input_type -> google.cloud.chronicle.v1.ListRuleDeploymentsRequest
+	27, // 45: google.cloud.chronicle.v1.RuleService.UpdateRuleDeployment:input_type -> google.cloud.chronicle.v1.UpdateRuleDeploymentRequest
+	7,  // 46: google.cloud.chronicle.v1.RuleService.CreateRule:output_type -> google.cloud.chronicle.v1.Rule
+	7,  // 47: google.cloud.chronicle.v1.RuleService.GetRule:output_type -> google.cloud.chronicle.v1.Rule
+	13, // 48: google.cloud.chronicle.v1.RuleService.ListRules:output_type -> google.cloud.chronicle.v1.ListRulesResponse
+	7,  // 49: google.cloud.chronicle.v1.RuleService.UpdateRule:output_type -> google.cloud.chronicle.v1.Rule
+	37, // 50: google.cloud.chronicle.v1.RuleService.DeleteRule:output_type -> google.protobuf.Empty
+	17, // 51: google.cloud.chronicle.v1.RuleService.VerifyRuleText:output_type -> google.cloud.chronicle.v1.VerifyRuleTextResponse
+	19, // 52: google.cloud.chronicle.v1.RuleService.ListRuleRevisions:output_type -> google.cloud.chronicle.v1.ListRuleRevisionsResponse
+	38, // 53: google.cloud.chronicle.v1.RuleService.CreateRetrohunt:output_type -> google.longrunning.Operation
+	9,  // 54: google.cloud.chronicle.v1.RuleService.GetRetrohunt:output_type -> google.cloud.chronicle.v1.Retrohunt
+	23, // 55: google.cloud.chronicle.v1.RuleService.ListRetrohunts:output_type -> google.cloud.chronicle.v1.ListRetrohuntsResponse
+	8,  // 56: google.cloud.chronicle.v1.RuleService.GetRuleDeployment:output_type -> google.cloud.chronicle.v1.RuleDeployment
+	26, // 57: google.cloud.chronicle.v1.RuleService.ListRuleDeployments:output_type -> google.cloud.chronicle.v1.ListRuleDeploymentsResponse
+	8,  // 58: google.cloud.chronicle.v1.RuleService.UpdateRuleDeployment:output_type -> google.cloud.chronicle.v1.RuleDeployment
+	46, // [46:59] is the sub-list for method output_type
+	33, // [33:46] is the sub-list for method input_type
+	33, // [33:33] is the sub-list for extension type_name
+	33, // [33:33] is the sub-list for extension extendee
+	0,  // [0:33] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_chronicle_v1_rule_proto_init() }
@@ -2597,7 +2723,7 @@ func file_google_cloud_chronicle_v1_rule_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_chronicle_v1_rule_proto_rawDesc), len(file_google_cloud_chronicle_v1_rule_proto_rawDesc)),
 			NumEnums:      7,
-			NumMessages:   25,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

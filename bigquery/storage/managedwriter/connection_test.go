@@ -24,7 +24,6 @@ import (
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
-	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -214,7 +213,7 @@ func TestConnectionPool_OpenCallOptionPropagation(t *testing.T) {
 	pool := &connectionPool{
 		ctx:    ctx,
 		cancel: cancel,
-		open: createOpenF(func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
+		open: createOpenF(func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 			if len(opts) == 0 {
 				t.Fatalf("no options were propagated")
 			}

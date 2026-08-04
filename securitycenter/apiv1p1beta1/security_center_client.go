@@ -33,6 +33,7 @@ import (
 	securitycenterpb "cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1453,8 +1454,12 @@ func (c *gRPCClient) RunAssetDiscovery(ctx context.Context, req *securitycenterp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securitycenter.RunAssetDiscoveryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunAssetDiscoveryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2703,8 +2708,12 @@ func (c *restClient) RunAssetDiscovery(ctx context.Context, req *securitycenterp
 	}
 
 	override := fmt.Sprintf("/v1p1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securitycenter.RunAssetDiscoveryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunAssetDiscoveryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3251,7 +3260,7 @@ func (c *restClient) UpdateSecurityMarks(ctx context.Context, req *securitycente
 // The name must be that of a previously created RunAssetDiscoveryOperation, possibly from a different process.
 func (c *gRPCClient) RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryOperation {
 	return &RunAssetDiscoveryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securitycenter.RunAssetDiscoveryOperation"),
 	}
 }
 
@@ -3260,7 +3269,7 @@ func (c *gRPCClient) RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryO
 func (c *restClient) RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryOperation {
 	override := fmt.Sprintf("/v1p1beta1/%s", name)
 	return &RunAssetDiscoveryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securitycenter.RunAssetDiscoveryOperation"),
 		pollPath: override,
 	}
 }

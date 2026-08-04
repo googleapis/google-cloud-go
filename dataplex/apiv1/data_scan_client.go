@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -647,8 +648,12 @@ func (c *dataScanGRPCClient) CreateDataScan(ctx context.Context, req *dataplexpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateDataScanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDataScanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -670,8 +675,12 @@ func (c *dataScanGRPCClient) UpdateDataScan(ctx context.Context, req *dataplexpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateDataScanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDataScanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -696,8 +705,12 @@ func (c *dataScanGRPCClient) DeleteDataScan(ctx context.Context, req *dataplexpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteDataScanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDataScanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1235,8 +1248,12 @@ func (c *dataScanRESTClient) CreateDataScan(ctx context.Context, req *dataplexpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateDataScanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDataScanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1309,8 +1326,12 @@ func (c *dataScanRESTClient) UpdateDataScan(ctx context.Context, req *dataplexpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateDataScanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDataScanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1372,8 +1393,12 @@ func (c *dataScanRESTClient) DeleteDataScan(ctx context.Context, req *dataplexpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteDataScanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDataScanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2425,7 +2450,7 @@ func (c *dataScanRESTClient) ListOperations(ctx context.Context, req *longrunnin
 // The name must be that of a previously created CreateDataScanOperation, possibly from a different process.
 func (c *dataScanGRPCClient) CreateDataScanOperation(name string) *CreateDataScanOperation {
 	return &CreateDataScanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateDataScanOperation"),
 	}
 }
 
@@ -2434,7 +2459,7 @@ func (c *dataScanGRPCClient) CreateDataScanOperation(name string) *CreateDataSca
 func (c *dataScanRESTClient) CreateDataScanOperation(name string) *CreateDataScanOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDataScanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateDataScanOperation"),
 		pollPath: override,
 	}
 }
@@ -2443,7 +2468,7 @@ func (c *dataScanRESTClient) CreateDataScanOperation(name string) *CreateDataSca
 // The name must be that of a previously created DeleteDataScanOperation, possibly from a different process.
 func (c *dataScanGRPCClient) DeleteDataScanOperation(name string) *DeleteDataScanOperation {
 	return &DeleteDataScanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteDataScanOperation"),
 	}
 }
 
@@ -2452,7 +2477,7 @@ func (c *dataScanGRPCClient) DeleteDataScanOperation(name string) *DeleteDataSca
 func (c *dataScanRESTClient) DeleteDataScanOperation(name string) *DeleteDataScanOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDataScanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteDataScanOperation"),
 		pollPath: override,
 	}
 }
@@ -2461,7 +2486,7 @@ func (c *dataScanRESTClient) DeleteDataScanOperation(name string) *DeleteDataSca
 // The name must be that of a previously created UpdateDataScanOperation, possibly from a different process.
 func (c *dataScanGRPCClient) UpdateDataScanOperation(name string) *UpdateDataScanOperation {
 	return &UpdateDataScanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateDataScanOperation"),
 	}
 }
 
@@ -2470,7 +2495,7 @@ func (c *dataScanGRPCClient) UpdateDataScanOperation(name string) *UpdateDataSca
 func (c *dataScanRESTClient) UpdateDataScanOperation(name string) *UpdateDataScanOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDataScanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateDataScanOperation"),
 		pollPath: override,
 	}
 }

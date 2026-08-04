@@ -33,6 +33,7 @@ import (
 	databasepb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1468,8 +1469,12 @@ func (c *databaseAdminGRPCClient) CreateDatabase(ctx context.Context, req *datab
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*database.CreateDatabaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDatabaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1515,8 +1520,12 @@ func (c *databaseAdminGRPCClient) UpdateDatabase(ctx context.Context, req *datab
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*database.UpdateDatabaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDatabaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1541,8 +1550,12 @@ func (c *databaseAdminGRPCClient) UpdateDatabaseDdl(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*database.UpdateDatabaseDdlOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDatabaseDdlOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1683,8 +1696,12 @@ func (c *databaseAdminGRPCClient) CreateBackup(ctx context.Context, req *databas
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*database.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1709,8 +1726,12 @@ func (c *databaseAdminGRPCClient) CopyBackup(ctx context.Context, req *databasep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*database.CopyBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CopyBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1852,8 +1873,12 @@ func (c *databaseAdminGRPCClient) RestoreDatabase(ctx context.Context, req *data
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*database.RestoreDatabaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreDatabaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2445,8 +2470,12 @@ func (c *databaseAdminRESTClient) CreateDatabase(ctx context.Context, req *datab
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*database.CreateDatabaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDatabaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2612,8 +2641,12 @@ func (c *databaseAdminRESTClient) UpdateDatabase(ctx context.Context, req *datab
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*database.UpdateDatabaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDatabaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2685,8 +2718,12 @@ func (c *databaseAdminRESTClient) UpdateDatabaseDdl(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*database.UpdateDatabaseDdlOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDatabaseDdlOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3089,8 +3126,12 @@ func (c *databaseAdminRESTClient) CreateBackup(ctx context.Context, req *databas
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*database.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3167,8 +3208,12 @@ func (c *databaseAdminRESTClient) CopyBackup(ctx context.Context, req *databasep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*database.CopyBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CopyBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3502,8 +3547,12 @@ func (c *databaseAdminRESTClient) RestoreDatabase(ctx context.Context, req *data
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*database.RestoreDatabaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreDatabaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4420,7 +4469,7 @@ func (c *databaseAdminRESTClient) ListOperations(ctx context.Context, req *longr
 // The name must be that of a previously created CopyBackupOperation, possibly from a different process.
 func (c *databaseAdminGRPCClient) CopyBackupOperation(name string) *CopyBackupOperation {
 	return &CopyBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*database.CopyBackupOperation"),
 	}
 }
 
@@ -4429,7 +4478,7 @@ func (c *databaseAdminGRPCClient) CopyBackupOperation(name string) *CopyBackupOp
 func (c *databaseAdminRESTClient) CopyBackupOperation(name string) *CopyBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CopyBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*database.CopyBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -4438,7 +4487,7 @@ func (c *databaseAdminRESTClient) CopyBackupOperation(name string) *CopyBackupOp
 // The name must be that of a previously created CreateBackupOperation, possibly from a different process.
 func (c *databaseAdminGRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*database.CreateBackupOperation"),
 	}
 }
 
@@ -4447,7 +4496,7 @@ func (c *databaseAdminGRPCClient) CreateBackupOperation(name string) *CreateBack
 func (c *databaseAdminRESTClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*database.CreateBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -4456,7 +4505,7 @@ func (c *databaseAdminRESTClient) CreateBackupOperation(name string) *CreateBack
 // The name must be that of a previously created CreateDatabaseOperation, possibly from a different process.
 func (c *databaseAdminGRPCClient) CreateDatabaseOperation(name string) *CreateDatabaseOperation {
 	return &CreateDatabaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*database.CreateDatabaseOperation"),
 	}
 }
 
@@ -4465,7 +4514,7 @@ func (c *databaseAdminGRPCClient) CreateDatabaseOperation(name string) *CreateDa
 func (c *databaseAdminRESTClient) CreateDatabaseOperation(name string) *CreateDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDatabaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*database.CreateDatabaseOperation"),
 		pollPath: override,
 	}
 }
@@ -4474,7 +4523,7 @@ func (c *databaseAdminRESTClient) CreateDatabaseOperation(name string) *CreateDa
 // The name must be that of a previously created RestoreDatabaseOperation, possibly from a different process.
 func (c *databaseAdminGRPCClient) RestoreDatabaseOperation(name string) *RestoreDatabaseOperation {
 	return &RestoreDatabaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*database.RestoreDatabaseOperation"),
 	}
 }
 
@@ -4483,7 +4532,7 @@ func (c *databaseAdminGRPCClient) RestoreDatabaseOperation(name string) *Restore
 func (c *databaseAdminRESTClient) RestoreDatabaseOperation(name string) *RestoreDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RestoreDatabaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*database.RestoreDatabaseOperation"),
 		pollPath: override,
 	}
 }
@@ -4492,7 +4541,7 @@ func (c *databaseAdminRESTClient) RestoreDatabaseOperation(name string) *Restore
 // The name must be that of a previously created UpdateDatabaseOperation, possibly from a different process.
 func (c *databaseAdminGRPCClient) UpdateDatabaseOperation(name string) *UpdateDatabaseOperation {
 	return &UpdateDatabaseOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*database.UpdateDatabaseOperation"),
 	}
 }
 
@@ -4501,7 +4550,7 @@ func (c *databaseAdminGRPCClient) UpdateDatabaseOperation(name string) *UpdateDa
 func (c *databaseAdminRESTClient) UpdateDatabaseOperation(name string) *UpdateDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDatabaseOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*database.UpdateDatabaseOperation"),
 		pollPath: override,
 	}
 }
@@ -4510,7 +4559,7 @@ func (c *databaseAdminRESTClient) UpdateDatabaseOperation(name string) *UpdateDa
 // The name must be that of a previously created UpdateDatabaseDdlOperation, possibly from a different process.
 func (c *databaseAdminGRPCClient) UpdateDatabaseDdlOperation(name string) *UpdateDatabaseDdlOperation {
 	return &UpdateDatabaseDdlOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*database.UpdateDatabaseDdlOperation"),
 	}
 }
 
@@ -4519,7 +4568,7 @@ func (c *databaseAdminGRPCClient) UpdateDatabaseDdlOperation(name string) *Updat
 func (c *databaseAdminRESTClient) UpdateDatabaseDdlOperation(name string) *UpdateDatabaseDdlOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDatabaseDdlOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*database.UpdateDatabaseDdlOperation"),
 		pollPath: override,
 	}
 }

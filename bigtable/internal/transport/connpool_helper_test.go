@@ -36,6 +36,8 @@ type fakeService struct {
 	btpb.UnimplementedBigtableServer
 	mu                      sync.Mutex
 	pingCount               int
+	pingInflight            int // Currently in-flight PingAndWarm RPCs
+	pingPeakInflight        int // High-water mark for concurrent PingAndWarm RPCs
 	callCount               int
 	streamSema              chan struct{} // To control stream lifetime
 	delay                   time.Duration // To simulate work
@@ -122,6 +124,8 @@ func (f *fakeService) reset() {
 	defer f.mu.Unlock()
 	f.callCount = 0
 	f.pingCount = 0
+	f.pingInflight = 0
+	f.pingPeakInflight = 0
 	f.serverErr = nil
 	f.pingErrs = nil
 	f.delay = 0
@@ -139,6 +143,10 @@ func (s *fakeService) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequ
 	s.mu.Lock()
 	callNum := s.pingCount
 	s.pingCount++
+	s.pingInflight++
+	if s.pingInflight > s.pingPeakInflight {
+		s.pingPeakInflight = s.pingInflight
+	}
 
 	var err error
 	if len(s.pingErrs) > 0 {
@@ -156,6 +164,13 @@ func (s *fakeService) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequ
 		s.lastPingAndWarmMetadata, _ = metadata.FromIncomingContext(ctx)
 	}
 	s.mu.Unlock()
+
+	defer func() {
+		s.mu.Lock()
+		s.pingInflight--
+		s.mu.Unlock()
+	}()
+
 	if delay > 0 {
 		select {
 		case <-time.After(delay):
@@ -168,6 +183,12 @@ func (s *fakeService) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequ
 	}
 
 	return &btpb.PingAndWarmResponse{}, nil
+}
+
+func (s *fakeService) getPingPeakInflight() int {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.pingPeakInflight
 }
 
 func (s *fakeService) getCallCount() int {

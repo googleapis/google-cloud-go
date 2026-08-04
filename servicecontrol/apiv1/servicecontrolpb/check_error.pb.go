@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,15 +41,19 @@ const (
 type CheckError_Code int32
 
 const (
-	// This is never used in `CheckResponse`.
+	// This is the default value if error code is not explicitly set.
+	// It should not be used directly.
 	CheckError_ERROR_CODE_UNSPECIFIED CheckError_Code = 0
 	// The consumer's project id, network container, or resource container was
-	// not found. Same as [google.rpc.Code.NOT_FOUND][google.rpc.Code.NOT_FOUND].
+	// not found. Same as
+	// [google.rpc.Code.NOT_FOUND][google.rpc.Code.NOT_FOUND].
 	CheckError_NOT_FOUND CheckError_Code = 5
 	// The consumer doesn't have access to the specified resource.
-	// Same as [google.rpc.Code.PERMISSION_DENIED][google.rpc.Code.PERMISSION_DENIED].
+	// Same as
+	// [google.rpc.Code.PERMISSION_DENIED][google.rpc.Code.PERMISSION_DENIED].
 	CheckError_PERMISSION_DENIED CheckError_Code = 7
-	// Quota check failed. Same as [google.rpc.Code.RESOURCE_EXHAUSTED][google.rpc.Code.RESOURCE_EXHAUSTED].
+	// Quota check failed. Same as
+	// [google.rpc.Code.RESOURCE_EXHAUSTED][google.rpc.Code.RESOURCE_EXHAUSTED].
 	CheckError_RESOURCE_EXHAUSTED CheckError_Code = 8
 	// The consumer hasn't activated the service.
 	CheckError_SERVICE_NOT_ACTIVATED CheckError_Code = 104
@@ -282,8 +286,8 @@ const file_google_api_servicecontrol_v1_check_error_proto_rawDesc = "" +
 	"\x1cNAMESPACE_LOOKUP_UNAVAILABLE\x10\xac\x02\x12\x1f\n" +
 	"\x1aSERVICE_STATUS_UNAVAILABLE\x10\xad\x02\x12\x1f\n" +
 	"\x1aBILLING_STATUS_UNAVAILABLE\x10\xae\x02\x12/\n" +
-	"*CLOUD_RESOURCE_MANAGER_BACKEND_UNAVAILABLE\x10\xb1\x02B\xea\x01\n" +
-	" com.google.api.servicecontrol.v1B\x0fCheckErrorProtoP\x01ZJcloud.google.com/go/servicecontrol/apiv1/servicecontrolpb;servicecontrolpb\xf8\x01\x01\xaa\x02\x1eGoogle.Cloud.ServiceControl.V1\xca\x02\x1eGoogle\\Cloud\\ServiceControl\\V1\xea\x02!Google::Cloud::ServiceControl::V1b\x06proto3"
+	"*CLOUD_RESOURCE_MANAGER_BACKEND_UNAVAILABLE\x10\xb1\x02B\xe7\x01\n" +
+	" com.google.api.servicecontrol.v1B\x0fCheckErrorProtoP\x01ZJcloud.google.com/go/servicecontrol/apiv1/servicecontrolpb;servicecontrolpb\xaa\x02\x1eGoogle.Cloud.ServiceControl.V1\xca\x02\x1eGoogle\\Cloud\\ServiceControl\\V1\xea\x02!Google::Cloud::ServiceControl::V1b\x06proto3"
 
 var (
 	file_google_api_servicecontrol_v1_check_error_proto_rawDescOnce sync.Once
