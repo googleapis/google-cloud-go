@@ -16,7 +16,7 @@ package cert
 
 import (
 	"errors"
-	"strings"
+	"path/filepath"
 	"testing"
 )
 
@@ -120,8 +120,8 @@ func TestGetFileBasedCertificatePath(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetFileBasedCertificatePath failed: %v", err)
 	}
-	if !strings.HasSuffix(got, "workload_cert.pem") {
-		t.Errorf("GetFileBasedCertificatePath() = %q, want path ending with workload_cert.pem", got)
+	if filepath.Base(got) != "workload_cert.pem" {
+		t.Errorf("GetFileBasedCertificatePath() = %q, want filename workload_cert.pem", got)
 	}
 
 	_, err = GetFileBasedCertificatePath("testdata/certificate_config_workload_use_ecp.json")
