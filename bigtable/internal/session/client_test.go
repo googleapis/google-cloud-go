@@ -506,7 +506,7 @@ func TestReleaseSessionPool_RemovesEntryAndInvokesUnregister(t *testing.T) {
 	sc := newTestClient(t, &fakeChannelPool{}, Config{})
 	key := poolKey{"table:foo", permissionRead}
 	pool := btransport.NewSessionPoolImpl(
-		1, "test-pool", 0, 0,
+		1, "test-pool",
 		func(ctx context.Context) (btransport.Stream, error) { return nil, errors.New("test never dials") },
 		&btpb.OpenSessionRequest{}, nil,
 		btransport.SessionTypeTable, false,

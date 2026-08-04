@@ -64,9 +64,12 @@ func (c *Client) buildDivertible(t *Table, openSession func() session.TableAPI) 
 // OpenTable opens a table. Returns a TableShim that routes each RPC via
 // the Client's Diverter — with sessionLoad=0.0 every call lands on the
 // classic path. The session TableAPI is wired from the Client's
-// sessionImpl (always constructed by NewClientWithConfig); server-driven
-// SessionLoad updates from ClientConfigurationManager retarget traffic
-// without re-opening the table.
+// sessionImpl when present; it's nil when the caller pre-dialed a
+// custom gRPC conn or opted out via ClientConfig.DisableSession, in
+// which case the shim runs classic-only and useSession() reports
+// false. Server-driven SessionLoad updates from
+// ClientConfigurationManager retarget traffic without re-opening the
+// table.
 func (c *Client) OpenTable(table string) TableAPI {
 	classic := &tableImpl{Table{
 		c:     c,

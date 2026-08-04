@@ -702,12 +702,9 @@ func (sc *sessionClient) getOrCreateSessionPool(
 	// it in the human-readable label because (resource, permission)
 	// already uniquely identifies the pool.
 	poolName := key.displayName()
-	// Pool bounds start at 0; NewSessionPoolImpl falls back to
-	// defaultPoolConfig() and ClientConfigurationManager overrides on
-	// first UpdateConfig with server-driven values.
 	pool := btransport.NewSessionPoolImpl(
 		id,
-		poolName, 0, 0, streamFactory, openSessionRequest, md, sessionType,
+		poolName, streamFactory, openSessionRequest, md, sessionType,
 		sc.enableDebug,
 	)
 	mp := &managedSessionPool{pool: pool}

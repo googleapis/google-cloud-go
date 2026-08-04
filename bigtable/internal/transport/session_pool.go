@@ -195,7 +195,17 @@ func (p *SessionPoolImpl) noteVRpcOutcome(sh *SessionHandle, e2e, backend time.D
 // NewSessionPoolImpl creates a new SessionPoolImpl. id is baked into
 // every session log name so channelz/sessionz can reverse-link back to
 // the pool that owns each session.
-func NewSessionPoolImpl(id uint64, poolName string, min, max int, streamFactory func(ctx context.Context) (Stream, error), openSessionRequest *spb.OpenSessionRequest, md metadata.MD, sessionType SessionType, debugEnabled bool) *SessionPoolImpl {
+//
+// The sizer/picker/budget/threshold are bootstrapped from the default
+// ClientConfiguration proto (default_client_config.go). Production
+// callers register via ClientConfigurationManager, which fires
+// UpdateConfig synchronously and replaces these with server-driven
+// values before the pool serves traffic. Callers that want custom
+// bounds without going through a manager (tests) should call
+// pool.UpdateConfig(...) right after construction; a pool that
+// never sees an UpdateConfig will serve traffic with the
+// defaultPoolConfig() values (currently 5/400).
+func NewSessionPoolImpl(id uint64, poolName string, streamFactory func(ctx context.Context) (Stream, error), openSessionRequest *spb.OpenSessionRequest, md metadata.MD, sessionType SessionType, debugEnabled bool) *SessionPoolImpl {
 	poolCtx, poolCancel := context.WithCancel(context.Background())
 	pool := &SessionPoolImpl{
 		poolName:           poolName,
@@ -213,25 +223,9 @@ func NewSessionPoolImpl(id uint64, poolName string, min, max int, streamFactory 
 	}
 	pool.m.afePickCounts = make(map[AfeID]int64)
 
-	// Bootstrap sizer/picker/budget/threshold from the default
-	// ClientConfiguration proto (default_client_config.go). Fallback
-	// values live in one place instead of as literals scattered here.
-	// Every real caller registers via ClientConfigurationManager, which
-	// fires UpdateConfig synchronously and replaces these with
-	// server-driven values before the pool serves traffic.
 	defaultCfg := defaultPoolConfig()
-	// min/max <= 0 fall back to the same proto defaults the rest of the
-	// bootstrap reads from — otherwise a caller that instantiated the
-	// pool with zero bounds would see the sizer clamp DesiredCapacity to
-	// 0 and never open a session before UpdateConfig arrives.
-	if min <= 0 {
-		min = int(defaultCfg.GetMinSessionCount())
-	}
-	if max <= 0 {
-		max = int(defaultCfg.GetMaxSessionCount())
-	}
 	fetcher := func() *PoolStats { return pool.Stats() }
-	pool.sizer = NewPoolSizer(fetcher, min, max, float64(defaultCfg.GetHeadroom()))
+	pool.sizer = NewPoolSizer(fetcher, int(defaultCfg.GetMinSessionCount()), int(defaultCfg.GetMaxSessionCount()), float64(defaultCfg.GetHeadroom()))
 	pool.picker = pickerFromLoadBalancing(defaultCfg.GetLoadBalancingOptions(), pool.debugEnabled)
 	pool.budget = NewAdaptiveSessionThrottler(
 		int(defaultCfg.GetNewSessionCreationBudget()),
@@ -597,17 +591,7 @@ func (p *SessionPoolImpl) Invoke(ctx context.Context, desc VRpcDescriptor, req i
 		ev.Peer = peerInfoToSnapshot(sh.session.PeerInfo())
 		ev.RemoteAddr = sh.session.RemoteAddr()
 		if invokeErr != nil {
-			// stdlib context errors don't implement GRPCStatus, so
-			// status.Code returns Unknown — classify explicitly so
-			// deadline/cancel rows label correctly.
-			switch {
-			case errors.Is(invokeErr, context.DeadlineExceeded):
-				ev.ErrCode = "DeadlineExceeded"
-			case errors.Is(invokeErr, context.Canceled):
-				ev.ErrCode = "Canceled"
-			default:
-				ev.ErrCode = status.Code(invokeErr).String()
-			}
+			ev.ErrCode = statusOf(invokeErr).Code().String()
 			btopt.Debugf(nil, "POOL %s slow vRPC failed method=%s session=%s rpc_id=%d code=%s latency=%v session_age=%v backend=%v raw_err=%v",
 				p.poolName, ev.Method, ev.Session, ev.RPCIDOnSession, ev.ErrCode, ev.Latency, ev.SessionAge, ev.BackendLatency, invokeErr)
 		}
