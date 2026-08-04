@@ -24,6 +24,19 @@ import (
 // standard K-choice draw size.
 const defaultAfeRandomSubsetSize = 2
 
+// defaultOutlierProbeRate is the fraction of LeastLatencyAfePicker
+// picks reserved for penalized AFEs (OutlierScore > 1.0) so their
+// PeakEwma trackers keep receiving fresh samples — otherwise a
+// heavily-downweighted AFE starves under K-choice and can never
+// recover: no traffic means no Update() calls, and PeakEwma.Value()
+// has no time-decay on read, so the stored peak stays high forever.
+//
+// 0.5 % (1 pick in ~200) is a compromise: enough sample flow to detect
+// recovery within a single outlier-detector tick even on modest-QPS
+// pools, low enough that a genuinely-bad AFE only takes a small share
+// of user traffic while it's still bad.
+const defaultOutlierProbeRate = 0.005
+
 // PickCandidate is one AFE the picker considered during a K-choice draw,
 // with the cost value the picker's decision rule used to score it.
 // Cost's interpretation depends on the picker in play: NumOutstanding
@@ -128,16 +141,29 @@ func (p LeastInFlightAfePicker) PickAfe(ready []AfeSnapshot) (AfeID, bool, PickD
 
 // LeastLatencyAfePicker picks the AFE with the lowest per-AFE e2e
 // PeakEwma cost. Same K-choice partial Fisher-Yates as
-// LeastInFlightAfePicker.
+// LeastInFlightAfePicker. Reserves probeRate of picks for penalized
+// AFEs (OutlierScore > 1.0) so their PeakEwmas keep receiving samples
+// and outlier detection can observe recovery — see defaultOutlierProbeRate.
 type LeastLatencyAfePicker struct {
 	RandomSubsetSize int
 	// recordCandidates: see SimpleAfePicker.recordCandidates.
 	recordCandidates bool
+	// probeRate is the fraction of picks reserved for a randomly-chosen
+	// penalized AFE (OutlierScore > 1.0). Zero disables probing entirely;
+	// NewLeastLatencyAfePicker initializes to defaultOutlierProbeRate.
+	// Tests wanting fully-deterministic K-choice construct the struct
+	// literal directly with probeRate: 0.
+	probeRate float64
 }
 
-// NewLeastLatencyAfePicker constructs a LeastLatencyAfePicker.
+// NewLeastLatencyAfePicker constructs a LeastLatencyAfePicker with
+// outlier probing enabled at defaultOutlierProbeRate.
 func NewLeastLatencyAfePicker(randomSubsetSize int, recordCandidates bool) *LeastLatencyAfePicker {
-	return &LeastLatencyAfePicker{RandomSubsetSize: randomSubsetSize, recordCandidates: recordCandidates}
+	return &LeastLatencyAfePicker{
+		RandomSubsetSize: randomSubsetSize,
+		recordCandidates: recordCandidates,
+		probeRate:        defaultOutlierProbeRate,
+	}
 }
 
 // Name returns "least-latency".
@@ -150,15 +176,61 @@ func (LeastLatencyAfePicker) Name() string { return "least-latency" }
 // picked with much lower probability. Undecorated snapshots
 // (OutlierScore == 0) fall back to 1.0 so tests and callers that skip
 // decoration see baseline behaviour.
+//
+// With probability probeRate, PickAfe bypasses K-choice entirely and
+// picks a random penalized AFE (OutlierScore > 1.0) from ready. This
+// is the recovery path — a starved outlier gets a trickle of real
+// traffic so its PeakEwma is updated and the outlier scorer can
+// re-evaluate on its next tick. The pick's Reason is "outlier-probe"
+// so debug tooling can distinguish probe traffic from cost-driven
+// picks. Probing runs only when ready contains at least one penalized
+// candidate; otherwise the code path is a single float compare +
+// linear scan of ready checking for any Penalized candidate.
 func (p LeastLatencyAfePicker) PickAfe(ready []AfeSnapshot) (AfeID, bool, PickDecision) {
-	winner, picked, cands := kChoiceMinCost(ready, p.RandomSubsetSize, p.recordCandidates, func(s AfeSnapshot) float64 {
-		score := s.OutlierScore
-		if score == 0 {
-			score = 1.0
+	if p.probeRate > 0 && rand.Float64() < p.probeRate {
+		if idx := pickProbeCandidate(ready); idx >= 0 {
+			s := ready[idx]
+			d := PickDecision{Winner: s.ID, Reason: "outlier-probe"}
+			if p.recordCandidates {
+				cost := s.E2eCost * effectiveScore(s.OutlierScore)
+				d.Candidates = []PickCandidate{{AfeID: s.ID, Cost: cost}}
+			}
+			return s.ID, true, d
 		}
-		return s.E2eCost * score
+	}
+	winner, picked, cands := kChoiceMinCost(ready, p.RandomSubsetSize, p.recordCandidates, func(s AfeSnapshot) float64 {
+		return s.E2eCost * effectiveScore(s.OutlierScore)
 	})
 	return decisionFor(winner, picked, cands, "min-latency")
+}
+
+// effectiveScore treats a zero OutlierScore (undecorated snapshot) as
+// 1.0 so callers that skip SessionPoolImpl.decorateReady see baseline
+// picker behavior.
+func effectiveScore(s float64) float64 {
+	if s == 0 {
+		return 1.0
+	}
+	return s
+}
+
+// pickProbeCandidate returns the index of a random penalized candidate
+// (OutlierScore > 1.0) in ready, or -1 if none exist. Uses reservoir
+// sampling so no allocation is needed for the intermediate index list;
+// the picker's hot path stays allocation-free on both the probe and
+// no-probe paths.
+func pickProbeCandidate(ready []AfeSnapshot) int {
+	winner := -1
+	seen := 0
+	for i := range ready {
+		if ready[i].OutlierScore > 1.0 {
+			seen++
+			if rand.IntN(seen) == 0 {
+				winner = i
+			}
+		}
+	}
+	return winner
 }
 
 // decisionFor packages kChoiceMinCost's return into a PickDecision.

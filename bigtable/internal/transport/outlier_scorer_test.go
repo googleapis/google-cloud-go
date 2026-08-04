@@ -253,6 +253,75 @@ func TestLatencyOutlierScorer_AuditRingBounded(t *testing.T) {
 	}
 }
 
+// TestLeastLatencyAfePicker_OutlierProbeSendsTrafficToPenalized pins
+// the recovery mechanism: even though the outlier is 10x more expensive
+// and would receive ~0 traffic under pure K-choice, probeRate ensures
+// a small fraction of picks still land on it so its PeakEwma updates
+// and the outlier scorer can observe recovery on its next tick.
+func TestLeastLatencyAfePicker_OutlierProbeSendsTrafficToPenalized(t *testing.T) {
+	snaps := []AfeSnapshot{
+		{ID: 1, IdleCount: 1, E2eCost: float64(1 * time.Millisecond), OutlierScore: 10.0}, // penalized
+		{ID: 2, IdleCount: 1, E2eCost: float64(1 * time.Millisecond), OutlierScore: 1.0},
+		{ID: 3, IdleCount: 1, E2eCost: float64(1 * time.Millisecond), OutlierScore: 1.0},
+		{ID: 4, IdleCount: 1, E2eCost: float64(1 * time.Millisecond), OutlierScore: 1.0},
+		{ID: 5, IdleCount: 1, E2eCost: float64(1 * time.Millisecond), OutlierScore: 1.0},
+	}
+	picker := NewLeastLatencyAfePicker(2, false) // probeRate = defaultOutlierProbeRate (0.005)
+	counts := map[AfeID]int{}
+	probeReasonCount := 0
+	const N = 20000
+	for i := 0; i < N; i++ {
+		draw := make([]AfeSnapshot, len(snaps))
+		copy(draw, snaps)
+		id, _, dec := picker.PickAfe(draw)
+		counts[id]++
+		if dec.Reason == "outlier-probe" {
+			probeReasonCount++
+		}
+	}
+	// Expected probe picks: N * probeRate = 20000 * 0.005 = 100 (mean).
+	// Loose bounds: 30..250 (very unlikely to be outside without a bug).
+	if probeReasonCount < 30 || probeReasonCount > 250 {
+		t.Errorf("outlier-probe reason fired %d times, want ~100 (30..250 tolerance)", probeReasonCount)
+	}
+	// Penalized AFE should have received traffic — all of it via probes,
+	// since K-choice never picks a 10x candidate against 1x siblings.
+	if counts[1] == 0 {
+		t.Fatal("penalized AFE 1 got zero picks; probing didn't fire")
+	}
+	// But still nowhere near uniform (which would be N/5 = 4000).
+	if counts[1] > 400 {
+		t.Errorf("penalized AFE 1 got %d picks, want < 400 (probe traffic only)", counts[1])
+	}
+}
+
+// TestLeastLatencyAfePicker_ProbeDisabledStarvesOutlier pins that
+// probeRate=0 makes the outlier truly starve (the pathology we're
+// fixing with probing) — regression check that the probe path is what
+// gets the outlier its picks.
+func TestLeastLatencyAfePicker_ProbeDisabledStarvesOutlier(t *testing.T) {
+	snaps := []AfeSnapshot{
+		{ID: 1, IdleCount: 1, E2eCost: float64(1 * time.Millisecond), OutlierScore: 10.0},
+		{ID: 2, IdleCount: 1, E2eCost: float64(1 * time.Millisecond), OutlierScore: 1.0},
+		{ID: 3, IdleCount: 1, E2eCost: float64(1 * time.Millisecond), OutlierScore: 1.0},
+		{ID: 4, IdleCount: 1, E2eCost: float64(1 * time.Millisecond), OutlierScore: 1.0},
+		{ID: 5, IdleCount: 1, E2eCost: float64(1 * time.Millisecond), OutlierScore: 1.0},
+	}
+	// Construct literal with probeRate: 0 to bypass the default.
+	picker := &LeastLatencyAfePicker{RandomSubsetSize: 2, probeRate: 0}
+	counts := map[AfeID]int{}
+	const N = 5000
+	for i := 0; i < N; i++ {
+		draw := make([]AfeSnapshot, len(snaps))
+		copy(draw, snaps)
+		id, _, _ := picker.PickAfe(draw)
+		counts[id]++
+	}
+	if counts[1] != 0 {
+		t.Errorf("penalized AFE 1 got %d picks with probeRate=0, want 0 (K-choice never picks 10x vs 1x)", counts[1])
+	}
+}
+
 func TestLatencyOutlierScorer_PickerIntegration(t *testing.T) {
 	// Populate the scorer's score map by running one tick against a
 	// synthetic snapshot where AFE 1 is a heavy outlier.
