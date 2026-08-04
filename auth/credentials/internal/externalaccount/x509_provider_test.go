@@ -194,3 +194,37 @@ func TestGetClient_error(t *testing.T) {
 		t.Errorf("got nil, want an error")
 	}
 }
+
+func TestRetrieveSubjectToken_X509_UseEcp(t *testing.T) {
+	pemBytes, err := os.ReadFile("../../../internal/transport/cert/testdata/rsa2048bit.pem")
+	if err != nil {
+		t.Fatalf("Failed to read rsa2048bit.pem: %v", err)
+	}
+	expectedCert, err := parseCertificate(pemBytes)
+	if err != nil {
+		t.Fatalf("Failed to parse expected cert: %v", err)
+	}
+	expectedEncoded := base64.StdEncoding.EncodeToString(expectedCert.Raw)
+
+	provider := &x509Provider{
+		ConfigFilePath: path.Join(testDataDir, "certificate_config_workload_use_ecp.json"),
+	}
+
+	got, err := provider.subjectToken(context.Background())
+	if err != nil {
+		t.Fatalf("subjectToken failed: %v", err)
+	}
+
+	var gotTrustChain []string
+	if err := json.Unmarshal([]byte(got), &gotTrustChain); err != nil {
+		t.Fatalf("failed to unmarshal got: %v", err)
+	}
+
+	if len(gotTrustChain) == 0 {
+		t.Fatal("got empty trust chain, expected at least the leaf certificate")
+	}
+
+	if gotTrustChain[0] != expectedEncoded {
+		t.Errorf("got leaf certificate %s, want %s", gotTrustChain[0], expectedEncoded)
+	}
+}
