@@ -599,7 +599,7 @@ func (sc *sessionClient) buildLazyReleaser(key poolKey) func() error {
 //     tearing down.
 //   - the entry is absent (already released — makes second calls safe).
 //
-// Assumes the caller (currently bigtable.Client via sessionTableCache)
+// Assumes the caller (currently bigtable.Client via session.TableCache)
 // guarantees at-most-one sessionTable per resource at any moment. That
 // invariant means no co-owner can be relying on the pool we're closing.
 // If session.Client is ever exposed to callers that bypass that cache,

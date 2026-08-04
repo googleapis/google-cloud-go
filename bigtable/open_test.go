@@ -503,23 +503,23 @@ func newSessionWiredClient(t *testing.T, fsc *fakeSessionClient) *Client {
 	// Cache with a huge TTL and huge sweep interval so eviction never
 	// fires during these tests. Cache-behavior tests build their own
 	// cache with tight timings.
-	c.sessionTables = newSessionTableCache(24*time.Hour, 24*time.Hour, nil)
-	t.Cleanup(c.sessionTables.close)
+	c.sessionTables = session.NewTableCache(24*time.Hour, 24*time.Hour, nil)
+	t.Cleanup(c.sessionTables.Close)
 	return c
 }
 
-// unwrap peels the sessionTableHandle wrapper off a shim's session so
+// unwrap peels the session.TableHandle wrapper off a shim's session so
 // tests can inspect the underlying fakeSessionClient-vended
 // noopSessionTable directly.
 func unwrapSession(t *testing.T, api session.TableAPI) *noopSessionTable {
 	t.Helper()
-	h, ok := api.(*sessionTableHandle)
+	h, ok := api.(*session.TableHandle)
 	if !ok {
-		t.Fatalf("session = %T, want *sessionTableHandle (cache wrapper)", api)
+		t.Fatalf("session = %T, want *session.TableHandle (cache wrapper)", api)
 	}
-	nst, ok := h.api.(*noopSessionTable)
+	nst, ok := h.Unwrap().(*noopSessionTable)
 	if !ok {
-		t.Fatalf("handle.api = %T, want *noopSessionTable (from fakeSessionClient)", h.api)
+		t.Fatalf("handle.Unwrap() = %T, want *noopSessionTable (from fakeSessionClient)", h.Unwrap())
 	}
 	return nst
 }

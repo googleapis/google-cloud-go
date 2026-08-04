@@ -295,7 +295,7 @@ func dispatch[Args any, R any, Resp interface {
 // post-insert would leak a fresh pool.
 //
 // Safety of per-handle pool teardown also rests on a caller-side
-// invariant: bigtable.Client's sessionTableCache guarantees at-most-one
+// invariant: bigtable.Client's session.TableCache guarantees at-most-one
 // sessionTable per resource at any moment, so no co-owner sharing a
 // pool with us can be mid-flight when we tear it down. If session.Client
 // ever gains a caller that bypasses that cache, this method must gain
