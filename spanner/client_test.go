@@ -3651,6 +3651,416 @@ func TestClient_ReadWriteTransactionCommitAborted(t *testing.T) {
 	}
 }
 
+// TestClient_ReadWriteTransaction_FabricatedAbortTriggersRollback verifies that
+// when the transaction body returns a client-fabricated codes.Aborted error
+// after a successful statement, the client rolls back the still-live server
+// transaction before retrying so locks are released.
+func TestClient_ReadWriteTransaction_FabricatedAbortTriggersRollback(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	var attempts int
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		c, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+			return fmt.Errorf("update count mismatch\nGot:  %v\nWant: %v", g, w)
+		}
+		if attempts == 1 {
+			// Fabricated abort: Spanner did not abort this transaction.
+			return status.Error(codes.Aborted, "application requested retry")
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("unexpected number of attempts: %d, expected %d", g, w)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	// After rolling back the fabricated-abort attempt the client clears the
+	// transaction id, so the retry uses an explicit BeginTransaction.
+	if err := compareRequests([]interface{}{
+		&sppb.CreateSessionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.RollbackRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+	rollbacks := requestsOfType(requests, reflect.TypeOf(&sppb.RollbackRequest{}))
+	if g, w := len(rollbacks), 1; g != w {
+		t.Fatalf("rollback count mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+	if len(rollbacks[0].(*sppb.RollbackRequest).TransactionId) == 0 {
+		t.Fatal("expected RollbackRequest with a non-empty transaction id")
+	}
+}
+
+// TestClient_ReadWriteTransaction_ServerAbortDoesNotRollback is a regression
+// guard: a genuine Spanner ABORTED on commit must not send Rollback (the server
+// already released locks) and must still retry and commit successfully.
+func TestClient_ReadWriteTransaction_ServerAbortDoesNotRollback(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction, SimulatedExecutionTime{
+		Errors: []error{status.Error(codes.Aborted, "Transaction aborted")},
+	})
+
+	var attempts int
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		c, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+			return fmt.Errorf("update count mismatch\nGot:  %v\nWant: %v", g, w)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("unexpected number of attempts: %d, expected %d", g, w)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.CreateSessionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+	rollbacks := requestsOfType(requests, reflect.TypeOf(&sppb.RollbackRequest{}))
+	if g, w := len(rollbacks), 0; g != w {
+		t.Fatalf("rollback count mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+}
+
+// TestClient_ReadWriteTransaction_FabricatedAbortBeforeAnyRPC verifies that
+// returning codes.Aborted before any RPC (inline begin still pending) does not
+// send a RollbackRequest with an empty/nil transaction id, and still retries
+// successfully.
+func TestClient_ReadWriteTransaction_FabricatedAbortBeforeAnyRPC(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	var attempts int
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		if attempts == 1 {
+			return status.Error(codes.Aborted, "application requested retry before any RPC")
+		}
+		c, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+			return fmt.Errorf("update count mismatch\nGot:  %v\nWant: %v", g, w)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("unexpected number of attempts: %d, expected %d", g, w)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	// No server-side transaction was started on attempt 1, so rollback is a
+	// no-op (no RollbackRequest). Attempt 2 uses an explicit BeginTransaction
+	// because the prior attempt closed the transaction state.
+	if err := compareRequests([]interface{}{
+		&sppb.CreateSessionRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+	rollbacks := requestsOfType(requests, reflect.TypeOf(&sppb.RollbackRequest{}))
+	if g, w := len(rollbacks), 0; g != w {
+		t.Fatalf("rollback count mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+}
+
+// TestClient_ReadWriteTransaction_FabricatedAbortWithExplicitBegin verifies that
+// a body-fabricated codes.Aborted under ExplicitBeginTransaction rolls back,
+// starts a new transaction on retry (new BeginTransactionRequest), and commits
+// without deadlocking on the rolled-back transaction id.
+func TestClient_ReadWriteTransaction_FabricatedAbortWithExplicitBegin(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	var attempts int
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		c, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+			return fmt.Errorf("update count mismatch\nGot:  %v\nWant: %v", g, w)
+		}
+		if attempts == 1 {
+			return status.Error(codes.Aborted, "application requested retry")
+		}
+		return nil
+	}, TransactionOptions{BeginTransactionOption: ExplicitBeginTransaction})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("unexpected number of attempts: %d, expected %d", g, w)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.CreateSessionRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.RollbackRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+	rollbacks := requestsOfType(requests, reflect.TypeOf(&sppb.RollbackRequest{}))
+	if g, w := len(rollbacks), 1; g != w {
+		t.Fatalf("rollback count mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+	if len(rollbacks[0].(*sppb.RollbackRequest).TransactionId) == 0 {
+		t.Fatal("expected RollbackRequest with a non-empty transaction id")
+	}
+	begins := requestsOfType(requests, reflect.TypeOf(&sppb.BeginTransactionRequest{}))
+	if g, w := len(begins), 2; g != w {
+		t.Fatalf("BeginTransaction count mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+}
+
+func TestReadWriteTransaction_FabricatedAbortReturnsRollbackError(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		name        string
+		rollbackErr error
+	}{
+		{name: "FailedPrecondition", rollbackErr: status.Error(codes.FailedPrecondition, "rollback failed")},
+		// Retryable-looking rollback failures must still be non-retryable to the
+		// outer transaction runner so a new attempt is not started while locks
+		// may still be held.
+		{name: "Aborted", rollbackErr: status.Error(codes.Aborted, "rollback aborted")},
+		{name: "Internal", rollbackErr: status.Error(codes.Internal, "rollback internal")},
+		{name: "ResourceExhausted", rollbackErr: status.Error(codes.ResourceExhausted, "rollback resource exhausted")},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			rpcClient := &mockSpannerClient{rollbackErr: tc.rollbackErr}
+			txID := transactionID("transaction-id")
+			tx := &ReadWriteTransaction{
+				txReadOnly: txReadOnly{
+					sh: &sessionHandle{
+						session: &session{id: "session-id"},
+						client:  rpcClient,
+					},
+				},
+				tx:              txID,
+				txReadyOrClosed: make(chan struct{}),
+				state:           txActive,
+			}
+
+			var attempts int
+			err := runWithRetryOnAbortedOrFailedInlineBegin(context.Background(), func(ctx context.Context) error {
+				attempts++
+				// Re-arm state for a synthetic outer retry that must not happen.
+				tx.state = txActive
+				tx.tx = txID
+				_, err := tx.runInTransaction(ctx, func(context.Context, *ReadWriteTransaction) error {
+					return status.Error(codes.Aborted, "application requested retry")
+				})
+				return err
+			})
+			if g, w := ErrCode(err), codes.FailedPrecondition; g != w {
+				t.Fatalf("error code mismatch\nGot:  %v\nWant: %v", g, w)
+			}
+			if !strings.Contains(err.Error(), "failed to roll back transaction before retry") {
+				t.Fatalf("error message mismatch\nGot: %v", err)
+			}
+			if g, w := attempts, 1; g != w {
+				t.Fatalf("outer retry attempts mismatch\nGot:  %v\nWant: %v", g, w)
+			}
+			if g, w := rpcClient.rollbackCount, 1; g != w {
+				t.Fatalf("rollback count mismatch\nGot:  %v\nWant: %v", g, w)
+			}
+			if g, w := string(tx.tx), string(txID); g != w {
+				t.Fatalf("transaction id mismatch\nGot:  %v\nWant: %v", g, w)
+			}
+		})
+	}
+}
+
+type txInitWaitContext struct {
+	context.Context
+	once    sync.Once
+	entered chan struct{}
+}
+
+func (c *txInitWaitContext) Done() <-chan struct{} {
+	c.once.Do(func() { close(c.entered) })
+	return c.Context.Done()
+}
+
+// testInlineStreamingAbortWakesConcurrentAcquire covers the regression where a
+// genuine streaming ABORTED during inline begin left concurrent acquire waiters
+// blocked because txInit->txAborted did not close txReadyOrClosed.
+func testInlineStreamingAbortWakesConcurrentAcquire(t *testing.T, streamMethod string, runStream func(context.Context, *ReadWriteTransaction) error) {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	server.TestSpanner.PutExecutionTime(streamMethod, SimulatedExecutionTime{
+		Errors: []error{status.Error(codes.Aborted, "Transaction aborted")},
+	})
+	server.TestSpanner.Freeze()
+	unfrozen := false
+	defer func() {
+		if !unfrozen {
+			server.TestSpanner.Unfreeze()
+		}
+	}()
+
+	var attempts int
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		if attempts > 1 {
+			// Retry path: single statement after the aborted inline begin.
+			_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+			return err
+		}
+
+		streamErrCh := make(chan error, 1)
+		go func() {
+			streamErrCh <- runStream(ctx, tx)
+		}()
+
+		waitDeadline := time.After(2 * time.Second)
+	waitForStream:
+		for {
+			select {
+			case req := <-server.TestSpanner.ReceivedRequests():
+				switch req.(type) {
+				case *sppb.ExecuteSqlRequest, *sppb.ReadRequest:
+					break waitForStream
+				}
+			case <-waitDeadline:
+				t.Fatal("timed out waiting for inline streaming request")
+			case <-ctx.Done():
+				t.Fatal(ctx.Err())
+			}
+		}
+
+		waitCtx := &txInitWaitContext{Context: ctx, entered: make(chan struct{})}
+		updateErrCh := make(chan error, 1)
+		go func() {
+			_, err := tx.Update(waitCtx, NewStatement(UpdateBarSetFoo))
+			updateErrCh <- err
+		}()
+		select {
+		case <-waitCtx.entered:
+		case <-time.After(2 * time.Second):
+			t.Fatal("timed out waiting for concurrent acquire")
+		case <-ctx.Done():
+			t.Fatal(ctx.Err())
+		}
+		server.TestSpanner.Unfreeze()
+		unfrozen = true
+
+		var streamErr, updateErr error
+		for i := 0; i < 2; i++ {
+			select {
+			case streamErr = <-streamErrCh:
+				streamErrCh = nil
+			case updateErr = <-updateErrCh:
+				updateErrCh = nil
+			case <-time.After(3 * time.Second):
+				t.Fatal("concurrent acquire remained blocked after inline-begin ABORTED")
+			case <-ctx.Done():
+				t.Fatal(ctx.Err())
+			}
+		}
+		// Prefer the streaming abort (or either error) so the runner retries.
+		if streamErr != nil {
+			return streamErr
+		}
+		return updateErr
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("unexpected number of attempts: %d, expected %d", g, w)
+	}
+}
+
+// TestClient_ReadWriteTransaction_InlineStreamingQueryAbortWakesConcurrentAcquire
+// verifies that a genuine ABORTED on an inline Query wakes concurrent acquire
+// waiters and the transaction retries successfully.
+func TestClient_ReadWriteTransaction_InlineStreamingQueryAbortWakesConcurrentAcquire(t *testing.T) {
+	t.Parallel()
+	testInlineStreamingAbortWakesConcurrentAcquire(t, MethodExecuteStreamingSql, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				return nil
+			}
+			if err != nil {
+				return err
+			}
+		}
+	})
+}
+
+// TestClient_ReadWriteTransaction_InlineStreamingReadAbortWakesConcurrentAcquire
+// verifies that a genuine ABORTED on an inline Read wakes concurrent acquire
+// waiters and the transaction retries successfully.
+func TestClient_ReadWriteTransaction_InlineStreamingReadAbortWakesConcurrentAcquire(t *testing.T) {
+	t.Parallel()
+	testInlineStreamingAbortWakesConcurrentAcquire(t, MethodStreamingRead, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				return nil
+			}
+			if err != nil {
+				return err
+			}
+		}
+	})
+}
+
 func TestClient_ReadWriteTransaction_BufferedWriteBeforeAbortedFirstSqlStatement(t *testing.T) {
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServer(t)
