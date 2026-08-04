@@ -153,6 +153,10 @@ ORDER BY num`
 	if !tableRowIt.IsAccelerated() {
 		t.Fatalf("reading from table should use Storage API")
 	}
+	if tableRowIt.src == nil || tableRowIt.src.t == nil {
+		t.Fatalf("table iterator expected non-nil src.t")
+	}
+
 	jobRowIt, err := job.Read(ctx)
 	if err != nil {
 		t.Fatalf("ReadJobResults(job): %v", err)
@@ -163,6 +167,13 @@ ORDER BY num`
 	if !jobRowIt.IsAccelerated() {
 		t.Fatalf("reading job should use Storage API")
 	}
+	if jobRowIt.SourceJob() == nil {
+		t.Fatalf("job iterator expected non-nil SourceJob()")
+	}
+	if jobRowIt.src == nil || jobRowIt.src.t == nil {
+		t.Fatalf("job iterator expected non-nil src.t")
+	}
+
 	q.Dst = nil
 	q.forceStorageAPI = true
 	qRowIt, err := q.Read(ctx)
@@ -174,6 +185,12 @@ ORDER BY num`
 	}
 	if err = checkRowsRead(qRowIt, expectedRows); err != nil {
 		t.Fatalf("checkRowsRead(query): %v", err)
+	}
+	if qRowIt.SourceJob() == nil {
+		t.Fatalf("query iterator expected non-nil SourceJob()")
+	}
+	if qRowIt.src == nil || qRowIt.src.t == nil {
+		t.Fatalf("query iterator expected non-nil src.t")
 	}
 }
 
@@ -406,6 +423,10 @@ func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
 	}
 	if total != it.TotalRows {
 		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, total)
+	}
+
+	if it.QueryID() == "" {
+		t.Fatalf("expected non-empty QueryID for jobs.query storage read")
 	}
 }
 

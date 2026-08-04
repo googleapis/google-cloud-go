@@ -433,6 +433,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 		if resp.PageToken != "" && q.client.isStorageReadAvailable() {
 			it, err = newStorageRowIteratorFromJob(ctx, minimalJob)
 			if err == nil {
+				it.src.queryID = resp.QueryId
 				return it, nil
 			}
 		}
