@@ -109,13 +109,14 @@ var newSessionClient = func(
 // session.TableAPI on it for each RPC. One channel per
 // (project, instance, appProfile).
 //
-// project and instance are retained so the dispatch path can validate that an
-// incoming V2 resource name targets this daemon's scope before stripping it to
-// the leaf ID session.Client expects (see resourcename.go).
+// scopePrefix is "projects/<project>/instances/<instance>/", precomputed once
+// at construction. The dispatch path validates that an incoming V2 resource
+// name targets this daemon's scope against it, then strips it to the leaf ID
+// session.Client expects (see resourcename.go). It is the only retained form of
+// the (project, instance) the channel is scoped to.
 type Channel struct {
-	sc       session.Client
-	project  string
-	instance string
+	sc          session.Client
+	scopePrefix string
 }
 
 // NewChannel constructs an Channel scoped to
@@ -143,13 +144,12 @@ func NewChannel(
 		return nil, err
 	}
 	return &Channel{
-		sc:       sc,
-		project:  project,
-		instance: instance,
+		sc:          sc,
+		scopePrefix: scopePrefixFor(project, instance),
 	}, nil
 }
 
-// openSession routes an extracted resource to a session.TableAPI based on its
+// openHandle routes an extracted resource to a session.TableAPI based on its
 // kind. The adapter already determined the kind from the populated V2 name
 // field; here the full name is validated against this daemon's scope and
 // reduced to the leaf ID(s) session.Client expects, which re-prefixes them with
@@ -158,26 +158,30 @@ func NewChannel(
 //
 // The underlying read/write session pools are deduped inside session.Client,
 // so opening a handle per call is cheap and nothing is cached here.
-func (c *Channel) openSession(res adapters.Resource) (session.TableAPI, error) {
+func (c *Channel) openHandle(res adapters.Resource) (session.TableAPI, error) {
 	switch res.Kind {
+	case adapters.ResourceTable:
+		tableID, err := c.parseTableName(res.Name)
+		if err != nil {
+			return nil, err
+		}
+		return c.sc.OpenTable(tableID), nil
 	case adapters.ResourceAuthorizedView:
-		tableID, viewID, err := parseAuthorizedViewName(res.Name, c.project, c.instance)
+		tableID, viewID, err := c.parseAuthorizedViewName(res.Name)
 		if err != nil {
 			return nil, err
 		}
 		return c.sc.OpenAuthorizedView(tableID, viewID), nil
 	case adapters.ResourceMaterializedView:
-		viewID, err := parseMaterializedViewName(res.Name, c.project, c.instance)
+		viewID, err := c.parseMaterializedViewName(res.Name)
 		if err != nil {
 			return nil, err
 		}
 		return c.sc.OpenMaterializedView(viewID), nil
 	default:
-		tableID, err := parseTableName(res.Name, c.project, c.instance)
-		if err != nil {
-			return nil, err
-		}
-		return c.sc.OpenTable(tableID), nil
+		// Kind is set by the adapter from the populated V2 name field, so an
+		// unrecognized kind is an internal invariant violation, not bad input.
+		return nil, status.Errorf(codes.Internal, "accelerator: unknown resource kind %v", res.Kind)
 	}
 }
 
@@ -214,7 +218,7 @@ func (c *Channel) mutateRowImpl(ctx context.Context, args, reply interface{}) er
 	// Open a fresh handle per call, routed to a table or authorized view by the
 	// resource kind; the underlying read/write session pools are deduped inside
 	// session.Client, so this is cheap.
-	tbl, err := c.openSession(resource)
+	tbl, err := c.openHandle(resource)
 	if err != nil {
 		return err
 	}
@@ -263,21 +267,24 @@ func (c *Channel) Close() error {
 // RecvMsg. Backpressure flows naturally: no session work happens until the
 // consumer pulls.
 //
-// Concurrency contract (matches google.golang.org/grpc.ClientStream): it is
-// safe to have one goroutine calling SendMsg and another calling RecvMsg on
-// the same stream at the same time, but it is NOT safe to call SendMsg from
-// multiple goroutines, nor to call RecvMsg from multiple goroutines, nor to
-// call CloseSend concurrently with SendMsg. Callers that violate this
-// contract race on the internal state below. The daemon's stream
-// interceptor (interceptors.go) is the only production caller and always
-// drives one stream sequentially from a single per-RPC goroutine, so the
-// contract is satisfied trivially there.
+// Concurrency contract: unlike a general google.golang.org/grpc.ClientStream,
+// this stream must be driven sequentially by a single goroutine. It does NOT
+// support concurrent SendMsg/RecvMsg (nor SendMsg concurrent with CloseSend):
+// the send and receive paths share unsynchronized state (req, sent, done,
+// terminalErr) with no locking, so concurrent access races. This narrower
+// contract is deliberate — the stream is effectively unary (one SendMsg, then
+// RecvMsg until EOF), and the daemon's stream interceptor (interceptors.go),
+// the only production caller, always drives one stream sequentially from a
+// single per-RPC goroutine, so no synchronization is warranted.
 //
 // State machine:
 //   - awaitingSend: SendMsg has not been called.
 //   - awaitingRecv: request captured; session call has not run.
 //   - done: session call has completed (or errored) and the single response
-//     has been delivered (or never will be). Subsequent RecvMsg returns EOF.
+//     has been delivered (or never will be). Subsequent RecvMsg returns the
+//     terminal status recorded in terminalErr — io.EOF after a successful read,
+//     or the error that aborted the stream — matching grpc.ClientStream, which
+//     keeps reporting the terminal status on repeated RecvMsg calls.
 type readRowsClientStream struct {
 	ctx context.Context
 	c   *Channel
@@ -285,6 +292,10 @@ type readRowsClientStream struct {
 	req  *v2pb.ReadRowsRequest
 	sent bool
 	done bool
+	// terminalErr is the status a post-completion RecvMsg replays: io.EOF once
+	// the single response was delivered, or the error that aborted the stream.
+	// Set together with done.
+	terminalErr error
 }
 
 func (s *readRowsClientStream) Header() (gmetadata.MD, error) { return nil, nil }
@@ -310,7 +321,10 @@ func (s *readRowsClientStream) SendMsg(m any) error {
 
 func (s *readRowsClientStream) RecvMsg(m any) error {
 	if s.done {
-		return io.EOF
+		// Replay the terminal status: io.EOF after a successful read, or the
+		// error that aborted the stream. Returning io.EOF here after an error
+		// would falsely signal clean completion to a caller that keeps pulling.
+		return s.terminalErr
 	}
 	if !s.sent {
 		return status.Error(codes.Internal, "accelerator: ReadRows RecvMsg called before SendMsg")
@@ -323,40 +337,45 @@ func (s *readRowsClientStream) RecvMsg(m any) error {
 	reqAdapter := adapters.DefaultReadRowRequestAdapter
 	resource, err := reqAdapter.ExtractResource(s.req)
 	if err != nil {
-		s.done = true
-		return err
+		return s.terminate(err)
 	}
 	sessionReq, err := reqAdapter.Adapt(s.req)
 	if err != nil {
-		s.done = true
-		return err
+		return s.terminate(err)
 	}
 
 	// Routed to a table, authorized view, or materialized view by the
 	// resource kind the adapter extracted.
-	tbl, err := s.c.openSession(resource)
+	tbl, err := s.c.openHandle(resource)
 	if err != nil {
-		s.done = true
-		return err
+		return s.terminate(err)
 	}
 
 	sessionResp, err := tbl.ReadRow(s.ctx, sessionReq)
 	if err != nil {
-		s.done = true
-		return err
+		return s.terminate(err)
 	}
 
 	adapted, err := adapters.DefaultReadRowResponseAdapter.Adapt(sessionResp)
 	if err != nil {
-		s.done = true
-		return err
+		return s.terminate(err)
 	}
 	proto.Reset(resp)
 	if adapted != nil {
 		proto.Merge(resp, adapted)
 	}
+	// The single response was delivered; the next RecvMsg reports EOF.
 	s.done = true
+	s.terminalErr = io.EOF
 	return nil
+}
+
+// terminate marks the stream done, records err as the terminal status so
+// subsequent RecvMsg calls replay it, and returns err for this call.
+func (s *readRowsClientStream) terminate(err error) error {
+	s.done = true
+	s.terminalErr = err
+	return err
 }
 
 // validateSingleRowReadRequest rejects request shapes the session transport

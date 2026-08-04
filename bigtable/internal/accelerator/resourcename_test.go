@@ -26,6 +26,12 @@ const (
 	testInstance = "i"
 )
 
+// scopedTestChannel returns a Channel with only the scope the resource-name
+// parsers depend on (no session.Client dialed).
+func scopedTestChannel() *Channel {
+	return &Channel{scopePrefix: scopePrefixFor(testProject, testInstance)}
+}
+
 func TestParseTableName(t *testing.T) {
 	cases := []struct {
 		name     string
@@ -43,7 +49,7 @@ func TestParseTableName(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := parseTableName(tc.in, testProject, testInstance)
+			got, err := scopedTestChannel().parseTableName(tc.in)
 			if status.Code(err) != tc.wantCode {
 				t.Fatalf("parseTableName(%q) code = %v; want %v (err=%v)", tc.in, status.Code(err), tc.wantCode, err)
 			}
@@ -70,7 +76,7 @@ func TestParseAuthorizedViewName(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			gotT, gotV, err := parseAuthorizedViewName(tc.in, testProject, testInstance)
+			gotT, gotV, err := scopedTestChannel().parseAuthorizedViewName(tc.in)
 			if status.Code(err) != tc.wantCode {
 				t.Fatalf("parseAuthorizedViewName(%q) code = %v; want %v (err=%v)", tc.in, status.Code(err), tc.wantCode, err)
 			}
@@ -95,7 +101,7 @@ func TestParseMaterializedViewName(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := parseMaterializedViewName(tc.in, testProject, testInstance)
+			got, err := scopedTestChannel().parseMaterializedViewName(tc.in)
 			if status.Code(err) != tc.wantCode {
 				t.Fatalf("parseMaterializedViewName(%q) code = %v; want %v (err=%v)", tc.in, status.Code(err), tc.wantCode, err)
 			}

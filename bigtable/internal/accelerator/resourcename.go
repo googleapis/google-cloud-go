@@ -32,17 +32,23 @@ import (
 // validate the project/instance segments against the channel's scope and
 // reject a mismatch, returning the leaf ID(s) only for an in-scope name.
 
-// stripScope verifies name begins with this daemon's
+// scopePrefixFor builds the "projects/<project>/instances/<instance>/" prefix a
+// Channel validates and strips resource names against. Precomputed once at
+// construction and stored on Channel.scopePrefix.
+func scopePrefixFor(project, instance string) string {
+	return "projects/" + project + "/instances/" + instance + "/"
+}
+
+// stripScope verifies name begins with this daemon's precomputed
 // "projects/<project>/instances/<instance>/" prefix and returns the remainder
 // after it. A name targeting any other project/instance is rejected with
 // InvalidArgument rather than silently rebound onto this daemon's scope.
-func stripScope(name, project, instance string) (string, error) {
-	prefix := "projects/" + project + "/instances/" + instance + "/"
-	rest, ok := strings.CutPrefix(name, prefix)
+func (c *Channel) stripScope(name string) (string, error) {
+	rest, ok := strings.CutPrefix(name, c.scopePrefix)
 	if !ok {
 		return "", status.Errorf(codes.InvalidArgument,
-			"accelerator: resource %q is not in this daemon's scope (projects/%s/instances/%s)",
-			name, project, instance)
+			"accelerator: resource %q is not in this daemon's scope (%s)",
+			name, strings.TrimSuffix(c.scopePrefix, "/"))
 	}
 	return rest, nil
 }
@@ -64,8 +70,8 @@ func malformedResource(name string) error {
 
 // parseTableName validates that name is a table resource in this daemon's
 // (project, instance) and returns the table leaf ID.
-func parseTableName(name, project, instance string) (tableID string, err error) {
-	rest, err := stripScope(name, project, instance)
+func (c *Channel) parseTableName(name string) (tableID string, err error) {
+	rest, err := c.stripScope(name)
 	if err != nil {
 		return "", err
 	}
@@ -74,8 +80,8 @@ func parseTableName(name, project, instance string) (tableID string, err error) 
 
 // parseAuthorizedViewName validates that name is an authorized-view resource in
 // this daemon's (project, instance) and returns the table and view leaf IDs.
-func parseAuthorizedViewName(name, project, instance string) (tableID, viewID string, err error) {
-	rest, err := stripScope(name, project, instance)
+func (c *Channel) parseAuthorizedViewName(name string) (tableID, viewID string, err error) {
+	rest, err := c.stripScope(name)
 	if err != nil {
 		return "", "", err
 	}
@@ -93,8 +99,8 @@ func parseAuthorizedViewName(name, project, instance string) (tableID, viewID st
 
 // parseMaterializedViewName validates that name is a materialized-view resource
 // in this daemon's (project, instance) and returns the view leaf ID.
-func parseMaterializedViewName(name, project, instance string) (viewID string, err error) {
-	rest, err := stripScope(name, project, instance)
+func (c *Channel) parseMaterializedViewName(name string) (viewID string, err error) {
+	rest, err := c.stripScope(name)
 	if err != nil {
 		return "", err
 	}

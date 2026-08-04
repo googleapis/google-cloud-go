@@ -655,8 +655,11 @@ func TestNewStream_ReadRows_PropagatesSessionError(t *testing.T) {
 	if err := stream.RecvMsg(&v2pb.ReadRowsResponse{}); !errors.Is(err, sentinel) {
 		t.Errorf("RecvMsg err = %v; want %v", err, sentinel)
 	}
-	if err := stream.RecvMsg(&v2pb.ReadRowsResponse{}); err != io.EOF {
-		t.Errorf("RecvMsg after error = %v; want io.EOF", err)
+	// After an aborting error the stream replays that terminal error, not
+	// io.EOF: returning io.EOF would falsely signal clean completion to a
+	// caller that keeps pulling (matches grpc.ClientStream).
+	if err := stream.RecvMsg(&v2pb.ReadRowsResponse{}); !errors.Is(err, sentinel) {
+		t.Errorf("RecvMsg after error = %v; want %v", err, sentinel)
 	}
 }
 
