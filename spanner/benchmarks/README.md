@@ -7,10 +7,10 @@ It supports stale reads and queries.
 By default, it leverages the latest released version of
 spanner.  For local development, you might want to point at head via something like replacement:
 
-``
+```
 cd spanner/benchmarks
 go mod edit -replace cloud.google.com/go/spanner=../
-``
+```
 
 
 ## Commands
