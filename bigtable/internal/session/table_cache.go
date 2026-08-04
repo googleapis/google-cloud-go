@@ -164,18 +164,20 @@ func (h *TableHandle) dispatch() *TableHandle {
 	return cur
 }
 
-// ReadRow: atomic-Load fast path, self-heal on eviction. Happy path
-// adds one atomic Load vs a bare api.ReadRow; the cache-map lookup
-// only fires on the recovery branch inside dispatch().
+// ReadRow proxies to the underlying TableAPI on the atomic-Load fast
+// path, self-healing via dispatch() on eviction. Happy path adds one
+// atomic Load vs a bare api.ReadRow; the cache-map lookup only fires
+// on the recovery branch inside dispatch().
 func (h *TableHandle) ReadRow(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
 	d := h.dispatch()
 	d.touch()
 	return d.api.ReadRow(ctx, req)
 }
 
-// MutateRow: same shape as ReadRow. Kept minimal so any future proxied
-// method (BulkMutate, SampleRowKeys, etc.) drops in as a 3-line pass-
-// through without duplicating the self-heal conditional.
+// MutateRow proxies to the underlying TableAPI, same shape as ReadRow.
+// Kept minimal so any future proxied method (BulkMutate, SampleRowKeys,
+// etc.) drops in as a 3-line pass-through without duplicating the
+// self-heal conditional.
 func (h *TableHandle) MutateRow(ctx context.Context, req *btpb.SessionMutateRowRequest) (*btpb.SessionMutateRowResponse, error) {
 	d := h.dispatch()
 	d.touch()
