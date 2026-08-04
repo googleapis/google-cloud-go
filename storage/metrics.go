@@ -31,6 +31,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/storage/internal"
 	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
@@ -40,6 +41,8 @@ import (
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -71,6 +74,7 @@ type clientMetrics struct {
 	tcpConnectDuration        metric.Float64Histogram
 	tlsHandshakeDuration      metric.Float64Histogram
 	gfeDuration               metric.Float64Histogram
+	credentialRefreshDuration metric.Float64Histogram
 }
 
 func formatMetricWithPrefix(m metricdata.Metrics, prefix string) string {
@@ -225,6 +229,10 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 					sdkmetric.Instrument{Name: "gcp.storage.client.gfe.duration", Kind: sdkmetric.InstrumentKindHistogram},
 					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
 				),
+				sdkmetric.NewView(
+					sdkmetric.Instrument{Name: "gcp.storage.client.auth.credential_refresh.duration", Kind: sdkmetric.InstrumentKindHistogram},
+					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
+				),
 			),
 		)
 		ownProvider = true
@@ -319,6 +327,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	var tcpConnectDuration metric.Float64Histogram
 	var tlsHandshakeDuration metric.Float64Histogram
 	var gfeDuration metric.Float64Histogram
+	var credentialRefreshDuration metric.Float64Histogram
 
 	if isOtelDebugMetricsEnabled(config) {
 		activeRequests, err = meter.Int64UpDownCounter(
@@ -374,6 +383,15 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		if err != nil {
 			return nil, nil, err
 		}
+
+		credentialRefreshDuration, err = meter.Float64Histogram(
+			"gcp.storage.client.auth.credential_refresh.duration",
+			metric.WithDescription("Duration of the background API/network calls made to refresh OAuth2/JWT access credentials."),
+			metric.WithUnit("s"),
+		)
+		if err != nil {
+			return nil, nil, err
+		}
 	}
 
 	cm := &clientMetrics{
@@ -393,6 +411,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		tcpConnectDuration:        tcpConnectDuration,
 		tlsHandshakeDuration:      tlsHandshakeDuration,
 		gfeDuration:               gfeDuration,
+		credentialRefreshDuration: credentialRefreshDuration,
 	}
 
 	var cleanup func()
@@ -1548,4 +1567,66 @@ func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option
 		option.WithGRPCDialOption(grpc.WithContextDialer(dialer)),
 		option.WithGRPCDialOption(grpc.WithStatsHandler(sh)),
 	}
+}
+
+type metricsTokenProvider struct {
+	base    auth.TokenProvider
+	metrics *clientMetrics
+}
+
+func (p *metricsTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
+	start := time.Now()
+	tok, err := p.base.Token(ctx)
+	p.metrics.recordCredentialRefreshDuration(ctx, time.Since(start), err)
+	return tok, err
+}
+
+func wrapAuthCredentials(c *auth.Credentials, m *clientMetrics) *auth.Credentials {
+	if c == nil || m == nil {
+		return c
+	}
+	// Avoid double wrapping
+	if _, ok := c.TokenProvider.(*metricsTokenProvider); ok {
+		return c
+	}
+	clone := *c
+	clone.TokenProvider = &metricsTokenProvider{base: c.TokenProvider, metrics: m}
+	return &clone
+}
+
+type metricsTokenSource struct {
+	base    oauth2.TokenSource
+	metrics *clientMetrics
+}
+
+func (s *metricsTokenSource) Token() (*oauth2.Token, error) {
+	start := time.Now()
+	tok, err := s.base.Token()
+	s.metrics.recordCredentialRefreshDuration(context.Background(), time.Since(start), err)
+	return tok, err
+}
+
+func wrapGoogleCredentials(c *google.Credentials, metrics *clientMetrics) *google.Credentials {
+	if c == nil || c.TokenSource == nil {
+		return c
+	}
+	clone := &google.Credentials{
+		ProjectID:              c.ProjectID,
+		TokenSource:            &metricsTokenSource{base: c.TokenSource, metrics: metrics},
+		JSON:                   c.JSON,
+		UniverseDomainProvider: c.UniverseDomainProvider,
+	}
+	return clone
+}
+
+func (cm *clientMetrics) recordCredentialRefreshDuration(ctx context.Context, duration time.Duration, err error) {
+	if cm == nil || cm.credentialRefreshDuration == nil {
+		return
+	}
+	errorType := "OK"
+	if err != nil {
+		errorType = "CLIENT_AUTHENTICATION_ERROR"
+	}
+	attrs := []attribute.KeyValue{attribute.String("error.type", errorType)}
+	cm.credentialRefreshDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attrs...))
 }
