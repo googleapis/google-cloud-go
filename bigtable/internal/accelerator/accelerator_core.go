@@ -17,11 +17,12 @@
 // internal/session.
 //
 // Channel is scoped to one (project, instance, appProfile). It owns a
-// session.Client and dispatches each RPC by opening a per-resource
-// session.TableAPI on it. session.Client already dedupes the expensive
-// resource — the per-(resource, permission) read/write session pools — so
-// opening a handle per call is cheap and nothing is cached at this layer.
-// Close tears down the session.Client and all its pools.
+// session.Client and a session.TableCache, and dispatches each RPC by
+// resolving a per-resource session.TableAPI through the cache. Handles are kept
+// warm for reuse and evicted on idle TTL, so a long-lived daemon reclaims idle
+// resources' session pools instead of accumulating one per resource forever.
+// Close tears down the cache (releasing cached handles' pools) and then the
+// session.Client.
 package accelerator
 
 import (
@@ -114,9 +115,14 @@ var newSessionClient = func(
 // name targets this daemon's scope against it, then strips it to the leaf ID
 // session.Client expects (see resourcename.go). It is the only retained form of
 // the (project, instance) the channel is scoped to.
+//
+// sessionTables caches per-resource session.TableAPI handles keyed by the
+// fully-qualified V2 resource name, so repeated RPCs to the same resource share
+// one warm handle and idle resources' pools are reclaimed by its TTL sweeper.
 type Channel struct {
-	sc          session.Client
-	scopePrefix string
+	sc            session.Client
+	scopePrefix   string
+	sessionTables *session.TableCache
 }
 
 // NewChannel constructs an Channel scoped to
@@ -144,45 +150,61 @@ func NewChannel(
 		return nil, err
 	}
 	return &Channel{
-		sc:          sc,
-		scopePrefix: scopePrefixFor(project, instance),
+		sc:            sc,
+		scopePrefix:   scopePrefixFor(project, instance),
+		sessionTables: session.NewTableCache(session.DefaultTableCacheTTL, session.DefaultTableCacheSweepInterval, nil /* time.Now */),
 	}, nil
 }
 
-// openHandle routes an extracted resource to a session.TableAPI based on its
-// kind. The adapter already determined the kind from the populated V2 name
-// field; here the full name is validated against this daemon's scope and
-// reduced to the leaf ID(s) session.Client expects, which re-prefixes them with
-// its own project/instance. A name targeting a different project/instance is
-// rejected rather than silently served from this daemon's scope.
+// openHandle resolves an extracted resource to a per-resource, cached
+// session.TableAPI based on its kind. The adapter already determined the kind
+// from the populated V2 name field; here the full name is validated against
+// this daemon's scope and reduced to the leaf ID(s) session.Client expects,
+// which re-prefixes them with its own project/instance. A name targeting a
+// different project/instance is rejected rather than silently served from this
+// daemon's scope.
 //
-// The underlying read/write session pools are deduped inside session.Client,
-// so opening a handle per call is cheap and nothing is cached here.
+// Validation runs before the cache lookup, so an out-of-scope name is rejected
+// without ever creating or caching a handle. In-scope names resolve through the
+// TableCache keyed by the full V2 name, so repeated RPCs to the same resource
+// share one warm handle; the cache's sweeper evicts idle handles (releasing
+// their pools) on TTL.
 func (c *Channel) openHandle(res adapters.Resource) (session.TableAPI, error) {
+	var open func() session.TableAPI
 	switch res.Kind {
 	case adapters.ResourceTable:
 		tableID, err := c.parseTableName(res.Name)
 		if err != nil {
 			return nil, err
 		}
-		return c.sc.OpenTable(tableID), nil
+		open = func() session.TableAPI { return c.sc.OpenTable(tableID) }
 	case adapters.ResourceAuthorizedView:
 		tableID, viewID, err := c.parseAuthorizedViewName(res.Name)
 		if err != nil {
 			return nil, err
 		}
-		return c.sc.OpenAuthorizedView(tableID, viewID), nil
+		open = func() session.TableAPI { return c.sc.OpenAuthorizedView(tableID, viewID) }
 	case adapters.ResourceMaterializedView:
 		viewID, err := c.parseMaterializedViewName(res.Name)
 		if err != nil {
 			return nil, err
 		}
-		return c.sc.OpenMaterializedView(viewID), nil
+		open = func() session.TableAPI { return c.sc.OpenMaterializedView(viewID) }
 	default:
 		// Kind is set by the adapter from the populated V2 name field, so an
 		// unrecognized kind is an internal invariant violation, not bad input.
 		return nil, status.Errorf(codes.Internal, "accelerator: unknown resource kind %v", res.Kind)
 	}
+
+	// Key on the full V2 name (the identity Cloud Bigtable uses on the wire),
+	// so table / authorized-view / materialized-view keys never collide. A nil
+	// handle means the cache has been Closed (Channel.Close), so the channel is
+	// no longer usable.
+	tbl := c.sessionTables.GetOrOpen(res.Name, open)
+	if tbl == nil {
+		return nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
+	}
+	return tbl, nil
 }
 
 // Invoke implements grpc.ClientConnInterface for unary V2 RPCs.
@@ -215,9 +237,9 @@ func (c *Channel) mutateRowImpl(ctx context.Context, args, reply interface{}) er
 		return err
 	}
 
-	// Open a fresh handle per call, routed to a table or authorized view by the
-	// resource kind; the underlying read/write session pools are deduped inside
-	// session.Client, so this is cheap.
+	// Resolve a cached handle for the resource, routed to a table or authorized
+	// view by the resource kind; repeated calls to the same resource reuse one
+	// warm handle from the TableCache.
 	tbl, err := c.openHandle(resource)
 	if err != nil {
 		return err
@@ -253,12 +275,15 @@ func (c *Channel) NewStream(ctx context.Context, _ *grpc.StreamDesc, method stri
 	}
 }
 
-// Close releases resources held by the channel by closing the underlying
-// session.Client and all its pools.
+// Close releases resources held by the channel. It closes the per-resource
+// TableCache first — stopping its sweeper and Close()ing every cached handle so
+// each releases its session pools — then tears down the session.Client that
+// owns those pools.
 func (c *Channel) Close() error {
 	if c.sc == nil {
 		return nil
 	}
+	c.sessionTables.Close()
 	return c.sc.Close()
 }
 

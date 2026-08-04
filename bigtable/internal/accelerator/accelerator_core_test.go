@@ -121,6 +121,9 @@ func newTestChannel(t *testing.T, sc *mockSessionClient) *Channel {
 	if err != nil {
 		t.Fatalf("NewChannel error: %v", err)
 	}
+	// Close on cleanup so the TableCache sweeper goroutine doesn't outlive
+	// the test.
+	t.Cleanup(func() { _ = channel.Close() })
 	return channel
 }
 
@@ -222,26 +225,33 @@ func TestInvoke_MutateRow_RejectsOutOfScope(t *testing.T) {
 	}
 }
 
-func TestInvoke_MutateRow_OpensTablePerCall(t *testing.T) {
+func TestInvoke_MutateRow_CachesTableHandle(t *testing.T) {
 	sc := &mockSessionClient{table: &mockSessionTableAPI{}}
 	channel := newTestChannel(t, sc)
 
-	reqV2 := &v2pb.MutateRowRequest{
-		TableName: "projects/p/instances/i/tables/t",
-		RowKey:    []byte("k"),
-	}
-	for i := 0; i < 3; i++ {
+	mutate := func(table string) {
+		t.Helper()
 		if err := channel.Invoke(context.Background(),
 			v2pb.Bigtable_MutateRow_FullMethodName,
-			reqV2, &v2pb.MutateRowResponse{}); err != nil {
-			t.Fatalf("Invoke iter %d: %v", i, err)
+			&v2pb.MutateRowRequest{TableName: table, RowKey: []byte("k")},
+			&v2pb.MutateRowResponse{}); err != nil {
+			t.Fatalf("Invoke(MutateRow, %s): %v", table, err)
 		}
 	}
-	// No handle cache at this layer: each RPC opens a fresh table handle.
-	// The underlying session pools are deduped inside session.Client, so
-	// this stays cheap.
-	if sc.newTableCalled != 3 {
-		t.Errorf("Expected OpenTable called once per MutateRow (3 invokes); got %d", sc.newTableCalled)
+
+	// Repeated RPCs to the same table share one cached handle: OpenTable runs
+	// once, on the first (cache-miss) call.
+	for i := 0; i < 3; i++ {
+		mutate("projects/p/instances/i/tables/t")
+	}
+	if sc.newTableCalled != 1 {
+		t.Errorf("OpenTable called %d times for one table across 3 MutateRows; want 1 (cached)", sc.newTableCalled)
+	}
+
+	// A distinct resource misses the cache and opens its own handle.
+	mutate("projects/p/instances/i/tables/other")
+	if sc.newTableCalled != 2 {
+		t.Errorf("OpenTable called %d times after a second distinct table; want 2", sc.newTableCalled)
 	}
 }
 
@@ -663,7 +673,7 @@ func TestNewStream_ReadRows_PropagatesSessionError(t *testing.T) {
 	}
 }
 
-func TestNewStream_ReadRows_OpensTablePerCall(t *testing.T) {
+func TestNewStream_ReadRows_CachesTableHandle(t *testing.T) {
 	tbl := &mockSessionTableAPI{
 		readRowFn: func(_ context.Context, _ *v2pb.SessionReadRowRequest) (*v2pb.SessionReadRowResponse, error) {
 			return &v2pb.SessionReadRowResponse{}, nil
@@ -672,26 +682,37 @@ func TestNewStream_ReadRows_OpensTablePerCall(t *testing.T) {
 	sc := &mockSessionClient{table: tbl}
 	channel := newTestChannel(t, sc)
 
-	for i := 0; i < 3; i++ {
+	readRows := func(table string) {
+		t.Helper()
 		stream, err := channel.NewStream(context.Background(), nil, v2pb.Bigtable_ReadRows_FullMethodName)
 		if err != nil {
-			t.Fatalf("NewStream iter %d: %v", i, err)
+			t.Fatalf("NewStream(%s): %v", table, err)
 		}
-		if err := stream.SendMsg(singleKeyReadRowsRequest("projects/p/instances/i/tables/t", "k")); err != nil {
-			t.Fatalf("SendMsg iter %d: %v", i, err)
+		if err := stream.SendMsg(singleKeyReadRowsRequest(table, "k")); err != nil {
+			t.Fatalf("SendMsg(%s): %v", table, err)
 		}
 		if err := stream.RecvMsg(&v2pb.ReadRowsResponse{}); err != nil {
-			t.Fatalf("RecvMsg iter %d: %v", i, err)
+			t.Fatalf("RecvMsg(%s): %v", table, err)
 		}
 	}
-	// No handle cache at this layer: each ReadRows opens a fresh table
-	// handle; session pools are deduped downstream in session.Client.
-	if sc.newTableCalled != 3 {
-		t.Errorf("OpenTable called %d times across 3 ReadRows; want 3 (one per call)", sc.newTableCalled)
+
+	// Repeated ReadRows to the same table share one cached handle: OpenTable
+	// runs once, on the first (cache-miss) call.
+	for i := 0; i < 3; i++ {
+		readRows("projects/p/instances/i/tables/t")
+	}
+	if sc.newTableCalled != 1 {
+		t.Errorf("OpenTable called %d times across 3 ReadRows; want 1 (cached)", sc.newTableCalled)
+	}
+
+	// A distinct resource misses the cache and opens its own handle.
+	readRows("projects/p/instances/i/tables/other")
+	if sc.newTableCalled != 2 {
+		t.Errorf("OpenTable called %d times after a second distinct table; want 2", sc.newTableCalled)
 	}
 }
 
-func TestNewStream_ReadRows_OpensTableIndependentlyFromMutateRow(t *testing.T) {
+func TestNewStream_ReadRows_SharesCachedHandleWithMutateRow(t *testing.T) {
 	tbl := &mockSessionTableAPI{
 		readRowFn: func(_ context.Context, _ *v2pb.SessionReadRowRequest) (*v2pb.SessionReadRowResponse, error) {
 			return &v2pb.SessionReadRowResponse{}, nil
@@ -720,9 +741,10 @@ func TestNewStream_ReadRows_OpensTableIndependentlyFromMutateRow(t *testing.T) {
 		t.Fatalf("Invoke(MutateRow): %v", err)
 	}
 
-	// One OpenTable per RPC: one for the ReadRows, one for the MutateRow.
-	if sc.newTableCalled != 2 {
-		t.Errorf("OpenTable called %d times; want 2 (one per RPC)", sc.newTableCalled)
+	// Read and write on the same table key into the same cache entry, so the
+	// handle opened by the ReadRows is reused by the MutateRow.
+	if sc.newTableCalled != 1 {
+		t.Errorf("OpenTable called %d times for read+write on one table; want 1 (shared handle)", sc.newTableCalled)
 	}
 }
 
