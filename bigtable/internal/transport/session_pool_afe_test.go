@@ -74,7 +74,6 @@ func checkoutAndRelease(t *testing.T, p *SessionPoolImpl, recordLatency time.Dur
 // every AFE has the same number of idle sessions.
 func TestPool_LeastInFlight_FansOutAcrossAFEs(t *testing.T) {
 	p := newTestPool(t, 1, 30)
-	defer p.Close()
 
 	// 3 AFEs × 2 sessions each = 6 sessions total.
 	afes := []AfeID{101, 202, 303}
@@ -104,7 +103,6 @@ func TestPool_LeastInFlight_FansOutAcrossAFEs(t *testing.T) {
 // with a much lower latency history.
 func TestPool_LeastLatency_PrefersLowCostAFE(t *testing.T) {
 	p := newTestPool(t, 1, 20)
-	defer p.Close()
 
 	// Switch picker to LeastLatency (subset-size = 2 = both AFEs).
 	p.picker = NewLeastLatencyAfePicker(2, true)
@@ -142,7 +140,6 @@ func TestPool_LeastLatency_PrefersLowCostAFE(t *testing.T) {
 // (SessionList.java:181-187).
 func TestPool_LeastLatency_IgnoresFailingAFELatency(t *testing.T) {
 	p := newTestPool(t, 1, 20)
-	defer p.Close()
 
 	p.picker = NewLeastLatencyAfePicker(2, true)
 
@@ -191,7 +188,6 @@ func TestPool_LeastLatency_IgnoresFailingAFELatency(t *testing.T) {
 // sessions still get picked, just from the shared unknown bucket.
 func TestPool_UnknownAFE_BucketedAtZero(t *testing.T) {
 	p := newTestPool(t, 1, 20)
-	defer p.Close()
 
 	// injectActiveSession (no On-Afe variant) — leaves PeerInfo nil so
 	// AfeID() returns 0.
