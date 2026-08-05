@@ -30,9 +30,13 @@ import (
 
 type clientAgentEngines struct {
 	AgentEngines
-	Memories  *clientMemories
 	Sessions  *clientSessions
 	Sandboxes *Sandboxes
+}
+
+type clientMemoryBanks struct {
+	MemoryBanks
+	Memories *clientMemories
 }
 
 type clientMemories struct {
@@ -48,6 +52,7 @@ type clientSessions struct {
 // A Client is a Google Vertex AI client.
 type Client struct {
 	AgentEngines *clientAgentEngines
+	MemoryBanks  *clientMemoryBanks
 }
 
 // NewClient creates a new Google Vertex AI client and configures the the GenAI components.
@@ -75,15 +80,18 @@ func NewClient(ctx context.Context, cc *genai.ClientConfig) (*Client, error) {
 	return &Client{
 		AgentEngines: &clientAgentEngines{
 			AgentEngines: AgentEngines{apiClient: ac},
-			Memories: &clientMemories{
-				Memories:  Memories{apiClient: ac},
-				Revisions: &MemoryRevisions{apiClient: ac},
-			},
 			Sessions: &clientSessions{
 				Sessions: Sessions{apiClient: ac},
 				Events:   &SessionEvents{apiClient: ac},
 			},
 			Sandboxes: &Sandboxes{apiClient: ac},
+		},
+		MemoryBanks: &clientMemoryBanks{
+			MemoryBanks: MemoryBanks{apiClient: ac},
+			Memories: &clientMemories{
+				Memories:  Memories{apiClient: ac},
+				Revisions: &MemoryRevisions{apiClient: ac},
+			},
 		},
 	}, nil
 }
