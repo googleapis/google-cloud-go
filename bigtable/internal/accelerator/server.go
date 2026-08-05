@@ -21,16 +21,27 @@
 package accelerator
 
 import (
+	"bufio"
+	"context"
+	"fmt"
 	"io"
 	"log"
 	"net"
 	"os"
+	"strings"
 	"sync"
 	"syscall"
+	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"google.golang.org/grpc"
 )
+
+// defaultHandshakeTimeout bounds how long Start waits for the parent process to
+// write the auth secret to stdin. Without it, a parent that never writes would
+// leave the daemon blocked in readSecret forever — never binding the socket and
+// never exiting.
+const defaultHandshakeTimeout = 5 * time.Second
 
 // Server manages the lifecycle of the local gRPC UDS server.
 type Server struct {
@@ -40,8 +51,12 @@ type Server struct {
 	listener     net.Listener
 	shutdownChan chan struct{}
 	stopOnce     sync.Once
-	stdinReader  io.Reader // stdin source; nil disables the stdin watchdog. Defaults to os.Stdin; override with WithStdinReader.
+	stdinReader  io.Reader     // stdin source; nil disables the stdin watchdog. Defaults to os.Stdin; override with WithStdinReader.
+	stdinBuf     *bufio.Reader // wraps stdinReader once in Start(); shared by readSecret + monitorStdin
+	authSecret   string
 	channel      *Channel
+
+	handshakeTimeout time.Duration // bounds readSecret; defaults to defaultHandshakeTimeout, override with WithHandshakeTimeout.
 }
 
 // ServerOption configures optional Server behavior. Options are applied in
@@ -56,14 +71,22 @@ func WithStdinReader(r io.Reader) ServerOption {
 	return func(s *Server) { s.stdinReader = r }
 }
 
+// WithHandshakeTimeout overrides how long Start waits for the parent to write
+// the auth secret to stdin before failing. Primarily for tests that want a short
+// deadline; the shipped daemon uses defaultHandshakeTimeout.
+func WithHandshakeTimeout(d time.Duration) ServerOption {
+	return func(s *Server) { s.handshakeTimeout = d }
+}
+
 // NewServer creates a new Server instance.
 func NewServer(udsPath string, channel *Channel, opts ...ServerOption) *Server {
 	s := &Server{
-		udsPath:      udsPath,
-		shutdownChan: make(chan struct{}),
-		stdinReader:  os.Stdin,
-		channel:      channel,
-		service:      newBigtableServerStub(),
+		udsPath:          udsPath,
+		shutdownChan:     make(chan struct{}),
+		stdinReader:      os.Stdin,
+		channel:          channel,
+		service:          newBigtableServerStub(),
+		handshakeTimeout: defaultHandshakeTimeout,
 	}
 	for _, opt := range opts {
 		opt(s)
@@ -73,6 +96,17 @@ func NewServer(udsPath string, channel *Channel, opts ...ServerOption) *Server {
 
 // Start boots the gRPC server on the Unix Domain Socket asynchronously.
 func (s *Server) Start() error {
+	// Read the auth secret from stdin BEFORE binding — the parent process writes
+	// the secret before the daemon starts serving, so it is always present on the
+	// pipe.
+	if s.stdinReader != nil {
+		ctx, cancel := context.WithTimeout(context.Background(), s.handshakeTimeout)
+		defer cancel()
+		if err := s.readSecret(ctx); err != nil {
+			return err
+		}
+	}
+
 	// Clear any stale socket left by a previous instance so the bind below
 	// succeeds. Safe under the daemon's 1:1 pairing with its parent: no live
 	// sibling shares this path.
@@ -105,10 +139,21 @@ func (s *Server) Start() error {
 		return err
 	}
 
-	// Proxy interceptors route each RPC through the Channel.
+	// Chain the proxy interceptors, which route each RPC through the Channel.
+	// The auth interceptors are prepended only when a secret was read from stdin
+	// — the sole secret-less path is test mode (WithStdinReader(nil)), where auth
+	// is intentionally disabled. Gating the wiring here (rather than relying on a
+	// no-op inside the interceptor) keeps "auth is off" explicit and off the RPC
+	// hot path.
+	unaryInterceptors := []grpc.UnaryServerInterceptor{proxyUnaryInterceptor(s.channel)}
+	streamInterceptors := []grpc.StreamServerInterceptor{proxyStreamInterceptor(s.channel)}
+	if s.authSecret != "" {
+		unaryInterceptors = append([]grpc.UnaryServerInterceptor{authUnaryInterceptor(s.authSecret)}, unaryInterceptors...)
+		streamInterceptors = append([]grpc.StreamServerInterceptor{authStreamInterceptor(s.authSecret)}, streamInterceptors...)
+	}
 	s.grpcServer = grpc.NewServer(
-		grpc.UnaryInterceptor(proxyUnaryInterceptor(s.channel)),
-		grpc.StreamInterceptor(proxyStreamInterceptor(s.channel)),
+		grpc.ChainUnaryInterceptor(unaryInterceptors...),
+		grpc.ChainStreamInterceptor(streamInterceptors...),
 	)
 
 	// Register the empty bigtableServerStub. gRPC requires a typed
@@ -160,6 +205,51 @@ func (s *Server) Stop() {
 
 		_ = os.Remove(s.udsPath)
 	})
+}
+
+// readSecret reads the auth secret written by the parent process to stdin
+// before the daemon binds. It wraps stdinReader once in a bufio.Reader
+// (stored as s.stdinBuf) so monitorStdin can continue consuming the same
+// buffered stream without losing bytes.
+//
+// An empty or whitespace-only secret is rejected so the daemon fails closed:
+// serving with an empty authSecret would disable the auth interceptor (see
+// Server.Start), so we refuse to start rather than accept unauthenticated
+// callers. This guarantees the shipped binary — which always feeds os.Stdin —
+// either has a real secret or never binds the socket.
+//
+// The read is bounded by ctx: ReadString blocks until a newline or EOF, so a
+// parent that opens the pipe but never writes would otherwise wedge Start
+// forever. On timeout we return ctx.Err(); the read goroutine stays parked on
+// stdin until the process exits, which is fine because Start returns an error
+// and the daemon never serves.
+func (s *Server) readSecret(ctx context.Context) error {
+	s.stdinBuf = bufio.NewReader(s.stdinReader)
+
+	type readResult struct {
+		line string
+		err  error
+	}
+	ch := make(chan readResult, 1)
+	go func() {
+		line, err := s.stdinBuf.ReadString('\n')
+		ch <- readResult{line, err}
+	}()
+
+	select {
+	case <-ctx.Done():
+		return fmt.Errorf("accelerator: timed out reading auth secret from stdin: %w", ctx.Err())
+	case res := <-ch:
+		if res.err != nil {
+			return fmt.Errorf("accelerator: failed to read auth secret from stdin: %w", res.err)
+		}
+		secret := strings.TrimSpace(res.line)
+		if secret == "" {
+			return fmt.Errorf("accelerator: received empty auth secret from stdin; refusing to serve unauthenticated")
+		}
+		s.authSecret = secret
+		return nil
+	}
 }
 
 // ShutdownChan returns a read-only channel that is closed when the server

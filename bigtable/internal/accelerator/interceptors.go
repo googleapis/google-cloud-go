@@ -16,13 +16,17 @@ package accelerator
 
 import (
 	"context"
+	"crypto/sha256"
+	"crypto/subtle"
 	"io"
+	"log"
 	"strings"
 	"sync"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -41,6 +45,84 @@ type bigtableServerStub struct {
 // newBigtableServerStub creates a new stub instance.
 func newBigtableServerStub() *bigtableServerStub {
 	return &bigtableServerStub{}
+}
+
+// authUnaryInterceptor validates the x-accelerator-token metadata header on
+// every unary RPC. It is only chained into the server when a non-empty secret
+// was read from stdin (see Server.Start); the shipped daemon always reads one,
+// so auth is disabled only in test mode (WithStdinReader(nil)). Mismatches are
+// rejected with codes.Internal (see checkAuthToken for why not Unauthenticated).
+func authUnaryInterceptor(secret string) grpc.UnaryServerInterceptor {
+	return func(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
+		if err := checkAuthToken(ctx, secret); err != nil {
+			return nil, err
+		}
+		return handler(ctx, req)
+	}
+}
+
+// authStreamInterceptor is the streaming counterpart to authUnaryInterceptor.
+func authStreamInterceptor(secret string) grpc.StreamServerInterceptor {
+	return func(srv any, ss grpc.ServerStream, _ *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if err := checkAuthToken(ss.Context(), secret); err != nil {
+			return err
+		}
+		return handler(srv, ss)
+	}
+}
+
+// checkAuthToken pulls the x-accelerator-token from incoming metadata and
+// constant-time-compares its SHA-256 digest against the secret's. Hashing first
+// makes both ConstantTimeCompare inputs a fixed 32 bytes, so a mismatched-length
+// token cannot leak the secret's length through the early-return timing side
+// channel (ConstantTimeCompare returns immediately when its inputs differ in
+// length).
+//
+// It returns nil when the token matches. The secret == "" guard is defense in
+// depth: Server.Start only chains this interceptor for a non-empty secret, so
+// the shipped daemon never hits it.
+//
+// On failure it returns codes.Internal with a generic message, NOT
+// codes.Unauthenticated: the accelerator is a transparent proxy, so the only
+// Unauthenticated a caller should ever see is a genuine Bigtable credential
+// failure forwarded from the backend. A handshake-token mismatch is instead an
+// accelerator-internal condition — in practice always a client/daemon wiring
+// bug, since the spawning client attaches the correct token to every RPC.
+// Surfacing it as Unauthenticated would send the user to debug their GCP
+// credentials; Internal correctly says "not your fault." The specific reason is
+// logged server-side (and never returned) so a same-UID probe gets no oracle.
+func checkAuthToken(ctx context.Context, secret string) error {
+	if secret == "" {
+		return nil
+	}
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return authFailure("missing metadata")
+	}
+	vals := md.Get("x-accelerator-token")
+	if len(vals) == 0 {
+		return authFailure("missing x-accelerator-token")
+	}
+	secretHash := sha256.Sum256([]byte(secret))
+	tokenHash := sha256.Sum256([]byte(vals[0]))
+	if subtle.ConstantTimeCompare(tokenHash[:], secretHash[:]) != 1 {
+		return authFailure("invalid x-accelerator-token")
+	}
+	return nil
+}
+
+// authRejectMsg is the single message used both for the server-side log line and
+// for the codes.Internal error returned to the caller, so the two never drift
+// apart. The specific reason (which check failed) is appended only to the log and
+// is never returned, so a same-UID probe gets no oracle.
+const authRejectMsg = "accelerator: rejecting RPC from mismatched token"
+
+// authFailure logs the handshake rejection server-side (with the specific reason,
+// which is never returned) and returns a codes.Internal error carrying the
+// generic authRejectMsg to the caller.
+func authFailure(reason string) error {
+	log.Printf("%s (reason: %s)", authRejectMsg, reason)
+	return status.Error(codes.Internal, authRejectMsg)
 }
 
 // proxyUnaryInterceptor intercepts every incoming unary RPC, allocates the

@@ -24,8 +24,86 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
+
+// newServerWithSecret starts an Server wired to accept exactly
+// `secret` on every RPC. It returns the server and the write end of the stdin
+// pipe — callers must defer both server.Stop() and stdinW.Close() (in that
+// order). Keeping stdinW open prevents monitorStdin from triggering a premature
+// shutdown while tests are running.
+func newServerWithSecret(t *testing.T, udsPath, secret string) (*Server, *os.File) {
+	t.Helper()
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("failed to create pipe: %v", err)
+	}
+	go func() { w.WriteString(secret + "\n") }()
+	channel := &Channel{}
+	server := NewServer(udsPath, channel, WithStdinReader(r))
+	if err := server.Start(); err != nil {
+		r.Close()
+		w.Close()
+		t.Fatalf("failed to start server: %v", err)
+	}
+	return server, w
+}
+
+func TestServer_AuthInterceptor(t *testing.T) {
+	tmpDir, err := os.MkdirTemp("", "accelerator-auth-*")
+	if err != nil {
+		t.Fatalf("failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tmpDir)
+	udsPath := filepath.Join(tmpDir, "bt_proxy.sock")
+
+	const secret = "correct-secret-token"
+	server, stdinW := newServerWithSecret(t, udsPath, secret)
+	defer stdinW.Close()
+	defer server.Stop()
+
+	conn, err := grpc.NewClient("unix://"+udsPath, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatalf("failed to connect: %v", err)
+	}
+	defer conn.Close()
+
+	// PingAndWarm is a real Bigtable RPC (so the proxy resolves its proto types)
+	// that the channel does not proxy, so it returns Unimplemented. That makes
+	// Unimplemented a reliable stand-in for "auth passed": the request reached
+	// the channel instead of being rejected by the auth interceptor.
+	req := &btpb.PingAndWarmRequest{}
+	resp := &btpb.PingAndWarmResponse{}
+
+	// A rejected handshake surfaces as Internal (not Unauthenticated), so it is
+	// not mistaken for a Bigtable credential failure by the calling client.
+	t.Run("MissingToken", func(t *testing.T) {
+		err := conn.Invoke(context.Background(), "/google.bigtable.v2.Bigtable/PingAndWarm", req, resp)
+		if got := status.Code(err); got != codes.Internal {
+			t.Errorf("expected Internal, got %v", got)
+		}
+	})
+
+	t.Run("WrongToken", func(t *testing.T) {
+		ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs("x-accelerator-token", "wrong-token"))
+		err := conn.Invoke(ctx, "/google.bigtable.v2.Bigtable/PingAndWarm", req, resp)
+		if got := status.Code(err); got != codes.Internal {
+			t.Errorf("expected Internal, got %v", got)
+		}
+	})
+
+	t.Run("CorrectToken", func(t *testing.T) {
+		ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs("x-accelerator-token", secret))
+		err := conn.Invoke(ctx, "/google.bigtable.v2.Bigtable/PingAndWarm", req, resp)
+		// Auth passes and falls through to the zero-value channel, which returns
+		// Unimplemented for PingAndWarm — proving the auth layer did not
+		// short-circuit with Internal.
+		if got := status.Code(err); got != codes.Unimplemented {
+			t.Errorf("expected auth to pass (Unimplemented from channel), got %v", got)
+		}
+	})
+}
 
 func TestServer_EndToEnd(t *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "accelerator-test-*")
