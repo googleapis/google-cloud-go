@@ -32,8 +32,7 @@ func TestServer_Permissions(t *testing.T) {
 	// exercises Start/Stop; no RPCs are issued, so the channel's
 	// session.Client is never dereferenced. Close handles a nil sc.
 	channel := &Channel{}
-	server := NewServer(udsPath, channel)
-	server.StdinReader = nil
+	server := NewServer(udsPath, channel, WithStdinReader(nil))
 	if err := server.Start(); err != nil {
 		t.Fatalf("failed to start server: %v", err)
 	}
@@ -51,8 +50,7 @@ func TestServer_Permissions(t *testing.T) {
 func TestServer_StartFailure(t *testing.T) {
 	udsPath := "/nonexistent-dir-123456/bt_proxy.sock"
 	channel := &Channel{}
-	server := NewServer(udsPath, channel)
-	server.StdinReader = nil
+	server := NewServer(udsPath, channel, WithStdinReader(nil))
 	if err := server.Start(); err == nil {
 		t.Error("expected error when starting server with nonexistent UDS path, but got nil")
 	}

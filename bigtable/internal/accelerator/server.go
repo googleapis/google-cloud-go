@@ -40,18 +40,33 @@ type Server struct {
 	listener     net.Listener
 	shutdownChan chan struct{}
 	stopOnce     sync.Once
-	StdinReader  io.Reader // Configurable stdin reader for testing; nil disables stdin watchdog
+	stdinReader  io.Reader // stdin source; nil disables the stdin watchdog. Defaults to os.Stdin; override with WithStdinReader.
 	channel      *Channel
 }
 
+// ServerOption configures optional Server behavior. Options are applied in
+// order by NewServer; later options override earlier ones for the same field.
+type ServerOption func(*Server)
+
+// WithStdinReader overrides the reader the server treats as stdin. The shipped
+// daemon uses the os.Stdin default; tests inject a pipe, or pass nil to disable
+// the stdin watchdog. Providing it as a construction-time option keeps the
+// underlying field immutable after NewServer returns.
+func WithStdinReader(r io.Reader) ServerOption {
+	return func(s *Server) { s.stdinReader = r }
+}
+
 // NewServer creates a new Server instance.
-func NewServer(udsPath string, channel *Channel) *Server {
+func NewServer(udsPath string, channel *Channel, opts ...ServerOption) *Server {
 	s := &Server{
 		udsPath:      udsPath,
 		shutdownChan: make(chan struct{}),
-		StdinReader:  os.Stdin,
+		stdinReader:  os.Stdin,
 		channel:      channel,
 		service:      newBigtableServerStub(),
+	}
+	for _, opt := range opts {
+		opt(s)
 	}
 	return s
 }
@@ -111,6 +126,12 @@ func (s *Server) Start() error {
 		if err := s.grpcServer.Serve(s.listener); err != nil && err != grpc.ErrServerStopped {
 			log.Printf("accelerator: gRPC server exited with error: %v", err)
 		}
+		// Whatever made Serve return, the server is no longer accepting RPCs.
+		// Drive a full Stop() so the listener, channel, and socket are torn down
+		// and ShutdownChan is closed — otherwise a self-inflicted Serve failure
+		// would leave a half-dead daemon behind. Stop() is idempotent, so the
+		// clean-shutdown path (Stop() already running) is a no-op.
+		s.Stop()
 	}()
 
 	return nil

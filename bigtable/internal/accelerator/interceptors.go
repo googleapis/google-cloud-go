@@ -24,6 +24,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
 )
@@ -120,8 +121,13 @@ func proxyStreamInterceptor(channel *Channel) grpc.StreamServerInterceptor {
 			return err
 		}
 
+		// Allocate the response message once and reuse it across iterations
+		// instead of allocating per streamed row. gRPC marshals the message
+		// synchronously inside SendMsg before returning, so resetting and
+		// refilling the same message on the next RecvMsg is safe.
+		resp := output.New().Interface()
 		for {
-			resp := output.New().Interface()
+			proto.Reset(resp)
 			err := clientStream.RecvMsg(resp)
 			if err == io.EOF {
 				return nil

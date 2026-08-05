@@ -41,8 +41,7 @@ func TestServer_EndToEnd(t *testing.T) {
 	// the channel's default-Unimplemented case for non-ReadRows methods.
 	channel := &Channel{}
 
-	server := NewServer(udsPath, channel)
-	server.StdinReader = nil
+	server := NewServer(udsPath, channel, WithStdinReader(nil))
 	if err := server.Start(); err != nil {
 		t.Fatalf("failed to start accelerator server: %v", err)
 	}
