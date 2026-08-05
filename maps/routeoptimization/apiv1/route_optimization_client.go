@@ -32,7 +32,6 @@ import (
 	routeoptimizationpb "cloud.google.com/go/maps/routeoptimization/apiv1/routeoptimizationpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -647,12 +646,8 @@ func (c *gRPCClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizat
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*routeoptimization.BatchOptimizeToursOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchOptimizeToursOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -674,12 +669,8 @@ func (c *gRPCClient) OptimizeToursLongRunning(ctx context.Context, req *routeopt
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*routeoptimization.OptimizeToursLongRunningOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &OptimizeToursLongRunningOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -701,12 +692,8 @@ func (c *gRPCClient) OptimizeToursUri(ctx context.Context, req *routeoptimizatio
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*routeoptimization.OptimizeToursUriOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &OptimizeToursUriOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -882,12 +869,8 @@ func (c *restClient) BatchOptimizeTours(ctx context.Context, req *routeoptimizat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*routeoptimization.BatchOptimizeToursOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchOptimizeToursOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -968,12 +951,8 @@ func (c *restClient) OptimizeToursLongRunning(ctx context.Context, req *routeopt
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*routeoptimization.OptimizeToursLongRunningOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &OptimizeToursLongRunningOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1061,12 +1040,8 @@ func (c *restClient) OptimizeToursUri(ctx context.Context, req *routeoptimizatio
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*routeoptimization.OptimizeToursUriOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &OptimizeToursUriOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1129,7 +1104,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // The name must be that of a previously created BatchOptimizeToursOperation, possibly from a different process.
 func (c *gRPCClient) BatchOptimizeToursOperation(name string) *BatchOptimizeToursOperation {
 	return &BatchOptimizeToursOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*routeoptimization.BatchOptimizeToursOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1138,7 +1113,7 @@ func (c *gRPCClient) BatchOptimizeToursOperation(name string) *BatchOptimizeTour
 func (c *restClient) BatchOptimizeToursOperation(name string) *BatchOptimizeToursOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BatchOptimizeToursOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*routeoptimization.BatchOptimizeToursOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1147,7 +1122,7 @@ func (c *restClient) BatchOptimizeToursOperation(name string) *BatchOptimizeTour
 // The name must be that of a previously created OptimizeToursLongRunningOperation, possibly from a different process.
 func (c *gRPCClient) OptimizeToursLongRunningOperation(name string) *OptimizeToursLongRunningOperation {
 	return &OptimizeToursLongRunningOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*routeoptimization.OptimizeToursLongRunningOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1156,7 +1131,7 @@ func (c *gRPCClient) OptimizeToursLongRunningOperation(name string) *OptimizeTou
 func (c *restClient) OptimizeToursLongRunningOperation(name string) *OptimizeToursLongRunningOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &OptimizeToursLongRunningOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*routeoptimization.OptimizeToursLongRunningOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1165,7 +1140,7 @@ func (c *restClient) OptimizeToursLongRunningOperation(name string) *OptimizeTou
 // The name must be that of a previously created OptimizeToursUriOperation, possibly from a different process.
 func (c *gRPCClient) OptimizeToursUriOperation(name string) *OptimizeToursUriOperation {
 	return &OptimizeToursUriOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*routeoptimization.OptimizeToursUriOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1174,7 +1149,7 @@ func (c *gRPCClient) OptimizeToursUriOperation(name string) *OptimizeToursUriOpe
 func (c *restClient) OptimizeToursUriOperation(name string) *OptimizeToursUriOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &OptimizeToursUriOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*routeoptimization.OptimizeToursUriOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

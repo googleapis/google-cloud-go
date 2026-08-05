@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -2996,12 +2995,8 @@ func (c *gRPCClient) UploadConversation(ctx context.Context, req *contactcenteri
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.UploadConversationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UploadConversationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3143,12 +3138,8 @@ func (c *gRPCClient) CreateAnalysis(ctx context.Context, req *contactcenterinsig
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.CreateAnalysisOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAnalysisOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3269,12 +3260,8 @@ func (c *gRPCClient) BulkAnalyzeConversations(ctx context.Context, req *contactc
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkAnalyzeConversationsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BulkAnalyzeConversationsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3299,12 +3286,8 @@ func (c *gRPCClient) BulkDeleteConversations(ctx context.Context, req *contactce
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkDeleteConversationsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BulkDeleteConversationsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3329,12 +3312,8 @@ func (c *gRPCClient) IngestConversations(ctx context.Context, req *contactcenter
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.IngestConversationsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &IngestConversationsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3359,12 +3338,8 @@ func (c *gRPCClient) ExportInsightsData(ctx context.Context, req *contactcenteri
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.ExportInsightsDataOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportInsightsDataOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3389,12 +3364,8 @@ func (c *gRPCClient) CreateIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.CreateIssueModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateIssueModelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3488,12 +3459,8 @@ func (c *gRPCClient) DeleteIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.DeleteIssueModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteIssueModelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3518,12 +3485,8 @@ func (c *gRPCClient) DeployIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.DeployIssueModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeployIssueModelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3548,12 +3511,8 @@ func (c *gRPCClient) UndeployIssueModel(ctx context.Context, req *contactcenteri
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.UndeployIssueModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UndeployIssueModelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3578,12 +3537,8 @@ func (c *gRPCClient) ExportIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.ExportIssueModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportIssueModelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3608,12 +3563,8 @@ func (c *gRPCClient) ImportIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.ImportIssueModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportIssueModelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4123,12 +4074,8 @@ func (c *gRPCClient) InitializeEncryptionSpec(ctx context.Context, req *contactc
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.InitializeEncryptionSpecOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &InitializeEncryptionSpecOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4294,12 +4241,8 @@ func (c *gRPCClient) QueryMetrics(ctx context.Context, req *contactcenterinsight
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.QueryMetricsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &QueryMetricsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4654,12 +4597,8 @@ func (c *gRPCClient) TuneQaScorecardRevision(ctx context.Context, req *contactce
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.TuneQaScorecardRevisionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &TuneQaScorecardRevisionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4997,12 +4936,8 @@ func (c *gRPCClient) BulkUploadFeedbackLabels(ctx context.Context, req *contactc
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkUploadFeedbackLabelsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BulkUploadFeedbackLabelsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -5027,12 +4962,8 @@ func (c *gRPCClient) BulkDownloadFeedbackLabels(ctx context.Context, req *contac
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkDownloadFeedbackLabelsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BulkDownloadFeedbackLabelsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -5254,12 +5185,8 @@ func (c *restClient) UploadConversation(ctx context.Context, req *contactcenteri
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.UploadConversationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UploadConversationOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5586,12 +5513,8 @@ func (c *restClient) CreateAnalysis(ctx context.Context, req *contactcenterinsig
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.CreateAnalysisOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAnalysisOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5836,12 +5759,8 @@ func (c *restClient) BulkAnalyzeConversations(ctx context.Context, req *contactc
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkAnalyzeConversationsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BulkAnalyzeConversationsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5906,12 +5825,8 @@ func (c *restClient) BulkDeleteConversations(ctx context.Context, req *contactce
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkDeleteConversationsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BulkDeleteConversationsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5977,12 +5892,8 @@ func (c *restClient) IngestConversations(ctx context.Context, req *contactcenter
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.IngestConversationsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &IngestConversationsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6047,12 +5958,8 @@ func (c *restClient) ExportInsightsData(ctx context.Context, req *contactcenteri
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.ExportInsightsDataOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportInsightsDataOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6118,12 +6025,8 @@ func (c *restClient) CreateIssueModel(ctx context.Context, req *contactcenterins
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.CreateIssueModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateIssueModelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6364,12 +6267,8 @@ func (c *restClient) DeleteIssueModel(ctx context.Context, req *contactcenterins
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.DeleteIssueModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteIssueModelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6435,12 +6334,8 @@ func (c *restClient) DeployIssueModel(ctx context.Context, req *contactcenterins
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.DeployIssueModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeployIssueModelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6506,12 +6401,8 @@ func (c *restClient) UndeployIssueModel(ctx context.Context, req *contactcenteri
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.UndeployIssueModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UndeployIssueModelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6576,12 +6467,8 @@ func (c *restClient) ExportIssueModel(ctx context.Context, req *contactcenterins
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.ExportIssueModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportIssueModelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6646,12 +6533,8 @@ func (c *restClient) ImportIssueModel(ctx context.Context, req *contactcenterins
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.ImportIssueModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportIssueModelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -7861,12 +7744,8 @@ func (c *restClient) InitializeEncryptionSpec(ctx context.Context, req *contactc
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.InitializeEncryptionSpecOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &InitializeEncryptionSpecOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -8240,12 +8119,8 @@ func (c *restClient) QueryMetrics(ctx context.Context, req *contactcenterinsight
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.QueryMetricsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &QueryMetricsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -9061,12 +8936,8 @@ func (c *restClient) TuneQaScorecardRevision(ctx context.Context, req *contactce
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.TuneQaScorecardRevisionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &TuneQaScorecardRevisionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -9779,12 +9650,8 @@ func (c *restClient) BulkUploadFeedbackLabels(ctx context.Context, req *contactc
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkUploadFeedbackLabelsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BulkUploadFeedbackLabelsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -9849,12 +9716,8 @@ func (c *restClient) BulkDownloadFeedbackLabels(ctx context.Context, req *contac
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkDownloadFeedbackLabelsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BulkDownloadFeedbackLabelsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -10040,7 +9903,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created BulkAnalyzeConversationsOperation, possibly from a different process.
 func (c *gRPCClient) BulkAnalyzeConversationsOperation(name string) *BulkAnalyzeConversationsOperation {
 	return &BulkAnalyzeConversationsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkAnalyzeConversationsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10049,7 +9912,7 @@ func (c *gRPCClient) BulkAnalyzeConversationsOperation(name string) *BulkAnalyze
 func (c *restClient) BulkAnalyzeConversationsOperation(name string) *BulkAnalyzeConversationsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BulkAnalyzeConversationsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkAnalyzeConversationsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10058,7 +9921,7 @@ func (c *restClient) BulkAnalyzeConversationsOperation(name string) *BulkAnalyze
 // The name must be that of a previously created BulkDeleteConversationsOperation, possibly from a different process.
 func (c *gRPCClient) BulkDeleteConversationsOperation(name string) *BulkDeleteConversationsOperation {
 	return &BulkDeleteConversationsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkDeleteConversationsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10067,7 +9930,7 @@ func (c *gRPCClient) BulkDeleteConversationsOperation(name string) *BulkDeleteCo
 func (c *restClient) BulkDeleteConversationsOperation(name string) *BulkDeleteConversationsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BulkDeleteConversationsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkDeleteConversationsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10076,7 +9939,7 @@ func (c *restClient) BulkDeleteConversationsOperation(name string) *BulkDeleteCo
 // The name must be that of a previously created BulkDownloadFeedbackLabelsOperation, possibly from a different process.
 func (c *gRPCClient) BulkDownloadFeedbackLabelsOperation(name string) *BulkDownloadFeedbackLabelsOperation {
 	return &BulkDownloadFeedbackLabelsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkDownloadFeedbackLabelsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10085,7 +9948,7 @@ func (c *gRPCClient) BulkDownloadFeedbackLabelsOperation(name string) *BulkDownl
 func (c *restClient) BulkDownloadFeedbackLabelsOperation(name string) *BulkDownloadFeedbackLabelsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BulkDownloadFeedbackLabelsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkDownloadFeedbackLabelsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10094,7 +9957,7 @@ func (c *restClient) BulkDownloadFeedbackLabelsOperation(name string) *BulkDownl
 // The name must be that of a previously created BulkUploadFeedbackLabelsOperation, possibly from a different process.
 func (c *gRPCClient) BulkUploadFeedbackLabelsOperation(name string) *BulkUploadFeedbackLabelsOperation {
 	return &BulkUploadFeedbackLabelsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkUploadFeedbackLabelsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10103,7 +9966,7 @@ func (c *gRPCClient) BulkUploadFeedbackLabelsOperation(name string) *BulkUploadF
 func (c *restClient) BulkUploadFeedbackLabelsOperation(name string) *BulkUploadFeedbackLabelsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BulkUploadFeedbackLabelsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkUploadFeedbackLabelsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10112,7 +9975,7 @@ func (c *restClient) BulkUploadFeedbackLabelsOperation(name string) *BulkUploadF
 // The name must be that of a previously created CreateAnalysisOperation, possibly from a different process.
 func (c *gRPCClient) CreateAnalysisOperation(name string) *CreateAnalysisOperation {
 	return &CreateAnalysisOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.CreateAnalysisOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10121,7 +9984,7 @@ func (c *gRPCClient) CreateAnalysisOperation(name string) *CreateAnalysisOperati
 func (c *restClient) CreateAnalysisOperation(name string) *CreateAnalysisOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAnalysisOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.CreateAnalysisOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10130,7 +9993,7 @@ func (c *restClient) CreateAnalysisOperation(name string) *CreateAnalysisOperati
 // The name must be that of a previously created CreateIssueModelOperation, possibly from a different process.
 func (c *gRPCClient) CreateIssueModelOperation(name string) *CreateIssueModelOperation {
 	return &CreateIssueModelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.CreateIssueModelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10139,7 +10002,7 @@ func (c *gRPCClient) CreateIssueModelOperation(name string) *CreateIssueModelOpe
 func (c *restClient) CreateIssueModelOperation(name string) *CreateIssueModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateIssueModelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.CreateIssueModelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10148,7 +10011,7 @@ func (c *restClient) CreateIssueModelOperation(name string) *CreateIssueModelOpe
 // The name must be that of a previously created DeleteIssueModelOperation, possibly from a different process.
 func (c *gRPCClient) DeleteIssueModelOperation(name string) *DeleteIssueModelOperation {
 	return &DeleteIssueModelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.DeleteIssueModelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10157,7 +10020,7 @@ func (c *gRPCClient) DeleteIssueModelOperation(name string) *DeleteIssueModelOpe
 func (c *restClient) DeleteIssueModelOperation(name string) *DeleteIssueModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteIssueModelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.DeleteIssueModelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10166,7 +10029,7 @@ func (c *restClient) DeleteIssueModelOperation(name string) *DeleteIssueModelOpe
 // The name must be that of a previously created DeployIssueModelOperation, possibly from a different process.
 func (c *gRPCClient) DeployIssueModelOperation(name string) *DeployIssueModelOperation {
 	return &DeployIssueModelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.DeployIssueModelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10175,7 +10038,7 @@ func (c *gRPCClient) DeployIssueModelOperation(name string) *DeployIssueModelOpe
 func (c *restClient) DeployIssueModelOperation(name string) *DeployIssueModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeployIssueModelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.DeployIssueModelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10184,7 +10047,7 @@ func (c *restClient) DeployIssueModelOperation(name string) *DeployIssueModelOpe
 // The name must be that of a previously created ExportInsightsDataOperation, possibly from a different process.
 func (c *gRPCClient) ExportInsightsDataOperation(name string) *ExportInsightsDataOperation {
 	return &ExportInsightsDataOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.ExportInsightsDataOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10193,7 +10056,7 @@ func (c *gRPCClient) ExportInsightsDataOperation(name string) *ExportInsightsDat
 func (c *restClient) ExportInsightsDataOperation(name string) *ExportInsightsDataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportInsightsDataOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.ExportInsightsDataOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10202,7 +10065,7 @@ func (c *restClient) ExportInsightsDataOperation(name string) *ExportInsightsDat
 // The name must be that of a previously created ExportIssueModelOperation, possibly from a different process.
 func (c *gRPCClient) ExportIssueModelOperation(name string) *ExportIssueModelOperation {
 	return &ExportIssueModelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.ExportIssueModelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10211,7 +10074,7 @@ func (c *gRPCClient) ExportIssueModelOperation(name string) *ExportIssueModelOpe
 func (c *restClient) ExportIssueModelOperation(name string) *ExportIssueModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportIssueModelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.ExportIssueModelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10220,7 +10083,7 @@ func (c *restClient) ExportIssueModelOperation(name string) *ExportIssueModelOpe
 // The name must be that of a previously created ImportIssueModelOperation, possibly from a different process.
 func (c *gRPCClient) ImportIssueModelOperation(name string) *ImportIssueModelOperation {
 	return &ImportIssueModelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.ImportIssueModelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10229,7 +10092,7 @@ func (c *gRPCClient) ImportIssueModelOperation(name string) *ImportIssueModelOpe
 func (c *restClient) ImportIssueModelOperation(name string) *ImportIssueModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportIssueModelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.ImportIssueModelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10238,7 +10101,7 @@ func (c *restClient) ImportIssueModelOperation(name string) *ImportIssueModelOpe
 // The name must be that of a previously created IngestConversationsOperation, possibly from a different process.
 func (c *gRPCClient) IngestConversationsOperation(name string) *IngestConversationsOperation {
 	return &IngestConversationsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.IngestConversationsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10247,7 +10110,7 @@ func (c *gRPCClient) IngestConversationsOperation(name string) *IngestConversati
 func (c *restClient) IngestConversationsOperation(name string) *IngestConversationsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &IngestConversationsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.IngestConversationsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10256,7 +10119,7 @@ func (c *restClient) IngestConversationsOperation(name string) *IngestConversati
 // The name must be that of a previously created InitializeEncryptionSpecOperation, possibly from a different process.
 func (c *gRPCClient) InitializeEncryptionSpecOperation(name string) *InitializeEncryptionSpecOperation {
 	return &InitializeEncryptionSpecOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.InitializeEncryptionSpecOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10265,7 +10128,7 @@ func (c *gRPCClient) InitializeEncryptionSpecOperation(name string) *InitializeE
 func (c *restClient) InitializeEncryptionSpecOperation(name string) *InitializeEncryptionSpecOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &InitializeEncryptionSpecOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.InitializeEncryptionSpecOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10274,7 +10137,7 @@ func (c *restClient) InitializeEncryptionSpecOperation(name string) *InitializeE
 // The name must be that of a previously created QueryMetricsOperation, possibly from a different process.
 func (c *gRPCClient) QueryMetricsOperation(name string) *QueryMetricsOperation {
 	return &QueryMetricsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.QueryMetricsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10283,7 +10146,7 @@ func (c *gRPCClient) QueryMetricsOperation(name string) *QueryMetricsOperation {
 func (c *restClient) QueryMetricsOperation(name string) *QueryMetricsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &QueryMetricsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.QueryMetricsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10292,7 +10155,7 @@ func (c *restClient) QueryMetricsOperation(name string) *QueryMetricsOperation {
 // The name must be that of a previously created TuneQaScorecardRevisionOperation, possibly from a different process.
 func (c *gRPCClient) TuneQaScorecardRevisionOperation(name string) *TuneQaScorecardRevisionOperation {
 	return &TuneQaScorecardRevisionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.TuneQaScorecardRevisionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10301,7 +10164,7 @@ func (c *gRPCClient) TuneQaScorecardRevisionOperation(name string) *TuneQaScorec
 func (c *restClient) TuneQaScorecardRevisionOperation(name string) *TuneQaScorecardRevisionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &TuneQaScorecardRevisionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.TuneQaScorecardRevisionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10310,7 +10173,7 @@ func (c *restClient) TuneQaScorecardRevisionOperation(name string) *TuneQaScorec
 // The name must be that of a previously created UndeployIssueModelOperation, possibly from a different process.
 func (c *gRPCClient) UndeployIssueModelOperation(name string) *UndeployIssueModelOperation {
 	return &UndeployIssueModelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.UndeployIssueModelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10319,7 +10182,7 @@ func (c *gRPCClient) UndeployIssueModelOperation(name string) *UndeployIssueMode
 func (c *restClient) UndeployIssueModelOperation(name string) *UndeployIssueModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UndeployIssueModelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.UndeployIssueModelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -10328,7 +10191,7 @@ func (c *restClient) UndeployIssueModelOperation(name string) *UndeployIssueMode
 // The name must be that of a previously created UploadConversationOperation, possibly from a different process.
 func (c *gRPCClient) UploadConversationOperation(name string) *UploadConversationOperation {
 	return &UploadConversationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.UploadConversationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -10337,7 +10200,7 @@ func (c *gRPCClient) UploadConversationOperation(name string) *UploadConversatio
 func (c *restClient) UploadConversationOperation(name string) *UploadConversationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UploadConversationOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.UploadConversationOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

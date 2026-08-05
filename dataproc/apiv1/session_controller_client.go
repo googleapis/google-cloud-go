@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -544,12 +543,8 @@ func (c *sessionControllerGRPCClient) CreateSession(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.CreateSessionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSessionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -650,12 +645,8 @@ func (c *sessionControllerGRPCClient) TerminateSession(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.TerminateSessionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &TerminateSessionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -680,12 +671,8 @@ func (c *sessionControllerGRPCClient) DeleteSession(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.DeleteSessionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSessionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -930,12 +917,8 @@ func (c *sessionControllerRESTClient) CreateSession(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.CreateSessionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSessionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1138,12 +1121,8 @@ func (c *sessionControllerRESTClient) TerminateSession(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.TerminateSessionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &TerminateSessionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1206,12 +1185,8 @@ func (c *sessionControllerRESTClient) DeleteSession(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.DeleteSessionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSessionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1636,7 +1611,7 @@ func (c *sessionControllerRESTClient) ListOperations(ctx context.Context, req *l
 // The name must be that of a previously created CreateSessionOperation, possibly from a different process.
 func (c *sessionControllerGRPCClient) CreateSessionOperation(name string) *CreateSessionOperation {
 	return &CreateSessionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.CreateSessionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1645,7 +1620,7 @@ func (c *sessionControllerGRPCClient) CreateSessionOperation(name string) *Creat
 func (c *sessionControllerRESTClient) CreateSessionOperation(name string) *CreateSessionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSessionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.CreateSessionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1654,7 +1629,7 @@ func (c *sessionControllerRESTClient) CreateSessionOperation(name string) *Creat
 // The name must be that of a previously created DeleteSessionOperation, possibly from a different process.
 func (c *sessionControllerGRPCClient) DeleteSessionOperation(name string) *DeleteSessionOperation {
 	return &DeleteSessionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.DeleteSessionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1663,7 +1638,7 @@ func (c *sessionControllerGRPCClient) DeleteSessionOperation(name string) *Delet
 func (c *sessionControllerRESTClient) DeleteSessionOperation(name string) *DeleteSessionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteSessionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.DeleteSessionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1672,7 +1647,7 @@ func (c *sessionControllerRESTClient) DeleteSessionOperation(name string) *Delet
 // The name must be that of a previously created TerminateSessionOperation, possibly from a different process.
 func (c *sessionControllerGRPCClient) TerminateSessionOperation(name string) *TerminateSessionOperation {
 	return &TerminateSessionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.TerminateSessionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1681,7 +1656,7 @@ func (c *sessionControllerGRPCClient) TerminateSessionOperation(name string) *Te
 func (c *sessionControllerRESTClient) TerminateSessionOperation(name string) *TerminateSessionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &TerminateSessionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.TerminateSessionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

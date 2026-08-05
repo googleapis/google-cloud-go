@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -713,12 +712,8 @@ func (c *gRPCClient) GenerateAuditReport(ctx context.Context, req *auditmanagerp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*auditmanager.GenerateAuditReportOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &GenerateAuditReportOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1284,12 +1279,8 @@ func (c *restClient) GenerateAuditReport(ctx context.Context, req *auditmanagerp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*auditmanager.GenerateAuditReportOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &GenerateAuditReportOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2011,7 +2002,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created GenerateAuditReportOperation, possibly from a different process.
 func (c *gRPCClient) GenerateAuditReportOperation(name string) *GenerateAuditReportOperation {
 	return &GenerateAuditReportOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*auditmanager.GenerateAuditReportOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2020,7 +2011,7 @@ func (c *gRPCClient) GenerateAuditReportOperation(name string) *GenerateAuditRep
 func (c *restClient) GenerateAuditReportOperation(name string) *GenerateAuditReportOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &GenerateAuditReportOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*auditmanager.GenerateAuditReportOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

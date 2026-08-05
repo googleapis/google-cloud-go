@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -572,12 +571,8 @@ func (c *gRPCClient) CreateSubscription(ctx context.Context, req *subscriptionsp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*subscriptions.CreateSubscriptionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSubscriptionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -602,12 +597,8 @@ func (c *gRPCClient) DeleteSubscription(ctx context.Context, req *subscriptionsp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*subscriptions.DeleteSubscriptionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSubscriptionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -699,12 +690,8 @@ func (c *gRPCClient) UpdateSubscription(ctx context.Context, req *subscriptionsp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*subscriptions.UpdateSubscriptionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateSubscriptionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -729,12 +716,8 @@ func (c *gRPCClient) ReactivateSubscription(ctx context.Context, req *subscripti
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*subscriptions.ReactivateSubscriptionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ReactivateSubscriptionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -819,12 +802,8 @@ func (c *restClient) CreateSubscription(ctx context.Context, req *subscriptionsp
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*subscriptions.CreateSubscriptionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSubscriptionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -894,12 +873,8 @@ func (c *restClient) DeleteSubscription(ctx context.Context, req *subscriptionsp
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*subscriptions.DeleteSubscriptionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSubscriptionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1114,12 +1089,8 @@ func (c *restClient) UpdateSubscription(ctx context.Context, req *subscriptionsp
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*subscriptions.UpdateSubscriptionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateSubscriptionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1191,12 +1162,8 @@ func (c *restClient) ReactivateSubscription(ctx context.Context, req *subscripti
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*subscriptions.ReactivateSubscriptionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ReactivateSubscriptionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1259,7 +1226,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // The name must be that of a previously created CreateSubscriptionOperation, possibly from a different process.
 func (c *gRPCClient) CreateSubscriptionOperation(name string) *CreateSubscriptionOperation {
 	return &CreateSubscriptionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*subscriptions.CreateSubscriptionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1268,7 +1235,7 @@ func (c *gRPCClient) CreateSubscriptionOperation(name string) *CreateSubscriptio
 func (c *restClient) CreateSubscriptionOperation(name string) *CreateSubscriptionOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateSubscriptionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*subscriptions.CreateSubscriptionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1277,7 +1244,7 @@ func (c *restClient) CreateSubscriptionOperation(name string) *CreateSubscriptio
 // The name must be that of a previously created DeleteSubscriptionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteSubscriptionOperation(name string) *DeleteSubscriptionOperation {
 	return &DeleteSubscriptionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*subscriptions.DeleteSubscriptionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1286,7 +1253,7 @@ func (c *gRPCClient) DeleteSubscriptionOperation(name string) *DeleteSubscriptio
 func (c *restClient) DeleteSubscriptionOperation(name string) *DeleteSubscriptionOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteSubscriptionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*subscriptions.DeleteSubscriptionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1295,7 +1262,7 @@ func (c *restClient) DeleteSubscriptionOperation(name string) *DeleteSubscriptio
 // The name must be that of a previously created ReactivateSubscriptionOperation, possibly from a different process.
 func (c *gRPCClient) ReactivateSubscriptionOperation(name string) *ReactivateSubscriptionOperation {
 	return &ReactivateSubscriptionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*subscriptions.ReactivateSubscriptionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1304,7 +1271,7 @@ func (c *gRPCClient) ReactivateSubscriptionOperation(name string) *ReactivateSub
 func (c *restClient) ReactivateSubscriptionOperation(name string) *ReactivateSubscriptionOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ReactivateSubscriptionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*subscriptions.ReactivateSubscriptionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1313,7 +1280,7 @@ func (c *restClient) ReactivateSubscriptionOperation(name string) *ReactivateSub
 // The name must be that of a previously created UpdateSubscriptionOperation, possibly from a different process.
 func (c *gRPCClient) UpdateSubscriptionOperation(name string) *UpdateSubscriptionOperation {
 	return &UpdateSubscriptionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*subscriptions.UpdateSubscriptionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1322,7 +1289,7 @@ func (c *gRPCClient) UpdateSubscriptionOperation(name string) *UpdateSubscriptio
 func (c *restClient) UpdateSubscriptionOperation(name string) *UpdateSubscriptionOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpdateSubscriptionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*subscriptions.UpdateSubscriptionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

@@ -32,7 +32,6 @@ import (
 	redispb "cloud.google.com/go/redis/apiv1beta1/redispb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -788,12 +787,8 @@ func (c *cloudRedisGRPCClient) CreateInstance(ctx context.Context, req *redispb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.CreateInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -815,12 +810,8 @@ func (c *cloudRedisGRPCClient) UpdateInstance(ctx context.Context, req *redispb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.UpdateInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -845,12 +836,8 @@ func (c *cloudRedisGRPCClient) UpgradeInstance(ctx context.Context, req *redispb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.UpgradeInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpgradeInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -872,12 +859,8 @@ func (c *cloudRedisGRPCClient) ImportInstance(ctx context.Context, req *redispb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.ImportInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -899,12 +882,8 @@ func (c *cloudRedisGRPCClient) ExportInstance(ctx context.Context, req *redispb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.ExportInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -929,12 +908,8 @@ func (c *cloudRedisGRPCClient) FailoverInstance(ctx context.Context, req *redisp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.FailoverInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &FailoverInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -959,12 +934,8 @@ func (c *cloudRedisGRPCClient) DeleteInstance(ctx context.Context, req *redispb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.DeleteInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -989,12 +960,8 @@ func (c *cloudRedisGRPCClient) RescheduleMaintenance(ctx context.Context, req *r
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.RescheduleMaintenanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RescheduleMaintenanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1273,12 +1240,8 @@ func (c *cloudRedisRESTClient) CreateInstance(ctx context.Context, req *redispb.
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.CreateInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1352,12 +1315,8 @@ func (c *cloudRedisRESTClient) UpdateInstance(ctx context.Context, req *redispb.
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.UpdateInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1423,12 +1382,8 @@ func (c *cloudRedisRESTClient) UpgradeInstance(ctx context.Context, req *redispb
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.UpgradeInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpgradeInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1497,12 +1452,8 @@ func (c *cloudRedisRESTClient) ImportInstance(ctx context.Context, req *redispb.
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.ImportInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1569,12 +1520,8 @@ func (c *cloudRedisRESTClient) ExportInstance(ctx context.Context, req *redispb.
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.ExportInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1640,12 +1587,8 @@ func (c *cloudRedisRESTClient) FailoverInstance(ctx context.Context, req *redisp
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.FailoverInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &FailoverInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1705,12 +1648,8 @@ func (c *cloudRedisRESTClient) DeleteInstance(ctx context.Context, req *redispb.
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.DeleteInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1776,12 +1715,8 @@ func (c *cloudRedisRESTClient) RescheduleMaintenance(ctx context.Context, req *r
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*redis.RescheduleMaintenanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RescheduleMaintenanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1790,7 +1725,7 @@ func (c *cloudRedisRESTClient) RescheduleMaintenance(ctx context.Context, req *r
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *cloudRedisGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.CreateInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1799,7 +1734,7 @@ func (c *cloudRedisGRPCClient) CreateInstanceOperation(name string) *CreateInsta
 func (c *cloudRedisRESTClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.CreateInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1808,7 +1743,7 @@ func (c *cloudRedisRESTClient) CreateInstanceOperation(name string) *CreateInsta
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *cloudRedisGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.DeleteInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1817,7 +1752,7 @@ func (c *cloudRedisGRPCClient) DeleteInstanceOperation(name string) *DeleteInsta
 func (c *cloudRedisRESTClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.DeleteInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1826,7 +1761,7 @@ func (c *cloudRedisRESTClient) DeleteInstanceOperation(name string) *DeleteInsta
 // The name must be that of a previously created ExportInstanceOperation, possibly from a different process.
 func (c *cloudRedisGRPCClient) ExportInstanceOperation(name string) *ExportInstanceOperation {
 	return &ExportInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.ExportInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1835,7 +1770,7 @@ func (c *cloudRedisGRPCClient) ExportInstanceOperation(name string) *ExportInsta
 func (c *cloudRedisRESTClient) ExportInstanceOperation(name string) *ExportInstanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &ExportInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.ExportInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1844,7 +1779,7 @@ func (c *cloudRedisRESTClient) ExportInstanceOperation(name string) *ExportInsta
 // The name must be that of a previously created FailoverInstanceOperation, possibly from a different process.
 func (c *cloudRedisGRPCClient) FailoverInstanceOperation(name string) *FailoverInstanceOperation {
 	return &FailoverInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.FailoverInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1853,7 +1788,7 @@ func (c *cloudRedisGRPCClient) FailoverInstanceOperation(name string) *FailoverI
 func (c *cloudRedisRESTClient) FailoverInstanceOperation(name string) *FailoverInstanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &FailoverInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.FailoverInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1862,7 +1797,7 @@ func (c *cloudRedisRESTClient) FailoverInstanceOperation(name string) *FailoverI
 // The name must be that of a previously created ImportInstanceOperation, possibly from a different process.
 func (c *cloudRedisGRPCClient) ImportInstanceOperation(name string) *ImportInstanceOperation {
 	return &ImportInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.ImportInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1871,7 +1806,7 @@ func (c *cloudRedisGRPCClient) ImportInstanceOperation(name string) *ImportInsta
 func (c *cloudRedisRESTClient) ImportInstanceOperation(name string) *ImportInstanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &ImportInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.ImportInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1880,7 +1815,7 @@ func (c *cloudRedisRESTClient) ImportInstanceOperation(name string) *ImportInsta
 // The name must be that of a previously created RescheduleMaintenanceOperation, possibly from a different process.
 func (c *cloudRedisGRPCClient) RescheduleMaintenanceOperation(name string) *RescheduleMaintenanceOperation {
 	return &RescheduleMaintenanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.RescheduleMaintenanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1889,7 +1824,7 @@ func (c *cloudRedisGRPCClient) RescheduleMaintenanceOperation(name string) *Resc
 func (c *cloudRedisRESTClient) RescheduleMaintenanceOperation(name string) *RescheduleMaintenanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &RescheduleMaintenanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.RescheduleMaintenanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1898,7 +1833,7 @@ func (c *cloudRedisRESTClient) RescheduleMaintenanceOperation(name string) *Resc
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *cloudRedisGRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.UpdateInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1907,7 +1842,7 @@ func (c *cloudRedisGRPCClient) UpdateInstanceOperation(name string) *UpdateInsta
 func (c *cloudRedisRESTClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.UpdateInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1916,7 +1851,7 @@ func (c *cloudRedisRESTClient) UpdateInstanceOperation(name string) *UpdateInsta
 // The name must be that of a previously created UpgradeInstanceOperation, possibly from a different process.
 func (c *cloudRedisGRPCClient) UpgradeInstanceOperation(name string) *UpgradeInstanceOperation {
 	return &UpgradeInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.UpgradeInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1925,7 +1860,7 @@ func (c *cloudRedisGRPCClient) UpgradeInstanceOperation(name string) *UpgradeIns
 func (c *cloudRedisRESTClient) UpgradeInstanceOperation(name string) *UpgradeInstanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &UpgradeInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*redis.UpgradeInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

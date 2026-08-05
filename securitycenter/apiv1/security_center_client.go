@@ -33,7 +33,6 @@ import (
 	securitycenterpb "cloud.google.com/go/securitycenter/apiv1/securitycenterpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1619,12 +1618,8 @@ func (c *gRPCClient) BulkMuteFindings(ctx context.Context, req *securitycenterpb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securitycenter.BulkMuteFindingsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BulkMuteFindingsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2589,12 +2584,8 @@ func (c *gRPCClient) RunAssetDiscovery(ctx context.Context, req *securitycenterp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securitycenter.RunAssetDiscoveryOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RunAssetDiscoveryOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3704,12 +3695,8 @@ func (c *restClient) BulkMuteFindings(ctx context.Context, req *securitycenterpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securitycenter.BulkMuteFindingsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BulkMuteFindingsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5666,12 +5653,8 @@ func (c *restClient) RunAssetDiscovery(ctx context.Context, req *securitycenterp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securitycenter.RunAssetDiscoveryOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RunAssetDiscoveryOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -8097,7 +8080,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created BulkMuteFindingsOperation, possibly from a different process.
 func (c *gRPCClient) BulkMuteFindingsOperation(name string) *BulkMuteFindingsOperation {
 	return &BulkMuteFindingsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securitycenter.BulkMuteFindingsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -8106,7 +8089,7 @@ func (c *gRPCClient) BulkMuteFindingsOperation(name string) *BulkMuteFindingsOpe
 func (c *restClient) BulkMuteFindingsOperation(name string) *BulkMuteFindingsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BulkMuteFindingsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securitycenter.BulkMuteFindingsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -8115,7 +8098,7 @@ func (c *restClient) BulkMuteFindingsOperation(name string) *BulkMuteFindingsOpe
 // The name must be that of a previously created RunAssetDiscoveryOperation, possibly from a different process.
 func (c *gRPCClient) RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryOperation {
 	return &RunAssetDiscoveryOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securitycenter.RunAssetDiscoveryOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -8124,7 +8107,7 @@ func (c *gRPCClient) RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryO
 func (c *restClient) RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RunAssetDiscoveryOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securitycenter.RunAssetDiscoveryOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

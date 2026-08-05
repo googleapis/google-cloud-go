@@ -30,7 +30,6 @@ import (
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -659,12 +658,8 @@ func (c *crossNetworkAutomationGRPCClient) CreateServiceConnectionMap(ctx contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreateServiceConnectionMapOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateServiceConnectionMapOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -686,12 +681,8 @@ func (c *crossNetworkAutomationGRPCClient) UpdateServiceConnectionMap(ctx contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.UpdateServiceConnectionMapOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateServiceConnectionMapOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -716,12 +707,8 @@ func (c *crossNetworkAutomationGRPCClient) DeleteServiceConnectionMap(ctx contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeleteServiceConnectionMapOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteServiceConnectionMapOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -822,12 +809,8 @@ func (c *crossNetworkAutomationGRPCClient) CreateServiceConnectionPolicy(ctx con
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreateServiceConnectionPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateServiceConnectionPolicyOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -849,12 +832,8 @@ func (c *crossNetworkAutomationGRPCClient) UpdateServiceConnectionPolicy(ctx con
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.UpdateServiceConnectionPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateServiceConnectionPolicyOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -879,12 +858,8 @@ func (c *crossNetworkAutomationGRPCClient) DeleteServiceConnectionPolicy(ctx con
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeleteServiceConnectionPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteServiceConnectionPolicyOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -982,12 +957,8 @@ func (c *crossNetworkAutomationGRPCClient) UpdateServiceClass(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.UpdateServiceClassOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateServiceClassOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1012,12 +983,8 @@ func (c *crossNetworkAutomationGRPCClient) DeleteServiceClass(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeleteServiceClassOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteServiceClassOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1118,12 +1085,8 @@ func (c *crossNetworkAutomationGRPCClient) CreateServiceConnectionToken(ctx cont
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreateServiceConnectionTokenOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateServiceConnectionTokenOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1148,12 +1111,8 @@ func (c *crossNetworkAutomationGRPCClient) DeleteServiceConnectionToken(ctx cont
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeleteServiceConnectionTokenOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteServiceConnectionTokenOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1407,7 +1366,7 @@ func (c *crossNetworkAutomationGRPCClient) ListOperations(ctx context.Context, r
 // The name must be that of a previously created CreateServiceConnectionMapOperation, possibly from a different process.
 func (c *crossNetworkAutomationGRPCClient) CreateServiceConnectionMapOperation(name string) *CreateServiceConnectionMapOperation {
 	return &CreateServiceConnectionMapOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreateServiceConnectionMapOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1415,7 +1374,7 @@ func (c *crossNetworkAutomationGRPCClient) CreateServiceConnectionMapOperation(n
 // The name must be that of a previously created CreateServiceConnectionPolicyOperation, possibly from a different process.
 func (c *crossNetworkAutomationGRPCClient) CreateServiceConnectionPolicyOperation(name string) *CreateServiceConnectionPolicyOperation {
 	return &CreateServiceConnectionPolicyOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreateServiceConnectionPolicyOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1423,7 +1382,7 @@ func (c *crossNetworkAutomationGRPCClient) CreateServiceConnectionPolicyOperatio
 // The name must be that of a previously created CreateServiceConnectionTokenOperation, possibly from a different process.
 func (c *crossNetworkAutomationGRPCClient) CreateServiceConnectionTokenOperation(name string) *CreateServiceConnectionTokenOperation {
 	return &CreateServiceConnectionTokenOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreateServiceConnectionTokenOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1431,7 +1390,7 @@ func (c *crossNetworkAutomationGRPCClient) CreateServiceConnectionTokenOperation
 // The name must be that of a previously created DeleteServiceClassOperation, possibly from a different process.
 func (c *crossNetworkAutomationGRPCClient) DeleteServiceClassOperation(name string) *DeleteServiceClassOperation {
 	return &DeleteServiceClassOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeleteServiceClassOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1439,7 +1398,7 @@ func (c *crossNetworkAutomationGRPCClient) DeleteServiceClassOperation(name stri
 // The name must be that of a previously created DeleteServiceConnectionMapOperation, possibly from a different process.
 func (c *crossNetworkAutomationGRPCClient) DeleteServiceConnectionMapOperation(name string) *DeleteServiceConnectionMapOperation {
 	return &DeleteServiceConnectionMapOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeleteServiceConnectionMapOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1447,7 +1406,7 @@ func (c *crossNetworkAutomationGRPCClient) DeleteServiceConnectionMapOperation(n
 // The name must be that of a previously created DeleteServiceConnectionPolicyOperation, possibly from a different process.
 func (c *crossNetworkAutomationGRPCClient) DeleteServiceConnectionPolicyOperation(name string) *DeleteServiceConnectionPolicyOperation {
 	return &DeleteServiceConnectionPolicyOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeleteServiceConnectionPolicyOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1455,7 +1414,7 @@ func (c *crossNetworkAutomationGRPCClient) DeleteServiceConnectionPolicyOperatio
 // The name must be that of a previously created DeleteServiceConnectionTokenOperation, possibly from a different process.
 func (c *crossNetworkAutomationGRPCClient) DeleteServiceConnectionTokenOperation(name string) *DeleteServiceConnectionTokenOperation {
 	return &DeleteServiceConnectionTokenOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeleteServiceConnectionTokenOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1463,7 +1422,7 @@ func (c *crossNetworkAutomationGRPCClient) DeleteServiceConnectionTokenOperation
 // The name must be that of a previously created UpdateServiceClassOperation, possibly from a different process.
 func (c *crossNetworkAutomationGRPCClient) UpdateServiceClassOperation(name string) *UpdateServiceClassOperation {
 	return &UpdateServiceClassOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.UpdateServiceClassOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1471,7 +1430,7 @@ func (c *crossNetworkAutomationGRPCClient) UpdateServiceClassOperation(name stri
 // The name must be that of a previously created UpdateServiceConnectionMapOperation, possibly from a different process.
 func (c *crossNetworkAutomationGRPCClient) UpdateServiceConnectionMapOperation(name string) *UpdateServiceConnectionMapOperation {
 	return &UpdateServiceConnectionMapOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.UpdateServiceConnectionMapOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1479,6 +1438,6 @@ func (c *crossNetworkAutomationGRPCClient) UpdateServiceConnectionMapOperation(n
 // The name must be that of a previously created UpdateServiceConnectionPolicyOperation, possibly from a different process.
 func (c *crossNetworkAutomationGRPCClient) UpdateServiceConnectionPolicyOperation(name string) *UpdateServiceConnectionPolicyOperation {
 	return &UpdateServiceConnectionPolicyOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.UpdateServiceConnectionPolicyOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

@@ -32,7 +32,6 @@ import (
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -493,12 +492,8 @@ func (c *merchantCenterAccountLinkGRPCClient) CreateMerchantCenterAccountLink(ct
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.CreateMerchantCenterAccountLinkOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMerchantCenterAccountLinkOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -713,12 +708,8 @@ func (c *merchantCenterAccountLinkRESTClient) CreateMerchantCenterAccountLink(ct
 	}
 
 	override := fmt.Sprintf("/v2alpha/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.CreateMerchantCenterAccountLinkOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMerchantCenterAccountLinkOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -911,7 +902,7 @@ func (c *merchantCenterAccountLinkRESTClient) ListOperations(ctx context.Context
 // The name must be that of a previously created CreateMerchantCenterAccountLinkOperation, possibly from a different process.
 func (c *merchantCenterAccountLinkGRPCClient) CreateMerchantCenterAccountLinkOperation(name string) *CreateMerchantCenterAccountLinkOperation {
 	return &CreateMerchantCenterAccountLinkOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.CreateMerchantCenterAccountLinkOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -920,7 +911,7 @@ func (c *merchantCenterAccountLinkGRPCClient) CreateMerchantCenterAccountLinkOpe
 func (c *merchantCenterAccountLinkRESTClient) CreateMerchantCenterAccountLinkOperation(name string) *CreateMerchantCenterAccountLinkOperation {
 	override := fmt.Sprintf("/v2alpha/%s", name)
 	return &CreateMerchantCenterAccountLinkOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.CreateMerchantCenterAccountLinkOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

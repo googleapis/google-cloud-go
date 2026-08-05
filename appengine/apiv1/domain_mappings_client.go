@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -543,12 +542,8 @@ func (c *domainMappingsGRPCClient) CreateDomainMapping(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.CreateDomainMappingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDomainMappingOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -570,12 +565,8 @@ func (c *domainMappingsGRPCClient) UpdateDomainMapping(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.UpdateDomainMappingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDomainMappingOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -597,12 +588,8 @@ func (c *domainMappingsGRPCClient) DeleteDomainMapping(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.DeleteDomainMappingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDomainMappingOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -801,12 +788,8 @@ func (c *domainMappingsRESTClient) CreateDomainMapping(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.CreateDomainMappingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDomainMappingOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -879,12 +862,8 @@ func (c *domainMappingsRESTClient) UpdateDomainMapping(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.UpdateDomainMappingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDomainMappingOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -942,12 +921,8 @@ func (c *domainMappingsRESTClient) DeleteDomainMapping(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appengine.DeleteDomainMappingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDomainMappingOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -956,7 +931,7 @@ func (c *domainMappingsRESTClient) DeleteDomainMapping(ctx context.Context, req 
 // The name must be that of a previously created CreateDomainMappingOperation, possibly from a different process.
 func (c *domainMappingsGRPCClient) CreateDomainMappingOperation(name string) *CreateDomainMappingOperation {
 	return &CreateDomainMappingOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.CreateDomainMappingOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -965,7 +940,7 @@ func (c *domainMappingsGRPCClient) CreateDomainMappingOperation(name string) *Cr
 func (c *domainMappingsRESTClient) CreateDomainMappingOperation(name string) *CreateDomainMappingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDomainMappingOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.CreateDomainMappingOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -974,7 +949,7 @@ func (c *domainMappingsRESTClient) CreateDomainMappingOperation(name string) *Cr
 // The name must be that of a previously created DeleteDomainMappingOperation, possibly from a different process.
 func (c *domainMappingsGRPCClient) DeleteDomainMappingOperation(name string) *DeleteDomainMappingOperation {
 	return &DeleteDomainMappingOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.DeleteDomainMappingOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -983,7 +958,7 @@ func (c *domainMappingsGRPCClient) DeleteDomainMappingOperation(name string) *De
 func (c *domainMappingsRESTClient) DeleteDomainMappingOperation(name string) *DeleteDomainMappingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDomainMappingOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.DeleteDomainMappingOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -992,7 +967,7 @@ func (c *domainMappingsRESTClient) DeleteDomainMappingOperation(name string) *De
 // The name must be that of a previously created UpdateDomainMappingOperation, possibly from a different process.
 func (c *domainMappingsGRPCClient) UpdateDomainMappingOperation(name string) *UpdateDomainMappingOperation {
 	return &UpdateDomainMappingOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.UpdateDomainMappingOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1001,7 +976,7 @@ func (c *domainMappingsGRPCClient) UpdateDomainMappingOperation(name string) *Up
 func (c *domainMappingsRESTClient) UpdateDomainMappingOperation(name string) *UpdateDomainMappingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDomainMappingOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appengine.UpdateDomainMappingOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

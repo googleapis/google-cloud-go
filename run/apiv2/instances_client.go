@@ -33,7 +33,6 @@ import (
 	runpb "cloud.google.com/go/run/apiv2/runpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -524,12 +523,8 @@ func (c *instancesGRPCClient) CreateInstance(ctx context.Context, req *runpb.Cre
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.CreateInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -563,12 +558,8 @@ func (c *instancesGRPCClient) DeleteInstance(ctx context.Context, req *runpb.Del
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.DeleteInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -687,12 +678,8 @@ func (c *instancesGRPCClient) StopInstance(ctx context.Context, req *runpb.StopI
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.StopInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StopInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -717,12 +704,8 @@ func (c *instancesGRPCClient) StartInstance(ctx context.Context, req *runpb.Star
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.StartInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StartInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -908,12 +891,8 @@ func (c *instancesRESTClient) CreateInstance(ctx context.Context, req *runpb.Cre
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.CreateInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -987,12 +966,8 @@ func (c *instancesRESTClient) DeleteInstance(ctx context.Context, req *runpb.Del
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.DeleteInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1204,12 +1179,8 @@ func (c *instancesRESTClient) StopInstance(ctx context.Context, req *runpb.StopI
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.StopInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StopInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1274,12 +1245,8 @@ func (c *instancesRESTClient) StartInstance(ctx context.Context, req *runpb.Star
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.StartInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StartInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1525,7 +1492,7 @@ func (c *instancesRESTClient) WaitOperation(ctx context.Context, req *longrunnin
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *instancesGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.CreateInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1534,7 +1501,7 @@ func (c *instancesGRPCClient) CreateInstanceOperation(name string) *CreateInstan
 func (c *instancesRESTClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.CreateInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1543,7 +1510,7 @@ func (c *instancesRESTClient) CreateInstanceOperation(name string) *CreateInstan
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *instancesGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.DeleteInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1552,7 +1519,7 @@ func (c *instancesGRPCClient) DeleteInstanceOperation(name string) *DeleteInstan
 func (c *instancesRESTClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.DeleteInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1561,7 +1528,7 @@ func (c *instancesRESTClient) DeleteInstanceOperation(name string) *DeleteInstan
 // The name must be that of a previously created StartInstanceOperation, possibly from a different process.
 func (c *instancesGRPCClient) StartInstanceOperation(name string) *StartInstanceOperation {
 	return &StartInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.StartInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1570,7 +1537,7 @@ func (c *instancesGRPCClient) StartInstanceOperation(name string) *StartInstance
 func (c *instancesRESTClient) StartInstanceOperation(name string) *StartInstanceOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &StartInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.StartInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1579,7 +1546,7 @@ func (c *instancesRESTClient) StartInstanceOperation(name string) *StartInstance
 // The name must be that of a previously created StopInstanceOperation, possibly from a different process.
 func (c *instancesGRPCClient) StopInstanceOperation(name string) *StopInstanceOperation {
 	return &StopInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.StopInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1588,7 +1555,7 @@ func (c *instancesGRPCClient) StopInstanceOperation(name string) *StopInstanceOp
 func (c *instancesRESTClient) StopInstanceOperation(name string) *StopInstanceOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &StopInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.StopInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

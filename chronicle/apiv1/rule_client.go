@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -979,12 +978,8 @@ func (c *ruleGRPCClient) CreateRetrohunt(ctx context.Context, req *chroniclepb.C
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*chronicle.CreateRetrohuntOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateRetrohuntOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1791,12 +1786,8 @@ func (c *ruleRESTClient) CreateRetrohunt(ctx context.Context, req *chroniclepb.C
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*chronicle.CreateRetrohuntOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateRetrohuntOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2374,7 +2365,7 @@ func (c *ruleRESTClient) ListOperations(ctx context.Context, req *longrunningpb.
 // The name must be that of a previously created CreateRetrohuntOperation, possibly from a different process.
 func (c *ruleGRPCClient) CreateRetrohuntOperation(name string) *CreateRetrohuntOperation {
 	return &CreateRetrohuntOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*chronicle.CreateRetrohuntOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2383,7 +2374,7 @@ func (c *ruleGRPCClient) CreateRetrohuntOperation(name string) *CreateRetrohuntO
 func (c *ruleRESTClient) CreateRetrohuntOperation(name string) *CreateRetrohuntOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateRetrohuntOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*chronicle.CreateRetrohuntOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

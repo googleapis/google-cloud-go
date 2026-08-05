@@ -32,7 +32,6 @@ import (
 	networksecuritypb "cloud.google.com/go/networksecurity/apiv1/networksecuritypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -700,12 +699,8 @@ func (c *sSERealmGRPCClient) CreateSACRealm(ctx context.Context, req *networksec
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateSACRealmOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSACRealmOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -730,12 +725,8 @@ func (c *sSERealmGRPCClient) DeleteSACRealm(ctx context.Context, req *networksec
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteSACRealmOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSACRealmOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -836,12 +827,8 @@ func (c *sSERealmGRPCClient) CreateSACAttachment(ctx context.Context, req *netwo
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateSACAttachmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSACAttachmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -866,12 +853,8 @@ func (c *sSERealmGRPCClient) DeleteSACAttachment(ctx context.Context, req *netwo
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteSACAttachmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSACAttachmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1327,12 +1310,8 @@ func (c *sSERealmRESTClient) CreateSACRealm(ctx context.Context, req *networksec
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateSACRealmOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSACRealmOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1394,12 +1373,8 @@ func (c *sSERealmRESTClient) DeleteSACRealm(ctx context.Context, req *networksec
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteSACRealmOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSACRealmOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1610,12 +1585,8 @@ func (c *sSERealmRESTClient) CreateSACAttachment(ctx context.Context, req *netwo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateSACAttachmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSACAttachmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1677,12 +1648,8 @@ func (c *sSERealmRESTClient) DeleteSACAttachment(ctx context.Context, req *netwo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteSACAttachmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSACAttachmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2260,7 +2227,7 @@ func (c *sSERealmRESTClient) ListOperations(ctx context.Context, req *longrunnin
 // The name must be that of a previously created CreateSACAttachmentOperation, possibly from a different process.
 func (c *sSERealmGRPCClient) CreateSACAttachmentOperation(name string) *CreateSACAttachmentOperation {
 	return &CreateSACAttachmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateSACAttachmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2269,7 +2236,7 @@ func (c *sSERealmGRPCClient) CreateSACAttachmentOperation(name string) *CreateSA
 func (c *sSERealmRESTClient) CreateSACAttachmentOperation(name string) *CreateSACAttachmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSACAttachmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateSACAttachmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2278,7 +2245,7 @@ func (c *sSERealmRESTClient) CreateSACAttachmentOperation(name string) *CreateSA
 // The name must be that of a previously created CreateSACRealmOperation, possibly from a different process.
 func (c *sSERealmGRPCClient) CreateSACRealmOperation(name string) *CreateSACRealmOperation {
 	return &CreateSACRealmOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateSACRealmOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2287,7 +2254,7 @@ func (c *sSERealmGRPCClient) CreateSACRealmOperation(name string) *CreateSACReal
 func (c *sSERealmRESTClient) CreateSACRealmOperation(name string) *CreateSACRealmOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSACRealmOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateSACRealmOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2296,7 +2263,7 @@ func (c *sSERealmRESTClient) CreateSACRealmOperation(name string) *CreateSACReal
 // The name must be that of a previously created DeleteSACAttachmentOperation, possibly from a different process.
 func (c *sSERealmGRPCClient) DeleteSACAttachmentOperation(name string) *DeleteSACAttachmentOperation {
 	return &DeleteSACAttachmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteSACAttachmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2305,7 +2272,7 @@ func (c *sSERealmGRPCClient) DeleteSACAttachmentOperation(name string) *DeleteSA
 func (c *sSERealmRESTClient) DeleteSACAttachmentOperation(name string) *DeleteSACAttachmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteSACAttachmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteSACAttachmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2314,7 +2281,7 @@ func (c *sSERealmRESTClient) DeleteSACAttachmentOperation(name string) *DeleteSA
 // The name must be that of a previously created DeleteSACRealmOperation, possibly from a different process.
 func (c *sSERealmGRPCClient) DeleteSACRealmOperation(name string) *DeleteSACRealmOperation {
 	return &DeleteSACRealmOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteSACRealmOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2323,7 +2290,7 @@ func (c *sSERealmGRPCClient) DeleteSACRealmOperation(name string) *DeleteSACReal
 func (c *sSERealmRESTClient) DeleteSACRealmOperation(name string) *DeleteSACRealmOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteSACRealmOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteSACRealmOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

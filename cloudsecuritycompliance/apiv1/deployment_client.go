@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -640,12 +639,8 @@ func (c *deploymentGRPCClient) CreateFrameworkDeployment(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudsecuritycompliance.CreateFrameworkDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateFrameworkDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -670,12 +665,8 @@ func (c *deploymentGRPCClient) DeleteFrameworkDeployment(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudsecuritycompliance.DeleteFrameworkDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteFrameworkDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1072,12 +1063,8 @@ func (c *deploymentRESTClient) CreateFrameworkDeployment(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudsecuritycompliance.CreateFrameworkDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateFrameworkDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1139,12 +1126,8 @@ func (c *deploymentRESTClient) DeleteFrameworkDeployment(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudsecuritycompliance.DeleteFrameworkDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteFrameworkDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1807,7 +1790,7 @@ func (c *deploymentRESTClient) ListOperations(ctx context.Context, req *longrunn
 // The name must be that of a previously created CreateFrameworkDeploymentOperation, possibly from a different process.
 func (c *deploymentGRPCClient) CreateFrameworkDeploymentOperation(name string) *CreateFrameworkDeploymentOperation {
 	return &CreateFrameworkDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudsecuritycompliance.CreateFrameworkDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1816,7 +1799,7 @@ func (c *deploymentGRPCClient) CreateFrameworkDeploymentOperation(name string) *
 func (c *deploymentRESTClient) CreateFrameworkDeploymentOperation(name string) *CreateFrameworkDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateFrameworkDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudsecuritycompliance.CreateFrameworkDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1825,7 +1808,7 @@ func (c *deploymentRESTClient) CreateFrameworkDeploymentOperation(name string) *
 // The name must be that of a previously created DeleteFrameworkDeploymentOperation, possibly from a different process.
 func (c *deploymentGRPCClient) DeleteFrameworkDeploymentOperation(name string) *DeleteFrameworkDeploymentOperation {
 	return &DeleteFrameworkDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudsecuritycompliance.DeleteFrameworkDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1834,7 +1817,7 @@ func (c *deploymentGRPCClient) DeleteFrameworkDeploymentOperation(name string) *
 func (c *deploymentRESTClient) DeleteFrameworkDeploymentOperation(name string) *DeleteFrameworkDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteFrameworkDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudsecuritycompliance.DeleteFrameworkDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

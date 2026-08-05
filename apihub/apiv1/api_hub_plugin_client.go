@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -865,12 +864,8 @@ func (c *apiHubPluginRESTClient) DeletePlugin(ctx context.Context, req *apihubpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.DeletePluginOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePluginOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -939,12 +934,8 @@ func (c *apiHubPluginRESTClient) CreatePluginInstance(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.CreatePluginInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreatePluginInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1009,12 +1000,8 @@ func (c *apiHubPluginRESTClient) ExecutePluginInstanceAction(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.ExecutePluginInstanceActionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExecutePluginInstanceActionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1218,12 +1205,8 @@ func (c *apiHubPluginRESTClient) EnablePluginInstanceAction(ctx context.Context,
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.EnablePluginInstanceActionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &EnablePluginInstanceActionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1288,12 +1271,8 @@ func (c *apiHubPluginRESTClient) DisablePluginInstanceAction(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.DisablePluginInstanceActionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DisablePluginInstanceActionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1438,12 +1417,8 @@ func (c *apiHubPluginRESTClient) DeletePluginInstance(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apihub.DeletePluginInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePluginInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1810,7 +1785,7 @@ func (c *apiHubPluginRESTClient) ListOperations(ctx context.Context, req *longru
 func (c *apiHubPluginRESTClient) CreatePluginInstanceOperation(name string) *CreatePluginInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePluginInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.CreatePluginInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1820,7 +1795,7 @@ func (c *apiHubPluginRESTClient) CreatePluginInstanceOperation(name string) *Cre
 func (c *apiHubPluginRESTClient) DeletePluginOperation(name string) *DeletePluginOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePluginOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.DeletePluginOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1830,7 +1805,7 @@ func (c *apiHubPluginRESTClient) DeletePluginOperation(name string) *DeletePlugi
 func (c *apiHubPluginRESTClient) DeletePluginInstanceOperation(name string) *DeletePluginInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePluginInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.DeletePluginInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1840,7 +1815,7 @@ func (c *apiHubPluginRESTClient) DeletePluginInstanceOperation(name string) *Del
 func (c *apiHubPluginRESTClient) DisablePluginInstanceActionOperation(name string) *DisablePluginInstanceActionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DisablePluginInstanceActionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.DisablePluginInstanceActionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1850,7 +1825,7 @@ func (c *apiHubPluginRESTClient) DisablePluginInstanceActionOperation(name strin
 func (c *apiHubPluginRESTClient) EnablePluginInstanceActionOperation(name string) *EnablePluginInstanceActionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &EnablePluginInstanceActionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.EnablePluginInstanceActionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1860,7 +1835,7 @@ func (c *apiHubPluginRESTClient) EnablePluginInstanceActionOperation(name string
 func (c *apiHubPluginRESTClient) ExecutePluginInstanceActionOperation(name string) *ExecutePluginInstanceActionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExecutePluginInstanceActionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apihub.ExecutePluginInstanceActionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

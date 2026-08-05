@@ -34,7 +34,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1177,12 +1176,8 @@ func (c *firestoreAdminGRPCClient) CreateIndex(ctx context.Context, req *adminpb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.CreateIndexOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateIndexOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1324,12 +1319,8 @@ func (c *firestoreAdminGRPCClient) UpdateField(ctx context.Context, req *adminpb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.UpdateFieldOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateFieldOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1406,12 +1397,8 @@ func (c *firestoreAdminGRPCClient) ExportDocuments(ctx context.Context, req *adm
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.ExportDocumentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportDocumentsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1436,12 +1423,8 @@ func (c *firestoreAdminGRPCClient) ImportDocuments(ctx context.Context, req *adm
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.ImportDocumentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportDocumentsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1466,12 +1449,8 @@ func (c *firestoreAdminGRPCClient) BulkDeleteDocuments(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.BulkDeleteDocumentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BulkDeleteDocumentsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1496,12 +1475,8 @@ func (c *firestoreAdminGRPCClient) CreateDatabase(ctx context.Context, req *admi
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.CreateDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDatabaseOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1571,12 +1546,8 @@ func (c *firestoreAdminGRPCClient) UpdateDatabase(ctx context.Context, req *admi
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.UpdateDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDatabaseOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1601,12 +1572,8 @@ func (c *firestoreAdminGRPCClient) DeleteDatabase(ctx context.Context, req *admi
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.DeleteDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDatabaseOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1863,12 +1830,8 @@ func (c *firestoreAdminGRPCClient) RestoreDatabase(ctx context.Context, req *adm
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.RestoreDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RestoreDatabaseOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2023,12 +1986,8 @@ func (c *firestoreAdminGRPCClient) CloneDatabase(ctx context.Context, req *admin
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.CloneDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CloneDatabaseOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2201,12 +2160,8 @@ func (c *firestoreAdminRESTClient) CreateIndex(ctx context.Context, req *adminpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.CreateIndexOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateIndexOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2527,12 +2482,8 @@ func (c *firestoreAdminRESTClient) UpdateField(ctx context.Context, req *adminpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.UpdateFieldOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateFieldOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2696,12 +2647,8 @@ func (c *firestoreAdminRESTClient) ExportDocuments(ctx context.Context, req *adm
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.ExportDocumentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportDocumentsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2770,12 +2717,8 @@ func (c *firestoreAdminRESTClient) ImportDocuments(ctx context.Context, req *adm
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.ImportDocumentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportDocumentsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2847,12 +2790,8 @@ func (c *firestoreAdminRESTClient) BulkDeleteDocuments(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.BulkDeleteDocumentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BulkDeleteDocumentsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2919,12 +2858,8 @@ func (c *firestoreAdminRESTClient) CreateDatabase(ctx context.Context, req *admi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.CreateDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDatabaseOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3111,12 +3046,8 @@ func (c *firestoreAdminRESTClient) UpdateDatabase(ctx context.Context, req *admi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.UpdateDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDatabaseOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3178,12 +3109,8 @@ func (c *firestoreAdminRESTClient) DeleteDatabase(ctx context.Context, req *admi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.DeleteDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDatabaseOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3835,12 +3762,8 @@ func (c *firestoreAdminRESTClient) RestoreDatabase(ctx context.Context, req *adm
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.RestoreDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RestoreDatabaseOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4228,12 +4151,8 @@ func (c *firestoreAdminRESTClient) CloneDatabase(ctx context.Context, req *admin
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apiv1.CloneDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CloneDatabaseOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4464,7 +4383,7 @@ func (c *firestoreAdminRESTClient) ListOperations(ctx context.Context, req *long
 // The name must be that of a previously created BulkDeleteDocumentsOperation, possibly from a different process.
 func (c *firestoreAdminGRPCClient) BulkDeleteDocumentsOperation(name string) *BulkDeleteDocumentsOperation {
 	return &BulkDeleteDocumentsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.BulkDeleteDocumentsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4473,7 +4392,7 @@ func (c *firestoreAdminGRPCClient) BulkDeleteDocumentsOperation(name string) *Bu
 func (c *firestoreAdminRESTClient) BulkDeleteDocumentsOperation(name string) *BulkDeleteDocumentsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BulkDeleteDocumentsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.BulkDeleteDocumentsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4482,7 +4401,7 @@ func (c *firestoreAdminRESTClient) BulkDeleteDocumentsOperation(name string) *Bu
 // The name must be that of a previously created CloneDatabaseOperation, possibly from a different process.
 func (c *firestoreAdminGRPCClient) CloneDatabaseOperation(name string) *CloneDatabaseOperation {
 	return &CloneDatabaseOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.CloneDatabaseOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4491,7 +4410,7 @@ func (c *firestoreAdminGRPCClient) CloneDatabaseOperation(name string) *CloneDat
 func (c *firestoreAdminRESTClient) CloneDatabaseOperation(name string) *CloneDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CloneDatabaseOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.CloneDatabaseOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4500,7 +4419,7 @@ func (c *firestoreAdminRESTClient) CloneDatabaseOperation(name string) *CloneDat
 // The name must be that of a previously created CreateDatabaseOperation, possibly from a different process.
 func (c *firestoreAdminGRPCClient) CreateDatabaseOperation(name string) *CreateDatabaseOperation {
 	return &CreateDatabaseOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.CreateDatabaseOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4509,7 +4428,7 @@ func (c *firestoreAdminGRPCClient) CreateDatabaseOperation(name string) *CreateD
 func (c *firestoreAdminRESTClient) CreateDatabaseOperation(name string) *CreateDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDatabaseOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.CreateDatabaseOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4518,7 +4437,7 @@ func (c *firestoreAdminRESTClient) CreateDatabaseOperation(name string) *CreateD
 // The name must be that of a previously created CreateIndexOperation, possibly from a different process.
 func (c *firestoreAdminGRPCClient) CreateIndexOperation(name string) *CreateIndexOperation {
 	return &CreateIndexOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.CreateIndexOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4527,7 +4446,7 @@ func (c *firestoreAdminGRPCClient) CreateIndexOperation(name string) *CreateInde
 func (c *firestoreAdminRESTClient) CreateIndexOperation(name string) *CreateIndexOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateIndexOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.CreateIndexOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4536,7 +4455,7 @@ func (c *firestoreAdminRESTClient) CreateIndexOperation(name string) *CreateInde
 // The name must be that of a previously created DeleteDatabaseOperation, possibly from a different process.
 func (c *firestoreAdminGRPCClient) DeleteDatabaseOperation(name string) *DeleteDatabaseOperation {
 	return &DeleteDatabaseOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.DeleteDatabaseOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4545,7 +4464,7 @@ func (c *firestoreAdminGRPCClient) DeleteDatabaseOperation(name string) *DeleteD
 func (c *firestoreAdminRESTClient) DeleteDatabaseOperation(name string) *DeleteDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDatabaseOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.DeleteDatabaseOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4554,7 +4473,7 @@ func (c *firestoreAdminRESTClient) DeleteDatabaseOperation(name string) *DeleteD
 // The name must be that of a previously created ExportDocumentsOperation, possibly from a different process.
 func (c *firestoreAdminGRPCClient) ExportDocumentsOperation(name string) *ExportDocumentsOperation {
 	return &ExportDocumentsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.ExportDocumentsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4563,7 +4482,7 @@ func (c *firestoreAdminGRPCClient) ExportDocumentsOperation(name string) *Export
 func (c *firestoreAdminRESTClient) ExportDocumentsOperation(name string) *ExportDocumentsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportDocumentsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.ExportDocumentsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4572,7 +4491,7 @@ func (c *firestoreAdminRESTClient) ExportDocumentsOperation(name string) *Export
 // The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
 func (c *firestoreAdminGRPCClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
 	return &ImportDocumentsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.ImportDocumentsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4581,7 +4500,7 @@ func (c *firestoreAdminGRPCClient) ImportDocumentsOperation(name string) *Import
 func (c *firestoreAdminRESTClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportDocumentsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.ImportDocumentsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4590,7 +4509,7 @@ func (c *firestoreAdminRESTClient) ImportDocumentsOperation(name string) *Import
 // The name must be that of a previously created RestoreDatabaseOperation, possibly from a different process.
 func (c *firestoreAdminGRPCClient) RestoreDatabaseOperation(name string) *RestoreDatabaseOperation {
 	return &RestoreDatabaseOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.RestoreDatabaseOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4599,7 +4518,7 @@ func (c *firestoreAdminGRPCClient) RestoreDatabaseOperation(name string) *Restor
 func (c *firestoreAdminRESTClient) RestoreDatabaseOperation(name string) *RestoreDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RestoreDatabaseOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.RestoreDatabaseOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4608,7 +4527,7 @@ func (c *firestoreAdminRESTClient) RestoreDatabaseOperation(name string) *Restor
 // The name must be that of a previously created UpdateDatabaseOperation, possibly from a different process.
 func (c *firestoreAdminGRPCClient) UpdateDatabaseOperation(name string) *UpdateDatabaseOperation {
 	return &UpdateDatabaseOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.UpdateDatabaseOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4617,7 +4536,7 @@ func (c *firestoreAdminGRPCClient) UpdateDatabaseOperation(name string) *UpdateD
 func (c *firestoreAdminRESTClient) UpdateDatabaseOperation(name string) *UpdateDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDatabaseOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.UpdateDatabaseOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4626,7 +4545,7 @@ func (c *firestoreAdminRESTClient) UpdateDatabaseOperation(name string) *UpdateD
 // The name must be that of a previously created UpdateFieldOperation, possibly from a different process.
 func (c *firestoreAdminGRPCClient) UpdateFieldOperation(name string) *UpdateFieldOperation {
 	return &UpdateFieldOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.UpdateFieldOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4635,7 +4554,7 @@ func (c *firestoreAdminGRPCClient) UpdateFieldOperation(name string) *UpdateFiel
 func (c *firestoreAdminRESTClient) UpdateFieldOperation(name string) *UpdateFieldOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateFieldOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apiv1.UpdateFieldOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

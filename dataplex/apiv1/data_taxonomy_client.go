@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -778,12 +777,8 @@ func (c *dataTaxonomyGRPCClient) CreateDataTaxonomy(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateDataTaxonomyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDataTaxonomyOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -805,12 +800,8 @@ func (c *dataTaxonomyGRPCClient) UpdateDataTaxonomy(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateDataTaxonomyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDataTaxonomyOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -835,12 +826,8 @@ func (c *dataTaxonomyGRPCClient) DeleteDataTaxonomy(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteDataTaxonomyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDataTaxonomyOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -941,12 +928,8 @@ func (c *dataTaxonomyGRPCClient) CreateDataAttributeBinding(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateDataAttributeBindingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDataAttributeBindingOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -968,12 +951,8 @@ func (c *dataTaxonomyGRPCClient) UpdateDataAttributeBinding(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateDataAttributeBindingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDataAttributeBindingOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -998,12 +977,8 @@ func (c *dataTaxonomyGRPCClient) DeleteDataAttributeBinding(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteDataAttributeBindingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDataAttributeBindingOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1104,12 +1079,8 @@ func (c *dataTaxonomyGRPCClient) CreateDataAttribute(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateDataAttributeOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDataAttributeOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1131,12 +1102,8 @@ func (c *dataTaxonomyGRPCClient) UpdateDataAttribute(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateDataAttributeOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDataAttributeOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1161,12 +1128,8 @@ func (c *dataTaxonomyGRPCClient) DeleteDataAttribute(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteDataAttributeOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDataAttributeOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1559,12 +1522,8 @@ func (c *dataTaxonomyRESTClient) CreateDataTaxonomy(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateDataTaxonomyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDataTaxonomyOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1639,12 +1598,8 @@ func (c *dataTaxonomyRESTClient) UpdateDataTaxonomy(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateDataTaxonomyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDataTaxonomyOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1709,12 +1664,8 @@ func (c *dataTaxonomyRESTClient) DeleteDataTaxonomy(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteDataTaxonomyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDataTaxonomyOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1931,12 +1882,8 @@ func (c *dataTaxonomyRESTClient) CreateDataAttributeBinding(ctx context.Context,
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateDataAttributeBindingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDataAttributeBindingOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2011,12 +1958,8 @@ func (c *dataTaxonomyRESTClient) UpdateDataAttributeBinding(ctx context.Context,
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateDataAttributeBindingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDataAttributeBindingOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2080,12 +2023,8 @@ func (c *dataTaxonomyRESTClient) DeleteDataAttributeBinding(ctx context.Context,
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteDataAttributeBindingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDataAttributeBindingOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2302,12 +2241,8 @@ func (c *dataTaxonomyRESTClient) CreateDataAttribute(ctx context.Context, req *d
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateDataAttributeOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDataAttributeOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2382,12 +2317,8 @@ func (c *dataTaxonomyRESTClient) UpdateDataAttribute(ctx context.Context, req *d
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateDataAttributeOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDataAttributeOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2451,12 +2382,8 @@ func (c *dataTaxonomyRESTClient) DeleteDataAttribute(ctx context.Context, req *d
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteDataAttributeOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDataAttributeOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3179,7 +3106,7 @@ func (c *dataTaxonomyRESTClient) ListOperations(ctx context.Context, req *longru
 // The name must be that of a previously created CreateDataAttributeOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) CreateDataAttributeOperation(name string) *CreateDataAttributeOperation {
 	return &CreateDataAttributeOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateDataAttributeOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3188,7 +3115,7 @@ func (c *dataTaxonomyGRPCClient) CreateDataAttributeOperation(name string) *Crea
 func (c *dataTaxonomyRESTClient) CreateDataAttributeOperation(name string) *CreateDataAttributeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDataAttributeOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateDataAttributeOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3197,7 +3124,7 @@ func (c *dataTaxonomyRESTClient) CreateDataAttributeOperation(name string) *Crea
 // The name must be that of a previously created CreateDataAttributeBindingOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) CreateDataAttributeBindingOperation(name string) *CreateDataAttributeBindingOperation {
 	return &CreateDataAttributeBindingOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateDataAttributeBindingOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3206,7 +3133,7 @@ func (c *dataTaxonomyGRPCClient) CreateDataAttributeBindingOperation(name string
 func (c *dataTaxonomyRESTClient) CreateDataAttributeBindingOperation(name string) *CreateDataAttributeBindingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDataAttributeBindingOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateDataAttributeBindingOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3215,7 +3142,7 @@ func (c *dataTaxonomyRESTClient) CreateDataAttributeBindingOperation(name string
 // The name must be that of a previously created CreateDataTaxonomyOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) CreateDataTaxonomyOperation(name string) *CreateDataTaxonomyOperation {
 	return &CreateDataTaxonomyOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateDataTaxonomyOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3224,7 +3151,7 @@ func (c *dataTaxonomyGRPCClient) CreateDataTaxonomyOperation(name string) *Creat
 func (c *dataTaxonomyRESTClient) CreateDataTaxonomyOperation(name string) *CreateDataTaxonomyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDataTaxonomyOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateDataTaxonomyOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3233,7 +3160,7 @@ func (c *dataTaxonomyRESTClient) CreateDataTaxonomyOperation(name string) *Creat
 // The name must be that of a previously created DeleteDataAttributeOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) DeleteDataAttributeOperation(name string) *DeleteDataAttributeOperation {
 	return &DeleteDataAttributeOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteDataAttributeOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3242,7 +3169,7 @@ func (c *dataTaxonomyGRPCClient) DeleteDataAttributeOperation(name string) *Dele
 func (c *dataTaxonomyRESTClient) DeleteDataAttributeOperation(name string) *DeleteDataAttributeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDataAttributeOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteDataAttributeOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3251,7 +3178,7 @@ func (c *dataTaxonomyRESTClient) DeleteDataAttributeOperation(name string) *Dele
 // The name must be that of a previously created DeleteDataAttributeBindingOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) DeleteDataAttributeBindingOperation(name string) *DeleteDataAttributeBindingOperation {
 	return &DeleteDataAttributeBindingOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteDataAttributeBindingOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3260,7 +3187,7 @@ func (c *dataTaxonomyGRPCClient) DeleteDataAttributeBindingOperation(name string
 func (c *dataTaxonomyRESTClient) DeleteDataAttributeBindingOperation(name string) *DeleteDataAttributeBindingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDataAttributeBindingOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteDataAttributeBindingOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3269,7 +3196,7 @@ func (c *dataTaxonomyRESTClient) DeleteDataAttributeBindingOperation(name string
 // The name must be that of a previously created DeleteDataTaxonomyOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) DeleteDataTaxonomyOperation(name string) *DeleteDataTaxonomyOperation {
 	return &DeleteDataTaxonomyOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteDataTaxonomyOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3278,7 +3205,7 @@ func (c *dataTaxonomyGRPCClient) DeleteDataTaxonomyOperation(name string) *Delet
 func (c *dataTaxonomyRESTClient) DeleteDataTaxonomyOperation(name string) *DeleteDataTaxonomyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDataTaxonomyOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteDataTaxonomyOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3287,7 +3214,7 @@ func (c *dataTaxonomyRESTClient) DeleteDataTaxonomyOperation(name string) *Delet
 // The name must be that of a previously created UpdateDataAttributeOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) UpdateDataAttributeOperation(name string) *UpdateDataAttributeOperation {
 	return &UpdateDataAttributeOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateDataAttributeOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3296,7 +3223,7 @@ func (c *dataTaxonomyGRPCClient) UpdateDataAttributeOperation(name string) *Upda
 func (c *dataTaxonomyRESTClient) UpdateDataAttributeOperation(name string) *UpdateDataAttributeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDataAttributeOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateDataAttributeOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3305,7 +3232,7 @@ func (c *dataTaxonomyRESTClient) UpdateDataAttributeOperation(name string) *Upda
 // The name must be that of a previously created UpdateDataAttributeBindingOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) UpdateDataAttributeBindingOperation(name string) *UpdateDataAttributeBindingOperation {
 	return &UpdateDataAttributeBindingOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateDataAttributeBindingOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3314,7 +3241,7 @@ func (c *dataTaxonomyGRPCClient) UpdateDataAttributeBindingOperation(name string
 func (c *dataTaxonomyRESTClient) UpdateDataAttributeBindingOperation(name string) *UpdateDataAttributeBindingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDataAttributeBindingOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateDataAttributeBindingOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3323,7 +3250,7 @@ func (c *dataTaxonomyRESTClient) UpdateDataAttributeBindingOperation(name string
 // The name must be that of a previously created UpdateDataTaxonomyOperation, possibly from a different process.
 func (c *dataTaxonomyGRPCClient) UpdateDataTaxonomyOperation(name string) *UpdateDataTaxonomyOperation {
 	return &UpdateDataTaxonomyOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateDataTaxonomyOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3332,7 +3259,7 @@ func (c *dataTaxonomyGRPCClient) UpdateDataTaxonomyOperation(name string) *Updat
 func (c *dataTaxonomyRESTClient) UpdateDataTaxonomyOperation(name string) *UpdateDataTaxonomyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDataTaxonomyOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateDataTaxonomyOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

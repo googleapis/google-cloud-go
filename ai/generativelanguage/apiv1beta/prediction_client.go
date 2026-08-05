@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -482,12 +481,8 @@ func (c *predictionGRPCClient) PredictLongRunning(ctx context.Context, req *gene
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*generativelanguage.PredictLongRunningOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PredictLongRunningOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -718,12 +713,8 @@ func (c *predictionRESTClient) PredictLongRunning(ctx context.Context, req *gene
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*generativelanguage.PredictLongRunningOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PredictLongRunningOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -948,7 +939,7 @@ func (c *predictionRESTClient) ListOperations(ctx context.Context, req *longrunn
 // The name must be that of a previously created PredictLongRunningOperation, possibly from a different process.
 func (c *predictionGRPCClient) PredictLongRunningOperation(name string) *PredictLongRunningOperation {
 	return &PredictLongRunningOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*generativelanguage.PredictLongRunningOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -957,7 +948,7 @@ func (c *predictionGRPCClient) PredictLongRunningOperation(name string) *Predict
 func (c *predictionRESTClient) PredictLongRunningOperation(name string) *PredictLongRunningOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &PredictLongRunningOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*generativelanguage.PredictLongRunningOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

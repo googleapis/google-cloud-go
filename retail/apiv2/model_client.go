@@ -32,7 +32,6 @@ import (
 	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -753,12 +752,8 @@ func (c *modelGRPCClient) CreateModel(ctx context.Context, req *retailpb.CreateM
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.CreateModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateModelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -945,12 +940,8 @@ func (c *modelGRPCClient) TuneModel(ctx context.Context, req *retailpb.TuneModel
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.TuneModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &TuneModelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1088,12 +1079,8 @@ func (c *modelRESTClient) CreateModel(ctx context.Context, req *retailpb.CreateM
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.CreateModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateModelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1529,12 +1516,8 @@ func (c *modelRESTClient) TuneModel(ctx context.Context, req *retailpb.TuneModel
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.TuneModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &TuneModelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1681,7 +1664,7 @@ func (c *modelRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 // The name must be that of a previously created CreateModelOperation, possibly from a different process.
 func (c *modelGRPCClient) CreateModelOperation(name string) *CreateModelOperation {
 	return &CreateModelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.CreateModelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1690,7 +1673,7 @@ func (c *modelGRPCClient) CreateModelOperation(name string) *CreateModelOperatio
 func (c *modelRESTClient) CreateModelOperation(name string) *CreateModelOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateModelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.CreateModelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1699,7 +1682,7 @@ func (c *modelRESTClient) CreateModelOperation(name string) *CreateModelOperatio
 // The name must be that of a previously created TuneModelOperation, possibly from a different process.
 func (c *modelGRPCClient) TuneModelOperation(name string) *TuneModelOperation {
 	return &TuneModelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.TuneModelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1708,7 +1691,7 @@ func (c *modelGRPCClient) TuneModelOperation(name string) *TuneModelOperation {
 func (c *modelRESTClient) TuneModelOperation(name string) *TuneModelOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &TuneModelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.TuneModelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

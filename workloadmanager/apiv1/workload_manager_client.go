@@ -32,7 +32,6 @@ import (
 	workloadmanagerpb "cloud.google.com/go/workloadmanager/apiv1/workloadmanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -868,12 +867,8 @@ func (c *gRPCClient) CreateEvaluation(ctx context.Context, req *workloadmanagerp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.CreateEvaluationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateEvaluationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -895,12 +890,8 @@ func (c *gRPCClient) UpdateEvaluation(ctx context.Context, req *workloadmanagerp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.UpdateEvaluationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateEvaluationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -925,12 +916,8 @@ func (c *gRPCClient) DeleteEvaluation(ctx context.Context, req *workloadmanagerp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.DeleteEvaluationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteEvaluationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1031,12 +1018,8 @@ func (c *gRPCClient) RunEvaluation(ctx context.Context, req *workloadmanagerpb.R
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.RunEvaluationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RunEvaluationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1061,12 +1044,8 @@ func (c *gRPCClient) DeleteExecution(ctx context.Context, req *workloadmanagerpb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.DeleteExecutionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteExecutionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1572,12 +1551,8 @@ func (c *restClient) CreateEvaluation(ctx context.Context, req *workloadmanagerp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.CreateEvaluationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateEvaluationOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1650,12 +1625,8 @@ func (c *restClient) UpdateEvaluation(ctx context.Context, req *workloadmanagerp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.UpdateEvaluationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateEvaluationOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1720,12 +1691,8 @@ func (c *restClient) DeleteEvaluation(ctx context.Context, req *workloadmanagerp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.DeleteEvaluationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteEvaluationOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1931,12 +1898,8 @@ func (c *restClient) RunEvaluation(ctx context.Context, req *workloadmanagerpb.R
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.RunEvaluationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RunEvaluationOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1998,12 +1961,8 @@ func (c *restClient) DeleteExecution(ctx context.Context, req *workloadmanagerpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workloadmanager.DeleteExecutionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteExecutionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2617,7 +2576,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateEvaluationOperation, possibly from a different process.
 func (c *gRPCClient) CreateEvaluationOperation(name string) *CreateEvaluationOperation {
 	return &CreateEvaluationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.CreateEvaluationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2626,7 +2585,7 @@ func (c *gRPCClient) CreateEvaluationOperation(name string) *CreateEvaluationOpe
 func (c *restClient) CreateEvaluationOperation(name string) *CreateEvaluationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEvaluationOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.CreateEvaluationOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2635,7 +2594,7 @@ func (c *restClient) CreateEvaluationOperation(name string) *CreateEvaluationOpe
 // The name must be that of a previously created DeleteEvaluationOperation, possibly from a different process.
 func (c *gRPCClient) DeleteEvaluationOperation(name string) *DeleteEvaluationOperation {
 	return &DeleteEvaluationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.DeleteEvaluationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2644,7 +2603,7 @@ func (c *gRPCClient) DeleteEvaluationOperation(name string) *DeleteEvaluationOpe
 func (c *restClient) DeleteEvaluationOperation(name string) *DeleteEvaluationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEvaluationOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.DeleteEvaluationOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2653,7 +2612,7 @@ func (c *restClient) DeleteEvaluationOperation(name string) *DeleteEvaluationOpe
 // The name must be that of a previously created DeleteExecutionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteExecutionOperation(name string) *DeleteExecutionOperation {
 	return &DeleteExecutionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.DeleteExecutionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2662,7 +2621,7 @@ func (c *gRPCClient) DeleteExecutionOperation(name string) *DeleteExecutionOpera
 func (c *restClient) DeleteExecutionOperation(name string) *DeleteExecutionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteExecutionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.DeleteExecutionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2671,7 +2630,7 @@ func (c *restClient) DeleteExecutionOperation(name string) *DeleteExecutionOpera
 // The name must be that of a previously created RunEvaluationOperation, possibly from a different process.
 func (c *gRPCClient) RunEvaluationOperation(name string) *RunEvaluationOperation {
 	return &RunEvaluationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.RunEvaluationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2680,7 +2639,7 @@ func (c *gRPCClient) RunEvaluationOperation(name string) *RunEvaluationOperation
 func (c *restClient) RunEvaluationOperation(name string) *RunEvaluationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RunEvaluationOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.RunEvaluationOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2689,7 +2648,7 @@ func (c *restClient) RunEvaluationOperation(name string) *RunEvaluationOperation
 // The name must be that of a previously created UpdateEvaluationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateEvaluationOperation(name string) *UpdateEvaluationOperation {
 	return &UpdateEvaluationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.UpdateEvaluationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2698,7 +2657,7 @@ func (c *gRPCClient) UpdateEvaluationOperation(name string) *UpdateEvaluationOpe
 func (c *restClient) UpdateEvaluationOperation(name string) *UpdateEvaluationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateEvaluationOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workloadmanager.UpdateEvaluationOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

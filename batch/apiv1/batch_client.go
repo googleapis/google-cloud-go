@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -700,12 +699,8 @@ func (c *gRPCClient) DeleteJob(ctx context.Context, req *batchpb.DeleteJobReques
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*batch.DeleteJobOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteJobOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -730,12 +725,8 @@ func (c *gRPCClient) CancelJob(ctx context.Context, req *batchpb.CancelJobReques
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*batch.CancelJobOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CancelJobOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1222,12 +1213,8 @@ func (c *restClient) DeleteJob(ctx context.Context, req *batchpb.DeleteJobReques
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*batch.DeleteJobOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteJobOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1292,12 +1279,8 @@ func (c *restClient) CancelJob(ctx context.Context, req *batchpb.CancelJobReques
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*batch.CancelJobOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CancelJobOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1900,7 +1883,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CancelJobOperation, possibly from a different process.
 func (c *gRPCClient) CancelJobOperation(name string) *CancelJobOperation {
 	return &CancelJobOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*batch.CancelJobOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1909,7 +1892,7 @@ func (c *gRPCClient) CancelJobOperation(name string) *CancelJobOperation {
 func (c *restClient) CancelJobOperation(name string) *CancelJobOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CancelJobOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*batch.CancelJobOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1918,7 +1901,7 @@ func (c *restClient) CancelJobOperation(name string) *CancelJobOperation {
 // The name must be that of a previously created DeleteJobOperation, possibly from a different process.
 func (c *gRPCClient) DeleteJobOperation(name string) *DeleteJobOperation {
 	return &DeleteJobOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*batch.DeleteJobOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1927,7 +1910,7 @@ func (c *gRPCClient) DeleteJobOperation(name string) *DeleteJobOperation {
 func (c *restClient) DeleteJobOperation(name string) *DeleteJobOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteJobOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*batch.DeleteJobOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

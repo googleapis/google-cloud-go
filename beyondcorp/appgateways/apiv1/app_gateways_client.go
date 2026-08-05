@@ -30,7 +30,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -503,12 +502,8 @@ func (c *gRPCClient) CreateAppGateway(ctx context.Context, req *appgatewayspb.Cr
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appgateways.CreateAppGatewayOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAppGatewayOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -533,12 +528,8 @@ func (c *gRPCClient) DeleteAppGateway(ctx context.Context, req *appgatewayspb.De
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appgateways.DeleteAppGatewayOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAppGatewayOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -792,7 +783,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateAppGatewayOperation, possibly from a different process.
 func (c *gRPCClient) CreateAppGatewayOperation(name string) *CreateAppGatewayOperation {
 	return &CreateAppGatewayOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appgateways.CreateAppGatewayOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -800,6 +791,6 @@ func (c *gRPCClient) CreateAppGatewayOperation(name string) *CreateAppGatewayOpe
 // The name must be that of a previously created DeleteAppGatewayOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAppGatewayOperation(name string) *DeleteAppGatewayOperation {
 	return &DeleteAppGatewayOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appgateways.DeleteAppGatewayOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

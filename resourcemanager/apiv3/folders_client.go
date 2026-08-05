@@ -33,7 +33,6 @@ import (
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -860,12 +859,8 @@ func (c *foldersGRPCClient) CreateFolder(ctx context.Context, req *resourcemanag
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.CreateFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateFolderOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -887,12 +882,8 @@ func (c *foldersGRPCClient) UpdateFolder(ctx context.Context, req *resourcemanag
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UpdateFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateFolderOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -917,12 +908,8 @@ func (c *foldersGRPCClient) MoveFolder(ctx context.Context, req *resourcemanager
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.MoveFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &MoveFolderOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -947,12 +934,8 @@ func (c *foldersGRPCClient) DeleteFolder(ctx context.Context, req *resourcemanag
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.DeleteFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteFolderOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -977,12 +960,8 @@ func (c *foldersGRPCClient) UndeleteFolder(ctx context.Context, req *resourceman
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UndeleteFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UndeleteFolderOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1397,12 +1376,8 @@ func (c *foldersRESTClient) CreateFolder(ctx context.Context, req *resourcemanag
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.CreateFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateFolderOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1488,12 +1463,8 @@ func (c *foldersRESTClient) UpdateFolder(ctx context.Context, req *resourcemanag
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UpdateFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateFolderOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1574,12 +1545,8 @@ func (c *foldersRESTClient) MoveFolder(ctx context.Context, req *resourcemanager
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.MoveFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &MoveFolderOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1648,12 +1615,8 @@ func (c *foldersRESTClient) DeleteFolder(ctx context.Context, req *resourcemanag
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.DeleteFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteFolderOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1728,12 +1691,8 @@ func (c *foldersRESTClient) UndeleteFolder(ctx context.Context, req *resourceman
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UndeleteFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UndeleteFolderOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1997,7 +1956,7 @@ func (c *foldersRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 // The name must be that of a previously created CreateFolderOperation, possibly from a different process.
 func (c *foldersGRPCClient) CreateFolderOperation(name string) *CreateFolderOperation {
 	return &CreateFolderOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.CreateFolderOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2006,7 +1965,7 @@ func (c *foldersGRPCClient) CreateFolderOperation(name string) *CreateFolderOper
 func (c *foldersRESTClient) CreateFolderOperation(name string) *CreateFolderOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &CreateFolderOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.CreateFolderOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2015,7 +1974,7 @@ func (c *foldersRESTClient) CreateFolderOperation(name string) *CreateFolderOper
 // The name must be that of a previously created DeleteFolderOperation, possibly from a different process.
 func (c *foldersGRPCClient) DeleteFolderOperation(name string) *DeleteFolderOperation {
 	return &DeleteFolderOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.DeleteFolderOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2024,7 +1983,7 @@ func (c *foldersGRPCClient) DeleteFolderOperation(name string) *DeleteFolderOper
 func (c *foldersRESTClient) DeleteFolderOperation(name string) *DeleteFolderOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &DeleteFolderOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.DeleteFolderOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2033,7 +1992,7 @@ func (c *foldersRESTClient) DeleteFolderOperation(name string) *DeleteFolderOper
 // The name must be that of a previously created MoveFolderOperation, possibly from a different process.
 func (c *foldersGRPCClient) MoveFolderOperation(name string) *MoveFolderOperation {
 	return &MoveFolderOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.MoveFolderOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2042,7 +2001,7 @@ func (c *foldersGRPCClient) MoveFolderOperation(name string) *MoveFolderOperatio
 func (c *foldersRESTClient) MoveFolderOperation(name string) *MoveFolderOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &MoveFolderOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.MoveFolderOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2051,7 +2010,7 @@ func (c *foldersRESTClient) MoveFolderOperation(name string) *MoveFolderOperatio
 // The name must be that of a previously created UndeleteFolderOperation, possibly from a different process.
 func (c *foldersGRPCClient) UndeleteFolderOperation(name string) *UndeleteFolderOperation {
 	return &UndeleteFolderOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UndeleteFolderOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2060,7 +2019,7 @@ func (c *foldersGRPCClient) UndeleteFolderOperation(name string) *UndeleteFolder
 func (c *foldersRESTClient) UndeleteFolderOperation(name string) *UndeleteFolderOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &UndeleteFolderOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UndeleteFolderOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2069,7 +2028,7 @@ func (c *foldersRESTClient) UndeleteFolderOperation(name string) *UndeleteFolder
 // The name must be that of a previously created UpdateFolderOperation, possibly from a different process.
 func (c *foldersGRPCClient) UpdateFolderOperation(name string) *UpdateFolderOperation {
 	return &UpdateFolderOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UpdateFolderOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2078,7 +2037,7 @@ func (c *foldersGRPCClient) UpdateFolderOperation(name string) *UpdateFolderOper
 func (c *foldersRESTClient) UpdateFolderOperation(name string) *UpdateFolderOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &UpdateFolderOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UpdateFolderOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

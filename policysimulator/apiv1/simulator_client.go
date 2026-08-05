@@ -32,7 +32,6 @@ import (
 	policysimulatorpb "cloud.google.com/go/policysimulator/apiv1/policysimulatorpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -542,12 +541,8 @@ func (c *simulatorGRPCClient) CreateReplay(ctx context.Context, req *policysimul
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*policysimulator.CreateReplayOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateReplayOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -790,12 +785,8 @@ func (c *simulatorRESTClient) CreateReplay(ctx context.Context, req *policysimul
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*policysimulator.CreateReplayOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateReplayOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1021,7 +1012,7 @@ func (c *simulatorRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created CreateReplayOperation, possibly from a different process.
 func (c *simulatorGRPCClient) CreateReplayOperation(name string) *CreateReplayOperation {
 	return &CreateReplayOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*policysimulator.CreateReplayOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1030,7 +1021,7 @@ func (c *simulatorGRPCClient) CreateReplayOperation(name string) *CreateReplayOp
 func (c *simulatorRESTClient) CreateReplayOperation(name string) *CreateReplayOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateReplayOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*policysimulator.CreateReplayOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

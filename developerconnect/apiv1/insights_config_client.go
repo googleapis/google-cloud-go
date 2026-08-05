@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -627,12 +626,8 @@ func (c *insightsConfigGRPCClient) CreateInsightsConfig(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateInsightsConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInsightsConfigOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -678,12 +673,8 @@ func (c *insightsConfigGRPCClient) UpdateInsightsConfig(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.UpdateInsightsConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInsightsConfigOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -708,12 +699,8 @@ func (c *insightsConfigGRPCClient) DeleteInsightsConfig(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteInsightsConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInsightsConfigOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1116,12 +1103,8 @@ func (c *insightsConfigRESTClient) CreateInsightsConfig(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateInsightsConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInsightsConfigOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1250,12 +1233,8 @@ func (c *insightsConfigRESTClient) UpdateInsightsConfig(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.UpdateInsightsConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInsightsConfigOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1323,12 +1302,8 @@ func (c *insightsConfigRESTClient) DeleteInsightsConfig(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteInsightsConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInsightsConfigOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1840,7 +1815,7 @@ func (c *insightsConfigRESTClient) ListOperations(ctx context.Context, req *long
 // The name must be that of a previously created CreateInsightsConfigOperation, possibly from a different process.
 func (c *insightsConfigGRPCClient) CreateInsightsConfigOperation(name string) *CreateInsightsConfigOperation {
 	return &CreateInsightsConfigOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateInsightsConfigOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1849,7 +1824,7 @@ func (c *insightsConfigGRPCClient) CreateInsightsConfigOperation(name string) *C
 func (c *insightsConfigRESTClient) CreateInsightsConfigOperation(name string) *CreateInsightsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInsightsConfigOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateInsightsConfigOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1858,7 +1833,7 @@ func (c *insightsConfigRESTClient) CreateInsightsConfigOperation(name string) *C
 // The name must be that of a previously created DeleteInsightsConfigOperation, possibly from a different process.
 func (c *insightsConfigGRPCClient) DeleteInsightsConfigOperation(name string) *DeleteInsightsConfigOperation {
 	return &DeleteInsightsConfigOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteInsightsConfigOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1867,7 +1842,7 @@ func (c *insightsConfigGRPCClient) DeleteInsightsConfigOperation(name string) *D
 func (c *insightsConfigRESTClient) DeleteInsightsConfigOperation(name string) *DeleteInsightsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInsightsConfigOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteInsightsConfigOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1876,7 +1851,7 @@ func (c *insightsConfigRESTClient) DeleteInsightsConfigOperation(name string) *D
 // The name must be that of a previously created UpdateInsightsConfigOperation, possibly from a different process.
 func (c *insightsConfigGRPCClient) UpdateInsightsConfigOperation(name string) *UpdateInsightsConfigOperation {
 	return &UpdateInsightsConfigOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.UpdateInsightsConfigOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1885,7 +1860,7 @@ func (c *insightsConfigGRPCClient) UpdateInsightsConfigOperation(name string) *U
 func (c *insightsConfigRESTClient) UpdateInsightsConfigOperation(name string) *UpdateInsightsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInsightsConfigOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.UpdateInsightsConfigOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

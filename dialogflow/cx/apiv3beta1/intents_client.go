@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -862,12 +861,8 @@ func (c *intentsGRPCClient) ImportIntents(ctx context.Context, req *cxpb.ImportI
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ImportIntentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportIntentsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -892,12 +887,8 @@ func (c *intentsGRPCClient) ExportIntents(ctx context.Context, req *cxpb.ExportI
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ExportIntentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportIntentsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1464,12 +1455,8 @@ func (c *intentsRESTClient) ImportIntents(ctx context.Context, req *cxpb.ImportI
 	}
 
 	override := fmt.Sprintf("/v3beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ImportIntentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportIntentsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1544,12 +1531,8 @@ func (c *intentsRESTClient) ExportIntents(ctx context.Context, req *cxpb.ExportI
 	}
 
 	override := fmt.Sprintf("/v3beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ExportIntentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportIntentsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1885,7 +1868,7 @@ func (c *intentsRESTClient) ListOperations(ctx context.Context, req *longrunning
 // The name must be that of a previously created ExportIntentsOperation, possibly from a different process.
 func (c *intentsGRPCClient) ExportIntentsOperation(name string) *ExportIntentsOperation {
 	return &ExportIntentsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ExportIntentsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1894,7 +1877,7 @@ func (c *intentsGRPCClient) ExportIntentsOperation(name string) *ExportIntentsOp
 func (c *intentsRESTClient) ExportIntentsOperation(name string) *ExportIntentsOperation {
 	override := fmt.Sprintf("/v3beta1/%s", name)
 	return &ExportIntentsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ExportIntentsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1903,7 +1886,7 @@ func (c *intentsRESTClient) ExportIntentsOperation(name string) *ExportIntentsOp
 // The name must be that of a previously created ImportIntentsOperation, possibly from a different process.
 func (c *intentsGRPCClient) ImportIntentsOperation(name string) *ImportIntentsOperation {
 	return &ImportIntentsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ImportIntentsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1912,7 +1895,7 @@ func (c *intentsGRPCClient) ImportIntentsOperation(name string) *ImportIntentsOp
 func (c *intentsRESTClient) ImportIntentsOperation(name string) *ImportIntentsOperation {
 	override := fmt.Sprintf("/v3beta1/%s", name)
 	return &ImportIntentsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ImportIntentsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

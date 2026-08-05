@@ -30,7 +30,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -530,12 +529,8 @@ func (c *gRPCClient) CreateAppConnection(ctx context.Context, req *appconnection
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appconnections.CreateAppConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAppConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -557,12 +552,8 @@ func (c *gRPCClient) UpdateAppConnection(ctx context.Context, req *appconnection
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appconnections.UpdateAppConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAppConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -587,12 +578,8 @@ func (c *gRPCClient) DeleteAppConnection(ctx context.Context, req *appconnection
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appconnections.DeleteAppConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAppConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -898,7 +885,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateAppConnectionOperation, possibly from a different process.
 func (c *gRPCClient) CreateAppConnectionOperation(name string) *CreateAppConnectionOperation {
 	return &CreateAppConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appconnections.CreateAppConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -906,7 +893,7 @@ func (c *gRPCClient) CreateAppConnectionOperation(name string) *CreateAppConnect
 // The name must be that of a previously created DeleteAppConnectionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAppConnectionOperation(name string) *DeleteAppConnectionOperation {
 	return &DeleteAppConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appconnections.DeleteAppConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -914,6 +901,6 @@ func (c *gRPCClient) DeleteAppConnectionOperation(name string) *DeleteAppConnect
 // The name must be that of a previously created UpdateAppConnectionOperation, possibly from a different process.
 func (c *gRPCClient) UpdateAppConnectionOperation(name string) *UpdateAppConnectionOperation {
 	return &UpdateAppConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appconnections.UpdateAppConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

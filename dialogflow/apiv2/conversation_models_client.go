@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -818,12 +817,8 @@ func (c *conversationModelsGRPCClient) CreateConversationModel(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.CreateConversationModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateConversationModelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -915,12 +910,8 @@ func (c *conversationModelsGRPCClient) DeleteConversationModel(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.DeleteConversationModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteConversationModelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -942,12 +933,8 @@ func (c *conversationModelsGRPCClient) DeployConversationModel(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.DeployConversationModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeployConversationModelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -969,12 +956,8 @@ func (c *conversationModelsGRPCClient) UndeployConversationModel(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.UndeployConversationModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UndeployConversationModelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1069,12 +1052,8 @@ func (c *conversationModelsGRPCClient) CreateConversationModelEvaluation(ctx con
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.CreateConversationModelEvaluationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateConversationModelEvaluationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1303,12 +1282,8 @@ func (c *conversationModelsRESTClient) CreateConversationModel(ctx context.Conte
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.CreateConversationModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateConversationModelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1506,12 +1481,8 @@ func (c *conversationModelsRESTClient) DeleteConversationModel(ctx context.Conte
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.DeleteConversationModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteConversationModelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1586,12 +1557,8 @@ func (c *conversationModelsRESTClient) DeployConversationModel(ctx context.Conte
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.DeployConversationModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeployConversationModelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1667,12 +1634,8 @@ func (c *conversationModelsRESTClient) UndeployConversationModel(ctx context.Con
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.UndeployConversationModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UndeployConversationModelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1869,12 +1832,8 @@ func (c *conversationModelsRESTClient) CreateConversationModelEvaluation(ctx con
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.CreateConversationModelEvaluationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateConversationModelEvaluationOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2210,7 +2169,7 @@ func (c *conversationModelsRESTClient) ListOperations(ctx context.Context, req *
 // The name must be that of a previously created CreateConversationModelOperation, possibly from a different process.
 func (c *conversationModelsGRPCClient) CreateConversationModelOperation(name string) *CreateConversationModelOperation {
 	return &CreateConversationModelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.CreateConversationModelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2219,7 +2178,7 @@ func (c *conversationModelsGRPCClient) CreateConversationModelOperation(name str
 func (c *conversationModelsRESTClient) CreateConversationModelOperation(name string) *CreateConversationModelOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateConversationModelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.CreateConversationModelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2228,7 +2187,7 @@ func (c *conversationModelsRESTClient) CreateConversationModelOperation(name str
 // The name must be that of a previously created CreateConversationModelEvaluationOperation, possibly from a different process.
 func (c *conversationModelsGRPCClient) CreateConversationModelEvaluationOperation(name string) *CreateConversationModelEvaluationOperation {
 	return &CreateConversationModelEvaluationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.CreateConversationModelEvaluationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2237,7 +2196,7 @@ func (c *conversationModelsGRPCClient) CreateConversationModelEvaluationOperatio
 func (c *conversationModelsRESTClient) CreateConversationModelEvaluationOperation(name string) *CreateConversationModelEvaluationOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateConversationModelEvaluationOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.CreateConversationModelEvaluationOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2246,7 +2205,7 @@ func (c *conversationModelsRESTClient) CreateConversationModelEvaluationOperatio
 // The name must be that of a previously created DeleteConversationModelOperation, possibly from a different process.
 func (c *conversationModelsGRPCClient) DeleteConversationModelOperation(name string) *DeleteConversationModelOperation {
 	return &DeleteConversationModelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.DeleteConversationModelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2255,7 +2214,7 @@ func (c *conversationModelsGRPCClient) DeleteConversationModelOperation(name str
 func (c *conversationModelsRESTClient) DeleteConversationModelOperation(name string) *DeleteConversationModelOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteConversationModelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.DeleteConversationModelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2264,7 +2223,7 @@ func (c *conversationModelsRESTClient) DeleteConversationModelOperation(name str
 // The name must be that of a previously created DeployConversationModelOperation, possibly from a different process.
 func (c *conversationModelsGRPCClient) DeployConversationModelOperation(name string) *DeployConversationModelOperation {
 	return &DeployConversationModelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.DeployConversationModelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2273,7 +2232,7 @@ func (c *conversationModelsGRPCClient) DeployConversationModelOperation(name str
 func (c *conversationModelsRESTClient) DeployConversationModelOperation(name string) *DeployConversationModelOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeployConversationModelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.DeployConversationModelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2282,7 +2241,7 @@ func (c *conversationModelsRESTClient) DeployConversationModelOperation(name str
 // The name must be that of a previously created UndeployConversationModelOperation, possibly from a different process.
 func (c *conversationModelsGRPCClient) UndeployConversationModelOperation(name string) *UndeployConversationModelOperation {
 	return &UndeployConversationModelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.UndeployConversationModelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2291,7 +2250,7 @@ func (c *conversationModelsGRPCClient) UndeployConversationModelOperation(name s
 func (c *conversationModelsRESTClient) UndeployConversationModelOperation(name string) *UndeployConversationModelOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UndeployConversationModelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.UndeployConversationModelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

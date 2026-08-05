@@ -33,7 +33,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1474,12 +1473,8 @@ func (c *gRPCClient) BatchCreateTasks(ctx context.Context, req *cloudtaskspb.Bat
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudtasks.BatchCreateTasksOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchCreateTasksOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1524,12 +1519,8 @@ func (c *gRPCClient) BatchDeleteTasks(ctx context.Context, req *cloudtaskspb.Bat
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudtasks.BatchDeleteTasksOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchDeleteTasksOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2778,12 +2769,8 @@ func (c *restClient) BatchCreateTasks(ctx context.Context, req *cloudtaskspb.Bat
 	}
 
 	override := fmt.Sprintf("/v2beta3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudtasks.BatchCreateTasksOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchCreateTasksOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2898,12 +2885,8 @@ func (c *restClient) BatchDeleteTasks(ctx context.Context, req *cloudtaskspb.Bat
 	}
 
 	override := fmt.Sprintf("/v2beta3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudtasks.BatchDeleteTasksOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchDeleteTasksOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3338,7 +3321,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // The name must be that of a previously created BatchCreateTasksOperation, possibly from a different process.
 func (c *gRPCClient) BatchCreateTasksOperation(name string) *BatchCreateTasksOperation {
 	return &BatchCreateTasksOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudtasks.BatchCreateTasksOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3347,7 +3330,7 @@ func (c *gRPCClient) BatchCreateTasksOperation(name string) *BatchCreateTasksOpe
 func (c *restClient) BatchCreateTasksOperation(name string) *BatchCreateTasksOperation {
 	override := fmt.Sprintf("/v2beta3/%s", name)
 	return &BatchCreateTasksOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudtasks.BatchCreateTasksOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3356,7 +3339,7 @@ func (c *restClient) BatchCreateTasksOperation(name string) *BatchCreateTasksOpe
 // The name must be that of a previously created BatchDeleteTasksOperation, possibly from a different process.
 func (c *gRPCClient) BatchDeleteTasksOperation(name string) *BatchDeleteTasksOperation {
 	return &BatchDeleteTasksOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudtasks.BatchDeleteTasksOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3365,7 +3348,7 @@ func (c *gRPCClient) BatchDeleteTasksOperation(name string) *BatchDeleteTasksOpe
 func (c *restClient) BatchDeleteTasksOperation(name string) *BatchDeleteTasksOperation {
 	override := fmt.Sprintf("/v2beta3/%s", name)
 	return &BatchDeleteTasksOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudtasks.BatchDeleteTasksOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

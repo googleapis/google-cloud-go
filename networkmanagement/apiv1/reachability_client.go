@@ -33,7 +33,6 @@ import (
 	networkmanagementpb "cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -753,12 +752,8 @@ func (c *reachabilityGRPCClient) CreateConnectivityTest(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkmanagement.CreateConnectivityTestOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateConnectivityTestOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -780,12 +775,8 @@ func (c *reachabilityGRPCClient) UpdateConnectivityTest(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkmanagement.UpdateConnectivityTestOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateConnectivityTestOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -810,12 +801,8 @@ func (c *reachabilityGRPCClient) RerunConnectivityTest(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkmanagement.RerunConnectivityTestOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RerunConnectivityTestOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -840,12 +827,8 @@ func (c *reachabilityGRPCClient) DeleteConnectivityTest(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkmanagement.DeleteConnectivityTestOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteConnectivityTestOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1310,12 +1293,8 @@ func (c *reachabilityRESTClient) CreateConnectivityTest(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkmanagement.CreateConnectivityTestOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateConnectivityTestOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1398,12 +1377,8 @@ func (c *reachabilityRESTClient) UpdateConnectivityTest(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkmanagement.UpdateConnectivityTestOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateConnectivityTestOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1479,12 +1454,8 @@ func (c *reachabilityRESTClient) RerunConnectivityTest(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkmanagement.RerunConnectivityTestOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RerunConnectivityTestOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1543,12 +1514,8 @@ func (c *reachabilityRESTClient) DeleteConnectivityTest(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkmanagement.DeleteConnectivityTestOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteConnectivityTestOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2119,7 +2086,7 @@ func (c *reachabilityRESTClient) ListOperations(ctx context.Context, req *longru
 // The name must be that of a previously created CreateConnectivityTestOperation, possibly from a different process.
 func (c *reachabilityGRPCClient) CreateConnectivityTestOperation(name string) *CreateConnectivityTestOperation {
 	return &CreateConnectivityTestOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkmanagement.CreateConnectivityTestOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2128,7 +2095,7 @@ func (c *reachabilityGRPCClient) CreateConnectivityTestOperation(name string) *C
 func (c *reachabilityRESTClient) CreateConnectivityTestOperation(name string) *CreateConnectivityTestOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateConnectivityTestOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkmanagement.CreateConnectivityTestOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2137,7 +2104,7 @@ func (c *reachabilityRESTClient) CreateConnectivityTestOperation(name string) *C
 // The name must be that of a previously created DeleteConnectivityTestOperation, possibly from a different process.
 func (c *reachabilityGRPCClient) DeleteConnectivityTestOperation(name string) *DeleteConnectivityTestOperation {
 	return &DeleteConnectivityTestOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkmanagement.DeleteConnectivityTestOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2146,7 +2113,7 @@ func (c *reachabilityGRPCClient) DeleteConnectivityTestOperation(name string) *D
 func (c *reachabilityRESTClient) DeleteConnectivityTestOperation(name string) *DeleteConnectivityTestOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteConnectivityTestOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkmanagement.DeleteConnectivityTestOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2155,7 +2122,7 @@ func (c *reachabilityRESTClient) DeleteConnectivityTestOperation(name string) *D
 // The name must be that of a previously created RerunConnectivityTestOperation, possibly from a different process.
 func (c *reachabilityGRPCClient) RerunConnectivityTestOperation(name string) *RerunConnectivityTestOperation {
 	return &RerunConnectivityTestOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkmanagement.RerunConnectivityTestOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2164,7 +2131,7 @@ func (c *reachabilityGRPCClient) RerunConnectivityTestOperation(name string) *Re
 func (c *reachabilityRESTClient) RerunConnectivityTestOperation(name string) *RerunConnectivityTestOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RerunConnectivityTestOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkmanagement.RerunConnectivityTestOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2173,7 +2140,7 @@ func (c *reachabilityRESTClient) RerunConnectivityTestOperation(name string) *Re
 // The name must be that of a previously created UpdateConnectivityTestOperation, possibly from a different process.
 func (c *reachabilityGRPCClient) UpdateConnectivityTestOperation(name string) *UpdateConnectivityTestOperation {
 	return &UpdateConnectivityTestOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkmanagement.UpdateConnectivityTestOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2182,7 +2149,7 @@ func (c *reachabilityGRPCClient) UpdateConnectivityTestOperation(name string) *U
 func (c *reachabilityRESTClient) UpdateConnectivityTestOperation(name string) *UpdateConnectivityTestOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateConnectivityTestOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkmanagement.UpdateConnectivityTestOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

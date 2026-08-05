@@ -33,7 +33,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -2193,12 +2192,8 @@ func (c *keyManagementGRPCClient) DeleteCryptoKey(ctx context.Context, req *kmsp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.DeleteCryptoKeyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteCryptoKeyOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2223,12 +2218,8 @@ func (c *keyManagementGRPCClient) DeleteCryptoKeyVersion(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.DeleteCryptoKeyVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteCryptoKeyVersionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3883,12 +3874,8 @@ func (c *keyManagementRESTClient) DeleteCryptoKey(ctx context.Context, req *kmsp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.DeleteCryptoKeyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteCryptoKeyOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3957,12 +3944,8 @@ func (c *keyManagementRESTClient) DeleteCryptoKeyVersion(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.DeleteCryptoKeyVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteCryptoKeyVersionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5672,7 +5655,7 @@ func (c *keyManagementRESTClient) GetOperation(ctx context.Context, req *longrun
 // The name must be that of a previously created DeleteCryptoKeyOperation, possibly from a different process.
 func (c *keyManagementGRPCClient) DeleteCryptoKeyOperation(name string) *DeleteCryptoKeyOperation {
 	return &DeleteCryptoKeyOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.DeleteCryptoKeyOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5681,7 +5664,7 @@ func (c *keyManagementGRPCClient) DeleteCryptoKeyOperation(name string) *DeleteC
 func (c *keyManagementRESTClient) DeleteCryptoKeyOperation(name string) *DeleteCryptoKeyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCryptoKeyOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.DeleteCryptoKeyOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -5690,7 +5673,7 @@ func (c *keyManagementRESTClient) DeleteCryptoKeyOperation(name string) *DeleteC
 // The name must be that of a previously created DeleteCryptoKeyVersionOperation, possibly from a different process.
 func (c *keyManagementGRPCClient) DeleteCryptoKeyVersionOperation(name string) *DeleteCryptoKeyVersionOperation {
 	return &DeleteCryptoKeyVersionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.DeleteCryptoKeyVersionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5699,7 +5682,7 @@ func (c *keyManagementGRPCClient) DeleteCryptoKeyVersionOperation(name string) *
 func (c *keyManagementRESTClient) DeleteCryptoKeyVersionOperation(name string) *DeleteCryptoKeyVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCryptoKeyVersionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.DeleteCryptoKeyVersionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

@@ -32,7 +32,6 @@ import (
 	networksecuritypb "cloud.google.com/go/networksecurity/apiv1/networksecuritypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -908,12 +907,8 @@ func (c *mirroringGRPCClient) CreateMirroringEndpointGroup(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateMirroringEndpointGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMirroringEndpointGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -935,12 +930,8 @@ func (c *mirroringGRPCClient) UpdateMirroringEndpointGroup(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateMirroringEndpointGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateMirroringEndpointGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -965,12 +956,8 @@ func (c *mirroringGRPCClient) DeleteMirroringEndpointGroup(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteMirroringEndpointGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteMirroringEndpointGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1071,12 +1058,8 @@ func (c *mirroringGRPCClient) CreateMirroringEndpointGroupAssociation(ctx contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateMirroringEndpointGroupAssociationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMirroringEndpointGroupAssociationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1098,12 +1081,8 @@ func (c *mirroringGRPCClient) UpdateMirroringEndpointGroupAssociation(ctx contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateMirroringEndpointGroupAssociationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateMirroringEndpointGroupAssociationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1128,12 +1107,8 @@ func (c *mirroringGRPCClient) DeleteMirroringEndpointGroupAssociation(ctx contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteMirroringEndpointGroupAssociationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteMirroringEndpointGroupAssociationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1234,12 +1209,8 @@ func (c *mirroringGRPCClient) CreateMirroringDeploymentGroup(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateMirroringDeploymentGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMirroringDeploymentGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1261,12 +1232,8 @@ func (c *mirroringGRPCClient) UpdateMirroringDeploymentGroup(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateMirroringDeploymentGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateMirroringDeploymentGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1291,12 +1258,8 @@ func (c *mirroringGRPCClient) DeleteMirroringDeploymentGroup(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteMirroringDeploymentGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteMirroringDeploymentGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1397,12 +1360,8 @@ func (c *mirroringGRPCClient) CreateMirroringDeployment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateMirroringDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMirroringDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1424,12 +1383,8 @@ func (c *mirroringGRPCClient) UpdateMirroringDeployment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateMirroringDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateMirroringDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1454,12 +1409,8 @@ func (c *mirroringGRPCClient) DeleteMirroringDeployment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteMirroringDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteMirroringDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1918,12 +1869,8 @@ func (c *mirroringRESTClient) CreateMirroringEndpointGroup(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateMirroringEndpointGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMirroringEndpointGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1997,12 +1944,8 @@ func (c *mirroringRESTClient) UpdateMirroringEndpointGroup(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateMirroringEndpointGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateMirroringEndpointGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2065,12 +2008,8 @@ func (c *mirroringRESTClient) DeleteMirroringEndpointGroup(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteMirroringEndpointGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteMirroringEndpointGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2286,12 +2225,8 @@ func (c *mirroringRESTClient) CreateMirroringEndpointGroupAssociation(ctx contex
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateMirroringEndpointGroupAssociationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMirroringEndpointGroupAssociationOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2365,12 +2300,8 @@ func (c *mirroringRESTClient) UpdateMirroringEndpointGroupAssociation(ctx contex
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateMirroringEndpointGroupAssociationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateMirroringEndpointGroupAssociationOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2433,12 +2364,8 @@ func (c *mirroringRESTClient) DeleteMirroringEndpointGroupAssociation(ctx contex
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteMirroringEndpointGroupAssociationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteMirroringEndpointGroupAssociationOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2652,12 +2579,8 @@ func (c *mirroringRESTClient) CreateMirroringDeploymentGroup(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateMirroringDeploymentGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMirroringDeploymentGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2731,12 +2654,8 @@ func (c *mirroringRESTClient) UpdateMirroringDeploymentGroup(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateMirroringDeploymentGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateMirroringDeploymentGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2799,12 +2718,8 @@ func (c *mirroringRESTClient) DeleteMirroringDeploymentGroup(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteMirroringDeploymentGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteMirroringDeploymentGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3018,12 +2933,8 @@ func (c *mirroringRESTClient) CreateMirroringDeployment(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateMirroringDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMirroringDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3097,12 +3008,8 @@ func (c *mirroringRESTClient) UpdateMirroringDeployment(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateMirroringDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateMirroringDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3165,12 +3072,8 @@ func (c *mirroringRESTClient) DeleteMirroringDeployment(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteMirroringDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteMirroringDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3748,7 +3651,7 @@ func (c *mirroringRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created CreateMirroringDeploymentOperation, possibly from a different process.
 func (c *mirroringGRPCClient) CreateMirroringDeploymentOperation(name string) *CreateMirroringDeploymentOperation {
 	return &CreateMirroringDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateMirroringDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3757,7 +3660,7 @@ func (c *mirroringGRPCClient) CreateMirroringDeploymentOperation(name string) *C
 func (c *mirroringRESTClient) CreateMirroringDeploymentOperation(name string) *CreateMirroringDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateMirroringDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateMirroringDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3766,7 +3669,7 @@ func (c *mirroringRESTClient) CreateMirroringDeploymentOperation(name string) *C
 // The name must be that of a previously created CreateMirroringDeploymentGroupOperation, possibly from a different process.
 func (c *mirroringGRPCClient) CreateMirroringDeploymentGroupOperation(name string) *CreateMirroringDeploymentGroupOperation {
 	return &CreateMirroringDeploymentGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateMirroringDeploymentGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3775,7 +3678,7 @@ func (c *mirroringGRPCClient) CreateMirroringDeploymentGroupOperation(name strin
 func (c *mirroringRESTClient) CreateMirroringDeploymentGroupOperation(name string) *CreateMirroringDeploymentGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateMirroringDeploymentGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateMirroringDeploymentGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3784,7 +3687,7 @@ func (c *mirroringRESTClient) CreateMirroringDeploymentGroupOperation(name strin
 // The name must be that of a previously created CreateMirroringEndpointGroupOperation, possibly from a different process.
 func (c *mirroringGRPCClient) CreateMirroringEndpointGroupOperation(name string) *CreateMirroringEndpointGroupOperation {
 	return &CreateMirroringEndpointGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateMirroringEndpointGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3793,7 +3696,7 @@ func (c *mirroringGRPCClient) CreateMirroringEndpointGroupOperation(name string)
 func (c *mirroringRESTClient) CreateMirroringEndpointGroupOperation(name string) *CreateMirroringEndpointGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateMirroringEndpointGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateMirroringEndpointGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3802,7 +3705,7 @@ func (c *mirroringRESTClient) CreateMirroringEndpointGroupOperation(name string)
 // The name must be that of a previously created CreateMirroringEndpointGroupAssociationOperation, possibly from a different process.
 func (c *mirroringGRPCClient) CreateMirroringEndpointGroupAssociationOperation(name string) *CreateMirroringEndpointGroupAssociationOperation {
 	return &CreateMirroringEndpointGroupAssociationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateMirroringEndpointGroupAssociationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3811,7 +3714,7 @@ func (c *mirroringGRPCClient) CreateMirroringEndpointGroupAssociationOperation(n
 func (c *mirroringRESTClient) CreateMirroringEndpointGroupAssociationOperation(name string) *CreateMirroringEndpointGroupAssociationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateMirroringEndpointGroupAssociationOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateMirroringEndpointGroupAssociationOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3820,7 +3723,7 @@ func (c *mirroringRESTClient) CreateMirroringEndpointGroupAssociationOperation(n
 // The name must be that of a previously created DeleteMirroringDeploymentOperation, possibly from a different process.
 func (c *mirroringGRPCClient) DeleteMirroringDeploymentOperation(name string) *DeleteMirroringDeploymentOperation {
 	return &DeleteMirroringDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteMirroringDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3829,7 +3732,7 @@ func (c *mirroringGRPCClient) DeleteMirroringDeploymentOperation(name string) *D
 func (c *mirroringRESTClient) DeleteMirroringDeploymentOperation(name string) *DeleteMirroringDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteMirroringDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteMirroringDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3838,7 +3741,7 @@ func (c *mirroringRESTClient) DeleteMirroringDeploymentOperation(name string) *D
 // The name must be that of a previously created DeleteMirroringDeploymentGroupOperation, possibly from a different process.
 func (c *mirroringGRPCClient) DeleteMirroringDeploymentGroupOperation(name string) *DeleteMirroringDeploymentGroupOperation {
 	return &DeleteMirroringDeploymentGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteMirroringDeploymentGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3847,7 +3750,7 @@ func (c *mirroringGRPCClient) DeleteMirroringDeploymentGroupOperation(name strin
 func (c *mirroringRESTClient) DeleteMirroringDeploymentGroupOperation(name string) *DeleteMirroringDeploymentGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteMirroringDeploymentGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteMirroringDeploymentGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3856,7 +3759,7 @@ func (c *mirroringRESTClient) DeleteMirroringDeploymentGroupOperation(name strin
 // The name must be that of a previously created DeleteMirroringEndpointGroupOperation, possibly from a different process.
 func (c *mirroringGRPCClient) DeleteMirroringEndpointGroupOperation(name string) *DeleteMirroringEndpointGroupOperation {
 	return &DeleteMirroringEndpointGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteMirroringEndpointGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3865,7 +3768,7 @@ func (c *mirroringGRPCClient) DeleteMirroringEndpointGroupOperation(name string)
 func (c *mirroringRESTClient) DeleteMirroringEndpointGroupOperation(name string) *DeleteMirroringEndpointGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteMirroringEndpointGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteMirroringEndpointGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3874,7 +3777,7 @@ func (c *mirroringRESTClient) DeleteMirroringEndpointGroupOperation(name string)
 // The name must be that of a previously created DeleteMirroringEndpointGroupAssociationOperation, possibly from a different process.
 func (c *mirroringGRPCClient) DeleteMirroringEndpointGroupAssociationOperation(name string) *DeleteMirroringEndpointGroupAssociationOperation {
 	return &DeleteMirroringEndpointGroupAssociationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteMirroringEndpointGroupAssociationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3883,7 +3786,7 @@ func (c *mirroringGRPCClient) DeleteMirroringEndpointGroupAssociationOperation(n
 func (c *mirroringRESTClient) DeleteMirroringEndpointGroupAssociationOperation(name string) *DeleteMirroringEndpointGroupAssociationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteMirroringEndpointGroupAssociationOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteMirroringEndpointGroupAssociationOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3892,7 +3795,7 @@ func (c *mirroringRESTClient) DeleteMirroringEndpointGroupAssociationOperation(n
 // The name must be that of a previously created UpdateMirroringDeploymentOperation, possibly from a different process.
 func (c *mirroringGRPCClient) UpdateMirroringDeploymentOperation(name string) *UpdateMirroringDeploymentOperation {
 	return &UpdateMirroringDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateMirroringDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3901,7 +3804,7 @@ func (c *mirroringGRPCClient) UpdateMirroringDeploymentOperation(name string) *U
 func (c *mirroringRESTClient) UpdateMirroringDeploymentOperation(name string) *UpdateMirroringDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateMirroringDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateMirroringDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3910,7 +3813,7 @@ func (c *mirroringRESTClient) UpdateMirroringDeploymentOperation(name string) *U
 // The name must be that of a previously created UpdateMirroringDeploymentGroupOperation, possibly from a different process.
 func (c *mirroringGRPCClient) UpdateMirroringDeploymentGroupOperation(name string) *UpdateMirroringDeploymentGroupOperation {
 	return &UpdateMirroringDeploymentGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateMirroringDeploymentGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3919,7 +3822,7 @@ func (c *mirroringGRPCClient) UpdateMirroringDeploymentGroupOperation(name strin
 func (c *mirroringRESTClient) UpdateMirroringDeploymentGroupOperation(name string) *UpdateMirroringDeploymentGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateMirroringDeploymentGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateMirroringDeploymentGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3928,7 +3831,7 @@ func (c *mirroringRESTClient) UpdateMirroringDeploymentGroupOperation(name strin
 // The name must be that of a previously created UpdateMirroringEndpointGroupOperation, possibly from a different process.
 func (c *mirroringGRPCClient) UpdateMirroringEndpointGroupOperation(name string) *UpdateMirroringEndpointGroupOperation {
 	return &UpdateMirroringEndpointGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateMirroringEndpointGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3937,7 +3840,7 @@ func (c *mirroringGRPCClient) UpdateMirroringEndpointGroupOperation(name string)
 func (c *mirroringRESTClient) UpdateMirroringEndpointGroupOperation(name string) *UpdateMirroringEndpointGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateMirroringEndpointGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateMirroringEndpointGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3946,7 +3849,7 @@ func (c *mirroringRESTClient) UpdateMirroringEndpointGroupOperation(name string)
 // The name must be that of a previously created UpdateMirroringEndpointGroupAssociationOperation, possibly from a different process.
 func (c *mirroringGRPCClient) UpdateMirroringEndpointGroupAssociationOperation(name string) *UpdateMirroringEndpointGroupAssociationOperation {
 	return &UpdateMirroringEndpointGroupAssociationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateMirroringEndpointGroupAssociationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3955,7 +3858,7 @@ func (c *mirroringGRPCClient) UpdateMirroringEndpointGroupAssociationOperation(n
 func (c *mirroringRESTClient) UpdateMirroringEndpointGroupAssociationOperation(name string) *UpdateMirroringEndpointGroupAssociationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateMirroringEndpointGroupAssociationOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateMirroringEndpointGroupAssociationOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

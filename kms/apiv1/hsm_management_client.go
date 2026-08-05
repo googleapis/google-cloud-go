@@ -33,7 +33,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -929,12 +928,8 @@ func (c *hsmManagementGRPCClient) CreateSingleTenantHsmInstance(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.CreateSingleTenantHsmInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSingleTenantHsmInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -959,12 +954,8 @@ func (c *hsmManagementGRPCClient) CreateSingleTenantHsmInstanceProposal(ctx cont
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.CreateSingleTenantHsmInstanceProposalOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSingleTenantHsmInstanceProposalOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1013,12 +1004,8 @@ func (c *hsmManagementGRPCClient) ExecuteSingleTenantHsmInstanceProposal(ctx con
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.ExecuteSingleTenantHsmInstanceProposalOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExecuteSingleTenantHsmInstanceProposalOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1495,12 +1482,8 @@ func (c *hsmManagementRESTClient) CreateSingleTenantHsmInstance(ctx context.Cont
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.CreateSingleTenantHsmInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSingleTenantHsmInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1572,12 +1555,8 @@ func (c *hsmManagementRESTClient) CreateSingleTenantHsmInstanceProposal(ctx cont
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.CreateSingleTenantHsmInstanceProposalOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSingleTenantHsmInstanceProposalOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1717,12 +1696,8 @@ func (c *hsmManagementRESTClient) ExecuteSingleTenantHsmInstanceProposal(ctx con
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.ExecuteSingleTenantHsmInstanceProposalOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExecuteSingleTenantHsmInstanceProposalOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2321,7 +2296,7 @@ func (c *hsmManagementRESTClient) GetOperation(ctx context.Context, req *longrun
 // The name must be that of a previously created CreateSingleTenantHsmInstanceOperation, possibly from a different process.
 func (c *hsmManagementGRPCClient) CreateSingleTenantHsmInstanceOperation(name string) *CreateSingleTenantHsmInstanceOperation {
 	return &CreateSingleTenantHsmInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.CreateSingleTenantHsmInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2330,7 +2305,7 @@ func (c *hsmManagementGRPCClient) CreateSingleTenantHsmInstanceOperation(name st
 func (c *hsmManagementRESTClient) CreateSingleTenantHsmInstanceOperation(name string) *CreateSingleTenantHsmInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSingleTenantHsmInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.CreateSingleTenantHsmInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2339,7 +2314,7 @@ func (c *hsmManagementRESTClient) CreateSingleTenantHsmInstanceOperation(name st
 // The name must be that of a previously created CreateSingleTenantHsmInstanceProposalOperation, possibly from a different process.
 func (c *hsmManagementGRPCClient) CreateSingleTenantHsmInstanceProposalOperation(name string) *CreateSingleTenantHsmInstanceProposalOperation {
 	return &CreateSingleTenantHsmInstanceProposalOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.CreateSingleTenantHsmInstanceProposalOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2348,7 +2323,7 @@ func (c *hsmManagementGRPCClient) CreateSingleTenantHsmInstanceProposalOperation
 func (c *hsmManagementRESTClient) CreateSingleTenantHsmInstanceProposalOperation(name string) *CreateSingleTenantHsmInstanceProposalOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSingleTenantHsmInstanceProposalOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.CreateSingleTenantHsmInstanceProposalOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2357,7 +2332,7 @@ func (c *hsmManagementRESTClient) CreateSingleTenantHsmInstanceProposalOperation
 // The name must be that of a previously created ExecuteSingleTenantHsmInstanceProposalOperation, possibly from a different process.
 func (c *hsmManagementGRPCClient) ExecuteSingleTenantHsmInstanceProposalOperation(name string) *ExecuteSingleTenantHsmInstanceProposalOperation {
 	return &ExecuteSingleTenantHsmInstanceProposalOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.ExecuteSingleTenantHsmInstanceProposalOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2366,7 +2341,7 @@ func (c *hsmManagementGRPCClient) ExecuteSingleTenantHsmInstanceProposalOperatio
 func (c *hsmManagementRESTClient) ExecuteSingleTenantHsmInstanceProposalOperation(name string) *ExecuteSingleTenantHsmInstanceProposalOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExecuteSingleTenantHsmInstanceProposalOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.ExecuteSingleTenantHsmInstanceProposalOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

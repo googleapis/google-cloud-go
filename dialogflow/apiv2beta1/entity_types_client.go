@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1034,12 +1033,8 @@ func (c *entityTypesGRPCClient) BatchUpdateEntityTypes(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.BatchUpdateEntityTypesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchUpdateEntityTypesOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1064,12 +1059,8 @@ func (c *entityTypesGRPCClient) BatchDeleteEntityTypes(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.BatchDeleteEntityTypesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchDeleteEntityTypesOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1094,12 +1085,8 @@ func (c *entityTypesGRPCClient) BatchCreateEntities(ctx context.Context, req *di
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.BatchCreateEntitiesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchCreateEntitiesOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1124,12 +1111,8 @@ func (c *entityTypesGRPCClient) BatchUpdateEntities(ctx context.Context, req *di
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.BatchUpdateEntitiesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchUpdateEntitiesOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1154,12 +1137,8 @@ func (c *entityTypesGRPCClient) BatchDeleteEntities(ctx context.Context, req *di
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.BatchDeleteEntitiesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchDeleteEntitiesOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1727,12 +1706,8 @@ func (c *entityTypesRESTClient) BatchUpdateEntityTypes(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.BatchUpdateEntityTypesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchUpdateEntityTypesOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1811,12 +1786,8 @@ func (c *entityTypesRESTClient) BatchDeleteEntityTypes(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.BatchDeleteEntityTypesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchDeleteEntityTypesOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1895,12 +1866,8 @@ func (c *entityTypesRESTClient) BatchCreateEntities(ctx context.Context, req *di
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.BatchCreateEntitiesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchCreateEntitiesOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1981,12 +1948,8 @@ func (c *entityTypesRESTClient) BatchUpdateEntities(ctx context.Context, req *di
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.BatchUpdateEntitiesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchUpdateEntitiesOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2065,12 +2028,8 @@ func (c *entityTypesRESTClient) BatchDeleteEntities(ctx context.Context, req *di
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.BatchDeleteEntitiesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchDeleteEntitiesOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2406,7 +2365,7 @@ func (c *entityTypesRESTClient) ListOperations(ctx context.Context, req *longrun
 // The name must be that of a previously created BatchCreateEntitiesOperation, possibly from a different process.
 func (c *entityTypesGRPCClient) BatchCreateEntitiesOperation(name string) *BatchCreateEntitiesOperation {
 	return &BatchCreateEntitiesOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.BatchCreateEntitiesOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2415,7 +2374,7 @@ func (c *entityTypesGRPCClient) BatchCreateEntitiesOperation(name string) *Batch
 func (c *entityTypesRESTClient) BatchCreateEntitiesOperation(name string) *BatchCreateEntitiesOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &BatchCreateEntitiesOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.BatchCreateEntitiesOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2424,7 +2383,7 @@ func (c *entityTypesRESTClient) BatchCreateEntitiesOperation(name string) *Batch
 // The name must be that of a previously created BatchDeleteEntitiesOperation, possibly from a different process.
 func (c *entityTypesGRPCClient) BatchDeleteEntitiesOperation(name string) *BatchDeleteEntitiesOperation {
 	return &BatchDeleteEntitiesOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.BatchDeleteEntitiesOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2433,7 +2392,7 @@ func (c *entityTypesGRPCClient) BatchDeleteEntitiesOperation(name string) *Batch
 func (c *entityTypesRESTClient) BatchDeleteEntitiesOperation(name string) *BatchDeleteEntitiesOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &BatchDeleteEntitiesOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.BatchDeleteEntitiesOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2442,7 +2401,7 @@ func (c *entityTypesRESTClient) BatchDeleteEntitiesOperation(name string) *Batch
 // The name must be that of a previously created BatchDeleteEntityTypesOperation, possibly from a different process.
 func (c *entityTypesGRPCClient) BatchDeleteEntityTypesOperation(name string) *BatchDeleteEntityTypesOperation {
 	return &BatchDeleteEntityTypesOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.BatchDeleteEntityTypesOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2451,7 +2410,7 @@ func (c *entityTypesGRPCClient) BatchDeleteEntityTypesOperation(name string) *Ba
 func (c *entityTypesRESTClient) BatchDeleteEntityTypesOperation(name string) *BatchDeleteEntityTypesOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &BatchDeleteEntityTypesOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.BatchDeleteEntityTypesOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2460,7 +2419,7 @@ func (c *entityTypesRESTClient) BatchDeleteEntityTypesOperation(name string) *Ba
 // The name must be that of a previously created BatchUpdateEntitiesOperation, possibly from a different process.
 func (c *entityTypesGRPCClient) BatchUpdateEntitiesOperation(name string) *BatchUpdateEntitiesOperation {
 	return &BatchUpdateEntitiesOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.BatchUpdateEntitiesOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2469,7 +2428,7 @@ func (c *entityTypesGRPCClient) BatchUpdateEntitiesOperation(name string) *Batch
 func (c *entityTypesRESTClient) BatchUpdateEntitiesOperation(name string) *BatchUpdateEntitiesOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &BatchUpdateEntitiesOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.BatchUpdateEntitiesOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2478,7 +2437,7 @@ func (c *entityTypesRESTClient) BatchUpdateEntitiesOperation(name string) *Batch
 // The name must be that of a previously created BatchUpdateEntityTypesOperation, possibly from a different process.
 func (c *entityTypesGRPCClient) BatchUpdateEntityTypesOperation(name string) *BatchUpdateEntityTypesOperation {
 	return &BatchUpdateEntityTypesOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.BatchUpdateEntityTypesOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2487,7 +2446,7 @@ func (c *entityTypesGRPCClient) BatchUpdateEntityTypesOperation(name string) *Ba
 func (c *entityTypesRESTClient) BatchUpdateEntityTypesOperation(name string) *BatchUpdateEntityTypesOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &BatchUpdateEntityTypesOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.BatchUpdateEntityTypesOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

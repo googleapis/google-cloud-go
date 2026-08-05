@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -592,12 +591,8 @@ func (c *engineGRPCClient) CreateEngine(ctx context.Context, req *discoveryengin
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.CreateEngineOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateEngineOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -622,12 +617,8 @@ func (c *engineGRPCClient) DeleteEngine(ctx context.Context, req *discoveryengin
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteEngineOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteEngineOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -797,12 +788,8 @@ func (c *engineGRPCClient) TuneEngine(ctx context.Context, req *discoveryenginep
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.TuneEngineOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &TuneEngineOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -955,12 +942,8 @@ func (c *engineRESTClient) CreateEngine(ctx context.Context, req *discoveryengin
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.CreateEngineOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateEngineOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1019,12 +1002,8 @@ func (c *engineRESTClient) DeleteEngine(ctx context.Context, req *discoveryengin
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteEngineOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteEngineOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1428,12 +1407,8 @@ func (c *engineRESTClient) TuneEngine(ctx context.Context, req *discoveryenginep
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.TuneEngineOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &TuneEngineOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1625,7 +1600,7 @@ func (c *engineRESTClient) ListOperations(ctx context.Context, req *longrunningp
 // The name must be that of a previously created CreateEngineOperation, possibly from a different process.
 func (c *engineGRPCClient) CreateEngineOperation(name string) *CreateEngineOperation {
 	return &CreateEngineOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.CreateEngineOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1634,7 +1609,7 @@ func (c *engineGRPCClient) CreateEngineOperation(name string) *CreateEngineOpera
 func (c *engineRESTClient) CreateEngineOperation(name string) *CreateEngineOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &CreateEngineOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.CreateEngineOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1643,7 +1618,7 @@ func (c *engineRESTClient) CreateEngineOperation(name string) *CreateEngineOpera
 // The name must be that of a previously created DeleteEngineOperation, possibly from a different process.
 func (c *engineGRPCClient) DeleteEngineOperation(name string) *DeleteEngineOperation {
 	return &DeleteEngineOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteEngineOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1652,7 +1627,7 @@ func (c *engineGRPCClient) DeleteEngineOperation(name string) *DeleteEngineOpera
 func (c *engineRESTClient) DeleteEngineOperation(name string) *DeleteEngineOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &DeleteEngineOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteEngineOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1661,7 +1636,7 @@ func (c *engineRESTClient) DeleteEngineOperation(name string) *DeleteEngineOpera
 // The name must be that of a previously created TuneEngineOperation, possibly from a different process.
 func (c *engineGRPCClient) TuneEngineOperation(name string) *TuneEngineOperation {
 	return &TuneEngineOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.TuneEngineOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1670,7 +1645,7 @@ func (c *engineGRPCClient) TuneEngineOperation(name string) *TuneEngineOperation
 func (c *engineRESTClient) TuneEngineOperation(name string) *TuneEngineOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &TuneEngineOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.TuneEngineOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

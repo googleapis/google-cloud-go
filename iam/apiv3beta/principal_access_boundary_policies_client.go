@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -577,12 +576,8 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) CreatePrincipalAccessBoundar
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.CreatePrincipalAccessBoundaryPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreatePrincipalAccessBoundaryPolicyOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -628,12 +623,8 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) UpdatePrincipalAccessBoundar
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.UpdatePrincipalAccessBoundaryPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdatePrincipalAccessBoundaryPolicyOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -658,12 +649,8 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) DeletePrincipalAccessBoundar
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.DeletePrincipalAccessBoundaryPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePrincipalAccessBoundaryPolicyOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -858,12 +845,8 @@ func (c *principalAccessBoundaryPoliciesRESTClient) CreatePrincipalAccessBoundar
 	}
 
 	override := fmt.Sprintf("/v3beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.CreatePrincipalAccessBoundaryPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreatePrincipalAccessBoundaryPolicyOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -993,12 +976,8 @@ func (c *principalAccessBoundaryPoliciesRESTClient) UpdatePrincipalAccessBoundar
 	}
 
 	override := fmt.Sprintf("/v3beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.UpdatePrincipalAccessBoundaryPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdatePrincipalAccessBoundaryPolicyOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1066,12 +1045,8 @@ func (c *principalAccessBoundaryPoliciesRESTClient) DeletePrincipalAccessBoundar
 	}
 
 	override := fmt.Sprintf("/v3beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*iam.DeletePrincipalAccessBoundaryPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePrincipalAccessBoundaryPolicyOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1291,7 +1266,7 @@ func (c *principalAccessBoundaryPoliciesRESTClient) GetOperation(ctx context.Con
 // The name must be that of a previously created CreatePrincipalAccessBoundaryPolicyOperation, possibly from a different process.
 func (c *principalAccessBoundaryPoliciesGRPCClient) CreatePrincipalAccessBoundaryPolicyOperation(name string) *CreatePrincipalAccessBoundaryPolicyOperation {
 	return &CreatePrincipalAccessBoundaryPolicyOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.CreatePrincipalAccessBoundaryPolicyOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1300,7 +1275,7 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) CreatePrincipalAccessBoundar
 func (c *principalAccessBoundaryPoliciesRESTClient) CreatePrincipalAccessBoundaryPolicyOperation(name string) *CreatePrincipalAccessBoundaryPolicyOperation {
 	override := fmt.Sprintf("/v3beta/%s", name)
 	return &CreatePrincipalAccessBoundaryPolicyOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.CreatePrincipalAccessBoundaryPolicyOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1309,7 +1284,7 @@ func (c *principalAccessBoundaryPoliciesRESTClient) CreatePrincipalAccessBoundar
 // The name must be that of a previously created DeletePrincipalAccessBoundaryPolicyOperation, possibly from a different process.
 func (c *principalAccessBoundaryPoliciesGRPCClient) DeletePrincipalAccessBoundaryPolicyOperation(name string) *DeletePrincipalAccessBoundaryPolicyOperation {
 	return &DeletePrincipalAccessBoundaryPolicyOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.DeletePrincipalAccessBoundaryPolicyOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1318,7 +1293,7 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) DeletePrincipalAccessBoundar
 func (c *principalAccessBoundaryPoliciesRESTClient) DeletePrincipalAccessBoundaryPolicyOperation(name string) *DeletePrincipalAccessBoundaryPolicyOperation {
 	override := fmt.Sprintf("/v3beta/%s", name)
 	return &DeletePrincipalAccessBoundaryPolicyOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.DeletePrincipalAccessBoundaryPolicyOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1327,7 +1302,7 @@ func (c *principalAccessBoundaryPoliciesRESTClient) DeletePrincipalAccessBoundar
 // The name must be that of a previously created UpdatePrincipalAccessBoundaryPolicyOperation, possibly from a different process.
 func (c *principalAccessBoundaryPoliciesGRPCClient) UpdatePrincipalAccessBoundaryPolicyOperation(name string) *UpdatePrincipalAccessBoundaryPolicyOperation {
 	return &UpdatePrincipalAccessBoundaryPolicyOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.UpdatePrincipalAccessBoundaryPolicyOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1336,7 +1311,7 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) UpdatePrincipalAccessBoundar
 func (c *principalAccessBoundaryPoliciesRESTClient) UpdatePrincipalAccessBoundaryPolicyOperation(name string) *UpdatePrincipalAccessBoundaryPolicyOperation {
 	override := fmt.Sprintf("/v3beta/%s", name)
 	return &UpdatePrincipalAccessBoundaryPolicyOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*iam.UpdatePrincipalAccessBoundaryPolicyOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

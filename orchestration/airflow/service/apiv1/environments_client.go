@@ -31,7 +31,6 @@ import (
 	servicepb "cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -761,12 +760,8 @@ func (c *environmentsGRPCClient) CreateEnvironment(ctx context.Context, req *ser
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*service.CreateEnvironmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateEnvironmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -858,12 +853,8 @@ func (c *environmentsGRPCClient) UpdateEnvironment(ctx context.Context, req *ser
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*service.UpdateEnvironmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateEnvironmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -885,12 +876,8 @@ func (c *environmentsGRPCClient) DeleteEnvironment(ctx context.Context, req *ser
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*service.DeleteEnvironmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteEnvironmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1027,12 +1014,8 @@ func (c *environmentsGRPCClient) CheckUpgrade(ctx context.Context, req *servicep
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*service.CheckUpgradeOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CheckUpgradeOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1336,12 +1319,8 @@ func (c *environmentsGRPCClient) SaveSnapshot(ctx context.Context, req *servicep
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*service.SaveSnapshotOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SaveSnapshotOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1363,12 +1342,8 @@ func (c *environmentsGRPCClient) LoadSnapshot(ctx context.Context, req *servicep
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*service.LoadSnapshotOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &LoadSnapshotOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1390,12 +1365,8 @@ func (c *environmentsGRPCClient) DatabaseFailover(ctx context.Context, req *serv
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*service.DatabaseFailoverOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DatabaseFailoverOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1568,12 +1539,8 @@ func (c *environmentsRESTClient) CreateEnvironment(ctx context.Context, req *ser
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*service.CreateEnvironmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateEnvironmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1775,12 +1742,8 @@ func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *ser
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*service.UpdateEnvironmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateEnvironmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1836,12 +1799,8 @@ func (c *environmentsRESTClient) DeleteEnvironment(ctx context.Context, req *ser
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*service.DeleteEnvironmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteEnvironmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2170,12 +2129,8 @@ func (c *environmentsRESTClient) CheckUpgrade(ctx context.Context, req *servicep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*service.CheckUpgradeOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CheckUpgradeOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2875,12 +2830,8 @@ func (c *environmentsRESTClient) SaveSnapshot(ctx context.Context, req *servicep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*service.SaveSnapshotOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SaveSnapshotOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2945,12 +2896,8 @@ func (c *environmentsRESTClient) LoadSnapshot(ctx context.Context, req *servicep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*service.LoadSnapshotOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &LoadSnapshotOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3012,12 +2959,8 @@ func (c *environmentsRESTClient) DatabaseFailover(ctx context.Context, req *serv
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*service.DatabaseFailoverOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DatabaseFailoverOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3260,7 +3203,7 @@ func (c *environmentsRESTClient) ListOperations(ctx context.Context, req *longru
 // The name must be that of a previously created CheckUpgradeOperation, possibly from a different process.
 func (c *environmentsGRPCClient) CheckUpgradeOperation(name string) *CheckUpgradeOperation {
 	return &CheckUpgradeOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*service.CheckUpgradeOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3269,7 +3212,7 @@ func (c *environmentsGRPCClient) CheckUpgradeOperation(name string) *CheckUpgrad
 func (c *environmentsRESTClient) CheckUpgradeOperation(name string) *CheckUpgradeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CheckUpgradeOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*service.CheckUpgradeOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3278,7 +3221,7 @@ func (c *environmentsRESTClient) CheckUpgradeOperation(name string) *CheckUpgrad
 // The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
 func (c *environmentsGRPCClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
 	return &CreateEnvironmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*service.CreateEnvironmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3287,7 +3230,7 @@ func (c *environmentsGRPCClient) CreateEnvironmentOperation(name string) *Create
 func (c *environmentsRESTClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEnvironmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*service.CreateEnvironmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3296,7 +3239,7 @@ func (c *environmentsRESTClient) CreateEnvironmentOperation(name string) *Create
 // The name must be that of a previously created DatabaseFailoverOperation, possibly from a different process.
 func (c *environmentsGRPCClient) DatabaseFailoverOperation(name string) *DatabaseFailoverOperation {
 	return &DatabaseFailoverOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*service.DatabaseFailoverOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3305,7 +3248,7 @@ func (c *environmentsGRPCClient) DatabaseFailoverOperation(name string) *Databas
 func (c *environmentsRESTClient) DatabaseFailoverOperation(name string) *DatabaseFailoverOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DatabaseFailoverOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*service.DatabaseFailoverOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3314,7 +3257,7 @@ func (c *environmentsRESTClient) DatabaseFailoverOperation(name string) *Databas
 // The name must be that of a previously created DeleteEnvironmentOperation, possibly from a different process.
 func (c *environmentsGRPCClient) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
 	return &DeleteEnvironmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*service.DeleteEnvironmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3323,7 +3266,7 @@ func (c *environmentsGRPCClient) DeleteEnvironmentOperation(name string) *Delete
 func (c *environmentsRESTClient) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEnvironmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*service.DeleteEnvironmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3332,7 +3275,7 @@ func (c *environmentsRESTClient) DeleteEnvironmentOperation(name string) *Delete
 // The name must be that of a previously created LoadSnapshotOperation, possibly from a different process.
 func (c *environmentsGRPCClient) LoadSnapshotOperation(name string) *LoadSnapshotOperation {
 	return &LoadSnapshotOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*service.LoadSnapshotOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3341,7 +3284,7 @@ func (c *environmentsGRPCClient) LoadSnapshotOperation(name string) *LoadSnapsho
 func (c *environmentsRESTClient) LoadSnapshotOperation(name string) *LoadSnapshotOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &LoadSnapshotOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*service.LoadSnapshotOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3350,7 +3293,7 @@ func (c *environmentsRESTClient) LoadSnapshotOperation(name string) *LoadSnapsho
 // The name must be that of a previously created SaveSnapshotOperation, possibly from a different process.
 func (c *environmentsGRPCClient) SaveSnapshotOperation(name string) *SaveSnapshotOperation {
 	return &SaveSnapshotOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*service.SaveSnapshotOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3359,7 +3302,7 @@ func (c *environmentsGRPCClient) SaveSnapshotOperation(name string) *SaveSnapsho
 func (c *environmentsRESTClient) SaveSnapshotOperation(name string) *SaveSnapshotOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &SaveSnapshotOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*service.SaveSnapshotOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3368,7 +3311,7 @@ func (c *environmentsRESTClient) SaveSnapshotOperation(name string) *SaveSnapsho
 // The name must be that of a previously created UpdateEnvironmentOperation, possibly from a different process.
 func (c *environmentsGRPCClient) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
 	return &UpdateEnvironmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*service.UpdateEnvironmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3377,7 +3320,7 @@ func (c *environmentsGRPCClient) UpdateEnvironmentOperation(name string) *Update
 func (c *environmentsRESTClient) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateEnvironmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*service.UpdateEnvironmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

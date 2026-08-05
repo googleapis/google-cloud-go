@@ -32,7 +32,6 @@ import (
 	networksecuritypb "cloud.google.com/go/networksecurity/apiv1/networksecuritypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -911,12 +910,8 @@ func (c *interceptGRPCClient) CreateInterceptEndpointGroup(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateInterceptEndpointGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInterceptEndpointGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -938,12 +933,8 @@ func (c *interceptGRPCClient) UpdateInterceptEndpointGroup(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateInterceptEndpointGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInterceptEndpointGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -968,12 +959,8 @@ func (c *interceptGRPCClient) DeleteInterceptEndpointGroup(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteInterceptEndpointGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInterceptEndpointGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1074,12 +1061,8 @@ func (c *interceptGRPCClient) CreateInterceptEndpointGroupAssociation(ctx contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateInterceptEndpointGroupAssociationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInterceptEndpointGroupAssociationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1101,12 +1084,8 @@ func (c *interceptGRPCClient) UpdateInterceptEndpointGroupAssociation(ctx contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateInterceptEndpointGroupAssociationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInterceptEndpointGroupAssociationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1131,12 +1110,8 @@ func (c *interceptGRPCClient) DeleteInterceptEndpointGroupAssociation(ctx contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteInterceptEndpointGroupAssociationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInterceptEndpointGroupAssociationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1237,12 +1212,8 @@ func (c *interceptGRPCClient) CreateInterceptDeploymentGroup(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateInterceptDeploymentGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInterceptDeploymentGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1264,12 +1235,8 @@ func (c *interceptGRPCClient) UpdateInterceptDeploymentGroup(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateInterceptDeploymentGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInterceptDeploymentGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1294,12 +1261,8 @@ func (c *interceptGRPCClient) DeleteInterceptDeploymentGroup(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteInterceptDeploymentGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInterceptDeploymentGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1400,12 +1363,8 @@ func (c *interceptGRPCClient) CreateInterceptDeployment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateInterceptDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInterceptDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1427,12 +1386,8 @@ func (c *interceptGRPCClient) UpdateInterceptDeployment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateInterceptDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInterceptDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1457,12 +1412,8 @@ func (c *interceptGRPCClient) DeleteInterceptDeployment(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteInterceptDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInterceptDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1921,12 +1872,8 @@ func (c *interceptRESTClient) CreateInterceptEndpointGroup(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateInterceptEndpointGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInterceptEndpointGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2000,12 +1947,8 @@ func (c *interceptRESTClient) UpdateInterceptEndpointGroup(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateInterceptEndpointGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInterceptEndpointGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2068,12 +2011,8 @@ func (c *interceptRESTClient) DeleteInterceptEndpointGroup(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteInterceptEndpointGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInterceptEndpointGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2289,12 +2228,8 @@ func (c *interceptRESTClient) CreateInterceptEndpointGroupAssociation(ctx contex
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateInterceptEndpointGroupAssociationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInterceptEndpointGroupAssociationOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2368,12 +2303,8 @@ func (c *interceptRESTClient) UpdateInterceptEndpointGroupAssociation(ctx contex
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateInterceptEndpointGroupAssociationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInterceptEndpointGroupAssociationOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2436,12 +2367,8 @@ func (c *interceptRESTClient) DeleteInterceptEndpointGroupAssociation(ctx contex
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteInterceptEndpointGroupAssociationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInterceptEndpointGroupAssociationOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2655,12 +2582,8 @@ func (c *interceptRESTClient) CreateInterceptDeploymentGroup(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateInterceptDeploymentGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInterceptDeploymentGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2734,12 +2657,8 @@ func (c *interceptRESTClient) UpdateInterceptDeploymentGroup(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateInterceptDeploymentGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInterceptDeploymentGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2802,12 +2721,8 @@ func (c *interceptRESTClient) DeleteInterceptDeploymentGroup(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteInterceptDeploymentGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInterceptDeploymentGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3021,12 +2936,8 @@ func (c *interceptRESTClient) CreateInterceptDeployment(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateInterceptDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInterceptDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3100,12 +3011,8 @@ func (c *interceptRESTClient) UpdateInterceptDeployment(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateInterceptDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInterceptDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3168,12 +3075,8 @@ func (c *interceptRESTClient) DeleteInterceptDeployment(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteInterceptDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInterceptDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3751,7 +3654,7 @@ func (c *interceptRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created CreateInterceptDeploymentOperation, possibly from a different process.
 func (c *interceptGRPCClient) CreateInterceptDeploymentOperation(name string) *CreateInterceptDeploymentOperation {
 	return &CreateInterceptDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateInterceptDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3760,7 +3663,7 @@ func (c *interceptGRPCClient) CreateInterceptDeploymentOperation(name string) *C
 func (c *interceptRESTClient) CreateInterceptDeploymentOperation(name string) *CreateInterceptDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInterceptDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateInterceptDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3769,7 +3672,7 @@ func (c *interceptRESTClient) CreateInterceptDeploymentOperation(name string) *C
 // The name must be that of a previously created CreateInterceptDeploymentGroupOperation, possibly from a different process.
 func (c *interceptGRPCClient) CreateInterceptDeploymentGroupOperation(name string) *CreateInterceptDeploymentGroupOperation {
 	return &CreateInterceptDeploymentGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateInterceptDeploymentGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3778,7 +3681,7 @@ func (c *interceptGRPCClient) CreateInterceptDeploymentGroupOperation(name strin
 func (c *interceptRESTClient) CreateInterceptDeploymentGroupOperation(name string) *CreateInterceptDeploymentGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInterceptDeploymentGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateInterceptDeploymentGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3787,7 +3690,7 @@ func (c *interceptRESTClient) CreateInterceptDeploymentGroupOperation(name strin
 // The name must be that of a previously created CreateInterceptEndpointGroupOperation, possibly from a different process.
 func (c *interceptGRPCClient) CreateInterceptEndpointGroupOperation(name string) *CreateInterceptEndpointGroupOperation {
 	return &CreateInterceptEndpointGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateInterceptEndpointGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3796,7 +3699,7 @@ func (c *interceptGRPCClient) CreateInterceptEndpointGroupOperation(name string)
 func (c *interceptRESTClient) CreateInterceptEndpointGroupOperation(name string) *CreateInterceptEndpointGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInterceptEndpointGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateInterceptEndpointGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3805,7 +3708,7 @@ func (c *interceptRESTClient) CreateInterceptEndpointGroupOperation(name string)
 // The name must be that of a previously created CreateInterceptEndpointGroupAssociationOperation, possibly from a different process.
 func (c *interceptGRPCClient) CreateInterceptEndpointGroupAssociationOperation(name string) *CreateInterceptEndpointGroupAssociationOperation {
 	return &CreateInterceptEndpointGroupAssociationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateInterceptEndpointGroupAssociationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3814,7 +3717,7 @@ func (c *interceptGRPCClient) CreateInterceptEndpointGroupAssociationOperation(n
 func (c *interceptRESTClient) CreateInterceptEndpointGroupAssociationOperation(name string) *CreateInterceptEndpointGroupAssociationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInterceptEndpointGroupAssociationOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateInterceptEndpointGroupAssociationOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3823,7 +3726,7 @@ func (c *interceptRESTClient) CreateInterceptEndpointGroupAssociationOperation(n
 // The name must be that of a previously created DeleteInterceptDeploymentOperation, possibly from a different process.
 func (c *interceptGRPCClient) DeleteInterceptDeploymentOperation(name string) *DeleteInterceptDeploymentOperation {
 	return &DeleteInterceptDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteInterceptDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3832,7 +3735,7 @@ func (c *interceptGRPCClient) DeleteInterceptDeploymentOperation(name string) *D
 func (c *interceptRESTClient) DeleteInterceptDeploymentOperation(name string) *DeleteInterceptDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInterceptDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteInterceptDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3841,7 +3744,7 @@ func (c *interceptRESTClient) DeleteInterceptDeploymentOperation(name string) *D
 // The name must be that of a previously created DeleteInterceptDeploymentGroupOperation, possibly from a different process.
 func (c *interceptGRPCClient) DeleteInterceptDeploymentGroupOperation(name string) *DeleteInterceptDeploymentGroupOperation {
 	return &DeleteInterceptDeploymentGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteInterceptDeploymentGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3850,7 +3753,7 @@ func (c *interceptGRPCClient) DeleteInterceptDeploymentGroupOperation(name strin
 func (c *interceptRESTClient) DeleteInterceptDeploymentGroupOperation(name string) *DeleteInterceptDeploymentGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInterceptDeploymentGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteInterceptDeploymentGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3859,7 +3762,7 @@ func (c *interceptRESTClient) DeleteInterceptDeploymentGroupOperation(name strin
 // The name must be that of a previously created DeleteInterceptEndpointGroupOperation, possibly from a different process.
 func (c *interceptGRPCClient) DeleteInterceptEndpointGroupOperation(name string) *DeleteInterceptEndpointGroupOperation {
 	return &DeleteInterceptEndpointGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteInterceptEndpointGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3868,7 +3771,7 @@ func (c *interceptGRPCClient) DeleteInterceptEndpointGroupOperation(name string)
 func (c *interceptRESTClient) DeleteInterceptEndpointGroupOperation(name string) *DeleteInterceptEndpointGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInterceptEndpointGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteInterceptEndpointGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3877,7 +3780,7 @@ func (c *interceptRESTClient) DeleteInterceptEndpointGroupOperation(name string)
 // The name must be that of a previously created DeleteInterceptEndpointGroupAssociationOperation, possibly from a different process.
 func (c *interceptGRPCClient) DeleteInterceptEndpointGroupAssociationOperation(name string) *DeleteInterceptEndpointGroupAssociationOperation {
 	return &DeleteInterceptEndpointGroupAssociationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteInterceptEndpointGroupAssociationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3886,7 +3789,7 @@ func (c *interceptGRPCClient) DeleteInterceptEndpointGroupAssociationOperation(n
 func (c *interceptRESTClient) DeleteInterceptEndpointGroupAssociationOperation(name string) *DeleteInterceptEndpointGroupAssociationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInterceptEndpointGroupAssociationOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteInterceptEndpointGroupAssociationOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3895,7 +3798,7 @@ func (c *interceptRESTClient) DeleteInterceptEndpointGroupAssociationOperation(n
 // The name must be that of a previously created UpdateInterceptDeploymentOperation, possibly from a different process.
 func (c *interceptGRPCClient) UpdateInterceptDeploymentOperation(name string) *UpdateInterceptDeploymentOperation {
 	return &UpdateInterceptDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateInterceptDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3904,7 +3807,7 @@ func (c *interceptGRPCClient) UpdateInterceptDeploymentOperation(name string) *U
 func (c *interceptRESTClient) UpdateInterceptDeploymentOperation(name string) *UpdateInterceptDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInterceptDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateInterceptDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3913,7 +3816,7 @@ func (c *interceptRESTClient) UpdateInterceptDeploymentOperation(name string) *U
 // The name must be that of a previously created UpdateInterceptDeploymentGroupOperation, possibly from a different process.
 func (c *interceptGRPCClient) UpdateInterceptDeploymentGroupOperation(name string) *UpdateInterceptDeploymentGroupOperation {
 	return &UpdateInterceptDeploymentGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateInterceptDeploymentGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3922,7 +3825,7 @@ func (c *interceptGRPCClient) UpdateInterceptDeploymentGroupOperation(name strin
 func (c *interceptRESTClient) UpdateInterceptDeploymentGroupOperation(name string) *UpdateInterceptDeploymentGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInterceptDeploymentGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateInterceptDeploymentGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3931,7 +3834,7 @@ func (c *interceptRESTClient) UpdateInterceptDeploymentGroupOperation(name strin
 // The name must be that of a previously created UpdateInterceptEndpointGroupOperation, possibly from a different process.
 func (c *interceptGRPCClient) UpdateInterceptEndpointGroupOperation(name string) *UpdateInterceptEndpointGroupOperation {
 	return &UpdateInterceptEndpointGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateInterceptEndpointGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3940,7 +3843,7 @@ func (c *interceptGRPCClient) UpdateInterceptEndpointGroupOperation(name string)
 func (c *interceptRESTClient) UpdateInterceptEndpointGroupOperation(name string) *UpdateInterceptEndpointGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInterceptEndpointGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateInterceptEndpointGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3949,7 +3852,7 @@ func (c *interceptRESTClient) UpdateInterceptEndpointGroupOperation(name string)
 // The name must be that of a previously created UpdateInterceptEndpointGroupAssociationOperation, possibly from a different process.
 func (c *interceptGRPCClient) UpdateInterceptEndpointGroupAssociationOperation(name string) *UpdateInterceptEndpointGroupAssociationOperation {
 	return &UpdateInterceptEndpointGroupAssociationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateInterceptEndpointGroupAssociationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3958,7 +3861,7 @@ func (c *interceptGRPCClient) UpdateInterceptEndpointGroupAssociationOperation(n
 func (c *interceptRESTClient) UpdateInterceptEndpointGroupAssociationOperation(name string) *UpdateInterceptEndpointGroupAssociationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInterceptEndpointGroupAssociationOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateInterceptEndpointGroupAssociationOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

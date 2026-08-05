@@ -32,7 +32,6 @@ import (
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -727,12 +726,8 @@ func (c *foldersGRPCClient) CreateFolder(ctx context.Context, req *resourcemanag
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.CreateFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateFolderOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -778,12 +773,8 @@ func (c *foldersGRPCClient) MoveFolder(ctx context.Context, req *resourcemanager
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.MoveFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &MoveFolderOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1223,12 +1214,8 @@ func (c *foldersRESTClient) CreateFolder(ctx context.Context, req *resourcemanag
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.CreateFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateFolderOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1391,12 +1378,8 @@ func (c *foldersRESTClient) MoveFolder(ctx context.Context, req *resourcemanager
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.MoveFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &MoveFolderOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1746,7 +1729,7 @@ func (c *foldersRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 // The name must be that of a previously created CreateFolderOperation, possibly from a different process.
 func (c *foldersGRPCClient) CreateFolderOperation(name string) *CreateFolderOperation {
 	return &CreateFolderOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.CreateFolderOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1755,7 +1738,7 @@ func (c *foldersGRPCClient) CreateFolderOperation(name string) *CreateFolderOper
 func (c *foldersRESTClient) CreateFolderOperation(name string) *CreateFolderOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateFolderOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.CreateFolderOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1764,7 +1747,7 @@ func (c *foldersRESTClient) CreateFolderOperation(name string) *CreateFolderOper
 // The name must be that of a previously created MoveFolderOperation, possibly from a different process.
 func (c *foldersGRPCClient) MoveFolderOperation(name string) *MoveFolderOperation {
 	return &MoveFolderOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.MoveFolderOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1773,7 +1756,7 @@ func (c *foldersGRPCClient) MoveFolderOperation(name string) *MoveFolderOperatio
 func (c *foldersRESTClient) MoveFolderOperation(name string) *MoveFolderOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &MoveFolderOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.MoveFolderOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

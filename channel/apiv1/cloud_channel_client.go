@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -3234,12 +3233,8 @@ func (c *cloudChannelGRPCClient) ProvisionCloudIdentity(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.ProvisionCloudIdentityOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ProvisionCloudIdentityOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3438,12 +3433,8 @@ func (c *cloudChannelGRPCClient) CreateEntitlement(ctx context.Context, req *cha
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.CreateEntitlementOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateEntitlementOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3465,12 +3456,8 @@ func (c *cloudChannelGRPCClient) ChangeParameters(ctx context.Context, req *chan
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.ChangeParametersOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ChangeParametersOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3492,12 +3479,8 @@ func (c *cloudChannelGRPCClient) ChangeRenewalSettings(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.ChangeRenewalSettingsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ChangeRenewalSettingsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3522,12 +3505,8 @@ func (c *cloudChannelGRPCClient) ChangeOffer(ctx context.Context, req *channelpb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.ChangeOfferOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ChangeOfferOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3549,12 +3528,8 @@ func (c *cloudChannelGRPCClient) StartPaidService(ctx context.Context, req *chan
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.StartPaidServiceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StartPaidServiceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3576,12 +3551,8 @@ func (c *cloudChannelGRPCClient) SuspendEntitlement(ctx context.Context, req *ch
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.SuspendEntitlementOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SuspendEntitlementOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3603,12 +3574,8 @@ func (c *cloudChannelGRPCClient) CancelEntitlement(ctx context.Context, req *cha
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.CancelEntitlementOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CancelEntitlementOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3630,12 +3597,8 @@ func (c *cloudChannelGRPCClient) ActivateEntitlement(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.ActivateEntitlementOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ActivateEntitlementOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3657,12 +3620,8 @@ func (c *cloudChannelGRPCClient) TransferEntitlements(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.TransferEntitlementsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &TransferEntitlementsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3684,12 +3643,8 @@ func (c *cloudChannelGRPCClient) TransferEntitlementsToGoogle(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.TransferEntitlementsToGoogleOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &TransferEntitlementsToGoogleOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -5380,12 +5335,8 @@ func (c *cloudChannelRESTClient) ProvisionCloudIdentity(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.ProvisionCloudIdentityOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ProvisionCloudIdentityOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5868,12 +5819,8 @@ func (c *cloudChannelRESTClient) CreateEntitlement(ctx context.Context, req *cha
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.CreateEntitlementOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateEntitlementOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5961,12 +5908,8 @@ func (c *cloudChannelRESTClient) ChangeParameters(ctx context.Context, req *chan
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.ChangeParametersOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ChangeParametersOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6055,12 +5998,8 @@ func (c *cloudChannelRESTClient) ChangeRenewalSettings(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.ChangeRenewalSettingsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ChangeRenewalSettingsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6149,12 +6088,8 @@ func (c *cloudChannelRESTClient) ChangeOffer(ctx context.Context, req *channelpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.ChangeOfferOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ChangeOfferOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6244,12 +6179,8 @@ func (c *cloudChannelRESTClient) StartPaidService(ctx context.Context, req *chan
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.StartPaidServiceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StartPaidServiceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6336,12 +6267,8 @@ func (c *cloudChannelRESTClient) SuspendEntitlement(ctx context.Context, req *ch
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.SuspendEntitlementOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SuspendEntitlementOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6434,12 +6361,8 @@ func (c *cloudChannelRESTClient) CancelEntitlement(ctx context.Context, req *cha
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.CancelEntitlementOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CancelEntitlementOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6533,12 +6456,8 @@ func (c *cloudChannelRESTClient) ActivateEntitlement(ctx context.Context, req *c
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.ActivateEntitlementOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ActivateEntitlementOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6645,12 +6564,8 @@ func (c *cloudChannelRESTClient) TransferEntitlements(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.TransferEntitlementsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &TransferEntitlementsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6751,12 +6666,8 @@ func (c *cloudChannelRESTClient) TransferEntitlementsToGoogle(ctx context.Contex
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*channel.TransferEntitlementsToGoogleOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &TransferEntitlementsToGoogleOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -9403,7 +9314,7 @@ func (c *cloudChannelRESTClient) ListOperations(ctx context.Context, req *longru
 // The name must be that of a previously created ActivateEntitlementOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) ActivateEntitlementOperation(name string) *ActivateEntitlementOperation {
 	return &ActivateEntitlementOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.ActivateEntitlementOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -9412,7 +9323,7 @@ func (c *cloudChannelGRPCClient) ActivateEntitlementOperation(name string) *Acti
 func (c *cloudChannelRESTClient) ActivateEntitlementOperation(name string) *ActivateEntitlementOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ActivateEntitlementOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.ActivateEntitlementOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -9421,7 +9332,7 @@ func (c *cloudChannelRESTClient) ActivateEntitlementOperation(name string) *Acti
 // The name must be that of a previously created CancelEntitlementOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) CancelEntitlementOperation(name string) *CancelEntitlementOperation {
 	return &CancelEntitlementOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.CancelEntitlementOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -9430,7 +9341,7 @@ func (c *cloudChannelGRPCClient) CancelEntitlementOperation(name string) *Cancel
 func (c *cloudChannelRESTClient) CancelEntitlementOperation(name string) *CancelEntitlementOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CancelEntitlementOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.CancelEntitlementOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -9439,7 +9350,7 @@ func (c *cloudChannelRESTClient) CancelEntitlementOperation(name string) *Cancel
 // The name must be that of a previously created ChangeOfferOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) ChangeOfferOperation(name string) *ChangeOfferOperation {
 	return &ChangeOfferOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.ChangeOfferOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -9448,7 +9359,7 @@ func (c *cloudChannelGRPCClient) ChangeOfferOperation(name string) *ChangeOfferO
 func (c *cloudChannelRESTClient) ChangeOfferOperation(name string) *ChangeOfferOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ChangeOfferOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.ChangeOfferOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -9457,7 +9368,7 @@ func (c *cloudChannelRESTClient) ChangeOfferOperation(name string) *ChangeOfferO
 // The name must be that of a previously created ChangeParametersOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) ChangeParametersOperation(name string) *ChangeParametersOperation {
 	return &ChangeParametersOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.ChangeParametersOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -9466,7 +9377,7 @@ func (c *cloudChannelGRPCClient) ChangeParametersOperation(name string) *ChangeP
 func (c *cloudChannelRESTClient) ChangeParametersOperation(name string) *ChangeParametersOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ChangeParametersOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.ChangeParametersOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -9475,7 +9386,7 @@ func (c *cloudChannelRESTClient) ChangeParametersOperation(name string) *ChangeP
 // The name must be that of a previously created ChangeRenewalSettingsOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) ChangeRenewalSettingsOperation(name string) *ChangeRenewalSettingsOperation {
 	return &ChangeRenewalSettingsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.ChangeRenewalSettingsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -9484,7 +9395,7 @@ func (c *cloudChannelGRPCClient) ChangeRenewalSettingsOperation(name string) *Ch
 func (c *cloudChannelRESTClient) ChangeRenewalSettingsOperation(name string) *ChangeRenewalSettingsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ChangeRenewalSettingsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.ChangeRenewalSettingsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -9493,7 +9404,7 @@ func (c *cloudChannelRESTClient) ChangeRenewalSettingsOperation(name string) *Ch
 // The name must be that of a previously created CreateEntitlementOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) CreateEntitlementOperation(name string) *CreateEntitlementOperation {
 	return &CreateEntitlementOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.CreateEntitlementOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -9502,7 +9413,7 @@ func (c *cloudChannelGRPCClient) CreateEntitlementOperation(name string) *Create
 func (c *cloudChannelRESTClient) CreateEntitlementOperation(name string) *CreateEntitlementOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEntitlementOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.CreateEntitlementOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -9511,7 +9422,7 @@ func (c *cloudChannelRESTClient) CreateEntitlementOperation(name string) *Create
 // The name must be that of a previously created ProvisionCloudIdentityOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) ProvisionCloudIdentityOperation(name string) *ProvisionCloudIdentityOperation {
 	return &ProvisionCloudIdentityOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.ProvisionCloudIdentityOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -9520,7 +9431,7 @@ func (c *cloudChannelGRPCClient) ProvisionCloudIdentityOperation(name string) *P
 func (c *cloudChannelRESTClient) ProvisionCloudIdentityOperation(name string) *ProvisionCloudIdentityOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ProvisionCloudIdentityOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.ProvisionCloudIdentityOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -9529,7 +9440,7 @@ func (c *cloudChannelRESTClient) ProvisionCloudIdentityOperation(name string) *P
 // The name must be that of a previously created StartPaidServiceOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) StartPaidServiceOperation(name string) *StartPaidServiceOperation {
 	return &StartPaidServiceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.StartPaidServiceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -9538,7 +9449,7 @@ func (c *cloudChannelGRPCClient) StartPaidServiceOperation(name string) *StartPa
 func (c *cloudChannelRESTClient) StartPaidServiceOperation(name string) *StartPaidServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StartPaidServiceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.StartPaidServiceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -9547,7 +9458,7 @@ func (c *cloudChannelRESTClient) StartPaidServiceOperation(name string) *StartPa
 // The name must be that of a previously created SuspendEntitlementOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) SuspendEntitlementOperation(name string) *SuspendEntitlementOperation {
 	return &SuspendEntitlementOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.SuspendEntitlementOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -9556,7 +9467,7 @@ func (c *cloudChannelGRPCClient) SuspendEntitlementOperation(name string) *Suspe
 func (c *cloudChannelRESTClient) SuspendEntitlementOperation(name string) *SuspendEntitlementOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &SuspendEntitlementOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.SuspendEntitlementOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -9565,7 +9476,7 @@ func (c *cloudChannelRESTClient) SuspendEntitlementOperation(name string) *Suspe
 // The name must be that of a previously created TransferEntitlementsOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) TransferEntitlementsOperation(name string) *TransferEntitlementsOperation {
 	return &TransferEntitlementsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.TransferEntitlementsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -9574,7 +9485,7 @@ func (c *cloudChannelGRPCClient) TransferEntitlementsOperation(name string) *Tra
 func (c *cloudChannelRESTClient) TransferEntitlementsOperation(name string) *TransferEntitlementsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &TransferEntitlementsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.TransferEntitlementsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -9583,7 +9494,7 @@ func (c *cloudChannelRESTClient) TransferEntitlementsOperation(name string) *Tra
 // The name must be that of a previously created TransferEntitlementsToGoogleOperation, possibly from a different process.
 func (c *cloudChannelGRPCClient) TransferEntitlementsToGoogleOperation(name string) *TransferEntitlementsToGoogleOperation {
 	return &TransferEntitlementsToGoogleOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.TransferEntitlementsToGoogleOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -9592,7 +9503,7 @@ func (c *cloudChannelGRPCClient) TransferEntitlementsToGoogleOperation(name stri
 func (c *cloudChannelRESTClient) TransferEntitlementsToGoogleOperation(name string) *TransferEntitlementsToGoogleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &TransferEntitlementsToGoogleOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*channel.TransferEntitlementsToGoogleOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

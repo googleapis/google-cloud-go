@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -491,12 +490,8 @@ func (c *estimateBillingGRPCClient) EstimateDataSize(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.EstimateDataSizeOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &EstimateDataSizeOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -647,12 +642,8 @@ func (c *estimateBillingRESTClient) EstimateDataSize(ctx context.Context, req *d
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.EstimateDataSizeOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &EstimateDataSizeOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -844,7 +835,7 @@ func (c *estimateBillingRESTClient) ListOperations(ctx context.Context, req *lon
 // The name must be that of a previously created EstimateDataSizeOperation, possibly from a different process.
 func (c *estimateBillingGRPCClient) EstimateDataSizeOperation(name string) *EstimateDataSizeOperation {
 	return &EstimateDataSizeOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.EstimateDataSizeOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -853,7 +844,7 @@ func (c *estimateBillingGRPCClient) EstimateDataSizeOperation(name string) *Esti
 func (c *estimateBillingRESTClient) EstimateDataSizeOperation(name string) *EstimateDataSizeOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &EstimateDataSizeOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.EstimateDataSizeOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

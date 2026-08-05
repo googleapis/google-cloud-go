@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -786,12 +785,8 @@ func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *cxpb.Create
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.CreateVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateVersionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -857,12 +852,8 @@ func (c *versionsGRPCClient) LoadVersion(ctx context.Context, req *cxpb.LoadVers
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.LoadVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &LoadVersionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1254,12 +1245,8 @@ func (c *versionsRESTClient) CreateVersion(ctx context.Context, req *cxpb.Create
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.CreateVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateVersionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1444,12 +1431,8 @@ func (c *versionsRESTClient) LoadVersion(ctx context.Context, req *cxpb.LoadVers
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.LoadVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &LoadVersionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1848,7 +1831,7 @@ func (c *versionsRESTClient) ListOperations(ctx context.Context, req *longrunnin
 // The name must be that of a previously created CreateVersionOperation, possibly from a different process.
 func (c *versionsGRPCClient) CreateVersionOperation(name string) *CreateVersionOperation {
 	return &CreateVersionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.CreateVersionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1857,7 +1840,7 @@ func (c *versionsGRPCClient) CreateVersionOperation(name string) *CreateVersionO
 func (c *versionsRESTClient) CreateVersionOperation(name string) *CreateVersionOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &CreateVersionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.CreateVersionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1866,7 +1849,7 @@ func (c *versionsRESTClient) CreateVersionOperation(name string) *CreateVersionO
 // The name must be that of a previously created LoadVersionOperation, possibly from a different process.
 func (c *versionsGRPCClient) LoadVersionOperation(name string) *LoadVersionOperation {
 	return &LoadVersionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.LoadVersionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1875,7 +1858,7 @@ func (c *versionsGRPCClient) LoadVersionOperation(name string) *LoadVersionOpera
 func (c *versionsRESTClient) LoadVersionOperation(name string) *LoadVersionOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &LoadVersionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.LoadVersionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

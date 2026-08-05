@@ -32,7 +32,6 @@ import (
 	networksecuritypb "cloud.google.com/go/networksecurity/apiv1/networksecuritypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -736,12 +735,8 @@ func (c *organizationSecurityProfileGroupGRPCClient) CreateSecurityProfileGroup(
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateSecurityProfileGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSecurityProfileGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -763,12 +758,8 @@ func (c *organizationSecurityProfileGroupGRPCClient) UpdateSecurityProfileGroup(
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateSecurityProfileGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateSecurityProfileGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -793,12 +784,8 @@ func (c *organizationSecurityProfileGroupGRPCClient) DeleteSecurityProfileGroup(
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteSecurityProfileGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSecurityProfileGroupOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -899,12 +886,8 @@ func (c *organizationSecurityProfileGroupGRPCClient) CreateSecurityProfile(ctx c
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateSecurityProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSecurityProfileOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -926,12 +909,8 @@ func (c *organizationSecurityProfileGroupGRPCClient) UpdateSecurityProfile(ctx c
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateSecurityProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateSecurityProfileOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -956,12 +935,8 @@ func (c *organizationSecurityProfileGroupGRPCClient) DeleteSecurityProfile(ctx c
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteSecurityProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSecurityProfileOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1408,12 +1383,8 @@ func (c *organizationSecurityProfileGroupRESTClient) CreateSecurityProfileGroup(
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateSecurityProfileGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSecurityProfileGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1483,12 +1454,8 @@ func (c *organizationSecurityProfileGroupRESTClient) UpdateSecurityProfileGroup(
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateSecurityProfileGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateSecurityProfileGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1550,12 +1517,8 @@ func (c *organizationSecurityProfileGroupRESTClient) DeleteSecurityProfileGroup(
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteSecurityProfileGroupOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSecurityProfileGroupOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1757,12 +1720,8 @@ func (c *organizationSecurityProfileGroupRESTClient) CreateSecurityProfile(ctx c
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.CreateSecurityProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSecurityProfileOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1832,12 +1791,8 @@ func (c *organizationSecurityProfileGroupRESTClient) UpdateSecurityProfile(ctx c
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.UpdateSecurityProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateSecurityProfileOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1899,12 +1854,8 @@ func (c *organizationSecurityProfileGroupRESTClient) DeleteSecurityProfile(ctx c
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networksecurity.DeleteSecurityProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSecurityProfileOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2482,7 +2433,7 @@ func (c *organizationSecurityProfileGroupRESTClient) ListOperations(ctx context.
 // The name must be that of a previously created CreateSecurityProfileOperation, possibly from a different process.
 func (c *organizationSecurityProfileGroupGRPCClient) CreateSecurityProfileOperation(name string) *CreateSecurityProfileOperation {
 	return &CreateSecurityProfileOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateSecurityProfileOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2491,7 +2442,7 @@ func (c *organizationSecurityProfileGroupGRPCClient) CreateSecurityProfileOperat
 func (c *organizationSecurityProfileGroupRESTClient) CreateSecurityProfileOperation(name string) *CreateSecurityProfileOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSecurityProfileOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateSecurityProfileOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2500,7 +2451,7 @@ func (c *organizationSecurityProfileGroupRESTClient) CreateSecurityProfileOperat
 // The name must be that of a previously created CreateSecurityProfileGroupOperation, possibly from a different process.
 func (c *organizationSecurityProfileGroupGRPCClient) CreateSecurityProfileGroupOperation(name string) *CreateSecurityProfileGroupOperation {
 	return &CreateSecurityProfileGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateSecurityProfileGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2509,7 +2460,7 @@ func (c *organizationSecurityProfileGroupGRPCClient) CreateSecurityProfileGroupO
 func (c *organizationSecurityProfileGroupRESTClient) CreateSecurityProfileGroupOperation(name string) *CreateSecurityProfileGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSecurityProfileGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.CreateSecurityProfileGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2518,7 +2469,7 @@ func (c *organizationSecurityProfileGroupRESTClient) CreateSecurityProfileGroupO
 // The name must be that of a previously created DeleteSecurityProfileOperation, possibly from a different process.
 func (c *organizationSecurityProfileGroupGRPCClient) DeleteSecurityProfileOperation(name string) *DeleteSecurityProfileOperation {
 	return &DeleteSecurityProfileOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteSecurityProfileOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2527,7 +2478,7 @@ func (c *organizationSecurityProfileGroupGRPCClient) DeleteSecurityProfileOperat
 func (c *organizationSecurityProfileGroupRESTClient) DeleteSecurityProfileOperation(name string) *DeleteSecurityProfileOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteSecurityProfileOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteSecurityProfileOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2536,7 +2487,7 @@ func (c *organizationSecurityProfileGroupRESTClient) DeleteSecurityProfileOperat
 // The name must be that of a previously created DeleteSecurityProfileGroupOperation, possibly from a different process.
 func (c *organizationSecurityProfileGroupGRPCClient) DeleteSecurityProfileGroupOperation(name string) *DeleteSecurityProfileGroupOperation {
 	return &DeleteSecurityProfileGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteSecurityProfileGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2545,7 +2496,7 @@ func (c *organizationSecurityProfileGroupGRPCClient) DeleteSecurityProfileGroupO
 func (c *organizationSecurityProfileGroupRESTClient) DeleteSecurityProfileGroupOperation(name string) *DeleteSecurityProfileGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteSecurityProfileGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.DeleteSecurityProfileGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2554,7 +2505,7 @@ func (c *organizationSecurityProfileGroupRESTClient) DeleteSecurityProfileGroupO
 // The name must be that of a previously created UpdateSecurityProfileOperation, possibly from a different process.
 func (c *organizationSecurityProfileGroupGRPCClient) UpdateSecurityProfileOperation(name string) *UpdateSecurityProfileOperation {
 	return &UpdateSecurityProfileOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateSecurityProfileOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2563,7 +2514,7 @@ func (c *organizationSecurityProfileGroupGRPCClient) UpdateSecurityProfileOperat
 func (c *organizationSecurityProfileGroupRESTClient) UpdateSecurityProfileOperation(name string) *UpdateSecurityProfileOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateSecurityProfileOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateSecurityProfileOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2572,7 +2523,7 @@ func (c *organizationSecurityProfileGroupRESTClient) UpdateSecurityProfileOperat
 // The name must be that of a previously created UpdateSecurityProfileGroupOperation, possibly from a different process.
 func (c *organizationSecurityProfileGroupGRPCClient) UpdateSecurityProfileGroupOperation(name string) *UpdateSecurityProfileGroupOperation {
 	return &UpdateSecurityProfileGroupOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateSecurityProfileGroupOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2581,7 +2532,7 @@ func (c *organizationSecurityProfileGroupGRPCClient) UpdateSecurityProfileGroupO
 func (c *organizationSecurityProfileGroupRESTClient) UpdateSecurityProfileGroupOperation(name string) *UpdateSecurityProfileGroupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateSecurityProfileGroupOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networksecurity.UpdateSecurityProfileGroupOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

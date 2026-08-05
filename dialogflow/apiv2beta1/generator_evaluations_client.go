@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -586,12 +585,8 @@ func (c *generatorEvaluationsGRPCClient) CreateGeneratorEvaluation(ctx context.C
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.CreateGeneratorEvaluationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGeneratorEvaluationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -909,12 +904,8 @@ func (c *generatorEvaluationsRESTClient) CreateGeneratorEvaluation(ctx context.C
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.CreateGeneratorEvaluationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGeneratorEvaluationOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1427,7 +1418,7 @@ func (c *generatorEvaluationsRESTClient) ListOperations(ctx context.Context, req
 // The name must be that of a previously created CreateGeneratorEvaluationOperation, possibly from a different process.
 func (c *generatorEvaluationsGRPCClient) CreateGeneratorEvaluationOperation(name string) *CreateGeneratorEvaluationOperation {
 	return &CreateGeneratorEvaluationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.CreateGeneratorEvaluationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1436,7 +1427,7 @@ func (c *generatorEvaluationsGRPCClient) CreateGeneratorEvaluationOperation(name
 func (c *generatorEvaluationsRESTClient) CreateGeneratorEvaluationOperation(name string) *CreateGeneratorEvaluationOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &CreateGeneratorEvaluationOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.CreateGeneratorEvaluationOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

@@ -33,7 +33,6 @@ import (
 	notebookspb "cloud.google.com/go/notebooks/apiv1beta1/notebookspb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -960,12 +959,8 @@ func (c *notebookGRPCClient) CreateInstance(ctx context.Context, req *notebooksp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.CreateInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -987,12 +982,8 @@ func (c *notebookGRPCClient) RegisterInstance(ctx context.Context, req *notebook
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.RegisterInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RegisterInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1014,12 +1005,8 @@ func (c *notebookGRPCClient) SetInstanceAccelerator(ctx context.Context, req *no
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.SetInstanceAcceleratorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SetInstanceAcceleratorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1041,12 +1028,8 @@ func (c *notebookGRPCClient) SetInstanceMachineType(ctx context.Context, req *no
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.SetInstanceMachineTypeOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SetInstanceMachineTypeOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1068,12 +1051,8 @@ func (c *notebookGRPCClient) SetInstanceLabels(ctx context.Context, req *noteboo
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.SetInstanceLabelsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SetInstanceLabelsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1095,12 +1074,8 @@ func (c *notebookGRPCClient) DeleteInstance(ctx context.Context, req *notebooksp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.DeleteInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1122,12 +1097,8 @@ func (c *notebookGRPCClient) StartInstance(ctx context.Context, req *notebookspb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.StartInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StartInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1149,12 +1120,8 @@ func (c *notebookGRPCClient) StopInstance(ctx context.Context, req *notebookspb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.StopInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StopInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1176,12 +1143,8 @@ func (c *notebookGRPCClient) ResetInstance(ctx context.Context, req *notebookspb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.ResetInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ResetInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1203,12 +1166,8 @@ func (c *notebookGRPCClient) ReportInstanceInfo(ctx context.Context, req *notebo
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.ReportInstanceInfoOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ReportInstanceInfoOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1251,12 +1210,8 @@ func (c *notebookGRPCClient) UpgradeInstance(ctx context.Context, req *notebooks
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.UpgradeInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpgradeInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1278,12 +1233,8 @@ func (c *notebookGRPCClient) UpgradeInstanceInternal(ctx context.Context, req *n
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.UpgradeInstanceInternalOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpgradeInstanceInternalOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1375,12 +1326,8 @@ func (c *notebookGRPCClient) CreateEnvironment(ctx context.Context, req *noteboo
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.CreateEnvironmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateEnvironmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1402,12 +1349,8 @@ func (c *notebookGRPCClient) DeleteEnvironment(ctx context.Context, req *noteboo
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.DeleteEnvironmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteEnvironmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1848,12 +1791,8 @@ func (c *notebookRESTClient) CreateInstance(ctx context.Context, req *notebooksp
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.CreateInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1918,12 +1857,8 @@ func (c *notebookRESTClient) RegisterInstance(ctx context.Context, req *notebook
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.RegisterInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RegisterInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1985,12 +1920,8 @@ func (c *notebookRESTClient) SetInstanceAccelerator(ctx context.Context, req *no
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.SetInstanceAcceleratorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SetInstanceAcceleratorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2052,12 +1983,8 @@ func (c *notebookRESTClient) SetInstanceMachineType(ctx context.Context, req *no
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.SetInstanceMachineTypeOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SetInstanceMachineTypeOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2119,12 +2046,8 @@ func (c *notebookRESTClient) SetInstanceLabels(ctx context.Context, req *noteboo
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.SetInstanceLabelsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SetInstanceLabelsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2180,12 +2103,8 @@ func (c *notebookRESTClient) DeleteInstance(ctx context.Context, req *notebooksp
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.DeleteInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2247,12 +2166,8 @@ func (c *notebookRESTClient) StartInstance(ctx context.Context, req *notebookspb
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.StartInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StartInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2314,12 +2229,8 @@ func (c *notebookRESTClient) StopInstance(ctx context.Context, req *notebookspb.
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.StopInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StopInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2381,12 +2292,8 @@ func (c *notebookRESTClient) ResetInstance(ctx context.Context, req *notebookspb
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.ResetInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ResetInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2451,12 +2358,8 @@ func (c *notebookRESTClient) ReportInstanceInfo(ctx context.Context, req *notebo
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.ReportInstanceInfoOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ReportInstanceInfoOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2578,12 +2481,8 @@ func (c *notebookRESTClient) UpgradeInstance(ctx context.Context, req *notebooks
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.UpgradeInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpgradeInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2649,12 +2548,8 @@ func (c *notebookRESTClient) UpgradeInstanceInternal(ctx context.Context, req *n
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.UpgradeInstanceInternalOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpgradeInstanceInternalOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2850,12 +2745,8 @@ func (c *notebookRESTClient) CreateEnvironment(ctx context.Context, req *noteboo
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.CreateEnvironmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateEnvironmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2911,12 +2802,8 @@ func (c *notebookRESTClient) DeleteEnvironment(ctx context.Context, req *noteboo
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.DeleteEnvironmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteEnvironmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3479,7 +3366,7 @@ func (c *notebookRESTClient) ListOperations(ctx context.Context, req *longrunnin
 // The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
 func (c *notebookGRPCClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
 	return &CreateEnvironmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.CreateEnvironmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3488,7 +3375,7 @@ func (c *notebookGRPCClient) CreateEnvironmentOperation(name string) *CreateEnvi
 func (c *notebookRESTClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &CreateEnvironmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.CreateEnvironmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3497,7 +3384,7 @@ func (c *notebookRESTClient) CreateEnvironmentOperation(name string) *CreateEnvi
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.CreateInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3506,7 +3393,7 @@ func (c *notebookGRPCClient) CreateInstanceOperation(name string) *CreateInstanc
 func (c *notebookRESTClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.CreateInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3515,7 +3402,7 @@ func (c *notebookRESTClient) CreateInstanceOperation(name string) *CreateInstanc
 // The name must be that of a previously created DeleteEnvironmentOperation, possibly from a different process.
 func (c *notebookGRPCClient) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
 	return &DeleteEnvironmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.DeleteEnvironmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3524,7 +3411,7 @@ func (c *notebookGRPCClient) DeleteEnvironmentOperation(name string) *DeleteEnvi
 func (c *notebookRESTClient) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &DeleteEnvironmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.DeleteEnvironmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3533,7 +3420,7 @@ func (c *notebookRESTClient) DeleteEnvironmentOperation(name string) *DeleteEnvi
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.DeleteInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3542,7 +3429,7 @@ func (c *notebookGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanc
 func (c *notebookRESTClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.DeleteInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3551,7 +3438,7 @@ func (c *notebookRESTClient) DeleteInstanceOperation(name string) *DeleteInstanc
 // The name must be that of a previously created RegisterInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) RegisterInstanceOperation(name string) *RegisterInstanceOperation {
 	return &RegisterInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.RegisterInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3560,7 +3447,7 @@ func (c *notebookGRPCClient) RegisterInstanceOperation(name string) *RegisterIns
 func (c *notebookRESTClient) RegisterInstanceOperation(name string) *RegisterInstanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &RegisterInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.RegisterInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3569,7 +3456,7 @@ func (c *notebookRESTClient) RegisterInstanceOperation(name string) *RegisterIns
 // The name must be that of a previously created ReportInstanceInfoOperation, possibly from a different process.
 func (c *notebookGRPCClient) ReportInstanceInfoOperation(name string) *ReportInstanceInfoOperation {
 	return &ReportInstanceInfoOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.ReportInstanceInfoOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3578,7 +3465,7 @@ func (c *notebookGRPCClient) ReportInstanceInfoOperation(name string) *ReportIns
 func (c *notebookRESTClient) ReportInstanceInfoOperation(name string) *ReportInstanceInfoOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &ReportInstanceInfoOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.ReportInstanceInfoOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3587,7 +3474,7 @@ func (c *notebookRESTClient) ReportInstanceInfoOperation(name string) *ReportIns
 // The name must be that of a previously created ResetInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) ResetInstanceOperation(name string) *ResetInstanceOperation {
 	return &ResetInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.ResetInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3596,7 +3483,7 @@ func (c *notebookGRPCClient) ResetInstanceOperation(name string) *ResetInstanceO
 func (c *notebookRESTClient) ResetInstanceOperation(name string) *ResetInstanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &ResetInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.ResetInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3605,7 +3492,7 @@ func (c *notebookRESTClient) ResetInstanceOperation(name string) *ResetInstanceO
 // The name must be that of a previously created SetInstanceAcceleratorOperation, possibly from a different process.
 func (c *notebookGRPCClient) SetInstanceAcceleratorOperation(name string) *SetInstanceAcceleratorOperation {
 	return &SetInstanceAcceleratorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.SetInstanceAcceleratorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3614,7 +3501,7 @@ func (c *notebookGRPCClient) SetInstanceAcceleratorOperation(name string) *SetIn
 func (c *notebookRESTClient) SetInstanceAcceleratorOperation(name string) *SetInstanceAcceleratorOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &SetInstanceAcceleratorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.SetInstanceAcceleratorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3623,7 +3510,7 @@ func (c *notebookRESTClient) SetInstanceAcceleratorOperation(name string) *SetIn
 // The name must be that of a previously created SetInstanceLabelsOperation, possibly from a different process.
 func (c *notebookGRPCClient) SetInstanceLabelsOperation(name string) *SetInstanceLabelsOperation {
 	return &SetInstanceLabelsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.SetInstanceLabelsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3632,7 +3519,7 @@ func (c *notebookGRPCClient) SetInstanceLabelsOperation(name string) *SetInstanc
 func (c *notebookRESTClient) SetInstanceLabelsOperation(name string) *SetInstanceLabelsOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &SetInstanceLabelsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.SetInstanceLabelsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3641,7 +3528,7 @@ func (c *notebookRESTClient) SetInstanceLabelsOperation(name string) *SetInstanc
 // The name must be that of a previously created SetInstanceMachineTypeOperation, possibly from a different process.
 func (c *notebookGRPCClient) SetInstanceMachineTypeOperation(name string) *SetInstanceMachineTypeOperation {
 	return &SetInstanceMachineTypeOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.SetInstanceMachineTypeOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3650,7 +3537,7 @@ func (c *notebookGRPCClient) SetInstanceMachineTypeOperation(name string) *SetIn
 func (c *notebookRESTClient) SetInstanceMachineTypeOperation(name string) *SetInstanceMachineTypeOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &SetInstanceMachineTypeOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.SetInstanceMachineTypeOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3659,7 +3546,7 @@ func (c *notebookRESTClient) SetInstanceMachineTypeOperation(name string) *SetIn
 // The name must be that of a previously created StartInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) StartInstanceOperation(name string) *StartInstanceOperation {
 	return &StartInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.StartInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3668,7 +3555,7 @@ func (c *notebookGRPCClient) StartInstanceOperation(name string) *StartInstanceO
 func (c *notebookRESTClient) StartInstanceOperation(name string) *StartInstanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &StartInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.StartInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3677,7 +3564,7 @@ func (c *notebookRESTClient) StartInstanceOperation(name string) *StartInstanceO
 // The name must be that of a previously created StopInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) StopInstanceOperation(name string) *StopInstanceOperation {
 	return &StopInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.StopInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3686,7 +3573,7 @@ func (c *notebookGRPCClient) StopInstanceOperation(name string) *StopInstanceOpe
 func (c *notebookRESTClient) StopInstanceOperation(name string) *StopInstanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &StopInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.StopInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3695,7 +3582,7 @@ func (c *notebookRESTClient) StopInstanceOperation(name string) *StopInstanceOpe
 // The name must be that of a previously created UpgradeInstanceOperation, possibly from a different process.
 func (c *notebookGRPCClient) UpgradeInstanceOperation(name string) *UpgradeInstanceOperation {
 	return &UpgradeInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.UpgradeInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3704,7 +3591,7 @@ func (c *notebookGRPCClient) UpgradeInstanceOperation(name string) *UpgradeInsta
 func (c *notebookRESTClient) UpgradeInstanceOperation(name string) *UpgradeInstanceOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &UpgradeInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.UpgradeInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3713,7 +3600,7 @@ func (c *notebookRESTClient) UpgradeInstanceOperation(name string) *UpgradeInsta
 // The name must be that of a previously created UpgradeInstanceInternalOperation, possibly from a different process.
 func (c *notebookGRPCClient) UpgradeInstanceInternalOperation(name string) *UpgradeInstanceInternalOperation {
 	return &UpgradeInstanceInternalOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.UpgradeInstanceInternalOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3722,7 +3609,7 @@ func (c *notebookGRPCClient) UpgradeInstanceInternalOperation(name string) *Upgr
 func (c *notebookRESTClient) UpgradeInstanceInternalOperation(name string) *UpgradeInstanceInternalOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &UpgradeInstanceInternalOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.UpgradeInstanceInternalOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

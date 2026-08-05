@@ -33,7 +33,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -813,12 +812,8 @@ func (c *workflowTemplateGRPCClient) InstantiateWorkflowTemplate(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.InstantiateWorkflowTemplateOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &InstantiateWorkflowTemplateOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -843,12 +838,8 @@ func (c *workflowTemplateGRPCClient) InstantiateInlineWorkflowTemplate(ctx conte
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.InstantiateInlineWorkflowTemplateOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &InstantiateInlineWorkflowTemplateOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1327,12 +1318,8 @@ func (c *workflowTemplateRESTClient) InstantiateWorkflowTemplate(ctx context.Con
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.InstantiateWorkflowTemplateOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &InstantiateWorkflowTemplateOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1425,12 +1412,8 @@ func (c *workflowTemplateRESTClient) InstantiateInlineWorkflowTemplate(ctx conte
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataproc.InstantiateInlineWorkflowTemplateOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &InstantiateInlineWorkflowTemplateOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2040,7 +2023,7 @@ func (c *workflowTemplateRESTClient) ListOperations(ctx context.Context, req *lo
 // The name must be that of a previously created InstantiateInlineWorkflowTemplateOperation, possibly from a different process.
 func (c *workflowTemplateGRPCClient) InstantiateInlineWorkflowTemplateOperation(name string) *InstantiateInlineWorkflowTemplateOperation {
 	return &InstantiateInlineWorkflowTemplateOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.InstantiateInlineWorkflowTemplateOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2049,7 +2032,7 @@ func (c *workflowTemplateGRPCClient) InstantiateInlineWorkflowTemplateOperation(
 func (c *workflowTemplateRESTClient) InstantiateInlineWorkflowTemplateOperation(name string) *InstantiateInlineWorkflowTemplateOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &InstantiateInlineWorkflowTemplateOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.InstantiateInlineWorkflowTemplateOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2058,7 +2041,7 @@ func (c *workflowTemplateRESTClient) InstantiateInlineWorkflowTemplateOperation(
 // The name must be that of a previously created InstantiateWorkflowTemplateOperation, possibly from a different process.
 func (c *workflowTemplateGRPCClient) InstantiateWorkflowTemplateOperation(name string) *InstantiateWorkflowTemplateOperation {
 	return &InstantiateWorkflowTemplateOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.InstantiateWorkflowTemplateOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2067,7 +2050,7 @@ func (c *workflowTemplateGRPCClient) InstantiateWorkflowTemplateOperation(name s
 func (c *workflowTemplateRESTClient) InstantiateWorkflowTemplateOperation(name string) *InstantiateWorkflowTemplateOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &InstantiateWorkflowTemplateOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataproc.InstantiateWorkflowTemplateOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

@@ -31,7 +31,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1110,12 +1109,8 @@ func (c *dataMigrationGRPCClient) CreateMigrationJob(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.CreateMigrationJobOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMigrationJobOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1137,12 +1132,8 @@ func (c *dataMigrationGRPCClient) UpdateMigrationJob(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.UpdateMigrationJobOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateMigrationJobOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1167,12 +1158,8 @@ func (c *dataMigrationGRPCClient) DeleteMigrationJob(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.DeleteMigrationJobOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteMigrationJobOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1197,12 +1184,8 @@ func (c *dataMigrationGRPCClient) StartMigrationJob(ctx context.Context, req *cl
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.StartMigrationJobOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StartMigrationJobOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1227,12 +1210,8 @@ func (c *dataMigrationGRPCClient) StopMigrationJob(ctx context.Context, req *clo
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.StopMigrationJobOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StopMigrationJobOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1257,12 +1236,8 @@ func (c *dataMigrationGRPCClient) ResumeMigrationJob(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.ResumeMigrationJobOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ResumeMigrationJobOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1287,12 +1262,8 @@ func (c *dataMigrationGRPCClient) PromoteMigrationJob(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.PromoteMigrationJobOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PromoteMigrationJobOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1317,12 +1288,8 @@ func (c *dataMigrationGRPCClient) VerifyMigrationJob(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.VerifyMigrationJobOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &VerifyMigrationJobOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1347,12 +1314,8 @@ func (c *dataMigrationGRPCClient) RestartMigrationJob(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.RestartMigrationJobOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RestartMigrationJobOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1501,12 +1464,8 @@ func (c *dataMigrationGRPCClient) CreateConnectionProfile(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.CreateConnectionProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateConnectionProfileOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1528,12 +1487,8 @@ func (c *dataMigrationGRPCClient) UpdateConnectionProfile(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.UpdateConnectionProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateConnectionProfileOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1558,12 +1513,8 @@ func (c *dataMigrationGRPCClient) DeleteConnectionProfile(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.DeleteConnectionProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteConnectionProfileOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1588,12 +1539,8 @@ func (c *dataMigrationGRPCClient) CreatePrivateConnection(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.CreatePrivateConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreatePrivateConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1694,12 +1641,8 @@ func (c *dataMigrationGRPCClient) DeletePrivateConnection(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.DeletePrivateConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePrivateConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1800,12 +1743,8 @@ func (c *dataMigrationGRPCClient) CreateConversionWorkspace(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.CreateConversionWorkspaceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateConversionWorkspaceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1827,12 +1766,8 @@ func (c *dataMigrationGRPCClient) UpdateConversionWorkspace(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.UpdateConversionWorkspaceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateConversionWorkspaceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1857,12 +1792,8 @@ func (c *dataMigrationGRPCClient) DeleteConversionWorkspace(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.DeleteConversionWorkspaceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteConversionWorkspaceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2007,12 +1938,8 @@ func (c *dataMigrationGRPCClient) SeedConversionWorkspace(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.SeedConversionWorkspaceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SeedConversionWorkspaceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2037,12 +1964,8 @@ func (c *dataMigrationGRPCClient) ImportMappingRules(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.ImportMappingRulesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportMappingRulesOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2067,12 +1990,8 @@ func (c *dataMigrationGRPCClient) ConvertConversionWorkspace(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.ConvertConversionWorkspaceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ConvertConversionWorkspaceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2097,12 +2016,8 @@ func (c *dataMigrationGRPCClient) CommitConversionWorkspace(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.CommitConversionWorkspaceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CommitConversionWorkspaceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2127,12 +2042,8 @@ func (c *dataMigrationGRPCClient) RollbackConversionWorkspace(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.RollbackConversionWorkspaceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RollbackConversionWorkspaceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2157,12 +2068,8 @@ func (c *dataMigrationGRPCClient) ApplyConversionWorkspace(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clouddms.ApplyConversionWorkspaceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ApplyConversionWorkspaceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2568,7 +2475,7 @@ func (c *dataMigrationGRPCClient) ListOperations(ctx context.Context, req *longr
 // The name must be that of a previously created ApplyConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) ApplyConversionWorkspaceOperation(name string) *ApplyConversionWorkspaceOperation {
 	return &ApplyConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.ApplyConversionWorkspaceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2576,7 +2483,7 @@ func (c *dataMigrationGRPCClient) ApplyConversionWorkspaceOperation(name string)
 // The name must be that of a previously created CommitConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) CommitConversionWorkspaceOperation(name string) *CommitConversionWorkspaceOperation {
 	return &CommitConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.CommitConversionWorkspaceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2584,7 +2491,7 @@ func (c *dataMigrationGRPCClient) CommitConversionWorkspaceOperation(name string
 // The name must be that of a previously created ConvertConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) ConvertConversionWorkspaceOperation(name string) *ConvertConversionWorkspaceOperation {
 	return &ConvertConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.ConvertConversionWorkspaceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2592,7 +2499,7 @@ func (c *dataMigrationGRPCClient) ConvertConversionWorkspaceOperation(name strin
 // The name must be that of a previously created CreateConnectionProfileOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) CreateConnectionProfileOperation(name string) *CreateConnectionProfileOperation {
 	return &CreateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.CreateConnectionProfileOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2600,7 +2507,7 @@ func (c *dataMigrationGRPCClient) CreateConnectionProfileOperation(name string) 
 // The name must be that of a previously created CreateConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) CreateConversionWorkspaceOperation(name string) *CreateConversionWorkspaceOperation {
 	return &CreateConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.CreateConversionWorkspaceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2608,7 +2515,7 @@ func (c *dataMigrationGRPCClient) CreateConversionWorkspaceOperation(name string
 // The name must be that of a previously created CreateMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) CreateMigrationJobOperation(name string) *CreateMigrationJobOperation {
 	return &CreateMigrationJobOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.CreateMigrationJobOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2616,7 +2523,7 @@ func (c *dataMigrationGRPCClient) CreateMigrationJobOperation(name string) *Crea
 // The name must be that of a previously created CreatePrivateConnectionOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation {
 	return &CreatePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.CreatePrivateConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2624,7 +2531,7 @@ func (c *dataMigrationGRPCClient) CreatePrivateConnectionOperation(name string) 
 // The name must be that of a previously created DeleteConnectionProfileOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) DeleteConnectionProfileOperation(name string) *DeleteConnectionProfileOperation {
 	return &DeleteConnectionProfileOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.DeleteConnectionProfileOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2632,7 +2539,7 @@ func (c *dataMigrationGRPCClient) DeleteConnectionProfileOperation(name string) 
 // The name must be that of a previously created DeleteConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) DeleteConversionWorkspaceOperation(name string) *DeleteConversionWorkspaceOperation {
 	return &DeleteConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.DeleteConversionWorkspaceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2640,7 +2547,7 @@ func (c *dataMigrationGRPCClient) DeleteConversionWorkspaceOperation(name string
 // The name must be that of a previously created DeleteMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) DeleteMigrationJobOperation(name string) *DeleteMigrationJobOperation {
 	return &DeleteMigrationJobOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.DeleteMigrationJobOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2648,7 +2555,7 @@ func (c *dataMigrationGRPCClient) DeleteMigrationJobOperation(name string) *Dele
 // The name must be that of a previously created DeletePrivateConnectionOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation {
 	return &DeletePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.DeletePrivateConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2656,7 +2563,7 @@ func (c *dataMigrationGRPCClient) DeletePrivateConnectionOperation(name string) 
 // The name must be that of a previously created ImportMappingRulesOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) ImportMappingRulesOperation(name string) *ImportMappingRulesOperation {
 	return &ImportMappingRulesOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.ImportMappingRulesOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2664,7 +2571,7 @@ func (c *dataMigrationGRPCClient) ImportMappingRulesOperation(name string) *Impo
 // The name must be that of a previously created PromoteMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) PromoteMigrationJobOperation(name string) *PromoteMigrationJobOperation {
 	return &PromoteMigrationJobOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.PromoteMigrationJobOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2672,7 +2579,7 @@ func (c *dataMigrationGRPCClient) PromoteMigrationJobOperation(name string) *Pro
 // The name must be that of a previously created RestartMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) RestartMigrationJobOperation(name string) *RestartMigrationJobOperation {
 	return &RestartMigrationJobOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.RestartMigrationJobOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2680,7 +2587,7 @@ func (c *dataMigrationGRPCClient) RestartMigrationJobOperation(name string) *Res
 // The name must be that of a previously created ResumeMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) ResumeMigrationJobOperation(name string) *ResumeMigrationJobOperation {
 	return &ResumeMigrationJobOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.ResumeMigrationJobOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2688,7 +2595,7 @@ func (c *dataMigrationGRPCClient) ResumeMigrationJobOperation(name string) *Resu
 // The name must be that of a previously created RollbackConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) RollbackConversionWorkspaceOperation(name string) *RollbackConversionWorkspaceOperation {
 	return &RollbackConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.RollbackConversionWorkspaceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2696,7 +2603,7 @@ func (c *dataMigrationGRPCClient) RollbackConversionWorkspaceOperation(name stri
 // The name must be that of a previously created SeedConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) SeedConversionWorkspaceOperation(name string) *SeedConversionWorkspaceOperation {
 	return &SeedConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.SeedConversionWorkspaceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2704,7 +2611,7 @@ func (c *dataMigrationGRPCClient) SeedConversionWorkspaceOperation(name string) 
 // The name must be that of a previously created StartMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) StartMigrationJobOperation(name string) *StartMigrationJobOperation {
 	return &StartMigrationJobOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.StartMigrationJobOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2712,7 +2619,7 @@ func (c *dataMigrationGRPCClient) StartMigrationJobOperation(name string) *Start
 // The name must be that of a previously created StopMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) StopMigrationJobOperation(name string) *StopMigrationJobOperation {
 	return &StopMigrationJobOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.StopMigrationJobOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2720,7 +2627,7 @@ func (c *dataMigrationGRPCClient) StopMigrationJobOperation(name string) *StopMi
 // The name must be that of a previously created UpdateConnectionProfileOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) UpdateConnectionProfileOperation(name string) *UpdateConnectionProfileOperation {
 	return &UpdateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.UpdateConnectionProfileOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2728,7 +2635,7 @@ func (c *dataMigrationGRPCClient) UpdateConnectionProfileOperation(name string) 
 // The name must be that of a previously created UpdateConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) UpdateConversionWorkspaceOperation(name string) *UpdateConversionWorkspaceOperation {
 	return &UpdateConversionWorkspaceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.UpdateConversionWorkspaceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2736,7 +2643,7 @@ func (c *dataMigrationGRPCClient) UpdateConversionWorkspaceOperation(name string
 // The name must be that of a previously created UpdateMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) UpdateMigrationJobOperation(name string) *UpdateMigrationJobOperation {
 	return &UpdateMigrationJobOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.UpdateMigrationJobOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2744,6 +2651,6 @@ func (c *dataMigrationGRPCClient) UpdateMigrationJobOperation(name string) *Upda
 // The name must be that of a previously created VerifyMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) VerifyMigrationJobOperation(name string) *VerifyMigrationJobOperation {
 	return &VerifyMigrationJobOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clouddms.VerifyMigrationJobOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

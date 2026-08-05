@@ -31,7 +31,6 @@ import (
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -607,12 +606,8 @@ func (c *dataTransferGRPCClient) CreateMulticloudDataTransferConfig(ctx context.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreateMulticloudDataTransferConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMulticloudDataTransferConfigOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -634,12 +629,8 @@ func (c *dataTransferGRPCClient) UpdateMulticloudDataTransferConfig(ctx context.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.UpdateMulticloudDataTransferConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateMulticloudDataTransferConfigOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -664,12 +655,8 @@ func (c *dataTransferGRPCClient) DeleteMulticloudDataTransferConfig(ctx context.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeleteMulticloudDataTransferConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteMulticloudDataTransferConfigOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -770,12 +757,8 @@ func (c *dataTransferGRPCClient) CreateDestination(ctx context.Context, req *net
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreateDestinationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDestinationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -797,12 +780,8 @@ func (c *dataTransferGRPCClient) UpdateDestination(ctx context.Context, req *net
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.UpdateDestinationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDestinationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -827,12 +806,8 @@ func (c *dataTransferGRPCClient) DeleteDestination(ctx context.Context, req *net
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeleteDestinationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDestinationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1162,7 +1137,7 @@ func (c *dataTransferGRPCClient) ListOperations(ctx context.Context, req *longru
 // The name must be that of a previously created CreateDestinationOperation, possibly from a different process.
 func (c *dataTransferGRPCClient) CreateDestinationOperation(name string) *CreateDestinationOperation {
 	return &CreateDestinationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreateDestinationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1170,7 +1145,7 @@ func (c *dataTransferGRPCClient) CreateDestinationOperation(name string) *Create
 // The name must be that of a previously created CreateMulticloudDataTransferConfigOperation, possibly from a different process.
 func (c *dataTransferGRPCClient) CreateMulticloudDataTransferConfigOperation(name string) *CreateMulticloudDataTransferConfigOperation {
 	return &CreateMulticloudDataTransferConfigOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreateMulticloudDataTransferConfigOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1178,7 +1153,7 @@ func (c *dataTransferGRPCClient) CreateMulticloudDataTransferConfigOperation(nam
 // The name must be that of a previously created DeleteDestinationOperation, possibly from a different process.
 func (c *dataTransferGRPCClient) DeleteDestinationOperation(name string) *DeleteDestinationOperation {
 	return &DeleteDestinationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeleteDestinationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1186,7 +1161,7 @@ func (c *dataTransferGRPCClient) DeleteDestinationOperation(name string) *Delete
 // The name must be that of a previously created DeleteMulticloudDataTransferConfigOperation, possibly from a different process.
 func (c *dataTransferGRPCClient) DeleteMulticloudDataTransferConfigOperation(name string) *DeleteMulticloudDataTransferConfigOperation {
 	return &DeleteMulticloudDataTransferConfigOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeleteMulticloudDataTransferConfigOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1194,7 +1169,7 @@ func (c *dataTransferGRPCClient) DeleteMulticloudDataTransferConfigOperation(nam
 // The name must be that of a previously created UpdateDestinationOperation, possibly from a different process.
 func (c *dataTransferGRPCClient) UpdateDestinationOperation(name string) *UpdateDestinationOperation {
 	return &UpdateDestinationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.UpdateDestinationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1202,6 +1177,6 @@ func (c *dataTransferGRPCClient) UpdateDestinationOperation(name string) *Update
 // The name must be that of a previously created UpdateMulticloudDataTransferConfigOperation, possibly from a different process.
 func (c *dataTransferGRPCClient) UpdateMulticloudDataTransferConfigOperation(name string) *UpdateMulticloudDataTransferConfigOperation {
 	return &UpdateMulticloudDataTransferConfigOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.UpdateMulticloudDataTransferConfigOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

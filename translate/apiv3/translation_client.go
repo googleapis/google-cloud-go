@@ -32,7 +32,6 @@ import (
 	translatepb "cloud.google.com/go/translate/apiv3/translatepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1206,12 +1205,8 @@ func (c *translationGRPCClient) BatchTranslateText(ctx context.Context, req *tra
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.BatchTranslateTextOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchTranslateTextOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1236,12 +1231,8 @@ func (c *translationGRPCClient) BatchTranslateDocument(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.BatchTranslateDocumentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchTranslateDocumentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1266,12 +1257,8 @@ func (c *translationGRPCClient) CreateGlossary(ctx context.Context, req *transla
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.CreateGlossaryOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGlossaryOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1293,12 +1280,8 @@ func (c *translationGRPCClient) UpdateGlossary(ctx context.Context, req *transla
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.UpdateGlossaryOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateGlossaryOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1399,12 +1382,8 @@ func (c *translationGRPCClient) DeleteGlossary(ctx context.Context, req *transla
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.DeleteGlossaryOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGlossaryOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1570,12 +1549,8 @@ func (c *translationGRPCClient) CreateDataset(ctx context.Context, req *translat
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.CreateDatasetOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDatasetOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1676,12 +1651,8 @@ func (c *translationGRPCClient) DeleteDataset(ctx context.Context, req *translat
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.DeleteDatasetOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDatasetOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2019,12 +1990,8 @@ func (c *translationGRPCClient) ImportData(ctx context.Context, req *translatepb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.ImportDataOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportDataOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2046,12 +2013,8 @@ func (c *translationGRPCClient) ExportData(ctx context.Context, req *translatepb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.ExportDataOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportDataOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2128,12 +2091,8 @@ func (c *translationGRPCClient) CreateModel(ctx context.Context, req *translatep
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.CreateModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateModelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2234,12 +2193,8 @@ func (c *translationGRPCClient) DeleteModel(ctx context.Context, req *translatep
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.DeleteModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteModelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2816,12 +2771,8 @@ func (c *translationRESTClient) BatchTranslateText(ctx context.Context, req *tra
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.BatchTranslateTextOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchTranslateTextOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2892,12 +2843,8 @@ func (c *translationRESTClient) BatchTranslateDocument(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.BatchTranslateDocumentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchTranslateDocumentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2964,12 +2911,8 @@ func (c *translationRESTClient) CreateGlossary(ctx context.Context, req *transla
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.CreateGlossaryOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGlossaryOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3040,12 +2983,8 @@ func (c *translationRESTClient) UpdateGlossary(ctx context.Context, req *transla
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.UpdateGlossaryOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateGlossaryOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3246,12 +3185,8 @@ func (c *translationRESTClient) DeleteGlossary(ctx context.Context, req *transla
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.DeleteGlossaryOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGlossaryOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3619,12 +3554,8 @@ func (c *translationRESTClient) CreateDataset(ctx context.Context, req *translat
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.CreateDatasetOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDatasetOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3818,12 +3749,8 @@ func (c *translationRESTClient) DeleteDataset(ctx context.Context, req *translat
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.DeleteDatasetOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDatasetOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4512,12 +4439,8 @@ func (c *translationRESTClient) ImportData(ctx context.Context, req *translatepb
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.ImportDataOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportDataOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4579,12 +4502,8 @@ func (c *translationRESTClient) ExportData(ctx context.Context, req *translatepb
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.ExportDataOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportDataOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4731,12 +4650,8 @@ func (c *translationRESTClient) CreateModel(ctx context.Context, req *translatep
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.CreateModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateModelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4933,12 +4848,8 @@ func (c *translationRESTClient) DeleteModel(ctx context.Context, req *translatep
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*translate.DeleteModelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteModelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5364,7 +5275,7 @@ func (c *translationRESTClient) WaitOperation(ctx context.Context, req *longrunn
 // The name must be that of a previously created BatchTranslateDocumentOperation, possibly from a different process.
 func (c *translationGRPCClient) BatchTranslateDocumentOperation(name string) *BatchTranslateDocumentOperation {
 	return &BatchTranslateDocumentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.BatchTranslateDocumentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5373,7 +5284,7 @@ func (c *translationGRPCClient) BatchTranslateDocumentOperation(name string) *Ba
 func (c *translationRESTClient) BatchTranslateDocumentOperation(name string) *BatchTranslateDocumentOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &BatchTranslateDocumentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.BatchTranslateDocumentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -5382,7 +5293,7 @@ func (c *translationRESTClient) BatchTranslateDocumentOperation(name string) *Ba
 // The name must be that of a previously created BatchTranslateTextOperation, possibly from a different process.
 func (c *translationGRPCClient) BatchTranslateTextOperation(name string) *BatchTranslateTextOperation {
 	return &BatchTranslateTextOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.BatchTranslateTextOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5391,7 +5302,7 @@ func (c *translationGRPCClient) BatchTranslateTextOperation(name string) *BatchT
 func (c *translationRESTClient) BatchTranslateTextOperation(name string) *BatchTranslateTextOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &BatchTranslateTextOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.BatchTranslateTextOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -5400,7 +5311,7 @@ func (c *translationRESTClient) BatchTranslateTextOperation(name string) *BatchT
 // The name must be that of a previously created CreateDatasetOperation, possibly from a different process.
 func (c *translationGRPCClient) CreateDatasetOperation(name string) *CreateDatasetOperation {
 	return &CreateDatasetOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.CreateDatasetOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5409,7 +5320,7 @@ func (c *translationGRPCClient) CreateDatasetOperation(name string) *CreateDatas
 func (c *translationRESTClient) CreateDatasetOperation(name string) *CreateDatasetOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &CreateDatasetOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.CreateDatasetOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -5418,7 +5329,7 @@ func (c *translationRESTClient) CreateDatasetOperation(name string) *CreateDatas
 // The name must be that of a previously created CreateGlossaryOperation, possibly from a different process.
 func (c *translationGRPCClient) CreateGlossaryOperation(name string) *CreateGlossaryOperation {
 	return &CreateGlossaryOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.CreateGlossaryOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5427,7 +5338,7 @@ func (c *translationGRPCClient) CreateGlossaryOperation(name string) *CreateGlos
 func (c *translationRESTClient) CreateGlossaryOperation(name string) *CreateGlossaryOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &CreateGlossaryOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.CreateGlossaryOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -5436,7 +5347,7 @@ func (c *translationRESTClient) CreateGlossaryOperation(name string) *CreateGlos
 // The name must be that of a previously created CreateModelOperation, possibly from a different process.
 func (c *translationGRPCClient) CreateModelOperation(name string) *CreateModelOperation {
 	return &CreateModelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.CreateModelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5445,7 +5356,7 @@ func (c *translationGRPCClient) CreateModelOperation(name string) *CreateModelOp
 func (c *translationRESTClient) CreateModelOperation(name string) *CreateModelOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &CreateModelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.CreateModelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -5454,7 +5365,7 @@ func (c *translationRESTClient) CreateModelOperation(name string) *CreateModelOp
 // The name must be that of a previously created DeleteDatasetOperation, possibly from a different process.
 func (c *translationGRPCClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 	return &DeleteDatasetOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.DeleteDatasetOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5463,7 +5374,7 @@ func (c *translationGRPCClient) DeleteDatasetOperation(name string) *DeleteDatas
 func (c *translationRESTClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &DeleteDatasetOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.DeleteDatasetOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -5472,7 +5383,7 @@ func (c *translationRESTClient) DeleteDatasetOperation(name string) *DeleteDatas
 // The name must be that of a previously created DeleteGlossaryOperation, possibly from a different process.
 func (c *translationGRPCClient) DeleteGlossaryOperation(name string) *DeleteGlossaryOperation {
 	return &DeleteGlossaryOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.DeleteGlossaryOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5481,7 +5392,7 @@ func (c *translationGRPCClient) DeleteGlossaryOperation(name string) *DeleteGlos
 func (c *translationRESTClient) DeleteGlossaryOperation(name string) *DeleteGlossaryOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &DeleteGlossaryOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.DeleteGlossaryOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -5490,7 +5401,7 @@ func (c *translationRESTClient) DeleteGlossaryOperation(name string) *DeleteGlos
 // The name must be that of a previously created DeleteModelOperation, possibly from a different process.
 func (c *translationGRPCClient) DeleteModelOperation(name string) *DeleteModelOperation {
 	return &DeleteModelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.DeleteModelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5499,7 +5410,7 @@ func (c *translationGRPCClient) DeleteModelOperation(name string) *DeleteModelOp
 func (c *translationRESTClient) DeleteModelOperation(name string) *DeleteModelOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &DeleteModelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.DeleteModelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -5508,7 +5419,7 @@ func (c *translationRESTClient) DeleteModelOperation(name string) *DeleteModelOp
 // The name must be that of a previously created ExportDataOperation, possibly from a different process.
 func (c *translationGRPCClient) ExportDataOperation(name string) *ExportDataOperation {
 	return &ExportDataOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.ExportDataOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5517,7 +5428,7 @@ func (c *translationGRPCClient) ExportDataOperation(name string) *ExportDataOper
 func (c *translationRESTClient) ExportDataOperation(name string) *ExportDataOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &ExportDataOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.ExportDataOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -5526,7 +5437,7 @@ func (c *translationRESTClient) ExportDataOperation(name string) *ExportDataOper
 // The name must be that of a previously created ImportDataOperation, possibly from a different process.
 func (c *translationGRPCClient) ImportDataOperation(name string) *ImportDataOperation {
 	return &ImportDataOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.ImportDataOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5535,7 +5446,7 @@ func (c *translationGRPCClient) ImportDataOperation(name string) *ImportDataOper
 func (c *translationRESTClient) ImportDataOperation(name string) *ImportDataOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &ImportDataOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.ImportDataOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -5544,7 +5455,7 @@ func (c *translationRESTClient) ImportDataOperation(name string) *ImportDataOper
 // The name must be that of a previously created UpdateGlossaryOperation, possibly from a different process.
 func (c *translationGRPCClient) UpdateGlossaryOperation(name string) *UpdateGlossaryOperation {
 	return &UpdateGlossaryOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.UpdateGlossaryOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5553,7 +5464,7 @@ func (c *translationGRPCClient) UpdateGlossaryOperation(name string) *UpdateGlos
 func (c *translationRESTClient) UpdateGlossaryOperation(name string) *UpdateGlossaryOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &UpdateGlossaryOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*translate.UpdateGlossaryOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

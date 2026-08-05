@@ -32,7 +32,6 @@ import (
 	talentpb "cloud.google.com/go/talent/apiv4/talentpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -663,12 +662,8 @@ func (c *jobGRPCClient) BatchCreateJobs(ctx context.Context, req *talentpb.Batch
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*talent.BatchCreateJobsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchCreateJobsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -738,12 +733,8 @@ func (c *jobGRPCClient) BatchUpdateJobs(ctx context.Context, req *talentpb.Batch
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*talent.BatchUpdateJobsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchUpdateJobsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -788,12 +779,8 @@ func (c *jobGRPCClient) BatchDeleteJobs(ctx context.Context, req *talentpb.Batch
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*talent.BatchDeleteJobsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchDeleteJobsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1045,12 +1032,8 @@ func (c *jobRESTClient) BatchCreateJobs(ctx context.Context, req *talentpb.Batch
 	}
 
 	override := fmt.Sprintf("/v4/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*talent.BatchCreateJobsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchCreateJobsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1244,12 +1227,8 @@ func (c *jobRESTClient) BatchUpdateJobs(ctx context.Context, req *talentpb.Batch
 	}
 
 	override := fmt.Sprintf("/v4/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*talent.BatchUpdateJobsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchUpdateJobsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1359,12 +1338,8 @@ func (c *jobRESTClient) BatchDeleteJobs(ctx context.Context, req *talentpb.Batch
 	}
 
 	override := fmt.Sprintf("/v4/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*talent.BatchDeleteJobsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchDeleteJobsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1652,7 +1627,7 @@ func (c *jobRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 // The name must be that of a previously created BatchCreateJobsOperation, possibly from a different process.
 func (c *jobGRPCClient) BatchCreateJobsOperation(name string) *BatchCreateJobsOperation {
 	return &BatchCreateJobsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*talent.BatchCreateJobsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1661,7 +1636,7 @@ func (c *jobGRPCClient) BatchCreateJobsOperation(name string) *BatchCreateJobsOp
 func (c *jobRESTClient) BatchCreateJobsOperation(name string) *BatchCreateJobsOperation {
 	override := fmt.Sprintf("/v4/%s", name)
 	return &BatchCreateJobsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*talent.BatchCreateJobsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1670,7 +1645,7 @@ func (c *jobRESTClient) BatchCreateJobsOperation(name string) *BatchCreateJobsOp
 // The name must be that of a previously created BatchDeleteJobsOperation, possibly from a different process.
 func (c *jobGRPCClient) BatchDeleteJobsOperation(name string) *BatchDeleteJobsOperation {
 	return &BatchDeleteJobsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*talent.BatchDeleteJobsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1679,7 +1654,7 @@ func (c *jobGRPCClient) BatchDeleteJobsOperation(name string) *BatchDeleteJobsOp
 func (c *jobRESTClient) BatchDeleteJobsOperation(name string) *BatchDeleteJobsOperation {
 	override := fmt.Sprintf("/v4/%s", name)
 	return &BatchDeleteJobsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*talent.BatchDeleteJobsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1688,7 +1663,7 @@ func (c *jobRESTClient) BatchDeleteJobsOperation(name string) *BatchDeleteJobsOp
 // The name must be that of a previously created BatchUpdateJobsOperation, possibly from a different process.
 func (c *jobGRPCClient) BatchUpdateJobsOperation(name string) *BatchUpdateJobsOperation {
 	return &BatchUpdateJobsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*talent.BatchUpdateJobsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1697,7 +1672,7 @@ func (c *jobGRPCClient) BatchUpdateJobsOperation(name string) *BatchUpdateJobsOp
 func (c *jobRESTClient) BatchUpdateJobsOperation(name string) *BatchUpdateJobsOperation {
 	override := fmt.Sprintf("/v4/%s", name)
 	return &BatchUpdateJobsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*talent.BatchUpdateJobsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

@@ -32,7 +32,6 @@ import (
 	securityposturepb "cloud.google.com/go/securityposture/apiv1/securityposturepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1108,12 +1107,8 @@ func (c *gRPCClient) CreatePosture(ctx context.Context, req *securityposturepb.C
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securityposture.CreatePostureOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreatePostureOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1135,12 +1130,8 @@ func (c *gRPCClient) UpdatePosture(ctx context.Context, req *securityposturepb.U
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securityposture.UpdatePostureOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdatePostureOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1165,12 +1156,8 @@ func (c *gRPCClient) DeletePosture(ctx context.Context, req *securityposturepb.D
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securityposture.DeletePostureOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePostureOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1195,12 +1182,8 @@ func (c *gRPCClient) ExtractPosture(ctx context.Context, req *securityposturepb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securityposture.ExtractPostureOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExtractPostureOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1301,12 +1284,8 @@ func (c *gRPCClient) CreatePostureDeployment(ctx context.Context, req *securityp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securityposture.CreatePostureDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreatePostureDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1328,12 +1307,8 @@ func (c *gRPCClient) UpdatePostureDeployment(ctx context.Context, req *securityp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securityposture.UpdatePostureDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdatePostureDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1358,12 +1333,8 @@ func (c *gRPCClient) DeletePostureDeployment(ctx context.Context, req *securityp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securityposture.DeletePostureDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePostureDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1909,12 +1880,8 @@ func (c *restClient) CreatePosture(ctx context.Context, req *securityposturepb.C
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securityposture.CreatePostureOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreatePostureOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1996,12 +1963,8 @@ func (c *restClient) UpdatePosture(ctx context.Context, req *securityposturepb.U
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securityposture.UpdatePostureOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdatePostureOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2065,12 +2028,8 @@ func (c *restClient) DeletePosture(ctx context.Context, req *securityposturepb.D
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securityposture.DeletePostureOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePostureOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2137,12 +2096,8 @@ func (c *restClient) ExtractPosture(ctx context.Context, req *securityposturepb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securityposture.ExtractPostureOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExtractPostureOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2348,12 +2303,8 @@ func (c *restClient) CreatePostureDeployment(ctx context.Context, req *securityp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securityposture.CreatePostureDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreatePostureDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2423,12 +2374,8 @@ func (c *restClient) UpdatePostureDeployment(ctx context.Context, req *securityp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securityposture.UpdatePostureDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdatePostureDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2490,12 +2437,8 @@ func (c *restClient) DeletePostureDeployment(ctx context.Context, req *securityp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securityposture.DeletePostureDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePostureDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3008,7 +2951,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreatePostureOperation, possibly from a different process.
 func (c *gRPCClient) CreatePostureOperation(name string) *CreatePostureOperation {
 	return &CreatePostureOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securityposture.CreatePostureOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3017,7 +2960,7 @@ func (c *gRPCClient) CreatePostureOperation(name string) *CreatePostureOperation
 func (c *restClient) CreatePostureOperation(name string) *CreatePostureOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePostureOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securityposture.CreatePostureOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3026,7 +2969,7 @@ func (c *restClient) CreatePostureOperation(name string) *CreatePostureOperation
 // The name must be that of a previously created CreatePostureDeploymentOperation, possibly from a different process.
 func (c *gRPCClient) CreatePostureDeploymentOperation(name string) *CreatePostureDeploymentOperation {
 	return &CreatePostureDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securityposture.CreatePostureDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3035,7 +2978,7 @@ func (c *gRPCClient) CreatePostureDeploymentOperation(name string) *CreatePostur
 func (c *restClient) CreatePostureDeploymentOperation(name string) *CreatePostureDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePostureDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securityposture.CreatePostureDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3044,7 +2987,7 @@ func (c *restClient) CreatePostureDeploymentOperation(name string) *CreatePostur
 // The name must be that of a previously created DeletePostureOperation, possibly from a different process.
 func (c *gRPCClient) DeletePostureOperation(name string) *DeletePostureOperation {
 	return &DeletePostureOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securityposture.DeletePostureOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3053,7 +2996,7 @@ func (c *gRPCClient) DeletePostureOperation(name string) *DeletePostureOperation
 func (c *restClient) DeletePostureOperation(name string) *DeletePostureOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePostureOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securityposture.DeletePostureOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3062,7 +3005,7 @@ func (c *restClient) DeletePostureOperation(name string) *DeletePostureOperation
 // The name must be that of a previously created DeletePostureDeploymentOperation, possibly from a different process.
 func (c *gRPCClient) DeletePostureDeploymentOperation(name string) *DeletePostureDeploymentOperation {
 	return &DeletePostureDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securityposture.DeletePostureDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3071,7 +3014,7 @@ func (c *gRPCClient) DeletePostureDeploymentOperation(name string) *DeletePostur
 func (c *restClient) DeletePostureDeploymentOperation(name string) *DeletePostureDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePostureDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securityposture.DeletePostureDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3080,7 +3023,7 @@ func (c *restClient) DeletePostureDeploymentOperation(name string) *DeletePostur
 // The name must be that of a previously created ExtractPostureOperation, possibly from a different process.
 func (c *gRPCClient) ExtractPostureOperation(name string) *ExtractPostureOperation {
 	return &ExtractPostureOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securityposture.ExtractPostureOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3089,7 +3032,7 @@ func (c *gRPCClient) ExtractPostureOperation(name string) *ExtractPostureOperati
 func (c *restClient) ExtractPostureOperation(name string) *ExtractPostureOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExtractPostureOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securityposture.ExtractPostureOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3098,7 +3041,7 @@ func (c *restClient) ExtractPostureOperation(name string) *ExtractPostureOperati
 // The name must be that of a previously created UpdatePostureOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePostureOperation(name string) *UpdatePostureOperation {
 	return &UpdatePostureOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securityposture.UpdatePostureOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3107,7 +3050,7 @@ func (c *gRPCClient) UpdatePostureOperation(name string) *UpdatePostureOperation
 func (c *restClient) UpdatePostureOperation(name string) *UpdatePostureOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePostureOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securityposture.UpdatePostureOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3116,7 +3059,7 @@ func (c *restClient) UpdatePostureOperation(name string) *UpdatePostureOperation
 // The name must be that of a previously created UpdatePostureDeploymentOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePostureDeploymentOperation(name string) *UpdatePostureDeploymentOperation {
 	return &UpdatePostureDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securityposture.UpdatePostureDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3125,7 +3068,7 @@ func (c *gRPCClient) UpdatePostureDeploymentOperation(name string) *UpdatePostur
 func (c *restClient) UpdatePostureDeploymentOperation(name string) *UpdatePostureDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePostureDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securityposture.UpdatePostureDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

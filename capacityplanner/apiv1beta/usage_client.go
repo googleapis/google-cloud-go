@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -687,12 +686,8 @@ func (c *usageGRPCClient) ExportUsageHistories(ctx context.Context, req *capacit
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*capacityplanner.ExportUsageHistoriesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportUsageHistoriesOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -717,12 +712,8 @@ func (c *usageGRPCClient) ExportForecasts(ctx context.Context, req *capacityplan
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*capacityplanner.ExportForecastsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportForecastsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -747,12 +738,8 @@ func (c *usageGRPCClient) ExportReservationsUsage(ctx context.Context, req *capa
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*capacityplanner.ExportReservationsUsageOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportReservationsUsageOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1081,12 +1068,8 @@ func (c *usageRESTClient) ExportUsageHistories(ctx context.Context, req *capacit
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*capacityplanner.ExportUsageHistoriesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportUsageHistoriesOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1152,12 +1135,8 @@ func (c *usageRESTClient) ExportForecasts(ctx context.Context, req *capacityplan
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*capacityplanner.ExportForecastsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportForecastsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1223,12 +1202,8 @@ func (c *usageRESTClient) ExportReservationsUsage(ctx context.Context, req *capa
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*capacityplanner.ExportReservationsUsageOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ExportReservationsUsageOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1237,7 +1212,7 @@ func (c *usageRESTClient) ExportReservationsUsage(ctx context.Context, req *capa
 // The name must be that of a previously created ExportForecastsOperation, possibly from a different process.
 func (c *usageGRPCClient) ExportForecastsOperation(name string) *ExportForecastsOperation {
 	return &ExportForecastsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*capacityplanner.ExportForecastsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1246,7 +1221,7 @@ func (c *usageGRPCClient) ExportForecastsOperation(name string) *ExportForecasts
 func (c *usageRESTClient) ExportForecastsOperation(name string) *ExportForecastsOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ExportForecastsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*capacityplanner.ExportForecastsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1255,7 +1230,7 @@ func (c *usageRESTClient) ExportForecastsOperation(name string) *ExportForecasts
 // The name must be that of a previously created ExportReservationsUsageOperation, possibly from a different process.
 func (c *usageGRPCClient) ExportReservationsUsageOperation(name string) *ExportReservationsUsageOperation {
 	return &ExportReservationsUsageOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*capacityplanner.ExportReservationsUsageOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1264,7 +1239,7 @@ func (c *usageGRPCClient) ExportReservationsUsageOperation(name string) *ExportR
 func (c *usageRESTClient) ExportReservationsUsageOperation(name string) *ExportReservationsUsageOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ExportReservationsUsageOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*capacityplanner.ExportReservationsUsageOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1273,7 +1248,7 @@ func (c *usageRESTClient) ExportReservationsUsageOperation(name string) *ExportR
 // The name must be that of a previously created ExportUsageHistoriesOperation, possibly from a different process.
 func (c *usageGRPCClient) ExportUsageHistoriesOperation(name string) *ExportUsageHistoriesOperation {
 	return &ExportUsageHistoriesOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*capacityplanner.ExportUsageHistoriesOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1282,7 +1257,7 @@ func (c *usageGRPCClient) ExportUsageHistoriesOperation(name string) *ExportUsag
 func (c *usageRESTClient) ExportUsageHistoriesOperation(name string) *ExportUsageHistoriesOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ExportUsageHistoriesOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*capacityplanner.ExportUsageHistoriesOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

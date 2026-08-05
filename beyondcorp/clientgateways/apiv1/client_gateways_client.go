@@ -30,7 +30,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -497,12 +496,8 @@ func (c *gRPCClient) CreateClientGateway(ctx context.Context, req *clientgateway
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clientgateways.CreateClientGatewayOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateClientGatewayOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -527,12 +522,8 @@ func (c *gRPCClient) DeleteClientGateway(ctx context.Context, req *clientgateway
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*clientgateways.DeleteClientGatewayOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteClientGatewayOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -786,7 +777,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateClientGatewayOperation, possibly from a different process.
 func (c *gRPCClient) CreateClientGatewayOperation(name string) *CreateClientGatewayOperation {
 	return &CreateClientGatewayOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clientgateways.CreateClientGatewayOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -794,6 +785,6 @@ func (c *gRPCClient) CreateClientGatewayOperation(name string) *CreateClientGate
 // The name must be that of a previously created DeleteClientGatewayOperation, possibly from a different process.
 func (c *gRPCClient) DeleteClientGatewayOperation(name string) *DeleteClientGatewayOperation {
 	return &DeleteClientGatewayOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*clientgateways.DeleteClientGatewayOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

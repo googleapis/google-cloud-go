@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -555,12 +554,8 @@ func (c *userLicenseGRPCClient) BatchUpdateUserLicenses(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.BatchUpdateUserLicensesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchUpdateUserLicensesOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -793,12 +788,8 @@ func (c *userLicenseRESTClient) BatchUpdateUserLicenses(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.BatchUpdateUserLicensesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchUpdateUserLicensesOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -990,7 +981,7 @@ func (c *userLicenseRESTClient) ListOperations(ctx context.Context, req *longrun
 // The name must be that of a previously created BatchUpdateUserLicensesOperation, possibly from a different process.
 func (c *userLicenseGRPCClient) BatchUpdateUserLicensesOperation(name string) *BatchUpdateUserLicensesOperation {
 	return &BatchUpdateUserLicensesOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.BatchUpdateUserLicensesOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -999,7 +990,7 @@ func (c *userLicenseGRPCClient) BatchUpdateUserLicensesOperation(name string) *B
 func (c *userLicenseRESTClient) BatchUpdateUserLicensesOperation(name string) *BatchUpdateUserLicensesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BatchUpdateUserLicensesOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.BatchUpdateUserLicensesOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

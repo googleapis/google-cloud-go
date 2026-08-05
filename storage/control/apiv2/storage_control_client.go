@@ -36,7 +36,6 @@ import (
 	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1778,12 +1777,8 @@ func (c *storageControlGRPCClient) RenameFolder(ctx context.Context, req *contro
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.RenameFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RenameFolderOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1820,12 +1815,8 @@ func (c *storageControlGRPCClient) DeleteFolderRecursive(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.DeleteFolderRecursiveOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteFolderRecursiveOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2093,12 +2084,8 @@ func (c *storageControlGRPCClient) CreateAnywhereCache(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.CreateAnywhereCacheOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAnywhereCacheOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2132,12 +2119,8 @@ func (c *storageControlGRPCClient) UpdateAnywhereCache(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.UpdateAnywhereCacheOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAnywhereCacheOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2376,12 +2359,8 @@ func (c *storageControlGRPCClient) CreateRapidCache(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.CreateRapidCacheOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateRapidCacheOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2412,12 +2391,8 @@ func (c *storageControlGRPCClient) UpdateRapidCache(ctx context.Context, req *co
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.UpdateRapidCacheOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateRapidCacheOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3358,12 +3333,8 @@ func (c *storageControlRESTClient) RenameFolder(ctx context.Context, req *contro
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.RenameFolderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RenameFolderOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3441,12 +3412,8 @@ func (c *storageControlRESTClient) DeleteFolderRecursive(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.DeleteFolderRecursiveOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteFolderRecursiveOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4055,12 +4022,8 @@ func (c *storageControlRESTClient) CreateAnywhereCache(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.CreateAnywhereCacheOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAnywhereCacheOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4177,12 +4140,8 @@ func (c *storageControlRESTClient) UpdateAnywhereCache(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.UpdateAnywhereCacheOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAnywhereCacheOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4665,12 +4624,8 @@ func (c *storageControlRESTClient) CreateRapidCache(ctx context.Context, req *co
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.CreateRapidCacheOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateRapidCacheOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4783,12 +4738,8 @@ func (c *storageControlRESTClient) UpdateRapidCache(ctx context.Context, req *co
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.UpdateRapidCacheOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateRapidCacheOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5935,7 +5886,7 @@ func (c *storageControlRESTClient) ListIntelligenceFindingRevisions(ctx context.
 // The name must be that of a previously created CreateAnywhereCacheOperation, possibly from a different process.
 func (c *storageControlGRPCClient) CreateAnywhereCacheOperation(name string) *CreateAnywhereCacheOperation {
 	return &CreateAnywhereCacheOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.CreateAnywhereCacheOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5944,7 +5895,7 @@ func (c *storageControlGRPCClient) CreateAnywhereCacheOperation(name string) *Cr
 func (c *storageControlRESTClient) CreateAnywhereCacheOperation(name string) *CreateAnywhereCacheOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateAnywhereCacheOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.CreateAnywhereCacheOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -5953,7 +5904,7 @@ func (c *storageControlRESTClient) CreateAnywhereCacheOperation(name string) *Cr
 // The name must be that of a previously created CreateRapidCacheOperation, possibly from a different process.
 func (c *storageControlGRPCClient) CreateRapidCacheOperation(name string) *CreateRapidCacheOperation {
 	return &CreateRapidCacheOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.CreateRapidCacheOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5962,7 +5913,7 @@ func (c *storageControlGRPCClient) CreateRapidCacheOperation(name string) *Creat
 func (c *storageControlRESTClient) CreateRapidCacheOperation(name string) *CreateRapidCacheOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateRapidCacheOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.CreateRapidCacheOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -5971,7 +5922,7 @@ func (c *storageControlRESTClient) CreateRapidCacheOperation(name string) *Creat
 // The name must be that of a previously created DeleteFolderRecursiveOperation, possibly from a different process.
 func (c *storageControlGRPCClient) DeleteFolderRecursiveOperation(name string) *DeleteFolderRecursiveOperation {
 	return &DeleteFolderRecursiveOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.DeleteFolderRecursiveOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5980,7 +5931,7 @@ func (c *storageControlGRPCClient) DeleteFolderRecursiveOperation(name string) *
 func (c *storageControlRESTClient) DeleteFolderRecursiveOperation(name string) *DeleteFolderRecursiveOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteFolderRecursiveOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.DeleteFolderRecursiveOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -5989,7 +5940,7 @@ func (c *storageControlRESTClient) DeleteFolderRecursiveOperation(name string) *
 // The name must be that of a previously created RenameFolderOperation, possibly from a different process.
 func (c *storageControlGRPCClient) RenameFolderOperation(name string) *RenameFolderOperation {
 	return &RenameFolderOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.RenameFolderOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -5998,7 +5949,7 @@ func (c *storageControlGRPCClient) RenameFolderOperation(name string) *RenameFol
 func (c *storageControlRESTClient) RenameFolderOperation(name string) *RenameFolderOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &RenameFolderOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.RenameFolderOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6007,7 +5958,7 @@ func (c *storageControlRESTClient) RenameFolderOperation(name string) *RenameFol
 // The name must be that of a previously created UpdateAnywhereCacheOperation, possibly from a different process.
 func (c *storageControlGRPCClient) UpdateAnywhereCacheOperation(name string) *UpdateAnywhereCacheOperation {
 	return &UpdateAnywhereCacheOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.UpdateAnywhereCacheOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6016,7 +5967,7 @@ func (c *storageControlGRPCClient) UpdateAnywhereCacheOperation(name string) *Up
 func (c *storageControlRESTClient) UpdateAnywhereCacheOperation(name string) *UpdateAnywhereCacheOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateAnywhereCacheOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.UpdateAnywhereCacheOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6025,7 +5976,7 @@ func (c *storageControlRESTClient) UpdateAnywhereCacheOperation(name string) *Up
 // The name must be that of a previously created UpdateRapidCacheOperation, possibly from a different process.
 func (c *storageControlGRPCClient) UpdateRapidCacheOperation(name string) *UpdateRapidCacheOperation {
 	return &UpdateRapidCacheOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.UpdateRapidCacheOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6034,7 +5985,7 @@ func (c *storageControlGRPCClient) UpdateRapidCacheOperation(name string) *Updat
 func (c *storageControlRESTClient) UpdateRapidCacheOperation(name string) *UpdateRapidCacheOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateRapidCacheOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.UpdateRapidCacheOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

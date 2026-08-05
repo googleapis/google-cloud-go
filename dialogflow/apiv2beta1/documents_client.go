@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -862,12 +861,8 @@ func (c *documentsGRPCClient) CreateDocument(ctx context.Context, req *dialogflo
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.CreateDocumentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDocumentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -892,12 +887,8 @@ func (c *documentsGRPCClient) ImportDocuments(ctx context.Context, req *dialogfl
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.ImportDocumentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportDocumentsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -922,12 +913,8 @@ func (c *documentsGRPCClient) DeleteDocument(ctx context.Context, req *dialogflo
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.DeleteDocumentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDocumentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -949,12 +936,8 @@ func (c *documentsGRPCClient) UpdateDocument(ctx context.Context, req *dialogflo
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.UpdateDocumentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDocumentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -979,12 +962,8 @@ func (c *documentsGRPCClient) ReloadDocument(ctx context.Context, req *dialogflo
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.ReloadDocumentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ReloadDocumentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1365,12 +1344,8 @@ func (c *documentsRESTClient) CreateDocument(ctx context.Context, req *dialogflo
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.CreateDocumentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDocumentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1447,12 +1422,8 @@ func (c *documentsRESTClient) ImportDocuments(ctx context.Context, req *dialogfl
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.ImportDocumentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportDocumentsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1524,12 +1495,8 @@ func (c *documentsRESTClient) DeleteDocument(ctx context.Context, req *dialogflo
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.DeleteDocumentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDocumentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1611,12 +1578,8 @@ func (c *documentsRESTClient) UpdateDocument(ctx context.Context, req *dialogflo
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.UpdateDocumentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDocumentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1699,12 +1662,8 @@ func (c *documentsRESTClient) ReloadDocument(ctx context.Context, req *dialogflo
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.ReloadDocumentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ReloadDocumentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2040,7 +1999,7 @@ func (c *documentsRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created CreateDocumentOperation, possibly from a different process.
 func (c *documentsGRPCClient) CreateDocumentOperation(name string) *CreateDocumentOperation {
 	return &CreateDocumentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.CreateDocumentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2049,7 +2008,7 @@ func (c *documentsGRPCClient) CreateDocumentOperation(name string) *CreateDocume
 func (c *documentsRESTClient) CreateDocumentOperation(name string) *CreateDocumentOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &CreateDocumentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.CreateDocumentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2058,7 +2017,7 @@ func (c *documentsRESTClient) CreateDocumentOperation(name string) *CreateDocume
 // The name must be that of a previously created DeleteDocumentOperation, possibly from a different process.
 func (c *documentsGRPCClient) DeleteDocumentOperation(name string) *DeleteDocumentOperation {
 	return &DeleteDocumentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.DeleteDocumentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2067,7 +2026,7 @@ func (c *documentsGRPCClient) DeleteDocumentOperation(name string) *DeleteDocume
 func (c *documentsRESTClient) DeleteDocumentOperation(name string) *DeleteDocumentOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &DeleteDocumentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.DeleteDocumentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2076,7 +2035,7 @@ func (c *documentsRESTClient) DeleteDocumentOperation(name string) *DeleteDocume
 // The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
 func (c *documentsGRPCClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
 	return &ImportDocumentsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.ImportDocumentsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2085,7 +2044,7 @@ func (c *documentsGRPCClient) ImportDocumentsOperation(name string) *ImportDocum
 func (c *documentsRESTClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &ImportDocumentsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.ImportDocumentsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2094,7 +2053,7 @@ func (c *documentsRESTClient) ImportDocumentsOperation(name string) *ImportDocum
 // The name must be that of a previously created ReloadDocumentOperation, possibly from a different process.
 func (c *documentsGRPCClient) ReloadDocumentOperation(name string) *ReloadDocumentOperation {
 	return &ReloadDocumentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.ReloadDocumentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2103,7 +2062,7 @@ func (c *documentsGRPCClient) ReloadDocumentOperation(name string) *ReloadDocume
 func (c *documentsRESTClient) ReloadDocumentOperation(name string) *ReloadDocumentOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &ReloadDocumentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.ReloadDocumentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2112,7 +2071,7 @@ func (c *documentsRESTClient) ReloadDocumentOperation(name string) *ReloadDocume
 // The name must be that of a previously created UpdateDocumentOperation, possibly from a different process.
 func (c *documentsGRPCClient) UpdateDocumentOperation(name string) *UpdateDocumentOperation {
 	return &UpdateDocumentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.UpdateDocumentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2121,7 +2080,7 @@ func (c *documentsGRPCClient) UpdateDocumentOperation(name string) *UpdateDocume
 func (c *documentsRESTClient) UpdateDocumentOperation(name string) *UpdateDocumentOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &UpdateDocumentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.UpdateDocumentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

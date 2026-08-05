@@ -32,7 +32,6 @@ import (
 	osconfigpb "cloud.google.com/go/osconfig/apiv1/osconfigpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -825,12 +824,8 @@ func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignment(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*osconfig.CreateOSPolicyAssignmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateOSPolicyAssignmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -852,12 +847,8 @@ func (c *osConfigZonalGRPCClient) UpdateOSPolicyAssignment(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*osconfig.UpdateOSPolicyAssignmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateOSPolicyAssignmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1010,12 +1001,8 @@ func (c *osConfigZonalGRPCClient) DeleteOSPolicyAssignment(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*osconfig.DeleteOSPolicyAssignmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteOSPolicyAssignmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1317,12 +1304,8 @@ func (c *osConfigZonalRESTClient) CreateOSPolicyAssignment(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*osconfig.CreateOSPolicyAssignmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateOSPolicyAssignmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1400,12 +1383,8 @@ func (c *osConfigZonalRESTClient) UpdateOSPolicyAssignment(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*osconfig.UpdateOSPolicyAssignmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateOSPolicyAssignmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1694,12 +1673,8 @@ func (c *osConfigZonalRESTClient) DeleteOSPolicyAssignment(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*osconfig.DeleteOSPolicyAssignmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteOSPolicyAssignmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2132,7 +2107,7 @@ func (c *osConfigZonalRESTClient) ListVulnerabilityReports(ctx context.Context, 
 // The name must be that of a previously created CreateOSPolicyAssignmentOperation, possibly from a different process.
 func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignmentOperation(name string) *CreateOSPolicyAssignmentOperation {
 	return &CreateOSPolicyAssignmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*osconfig.CreateOSPolicyAssignmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2141,7 +2116,7 @@ func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignmentOperation(name string)
 func (c *osConfigZonalRESTClient) CreateOSPolicyAssignmentOperation(name string) *CreateOSPolicyAssignmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateOSPolicyAssignmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*osconfig.CreateOSPolicyAssignmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2150,7 +2125,7 @@ func (c *osConfigZonalRESTClient) CreateOSPolicyAssignmentOperation(name string)
 // The name must be that of a previously created DeleteOSPolicyAssignmentOperation, possibly from a different process.
 func (c *osConfigZonalGRPCClient) DeleteOSPolicyAssignmentOperation(name string) *DeleteOSPolicyAssignmentOperation {
 	return &DeleteOSPolicyAssignmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*osconfig.DeleteOSPolicyAssignmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2159,7 +2134,7 @@ func (c *osConfigZonalGRPCClient) DeleteOSPolicyAssignmentOperation(name string)
 func (c *osConfigZonalRESTClient) DeleteOSPolicyAssignmentOperation(name string) *DeleteOSPolicyAssignmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteOSPolicyAssignmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*osconfig.DeleteOSPolicyAssignmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2168,7 +2143,7 @@ func (c *osConfigZonalRESTClient) DeleteOSPolicyAssignmentOperation(name string)
 // The name must be that of a previously created UpdateOSPolicyAssignmentOperation, possibly from a different process.
 func (c *osConfigZonalGRPCClient) UpdateOSPolicyAssignmentOperation(name string) *UpdateOSPolicyAssignmentOperation {
 	return &UpdateOSPolicyAssignmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*osconfig.UpdateOSPolicyAssignmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2177,7 +2152,7 @@ func (c *osConfigZonalGRPCClient) UpdateOSPolicyAssignmentOperation(name string)
 func (c *osConfigZonalRESTClient) UpdateOSPolicyAssignmentOperation(name string) *UpdateOSPolicyAssignmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateOSPolicyAssignmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*osconfig.UpdateOSPolicyAssignmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

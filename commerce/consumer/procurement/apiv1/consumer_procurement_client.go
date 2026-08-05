@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -546,12 +545,8 @@ func (c *consumerProcurementGRPCClient) PlaceOrder(ctx context.Context, req *pro
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*procurement.PlaceOrderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PlaceOrderOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -643,12 +638,8 @@ func (c *consumerProcurementGRPCClient) ModifyOrder(ctx context.Context, req *pr
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*procurement.ModifyOrderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ModifyOrderOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -670,12 +661,8 @@ func (c *consumerProcurementGRPCClient) CancelOrder(ctx context.Context, req *pr
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*procurement.CancelOrderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CancelOrderOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -769,12 +756,8 @@ func (c *consumerProcurementRESTClient) PlaceOrder(ctx context.Context, req *pro
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*procurement.PlaceOrderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PlaceOrderOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -975,12 +958,8 @@ func (c *consumerProcurementRESTClient) ModifyOrder(ctx context.Context, req *pr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*procurement.ModifyOrderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ModifyOrderOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1044,12 +1023,8 @@ func (c *consumerProcurementRESTClient) CancelOrder(ctx context.Context, req *pr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*procurement.CancelOrderOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CancelOrderOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1112,7 +1087,7 @@ func (c *consumerProcurementRESTClient) GetOperation(ctx context.Context, req *l
 // The name must be that of a previously created CancelOrderOperation, possibly from a different process.
 func (c *consumerProcurementGRPCClient) CancelOrderOperation(name string) *CancelOrderOperation {
 	return &CancelOrderOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*procurement.CancelOrderOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1121,7 +1096,7 @@ func (c *consumerProcurementGRPCClient) CancelOrderOperation(name string) *Cance
 func (c *consumerProcurementRESTClient) CancelOrderOperation(name string) *CancelOrderOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CancelOrderOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*procurement.CancelOrderOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1130,7 +1105,7 @@ func (c *consumerProcurementRESTClient) CancelOrderOperation(name string) *Cance
 // The name must be that of a previously created ModifyOrderOperation, possibly from a different process.
 func (c *consumerProcurementGRPCClient) ModifyOrderOperation(name string) *ModifyOrderOperation {
 	return &ModifyOrderOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*procurement.ModifyOrderOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1139,7 +1114,7 @@ func (c *consumerProcurementGRPCClient) ModifyOrderOperation(name string) *Modif
 func (c *consumerProcurementRESTClient) ModifyOrderOperation(name string) *ModifyOrderOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ModifyOrderOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*procurement.ModifyOrderOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1148,7 +1123,7 @@ func (c *consumerProcurementRESTClient) ModifyOrderOperation(name string) *Modif
 // The name must be that of a previously created PlaceOrderOperation, possibly from a different process.
 func (c *consumerProcurementGRPCClient) PlaceOrderOperation(name string) *PlaceOrderOperation {
 	return &PlaceOrderOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*procurement.PlaceOrderOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1157,7 +1132,7 @@ func (c *consumerProcurementGRPCClient) PlaceOrderOperation(name string) *PlaceO
 func (c *consumerProcurementRESTClient) PlaceOrderOperation(name string) *PlaceOrderOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &PlaceOrderOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*procurement.PlaceOrderOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

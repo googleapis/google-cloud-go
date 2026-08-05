@@ -33,7 +33,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1643,12 +1642,8 @@ func (c *gRPCClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTr
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateTriggerOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateTriggerOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1670,12 +1665,8 @@ func (c *gRPCClient) UpdateTrigger(ctx context.Context, req *eventarcpb.UpdateTr
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateTriggerOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateTriggerOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1700,12 +1691,8 @@ func (c *gRPCClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTr
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteTriggerOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteTriggerOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1806,12 +1793,8 @@ func (c *gRPCClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateCh
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateChannelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateChannelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1833,12 +1816,8 @@ func (c *gRPCClient) UpdateChannel(ctx context.Context, req *eventarcpb.UpdateCh
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateChannelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateChannelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1863,12 +1842,8 @@ func (c *gRPCClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteCh
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteChannelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteChannelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2045,12 +2020,8 @@ func (c *gRPCClient) CreateChannelConnection(ctx context.Context, req *eventarcp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateChannelConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateChannelConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2075,12 +2046,8 @@ func (c *gRPCClient) DeleteChannelConnection(ctx context.Context, req *eventarcp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteChannelConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteChannelConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2278,12 +2245,8 @@ func (c *gRPCClient) CreateMessageBus(ctx context.Context, req *eventarcpb.Creat
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateMessageBusOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMessageBusOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2305,12 +2268,8 @@ func (c *gRPCClient) UpdateMessageBus(ctx context.Context, req *eventarcpb.Updat
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateMessageBusOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateMessageBusOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2335,12 +2294,8 @@ func (c *gRPCClient) DeleteMessageBus(ctx context.Context, req *eventarcpb.Delet
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteMessageBusOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteMessageBusOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2441,12 +2396,8 @@ func (c *gRPCClient) CreateEnrollment(ctx context.Context, req *eventarcpb.Creat
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateEnrollmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateEnrollmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2468,12 +2419,8 @@ func (c *gRPCClient) UpdateEnrollment(ctx context.Context, req *eventarcpb.Updat
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateEnrollmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateEnrollmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2498,12 +2445,8 @@ func (c *gRPCClient) DeleteEnrollment(ctx context.Context, req *eventarcpb.Delet
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteEnrollmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteEnrollmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2604,12 +2547,8 @@ func (c *gRPCClient) CreatePipeline(ctx context.Context, req *eventarcpb.CreateP
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreatePipelineOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreatePipelineOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2631,12 +2570,8 @@ func (c *gRPCClient) UpdatePipeline(ctx context.Context, req *eventarcpb.UpdateP
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdatePipelineOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdatePipelineOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2661,12 +2596,8 @@ func (c *gRPCClient) DeletePipeline(ctx context.Context, req *eventarcpb.DeleteP
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeletePipelineOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePipelineOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2767,12 +2698,8 @@ func (c *gRPCClient) CreateGoogleApiSource(ctx context.Context, req *eventarcpb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateGoogleApiSourceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGoogleApiSourceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2794,12 +2721,8 @@ func (c *gRPCClient) UpdateGoogleApiSource(ctx context.Context, req *eventarcpb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateGoogleApiSourceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateGoogleApiSourceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2824,12 +2747,8 @@ func (c *gRPCClient) DeleteGoogleApiSource(ctx context.Context, req *eventarcpb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteGoogleApiSourceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGoogleApiSourceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3285,12 +3204,8 @@ func (c *restClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateTriggerOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateTriggerOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3366,12 +3281,8 @@ func (c *restClient) UpdateTrigger(ctx context.Context, req *eventarcpb.UpdateTr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateTriggerOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateTriggerOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3439,12 +3350,8 @@ func (c *restClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteTriggerOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteTriggerOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3652,12 +3559,8 @@ func (c *restClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateCh
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateChannelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateChannelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3730,12 +3633,8 @@ func (c *restClient) UpdateChannel(ctx context.Context, req *eventarcpb.UpdateCh
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateChannelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateChannelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3797,12 +3696,8 @@ func (c *restClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteCh
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteChannelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteChannelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4145,12 +4040,8 @@ func (c *restClient) CreateChannelConnection(ctx context.Context, req *eventarcp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateChannelConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateChannelConnectionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4209,12 +4100,8 @@ func (c *restClient) DeleteChannelConnection(ctx context.Context, req *eventarcp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteChannelConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteChannelConnectionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4630,12 +4517,8 @@ func (c *restClient) CreateMessageBus(ctx context.Context, req *eventarcpb.Creat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateMessageBusOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMessageBusOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4711,12 +4594,8 @@ func (c *restClient) UpdateMessageBus(ctx context.Context, req *eventarcpb.Updat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateMessageBusOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateMessageBusOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4784,12 +4663,8 @@ func (c *restClient) DeleteMessageBus(ctx context.Context, req *eventarcpb.Delet
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteMessageBusOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteMessageBusOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5000,12 +4875,8 @@ func (c *restClient) CreateEnrollment(ctx context.Context, req *eventarcpb.Creat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateEnrollmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateEnrollmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5081,12 +4952,8 @@ func (c *restClient) UpdateEnrollment(ctx context.Context, req *eventarcpb.Updat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateEnrollmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateEnrollmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5154,12 +5021,8 @@ func (c *restClient) DeleteEnrollment(ctx context.Context, req *eventarcpb.Delet
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteEnrollmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteEnrollmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5370,12 +5233,8 @@ func (c *restClient) CreatePipeline(ctx context.Context, req *eventarcpb.CreateP
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreatePipelineOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreatePipelineOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5451,12 +5310,8 @@ func (c *restClient) UpdatePipeline(ctx context.Context, req *eventarcpb.UpdateP
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdatePipelineOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdatePipelineOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5524,12 +5379,8 @@ func (c *restClient) DeletePipeline(ctx context.Context, req *eventarcpb.DeleteP
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeletePipelineOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePipelineOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5740,12 +5591,8 @@ func (c *restClient) CreateGoogleApiSource(ctx context.Context, req *eventarcpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateGoogleApiSourceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGoogleApiSourceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5821,12 +5668,8 @@ func (c *restClient) UpdateGoogleApiSource(ctx context.Context, req *eventarcpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateGoogleApiSourceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateGoogleApiSourceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5894,12 +5737,8 @@ func (c *restClient) DeleteGoogleApiSource(ctx context.Context, req *eventarcpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteGoogleApiSourceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGoogleApiSourceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6462,7 +6301,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateChannelOperation, possibly from a different process.
 func (c *gRPCClient) CreateChannelOperation(name string) *CreateChannelOperation {
 	return &CreateChannelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateChannelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6471,7 +6310,7 @@ func (c *gRPCClient) CreateChannelOperation(name string) *CreateChannelOperation
 func (c *restClient) CreateChannelOperation(name string) *CreateChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateChannelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateChannelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6480,7 +6319,7 @@ func (c *restClient) CreateChannelOperation(name string) *CreateChannelOperation
 // The name must be that of a previously created CreateChannelConnectionOperation, possibly from a different process.
 func (c *gRPCClient) CreateChannelConnectionOperation(name string) *CreateChannelConnectionOperation {
 	return &CreateChannelConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateChannelConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6489,7 +6328,7 @@ func (c *gRPCClient) CreateChannelConnectionOperation(name string) *CreateChanne
 func (c *restClient) CreateChannelConnectionOperation(name string) *CreateChannelConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateChannelConnectionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateChannelConnectionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6498,7 +6337,7 @@ func (c *restClient) CreateChannelConnectionOperation(name string) *CreateChanne
 // The name must be that of a previously created CreateEnrollmentOperation, possibly from a different process.
 func (c *gRPCClient) CreateEnrollmentOperation(name string) *CreateEnrollmentOperation {
 	return &CreateEnrollmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateEnrollmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6507,7 +6346,7 @@ func (c *gRPCClient) CreateEnrollmentOperation(name string) *CreateEnrollmentOpe
 func (c *restClient) CreateEnrollmentOperation(name string) *CreateEnrollmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEnrollmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateEnrollmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6516,7 +6355,7 @@ func (c *restClient) CreateEnrollmentOperation(name string) *CreateEnrollmentOpe
 // The name must be that of a previously created CreateGoogleApiSourceOperation, possibly from a different process.
 func (c *gRPCClient) CreateGoogleApiSourceOperation(name string) *CreateGoogleApiSourceOperation {
 	return &CreateGoogleApiSourceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateGoogleApiSourceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6525,7 +6364,7 @@ func (c *gRPCClient) CreateGoogleApiSourceOperation(name string) *CreateGoogleAp
 func (c *restClient) CreateGoogleApiSourceOperation(name string) *CreateGoogleApiSourceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateGoogleApiSourceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateGoogleApiSourceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6534,7 +6373,7 @@ func (c *restClient) CreateGoogleApiSourceOperation(name string) *CreateGoogleAp
 // The name must be that of a previously created CreateMessageBusOperation, possibly from a different process.
 func (c *gRPCClient) CreateMessageBusOperation(name string) *CreateMessageBusOperation {
 	return &CreateMessageBusOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateMessageBusOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6543,7 +6382,7 @@ func (c *gRPCClient) CreateMessageBusOperation(name string) *CreateMessageBusOpe
 func (c *restClient) CreateMessageBusOperation(name string) *CreateMessageBusOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateMessageBusOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateMessageBusOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6552,7 +6391,7 @@ func (c *restClient) CreateMessageBusOperation(name string) *CreateMessageBusOpe
 // The name must be that of a previously created CreatePipelineOperation, possibly from a different process.
 func (c *gRPCClient) CreatePipelineOperation(name string) *CreatePipelineOperation {
 	return &CreatePipelineOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreatePipelineOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6561,7 +6400,7 @@ func (c *gRPCClient) CreatePipelineOperation(name string) *CreatePipelineOperati
 func (c *restClient) CreatePipelineOperation(name string) *CreatePipelineOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePipelineOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreatePipelineOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6570,7 +6409,7 @@ func (c *restClient) CreatePipelineOperation(name string) *CreatePipelineOperati
 // The name must be that of a previously created CreateTriggerOperation, possibly from a different process.
 func (c *gRPCClient) CreateTriggerOperation(name string) *CreateTriggerOperation {
 	return &CreateTriggerOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateTriggerOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6579,7 +6418,7 @@ func (c *gRPCClient) CreateTriggerOperation(name string) *CreateTriggerOperation
 func (c *restClient) CreateTriggerOperation(name string) *CreateTriggerOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateTriggerOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateTriggerOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6588,7 +6427,7 @@ func (c *restClient) CreateTriggerOperation(name string) *CreateTriggerOperation
 // The name must be that of a previously created DeleteChannelOperation, possibly from a different process.
 func (c *gRPCClient) DeleteChannelOperation(name string) *DeleteChannelOperation {
 	return &DeleteChannelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteChannelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6597,7 +6436,7 @@ func (c *gRPCClient) DeleteChannelOperation(name string) *DeleteChannelOperation
 func (c *restClient) DeleteChannelOperation(name string) *DeleteChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteChannelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteChannelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6606,7 +6445,7 @@ func (c *restClient) DeleteChannelOperation(name string) *DeleteChannelOperation
 // The name must be that of a previously created DeleteChannelConnectionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteChannelConnectionOperation(name string) *DeleteChannelConnectionOperation {
 	return &DeleteChannelConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteChannelConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6615,7 +6454,7 @@ func (c *gRPCClient) DeleteChannelConnectionOperation(name string) *DeleteChanne
 func (c *restClient) DeleteChannelConnectionOperation(name string) *DeleteChannelConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteChannelConnectionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteChannelConnectionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6624,7 +6463,7 @@ func (c *restClient) DeleteChannelConnectionOperation(name string) *DeleteChanne
 // The name must be that of a previously created DeleteEnrollmentOperation, possibly from a different process.
 func (c *gRPCClient) DeleteEnrollmentOperation(name string) *DeleteEnrollmentOperation {
 	return &DeleteEnrollmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteEnrollmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6633,7 +6472,7 @@ func (c *gRPCClient) DeleteEnrollmentOperation(name string) *DeleteEnrollmentOpe
 func (c *restClient) DeleteEnrollmentOperation(name string) *DeleteEnrollmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEnrollmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteEnrollmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6642,7 +6481,7 @@ func (c *restClient) DeleteEnrollmentOperation(name string) *DeleteEnrollmentOpe
 // The name must be that of a previously created DeleteGoogleApiSourceOperation, possibly from a different process.
 func (c *gRPCClient) DeleteGoogleApiSourceOperation(name string) *DeleteGoogleApiSourceOperation {
 	return &DeleteGoogleApiSourceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteGoogleApiSourceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6651,7 +6490,7 @@ func (c *gRPCClient) DeleteGoogleApiSourceOperation(name string) *DeleteGoogleAp
 func (c *restClient) DeleteGoogleApiSourceOperation(name string) *DeleteGoogleApiSourceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGoogleApiSourceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteGoogleApiSourceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6660,7 +6499,7 @@ func (c *restClient) DeleteGoogleApiSourceOperation(name string) *DeleteGoogleAp
 // The name must be that of a previously created DeleteMessageBusOperation, possibly from a different process.
 func (c *gRPCClient) DeleteMessageBusOperation(name string) *DeleteMessageBusOperation {
 	return &DeleteMessageBusOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteMessageBusOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6669,7 +6508,7 @@ func (c *gRPCClient) DeleteMessageBusOperation(name string) *DeleteMessageBusOpe
 func (c *restClient) DeleteMessageBusOperation(name string) *DeleteMessageBusOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteMessageBusOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteMessageBusOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6678,7 +6517,7 @@ func (c *restClient) DeleteMessageBusOperation(name string) *DeleteMessageBusOpe
 // The name must be that of a previously created DeletePipelineOperation, possibly from a different process.
 func (c *gRPCClient) DeletePipelineOperation(name string) *DeletePipelineOperation {
 	return &DeletePipelineOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeletePipelineOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6687,7 +6526,7 @@ func (c *gRPCClient) DeletePipelineOperation(name string) *DeletePipelineOperati
 func (c *restClient) DeletePipelineOperation(name string) *DeletePipelineOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePipelineOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeletePipelineOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6696,7 +6535,7 @@ func (c *restClient) DeletePipelineOperation(name string) *DeletePipelineOperati
 // The name must be that of a previously created DeleteTriggerOperation, possibly from a different process.
 func (c *gRPCClient) DeleteTriggerOperation(name string) *DeleteTriggerOperation {
 	return &DeleteTriggerOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteTriggerOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6705,7 +6544,7 @@ func (c *gRPCClient) DeleteTriggerOperation(name string) *DeleteTriggerOperation
 func (c *restClient) DeleteTriggerOperation(name string) *DeleteTriggerOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteTriggerOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteTriggerOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6714,7 +6553,7 @@ func (c *restClient) DeleteTriggerOperation(name string) *DeleteTriggerOperation
 // The name must be that of a previously created UpdateChannelOperation, possibly from a different process.
 func (c *gRPCClient) UpdateChannelOperation(name string) *UpdateChannelOperation {
 	return &UpdateChannelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateChannelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6723,7 +6562,7 @@ func (c *gRPCClient) UpdateChannelOperation(name string) *UpdateChannelOperation
 func (c *restClient) UpdateChannelOperation(name string) *UpdateChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateChannelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateChannelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6732,7 +6571,7 @@ func (c *restClient) UpdateChannelOperation(name string) *UpdateChannelOperation
 // The name must be that of a previously created UpdateEnrollmentOperation, possibly from a different process.
 func (c *gRPCClient) UpdateEnrollmentOperation(name string) *UpdateEnrollmentOperation {
 	return &UpdateEnrollmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateEnrollmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6741,7 +6580,7 @@ func (c *gRPCClient) UpdateEnrollmentOperation(name string) *UpdateEnrollmentOpe
 func (c *restClient) UpdateEnrollmentOperation(name string) *UpdateEnrollmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateEnrollmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateEnrollmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6750,7 +6589,7 @@ func (c *restClient) UpdateEnrollmentOperation(name string) *UpdateEnrollmentOpe
 // The name must be that of a previously created UpdateGoogleApiSourceOperation, possibly from a different process.
 func (c *gRPCClient) UpdateGoogleApiSourceOperation(name string) *UpdateGoogleApiSourceOperation {
 	return &UpdateGoogleApiSourceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateGoogleApiSourceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6759,7 +6598,7 @@ func (c *gRPCClient) UpdateGoogleApiSourceOperation(name string) *UpdateGoogleAp
 func (c *restClient) UpdateGoogleApiSourceOperation(name string) *UpdateGoogleApiSourceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateGoogleApiSourceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateGoogleApiSourceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6768,7 +6607,7 @@ func (c *restClient) UpdateGoogleApiSourceOperation(name string) *UpdateGoogleAp
 // The name must be that of a previously created UpdateMessageBusOperation, possibly from a different process.
 func (c *gRPCClient) UpdateMessageBusOperation(name string) *UpdateMessageBusOperation {
 	return &UpdateMessageBusOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateMessageBusOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6777,7 +6616,7 @@ func (c *gRPCClient) UpdateMessageBusOperation(name string) *UpdateMessageBusOpe
 func (c *restClient) UpdateMessageBusOperation(name string) *UpdateMessageBusOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateMessageBusOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateMessageBusOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6786,7 +6625,7 @@ func (c *restClient) UpdateMessageBusOperation(name string) *UpdateMessageBusOpe
 // The name must be that of a previously created UpdatePipelineOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePipelineOperation(name string) *UpdatePipelineOperation {
 	return &UpdatePipelineOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdatePipelineOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6795,7 +6634,7 @@ func (c *gRPCClient) UpdatePipelineOperation(name string) *UpdatePipelineOperati
 func (c *restClient) UpdatePipelineOperation(name string) *UpdatePipelineOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePipelineOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdatePipelineOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -6804,7 +6643,7 @@ func (c *restClient) UpdatePipelineOperation(name string) *UpdatePipelineOperati
 // The name must be that of a previously created UpdateTriggerOperation, possibly from a different process.
 func (c *gRPCClient) UpdateTriggerOperation(name string) *UpdateTriggerOperation {
 	return &UpdateTriggerOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateTriggerOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -6813,7 +6652,7 @@ func (c *gRPCClient) UpdateTriggerOperation(name string) *UpdateTriggerOperation
 func (c *restClient) UpdateTriggerOperation(name string) *UpdateTriggerOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateTriggerOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateTriggerOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

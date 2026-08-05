@@ -32,7 +32,6 @@ import (
 	oracledatabasepb "cloud.google.com/go/oracledatabase/apiv1/oracledatabasepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -2755,12 +2754,8 @@ func (c *gRPCClient) CreateCloudExadataInfrastructure(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateCloudExadataInfrastructureOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateCloudExadataInfrastructureOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2785,12 +2780,8 @@ func (c *gRPCClient) DeleteCloudExadataInfrastructure(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteCloudExadataInfrastructureOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteCloudExadataInfrastructureOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2815,12 +2806,8 @@ func (c *gRPCClient) ConfigureExascaleCloudExadataInfrastructure(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.ConfigureExascaleCloudExadataInfrastructureOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ConfigureExascaleCloudExadataInfrastructureOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2921,12 +2908,8 @@ func (c *gRPCClient) CreateCloudVmCluster(ctx context.Context, req *oracledataba
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateCloudVmClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateCloudVmClusterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2951,12 +2934,8 @@ func (c *gRPCClient) DeleteCloudVmCluster(ctx context.Context, req *oracledataba
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteCloudVmClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteCloudVmClusterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3369,12 +3348,8 @@ func (c *gRPCClient) CreateAutonomousDatabase(ctx context.Context, req *oracleda
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAutonomousDatabaseOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3396,12 +3371,8 @@ func (c *gRPCClient) UpdateAutonomousDatabase(ctx context.Context, req *oracleda
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.UpdateAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAutonomousDatabaseOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3426,12 +3397,8 @@ func (c *gRPCClient) DeleteAutonomousDatabase(ctx context.Context, req *oracleda
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAutonomousDatabaseOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3456,12 +3423,8 @@ func (c *gRPCClient) RestoreAutonomousDatabase(ctx context.Context, req *oracled
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.RestoreAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RestoreAutonomousDatabaseOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3666,12 +3629,8 @@ func (c *gRPCClient) StopAutonomousDatabase(ctx context.Context, req *oracledata
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.StopAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StopAutonomousDatabaseOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3696,12 +3655,8 @@ func (c *gRPCClient) StartAutonomousDatabase(ctx context.Context, req *oracledat
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.StartAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StartAutonomousDatabaseOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3726,12 +3681,8 @@ func (c *gRPCClient) RestartAutonomousDatabase(ctx context.Context, req *oracled
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.RestartAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RestartAutonomousDatabaseOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3756,12 +3707,8 @@ func (c *gRPCClient) SwitchoverAutonomousDatabase(ctx context.Context, req *orac
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.SwitchoverAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SwitchoverAutonomousDatabaseOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3786,12 +3733,8 @@ func (c *gRPCClient) FailoverAutonomousDatabase(ctx context.Context, req *oracle
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.FailoverAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &FailoverAutonomousDatabaseOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3892,12 +3835,8 @@ func (c *gRPCClient) CreateOdbNetwork(ctx context.Context, req *oracledatabasepb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateOdbNetworkOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateOdbNetworkOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -3922,12 +3861,8 @@ func (c *gRPCClient) DeleteOdbNetwork(ctx context.Context, req *oracledatabasepb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteOdbNetworkOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteOdbNetworkOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4028,12 +3963,8 @@ func (c *gRPCClient) CreateOdbSubnet(ctx context.Context, req *oracledatabasepb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateOdbSubnetOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateOdbSubnetOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4058,12 +3989,8 @@ func (c *gRPCClient) DeleteOdbSubnet(ctx context.Context, req *oracledatabasepb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteOdbSubnetOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteOdbSubnetOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4164,12 +4091,8 @@ func (c *gRPCClient) CreateExadbVmCluster(ctx context.Context, req *oracledataba
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateExadbVmClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateExadbVmClusterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4194,12 +4117,8 @@ func (c *gRPCClient) DeleteExadbVmCluster(ctx context.Context, req *oracledataba
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteExadbVmClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteExadbVmClusterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4221,12 +4140,8 @@ func (c *gRPCClient) UpdateExadbVmCluster(ctx context.Context, req *oracledataba
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.UpdateExadbVmClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateExadbVmClusterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4251,12 +4166,8 @@ func (c *gRPCClient) RemoveVirtualMachineExadbVmCluster(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.RemoveVirtualMachineExadbVmClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RemoveVirtualMachineExadbVmClusterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4357,12 +4268,8 @@ func (c *gRPCClient) CreateExascaleDbStorageVault(ctx context.Context, req *orac
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateExascaleDbStorageVaultOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateExascaleDbStorageVaultOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4387,12 +4294,8 @@ func (c *gRPCClient) DeleteExascaleDbStorageVault(ctx context.Context, req *orac
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteExascaleDbStorageVaultOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteExascaleDbStorageVaultOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4697,12 +4600,8 @@ func (c *gRPCClient) CreateDbSystem(ctx context.Context, req *oracledatabasepb.C
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateDbSystemOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDbSystemOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4727,12 +4626,8 @@ func (c *gRPCClient) DeleteDbSystem(ctx context.Context, req *oracledatabasepb.D
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteDbSystemOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDbSystemOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4833,12 +4728,8 @@ func (c *gRPCClient) CreateGoldengateDeployment(ctx context.Context, req *oracle
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateGoldengateDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGoldengateDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4863,12 +4754,8 @@ func (c *gRPCClient) DeleteGoldengateDeployment(ctx context.Context, req *oracle
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteGoldengateDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGoldengateDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4893,12 +4780,8 @@ func (c *gRPCClient) StopGoldengateDeployment(ctx context.Context, req *oracleda
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.StopGoldengateDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StopGoldengateDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -4923,12 +4806,8 @@ func (c *gRPCClient) StartGoldengateDeployment(ctx context.Context, req *oracled
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.StartGoldengateDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StartGoldengateDeploymentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -5029,12 +4908,8 @@ func (c *gRPCClient) CreateGoldengateConnection(ctx context.Context, req *oracle
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateGoldengateConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGoldengateConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -5059,12 +4934,8 @@ func (c *gRPCClient) DeleteGoldengateConnection(ctx context.Context, req *oracle
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteGoldengateConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGoldengateConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -5477,12 +5348,8 @@ func (c *gRPCClient) CreateGoldengateConnectionAssignment(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateGoldengateConnectionAssignmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGoldengateConnectionAssignmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -5507,12 +5374,8 @@ func (c *gRPCClient) DeleteGoldengateConnectionAssignment(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteGoldengateConnectionAssignmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGoldengateConnectionAssignmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -5920,12 +5783,8 @@ func (c *restClient) CreateCloudExadataInfrastructure(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateCloudExadataInfrastructureOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateCloudExadataInfrastructureOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -5990,12 +5849,8 @@ func (c *restClient) DeleteCloudExadataInfrastructure(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteCloudExadataInfrastructureOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteCloudExadataInfrastructureOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6060,12 +5915,8 @@ func (c *restClient) ConfigureExascaleCloudExadataInfrastructure(ctx context.Con
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.ConfigureExascaleCloudExadataInfrastructureOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ConfigureExascaleCloudExadataInfrastructureOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6273,12 +6124,8 @@ func (c *restClient) CreateCloudVmCluster(ctx context.Context, req *oracledataba
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateCloudVmClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateCloudVmClusterOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -6343,12 +6190,8 @@ func (c *restClient) DeleteCloudVmCluster(ctx context.Context, req *oracledataba
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteCloudVmClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteCloudVmClusterOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -7038,12 +6881,8 @@ func (c *restClient) CreateAutonomousDatabase(ctx context.Context, req *oracleda
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAutonomousDatabaseOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -7116,12 +6955,8 @@ func (c *restClient) UpdateAutonomousDatabase(ctx context.Context, req *oracleda
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.UpdateAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAutonomousDatabaseOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -7183,12 +7018,8 @@ func (c *restClient) DeleteAutonomousDatabase(ctx context.Context, req *oracleda
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAutonomousDatabaseOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -7253,12 +7084,8 @@ func (c *restClient) RestoreAutonomousDatabase(ctx context.Context, req *oracled
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.RestoreAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RestoreAutonomousDatabaseOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -7627,12 +7454,8 @@ func (c *restClient) StopAutonomousDatabase(ctx context.Context, req *oracledata
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.StopAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StopAutonomousDatabaseOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -7697,12 +7520,8 @@ func (c *restClient) StartAutonomousDatabase(ctx context.Context, req *oracledat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.StartAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StartAutonomousDatabaseOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -7767,12 +7586,8 @@ func (c *restClient) RestartAutonomousDatabase(ctx context.Context, req *oracled
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.RestartAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RestartAutonomousDatabaseOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -7838,12 +7653,8 @@ func (c *restClient) SwitchoverAutonomousDatabase(ctx context.Context, req *orac
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.SwitchoverAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SwitchoverAutonomousDatabaseOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -7909,12 +7720,8 @@ func (c *restClient) FailoverAutonomousDatabase(ctx context.Context, req *oracle
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.FailoverAutonomousDatabaseOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &FailoverAutonomousDatabaseOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -8125,12 +7932,8 @@ func (c *restClient) CreateOdbNetwork(ctx context.Context, req *oracledatabasepb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateOdbNetworkOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateOdbNetworkOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -8192,12 +7995,8 @@ func (c *restClient) DeleteOdbNetwork(ctx context.Context, req *oracledatabasepb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteOdbNetworkOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteOdbNetworkOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -8408,12 +8207,8 @@ func (c *restClient) CreateOdbSubnet(ctx context.Context, req *oracledatabasepb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateOdbSubnetOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateOdbSubnetOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -8475,12 +8270,8 @@ func (c *restClient) DeleteOdbSubnet(ctx context.Context, req *oracledatabasepb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteOdbSubnetOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteOdbSubnetOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -8692,12 +8483,8 @@ func (c *restClient) CreateExadbVmCluster(ctx context.Context, req *oracledataba
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateExadbVmClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateExadbVmClusterOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -8759,12 +8546,8 @@ func (c *restClient) DeleteExadbVmCluster(ctx context.Context, req *oracledataba
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteExadbVmClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteExadbVmClusterOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -8838,12 +8621,8 @@ func (c *restClient) UpdateExadbVmCluster(ctx context.Context, req *oracledataba
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.UpdateExadbVmClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateExadbVmClusterOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -8908,12 +8687,8 @@ func (c *restClient) RemoveVirtualMachineExadbVmCluster(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.RemoveVirtualMachineExadbVmClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RemoveVirtualMachineExadbVmClusterOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -9125,12 +8900,8 @@ func (c *restClient) CreateExascaleDbStorageVault(ctx context.Context, req *orac
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateExascaleDbStorageVaultOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateExascaleDbStorageVaultOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -9192,12 +8963,8 @@ func (c *restClient) DeleteExascaleDbStorageVault(ctx context.Context, req *orac
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteExascaleDbStorageVaultOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteExascaleDbStorageVaultOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -9764,12 +9531,8 @@ func (c *restClient) CreateDbSystem(ctx context.Context, req *oracledatabasepb.C
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateDbSystemOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDbSystemOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -9831,12 +9594,8 @@ func (c *restClient) DeleteDbSystem(ctx context.Context, req *oracledatabasepb.D
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteDbSystemOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDbSystemOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -10047,12 +9806,8 @@ func (c *restClient) CreateGoldengateDeployment(ctx context.Context, req *oracle
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateGoldengateDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGoldengateDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -10114,12 +9869,8 @@ func (c *restClient) DeleteGoldengateDeployment(ctx context.Context, req *oracle
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteGoldengateDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGoldengateDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -10184,12 +9935,8 @@ func (c *restClient) StopGoldengateDeployment(ctx context.Context, req *oracleda
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.StopGoldengateDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StopGoldengateDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -10254,12 +10001,8 @@ func (c *restClient) StartGoldengateDeployment(ctx context.Context, req *oracled
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.StartGoldengateDeploymentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &StartGoldengateDeploymentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -10470,12 +10213,8 @@ func (c *restClient) CreateGoldengateConnection(ctx context.Context, req *oracle
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateGoldengateConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGoldengateConnectionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -10537,12 +10276,8 @@ func (c *restClient) DeleteGoldengateConnection(ctx context.Context, req *oracle
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteGoldengateConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGoldengateConnectionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -11240,12 +10975,8 @@ func (c *restClient) CreateGoldengateConnectionAssignment(ctx context.Context, r
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.CreateGoldengateConnectionAssignmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGoldengateConnectionAssignmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -11307,12 +11038,8 @@ func (c *restClient) DeleteGoldengateConnectionAssignment(ctx context.Context, r
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.DeleteGoldengateConnectionAssignmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGoldengateConnectionAssignmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -11756,7 +11483,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created ConfigureExascaleCloudExadataInfrastructureOperation, possibly from a different process.
 func (c *gRPCClient) ConfigureExascaleCloudExadataInfrastructureOperation(name string) *ConfigureExascaleCloudExadataInfrastructureOperation {
 	return &ConfigureExascaleCloudExadataInfrastructureOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.ConfigureExascaleCloudExadataInfrastructureOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -11765,7 +11492,7 @@ func (c *gRPCClient) ConfigureExascaleCloudExadataInfrastructureOperation(name s
 func (c *restClient) ConfigureExascaleCloudExadataInfrastructureOperation(name string) *ConfigureExascaleCloudExadataInfrastructureOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ConfigureExascaleCloudExadataInfrastructureOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.ConfigureExascaleCloudExadataInfrastructureOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -11774,7 +11501,7 @@ func (c *restClient) ConfigureExascaleCloudExadataInfrastructureOperation(name s
 // The name must be that of a previously created CreateAutonomousDatabaseOperation, possibly from a different process.
 func (c *gRPCClient) CreateAutonomousDatabaseOperation(name string) *CreateAutonomousDatabaseOperation {
 	return &CreateAutonomousDatabaseOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateAutonomousDatabaseOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -11783,7 +11510,7 @@ func (c *gRPCClient) CreateAutonomousDatabaseOperation(name string) *CreateAuton
 func (c *restClient) CreateAutonomousDatabaseOperation(name string) *CreateAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAutonomousDatabaseOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateAutonomousDatabaseOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -11792,7 +11519,7 @@ func (c *restClient) CreateAutonomousDatabaseOperation(name string) *CreateAuton
 // The name must be that of a previously created CreateCloudExadataInfrastructureOperation, possibly from a different process.
 func (c *gRPCClient) CreateCloudExadataInfrastructureOperation(name string) *CreateCloudExadataInfrastructureOperation {
 	return &CreateCloudExadataInfrastructureOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateCloudExadataInfrastructureOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -11801,7 +11528,7 @@ func (c *gRPCClient) CreateCloudExadataInfrastructureOperation(name string) *Cre
 func (c *restClient) CreateCloudExadataInfrastructureOperation(name string) *CreateCloudExadataInfrastructureOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCloudExadataInfrastructureOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateCloudExadataInfrastructureOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -11810,7 +11537,7 @@ func (c *restClient) CreateCloudExadataInfrastructureOperation(name string) *Cre
 // The name must be that of a previously created CreateCloudVmClusterOperation, possibly from a different process.
 func (c *gRPCClient) CreateCloudVmClusterOperation(name string) *CreateCloudVmClusterOperation {
 	return &CreateCloudVmClusterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateCloudVmClusterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -11819,7 +11546,7 @@ func (c *gRPCClient) CreateCloudVmClusterOperation(name string) *CreateCloudVmCl
 func (c *restClient) CreateCloudVmClusterOperation(name string) *CreateCloudVmClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCloudVmClusterOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateCloudVmClusterOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -11828,7 +11555,7 @@ func (c *restClient) CreateCloudVmClusterOperation(name string) *CreateCloudVmCl
 // The name must be that of a previously created CreateDbSystemOperation, possibly from a different process.
 func (c *gRPCClient) CreateDbSystemOperation(name string) *CreateDbSystemOperation {
 	return &CreateDbSystemOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateDbSystemOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -11837,7 +11564,7 @@ func (c *gRPCClient) CreateDbSystemOperation(name string) *CreateDbSystemOperati
 func (c *restClient) CreateDbSystemOperation(name string) *CreateDbSystemOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDbSystemOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateDbSystemOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -11846,7 +11573,7 @@ func (c *restClient) CreateDbSystemOperation(name string) *CreateDbSystemOperati
 // The name must be that of a previously created CreateExadbVmClusterOperation, possibly from a different process.
 func (c *gRPCClient) CreateExadbVmClusterOperation(name string) *CreateExadbVmClusterOperation {
 	return &CreateExadbVmClusterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateExadbVmClusterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -11855,7 +11582,7 @@ func (c *gRPCClient) CreateExadbVmClusterOperation(name string) *CreateExadbVmCl
 func (c *restClient) CreateExadbVmClusterOperation(name string) *CreateExadbVmClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateExadbVmClusterOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateExadbVmClusterOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -11864,7 +11591,7 @@ func (c *restClient) CreateExadbVmClusterOperation(name string) *CreateExadbVmCl
 // The name must be that of a previously created CreateExascaleDbStorageVaultOperation, possibly from a different process.
 func (c *gRPCClient) CreateExascaleDbStorageVaultOperation(name string) *CreateExascaleDbStorageVaultOperation {
 	return &CreateExascaleDbStorageVaultOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateExascaleDbStorageVaultOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -11873,7 +11600,7 @@ func (c *gRPCClient) CreateExascaleDbStorageVaultOperation(name string) *CreateE
 func (c *restClient) CreateExascaleDbStorageVaultOperation(name string) *CreateExascaleDbStorageVaultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateExascaleDbStorageVaultOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateExascaleDbStorageVaultOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -11882,7 +11609,7 @@ func (c *restClient) CreateExascaleDbStorageVaultOperation(name string) *CreateE
 // The name must be that of a previously created CreateGoldengateConnectionOperation, possibly from a different process.
 func (c *gRPCClient) CreateGoldengateConnectionOperation(name string) *CreateGoldengateConnectionOperation {
 	return &CreateGoldengateConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateGoldengateConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -11891,7 +11618,7 @@ func (c *gRPCClient) CreateGoldengateConnectionOperation(name string) *CreateGol
 func (c *restClient) CreateGoldengateConnectionOperation(name string) *CreateGoldengateConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateGoldengateConnectionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateGoldengateConnectionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -11900,7 +11627,7 @@ func (c *restClient) CreateGoldengateConnectionOperation(name string) *CreateGol
 // The name must be that of a previously created CreateGoldengateConnectionAssignmentOperation, possibly from a different process.
 func (c *gRPCClient) CreateGoldengateConnectionAssignmentOperation(name string) *CreateGoldengateConnectionAssignmentOperation {
 	return &CreateGoldengateConnectionAssignmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateGoldengateConnectionAssignmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -11909,7 +11636,7 @@ func (c *gRPCClient) CreateGoldengateConnectionAssignmentOperation(name string) 
 func (c *restClient) CreateGoldengateConnectionAssignmentOperation(name string) *CreateGoldengateConnectionAssignmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateGoldengateConnectionAssignmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateGoldengateConnectionAssignmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -11918,7 +11645,7 @@ func (c *restClient) CreateGoldengateConnectionAssignmentOperation(name string) 
 // The name must be that of a previously created CreateGoldengateDeploymentOperation, possibly from a different process.
 func (c *gRPCClient) CreateGoldengateDeploymentOperation(name string) *CreateGoldengateDeploymentOperation {
 	return &CreateGoldengateDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateGoldengateDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -11927,7 +11654,7 @@ func (c *gRPCClient) CreateGoldengateDeploymentOperation(name string) *CreateGol
 func (c *restClient) CreateGoldengateDeploymentOperation(name string) *CreateGoldengateDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateGoldengateDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateGoldengateDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -11936,7 +11663,7 @@ func (c *restClient) CreateGoldengateDeploymentOperation(name string) *CreateGol
 // The name must be that of a previously created CreateOdbNetworkOperation, possibly from a different process.
 func (c *gRPCClient) CreateOdbNetworkOperation(name string) *CreateOdbNetworkOperation {
 	return &CreateOdbNetworkOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateOdbNetworkOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -11945,7 +11672,7 @@ func (c *gRPCClient) CreateOdbNetworkOperation(name string) *CreateOdbNetworkOpe
 func (c *restClient) CreateOdbNetworkOperation(name string) *CreateOdbNetworkOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateOdbNetworkOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateOdbNetworkOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -11954,7 +11681,7 @@ func (c *restClient) CreateOdbNetworkOperation(name string) *CreateOdbNetworkOpe
 // The name must be that of a previously created CreateOdbSubnetOperation, possibly from a different process.
 func (c *gRPCClient) CreateOdbSubnetOperation(name string) *CreateOdbSubnetOperation {
 	return &CreateOdbSubnetOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateOdbSubnetOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -11963,7 +11690,7 @@ func (c *gRPCClient) CreateOdbSubnetOperation(name string) *CreateOdbSubnetOpera
 func (c *restClient) CreateOdbSubnetOperation(name string) *CreateOdbSubnetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateOdbSubnetOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.CreateOdbSubnetOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -11972,7 +11699,7 @@ func (c *restClient) CreateOdbSubnetOperation(name string) *CreateOdbSubnetOpera
 // The name must be that of a previously created DeleteAutonomousDatabaseOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAutonomousDatabaseOperation(name string) *DeleteAutonomousDatabaseOperation {
 	return &DeleteAutonomousDatabaseOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteAutonomousDatabaseOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -11981,7 +11708,7 @@ func (c *gRPCClient) DeleteAutonomousDatabaseOperation(name string) *DeleteAuton
 func (c *restClient) DeleteAutonomousDatabaseOperation(name string) *DeleteAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAutonomousDatabaseOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteAutonomousDatabaseOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -11990,7 +11717,7 @@ func (c *restClient) DeleteAutonomousDatabaseOperation(name string) *DeleteAuton
 // The name must be that of a previously created DeleteCloudExadataInfrastructureOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCloudExadataInfrastructureOperation(name string) *DeleteCloudExadataInfrastructureOperation {
 	return &DeleteCloudExadataInfrastructureOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteCloudExadataInfrastructureOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -11999,7 +11726,7 @@ func (c *gRPCClient) DeleteCloudExadataInfrastructureOperation(name string) *Del
 func (c *restClient) DeleteCloudExadataInfrastructureOperation(name string) *DeleteCloudExadataInfrastructureOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCloudExadataInfrastructureOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteCloudExadataInfrastructureOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12008,7 +11735,7 @@ func (c *restClient) DeleteCloudExadataInfrastructureOperation(name string) *Del
 // The name must be that of a previously created DeleteCloudVmClusterOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCloudVmClusterOperation(name string) *DeleteCloudVmClusterOperation {
 	return &DeleteCloudVmClusterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteCloudVmClusterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12017,7 +11744,7 @@ func (c *gRPCClient) DeleteCloudVmClusterOperation(name string) *DeleteCloudVmCl
 func (c *restClient) DeleteCloudVmClusterOperation(name string) *DeleteCloudVmClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCloudVmClusterOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteCloudVmClusterOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12026,7 +11753,7 @@ func (c *restClient) DeleteCloudVmClusterOperation(name string) *DeleteCloudVmCl
 // The name must be that of a previously created DeleteDbSystemOperation, possibly from a different process.
 func (c *gRPCClient) DeleteDbSystemOperation(name string) *DeleteDbSystemOperation {
 	return &DeleteDbSystemOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteDbSystemOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12035,7 +11762,7 @@ func (c *gRPCClient) DeleteDbSystemOperation(name string) *DeleteDbSystemOperati
 func (c *restClient) DeleteDbSystemOperation(name string) *DeleteDbSystemOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDbSystemOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteDbSystemOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12044,7 +11771,7 @@ func (c *restClient) DeleteDbSystemOperation(name string) *DeleteDbSystemOperati
 // The name must be that of a previously created DeleteExadbVmClusterOperation, possibly from a different process.
 func (c *gRPCClient) DeleteExadbVmClusterOperation(name string) *DeleteExadbVmClusterOperation {
 	return &DeleteExadbVmClusterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteExadbVmClusterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12053,7 +11780,7 @@ func (c *gRPCClient) DeleteExadbVmClusterOperation(name string) *DeleteExadbVmCl
 func (c *restClient) DeleteExadbVmClusterOperation(name string) *DeleteExadbVmClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteExadbVmClusterOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteExadbVmClusterOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12062,7 +11789,7 @@ func (c *restClient) DeleteExadbVmClusterOperation(name string) *DeleteExadbVmCl
 // The name must be that of a previously created DeleteExascaleDbStorageVaultOperation, possibly from a different process.
 func (c *gRPCClient) DeleteExascaleDbStorageVaultOperation(name string) *DeleteExascaleDbStorageVaultOperation {
 	return &DeleteExascaleDbStorageVaultOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteExascaleDbStorageVaultOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12071,7 +11798,7 @@ func (c *gRPCClient) DeleteExascaleDbStorageVaultOperation(name string) *DeleteE
 func (c *restClient) DeleteExascaleDbStorageVaultOperation(name string) *DeleteExascaleDbStorageVaultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteExascaleDbStorageVaultOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteExascaleDbStorageVaultOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12080,7 +11807,7 @@ func (c *restClient) DeleteExascaleDbStorageVaultOperation(name string) *DeleteE
 // The name must be that of a previously created DeleteGoldengateConnectionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteGoldengateConnectionOperation(name string) *DeleteGoldengateConnectionOperation {
 	return &DeleteGoldengateConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteGoldengateConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12089,7 +11816,7 @@ func (c *gRPCClient) DeleteGoldengateConnectionOperation(name string) *DeleteGol
 func (c *restClient) DeleteGoldengateConnectionOperation(name string) *DeleteGoldengateConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGoldengateConnectionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteGoldengateConnectionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12098,7 +11825,7 @@ func (c *restClient) DeleteGoldengateConnectionOperation(name string) *DeleteGol
 // The name must be that of a previously created DeleteGoldengateConnectionAssignmentOperation, possibly from a different process.
 func (c *gRPCClient) DeleteGoldengateConnectionAssignmentOperation(name string) *DeleteGoldengateConnectionAssignmentOperation {
 	return &DeleteGoldengateConnectionAssignmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteGoldengateConnectionAssignmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12107,7 +11834,7 @@ func (c *gRPCClient) DeleteGoldengateConnectionAssignmentOperation(name string) 
 func (c *restClient) DeleteGoldengateConnectionAssignmentOperation(name string) *DeleteGoldengateConnectionAssignmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGoldengateConnectionAssignmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteGoldengateConnectionAssignmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12116,7 +11843,7 @@ func (c *restClient) DeleteGoldengateConnectionAssignmentOperation(name string) 
 // The name must be that of a previously created DeleteGoldengateDeploymentOperation, possibly from a different process.
 func (c *gRPCClient) DeleteGoldengateDeploymentOperation(name string) *DeleteGoldengateDeploymentOperation {
 	return &DeleteGoldengateDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteGoldengateDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12125,7 +11852,7 @@ func (c *gRPCClient) DeleteGoldengateDeploymentOperation(name string) *DeleteGol
 func (c *restClient) DeleteGoldengateDeploymentOperation(name string) *DeleteGoldengateDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGoldengateDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteGoldengateDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12134,7 +11861,7 @@ func (c *restClient) DeleteGoldengateDeploymentOperation(name string) *DeleteGol
 // The name must be that of a previously created DeleteOdbNetworkOperation, possibly from a different process.
 func (c *gRPCClient) DeleteOdbNetworkOperation(name string) *DeleteOdbNetworkOperation {
 	return &DeleteOdbNetworkOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteOdbNetworkOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12143,7 +11870,7 @@ func (c *gRPCClient) DeleteOdbNetworkOperation(name string) *DeleteOdbNetworkOpe
 func (c *restClient) DeleteOdbNetworkOperation(name string) *DeleteOdbNetworkOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteOdbNetworkOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteOdbNetworkOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12152,7 +11879,7 @@ func (c *restClient) DeleteOdbNetworkOperation(name string) *DeleteOdbNetworkOpe
 // The name must be that of a previously created DeleteOdbSubnetOperation, possibly from a different process.
 func (c *gRPCClient) DeleteOdbSubnetOperation(name string) *DeleteOdbSubnetOperation {
 	return &DeleteOdbSubnetOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteOdbSubnetOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12161,7 +11888,7 @@ func (c *gRPCClient) DeleteOdbSubnetOperation(name string) *DeleteOdbSubnetOpera
 func (c *restClient) DeleteOdbSubnetOperation(name string) *DeleteOdbSubnetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteOdbSubnetOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.DeleteOdbSubnetOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12170,7 +11897,7 @@ func (c *restClient) DeleteOdbSubnetOperation(name string) *DeleteOdbSubnetOpera
 // The name must be that of a previously created FailoverAutonomousDatabaseOperation, possibly from a different process.
 func (c *gRPCClient) FailoverAutonomousDatabaseOperation(name string) *FailoverAutonomousDatabaseOperation {
 	return &FailoverAutonomousDatabaseOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.FailoverAutonomousDatabaseOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12179,7 +11906,7 @@ func (c *gRPCClient) FailoverAutonomousDatabaseOperation(name string) *FailoverA
 func (c *restClient) FailoverAutonomousDatabaseOperation(name string) *FailoverAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &FailoverAutonomousDatabaseOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.FailoverAutonomousDatabaseOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12188,7 +11915,7 @@ func (c *restClient) FailoverAutonomousDatabaseOperation(name string) *FailoverA
 // The name must be that of a previously created RemoveVirtualMachineExadbVmClusterOperation, possibly from a different process.
 func (c *gRPCClient) RemoveVirtualMachineExadbVmClusterOperation(name string) *RemoveVirtualMachineExadbVmClusterOperation {
 	return &RemoveVirtualMachineExadbVmClusterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.RemoveVirtualMachineExadbVmClusterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12197,7 +11924,7 @@ func (c *gRPCClient) RemoveVirtualMachineExadbVmClusterOperation(name string) *R
 func (c *restClient) RemoveVirtualMachineExadbVmClusterOperation(name string) *RemoveVirtualMachineExadbVmClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RemoveVirtualMachineExadbVmClusterOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.RemoveVirtualMachineExadbVmClusterOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12206,7 +11933,7 @@ func (c *restClient) RemoveVirtualMachineExadbVmClusterOperation(name string) *R
 // The name must be that of a previously created RestartAutonomousDatabaseOperation, possibly from a different process.
 func (c *gRPCClient) RestartAutonomousDatabaseOperation(name string) *RestartAutonomousDatabaseOperation {
 	return &RestartAutonomousDatabaseOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.RestartAutonomousDatabaseOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12215,7 +11942,7 @@ func (c *gRPCClient) RestartAutonomousDatabaseOperation(name string) *RestartAut
 func (c *restClient) RestartAutonomousDatabaseOperation(name string) *RestartAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RestartAutonomousDatabaseOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.RestartAutonomousDatabaseOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12224,7 +11951,7 @@ func (c *restClient) RestartAutonomousDatabaseOperation(name string) *RestartAut
 // The name must be that of a previously created RestoreAutonomousDatabaseOperation, possibly from a different process.
 func (c *gRPCClient) RestoreAutonomousDatabaseOperation(name string) *RestoreAutonomousDatabaseOperation {
 	return &RestoreAutonomousDatabaseOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.RestoreAutonomousDatabaseOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12233,7 +11960,7 @@ func (c *gRPCClient) RestoreAutonomousDatabaseOperation(name string) *RestoreAut
 func (c *restClient) RestoreAutonomousDatabaseOperation(name string) *RestoreAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RestoreAutonomousDatabaseOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.RestoreAutonomousDatabaseOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12242,7 +11969,7 @@ func (c *restClient) RestoreAutonomousDatabaseOperation(name string) *RestoreAut
 // The name must be that of a previously created StartAutonomousDatabaseOperation, possibly from a different process.
 func (c *gRPCClient) StartAutonomousDatabaseOperation(name string) *StartAutonomousDatabaseOperation {
 	return &StartAutonomousDatabaseOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.StartAutonomousDatabaseOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12251,7 +11978,7 @@ func (c *gRPCClient) StartAutonomousDatabaseOperation(name string) *StartAutonom
 func (c *restClient) StartAutonomousDatabaseOperation(name string) *StartAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StartAutonomousDatabaseOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.StartAutonomousDatabaseOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12260,7 +11987,7 @@ func (c *restClient) StartAutonomousDatabaseOperation(name string) *StartAutonom
 // The name must be that of a previously created StartGoldengateDeploymentOperation, possibly from a different process.
 func (c *gRPCClient) StartGoldengateDeploymentOperation(name string) *StartGoldengateDeploymentOperation {
 	return &StartGoldengateDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.StartGoldengateDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12269,7 +11996,7 @@ func (c *gRPCClient) StartGoldengateDeploymentOperation(name string) *StartGolde
 func (c *restClient) StartGoldengateDeploymentOperation(name string) *StartGoldengateDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StartGoldengateDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.StartGoldengateDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12278,7 +12005,7 @@ func (c *restClient) StartGoldengateDeploymentOperation(name string) *StartGolde
 // The name must be that of a previously created StopAutonomousDatabaseOperation, possibly from a different process.
 func (c *gRPCClient) StopAutonomousDatabaseOperation(name string) *StopAutonomousDatabaseOperation {
 	return &StopAutonomousDatabaseOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.StopAutonomousDatabaseOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12287,7 +12014,7 @@ func (c *gRPCClient) StopAutonomousDatabaseOperation(name string) *StopAutonomou
 func (c *restClient) StopAutonomousDatabaseOperation(name string) *StopAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StopAutonomousDatabaseOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.StopAutonomousDatabaseOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12296,7 +12023,7 @@ func (c *restClient) StopAutonomousDatabaseOperation(name string) *StopAutonomou
 // The name must be that of a previously created StopGoldengateDeploymentOperation, possibly from a different process.
 func (c *gRPCClient) StopGoldengateDeploymentOperation(name string) *StopGoldengateDeploymentOperation {
 	return &StopGoldengateDeploymentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.StopGoldengateDeploymentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12305,7 +12032,7 @@ func (c *gRPCClient) StopGoldengateDeploymentOperation(name string) *StopGoldeng
 func (c *restClient) StopGoldengateDeploymentOperation(name string) *StopGoldengateDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StopGoldengateDeploymentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.StopGoldengateDeploymentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12314,7 +12041,7 @@ func (c *restClient) StopGoldengateDeploymentOperation(name string) *StopGoldeng
 // The name must be that of a previously created SwitchoverAutonomousDatabaseOperation, possibly from a different process.
 func (c *gRPCClient) SwitchoverAutonomousDatabaseOperation(name string) *SwitchoverAutonomousDatabaseOperation {
 	return &SwitchoverAutonomousDatabaseOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.SwitchoverAutonomousDatabaseOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12323,7 +12050,7 @@ func (c *gRPCClient) SwitchoverAutonomousDatabaseOperation(name string) *Switcho
 func (c *restClient) SwitchoverAutonomousDatabaseOperation(name string) *SwitchoverAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &SwitchoverAutonomousDatabaseOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.SwitchoverAutonomousDatabaseOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12332,7 +12059,7 @@ func (c *restClient) SwitchoverAutonomousDatabaseOperation(name string) *Switcho
 // The name must be that of a previously created UpdateAutonomousDatabaseOperation, possibly from a different process.
 func (c *gRPCClient) UpdateAutonomousDatabaseOperation(name string) *UpdateAutonomousDatabaseOperation {
 	return &UpdateAutonomousDatabaseOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.UpdateAutonomousDatabaseOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12341,7 +12068,7 @@ func (c *gRPCClient) UpdateAutonomousDatabaseOperation(name string) *UpdateAuton
 func (c *restClient) UpdateAutonomousDatabaseOperation(name string) *UpdateAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateAutonomousDatabaseOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.UpdateAutonomousDatabaseOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -12350,7 +12077,7 @@ func (c *restClient) UpdateAutonomousDatabaseOperation(name string) *UpdateAuton
 // The name must be that of a previously created UpdateExadbVmClusterOperation, possibly from a different process.
 func (c *gRPCClient) UpdateExadbVmClusterOperation(name string) *UpdateExadbVmClusterOperation {
 	return &UpdateExadbVmClusterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.UpdateExadbVmClusterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -12359,7 +12086,7 @@ func (c *gRPCClient) UpdateExadbVmClusterOperation(name string) *UpdateExadbVmCl
 func (c *restClient) UpdateExadbVmClusterOperation(name string) *UpdateExadbVmClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateExadbVmClusterOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.UpdateExadbVmClusterOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

@@ -32,7 +32,6 @@ import (
 	rapidmigrationassessmentpb "cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -705,12 +704,8 @@ func (c *gRPCClient) CreateCollector(ctx context.Context, req *rapidmigrationass
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.CreateCollectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateCollectorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -735,12 +730,8 @@ func (c *gRPCClient) CreateAnnotation(ctx context.Context, req *rapidmigrationas
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.CreateAnnotationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAnnotationOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -862,12 +853,8 @@ func (c *gRPCClient) UpdateCollector(ctx context.Context, req *rapidmigrationass
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.UpdateCollectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateCollectorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -892,12 +879,8 @@ func (c *gRPCClient) DeleteCollector(ctx context.Context, req *rapidmigrationass
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.DeleteCollectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteCollectorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -922,12 +905,8 @@ func (c *gRPCClient) ResumeCollector(ctx context.Context, req *rapidmigrationass
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.ResumeCollectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ResumeCollectorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -952,12 +931,8 @@ func (c *gRPCClient) RegisterCollector(ctx context.Context, req *rapidmigrationa
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.RegisterCollectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RegisterCollectorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -982,12 +957,8 @@ func (c *gRPCClient) PauseCollector(ctx context.Context, req *rapidmigrationasse
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.PauseCollectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PauseCollectorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1231,12 +1202,8 @@ func (c *restClient) CreateCollector(ctx context.Context, req *rapidmigrationass
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.CreateCollectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateCollectorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1305,12 +1272,8 @@ func (c *restClient) CreateAnnotation(ctx context.Context, req *rapidmigrationas
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.CreateAnnotationOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAnnotationOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1581,12 +1544,8 @@ func (c *restClient) UpdateCollector(ctx context.Context, req *rapidmigrationass
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.UpdateCollectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateCollectorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1649,12 +1608,8 @@ func (c *restClient) DeleteCollector(ctx context.Context, req *rapidmigrationass
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.DeleteCollectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteCollectorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1719,12 +1674,8 @@ func (c *restClient) ResumeCollector(ctx context.Context, req *rapidmigrationass
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.ResumeCollectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ResumeCollectorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1789,12 +1740,8 @@ func (c *restClient) RegisterCollector(ctx context.Context, req *rapidmigrationa
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.RegisterCollectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RegisterCollectorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1859,12 +1806,8 @@ func (c *restClient) PauseCollector(ctx context.Context, req *rapidmigrationasse
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*rapidmigrationassessment.PauseCollectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PauseCollectorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2230,7 +2173,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateAnnotationOperation, possibly from a different process.
 func (c *gRPCClient) CreateAnnotationOperation(name string) *CreateAnnotationOperation {
 	return &CreateAnnotationOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.CreateAnnotationOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2239,7 +2182,7 @@ func (c *gRPCClient) CreateAnnotationOperation(name string) *CreateAnnotationOpe
 func (c *restClient) CreateAnnotationOperation(name string) *CreateAnnotationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAnnotationOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.CreateAnnotationOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2248,7 +2191,7 @@ func (c *restClient) CreateAnnotationOperation(name string) *CreateAnnotationOpe
 // The name must be that of a previously created CreateCollectorOperation, possibly from a different process.
 func (c *gRPCClient) CreateCollectorOperation(name string) *CreateCollectorOperation {
 	return &CreateCollectorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.CreateCollectorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2257,7 +2200,7 @@ func (c *gRPCClient) CreateCollectorOperation(name string) *CreateCollectorOpera
 func (c *restClient) CreateCollectorOperation(name string) *CreateCollectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCollectorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.CreateCollectorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2266,7 +2209,7 @@ func (c *restClient) CreateCollectorOperation(name string) *CreateCollectorOpera
 // The name must be that of a previously created DeleteCollectorOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCollectorOperation(name string) *DeleteCollectorOperation {
 	return &DeleteCollectorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.DeleteCollectorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2275,7 +2218,7 @@ func (c *gRPCClient) DeleteCollectorOperation(name string) *DeleteCollectorOpera
 func (c *restClient) DeleteCollectorOperation(name string) *DeleteCollectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCollectorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.DeleteCollectorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2284,7 +2227,7 @@ func (c *restClient) DeleteCollectorOperation(name string) *DeleteCollectorOpera
 // The name must be that of a previously created PauseCollectorOperation, possibly from a different process.
 func (c *gRPCClient) PauseCollectorOperation(name string) *PauseCollectorOperation {
 	return &PauseCollectorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.PauseCollectorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2293,7 +2236,7 @@ func (c *gRPCClient) PauseCollectorOperation(name string) *PauseCollectorOperati
 func (c *restClient) PauseCollectorOperation(name string) *PauseCollectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &PauseCollectorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.PauseCollectorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2302,7 +2245,7 @@ func (c *restClient) PauseCollectorOperation(name string) *PauseCollectorOperati
 // The name must be that of a previously created RegisterCollectorOperation, possibly from a different process.
 func (c *gRPCClient) RegisterCollectorOperation(name string) *RegisterCollectorOperation {
 	return &RegisterCollectorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.RegisterCollectorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2311,7 +2254,7 @@ func (c *gRPCClient) RegisterCollectorOperation(name string) *RegisterCollectorO
 func (c *restClient) RegisterCollectorOperation(name string) *RegisterCollectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RegisterCollectorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.RegisterCollectorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2320,7 +2263,7 @@ func (c *restClient) RegisterCollectorOperation(name string) *RegisterCollectorO
 // The name must be that of a previously created ResumeCollectorOperation, possibly from a different process.
 func (c *gRPCClient) ResumeCollectorOperation(name string) *ResumeCollectorOperation {
 	return &ResumeCollectorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.ResumeCollectorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2329,7 +2272,7 @@ func (c *gRPCClient) ResumeCollectorOperation(name string) *ResumeCollectorOpera
 func (c *restClient) ResumeCollectorOperation(name string) *ResumeCollectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ResumeCollectorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.ResumeCollectorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2338,7 +2281,7 @@ func (c *restClient) ResumeCollectorOperation(name string) *ResumeCollectorOpera
 // The name must be that of a previously created UpdateCollectorOperation, possibly from a different process.
 func (c *gRPCClient) UpdateCollectorOperation(name string) *UpdateCollectorOperation {
 	return &UpdateCollectorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.UpdateCollectorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2347,7 +2290,7 @@ func (c *gRPCClient) UpdateCollectorOperation(name string) *UpdateCollectorOpera
 func (c *restClient) UpdateCollectorOperation(name string) *UpdateCollectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCollectorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*rapidmigrationassessment.UpdateCollectorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

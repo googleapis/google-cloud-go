@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -892,12 +891,8 @@ func (c *environmentsGRPCClient) CreateEnvironment(ctx context.Context, req *cxp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.CreateEnvironmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateEnvironmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -919,12 +914,8 @@ func (c *environmentsGRPCClient) UpdateEnvironment(ctx context.Context, req *cxp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.UpdateEnvironmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateEnvironmentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1021,12 +1012,8 @@ func (c *environmentsGRPCClient) RunContinuousTest(ctx context.Context, req *cxp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.RunContinuousTestOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RunContinuousTestOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1103,12 +1090,8 @@ func (c *environmentsGRPCClient) DeployFlow(ctx context.Context, req *cxpb.Deplo
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.DeployFlowOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeployFlowOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1477,12 +1460,8 @@ func (c *environmentsRESTClient) CreateEnvironment(ctx context.Context, req *cxp
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.CreateEnvironmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateEnvironmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1562,12 +1541,8 @@ func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *cxp
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.UpdateEnvironmentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateEnvironmentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1765,12 +1740,8 @@ func (c *environmentsRESTClient) RunContinuousTest(ctx context.Context, req *cxp
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.RunContinuousTestOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RunContinuousTestOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1924,12 +1895,8 @@ func (c *environmentsRESTClient) DeployFlow(ctx context.Context, req *cxpb.Deplo
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.DeployFlowOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeployFlowOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2265,7 +2232,7 @@ func (c *environmentsRESTClient) ListOperations(ctx context.Context, req *longru
 // The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
 func (c *environmentsGRPCClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
 	return &CreateEnvironmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.CreateEnvironmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2274,7 +2241,7 @@ func (c *environmentsGRPCClient) CreateEnvironmentOperation(name string) *Create
 func (c *environmentsRESTClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &CreateEnvironmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.CreateEnvironmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2283,7 +2250,7 @@ func (c *environmentsRESTClient) CreateEnvironmentOperation(name string) *Create
 // The name must be that of a previously created DeployFlowOperation, possibly from a different process.
 func (c *environmentsGRPCClient) DeployFlowOperation(name string) *DeployFlowOperation {
 	return &DeployFlowOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.DeployFlowOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2292,7 +2259,7 @@ func (c *environmentsGRPCClient) DeployFlowOperation(name string) *DeployFlowOpe
 func (c *environmentsRESTClient) DeployFlowOperation(name string) *DeployFlowOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &DeployFlowOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.DeployFlowOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2301,7 +2268,7 @@ func (c *environmentsRESTClient) DeployFlowOperation(name string) *DeployFlowOpe
 // The name must be that of a previously created RunContinuousTestOperation, possibly from a different process.
 func (c *environmentsGRPCClient) RunContinuousTestOperation(name string) *RunContinuousTestOperation {
 	return &RunContinuousTestOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.RunContinuousTestOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2310,7 +2277,7 @@ func (c *environmentsGRPCClient) RunContinuousTestOperation(name string) *RunCon
 func (c *environmentsRESTClient) RunContinuousTestOperation(name string) *RunContinuousTestOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &RunContinuousTestOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.RunContinuousTestOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2319,7 +2286,7 @@ func (c *environmentsRESTClient) RunContinuousTestOperation(name string) *RunCon
 // The name must be that of a previously created UpdateEnvironmentOperation, possibly from a different process.
 func (c *environmentsGRPCClient) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
 	return &UpdateEnvironmentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.UpdateEnvironmentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2328,7 +2295,7 @@ func (c *environmentsGRPCClient) UpdateEnvironmentOperation(name string) *Update
 func (c *environmentsRESTClient) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &UpdateEnvironmentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.UpdateEnvironmentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

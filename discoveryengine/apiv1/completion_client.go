@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -693,12 +692,8 @@ func (c *completionGRPCClient) ImportSuggestionDenyListEntries(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportSuggestionDenyListEntriesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportSuggestionDenyListEntriesOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -723,12 +718,8 @@ func (c *completionGRPCClient) PurgeSuggestionDenyListEntries(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.PurgeSuggestionDenyListEntriesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PurgeSuggestionDenyListEntriesOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -753,12 +744,8 @@ func (c *completionGRPCClient) ImportCompletionSuggestions(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportCompletionSuggestionsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportCompletionSuggestionsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -783,12 +770,8 @@ func (c *completionGRPCClient) PurgeCompletionSuggestions(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.PurgeCompletionSuggestionsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PurgeCompletionSuggestionsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1008,12 +991,8 @@ func (c *completionRESTClient) ImportSuggestionDenyListEntries(ctx context.Conte
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportSuggestionDenyListEntriesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportSuggestionDenyListEntriesOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1080,12 +1059,8 @@ func (c *completionRESTClient) PurgeSuggestionDenyListEntries(ctx context.Contex
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.PurgeSuggestionDenyListEntriesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PurgeSuggestionDenyListEntriesOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1152,12 +1127,8 @@ func (c *completionRESTClient) ImportCompletionSuggestions(ctx context.Context, 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportCompletionSuggestionsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportCompletionSuggestionsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1224,12 +1195,8 @@ func (c *completionRESTClient) PurgeCompletionSuggestions(ctx context.Context, r
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.PurgeCompletionSuggestionsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PurgeCompletionSuggestionsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1421,7 +1388,7 @@ func (c *completionRESTClient) ListOperations(ctx context.Context, req *longrunn
 // The name must be that of a previously created ImportCompletionSuggestionsOperation, possibly from a different process.
 func (c *completionGRPCClient) ImportCompletionSuggestionsOperation(name string) *ImportCompletionSuggestionsOperation {
 	return &ImportCompletionSuggestionsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportCompletionSuggestionsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1430,7 +1397,7 @@ func (c *completionGRPCClient) ImportCompletionSuggestionsOperation(name string)
 func (c *completionRESTClient) ImportCompletionSuggestionsOperation(name string) *ImportCompletionSuggestionsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportCompletionSuggestionsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportCompletionSuggestionsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1439,7 +1406,7 @@ func (c *completionRESTClient) ImportCompletionSuggestionsOperation(name string)
 // The name must be that of a previously created ImportSuggestionDenyListEntriesOperation, possibly from a different process.
 func (c *completionGRPCClient) ImportSuggestionDenyListEntriesOperation(name string) *ImportSuggestionDenyListEntriesOperation {
 	return &ImportSuggestionDenyListEntriesOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportSuggestionDenyListEntriesOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1448,7 +1415,7 @@ func (c *completionGRPCClient) ImportSuggestionDenyListEntriesOperation(name str
 func (c *completionRESTClient) ImportSuggestionDenyListEntriesOperation(name string) *ImportSuggestionDenyListEntriesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportSuggestionDenyListEntriesOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportSuggestionDenyListEntriesOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1457,7 +1424,7 @@ func (c *completionRESTClient) ImportSuggestionDenyListEntriesOperation(name str
 // The name must be that of a previously created PurgeCompletionSuggestionsOperation, possibly from a different process.
 func (c *completionGRPCClient) PurgeCompletionSuggestionsOperation(name string) *PurgeCompletionSuggestionsOperation {
 	return &PurgeCompletionSuggestionsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.PurgeCompletionSuggestionsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1466,7 +1433,7 @@ func (c *completionGRPCClient) PurgeCompletionSuggestionsOperation(name string) 
 func (c *completionRESTClient) PurgeCompletionSuggestionsOperation(name string) *PurgeCompletionSuggestionsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &PurgeCompletionSuggestionsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.PurgeCompletionSuggestionsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1475,7 +1442,7 @@ func (c *completionRESTClient) PurgeCompletionSuggestionsOperation(name string) 
 // The name must be that of a previously created PurgeSuggestionDenyListEntriesOperation, possibly from a different process.
 func (c *completionGRPCClient) PurgeSuggestionDenyListEntriesOperation(name string) *PurgeSuggestionDenyListEntriesOperation {
 	return &PurgeSuggestionDenyListEntriesOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.PurgeSuggestionDenyListEntriesOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1484,7 +1451,7 @@ func (c *completionGRPCClient) PurgeSuggestionDenyListEntriesOperation(name stri
 func (c *completionRESTClient) PurgeSuggestionDenyListEntriesOperation(name string) *PurgeSuggestionDenyListEntriesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &PurgeSuggestionDenyListEntriesOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.PurgeSuggestionDenyListEntriesOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

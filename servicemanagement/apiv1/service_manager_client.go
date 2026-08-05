@@ -33,7 +33,6 @@ import (
 	servicemanagementpb "cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -803,12 +802,8 @@ func (c *serviceManagerGRPCClient) CreateService(ctx context.Context, req *servi
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.CreateServiceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateServiceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -830,12 +825,8 @@ func (c *serviceManagerGRPCClient) DeleteService(ctx context.Context, req *servi
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.DeleteServiceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteServiceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -857,12 +848,8 @@ func (c *serviceManagerGRPCClient) UndeleteService(ctx context.Context, req *ser
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.UndeleteServiceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UndeleteServiceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -975,12 +962,8 @@ func (c *serviceManagerGRPCClient) SubmitConfigSource(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.SubmitConfigSourceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SubmitConfigSourceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1072,12 +1055,8 @@ func (c *serviceManagerGRPCClient) CreateServiceRollout(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.CreateServiceRolloutOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateServiceRolloutOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1425,12 +1404,8 @@ func (c *serviceManagerRESTClient) CreateService(ctx context.Context, req *servi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.CreateServiceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateServiceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1493,12 +1468,8 @@ func (c *serviceManagerRESTClient) DeleteService(ctx context.Context, req *servi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.DeleteServiceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteServiceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1559,12 +1530,8 @@ func (c *serviceManagerRESTClient) UndeleteService(ctx context.Context, req *ser
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.UndeleteServiceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UndeleteServiceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1843,12 +1810,8 @@ func (c *serviceManagerRESTClient) SubmitConfigSource(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.SubmitConfigSourceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SubmitConfigSourceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2059,12 +2022,8 @@ func (c *serviceManagerRESTClient) CreateServiceRollout(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*servicemanagement.CreateServiceRolloutOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateServiceRolloutOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2427,7 +2386,7 @@ func (c *serviceManagerRESTClient) ListOperations(ctx context.Context, req *long
 // The name must be that of a previously created CreateServiceOperation, possibly from a different process.
 func (c *serviceManagerGRPCClient) CreateServiceOperation(name string) *CreateServiceOperation {
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.CreateServiceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2436,7 +2395,7 @@ func (c *serviceManagerGRPCClient) CreateServiceOperation(name string) *CreateSe
 func (c *serviceManagerRESTClient) CreateServiceOperation(name string) *CreateServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateServiceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.CreateServiceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2445,7 +2404,7 @@ func (c *serviceManagerRESTClient) CreateServiceOperation(name string) *CreateSe
 // The name must be that of a previously created CreateServiceRolloutOperation, possibly from a different process.
 func (c *serviceManagerGRPCClient) CreateServiceRolloutOperation(name string) *CreateServiceRolloutOperation {
 	return &CreateServiceRolloutOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.CreateServiceRolloutOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2454,7 +2413,7 @@ func (c *serviceManagerGRPCClient) CreateServiceRolloutOperation(name string) *C
 func (c *serviceManagerRESTClient) CreateServiceRolloutOperation(name string) *CreateServiceRolloutOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateServiceRolloutOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.CreateServiceRolloutOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2463,7 +2422,7 @@ func (c *serviceManagerRESTClient) CreateServiceRolloutOperation(name string) *C
 // The name must be that of a previously created DeleteServiceOperation, possibly from a different process.
 func (c *serviceManagerGRPCClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.DeleteServiceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2472,7 +2431,7 @@ func (c *serviceManagerGRPCClient) DeleteServiceOperation(name string) *DeleteSe
 func (c *serviceManagerRESTClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteServiceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.DeleteServiceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2481,7 +2440,7 @@ func (c *serviceManagerRESTClient) DeleteServiceOperation(name string) *DeleteSe
 // The name must be that of a previously created SubmitConfigSourceOperation, possibly from a different process.
 func (c *serviceManagerGRPCClient) SubmitConfigSourceOperation(name string) *SubmitConfigSourceOperation {
 	return &SubmitConfigSourceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.SubmitConfigSourceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2490,7 +2449,7 @@ func (c *serviceManagerGRPCClient) SubmitConfigSourceOperation(name string) *Sub
 func (c *serviceManagerRESTClient) SubmitConfigSourceOperation(name string) *SubmitConfigSourceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &SubmitConfigSourceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.SubmitConfigSourceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2499,7 +2458,7 @@ func (c *serviceManagerRESTClient) SubmitConfigSourceOperation(name string) *Sub
 // The name must be that of a previously created UndeleteServiceOperation, possibly from a different process.
 func (c *serviceManagerGRPCClient) UndeleteServiceOperation(name string) *UndeleteServiceOperation {
 	return &UndeleteServiceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.UndeleteServiceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2508,7 +2467,7 @@ func (c *serviceManagerGRPCClient) UndeleteServiceOperation(name string) *Undele
 func (c *serviceManagerRESTClient) UndeleteServiceOperation(name string) *UndeleteServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UndeleteServiceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*servicemanagement.UndeleteServiceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

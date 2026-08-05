@@ -33,7 +33,6 @@ import (
 	instancepb "cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1381,12 +1380,8 @@ func (c *instanceAdminGRPCClient) CreateInstanceConfig(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.CreateInstanceConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInstanceConfigOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1408,12 +1403,8 @@ func (c *instanceAdminGRPCClient) UpdateInstanceConfig(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.UpdateInstanceConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInstanceConfigOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1638,12 +1629,8 @@ func (c *instanceAdminGRPCClient) CreateInstance(ctx context.Context, req *insta
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.CreateInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1665,12 +1652,8 @@ func (c *instanceAdminGRPCClient) UpdateInstance(ctx context.Context, req *insta
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.UpdateInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1811,12 +1794,8 @@ func (c *instanceAdminGRPCClient) CreateInstancePartition(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.CreateInstancePartitionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInstancePartitionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1858,12 +1837,8 @@ func (c *instanceAdminGRPCClient) UpdateInstancePartition(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.UpdateInstancePartitionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInstancePartitionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1940,12 +1915,8 @@ func (c *instanceAdminGRPCClient) MoveInstance(ctx context.Context, req *instanc
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.MoveInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &MoveInstanceOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2293,12 +2264,8 @@ func (c *instanceAdminRESTClient) CreateInstanceConfig(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.CreateInstanceConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInstanceConfigOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2407,12 +2374,8 @@ func (c *instanceAdminRESTClient) UpdateInstanceConfig(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.UpdateInstanceConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInstanceConfigOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2898,12 +2861,8 @@ func (c *instanceAdminRESTClient) CreateInstance(ctx context.Context, req *insta
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.CreateInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3007,12 +2966,8 @@ func (c *instanceAdminRESTClient) UpdateInstance(ctx context.Context, req *insta
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.UpdateInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3429,12 +3384,8 @@ func (c *instanceAdminRESTClient) CreateInstancePartition(ctx context.Context, r
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.CreateInstancePartitionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateInstancePartitionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3593,12 +3544,8 @@ func (c *instanceAdminRESTClient) UpdateInstancePartition(ctx context.Context, r
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.UpdateInstancePartitionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateInstancePartitionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3835,12 +3782,8 @@ func (c *instanceAdminRESTClient) MoveInstance(ctx context.Context, req *instanc
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*instance.MoveInstanceOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &MoveInstanceOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4065,7 +4008,7 @@ func (c *instanceAdminRESTClient) ListOperations(ctx context.Context, req *longr
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.CreateInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4074,7 +4017,7 @@ func (c *instanceAdminGRPCClient) CreateInstanceOperation(name string) *CreateIn
 func (c *instanceAdminRESTClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.CreateInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4083,7 +4026,7 @@ func (c *instanceAdminRESTClient) CreateInstanceOperation(name string) *CreateIn
 // The name must be that of a previously created CreateInstanceConfigOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) CreateInstanceConfigOperation(name string) *CreateInstanceConfigOperation {
 	return &CreateInstanceConfigOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.CreateInstanceConfigOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4092,7 +4035,7 @@ func (c *instanceAdminGRPCClient) CreateInstanceConfigOperation(name string) *Cr
 func (c *instanceAdminRESTClient) CreateInstanceConfigOperation(name string) *CreateInstanceConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstanceConfigOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.CreateInstanceConfigOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4101,7 +4044,7 @@ func (c *instanceAdminRESTClient) CreateInstanceConfigOperation(name string) *Cr
 // The name must be that of a previously created CreateInstancePartitionOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) CreateInstancePartitionOperation(name string) *CreateInstancePartitionOperation {
 	return &CreateInstancePartitionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.CreateInstancePartitionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4110,7 +4053,7 @@ func (c *instanceAdminGRPCClient) CreateInstancePartitionOperation(name string) 
 func (c *instanceAdminRESTClient) CreateInstancePartitionOperation(name string) *CreateInstancePartitionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstancePartitionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.CreateInstancePartitionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4119,7 +4062,7 @@ func (c *instanceAdminRESTClient) CreateInstancePartitionOperation(name string) 
 // The name must be that of a previously created MoveInstanceOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) MoveInstanceOperation(name string) *MoveInstanceOperation {
 	return &MoveInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.MoveInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4128,7 +4071,7 @@ func (c *instanceAdminGRPCClient) MoveInstanceOperation(name string) *MoveInstan
 func (c *instanceAdminRESTClient) MoveInstanceOperation(name string) *MoveInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &MoveInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.MoveInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4137,7 +4080,7 @@ func (c *instanceAdminRESTClient) MoveInstanceOperation(name string) *MoveInstan
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.UpdateInstanceOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4146,7 +4089,7 @@ func (c *instanceAdminGRPCClient) UpdateInstanceOperation(name string) *UpdateIn
 func (c *instanceAdminRESTClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.UpdateInstanceOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4155,7 +4098,7 @@ func (c *instanceAdminRESTClient) UpdateInstanceOperation(name string) *UpdateIn
 // The name must be that of a previously created UpdateInstanceConfigOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) UpdateInstanceConfigOperation(name string) *UpdateInstanceConfigOperation {
 	return &UpdateInstanceConfigOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.UpdateInstanceConfigOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4164,7 +4107,7 @@ func (c *instanceAdminGRPCClient) UpdateInstanceConfigOperation(name string) *Up
 func (c *instanceAdminRESTClient) UpdateInstanceConfigOperation(name string) *UpdateInstanceConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInstanceConfigOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.UpdateInstanceConfigOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4173,7 +4116,7 @@ func (c *instanceAdminRESTClient) UpdateInstanceConfigOperation(name string) *Up
 // The name must be that of a previously created UpdateInstancePartitionOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) UpdateInstancePartitionOperation(name string) *UpdateInstancePartitionOperation {
 	return &UpdateInstancePartitionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.UpdateInstancePartitionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4182,7 +4125,7 @@ func (c *instanceAdminGRPCClient) UpdateInstancePartitionOperation(name string) 
 func (c *instanceAdminRESTClient) UpdateInstancePartitionOperation(name string) *UpdateInstancePartitionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInstancePartitionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*instance.UpdateInstancePartitionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

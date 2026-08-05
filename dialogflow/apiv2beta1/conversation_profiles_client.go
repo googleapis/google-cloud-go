@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -869,12 +868,8 @@ func (c *conversationProfilesGRPCClient) SetSuggestionFeatureConfig(ctx context.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.SetSuggestionFeatureConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SetSuggestionFeatureConfigOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -896,12 +891,8 @@ func (c *conversationProfilesGRPCClient) ClearSuggestionFeatureConfig(ctx contex
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.ClearSuggestionFeatureConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ClearSuggestionFeatureConfigOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1456,12 +1447,8 @@ func (c *conversationProfilesRESTClient) SetSuggestionFeatureConfig(ctx context.
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.SetSuggestionFeatureConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SetSuggestionFeatureConfigOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1534,12 +1521,8 @@ func (c *conversationProfilesRESTClient) ClearSuggestionFeatureConfig(ctx contex
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.ClearSuggestionFeatureConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ClearSuggestionFeatureConfigOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1875,7 +1858,7 @@ func (c *conversationProfilesRESTClient) ListOperations(ctx context.Context, req
 // The name must be that of a previously created ClearSuggestionFeatureConfigOperation, possibly from a different process.
 func (c *conversationProfilesGRPCClient) ClearSuggestionFeatureConfigOperation(name string) *ClearSuggestionFeatureConfigOperation {
 	return &ClearSuggestionFeatureConfigOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.ClearSuggestionFeatureConfigOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1884,7 +1867,7 @@ func (c *conversationProfilesGRPCClient) ClearSuggestionFeatureConfigOperation(n
 func (c *conversationProfilesRESTClient) ClearSuggestionFeatureConfigOperation(name string) *ClearSuggestionFeatureConfigOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &ClearSuggestionFeatureConfigOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.ClearSuggestionFeatureConfigOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1893,7 +1876,7 @@ func (c *conversationProfilesRESTClient) ClearSuggestionFeatureConfigOperation(n
 // The name must be that of a previously created SetSuggestionFeatureConfigOperation, possibly from a different process.
 func (c *conversationProfilesGRPCClient) SetSuggestionFeatureConfigOperation(name string) *SetSuggestionFeatureConfigOperation {
 	return &SetSuggestionFeatureConfigOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.SetSuggestionFeatureConfigOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1902,7 +1885,7 @@ func (c *conversationProfilesGRPCClient) SetSuggestionFeatureConfigOperation(nam
 func (c *conversationProfilesRESTClient) SetSuggestionFeatureConfigOperation(name string) *SetSuggestionFeatureConfigOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &SetSuggestionFeatureConfigOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.SetSuggestionFeatureConfigOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

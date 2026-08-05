@@ -33,7 +33,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1091,12 +1090,8 @@ func (c *dataAgentGRPCClient) CreateDataAgent(ctx context.Context, req *geminida
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.CreateDataAgentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDataAgentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1142,12 +1137,8 @@ func (c *dataAgentGRPCClient) UpdateDataAgent(ctx context.Context, req *geminida
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.UpdateDataAgentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDataAgentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1193,12 +1184,8 @@ func (c *dataAgentGRPCClient) DeleteDataAgent(ctx context.Context, req *geminida
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.DeleteDataAgentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDataAgentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1746,12 +1733,8 @@ func (c *dataAgentRESTClient) CreateDataAgent(ctx context.Context, req *geminida
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.CreateDataAgentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDataAgentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1894,12 +1877,8 @@ func (c *dataAgentRESTClient) UpdateDataAgent(ctx context.Context, req *geminida
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.UpdateDataAgentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDataAgentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2032,12 +2011,8 @@ func (c *dataAgentRESTClient) DeleteDataAgent(ctx context.Context, req *geminida
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.DeleteDataAgentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDataAgentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2589,7 +2564,7 @@ func (c *dataAgentRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created CreateDataAgentOperation, possibly from a different process.
 func (c *dataAgentGRPCClient) CreateDataAgentOperation(name string) *CreateDataAgentOperation {
 	return &CreateDataAgentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.CreateDataAgentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2598,7 +2573,7 @@ func (c *dataAgentGRPCClient) CreateDataAgentOperation(name string) *CreateDataA
 func (c *dataAgentRESTClient) CreateDataAgentOperation(name string) *CreateDataAgentOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateDataAgentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.CreateDataAgentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2607,7 +2582,7 @@ func (c *dataAgentRESTClient) CreateDataAgentOperation(name string) *CreateDataA
 // The name must be that of a previously created DeleteDataAgentOperation, possibly from a different process.
 func (c *dataAgentGRPCClient) DeleteDataAgentOperation(name string) *DeleteDataAgentOperation {
 	return &DeleteDataAgentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.DeleteDataAgentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2616,7 +2591,7 @@ func (c *dataAgentGRPCClient) DeleteDataAgentOperation(name string) *DeleteDataA
 func (c *dataAgentRESTClient) DeleteDataAgentOperation(name string) *DeleteDataAgentOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteDataAgentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.DeleteDataAgentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2625,7 +2600,7 @@ func (c *dataAgentRESTClient) DeleteDataAgentOperation(name string) *DeleteDataA
 // The name must be that of a previously created UpdateDataAgentOperation, possibly from a different process.
 func (c *dataAgentGRPCClient) UpdateDataAgentOperation(name string) *UpdateDataAgentOperation {
 	return &UpdateDataAgentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.UpdateDataAgentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2634,7 +2609,7 @@ func (c *dataAgentGRPCClient) UpdateDataAgentOperation(name string) *UpdateDataA
 func (c *dataAgentRESTClient) UpdateDataAgentOperation(name string) *UpdateDataAgentOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpdateDataAgentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.UpdateDataAgentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

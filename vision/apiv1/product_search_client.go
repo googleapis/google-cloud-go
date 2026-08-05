@@ -32,7 +32,6 @@ import (
 	visionpb "cloud.google.com/go/vision/v2/apiv1/visionpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1674,12 +1673,8 @@ func (c *productSearchGRPCClient) ImportProductSets(ctx context.Context, req *vi
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vision.ImportProductSetsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportProductSetsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1704,12 +1699,8 @@ func (c *productSearchGRPCClient) PurgeProducts(ctx context.Context, req *vision
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vision.PurgeProductsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PurgeProductsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2960,12 +2951,8 @@ func (c *productSearchRESTClient) ImportProductSets(ctx context.Context, req *vi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vision.ImportProductSetsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportProductSetsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3053,12 +3040,8 @@ func (c *productSearchRESTClient) PurgeProducts(ctx context.Context, req *vision
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*vision.PurgeProductsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PurgeProductsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3121,7 +3104,7 @@ func (c *productSearchRESTClient) GetOperation(ctx context.Context, req *longrun
 // The name must be that of a previously created ImportProductSetsOperation, possibly from a different process.
 func (c *productSearchGRPCClient) ImportProductSetsOperation(name string) *ImportProductSetsOperation {
 	return &ImportProductSetsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vision.ImportProductSetsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3130,7 +3113,7 @@ func (c *productSearchGRPCClient) ImportProductSetsOperation(name string) *Impor
 func (c *productSearchRESTClient) ImportProductSetsOperation(name string) *ImportProductSetsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportProductSetsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vision.ImportProductSetsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3139,7 +3122,7 @@ func (c *productSearchRESTClient) ImportProductSetsOperation(name string) *Impor
 // The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
 func (c *productSearchGRPCClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
 	return &PurgeProductsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vision.PurgeProductsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3148,7 +3131,7 @@ func (c *productSearchGRPCClient) PurgeProductsOperation(name string) *PurgeProd
 func (c *productSearchRESTClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &PurgeProductsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*vision.PurgeProductsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

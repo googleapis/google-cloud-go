@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -823,12 +822,8 @@ func (c *sampleQueryGRPCClient) ImportSampleQueries(ctx context.Context, req *di
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportSampleQueriesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportSampleQueriesOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1296,12 +1291,8 @@ func (c *sampleQueryRESTClient) ImportSampleQueries(ctx context.Context, req *di
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportSampleQueriesOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportSampleQueriesOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1493,7 +1484,7 @@ func (c *sampleQueryRESTClient) ListOperations(ctx context.Context, req *longrun
 // The name must be that of a previously created ImportSampleQueriesOperation, possibly from a different process.
 func (c *sampleQueryGRPCClient) ImportSampleQueriesOperation(name string) *ImportSampleQueriesOperation {
 	return &ImportSampleQueriesOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportSampleQueriesOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1502,7 +1493,7 @@ func (c *sampleQueryGRPCClient) ImportSampleQueriesOperation(name string) *Impor
 func (c *sampleQueryRESTClient) ImportSampleQueriesOperation(name string) *ImportSampleQueriesOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &ImportSampleQueriesOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportSampleQueriesOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

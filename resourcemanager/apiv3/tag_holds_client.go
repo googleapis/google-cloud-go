@@ -31,7 +31,6 @@ import (
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -447,12 +446,8 @@ func (c *tagHoldsGRPCClient) CreateTagHold(ctx context.Context, req *resourceman
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.CreateTagHoldOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateTagHoldOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -477,12 +472,8 @@ func (c *tagHoldsGRPCClient) DeleteTagHold(ctx context.Context, req *resourceman
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.DeleteTagHoldOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteTagHoldOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -624,12 +615,8 @@ func (c *tagHoldsRESTClient) CreateTagHold(ctx context.Context, req *resourceman
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.CreateTagHoldOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateTagHoldOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -691,12 +678,8 @@ func (c *tagHoldsRESTClient) DeleteTagHold(ctx context.Context, req *resourceman
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.DeleteTagHoldOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteTagHoldOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -840,7 +823,7 @@ func (c *tagHoldsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 // The name must be that of a previously created CreateTagHoldOperation, possibly from a different process.
 func (c *tagHoldsGRPCClient) CreateTagHoldOperation(name string) *CreateTagHoldOperation {
 	return &CreateTagHoldOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.CreateTagHoldOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -849,7 +832,7 @@ func (c *tagHoldsGRPCClient) CreateTagHoldOperation(name string) *CreateTagHoldO
 func (c *tagHoldsRESTClient) CreateTagHoldOperation(name string) *CreateTagHoldOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &CreateTagHoldOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.CreateTagHoldOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -858,7 +841,7 @@ func (c *tagHoldsRESTClient) CreateTagHoldOperation(name string) *CreateTagHoldO
 // The name must be that of a previously created DeleteTagHoldOperation, possibly from a different process.
 func (c *tagHoldsGRPCClient) DeleteTagHoldOperation(name string) *DeleteTagHoldOperation {
 	return &DeleteTagHoldOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.DeleteTagHoldOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -867,7 +850,7 @@ func (c *tagHoldsGRPCClient) DeleteTagHoldOperation(name string) *DeleteTagHoldO
 func (c *tagHoldsRESTClient) DeleteTagHoldOperation(name string) *DeleteTagHoldOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &DeleteTagHoldOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.DeleteTagHoldOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

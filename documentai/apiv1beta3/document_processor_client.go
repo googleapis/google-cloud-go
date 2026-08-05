@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -906,12 +905,8 @@ func (c *documentProcessorGRPCClient) BatchProcessDocuments(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.BatchProcessDocumentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchProcessDocumentsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1112,12 +1107,8 @@ func (c *documentProcessorGRPCClient) TrainProcessorVersion(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.TrainProcessorVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &TrainProcessorVersionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1218,12 +1209,8 @@ func (c *documentProcessorGRPCClient) DeleteProcessorVersion(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DeleteProcessorVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteProcessorVersionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1248,12 +1235,8 @@ func (c *documentProcessorGRPCClient) DeployProcessorVersion(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DeployProcessorVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeployProcessorVersionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1278,12 +1261,8 @@ func (c *documentProcessorGRPCClient) UndeployProcessorVersion(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.UndeployProcessorVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UndeployProcessorVersionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1332,12 +1311,8 @@ func (c *documentProcessorGRPCClient) DeleteProcessor(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DeleteProcessorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteProcessorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1362,12 +1337,8 @@ func (c *documentProcessorGRPCClient) EnableProcessor(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.EnableProcessorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &EnableProcessorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1392,12 +1363,8 @@ func (c *documentProcessorGRPCClient) DisableProcessor(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DisableProcessorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DisableProcessorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1422,12 +1389,8 @@ func (c *documentProcessorGRPCClient) SetDefaultProcessorVersion(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.SetDefaultProcessorVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SetDefaultProcessorVersionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1452,12 +1415,8 @@ func (c *documentProcessorGRPCClient) ReviewDocument(ctx context.Context, req *d
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.ReviewDocumentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ReviewDocumentOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1482,12 +1441,8 @@ func (c *documentProcessorGRPCClient) EvaluateProcessorVersion(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.EvaluateProcessorVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &EvaluateProcessorVersionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1588,12 +1543,8 @@ func (c *documentProcessorGRPCClient) ImportProcessorVersion(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.ImportProcessorVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportProcessorVersionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1878,12 +1829,8 @@ func (c *documentProcessorRESTClient) BatchProcessDocuments(ctx context.Context,
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.BatchProcessDocumentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchProcessDocumentsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2279,12 +2226,8 @@ func (c *documentProcessorRESTClient) TrainProcessorVersion(ctx context.Context,
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.TrainProcessorVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &TrainProcessorVersionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2479,12 +2422,8 @@ func (c *documentProcessorRESTClient) DeleteProcessorVersion(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DeleteProcessorVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteProcessorVersionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2549,12 +2488,8 @@ func (c *documentProcessorRESTClient) DeployProcessorVersion(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DeployProcessorVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeployProcessorVersionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2619,12 +2554,8 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.UndeployProcessorVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UndeployProcessorVersionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2754,12 +2685,8 @@ func (c *documentProcessorRESTClient) DeleteProcessor(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DeleteProcessorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteProcessorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2824,12 +2751,8 @@ func (c *documentProcessorRESTClient) EnableProcessor(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.EnableProcessorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &EnableProcessorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2894,12 +2817,8 @@ func (c *documentProcessorRESTClient) DisableProcessor(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.DisableProcessorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DisableProcessorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2968,12 +2887,8 @@ func (c *documentProcessorRESTClient) SetDefaultProcessorVersion(ctx context.Con
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.SetDefaultProcessorVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &SetDefaultProcessorVersionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3041,12 +2956,8 @@ func (c *documentProcessorRESTClient) ReviewDocument(ctx context.Context, req *d
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.ReviewDocumentOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ReviewDocumentOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3112,12 +3023,8 @@ func (c *documentProcessorRESTClient) EvaluateProcessorVersion(ctx context.Conte
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.EvaluateProcessorVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &EvaluateProcessorVersionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3317,12 +3224,8 @@ func (c *documentProcessorRESTClient) ImportProcessorVersion(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.ImportProcessorVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportProcessorVersionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3651,7 +3554,7 @@ func (c *documentProcessorRESTClient) ListOperations(ctx context.Context, req *l
 // The name must be that of a previously created BatchProcessDocumentsOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) BatchProcessDocumentsOperation(name string) *BatchProcessDocumentsOperation {
 	return &BatchProcessDocumentsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.BatchProcessDocumentsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3660,7 +3563,7 @@ func (c *documentProcessorGRPCClient) BatchProcessDocumentsOperation(name string
 func (c *documentProcessorRESTClient) BatchProcessDocumentsOperation(name string) *BatchProcessDocumentsOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &BatchProcessDocumentsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.BatchProcessDocumentsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3669,7 +3572,7 @@ func (c *documentProcessorRESTClient) BatchProcessDocumentsOperation(name string
 // The name must be that of a previously created DeleteProcessorOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) DeleteProcessorOperation(name string) *DeleteProcessorOperation {
 	return &DeleteProcessorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DeleteProcessorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3678,7 +3581,7 @@ func (c *documentProcessorGRPCClient) DeleteProcessorOperation(name string) *Del
 func (c *documentProcessorRESTClient) DeleteProcessorOperation(name string) *DeleteProcessorOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &DeleteProcessorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DeleteProcessorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3687,7 +3590,7 @@ func (c *documentProcessorRESTClient) DeleteProcessorOperation(name string) *Del
 // The name must be that of a previously created DeleteProcessorVersionOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) DeleteProcessorVersionOperation(name string) *DeleteProcessorVersionOperation {
 	return &DeleteProcessorVersionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DeleteProcessorVersionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3696,7 +3599,7 @@ func (c *documentProcessorGRPCClient) DeleteProcessorVersionOperation(name strin
 func (c *documentProcessorRESTClient) DeleteProcessorVersionOperation(name string) *DeleteProcessorVersionOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &DeleteProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DeleteProcessorVersionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3705,7 +3608,7 @@ func (c *documentProcessorRESTClient) DeleteProcessorVersionOperation(name strin
 // The name must be that of a previously created DeployProcessorVersionOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) DeployProcessorVersionOperation(name string) *DeployProcessorVersionOperation {
 	return &DeployProcessorVersionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DeployProcessorVersionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3714,7 +3617,7 @@ func (c *documentProcessorGRPCClient) DeployProcessorVersionOperation(name strin
 func (c *documentProcessorRESTClient) DeployProcessorVersionOperation(name string) *DeployProcessorVersionOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &DeployProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DeployProcessorVersionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3723,7 +3626,7 @@ func (c *documentProcessorRESTClient) DeployProcessorVersionOperation(name strin
 // The name must be that of a previously created DisableProcessorOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) DisableProcessorOperation(name string) *DisableProcessorOperation {
 	return &DisableProcessorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DisableProcessorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3732,7 +3635,7 @@ func (c *documentProcessorGRPCClient) DisableProcessorOperation(name string) *Di
 func (c *documentProcessorRESTClient) DisableProcessorOperation(name string) *DisableProcessorOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &DisableProcessorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.DisableProcessorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3741,7 +3644,7 @@ func (c *documentProcessorRESTClient) DisableProcessorOperation(name string) *Di
 // The name must be that of a previously created EnableProcessorOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) EnableProcessorOperation(name string) *EnableProcessorOperation {
 	return &EnableProcessorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.EnableProcessorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3750,7 +3653,7 @@ func (c *documentProcessorGRPCClient) EnableProcessorOperation(name string) *Ena
 func (c *documentProcessorRESTClient) EnableProcessorOperation(name string) *EnableProcessorOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &EnableProcessorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.EnableProcessorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3759,7 +3662,7 @@ func (c *documentProcessorRESTClient) EnableProcessorOperation(name string) *Ena
 // The name must be that of a previously created EvaluateProcessorVersionOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) EvaluateProcessorVersionOperation(name string) *EvaluateProcessorVersionOperation {
 	return &EvaluateProcessorVersionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.EvaluateProcessorVersionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3768,7 +3671,7 @@ func (c *documentProcessorGRPCClient) EvaluateProcessorVersionOperation(name str
 func (c *documentProcessorRESTClient) EvaluateProcessorVersionOperation(name string) *EvaluateProcessorVersionOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &EvaluateProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.EvaluateProcessorVersionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3777,7 +3680,7 @@ func (c *documentProcessorRESTClient) EvaluateProcessorVersionOperation(name str
 // The name must be that of a previously created ImportProcessorVersionOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) ImportProcessorVersionOperation(name string) *ImportProcessorVersionOperation {
 	return &ImportProcessorVersionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.ImportProcessorVersionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3786,7 +3689,7 @@ func (c *documentProcessorGRPCClient) ImportProcessorVersionOperation(name strin
 func (c *documentProcessorRESTClient) ImportProcessorVersionOperation(name string) *ImportProcessorVersionOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &ImportProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.ImportProcessorVersionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3795,7 +3698,7 @@ func (c *documentProcessorRESTClient) ImportProcessorVersionOperation(name strin
 // The name must be that of a previously created ReviewDocumentOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) ReviewDocumentOperation(name string) *ReviewDocumentOperation {
 	return &ReviewDocumentOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.ReviewDocumentOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3804,7 +3707,7 @@ func (c *documentProcessorGRPCClient) ReviewDocumentOperation(name string) *Revi
 func (c *documentProcessorRESTClient) ReviewDocumentOperation(name string) *ReviewDocumentOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &ReviewDocumentOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.ReviewDocumentOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3813,7 +3716,7 @@ func (c *documentProcessorRESTClient) ReviewDocumentOperation(name string) *Revi
 // The name must be that of a previously created SetDefaultProcessorVersionOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) SetDefaultProcessorVersionOperation(name string) *SetDefaultProcessorVersionOperation {
 	return &SetDefaultProcessorVersionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.SetDefaultProcessorVersionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3822,7 +3725,7 @@ func (c *documentProcessorGRPCClient) SetDefaultProcessorVersionOperation(name s
 func (c *documentProcessorRESTClient) SetDefaultProcessorVersionOperation(name string) *SetDefaultProcessorVersionOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &SetDefaultProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.SetDefaultProcessorVersionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3831,7 +3734,7 @@ func (c *documentProcessorRESTClient) SetDefaultProcessorVersionOperation(name s
 // The name must be that of a previously created TrainProcessorVersionOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) TrainProcessorVersionOperation(name string) *TrainProcessorVersionOperation {
 	return &TrainProcessorVersionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.TrainProcessorVersionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3840,7 +3743,7 @@ func (c *documentProcessorGRPCClient) TrainProcessorVersionOperation(name string
 func (c *documentProcessorRESTClient) TrainProcessorVersionOperation(name string) *TrainProcessorVersionOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &TrainProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.TrainProcessorVersionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3849,7 +3752,7 @@ func (c *documentProcessorRESTClient) TrainProcessorVersionOperation(name string
 // The name must be that of a previously created UndeployProcessorVersionOperation, possibly from a different process.
 func (c *documentProcessorGRPCClient) UndeployProcessorVersionOperation(name string) *UndeployProcessorVersionOperation {
 	return &UndeployProcessorVersionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.UndeployProcessorVersionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3858,7 +3761,7 @@ func (c *documentProcessorGRPCClient) UndeployProcessorVersionOperation(name str
 func (c *documentProcessorRESTClient) UndeployProcessorVersionOperation(name string) *UndeployProcessorVersionOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &UndeployProcessorVersionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.UndeployProcessorVersionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

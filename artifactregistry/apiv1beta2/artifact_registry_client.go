@@ -33,7 +33,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1109,12 +1108,8 @@ func (c *gRPCClient) ImportAptArtifacts(ctx context.Context, req *artifactregist
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.ImportAptArtifactsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportAptArtifactsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1136,12 +1131,8 @@ func (c *gRPCClient) ImportYumArtifacts(ctx context.Context, req *artifactregist
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.ImportYumArtifactsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportYumArtifactsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1242,12 +1233,8 @@ func (c *gRPCClient) CreateRepository(ctx context.Context, req *artifactregistry
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.CreateRepositoryOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateRepositoryOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1293,12 +1280,8 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *artifactregistry
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeleteRepositoryOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteRepositoryOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1390,12 +1373,8 @@ func (c *gRPCClient) DeletePackage(ctx context.Context, req *artifactregistrypb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeletePackageOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePackageOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1487,12 +1466,8 @@ func (c *gRPCClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeleteVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteVersionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1942,12 +1917,8 @@ func (c *restClient) ImportAptArtifacts(ctx context.Context, req *artifactregist
 	}
 
 	override := fmt.Sprintf("/v1beta2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.ImportAptArtifactsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportAptArtifactsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2012,12 +1983,8 @@ func (c *restClient) ImportYumArtifacts(ctx context.Context, req *artifactregist
 	}
 
 	override := fmt.Sprintf("/v1beta2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.ImportYumArtifactsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportYumArtifactsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2222,12 +2189,8 @@ func (c *restClient) CreateRepository(ctx context.Context, req *artifactregistry
 	}
 
 	override := fmt.Sprintf("/v1beta2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.CreateRepositoryOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateRepositoryOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2356,12 +2319,8 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *artifactregistry
 	}
 
 	override := fmt.Sprintf("/v1beta2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeleteRepositoryOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteRepositoryOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2550,12 +2509,8 @@ func (c *restClient) DeletePackage(ctx context.Context, req *artifactregistrypb.
 	}
 
 	override := fmt.Sprintf("/v1beta2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeletePackageOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePackageOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2756,12 +2711,8 @@ func (c *restClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.
 	}
 
 	override := fmt.Sprintf("/v1beta2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*artifactregistry.DeleteVersionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteVersionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3657,7 +3608,7 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 // The name must be that of a previously created CreateRepositoryOperation, possibly from a different process.
 func (c *gRPCClient) CreateRepositoryOperation(name string) *CreateRepositoryOperation {
 	return &CreateRepositoryOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.CreateRepositoryOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3666,7 +3617,7 @@ func (c *gRPCClient) CreateRepositoryOperation(name string) *CreateRepositoryOpe
 func (c *restClient) CreateRepositoryOperation(name string) *CreateRepositoryOperation {
 	override := fmt.Sprintf("/v1beta2/%s", name)
 	return &CreateRepositoryOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.CreateRepositoryOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3675,7 +3626,7 @@ func (c *restClient) CreateRepositoryOperation(name string) *CreateRepositoryOpe
 // The name must be that of a previously created DeletePackageOperation, possibly from a different process.
 func (c *gRPCClient) DeletePackageOperation(name string) *DeletePackageOperation {
 	return &DeletePackageOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeletePackageOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3684,7 +3635,7 @@ func (c *gRPCClient) DeletePackageOperation(name string) *DeletePackageOperation
 func (c *restClient) DeletePackageOperation(name string) *DeletePackageOperation {
 	override := fmt.Sprintf("/v1beta2/%s", name)
 	return &DeletePackageOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeletePackageOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3693,7 +3644,7 @@ func (c *restClient) DeletePackageOperation(name string) *DeletePackageOperation
 // The name must be that of a previously created DeleteRepositoryOperation, possibly from a different process.
 func (c *gRPCClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOperation {
 	return &DeleteRepositoryOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeleteRepositoryOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3702,7 +3653,7 @@ func (c *gRPCClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOpe
 func (c *restClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOperation {
 	override := fmt.Sprintf("/v1beta2/%s", name)
 	return &DeleteRepositoryOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeleteRepositoryOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3711,7 +3662,7 @@ func (c *restClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOpe
 // The name must be that of a previously created DeleteVersionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteVersionOperation(name string) *DeleteVersionOperation {
 	return &DeleteVersionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeleteVersionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3720,7 +3671,7 @@ func (c *gRPCClient) DeleteVersionOperation(name string) *DeleteVersionOperation
 func (c *restClient) DeleteVersionOperation(name string) *DeleteVersionOperation {
 	override := fmt.Sprintf("/v1beta2/%s", name)
 	return &DeleteVersionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.DeleteVersionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3729,7 +3680,7 @@ func (c *restClient) DeleteVersionOperation(name string) *DeleteVersionOperation
 // The name must be that of a previously created ImportAptArtifactsOperation, possibly from a different process.
 func (c *gRPCClient) ImportAptArtifactsOperation(name string) *ImportAptArtifactsOperation {
 	return &ImportAptArtifactsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.ImportAptArtifactsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3738,7 +3689,7 @@ func (c *gRPCClient) ImportAptArtifactsOperation(name string) *ImportAptArtifact
 func (c *restClient) ImportAptArtifactsOperation(name string) *ImportAptArtifactsOperation {
 	override := fmt.Sprintf("/v1beta2/%s", name)
 	return &ImportAptArtifactsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.ImportAptArtifactsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3747,7 +3698,7 @@ func (c *restClient) ImportAptArtifactsOperation(name string) *ImportAptArtifact
 // The name must be that of a previously created ImportYumArtifactsOperation, possibly from a different process.
 func (c *gRPCClient) ImportYumArtifactsOperation(name string) *ImportYumArtifactsOperation {
 	return &ImportYumArtifactsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.ImportYumArtifactsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3756,7 +3707,7 @@ func (c *gRPCClient) ImportYumArtifactsOperation(name string) *ImportYumArtifact
 func (c *restClient) ImportYumArtifactsOperation(name string) *ImportYumArtifactsOperation {
 	override := fmt.Sprintf("/v1beta2/%s", name)
 	return &ImportYumArtifactsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*artifactregistry.ImportYumArtifactsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

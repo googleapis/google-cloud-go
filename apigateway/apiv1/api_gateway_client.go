@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -885,12 +884,8 @@ func (c *gRPCClient) CreateGateway(ctx context.Context, req *apigatewaypb.Create
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.CreateGatewayOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGatewayOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -912,12 +907,8 @@ func (c *gRPCClient) UpdateGateway(ctx context.Context, req *apigatewaypb.Update
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.UpdateGatewayOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateGatewayOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -942,12 +933,8 @@ func (c *gRPCClient) DeleteGateway(ctx context.Context, req *apigatewaypb.Delete
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.DeleteGatewayOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGatewayOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1048,12 +1035,8 @@ func (c *gRPCClient) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiR
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.CreateApiOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateApiOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1075,12 +1058,8 @@ func (c *gRPCClient) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiR
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.UpdateApiOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateApiOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1105,12 +1084,8 @@ func (c *gRPCClient) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiR
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.DeleteApiOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteApiOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1211,12 +1186,8 @@ func (c *gRPCClient) CreateApiConfig(ctx context.Context, req *apigatewaypb.Crea
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.CreateApiConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateApiConfigOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1238,12 +1209,8 @@ func (c *gRPCClient) UpdateApiConfig(ctx context.Context, req *apigatewaypb.Upda
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.UpdateApiConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateApiConfigOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1268,12 +1235,8 @@ func (c *gRPCClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.Dele
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.DeleteApiConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteApiConfigOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1480,12 +1443,8 @@ func (c *restClient) CreateGateway(ctx context.Context, req *apigatewaypb.Create
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.CreateGatewayOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGatewayOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1555,12 +1514,8 @@ func (c *restClient) UpdateGateway(ctx context.Context, req *apigatewaypb.Update
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.UpdateGatewayOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateGatewayOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1619,12 +1574,8 @@ func (c *restClient) DeleteGateway(ctx context.Context, req *apigatewaypb.Delete
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.DeleteGatewayOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGatewayOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1832,12 +1783,8 @@ func (c *restClient) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiR
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.CreateApiOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateApiOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1907,12 +1854,8 @@ func (c *restClient) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiR
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.UpdateApiOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateApiOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1971,12 +1914,8 @@ func (c *restClient) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiR
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.DeleteApiOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteApiOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2187,12 +2126,8 @@ func (c *restClient) CreateApiConfig(ctx context.Context, req *apigatewaypb.Crea
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.CreateApiConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateApiConfigOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2262,12 +2197,8 @@ func (c *restClient) UpdateApiConfig(ctx context.Context, req *apigatewaypb.Upda
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.UpdateApiConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateApiConfigOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2326,12 +2257,8 @@ func (c *restClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.Dele
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.DeleteApiConfigOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteApiConfigOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2340,7 +2267,7 @@ func (c *restClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.Dele
 // The name must be that of a previously created CreateApiOperation, possibly from a different process.
 func (c *gRPCClient) CreateApiOperation(name string) *CreateApiOperation {
 	return &CreateApiOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.CreateApiOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2349,7 +2276,7 @@ func (c *gRPCClient) CreateApiOperation(name string) *CreateApiOperation {
 func (c *restClient) CreateApiOperation(name string) *CreateApiOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateApiOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.CreateApiOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2358,7 +2285,7 @@ func (c *restClient) CreateApiOperation(name string) *CreateApiOperation {
 // The name must be that of a previously created CreateApiConfigOperation, possibly from a different process.
 func (c *gRPCClient) CreateApiConfigOperation(name string) *CreateApiConfigOperation {
 	return &CreateApiConfigOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.CreateApiConfigOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2367,7 +2294,7 @@ func (c *gRPCClient) CreateApiConfigOperation(name string) *CreateApiConfigOpera
 func (c *restClient) CreateApiConfigOperation(name string) *CreateApiConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateApiConfigOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.CreateApiConfigOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2376,7 +2303,7 @@ func (c *restClient) CreateApiConfigOperation(name string) *CreateApiConfigOpera
 // The name must be that of a previously created CreateGatewayOperation, possibly from a different process.
 func (c *gRPCClient) CreateGatewayOperation(name string) *CreateGatewayOperation {
 	return &CreateGatewayOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.CreateGatewayOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2385,7 +2312,7 @@ func (c *gRPCClient) CreateGatewayOperation(name string) *CreateGatewayOperation
 func (c *restClient) CreateGatewayOperation(name string) *CreateGatewayOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateGatewayOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.CreateGatewayOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2394,7 +2321,7 @@ func (c *restClient) CreateGatewayOperation(name string) *CreateGatewayOperation
 // The name must be that of a previously created DeleteApiOperation, possibly from a different process.
 func (c *gRPCClient) DeleteApiOperation(name string) *DeleteApiOperation {
 	return &DeleteApiOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.DeleteApiOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2403,7 +2330,7 @@ func (c *gRPCClient) DeleteApiOperation(name string) *DeleteApiOperation {
 func (c *restClient) DeleteApiOperation(name string) *DeleteApiOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteApiOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.DeleteApiOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2412,7 +2339,7 @@ func (c *restClient) DeleteApiOperation(name string) *DeleteApiOperation {
 // The name must be that of a previously created DeleteApiConfigOperation, possibly from a different process.
 func (c *gRPCClient) DeleteApiConfigOperation(name string) *DeleteApiConfigOperation {
 	return &DeleteApiConfigOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.DeleteApiConfigOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2421,7 +2348,7 @@ func (c *gRPCClient) DeleteApiConfigOperation(name string) *DeleteApiConfigOpera
 func (c *restClient) DeleteApiConfigOperation(name string) *DeleteApiConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteApiConfigOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.DeleteApiConfigOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2430,7 +2357,7 @@ func (c *restClient) DeleteApiConfigOperation(name string) *DeleteApiConfigOpera
 // The name must be that of a previously created DeleteGatewayOperation, possibly from a different process.
 func (c *gRPCClient) DeleteGatewayOperation(name string) *DeleteGatewayOperation {
 	return &DeleteGatewayOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.DeleteGatewayOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2439,7 +2366,7 @@ func (c *gRPCClient) DeleteGatewayOperation(name string) *DeleteGatewayOperation
 func (c *restClient) DeleteGatewayOperation(name string) *DeleteGatewayOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGatewayOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.DeleteGatewayOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2448,7 +2375,7 @@ func (c *restClient) DeleteGatewayOperation(name string) *DeleteGatewayOperation
 // The name must be that of a previously created UpdateApiOperation, possibly from a different process.
 func (c *gRPCClient) UpdateApiOperation(name string) *UpdateApiOperation {
 	return &UpdateApiOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.UpdateApiOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2457,7 +2384,7 @@ func (c *gRPCClient) UpdateApiOperation(name string) *UpdateApiOperation {
 func (c *restClient) UpdateApiOperation(name string) *UpdateApiOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateApiOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.UpdateApiOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2466,7 +2393,7 @@ func (c *restClient) UpdateApiOperation(name string) *UpdateApiOperation {
 // The name must be that of a previously created UpdateApiConfigOperation, possibly from a different process.
 func (c *gRPCClient) UpdateApiConfigOperation(name string) *UpdateApiConfigOperation {
 	return &UpdateApiConfigOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.UpdateApiConfigOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2475,7 +2402,7 @@ func (c *gRPCClient) UpdateApiConfigOperation(name string) *UpdateApiConfigOpera
 func (c *restClient) UpdateApiConfigOperation(name string) *UpdateApiConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateApiConfigOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.UpdateApiConfigOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2484,7 +2411,7 @@ func (c *restClient) UpdateApiConfigOperation(name string) *UpdateApiConfigOpera
 // The name must be that of a previously created UpdateGatewayOperation, possibly from a different process.
 func (c *gRPCClient) UpdateGatewayOperation(name string) *UpdateGatewayOperation {
 	return &UpdateGatewayOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.UpdateGatewayOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2493,7 +2420,7 @@ func (c *gRPCClient) UpdateGatewayOperation(name string) *UpdateGatewayOperation
 func (c *restClient) UpdateGatewayOperation(name string) *UpdateGatewayOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateGatewayOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.UpdateGatewayOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

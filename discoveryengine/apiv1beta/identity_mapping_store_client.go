@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -620,12 +619,8 @@ func (c *identityMappingStoreGRPCClient) DeleteIdentityMappingStore(ctx context.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteIdentityMappingStoreOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteIdentityMappingStoreOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -650,12 +645,8 @@ func (c *identityMappingStoreGRPCClient) ImportIdentityMappings(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportIdentityMappingsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportIdentityMappingsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -680,12 +671,8 @@ func (c *identityMappingStoreGRPCClient) PurgeIdentityMappings(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.PurgeIdentityMappingsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PurgeIdentityMappingsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1062,12 +1049,8 @@ func (c *identityMappingStoreRESTClient) DeleteIdentityMappingStore(ctx context.
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteIdentityMappingStoreOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteIdentityMappingStoreOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1132,12 +1115,8 @@ func (c *identityMappingStoreRESTClient) ImportIdentityMappings(ctx context.Cont
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportIdentityMappingsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportIdentityMappingsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1203,12 +1182,8 @@ func (c *identityMappingStoreRESTClient) PurgeIdentityMappings(ctx context.Conte
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.PurgeIdentityMappingsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PurgeIdentityMappingsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1556,7 +1531,7 @@ func (c *identityMappingStoreRESTClient) ListOperations(ctx context.Context, req
 // The name must be that of a previously created DeleteIdentityMappingStoreOperation, possibly from a different process.
 func (c *identityMappingStoreGRPCClient) DeleteIdentityMappingStoreOperation(name string) *DeleteIdentityMappingStoreOperation {
 	return &DeleteIdentityMappingStoreOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteIdentityMappingStoreOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1565,7 +1540,7 @@ func (c *identityMappingStoreGRPCClient) DeleteIdentityMappingStoreOperation(nam
 func (c *identityMappingStoreRESTClient) DeleteIdentityMappingStoreOperation(name string) *DeleteIdentityMappingStoreOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteIdentityMappingStoreOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteIdentityMappingStoreOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1574,7 +1549,7 @@ func (c *identityMappingStoreRESTClient) DeleteIdentityMappingStoreOperation(nam
 // The name must be that of a previously created ImportIdentityMappingsOperation, possibly from a different process.
 func (c *identityMappingStoreGRPCClient) ImportIdentityMappingsOperation(name string) *ImportIdentityMappingsOperation {
 	return &ImportIdentityMappingsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportIdentityMappingsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1583,7 +1558,7 @@ func (c *identityMappingStoreGRPCClient) ImportIdentityMappingsOperation(name st
 func (c *identityMappingStoreRESTClient) ImportIdentityMappingsOperation(name string) *ImportIdentityMappingsOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ImportIdentityMappingsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportIdentityMappingsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1592,7 +1567,7 @@ func (c *identityMappingStoreRESTClient) ImportIdentityMappingsOperation(name st
 // The name must be that of a previously created PurgeIdentityMappingsOperation, possibly from a different process.
 func (c *identityMappingStoreGRPCClient) PurgeIdentityMappingsOperation(name string) *PurgeIdentityMappingsOperation {
 	return &PurgeIdentityMappingsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.PurgeIdentityMappingsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1601,7 +1576,7 @@ func (c *identityMappingStoreGRPCClient) PurgeIdentityMappingsOperation(name str
 func (c *identityMappingStoreRESTClient) PurgeIdentityMappingsOperation(name string) *PurgeIdentityMappingsOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &PurgeIdentityMappingsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.PurgeIdentityMappingsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

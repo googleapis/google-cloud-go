@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1148,12 +1147,8 @@ func (c *gRPCClient) CreateConnection(ctx context.Context, req *developerconnect
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1175,12 +1170,8 @@ func (c *gRPCClient) UpdateConnection(ctx context.Context, req *developerconnect
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.UpdateConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1205,12 +1196,8 @@ func (c *gRPCClient) DeleteConnection(ctx context.Context, req *developerconnect
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1235,12 +1222,8 @@ func (c *gRPCClient) CreateGitRepositoryLink(ctx context.Context, req *developer
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateGitRepositoryLinkOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGitRepositoryLinkOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1265,12 +1248,8 @@ func (c *gRPCClient) DeleteGitRepositoryLink(ctx context.Context, req *developer
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteGitRepositoryLinkOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGitRepositoryLinkOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1623,12 +1602,8 @@ func (c *gRPCClient) CreateAccountConnector(ctx context.Context, req *developerc
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateAccountConnectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAccountConnectorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1650,12 +1625,8 @@ func (c *gRPCClient) UpdateAccountConnector(ctx context.Context, req *developerc
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.UpdateAccountConnectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAccountConnectorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1680,12 +1651,8 @@ func (c *gRPCClient) DeleteAccountConnector(ctx context.Context, req *developerc
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteAccountConnectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAccountConnectorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1786,12 +1753,8 @@ func (c *gRPCClient) DeleteUser(ctx context.Context, req *developerconnectpb.Del
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteUserOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteUserOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1840,12 +1803,8 @@ func (c *gRPCClient) DeleteSelf(ctx context.Context, req *developerconnectpb.Del
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteSelfOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSelfOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2280,12 +2239,8 @@ func (c *restClient) CreateConnection(ctx context.Context, req *developerconnect
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateConnectionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2364,12 +2319,8 @@ func (c *restClient) UpdateConnection(ctx context.Context, req *developerconnect
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.UpdateConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateConnectionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2437,12 +2388,8 @@ func (c *restClient) DeleteConnection(ctx context.Context, req *developerconnect
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteConnectionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2520,12 +2467,8 @@ func (c *restClient) CreateGitRepositoryLink(ctx context.Context, req *developer
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateGitRepositoryLinkOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGitRepositoryLinkOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2593,12 +2536,8 @@ func (c *restClient) DeleteGitRepositoryLink(ctx context.Context, req *developer
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteGitRepositoryLinkOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGitRepositoryLinkOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3297,12 +3236,8 @@ func (c *restClient) CreateAccountConnector(ctx context.Context, req *developerc
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateAccountConnectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAccountConnectorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3381,12 +3316,8 @@ func (c *restClient) UpdateAccountConnector(ctx context.Context, req *developerc
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.UpdateAccountConnectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAccountConnectorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3457,12 +3388,8 @@ func (c *restClient) DeleteAccountConnector(ctx context.Context, req *developerc
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteAccountConnectorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAccountConnectorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3677,12 +3604,8 @@ func (c *restClient) DeleteUser(ctx context.Context, req *developerconnectpb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteUserOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteUserOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3798,12 +3721,8 @@ func (c *restClient) DeleteSelf(ctx context.Context, req *developerconnectpb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteSelfOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSelfOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -4302,7 +4221,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateAccountConnectorOperation, possibly from a different process.
 func (c *gRPCClient) CreateAccountConnectorOperation(name string) *CreateAccountConnectorOperation {
 	return &CreateAccountConnectorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateAccountConnectorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4311,7 +4230,7 @@ func (c *gRPCClient) CreateAccountConnectorOperation(name string) *CreateAccount
 func (c *restClient) CreateAccountConnectorOperation(name string) *CreateAccountConnectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAccountConnectorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateAccountConnectorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4320,7 +4239,7 @@ func (c *restClient) CreateAccountConnectorOperation(name string) *CreateAccount
 // The name must be that of a previously created CreateConnectionOperation, possibly from a different process.
 func (c *gRPCClient) CreateConnectionOperation(name string) *CreateConnectionOperation {
 	return &CreateConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4329,7 +4248,7 @@ func (c *gRPCClient) CreateConnectionOperation(name string) *CreateConnectionOpe
 func (c *restClient) CreateConnectionOperation(name string) *CreateConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateConnectionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateConnectionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4338,7 +4257,7 @@ func (c *restClient) CreateConnectionOperation(name string) *CreateConnectionOpe
 // The name must be that of a previously created CreateGitRepositoryLinkOperation, possibly from a different process.
 func (c *gRPCClient) CreateGitRepositoryLinkOperation(name string) *CreateGitRepositoryLinkOperation {
 	return &CreateGitRepositoryLinkOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateGitRepositoryLinkOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4347,7 +4266,7 @@ func (c *gRPCClient) CreateGitRepositoryLinkOperation(name string) *CreateGitRep
 func (c *restClient) CreateGitRepositoryLinkOperation(name string) *CreateGitRepositoryLinkOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateGitRepositoryLinkOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateGitRepositoryLinkOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4356,7 +4275,7 @@ func (c *restClient) CreateGitRepositoryLinkOperation(name string) *CreateGitRep
 // The name must be that of a previously created DeleteAccountConnectorOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAccountConnectorOperation(name string) *DeleteAccountConnectorOperation {
 	return &DeleteAccountConnectorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteAccountConnectorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4365,7 +4284,7 @@ func (c *gRPCClient) DeleteAccountConnectorOperation(name string) *DeleteAccount
 func (c *restClient) DeleteAccountConnectorOperation(name string) *DeleteAccountConnectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAccountConnectorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteAccountConnectorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4374,7 +4293,7 @@ func (c *restClient) DeleteAccountConnectorOperation(name string) *DeleteAccount
 // The name must be that of a previously created DeleteConnectionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteConnectionOperation(name string) *DeleteConnectionOperation {
 	return &DeleteConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4383,7 +4302,7 @@ func (c *gRPCClient) DeleteConnectionOperation(name string) *DeleteConnectionOpe
 func (c *restClient) DeleteConnectionOperation(name string) *DeleteConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteConnectionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteConnectionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4392,7 +4311,7 @@ func (c *restClient) DeleteConnectionOperation(name string) *DeleteConnectionOpe
 // The name must be that of a previously created DeleteGitRepositoryLinkOperation, possibly from a different process.
 func (c *gRPCClient) DeleteGitRepositoryLinkOperation(name string) *DeleteGitRepositoryLinkOperation {
 	return &DeleteGitRepositoryLinkOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteGitRepositoryLinkOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4401,7 +4320,7 @@ func (c *gRPCClient) DeleteGitRepositoryLinkOperation(name string) *DeleteGitRep
 func (c *restClient) DeleteGitRepositoryLinkOperation(name string) *DeleteGitRepositoryLinkOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGitRepositoryLinkOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteGitRepositoryLinkOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4410,7 +4329,7 @@ func (c *restClient) DeleteGitRepositoryLinkOperation(name string) *DeleteGitRep
 // The name must be that of a previously created DeleteSelfOperation, possibly from a different process.
 func (c *gRPCClient) DeleteSelfOperation(name string) *DeleteSelfOperation {
 	return &DeleteSelfOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteSelfOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4419,7 +4338,7 @@ func (c *gRPCClient) DeleteSelfOperation(name string) *DeleteSelfOperation {
 func (c *restClient) DeleteSelfOperation(name string) *DeleteSelfOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteSelfOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteSelfOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4428,7 +4347,7 @@ func (c *restClient) DeleteSelfOperation(name string) *DeleteSelfOperation {
 // The name must be that of a previously created DeleteUserOperation, possibly from a different process.
 func (c *gRPCClient) DeleteUserOperation(name string) *DeleteUserOperation {
 	return &DeleteUserOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteUserOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4437,7 +4356,7 @@ func (c *gRPCClient) DeleteUserOperation(name string) *DeleteUserOperation {
 func (c *restClient) DeleteUserOperation(name string) *DeleteUserOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteUserOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteUserOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4446,7 +4365,7 @@ func (c *restClient) DeleteUserOperation(name string) *DeleteUserOperation {
 // The name must be that of a previously created UpdateAccountConnectorOperation, possibly from a different process.
 func (c *gRPCClient) UpdateAccountConnectorOperation(name string) *UpdateAccountConnectorOperation {
 	return &UpdateAccountConnectorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.UpdateAccountConnectorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4455,7 +4374,7 @@ func (c *gRPCClient) UpdateAccountConnectorOperation(name string) *UpdateAccount
 func (c *restClient) UpdateAccountConnectorOperation(name string) *UpdateAccountConnectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateAccountConnectorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.UpdateAccountConnectorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4464,7 +4383,7 @@ func (c *restClient) UpdateAccountConnectorOperation(name string) *UpdateAccount
 // The name must be that of a previously created UpdateConnectionOperation, possibly from a different process.
 func (c *gRPCClient) UpdateConnectionOperation(name string) *UpdateConnectionOperation {
 	return &UpdateConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.UpdateConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4473,7 +4392,7 @@ func (c *gRPCClient) UpdateConnectionOperation(name string) *UpdateConnectionOpe
 func (c *restClient) UpdateConnectionOperation(name string) *UpdateConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateConnectionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.UpdateConnectionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

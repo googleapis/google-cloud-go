@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -730,12 +729,8 @@ func (c *schemaGRPCClient) CreateSchema(ctx context.Context, req *discoveryengin
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.CreateSchemaOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSchemaOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -757,12 +752,8 @@ func (c *schemaGRPCClient) UpdateSchema(ctx context.Context, req *discoveryengin
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.UpdateSchemaOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateSchemaOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -787,12 +778,8 @@ func (c *schemaGRPCClient) DeleteSchema(ctx context.Context, req *discoveryengin
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteSchemaOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSchemaOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1080,12 +1067,8 @@ func (c *schemaRESTClient) CreateSchema(ctx context.Context, req *discoveryengin
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.CreateSchemaOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateSchemaOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1151,12 +1134,8 @@ func (c *schemaRESTClient) UpdateSchema(ctx context.Context, req *discoveryengin
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.UpdateSchemaOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateSchemaOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1215,12 +1194,8 @@ func (c *schemaRESTClient) DeleteSchema(ctx context.Context, req *discoveryengin
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteSchemaOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteSchemaOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1412,7 +1387,7 @@ func (c *schemaRESTClient) ListOperations(ctx context.Context, req *longrunningp
 // The name must be that of a previously created CreateSchemaOperation, possibly from a different process.
 func (c *schemaGRPCClient) CreateSchemaOperation(name string) *CreateSchemaOperation {
 	return &CreateSchemaOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.CreateSchemaOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1421,7 +1396,7 @@ func (c *schemaGRPCClient) CreateSchemaOperation(name string) *CreateSchemaOpera
 func (c *schemaRESTClient) CreateSchemaOperation(name string) *CreateSchemaOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSchemaOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.CreateSchemaOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1430,7 +1405,7 @@ func (c *schemaRESTClient) CreateSchemaOperation(name string) *CreateSchemaOpera
 // The name must be that of a previously created DeleteSchemaOperation, possibly from a different process.
 func (c *schemaGRPCClient) DeleteSchemaOperation(name string) *DeleteSchemaOperation {
 	return &DeleteSchemaOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteSchemaOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1439,7 +1414,7 @@ func (c *schemaGRPCClient) DeleteSchemaOperation(name string) *DeleteSchemaOpera
 func (c *schemaRESTClient) DeleteSchemaOperation(name string) *DeleteSchemaOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteSchemaOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteSchemaOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1448,7 +1423,7 @@ func (c *schemaRESTClient) DeleteSchemaOperation(name string) *DeleteSchemaOpera
 // The name must be that of a previously created UpdateSchemaOperation, possibly from a different process.
 func (c *schemaGRPCClient) UpdateSchemaOperation(name string) *UpdateSchemaOperation {
 	return &UpdateSchemaOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.UpdateSchemaOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1457,7 +1432,7 @@ func (c *schemaGRPCClient) UpdateSchemaOperation(name string) *UpdateSchemaOpera
 func (c *schemaRESTClient) UpdateSchemaOperation(name string) *UpdateSchemaOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateSchemaOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.UpdateSchemaOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

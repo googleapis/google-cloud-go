@@ -30,7 +30,6 @@ import (
 	managedidentitiespb "cloud.google.com/go/managedidentities/apiv1/managedidentitiespb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -485,12 +484,8 @@ func (c *gRPCClient) CreateMicrosoftAdDomain(ctx context.Context, req *managedid
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedidentities.CreateMicrosoftAdDomainOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateMicrosoftAdDomainOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -612,12 +607,8 @@ func (c *gRPCClient) UpdateDomain(ctx context.Context, req *managedidentitiespb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedidentities.UpdateDomainOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDomainOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -642,12 +633,8 @@ func (c *gRPCClient) DeleteDomain(ctx context.Context, req *managedidentitiespb.
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedidentities.DeleteDomainOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDomainOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -672,12 +659,8 @@ func (c *gRPCClient) AttachTrust(ctx context.Context, req *managedidentitiespb.A
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedidentities.AttachTrustOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &AttachTrustOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -702,12 +685,8 @@ func (c *gRPCClient) ReconfigureTrust(ctx context.Context, req *managedidentitie
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedidentities.ReconfigureTrustOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ReconfigureTrustOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -732,12 +711,8 @@ func (c *gRPCClient) DetachTrust(ctx context.Context, req *managedidentitiespb.D
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedidentities.DetachTrustOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DetachTrustOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -762,12 +737,8 @@ func (c *gRPCClient) ValidateTrust(ctx context.Context, req *managedidentitiespb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedidentities.ValidateTrustOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ValidateTrustOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -775,7 +746,7 @@ func (c *gRPCClient) ValidateTrust(ctx context.Context, req *managedidentitiespb
 // The name must be that of a previously created AttachTrustOperation, possibly from a different process.
 func (c *gRPCClient) AttachTrustOperation(name string) *AttachTrustOperation {
 	return &AttachTrustOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedidentities.AttachTrustOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -783,7 +754,7 @@ func (c *gRPCClient) AttachTrustOperation(name string) *AttachTrustOperation {
 // The name must be that of a previously created CreateMicrosoftAdDomainOperation, possibly from a different process.
 func (c *gRPCClient) CreateMicrosoftAdDomainOperation(name string) *CreateMicrosoftAdDomainOperation {
 	return &CreateMicrosoftAdDomainOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedidentities.CreateMicrosoftAdDomainOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -791,7 +762,7 @@ func (c *gRPCClient) CreateMicrosoftAdDomainOperation(name string) *CreateMicros
 // The name must be that of a previously created DeleteDomainOperation, possibly from a different process.
 func (c *gRPCClient) DeleteDomainOperation(name string) *DeleteDomainOperation {
 	return &DeleteDomainOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedidentities.DeleteDomainOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -799,7 +770,7 @@ func (c *gRPCClient) DeleteDomainOperation(name string) *DeleteDomainOperation {
 // The name must be that of a previously created DetachTrustOperation, possibly from a different process.
 func (c *gRPCClient) DetachTrustOperation(name string) *DetachTrustOperation {
 	return &DetachTrustOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedidentities.DetachTrustOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -807,7 +778,7 @@ func (c *gRPCClient) DetachTrustOperation(name string) *DetachTrustOperation {
 // The name must be that of a previously created ReconfigureTrustOperation, possibly from a different process.
 func (c *gRPCClient) ReconfigureTrustOperation(name string) *ReconfigureTrustOperation {
 	return &ReconfigureTrustOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedidentities.ReconfigureTrustOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -815,7 +786,7 @@ func (c *gRPCClient) ReconfigureTrustOperation(name string) *ReconfigureTrustOpe
 // The name must be that of a previously created UpdateDomainOperation, possibly from a different process.
 func (c *gRPCClient) UpdateDomainOperation(name string) *UpdateDomainOperation {
 	return &UpdateDomainOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedidentities.UpdateDomainOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -823,6 +794,6 @@ func (c *gRPCClient) UpdateDomainOperation(name string) *UpdateDomainOperation {
 // The name must be that of a previously created ValidateTrustOperation, possibly from a different process.
 func (c *gRPCClient) ValidateTrustOperation(name string) *ValidateTrustOperation {
 	return &ValidateTrustOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedidentities.ValidateTrustOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

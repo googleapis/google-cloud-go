@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -947,12 +946,8 @@ func (c *documentGRPCClient) ImportDocuments(ctx context.Context, req *discovery
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportDocumentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportDocumentsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -977,12 +972,8 @@ func (c *documentGRPCClient) PurgeDocuments(ctx context.Context, req *discoverye
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.PurgeDocumentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PurgeDocumentsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1500,12 +1491,8 @@ func (c *documentRESTClient) ImportDocuments(ctx context.Context, req *discovery
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.ImportDocumentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportDocumentsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1586,12 +1573,8 @@ func (c *documentRESTClient) PurgeDocuments(ctx context.Context, req *discoverye
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.PurgeDocumentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PurgeDocumentsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1909,7 +1892,7 @@ func (c *documentRESTClient) ListOperations(ctx context.Context, req *longrunnin
 // The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
 func (c *documentGRPCClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
 	return &ImportDocumentsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportDocumentsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1918,7 +1901,7 @@ func (c *documentGRPCClient) ImportDocumentsOperation(name string) *ImportDocume
 func (c *documentRESTClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &ImportDocumentsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.ImportDocumentsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1927,7 +1910,7 @@ func (c *documentRESTClient) ImportDocumentsOperation(name string) *ImportDocume
 // The name must be that of a previously created PurgeDocumentsOperation, possibly from a different process.
 func (c *documentGRPCClient) PurgeDocumentsOperation(name string) *PurgeDocumentsOperation {
 	return &PurgeDocumentsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.PurgeDocumentsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1936,7 +1919,7 @@ func (c *documentGRPCClient) PurgeDocumentsOperation(name string) *PurgeDocument
 func (c *documentRESTClient) PurgeDocumentsOperation(name string) *PurgeDocumentsOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &PurgeDocumentsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.PurgeDocumentsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

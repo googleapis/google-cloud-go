@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -870,12 +869,8 @@ func (c *intentsGRPCClient) BatchUpdateIntents(ctx context.Context, req *dialogf
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.BatchUpdateIntentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchUpdateIntentsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -900,12 +895,8 @@ func (c *intentsGRPCClient) BatchDeleteIntents(ctx context.Context, req *dialogf
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.BatchDeleteIntentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchDeleteIntentsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1485,12 +1476,8 @@ func (c *intentsRESTClient) BatchUpdateIntents(ctx context.Context, req *dialogf
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.BatchUpdateIntentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchUpdateIntentsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1569,12 +1556,8 @@ func (c *intentsRESTClient) BatchDeleteIntents(ctx context.Context, req *dialogf
 	}
 
 	override := fmt.Sprintf("/v2beta1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dialogflow.BatchDeleteIntentsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchDeleteIntentsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1910,7 +1893,7 @@ func (c *intentsRESTClient) ListOperations(ctx context.Context, req *longrunning
 // The name must be that of a previously created BatchDeleteIntentsOperation, possibly from a different process.
 func (c *intentsGRPCClient) BatchDeleteIntentsOperation(name string) *BatchDeleteIntentsOperation {
 	return &BatchDeleteIntentsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.BatchDeleteIntentsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1919,7 +1902,7 @@ func (c *intentsGRPCClient) BatchDeleteIntentsOperation(name string) *BatchDelet
 func (c *intentsRESTClient) BatchDeleteIntentsOperation(name string) *BatchDeleteIntentsOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &BatchDeleteIntentsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.BatchDeleteIntentsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1928,7 +1911,7 @@ func (c *intentsRESTClient) BatchDeleteIntentsOperation(name string) *BatchDelet
 // The name must be that of a previously created BatchUpdateIntentsOperation, possibly from a different process.
 func (c *intentsGRPCClient) BatchUpdateIntentsOperation(name string) *BatchUpdateIntentsOperation {
 	return &BatchUpdateIntentsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.BatchUpdateIntentsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1937,7 +1920,7 @@ func (c *intentsGRPCClient) BatchUpdateIntentsOperation(name string) *BatchUpdat
 func (c *intentsRESTClient) BatchUpdateIntentsOperation(name string) *BatchUpdateIntentsOperation {
 	override := fmt.Sprintf("/v2beta1/%s", name)
 	return &BatchUpdateIntentsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dialogflow.BatchUpdateIntentsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

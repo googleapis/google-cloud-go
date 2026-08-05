@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -584,12 +583,8 @@ func (c *auditGRPCClient) CreateFrameworkAudit(ctx context.Context, req *cloudse
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudsecuritycompliance.CreateFrameworkAuditOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateFrameworkAuditOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -967,12 +962,8 @@ func (c *auditRESTClient) CreateFrameworkAudit(ctx context.Context, req *cloudse
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudsecuritycompliance.CreateFrameworkAuditOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateFrameworkAuditOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1491,7 +1482,7 @@ func (c *auditRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 // The name must be that of a previously created CreateFrameworkAuditOperation, possibly from a different process.
 func (c *auditGRPCClient) CreateFrameworkAuditOperation(name string) *CreateFrameworkAuditOperation {
 	return &CreateFrameworkAuditOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudsecuritycompliance.CreateFrameworkAuditOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1500,7 +1491,7 @@ func (c *auditGRPCClient) CreateFrameworkAuditOperation(name string) *CreateFram
 func (c *auditRESTClient) CreateFrameworkAuditOperation(name string) *CreateFrameworkAuditOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateFrameworkAuditOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudsecuritycompliance.CreateFrameworkAuditOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

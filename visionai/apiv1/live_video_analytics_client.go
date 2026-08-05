@@ -32,7 +32,6 @@ import (
 	visionaipb "cloud.google.com/go/visionai/apiv1/visionaipb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1079,12 +1078,8 @@ func (c *liveVideoAnalyticsGRPCClient) CreateOperator(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateOperatorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateOperatorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1106,12 +1101,8 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateOperator(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateOperatorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateOperatorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1136,12 +1127,8 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteOperator(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteOperatorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteOperatorOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1242,12 +1229,8 @@ func (c *liveVideoAnalyticsGRPCClient) CreateAnalysis(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateAnalysisOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAnalysisOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1269,12 +1252,8 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateAnalysis(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateAnalysisOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAnalysisOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1299,12 +1278,8 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteAnalysis(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteAnalysisOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAnalysisOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1405,12 +1380,8 @@ func (c *liveVideoAnalyticsGRPCClient) CreateProcess(ctx context.Context, req *v
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateProcessOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateProcessOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1432,12 +1403,8 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateProcess(ctx context.Context, req *v
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateProcessOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateProcessOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1462,12 +1429,8 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteProcess(ctx context.Context, req *v
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteProcessOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteProcessOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1492,12 +1455,8 @@ func (c *liveVideoAnalyticsGRPCClient) BatchRunProcess(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.BatchRunProcessOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchRunProcessOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2028,12 +1987,8 @@ func (c *liveVideoAnalyticsRESTClient) CreateOperator(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateOperatorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateOperatorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2106,12 +2061,8 @@ func (c *liveVideoAnalyticsRESTClient) UpdateOperator(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateOperatorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateOperatorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2173,12 +2124,8 @@ func (c *liveVideoAnalyticsRESTClient) DeleteOperator(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteOperatorOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteOperatorOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2389,12 +2336,8 @@ func (c *liveVideoAnalyticsRESTClient) CreateAnalysis(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateAnalysisOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAnalysisOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2467,12 +2410,8 @@ func (c *liveVideoAnalyticsRESTClient) UpdateAnalysis(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateAnalysisOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAnalysisOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2534,12 +2473,8 @@ func (c *liveVideoAnalyticsRESTClient) DeleteAnalysis(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteAnalysisOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAnalysisOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2750,12 +2685,8 @@ func (c *liveVideoAnalyticsRESTClient) CreateProcess(ctx context.Context, req *v
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateProcessOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateProcessOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2828,12 +2759,8 @@ func (c *liveVideoAnalyticsRESTClient) UpdateProcess(ctx context.Context, req *v
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateProcessOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateProcessOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2895,12 +2822,8 @@ func (c *liveVideoAnalyticsRESTClient) DeleteProcess(ctx context.Context, req *v
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteProcessOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteProcessOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2966,12 +2889,8 @@ func (c *liveVideoAnalyticsRESTClient) BatchRunProcess(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.BatchRunProcessOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &BatchRunProcessOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3337,7 +3256,7 @@ func (c *liveVideoAnalyticsRESTClient) ListOperations(ctx context.Context, req *
 // The name must be that of a previously created BatchRunProcessOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) BatchRunProcessOperation(name string) *BatchRunProcessOperation {
 	return &BatchRunProcessOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.BatchRunProcessOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3346,7 +3265,7 @@ func (c *liveVideoAnalyticsGRPCClient) BatchRunProcessOperation(name string) *Ba
 func (c *liveVideoAnalyticsRESTClient) BatchRunProcessOperation(name string) *BatchRunProcessOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BatchRunProcessOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.BatchRunProcessOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3355,7 +3274,7 @@ func (c *liveVideoAnalyticsRESTClient) BatchRunProcessOperation(name string) *Ba
 // The name must be that of a previously created CreateAnalysisOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) CreateAnalysisOperation(name string) *CreateAnalysisOperation {
 	return &CreateAnalysisOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateAnalysisOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3364,7 +3283,7 @@ func (c *liveVideoAnalyticsGRPCClient) CreateAnalysisOperation(name string) *Cre
 func (c *liveVideoAnalyticsRESTClient) CreateAnalysisOperation(name string) *CreateAnalysisOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAnalysisOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateAnalysisOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3373,7 +3292,7 @@ func (c *liveVideoAnalyticsRESTClient) CreateAnalysisOperation(name string) *Cre
 // The name must be that of a previously created CreateOperatorOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) CreateOperatorOperation(name string) *CreateOperatorOperation {
 	return &CreateOperatorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateOperatorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3382,7 +3301,7 @@ func (c *liveVideoAnalyticsGRPCClient) CreateOperatorOperation(name string) *Cre
 func (c *liveVideoAnalyticsRESTClient) CreateOperatorOperation(name string) *CreateOperatorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateOperatorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateOperatorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3391,7 +3310,7 @@ func (c *liveVideoAnalyticsRESTClient) CreateOperatorOperation(name string) *Cre
 // The name must be that of a previously created CreateProcessOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) CreateProcessOperation(name string) *CreateProcessOperation {
 	return &CreateProcessOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateProcessOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3400,7 +3319,7 @@ func (c *liveVideoAnalyticsGRPCClient) CreateProcessOperation(name string) *Crea
 func (c *liveVideoAnalyticsRESTClient) CreateProcessOperation(name string) *CreateProcessOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateProcessOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateProcessOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3409,7 +3328,7 @@ func (c *liveVideoAnalyticsRESTClient) CreateProcessOperation(name string) *Crea
 // The name must be that of a previously created DeleteAnalysisOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) DeleteAnalysisOperation(name string) *DeleteAnalysisOperation {
 	return &DeleteAnalysisOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteAnalysisOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3418,7 +3337,7 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteAnalysisOperation(name string) *Del
 func (c *liveVideoAnalyticsRESTClient) DeleteAnalysisOperation(name string) *DeleteAnalysisOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAnalysisOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteAnalysisOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3427,7 +3346,7 @@ func (c *liveVideoAnalyticsRESTClient) DeleteAnalysisOperation(name string) *Del
 // The name must be that of a previously created DeleteOperatorOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) DeleteOperatorOperation(name string) *DeleteOperatorOperation {
 	return &DeleteOperatorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteOperatorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3436,7 +3355,7 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteOperatorOperation(name string) *Del
 func (c *liveVideoAnalyticsRESTClient) DeleteOperatorOperation(name string) *DeleteOperatorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteOperatorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteOperatorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3445,7 +3364,7 @@ func (c *liveVideoAnalyticsRESTClient) DeleteOperatorOperation(name string) *Del
 // The name must be that of a previously created DeleteProcessOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) DeleteProcessOperation(name string) *DeleteProcessOperation {
 	return &DeleteProcessOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteProcessOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3454,7 +3373,7 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteProcessOperation(name string) *Dele
 func (c *liveVideoAnalyticsRESTClient) DeleteProcessOperation(name string) *DeleteProcessOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteProcessOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteProcessOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3463,7 +3382,7 @@ func (c *liveVideoAnalyticsRESTClient) DeleteProcessOperation(name string) *Dele
 // The name must be that of a previously created UpdateAnalysisOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) UpdateAnalysisOperation(name string) *UpdateAnalysisOperation {
 	return &UpdateAnalysisOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateAnalysisOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3472,7 +3391,7 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateAnalysisOperation(name string) *Upd
 func (c *liveVideoAnalyticsRESTClient) UpdateAnalysisOperation(name string) *UpdateAnalysisOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateAnalysisOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateAnalysisOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3481,7 +3400,7 @@ func (c *liveVideoAnalyticsRESTClient) UpdateAnalysisOperation(name string) *Upd
 // The name must be that of a previously created UpdateOperatorOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) UpdateOperatorOperation(name string) *UpdateOperatorOperation {
 	return &UpdateOperatorOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateOperatorOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3490,7 +3409,7 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateOperatorOperation(name string) *Upd
 func (c *liveVideoAnalyticsRESTClient) UpdateOperatorOperation(name string) *UpdateOperatorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateOperatorOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateOperatorOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3499,7 +3418,7 @@ func (c *liveVideoAnalyticsRESTClient) UpdateOperatorOperation(name string) *Upd
 // The name must be that of a previously created UpdateProcessOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) UpdateProcessOperation(name string) *UpdateProcessOperation {
 	return &UpdateProcessOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateProcessOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3508,7 +3427,7 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateProcessOperation(name string) *Upda
 func (c *liveVideoAnalyticsRESTClient) UpdateProcessOperation(name string) *UpdateProcessOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateProcessOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateProcessOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

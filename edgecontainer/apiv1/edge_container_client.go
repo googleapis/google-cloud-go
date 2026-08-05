@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1076,12 +1075,8 @@ func (c *gRPCClient) CreateCluster(ctx context.Context, req *edgecontainerpb.Cre
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.CreateClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateClusterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1103,12 +1098,8 @@ func (c *gRPCClient) UpdateCluster(ctx context.Context, req *edgecontainerpb.Upd
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.UpdateClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateClusterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1133,12 +1124,8 @@ func (c *gRPCClient) UpgradeCluster(ctx context.Context, req *edgecontainerpb.Up
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.UpgradeClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpgradeClusterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1163,12 +1150,8 @@ func (c *gRPCClient) DeleteCluster(ctx context.Context, req *edgecontainerpb.Del
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.DeleteClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteClusterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1317,12 +1300,8 @@ func (c *gRPCClient) CreateNodePool(ctx context.Context, req *edgecontainerpb.Cr
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.CreateNodePoolOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateNodePoolOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1344,12 +1323,8 @@ func (c *gRPCClient) UpdateNodePool(ctx context.Context, req *edgecontainerpb.Up
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.UpdateNodePoolOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateNodePoolOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1374,12 +1349,8 @@ func (c *gRPCClient) DeleteNodePool(ctx context.Context, req *edgecontainerpb.De
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.DeleteNodePoolOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteNodePoolOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1556,12 +1527,8 @@ func (c *gRPCClient) CreateVpnConnection(ctx context.Context, req *edgecontainer
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.CreateVpnConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateVpnConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1586,12 +1553,8 @@ func (c *gRPCClient) DeleteVpnConnection(ctx context.Context, req *edgecontainer
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.DeleteVpnConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteVpnConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1999,12 +1962,8 @@ func (c *restClient) CreateCluster(ctx context.Context, req *edgecontainerpb.Cre
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.CreateClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateClusterOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2077,12 +2036,8 @@ func (c *restClient) UpdateCluster(ctx context.Context, req *edgecontainerpb.Upd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.UpdateClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateClusterOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2147,12 +2102,8 @@ func (c *restClient) UpgradeCluster(ctx context.Context, req *edgecontainerpb.Up
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.UpgradeClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpgradeClusterOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2214,12 +2165,8 @@ func (c *restClient) DeleteCluster(ctx context.Context, req *edgecontainerpb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.DeleteClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteClusterOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2544,12 +2491,8 @@ func (c *restClient) CreateNodePool(ctx context.Context, req *edgecontainerpb.Cr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.CreateNodePoolOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateNodePoolOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2622,12 +2565,8 @@ func (c *restClient) UpdateNodePool(ctx context.Context, req *edgecontainerpb.Up
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.UpdateNodePoolOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateNodePoolOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2689,12 +2628,8 @@ func (c *restClient) DeleteNodePool(ctx context.Context, req *edgecontainerpb.De
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.DeleteNodePoolOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteNodePoolOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3046,12 +2981,8 @@ func (c *restClient) CreateVpnConnection(ctx context.Context, req *edgecontainer
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.CreateVpnConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateVpnConnectionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3113,12 +3044,8 @@ func (c *restClient) DeleteVpnConnection(ctx context.Context, req *edgecontainer
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*edgecontainer.DeleteVpnConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteVpnConnectionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3541,7 +3468,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
 func (c *gRPCClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.CreateClusterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3550,7 +3477,7 @@ func (c *gRPCClient) CreateClusterOperation(name string) *CreateClusterOperation
 func (c *restClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.CreateClusterOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3559,7 +3486,7 @@ func (c *restClient) CreateClusterOperation(name string) *CreateClusterOperation
 // The name must be that of a previously created CreateNodePoolOperation, possibly from a different process.
 func (c *gRPCClient) CreateNodePoolOperation(name string) *CreateNodePoolOperation {
 	return &CreateNodePoolOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.CreateNodePoolOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3568,7 +3495,7 @@ func (c *gRPCClient) CreateNodePoolOperation(name string) *CreateNodePoolOperati
 func (c *restClient) CreateNodePoolOperation(name string) *CreateNodePoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateNodePoolOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.CreateNodePoolOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3577,7 +3504,7 @@ func (c *restClient) CreateNodePoolOperation(name string) *CreateNodePoolOperati
 // The name must be that of a previously created CreateVpnConnectionOperation, possibly from a different process.
 func (c *gRPCClient) CreateVpnConnectionOperation(name string) *CreateVpnConnectionOperation {
 	return &CreateVpnConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.CreateVpnConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3586,7 +3513,7 @@ func (c *gRPCClient) CreateVpnConnectionOperation(name string) *CreateVpnConnect
 func (c *restClient) CreateVpnConnectionOperation(name string) *CreateVpnConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateVpnConnectionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.CreateVpnConnectionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3595,7 +3522,7 @@ func (c *restClient) CreateVpnConnectionOperation(name string) *CreateVpnConnect
 // The name must be that of a previously created DeleteClusterOperation, possibly from a different process.
 func (c *gRPCClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.DeleteClusterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3604,7 +3531,7 @@ func (c *gRPCClient) DeleteClusterOperation(name string) *DeleteClusterOperation
 func (c *restClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.DeleteClusterOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3613,7 +3540,7 @@ func (c *restClient) DeleteClusterOperation(name string) *DeleteClusterOperation
 // The name must be that of a previously created DeleteNodePoolOperation, possibly from a different process.
 func (c *gRPCClient) DeleteNodePoolOperation(name string) *DeleteNodePoolOperation {
 	return &DeleteNodePoolOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.DeleteNodePoolOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3622,7 +3549,7 @@ func (c *gRPCClient) DeleteNodePoolOperation(name string) *DeleteNodePoolOperati
 func (c *restClient) DeleteNodePoolOperation(name string) *DeleteNodePoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteNodePoolOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.DeleteNodePoolOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3631,7 +3558,7 @@ func (c *restClient) DeleteNodePoolOperation(name string) *DeleteNodePoolOperati
 // The name must be that of a previously created DeleteVpnConnectionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteVpnConnectionOperation(name string) *DeleteVpnConnectionOperation {
 	return &DeleteVpnConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.DeleteVpnConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3640,7 +3567,7 @@ func (c *gRPCClient) DeleteVpnConnectionOperation(name string) *DeleteVpnConnect
 func (c *restClient) DeleteVpnConnectionOperation(name string) *DeleteVpnConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteVpnConnectionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.DeleteVpnConnectionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3649,7 +3576,7 @@ func (c *restClient) DeleteVpnConnectionOperation(name string) *DeleteVpnConnect
 // The name must be that of a previously created UpdateClusterOperation, possibly from a different process.
 func (c *gRPCClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.UpdateClusterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3658,7 +3585,7 @@ func (c *gRPCClient) UpdateClusterOperation(name string) *UpdateClusterOperation
 func (c *restClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.UpdateClusterOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3667,7 +3594,7 @@ func (c *restClient) UpdateClusterOperation(name string) *UpdateClusterOperation
 // The name must be that of a previously created UpdateNodePoolOperation, possibly from a different process.
 func (c *gRPCClient) UpdateNodePoolOperation(name string) *UpdateNodePoolOperation {
 	return &UpdateNodePoolOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.UpdateNodePoolOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3676,7 +3603,7 @@ func (c *gRPCClient) UpdateNodePoolOperation(name string) *UpdateNodePoolOperati
 func (c *restClient) UpdateNodePoolOperation(name string) *UpdateNodePoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateNodePoolOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.UpdateNodePoolOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3685,7 +3612,7 @@ func (c *restClient) UpdateNodePoolOperation(name string) *UpdateNodePoolOperati
 // The name must be that of a previously created UpgradeClusterOperation, possibly from a different process.
 func (c *gRPCClient) UpgradeClusterOperation(name string) *UpgradeClusterOperation {
 	return &UpgradeClusterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.UpgradeClusterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3694,7 +3621,7 @@ func (c *gRPCClient) UpgradeClusterOperation(name string) *UpgradeClusterOperati
 func (c *restClient) UpgradeClusterOperation(name string) *UpgradeClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpgradeClusterOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*edgecontainer.UpgradeClusterOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -677,12 +676,8 @@ func (c *dataProductGRPCClient) CreateDataProduct(ctx context.Context, req *data
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateDataProductOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDataProductOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -707,12 +702,8 @@ func (c *dataProductGRPCClient) DeleteDataProduct(ctx context.Context, req *data
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteDataProductOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDataProductOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -810,12 +801,8 @@ func (c *dataProductGRPCClient) UpdateDataProduct(ctx context.Context, req *data
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateDataProductOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDataProductOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -864,12 +851,8 @@ func (c *dataProductGRPCClient) CreateDataAsset(ctx context.Context, req *datapl
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateDataAssetOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDataAssetOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -891,12 +874,8 @@ func (c *dataProductGRPCClient) UpdateDataAsset(ctx context.Context, req *datapl
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateDataAssetOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDataAssetOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -921,12 +900,8 @@ func (c *dataProductGRPCClient) DeleteDataAsset(ctx context.Context, req *datapl
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteDataAssetOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDataAssetOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1319,12 +1294,8 @@ func (c *dataProductRESTClient) CreateDataProduct(ctx context.Context, req *data
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateDataProductOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDataProductOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1390,12 +1361,8 @@ func (c *dataProductRESTClient) DeleteDataProduct(ctx context.Context, req *data
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteDataProductOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDataProductOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1609,12 +1576,8 @@ func (c *dataProductRESTClient) UpdateDataProduct(ctx context.Context, req *data
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateDataProductOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDataProductOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1751,12 +1714,8 @@ func (c *dataProductRESTClient) CreateDataAsset(ctx context.Context, req *datapl
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateDataAssetOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateDataAssetOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1829,12 +1788,8 @@ func (c *dataProductRESTClient) UpdateDataAsset(ctx context.Context, req *datapl
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateDataAssetOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateDataAssetOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1899,12 +1854,8 @@ func (c *dataProductRESTClient) DeleteDataAsset(ctx context.Context, req *datapl
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteDataAssetOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteDataAssetOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2623,7 +2574,7 @@ func (c *dataProductRESTClient) ListOperations(ctx context.Context, req *longrun
 // The name must be that of a previously created CreateDataAssetOperation, possibly from a different process.
 func (c *dataProductGRPCClient) CreateDataAssetOperation(name string) *CreateDataAssetOperation {
 	return &CreateDataAssetOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateDataAssetOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2632,7 +2583,7 @@ func (c *dataProductGRPCClient) CreateDataAssetOperation(name string) *CreateDat
 func (c *dataProductRESTClient) CreateDataAssetOperation(name string) *CreateDataAssetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDataAssetOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateDataAssetOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2641,7 +2592,7 @@ func (c *dataProductRESTClient) CreateDataAssetOperation(name string) *CreateDat
 // The name must be that of a previously created CreateDataProductOperation, possibly from a different process.
 func (c *dataProductGRPCClient) CreateDataProductOperation(name string) *CreateDataProductOperation {
 	return &CreateDataProductOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateDataProductOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2650,7 +2601,7 @@ func (c *dataProductGRPCClient) CreateDataProductOperation(name string) *CreateD
 func (c *dataProductRESTClient) CreateDataProductOperation(name string) *CreateDataProductOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDataProductOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateDataProductOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2659,7 +2610,7 @@ func (c *dataProductRESTClient) CreateDataProductOperation(name string) *CreateD
 // The name must be that of a previously created DeleteDataAssetOperation, possibly from a different process.
 func (c *dataProductGRPCClient) DeleteDataAssetOperation(name string) *DeleteDataAssetOperation {
 	return &DeleteDataAssetOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteDataAssetOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2668,7 +2619,7 @@ func (c *dataProductGRPCClient) DeleteDataAssetOperation(name string) *DeleteDat
 func (c *dataProductRESTClient) DeleteDataAssetOperation(name string) *DeleteDataAssetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDataAssetOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteDataAssetOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2677,7 +2628,7 @@ func (c *dataProductRESTClient) DeleteDataAssetOperation(name string) *DeleteDat
 // The name must be that of a previously created DeleteDataProductOperation, possibly from a different process.
 func (c *dataProductGRPCClient) DeleteDataProductOperation(name string) *DeleteDataProductOperation {
 	return &DeleteDataProductOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteDataProductOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2686,7 +2637,7 @@ func (c *dataProductGRPCClient) DeleteDataProductOperation(name string) *DeleteD
 func (c *dataProductRESTClient) DeleteDataProductOperation(name string) *DeleteDataProductOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDataProductOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteDataProductOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2695,7 +2646,7 @@ func (c *dataProductRESTClient) DeleteDataProductOperation(name string) *DeleteD
 // The name must be that of a previously created UpdateDataAssetOperation, possibly from a different process.
 func (c *dataProductGRPCClient) UpdateDataAssetOperation(name string) *UpdateDataAssetOperation {
 	return &UpdateDataAssetOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateDataAssetOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2704,7 +2655,7 @@ func (c *dataProductGRPCClient) UpdateDataAssetOperation(name string) *UpdateDat
 func (c *dataProductRESTClient) UpdateDataAssetOperation(name string) *UpdateDataAssetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDataAssetOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateDataAssetOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -2713,7 +2664,7 @@ func (c *dataProductRESTClient) UpdateDataAssetOperation(name string) *UpdateDat
 // The name must be that of a previously created UpdateDataProductOperation, possibly from a different process.
 func (c *dataProductGRPCClient) UpdateDataProductOperation(name string) *UpdateDataProductOperation {
 	return &UpdateDataProductOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateDataProductOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2722,7 +2673,7 @@ func (c *dataProductGRPCClient) UpdateDataProductOperation(name string) *UpdateD
 func (c *dataProductRESTClient) UpdateDataProductOperation(name string) *UpdateDataProductOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDataProductOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateDataProductOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

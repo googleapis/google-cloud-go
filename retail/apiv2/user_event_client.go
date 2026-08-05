@@ -32,7 +32,6 @@ import (
 	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -678,12 +677,8 @@ func (c *userEventGRPCClient) PurgeUserEvents(ctx context.Context, req *retailpb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.PurgeUserEventsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PurgeUserEventsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -708,12 +703,8 @@ func (c *userEventGRPCClient) ImportUserEvents(ctx context.Context, req *retailp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.ImportUserEventsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportUserEventsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -735,12 +726,8 @@ func (c *userEventGRPCClient) RejoinUserEvents(ctx context.Context, req *retailp
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.RejoinUserEventsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RejoinUserEventsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1014,12 +1001,8 @@ func (c *userEventRESTClient) PurgeUserEvents(ctx context.Context, req *retailpb
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.PurgeUserEventsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &PurgeUserEventsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1090,12 +1073,8 @@ func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *retailp
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.ImportUserEventsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ImportUserEventsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1164,12 +1143,8 @@ func (c *userEventRESTClient) RejoinUserEvents(ctx context.Context, req *retailp
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.RejoinUserEventsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &RejoinUserEventsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1316,7 +1291,7 @@ func (c *userEventRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created ImportUserEventsOperation, possibly from a different process.
 func (c *userEventGRPCClient) ImportUserEventsOperation(name string) *ImportUserEventsOperation {
 	return &ImportUserEventsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.ImportUserEventsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1325,7 +1300,7 @@ func (c *userEventGRPCClient) ImportUserEventsOperation(name string) *ImportUser
 func (c *userEventRESTClient) ImportUserEventsOperation(name string) *ImportUserEventsOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &ImportUserEventsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.ImportUserEventsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1334,7 +1309,7 @@ func (c *userEventRESTClient) ImportUserEventsOperation(name string) *ImportUser
 // The name must be that of a previously created PurgeUserEventsOperation, possibly from a different process.
 func (c *userEventGRPCClient) PurgeUserEventsOperation(name string) *PurgeUserEventsOperation {
 	return &PurgeUserEventsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.PurgeUserEventsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1343,7 +1318,7 @@ func (c *userEventGRPCClient) PurgeUserEventsOperation(name string) *PurgeUserEv
 func (c *userEventRESTClient) PurgeUserEventsOperation(name string) *PurgeUserEventsOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &PurgeUserEventsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.PurgeUserEventsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -1352,7 +1327,7 @@ func (c *userEventRESTClient) PurgeUserEventsOperation(name string) *PurgeUserEv
 // The name must be that of a previously created RejoinUserEventsOperation, possibly from a different process.
 func (c *userEventGRPCClient) RejoinUserEventsOperation(name string) *RejoinUserEventsOperation {
 	return &RejoinUserEventsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.RejoinUserEventsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1361,7 +1336,7 @@ func (c *userEventGRPCClient) RejoinUserEventsOperation(name string) *RejoinUser
 func (c *userEventRESTClient) RejoinUserEventsOperation(name string) *RejoinUserEventsOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &RejoinUserEventsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.RejoinUserEventsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

@@ -32,7 +32,6 @@ import (
 	videointelligencepb "cloud.google.com/go/videointelligence/apiv1beta2/videointelligencepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -410,12 +409,8 @@ func (c *gRPCClient) AnnotateVideo(ctx context.Context, req *videointelligencepb
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*videointelligence.AnnotateVideoOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &AnnotateVideoOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -476,12 +471,8 @@ func (c *restClient) AnnotateVideo(ctx context.Context, req *videointelligencepb
 	}
 
 	override := fmt.Sprintf("/v1beta2/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*videointelligence.AnnotateVideoOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &AnnotateVideoOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -490,7 +481,7 @@ func (c *restClient) AnnotateVideo(ctx context.Context, req *videointelligencepb
 // The name must be that of a previously created AnnotateVideoOperation, possibly from a different process.
 func (c *gRPCClient) AnnotateVideoOperation(name string) *AnnotateVideoOperation {
 	return &AnnotateVideoOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*videointelligence.AnnotateVideoOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -499,7 +490,7 @@ func (c *gRPCClient) AnnotateVideoOperation(name string) *AnnotateVideoOperation
 func (c *restClient) AnnotateVideoOperation(name string) *AnnotateVideoOperation {
 	override := fmt.Sprintf("/v1beta2/%s", name)
 	return &AnnotateVideoOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*videointelligence.AnnotateVideoOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

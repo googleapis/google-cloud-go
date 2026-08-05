@@ -32,7 +32,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1038,12 +1037,8 @@ func (c *gRPCClient) CreateConnectionProfile(ctx context.Context, req *datastrea
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreateConnectionProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateConnectionProfileOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1065,12 +1060,8 @@ func (c *gRPCClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.UpdateConnectionProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateConnectionProfileOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1095,12 +1086,8 @@ func (c *gRPCClient) DeleteConnectionProfile(ctx context.Context, req *datastrea
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeleteConnectionProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteConnectionProfileOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1225,12 +1212,8 @@ func (c *gRPCClient) CreateStream(ctx context.Context, req *datastreampb.CreateS
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreateStreamOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateStreamOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1252,12 +1235,8 @@ func (c *gRPCClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.UpdateStreamOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateStreamOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1282,12 +1261,8 @@ func (c *gRPCClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteS
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeleteStreamOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteStreamOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1312,12 +1287,8 @@ func (c *gRPCClient) FetchErrors(ctx context.Context, req *datastreampb.FetchErr
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.FetchErrorsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &FetchErrorsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1394,12 +1365,8 @@ func (c *gRPCClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreatePrivateConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreatePrivateConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1500,12 +1467,8 @@ func (c *gRPCClient) DeletePrivateConnection(ctx context.Context, req *datastrea
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeletePrivateConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePrivateConnectionOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1530,12 +1493,8 @@ func (c *gRPCClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRo
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreateRouteOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateRouteOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1636,12 +1595,8 @@ func (c *gRPCClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRo
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeleteRouteOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteRouteOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1852,12 +1807,8 @@ func (c *restClient) CreateConnectionProfile(ctx context.Context, req *datastrea
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreateConnectionProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateConnectionProfileOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1930,12 +1881,8 @@ func (c *restClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.UpdateConnectionProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateConnectionProfileOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -1997,12 +1944,8 @@ func (c *restClient) DeleteConnectionProfile(ctx context.Context, req *datastrea
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeleteConnectionProfileOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteConnectionProfileOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2285,12 +2228,8 @@ func (c *restClient) CreateStream(ctx context.Context, req *datastreampb.CreateS
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreateStreamOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateStreamOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2369,12 +2308,8 @@ func (c *restClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.UpdateStreamOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateStreamOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2436,12 +2371,8 @@ func (c *restClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteS
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeleteStreamOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteStreamOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2506,12 +2437,8 @@ func (c *restClient) FetchErrors(ctx context.Context, req *datastreampb.FetchErr
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.FetchErrorsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &FetchErrorsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2661,12 +2588,8 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreatePrivateConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreatePrivateConnectionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2873,12 +2796,8 @@ func (c *restClient) DeletePrivateConnection(ctx context.Context, req *datastrea
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeletePrivateConnectionOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeletePrivateConnectionOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2949,12 +2868,8 @@ func (c *restClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRo
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreateRouteOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateRouteOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3158,12 +3073,8 @@ func (c *restClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRo
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeleteRouteOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteRouteOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3172,7 +3083,7 @@ func (c *restClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRo
 // The name must be that of a previously created CreateConnectionProfileOperation, possibly from a different process.
 func (c *gRPCClient) CreateConnectionProfileOperation(name string) *CreateConnectionProfileOperation {
 	return &CreateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreateConnectionProfileOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3181,7 +3092,7 @@ func (c *gRPCClient) CreateConnectionProfileOperation(name string) *CreateConnec
 func (c *restClient) CreateConnectionProfileOperation(name string) *CreateConnectionProfileOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &CreateConnectionProfileOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreateConnectionProfileOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3190,7 +3101,7 @@ func (c *restClient) CreateConnectionProfileOperation(name string) *CreateConnec
 // The name must be that of a previously created CreatePrivateConnectionOperation, possibly from a different process.
 func (c *gRPCClient) CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation {
 	return &CreatePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreatePrivateConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3199,7 +3110,7 @@ func (c *gRPCClient) CreatePrivateConnectionOperation(name string) *CreatePrivat
 func (c *restClient) CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &CreatePrivateConnectionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreatePrivateConnectionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3208,7 +3119,7 @@ func (c *restClient) CreatePrivateConnectionOperation(name string) *CreatePrivat
 // The name must be that of a previously created CreateRouteOperation, possibly from a different process.
 func (c *gRPCClient) CreateRouteOperation(name string) *CreateRouteOperation {
 	return &CreateRouteOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreateRouteOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3217,7 +3128,7 @@ func (c *gRPCClient) CreateRouteOperation(name string) *CreateRouteOperation {
 func (c *restClient) CreateRouteOperation(name string) *CreateRouteOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &CreateRouteOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreateRouteOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3226,7 +3137,7 @@ func (c *restClient) CreateRouteOperation(name string) *CreateRouteOperation {
 // The name must be that of a previously created CreateStreamOperation, possibly from a different process.
 func (c *gRPCClient) CreateStreamOperation(name string) *CreateStreamOperation {
 	return &CreateStreamOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreateStreamOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3235,7 +3146,7 @@ func (c *gRPCClient) CreateStreamOperation(name string) *CreateStreamOperation {
 func (c *restClient) CreateStreamOperation(name string) *CreateStreamOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &CreateStreamOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreateStreamOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3244,7 +3155,7 @@ func (c *restClient) CreateStreamOperation(name string) *CreateStreamOperation {
 // The name must be that of a previously created DeleteConnectionProfileOperation, possibly from a different process.
 func (c *gRPCClient) DeleteConnectionProfileOperation(name string) *DeleteConnectionProfileOperation {
 	return &DeleteConnectionProfileOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeleteConnectionProfileOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3253,7 +3164,7 @@ func (c *gRPCClient) DeleteConnectionProfileOperation(name string) *DeleteConnec
 func (c *restClient) DeleteConnectionProfileOperation(name string) *DeleteConnectionProfileOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &DeleteConnectionProfileOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeleteConnectionProfileOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3262,7 +3173,7 @@ func (c *restClient) DeleteConnectionProfileOperation(name string) *DeleteConnec
 // The name must be that of a previously created DeletePrivateConnectionOperation, possibly from a different process.
 func (c *gRPCClient) DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation {
 	return &DeletePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeletePrivateConnectionOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3271,7 +3182,7 @@ func (c *gRPCClient) DeletePrivateConnectionOperation(name string) *DeletePrivat
 func (c *restClient) DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &DeletePrivateConnectionOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeletePrivateConnectionOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3280,7 +3191,7 @@ func (c *restClient) DeletePrivateConnectionOperation(name string) *DeletePrivat
 // The name must be that of a previously created DeleteRouteOperation, possibly from a different process.
 func (c *gRPCClient) DeleteRouteOperation(name string) *DeleteRouteOperation {
 	return &DeleteRouteOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeleteRouteOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3289,7 +3200,7 @@ func (c *gRPCClient) DeleteRouteOperation(name string) *DeleteRouteOperation {
 func (c *restClient) DeleteRouteOperation(name string) *DeleteRouteOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &DeleteRouteOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeleteRouteOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3298,7 +3209,7 @@ func (c *restClient) DeleteRouteOperation(name string) *DeleteRouteOperation {
 // The name must be that of a previously created DeleteStreamOperation, possibly from a different process.
 func (c *gRPCClient) DeleteStreamOperation(name string) *DeleteStreamOperation {
 	return &DeleteStreamOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeleteStreamOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3307,7 +3218,7 @@ func (c *gRPCClient) DeleteStreamOperation(name string) *DeleteStreamOperation {
 func (c *restClient) DeleteStreamOperation(name string) *DeleteStreamOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &DeleteStreamOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeleteStreamOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3316,7 +3227,7 @@ func (c *restClient) DeleteStreamOperation(name string) *DeleteStreamOperation {
 // The name must be that of a previously created FetchErrorsOperation, possibly from a different process.
 func (c *gRPCClient) FetchErrorsOperation(name string) *FetchErrorsOperation {
 	return &FetchErrorsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.FetchErrorsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3325,7 +3236,7 @@ func (c *gRPCClient) FetchErrorsOperation(name string) *FetchErrorsOperation {
 func (c *restClient) FetchErrorsOperation(name string) *FetchErrorsOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &FetchErrorsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.FetchErrorsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3334,7 +3245,7 @@ func (c *restClient) FetchErrorsOperation(name string) *FetchErrorsOperation {
 // The name must be that of a previously created UpdateConnectionProfileOperation, possibly from a different process.
 func (c *gRPCClient) UpdateConnectionProfileOperation(name string) *UpdateConnectionProfileOperation {
 	return &UpdateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.UpdateConnectionProfileOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3343,7 +3254,7 @@ func (c *gRPCClient) UpdateConnectionProfileOperation(name string) *UpdateConnec
 func (c *restClient) UpdateConnectionProfileOperation(name string) *UpdateConnectionProfileOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &UpdateConnectionProfileOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.UpdateConnectionProfileOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3352,7 +3263,7 @@ func (c *restClient) UpdateConnectionProfileOperation(name string) *UpdateConnec
 // The name must be that of a previously created UpdateStreamOperation, possibly from a different process.
 func (c *gRPCClient) UpdateStreamOperation(name string) *UpdateStreamOperation {
 	return &UpdateStreamOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.UpdateStreamOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3361,7 +3272,7 @@ func (c *gRPCClient) UpdateStreamOperation(name string) *UpdateStreamOperation {
 func (c *restClient) UpdateStreamOperation(name string) *UpdateStreamOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &UpdateStreamOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.UpdateStreamOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }

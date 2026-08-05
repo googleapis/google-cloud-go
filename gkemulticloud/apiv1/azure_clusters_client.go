@@ -30,7 +30,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -752,12 +751,8 @@ func (c *azureClustersGRPCClient) CreateAzureClient(ctx context.Context, req *gk
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.CreateAzureClientOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAzureClientOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -858,12 +853,8 @@ func (c *azureClustersGRPCClient) DeleteAzureClient(ctx context.Context, req *gk
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.DeleteAzureClientOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAzureClientOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -888,12 +879,8 @@ func (c *azureClustersGRPCClient) CreateAzureCluster(ctx context.Context, req *g
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.CreateAzureClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAzureClusterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -915,12 +902,8 @@ func (c *azureClustersGRPCClient) UpdateAzureCluster(ctx context.Context, req *g
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.UpdateAzureClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAzureClusterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1021,12 +1004,8 @@ func (c *azureClustersGRPCClient) DeleteAzureCluster(ctx context.Context, req *g
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.DeleteAzureClusterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAzureClusterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1099,12 +1078,8 @@ func (c *azureClustersGRPCClient) CreateAzureNodePool(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.CreateAzureNodePoolOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAzureNodePoolOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1126,12 +1101,8 @@ func (c *azureClustersGRPCClient) UpdateAzureNodePool(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.UpdateAzureNodePoolOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAzureNodePoolOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1232,12 +1203,8 @@ func (c *azureClustersGRPCClient) DeleteAzureNodePool(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.DeleteAzureNodePoolOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAzureNodePoolOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1421,7 +1388,7 @@ func (c *azureClustersGRPCClient) ListOperations(ctx context.Context, req *longr
 // The name must be that of a previously created CreateAzureClientOperation, possibly from a different process.
 func (c *azureClustersGRPCClient) CreateAzureClientOperation(name string) *CreateAzureClientOperation {
 	return &CreateAzureClientOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.CreateAzureClientOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1429,7 +1396,7 @@ func (c *azureClustersGRPCClient) CreateAzureClientOperation(name string) *Creat
 // The name must be that of a previously created CreateAzureClusterOperation, possibly from a different process.
 func (c *azureClustersGRPCClient) CreateAzureClusterOperation(name string) *CreateAzureClusterOperation {
 	return &CreateAzureClusterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.CreateAzureClusterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1437,7 +1404,7 @@ func (c *azureClustersGRPCClient) CreateAzureClusterOperation(name string) *Crea
 // The name must be that of a previously created CreateAzureNodePoolOperation, possibly from a different process.
 func (c *azureClustersGRPCClient) CreateAzureNodePoolOperation(name string) *CreateAzureNodePoolOperation {
 	return &CreateAzureNodePoolOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.CreateAzureNodePoolOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1445,7 +1412,7 @@ func (c *azureClustersGRPCClient) CreateAzureNodePoolOperation(name string) *Cre
 // The name must be that of a previously created DeleteAzureClientOperation, possibly from a different process.
 func (c *azureClustersGRPCClient) DeleteAzureClientOperation(name string) *DeleteAzureClientOperation {
 	return &DeleteAzureClientOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.DeleteAzureClientOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1453,7 +1420,7 @@ func (c *azureClustersGRPCClient) DeleteAzureClientOperation(name string) *Delet
 // The name must be that of a previously created DeleteAzureClusterOperation, possibly from a different process.
 func (c *azureClustersGRPCClient) DeleteAzureClusterOperation(name string) *DeleteAzureClusterOperation {
 	return &DeleteAzureClusterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.DeleteAzureClusterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1461,7 +1428,7 @@ func (c *azureClustersGRPCClient) DeleteAzureClusterOperation(name string) *Dele
 // The name must be that of a previously created DeleteAzureNodePoolOperation, possibly from a different process.
 func (c *azureClustersGRPCClient) DeleteAzureNodePoolOperation(name string) *DeleteAzureNodePoolOperation {
 	return &DeleteAzureNodePoolOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.DeleteAzureNodePoolOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1469,7 +1436,7 @@ func (c *azureClustersGRPCClient) DeleteAzureNodePoolOperation(name string) *Del
 // The name must be that of a previously created UpdateAzureClusterOperation, possibly from a different process.
 func (c *azureClustersGRPCClient) UpdateAzureClusterOperation(name string) *UpdateAzureClusterOperation {
 	return &UpdateAzureClusterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.UpdateAzureClusterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1477,6 +1444,6 @@ func (c *azureClustersGRPCClient) UpdateAzureClusterOperation(name string) *Upda
 // The name must be that of a previously created UpdateAzureNodePoolOperation, possibly from a different process.
 func (c *azureClustersGRPCClient) UpdateAzureNodePoolOperation(name string) *UpdateAzureNodePoolOperation {
 	return &UpdateAzureNodePoolOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.UpdateAzureNodePoolOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

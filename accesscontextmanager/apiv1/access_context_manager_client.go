@@ -33,7 +33,6 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1112,12 +1111,8 @@ func (c *gRPCClient) CreateAccessPolicy(ctx context.Context, req *accesscontextm
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.CreateAccessPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAccessPolicyOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1139,12 +1134,8 @@ func (c *gRPCClient) UpdateAccessPolicy(ctx context.Context, req *accesscontextm
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.UpdateAccessPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAccessPolicyOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1169,12 +1160,8 @@ func (c *gRPCClient) DeleteAccessPolicy(ctx context.Context, req *accesscontextm
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.DeleteAccessPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAccessPolicyOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1275,12 +1262,8 @@ func (c *gRPCClient) CreateAccessLevel(ctx context.Context, req *accesscontextma
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.CreateAccessLevelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAccessLevelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1302,12 +1285,8 @@ func (c *gRPCClient) UpdateAccessLevel(ctx context.Context, req *accesscontextma
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.UpdateAccessLevelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAccessLevelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1332,12 +1311,8 @@ func (c *gRPCClient) DeleteAccessLevel(ctx context.Context, req *accesscontextma
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.DeleteAccessLevelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAccessLevelOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1362,12 +1337,8 @@ func (c *gRPCClient) ReplaceAccessLevels(ctx context.Context, req *accesscontext
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.ReplaceAccessLevelsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ReplaceAccessLevelsOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1468,12 +1439,8 @@ func (c *gRPCClient) CreateServicePerimeter(ctx context.Context, req *accesscont
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.CreateServicePerimeterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateServicePerimeterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1495,12 +1462,8 @@ func (c *gRPCClient) UpdateServicePerimeter(ctx context.Context, req *accesscont
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.UpdateServicePerimeterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateServicePerimeterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1525,12 +1488,8 @@ func (c *gRPCClient) DeleteServicePerimeter(ctx context.Context, req *accesscont
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.DeleteServicePerimeterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteServicePerimeterOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1555,12 +1514,8 @@ func (c *gRPCClient) ReplaceServicePerimeters(ctx context.Context, req *accessco
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.ReplaceServicePerimetersOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ReplaceServicePerimetersOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1585,12 +1540,8 @@ func (c *gRPCClient) CommitServicePerimeters(ctx context.Context, req *accesscon
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.CommitServicePerimetersOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CommitServicePerimetersOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1691,12 +1642,8 @@ func (c *gRPCClient) CreateGcpUserAccessBinding(ctx context.Context, req *access
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.CreateGcpUserAccessBindingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGcpUserAccessBindingOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1718,12 +1665,8 @@ func (c *gRPCClient) UpdateGcpUserAccessBinding(ctx context.Context, req *access
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.UpdateGcpUserAccessBindingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateGcpUserAccessBindingOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1748,12 +1691,8 @@ func (c *gRPCClient) DeleteGcpUserAccessBinding(ctx context.Context, req *access
 	if err != nil {
 		return nil, err
 	}
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.DeleteGcpUserAccessBindingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGcpUserAccessBindingOperation{
-		lro: lro,
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -2047,12 +1986,8 @@ func (c *restClient) CreateAccessPolicy(ctx context.Context, req *accesscontextm
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.CreateAccessPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAccessPolicyOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2127,12 +2062,8 @@ func (c *restClient) UpdateAccessPolicy(ctx context.Context, req *accesscontextm
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.UpdateAccessPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAccessPolicyOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2195,12 +2126,8 @@ func (c *restClient) DeleteAccessPolicy(ctx context.Context, req *accesscontextm
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.DeleteAccessPolicyOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAccessPolicyOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2417,12 +2344,8 @@ func (c *restClient) CreateAccessLevel(ctx context.Context, req *accesscontextma
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.CreateAccessLevelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateAccessLevelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2499,12 +2422,8 @@ func (c *restClient) UpdateAccessLevel(ctx context.Context, req *accesscontextma
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.UpdateAccessLevelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateAccessLevelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2568,12 +2487,8 @@ func (c *restClient) DeleteAccessLevel(ctx context.Context, req *accesscontextma
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.DeleteAccessLevelOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteAccessLevelOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2654,12 +2569,8 @@ func (c *restClient) ReplaceAccessLevels(ctx context.Context, req *accesscontext
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.ReplaceAccessLevelsOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ReplaceAccessLevelsOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2871,12 +2782,8 @@ func (c *restClient) CreateServicePerimeter(ctx context.Context, req *accesscont
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.CreateServicePerimeterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateServicePerimeterOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -2953,12 +2860,8 @@ func (c *restClient) UpdateServicePerimeter(ctx context.Context, req *accesscont
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.UpdateServicePerimeterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateServicePerimeterOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3022,12 +2925,8 @@ func (c *restClient) DeleteServicePerimeter(ctx context.Context, req *accesscont
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.DeleteServicePerimeterOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteServicePerimeterOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3104,12 +3003,8 @@ func (c *restClient) ReplaceServicePerimeters(ctx context.Context, req *accessco
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.ReplaceServicePerimetersOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &ReplaceServicePerimetersOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3188,12 +3083,8 @@ func (c *restClient) CommitServicePerimeters(ctx context.Context, req *accesscon
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.CommitServicePerimetersOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CommitServicePerimetersOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3407,12 +3298,8 @@ func (c *restClient) CreateGcpUserAccessBinding(ctx context.Context, req *access
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.CreateGcpUserAccessBindingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &CreateGcpUserAccessBindingOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3486,12 +3373,8 @@ func (c *restClient) UpdateGcpUserAccessBinding(ctx context.Context, req *access
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.UpdateGcpUserAccessBindingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &UpdateGcpUserAccessBindingOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3554,12 +3437,8 @@ func (c *restClient) DeleteGcpUserAccessBinding(ctx context.Context, req *access
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
-	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*accesscontextmanager.DeleteGcpUserAccessBindingOperation")
-	if gax.IsFeatureEnabled("TRACING") {
-		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
-	}
 	return &DeleteGcpUserAccessBindingOperation{
-		lro:      lro,
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
@@ -3822,7 +3701,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // The name must be that of a previously created CommitServicePerimetersOperation, possibly from a different process.
 func (c *gRPCClient) CommitServicePerimetersOperation(name string) *CommitServicePerimetersOperation {
 	return &CommitServicePerimetersOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.CommitServicePerimetersOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3831,7 +3710,7 @@ func (c *gRPCClient) CommitServicePerimetersOperation(name string) *CommitServic
 func (c *restClient) CommitServicePerimetersOperation(name string) *CommitServicePerimetersOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CommitServicePerimetersOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.CommitServicePerimetersOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3840,7 +3719,7 @@ func (c *restClient) CommitServicePerimetersOperation(name string) *CommitServic
 // The name must be that of a previously created CreateAccessLevelOperation, possibly from a different process.
 func (c *gRPCClient) CreateAccessLevelOperation(name string) *CreateAccessLevelOperation {
 	return &CreateAccessLevelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.CreateAccessLevelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3849,7 +3728,7 @@ func (c *gRPCClient) CreateAccessLevelOperation(name string) *CreateAccessLevelO
 func (c *restClient) CreateAccessLevelOperation(name string) *CreateAccessLevelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAccessLevelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.CreateAccessLevelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3858,7 +3737,7 @@ func (c *restClient) CreateAccessLevelOperation(name string) *CreateAccessLevelO
 // The name must be that of a previously created CreateAccessPolicyOperation, possibly from a different process.
 func (c *gRPCClient) CreateAccessPolicyOperation(name string) *CreateAccessPolicyOperation {
 	return &CreateAccessPolicyOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.CreateAccessPolicyOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3867,7 +3746,7 @@ func (c *gRPCClient) CreateAccessPolicyOperation(name string) *CreateAccessPolic
 func (c *restClient) CreateAccessPolicyOperation(name string) *CreateAccessPolicyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAccessPolicyOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.CreateAccessPolicyOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3876,7 +3755,7 @@ func (c *restClient) CreateAccessPolicyOperation(name string) *CreateAccessPolic
 // The name must be that of a previously created CreateGcpUserAccessBindingOperation, possibly from a different process.
 func (c *gRPCClient) CreateGcpUserAccessBindingOperation(name string) *CreateGcpUserAccessBindingOperation {
 	return &CreateGcpUserAccessBindingOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.CreateGcpUserAccessBindingOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3885,7 +3764,7 @@ func (c *gRPCClient) CreateGcpUserAccessBindingOperation(name string) *CreateGcp
 func (c *restClient) CreateGcpUserAccessBindingOperation(name string) *CreateGcpUserAccessBindingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateGcpUserAccessBindingOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.CreateGcpUserAccessBindingOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3894,7 +3773,7 @@ func (c *restClient) CreateGcpUserAccessBindingOperation(name string) *CreateGcp
 // The name must be that of a previously created CreateServicePerimeterOperation, possibly from a different process.
 func (c *gRPCClient) CreateServicePerimeterOperation(name string) *CreateServicePerimeterOperation {
 	return &CreateServicePerimeterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.CreateServicePerimeterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3903,7 +3782,7 @@ func (c *gRPCClient) CreateServicePerimeterOperation(name string) *CreateService
 func (c *restClient) CreateServicePerimeterOperation(name string) *CreateServicePerimeterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateServicePerimeterOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.CreateServicePerimeterOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3912,7 +3791,7 @@ func (c *restClient) CreateServicePerimeterOperation(name string) *CreateService
 // The name must be that of a previously created DeleteAccessLevelOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAccessLevelOperation(name string) *DeleteAccessLevelOperation {
 	return &DeleteAccessLevelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.DeleteAccessLevelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3921,7 +3800,7 @@ func (c *gRPCClient) DeleteAccessLevelOperation(name string) *DeleteAccessLevelO
 func (c *restClient) DeleteAccessLevelOperation(name string) *DeleteAccessLevelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAccessLevelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.DeleteAccessLevelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3930,7 +3809,7 @@ func (c *restClient) DeleteAccessLevelOperation(name string) *DeleteAccessLevelO
 // The name must be that of a previously created DeleteAccessPolicyOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAccessPolicyOperation(name string) *DeleteAccessPolicyOperation {
 	return &DeleteAccessPolicyOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.DeleteAccessPolicyOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3939,7 +3818,7 @@ func (c *gRPCClient) DeleteAccessPolicyOperation(name string) *DeleteAccessPolic
 func (c *restClient) DeleteAccessPolicyOperation(name string) *DeleteAccessPolicyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAccessPolicyOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.DeleteAccessPolicyOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3948,7 +3827,7 @@ func (c *restClient) DeleteAccessPolicyOperation(name string) *DeleteAccessPolic
 // The name must be that of a previously created DeleteGcpUserAccessBindingOperation, possibly from a different process.
 func (c *gRPCClient) DeleteGcpUserAccessBindingOperation(name string) *DeleteGcpUserAccessBindingOperation {
 	return &DeleteGcpUserAccessBindingOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.DeleteGcpUserAccessBindingOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3957,7 +3836,7 @@ func (c *gRPCClient) DeleteGcpUserAccessBindingOperation(name string) *DeleteGcp
 func (c *restClient) DeleteGcpUserAccessBindingOperation(name string) *DeleteGcpUserAccessBindingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGcpUserAccessBindingOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.DeleteGcpUserAccessBindingOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3966,7 +3845,7 @@ func (c *restClient) DeleteGcpUserAccessBindingOperation(name string) *DeleteGcp
 // The name must be that of a previously created DeleteServicePerimeterOperation, possibly from a different process.
 func (c *gRPCClient) DeleteServicePerimeterOperation(name string) *DeleteServicePerimeterOperation {
 	return &DeleteServicePerimeterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.DeleteServicePerimeterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3975,7 +3854,7 @@ func (c *gRPCClient) DeleteServicePerimeterOperation(name string) *DeleteService
 func (c *restClient) DeleteServicePerimeterOperation(name string) *DeleteServicePerimeterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteServicePerimeterOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.DeleteServicePerimeterOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -3984,7 +3863,7 @@ func (c *restClient) DeleteServicePerimeterOperation(name string) *DeleteService
 // The name must be that of a previously created ReplaceAccessLevelsOperation, possibly from a different process.
 func (c *gRPCClient) ReplaceAccessLevelsOperation(name string) *ReplaceAccessLevelsOperation {
 	return &ReplaceAccessLevelsOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.ReplaceAccessLevelsOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -3993,7 +3872,7 @@ func (c *gRPCClient) ReplaceAccessLevelsOperation(name string) *ReplaceAccessLev
 func (c *restClient) ReplaceAccessLevelsOperation(name string) *ReplaceAccessLevelsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ReplaceAccessLevelsOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.ReplaceAccessLevelsOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4002,7 +3881,7 @@ func (c *restClient) ReplaceAccessLevelsOperation(name string) *ReplaceAccessLev
 // The name must be that of a previously created ReplaceServicePerimetersOperation, possibly from a different process.
 func (c *gRPCClient) ReplaceServicePerimetersOperation(name string) *ReplaceServicePerimetersOperation {
 	return &ReplaceServicePerimetersOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.ReplaceServicePerimetersOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4011,7 +3890,7 @@ func (c *gRPCClient) ReplaceServicePerimetersOperation(name string) *ReplaceServ
 func (c *restClient) ReplaceServicePerimetersOperation(name string) *ReplaceServicePerimetersOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ReplaceServicePerimetersOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.ReplaceServicePerimetersOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4020,7 +3899,7 @@ func (c *restClient) ReplaceServicePerimetersOperation(name string) *ReplaceServ
 // The name must be that of a previously created UpdateAccessLevelOperation, possibly from a different process.
 func (c *gRPCClient) UpdateAccessLevelOperation(name string) *UpdateAccessLevelOperation {
 	return &UpdateAccessLevelOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.UpdateAccessLevelOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4029,7 +3908,7 @@ func (c *gRPCClient) UpdateAccessLevelOperation(name string) *UpdateAccessLevelO
 func (c *restClient) UpdateAccessLevelOperation(name string) *UpdateAccessLevelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateAccessLevelOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.UpdateAccessLevelOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4038,7 +3917,7 @@ func (c *restClient) UpdateAccessLevelOperation(name string) *UpdateAccessLevelO
 // The name must be that of a previously created UpdateAccessPolicyOperation, possibly from a different process.
 func (c *gRPCClient) UpdateAccessPolicyOperation(name string) *UpdateAccessPolicyOperation {
 	return &UpdateAccessPolicyOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.UpdateAccessPolicyOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4047,7 +3926,7 @@ func (c *gRPCClient) UpdateAccessPolicyOperation(name string) *UpdateAccessPolic
 func (c *restClient) UpdateAccessPolicyOperation(name string) *UpdateAccessPolicyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateAccessPolicyOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.UpdateAccessPolicyOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4056,7 +3935,7 @@ func (c *restClient) UpdateAccessPolicyOperation(name string) *UpdateAccessPolic
 // The name must be that of a previously created UpdateGcpUserAccessBindingOperation, possibly from a different process.
 func (c *gRPCClient) UpdateGcpUserAccessBindingOperation(name string) *UpdateGcpUserAccessBindingOperation {
 	return &UpdateGcpUserAccessBindingOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.UpdateGcpUserAccessBindingOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4065,7 +3944,7 @@ func (c *gRPCClient) UpdateGcpUserAccessBindingOperation(name string) *UpdateGcp
 func (c *restClient) UpdateGcpUserAccessBindingOperation(name string) *UpdateGcpUserAccessBindingOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateGcpUserAccessBindingOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.UpdateGcpUserAccessBindingOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
@@ -4074,7 +3953,7 @@ func (c *restClient) UpdateGcpUserAccessBindingOperation(name string) *UpdateGcp
 // The name must be that of a previously created UpdateServicePerimeterOperation, possibly from a different process.
 func (c *gRPCClient) UpdateServicePerimeterOperation(name string) *UpdateServicePerimeterOperation {
 	return &UpdateServicePerimeterOperation{
-		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.UpdateServicePerimeterOperation"),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -4083,7 +3962,7 @@ func (c *gRPCClient) UpdateServicePerimeterOperation(name string) *UpdateService
 func (c *restClient) UpdateServicePerimeterOperation(name string) *UpdateServicePerimeterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateServicePerimeterOperation{
-		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*accesscontextmanager.UpdateServicePerimeterOperation"),
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
 }
