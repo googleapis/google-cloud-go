@@ -21,10 +21,13 @@
 package accelerator
 
 import (
+	"bufio"
+	"fmt"
 	"io"
 	"log"
 	"net"
 	"os"
+	"strings"
 	"sync"
 	"syscall"
 
@@ -40,7 +43,9 @@ type Server struct {
 	listener     net.Listener
 	shutdownChan chan struct{}
 	stopOnce     sync.Once
-	stdinReader  io.Reader // stdin source; nil disables the stdin watchdog. Defaults to os.Stdin; override with WithStdinReader.
+	stdinReader  io.Reader     // stdin source; nil disables the stdin watchdog. Defaults to os.Stdin; override with WithStdinReader.
+	stdinBuf     *bufio.Reader // wraps stdinReader once in Start(); shared by readSecret + monitorStdin
+	authSecret   string
 	channel      *Channel
 }
 
@@ -73,6 +78,15 @@ func NewServer(udsPath string, channel *Channel, opts ...ServerOption) *Server {
 
 // Start boots the gRPC server on the Unix Domain Socket asynchronously.
 func (s *Server) Start() error {
+	// Read the auth secret from stdin BEFORE binding — the parent process writes
+	// the secret before the daemon starts serving, so it is always present on the
+	// pipe.
+	if s.stdinReader != nil {
+		if err := s.readSecret(); err != nil {
+			return err
+		}
+	}
+
 	// Clear any stale socket left by a previous instance so the bind below
 	// succeeds. Safe under the daemon's 1:1 pairing with its parent: no live
 	// sibling shares this path.
@@ -105,10 +119,18 @@ func (s *Server) Start() error {
 		return err
 	}
 
-	// Proxy interceptors route each RPC through the Channel.
+	// Auth interceptors run first; when authSecret is empty (test mode with
+	// WithStdinReader(nil)) they are no-ops. Proxy interceptors follow and route
+	// each RPC through the Channel.
 	s.grpcServer = grpc.NewServer(
-		grpc.UnaryInterceptor(proxyUnaryInterceptor(s.channel)),
-		grpc.StreamInterceptor(proxyStreamInterceptor(s.channel)),
+		grpc.ChainUnaryInterceptor(
+			authUnaryInterceptor(s.authSecret),
+			proxyUnaryInterceptor(s.channel),
+		),
+		grpc.ChainStreamInterceptor(
+			authStreamInterceptor(s.authSecret),
+			proxyStreamInterceptor(s.channel),
+		),
 	)
 
 	// Register the empty bigtableServerStub. gRPC requires a typed
@@ -160,6 +182,30 @@ func (s *Server) Stop() {
 
 		_ = os.Remove(s.udsPath)
 	})
+}
+
+// readSecret reads the auth secret written by the parent process to stdin
+// before the daemon binds. It wraps stdinReader once in a bufio.Reader
+// (stored as s.stdinBuf) so monitorStdin can continue consuming the same
+// buffered stream without losing bytes.
+//
+// An empty or whitespace-only secret is rejected so the daemon fails closed:
+// serving with an empty authSecret would disable the auth interceptor (see
+// checkAuthToken), so we refuse to start rather than accept unauthenticated
+// callers. This guarantees the shipped binary — which always feeds os.Stdin —
+// either has a real secret or never binds the socket.
+func (s *Server) readSecret() error {
+	s.stdinBuf = bufio.NewReader(s.stdinReader)
+	line, err := s.stdinBuf.ReadString('\n')
+	if err != nil {
+		return fmt.Errorf("accelerator: failed to read auth secret from stdin: %w", err)
+	}
+	secret := strings.TrimSpace(line)
+	if secret == "" {
+		return fmt.Errorf("accelerator: received empty auth secret from stdin; refusing to serve unauthenticated")
+	}
+	s.authSecret = secret
+	return nil
 }
 
 // ShutdownChan returns a read-only channel that is closed when the server
