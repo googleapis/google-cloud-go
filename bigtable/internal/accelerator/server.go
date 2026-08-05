@@ -299,10 +299,16 @@ func (s *Server) monitorStdin() {
 	}
 }
 
-// monitorParentPid stops the daemon if the parent PID becomes 1 (orphaned)
-// or otherwise changes.
+// monitorParentPid stops the daemon if its parent PID changes, which happens
+// when the original parent dies and the process is reparented (to init or a
+// subreaper). If the daemon is already parented to init at startup (e.g. under
+// a process supervisor or in a container), there is no original parent to
+// outlive, so the watchdog is disabled.
 func (s *Server) monitorParentPid() {
 	initialPpid := os.Getppid()
+	if initialPpid == 1 {
+		return
+	}
 	ticker := time.NewTicker(500 * time.Millisecond)
 	defer ticker.Stop()
 
@@ -311,8 +317,7 @@ func (s *Server) monitorParentPid() {
 		case <-s.shutdownChan:
 			return
 		case <-ticker.C:
-			currentPpid := os.Getppid()
-			if currentPpid == 1 || currentPpid != initialPpid {
+			if os.Getppid() != initialPpid {
 				s.Stop()
 				return
 			}
