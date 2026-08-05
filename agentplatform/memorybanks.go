@@ -141,7 +141,6 @@ func ingestEventsRequestParametersToVertex(fromObject map[string]any, parentObje
 
 type MemoryBanks struct {
 	apiClient *genai.InternalAPIClient
-	Memories  *Memories
 }
 
 func (m MemoryBanks) create(ctx context.Context, config *types.CreateMemoryBankConfig) (*types.MemoryBankOperation, error) {
