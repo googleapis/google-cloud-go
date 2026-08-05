@@ -167,7 +167,7 @@ func defaultOrganizationSecurityPoliciesRESTCallOptions() *OrganizationSecurityP
 	}
 }
 
-// internalOrganizationSecurityPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalOrganizationSecurityPoliciesClient is an interface that defines the methods available from Compute Engine API.
 type internalOrganizationSecurityPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -190,7 +190,7 @@ type internalOrganizationSecurityPoliciesClient interface {
 	RemoveRule(context.Context, *computepb.RemoveRuleOrganizationSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// OrganizationSecurityPoliciesClient is a client for interacting with Google Compute Engine API.
+// OrganizationSecurityPoliciesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The OrganizationSecurityPolicies API.

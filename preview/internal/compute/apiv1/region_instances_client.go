@@ -50,7 +50,7 @@ func defaultRegionInstancesRESTCallOptions() *RegionInstancesCallOptions {
 	}
 }
 
-// internalRegionInstancesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionInstancesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionInstancesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -58,7 +58,7 @@ type internalRegionInstancesClient interface {
 	BulkInsert(context.Context, *computepb.BulkInsertRegionInstanceRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RegionInstancesClient is a client for interacting with Google Compute Engine API.
+// RegionInstancesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionInstances API.

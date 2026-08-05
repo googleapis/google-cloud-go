@@ -344,7 +344,7 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 	}
 }
 
-// internalInstancesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalInstancesClient is an interface that defines the methods available from Compute Engine API.
 type internalInstancesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -402,7 +402,7 @@ type internalInstancesClient interface {
 	UpdateShieldedInstanceConfig(context.Context, *computepb.UpdateShieldedInstanceConfigInstanceRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// InstancesClient is a client for interacting with Google Compute Engine API.
+// InstancesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Instances API.
@@ -1442,6 +1442,9 @@ func (c *instancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteI
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
+	if req != nil && req.NoGracefulShutdown != nil {
+		params.Add("noGracefulShutdown", fmt.Sprintf("%v", req.GetNoGracefulShutdown()))
+	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -4034,6 +4037,9 @@ func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInsta
 	params := url.Values{}
 	if req != nil && req.DiscardLocalSsd != nil {
 		params.Add("discardLocalSsd", fmt.Sprintf("%v", req.GetDiscardLocalSsd()))
+	}
+	if req != nil && req.NoGracefulShutdown != nil {
+		params.Add("noGracefulShutdown", fmt.Sprintf("%v", req.GetNoGracefulShutdown()))
 	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))

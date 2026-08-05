@@ -28,6 +28,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -210,7 +211,9 @@ func (x *IngestAudienceMembersRequest) GetTermsOfService() *TermsOfService {
 type IngestAudienceMembersResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The auto-generated ID of the request.
-	RequestId     string `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	RequestId string `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	// Detailed row-level warnings with field paths.
+	FieldWarnings []*FieldWarning `protobuf:"bytes,2,rep,name=field_warnings,json=fieldWarnings,proto3" json:"field_warnings,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -250,6 +253,13 @@ func (x *IngestAudienceMembersResponse) GetRequestId() string {
 		return x.RequestId
 	}
 	return ""
+}
+
+func (x *IngestAudienceMembersResponse) GetFieldWarnings() []*FieldWarning {
+	if x != nil {
+		return x.FieldWarnings
+	}
+	return nil
 }
 
 // Request to remove users from an audience in the provided destinations.
@@ -390,6 +400,122 @@ func (x *RemoveAudienceMembersResponse) GetRequestId() string {
 	return ""
 }
 
+// Request to remove all users from an audience in the provided destinations.
+// Returns a
+// [RemoveAllAudienceMembersResponse][google.ads.datamanager.v1.RemoveAllAudienceMembersResponse].
+type RemoveAllAudienceMembersRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The list of destinations to remove the users from.
+	Destinations []*Destination `protobuf:"bytes,1,rep,name=destinations,proto3" json:"destinations,omitempty"`
+	// Optional. The remove as of time. If set, only audience members last added
+	// before this time will be removed. If not set, it defaults to current time.
+	// The remove as of time must not be in the future.
+	RemoveAsOfTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=remove_as_of_time,json=removeAsOfTime,proto3" json:"remove_as_of_time,omitempty"`
+	// Optional. For testing purposes. If `true`, the request is validated but not
+	// executed. Only errors are returned, not results.
+	ValidateOnly  bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RemoveAllAudienceMembersRequest) Reset() {
+	*x = RemoveAllAudienceMembersRequest{}
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RemoveAllAudienceMembersRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RemoveAllAudienceMembersRequest) ProtoMessage() {}
+
+func (x *RemoveAllAudienceMembersRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RemoveAllAudienceMembersRequest.ProtoReflect.Descriptor instead.
+func (*RemoveAllAudienceMembersRequest) Descriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *RemoveAllAudienceMembersRequest) GetDestinations() []*Destination {
+	if x != nil {
+		return x.Destinations
+	}
+	return nil
+}
+
+func (x *RemoveAllAudienceMembersRequest) GetRemoveAsOfTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.RemoveAsOfTime
+	}
+	return nil
+}
+
+func (x *RemoveAllAudienceMembersRequest) GetValidateOnly() bool {
+	if x != nil {
+		return x.ValidateOnly
+	}
+	return false
+}
+
+// Response from the
+// [RemoveAllAudienceMembersRequest][google.ads.datamanager.v1.RemoveAllAudienceMembersRequest].
+type RemoveAllAudienceMembersResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The auto-generated ID of the request.
+	RequestId     string `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RemoveAllAudienceMembersResponse) Reset() {
+	*x = RemoveAllAudienceMembersResponse{}
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RemoveAllAudienceMembersResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RemoveAllAudienceMembersResponse) ProtoMessage() {}
+
+func (x *RemoveAllAudienceMembersResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RemoveAllAudienceMembersResponse.ProtoReflect.Descriptor instead.
+func (*RemoveAllAudienceMembersResponse) Descriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *RemoveAllAudienceMembersResponse) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
 // Request to upload audience members to the provided destinations. Returns an
 // [IngestEventsResponse][google.ads.datamanager.v1.IngestEventsResponse].
 type IngestEventsRequest struct {
@@ -426,7 +552,7 @@ type IngestEventsRequest struct {
 
 func (x *IngestEventsRequest) Reset() {
 	*x = IngestEventsRequest{}
-	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[4]
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -438,7 +564,7 @@ func (x *IngestEventsRequest) String() string {
 func (*IngestEventsRequest) ProtoMessage() {}
 
 func (x *IngestEventsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[4]
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -451,7 +577,7 @@ func (x *IngestEventsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IngestEventsRequest.ProtoReflect.Descriptor instead.
 func (*IngestEventsRequest) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP(), []int{4}
+	return file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *IngestEventsRequest) GetDestinations() []*Destination {
@@ -501,14 +627,16 @@ func (x *IngestEventsRequest) GetEncryptionInfo() *EncryptionInfo {
 type IngestEventsResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The auto-generated ID of the request.
-	RequestId     string `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	RequestId string `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	// Detailed row-level warnings with field paths.
+	FieldWarnings []*FieldWarning `protobuf:"bytes,2,rep,name=field_warnings,json=fieldWarnings,proto3" json:"field_warnings,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *IngestEventsResponse) Reset() {
 	*x = IngestEventsResponse{}
-	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[5]
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -520,7 +648,7 @@ func (x *IngestEventsResponse) String() string {
 func (*IngestEventsResponse) ProtoMessage() {}
 
 func (x *IngestEventsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[5]
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -533,7 +661,7 @@ func (x *IngestEventsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IngestEventsResponse.ProtoReflect.Descriptor instead.
 func (*IngestEventsResponse) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP(), []int{5}
+	return file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *IngestEventsResponse) GetRequestId() string {
@@ -543,15 +671,24 @@ func (x *IngestEventsResponse) GetRequestId() string {
 	return ""
 }
 
+func (x *IngestEventsResponse) GetFieldWarnings() []*FieldWarning {
+	if x != nil {
+		return x.FieldWarnings
+	}
+	return nil
+}
+
 // Request to upload ad events.
 type IngestAdEventsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Required (at least 1). A list of ad events.
 	AdEvents []*AdEvent `protobuf:"bytes,1,rep,name=ad_events,json=adEvents,proto3" json:"ad_events,omitempty"`
-	// Optional. Information about encryption keys which are used to encrypt the
+	// Required. Information about encryption keys which are used to encrypt the
 	// data.
 	EncryptionInfo *EncryptionInfo `protobuf:"bytes,2,opt,name=encryption_info,json=encryptionInfo,proto3" json:"encryption_info,omitempty"`
 	// Optional. If true, the request is validated, but not executed.
+	//
+	// Deprecated: Marked as deprecated in google/ads/datamanager/v1/ingestion_service.proto.
 	ValidateOnly  bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -559,7 +696,7 @@ type IngestAdEventsRequest struct {
 
 func (x *IngestAdEventsRequest) Reset() {
 	*x = IngestAdEventsRequest{}
-	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[6]
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -571,7 +708,7 @@ func (x *IngestAdEventsRequest) String() string {
 func (*IngestAdEventsRequest) ProtoMessage() {}
 
 func (x *IngestAdEventsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[6]
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -584,7 +721,7 @@ func (x *IngestAdEventsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IngestAdEventsRequest.ProtoReflect.Descriptor instead.
 func (*IngestAdEventsRequest) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP(), []int{6}
+	return file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *IngestAdEventsRequest) GetAdEvents() []*AdEvent {
@@ -601,6 +738,7 @@ func (x *IngestAdEventsRequest) GetEncryptionInfo() *EncryptionInfo {
 	return nil
 }
 
+// Deprecated: Marked as deprecated in google/ads/datamanager/v1/ingestion_service.proto.
 func (x *IngestAdEventsRequest) GetValidateOnly() bool {
 	if x != nil {
 		return x.ValidateOnly
@@ -617,7 +755,7 @@ type IngestAdEventsResponse struct {
 
 func (x *IngestAdEventsResponse) Reset() {
 	*x = IngestAdEventsResponse{}
-	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[7]
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -629,7 +767,7 @@ func (x *IngestAdEventsResponse) String() string {
 func (*IngestAdEventsResponse) ProtoMessage() {}
 
 func (x *IngestAdEventsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[7]
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -642,7 +780,7 @@ func (x *IngestAdEventsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IngestAdEventsResponse.ProtoReflect.Descriptor instead.
 func (*IngestAdEventsResponse) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP(), []int{7}
+	return file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP(), []int{9}
 }
 
 // Request to get the status of request made to the DM API for a given request
@@ -658,7 +796,7 @@ type RetrieveRequestStatusRequest struct {
 
 func (x *RetrieveRequestStatusRequest) Reset() {
 	*x = RetrieveRequestStatusRequest{}
-	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[8]
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -670,7 +808,7 @@ func (x *RetrieveRequestStatusRequest) String() string {
 func (*RetrieveRequestStatusRequest) ProtoMessage() {}
 
 func (x *RetrieveRequestStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[8]
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -683,7 +821,7 @@ func (x *RetrieveRequestStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RetrieveRequestStatusRequest.ProtoReflect.Descriptor instead.
 func (*RetrieveRequestStatusRequest) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP(), []int{8}
+	return file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *RetrieveRequestStatusRequest) GetRequestId() string {
@@ -706,7 +844,7 @@ type RetrieveRequestStatusResponse struct {
 
 func (x *RetrieveRequestStatusResponse) Reset() {
 	*x = RetrieveRequestStatusResponse{}
-	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[9]
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -718,7 +856,7 @@ func (x *RetrieveRequestStatusResponse) String() string {
 func (*RetrieveRequestStatusResponse) ProtoMessage() {}
 
 func (x *RetrieveRequestStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[9]
+	mi := &file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -731,7 +869,7 @@ func (x *RetrieveRequestStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RetrieveRequestStatusResponse.ProtoReflect.Descriptor instead.
 func (*RetrieveRequestStatusResponse) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP(), []int{9}
+	return file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *RetrieveRequestStatusResponse) GetRequestStatusPerDestination() []*RequestStatusPerDestination {
@@ -745,7 +883,7 @@ var File_google_ads_datamanager_v1_ingestion_service_proto protoreflect.FileDesc
 
 const file_google_ads_datamanager_v1_ingestion_service_proto_rawDesc = "" +
 	"\n" +
-	"1google/ads/datamanager/v1/ingestion_service.proto\x12\x19google.ads.datamanager.v1\x1a(google/ads/datamanager/v1/ad_event.proto\x1a(google/ads/datamanager/v1/audience.proto\x1a'google/ads/datamanager/v1/consent.proto\x1a+google/ads/datamanager/v1/destination.proto\x1a/google/ads/datamanager/v1/encryption_info.proto\x1a%google/ads/datamanager/v1/event.proto\x1a>google/ads/datamanager/v1/request_status_per_destination.proto\x1a0google/ads/datamanager/v1/terms_of_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"\xb0\x04\n" +
+	"1google/ads/datamanager/v1/ingestion_service.proto\x12\x19google.ads.datamanager.v1\x1a(google/ads/datamanager/v1/ad_event.proto\x1a(google/ads/datamanager/v1/audience.proto\x1a'google/ads/datamanager/v1/consent.proto\x1a+google/ads/datamanager/v1/destination.proto\x1a/google/ads/datamanager/v1/encryption_info.proto\x1a%google/ads/datamanager/v1/event.proto\x1a1google/ads/datamanager/v1/processing_errors.proto\x1a>google/ads/datamanager/v1/request_status_per_destination.proto\x1a0google/ads/datamanager/v1/terms_of_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb0\x04\n" +
 	"\x1cIngestAudienceMembersRequest\x12O\n" +
 	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x03\xe0A\x02R\fdestinations\x12Y\n" +
 	"\x10audience_members\x18\x02 \x03(\v2).google.ads.datamanager.v1.AudienceMemberB\x03\xe0A\x02R\x0faudienceMembers\x12A\n" +
@@ -753,10 +891,11 @@ const file_google_ads_datamanager_v1_ingestion_service_proto_rawDesc = "" +
 	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12D\n" +
 	"\bencoding\x18\x05 \x01(\x0e2#.google.ads.datamanager.v1.EncodingB\x03\xe0A\x01R\bencoding\x12W\n" +
 	"\x0fencryption_info\x18\x06 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x03\xe0A\x01R\x0eencryptionInfo\x12X\n" +
-	"\x10terms_of_service\x18\a \x01(\v2).google.ads.datamanager.v1.TermsOfServiceB\x03\xe0A\x01R\x0etermsOfService\">\n" +
+	"\x10terms_of_service\x18\a \x01(\v2).google.ads.datamanager.v1.TermsOfServiceB\x03\xe0A\x01R\x0etermsOfService\"\x8e\x01\n" +
 	"\x1dIngestAudienceMembersResponse\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\"\x93\x03\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\x12N\n" +
+	"\x0efield_warnings\x18\x02 \x03(\v2'.google.ads.datamanager.v1.FieldWarningR\rfieldWarnings\"\x93\x03\n" +
 	"\x1cRemoveAudienceMembersRequest\x12O\n" +
 	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x03\xe0A\x02R\fdestinations\x12Y\n" +
 	"\x10audience_members\x18\x02 \x03(\v2).google.ads.datamanager.v1.AudienceMemberB\x03\xe0A\x02R\x0faudienceMembers\x12(\n" +
@@ -765,6 +904,13 @@ const file_google_ads_datamanager_v1_ingestion_service_proto_rawDesc = "" +
 	"\x0fencryption_info\x18\x05 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x03\xe0A\x01R\x0eencryptionInfo\">\n" +
 	"\x1dRemoveAudienceMembersResponse\x12\x1d\n" +
 	"\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\"\xe8\x01\n" +
+	"\x1fRemoveAllAudienceMembersRequest\x12O\n" +
+	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x03\xe0A\x02R\fdestinations\x12J\n" +
+	"\x11remove_as_of_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x0eremoveAsOfTime\x12(\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"A\n" +
+	" RemoveAllAudienceMembersResponse\x12\x1d\n" +
+	"\n" +
 	"request_id\x18\x01 \x01(\tR\trequestId\"\xb1\x03\n" +
 	"\x13IngestEventsRequest\x12O\n" +
 	"\fdestinations\x18\x01 \x03(\v2&.google.ads.datamanager.v1.DestinationB\x03\xe0A\x02R\fdestinations\x12=\n" +
@@ -772,14 +918,15 @@ const file_google_ads_datamanager_v1_ingestion_service_proto_rawDesc = "" +
 	"\aconsent\x18\x03 \x01(\v2\".google.ads.datamanager.v1.ConsentB\x03\xe0A\x01R\aconsent\x12(\n" +
 	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12D\n" +
 	"\bencoding\x18\x05 \x01(\x0e2#.google.ads.datamanager.v1.EncodingB\x03\xe0A\x01R\bencoding\x12W\n" +
-	"\x0fencryption_info\x18\x06 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x03\xe0A\x01R\x0eencryptionInfo\"5\n" +
+	"\x0fencryption_info\x18\x06 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x03\xe0A\x01R\x0eencryptionInfo\"\x85\x01\n" +
 	"\x14IngestEventsResponse\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\"\xe0\x01\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\x12N\n" +
+	"\x0efield_warnings\x18\x02 \x03(\v2'.google.ads.datamanager.v1.FieldWarningR\rfieldWarnings\"\xe2\x01\n" +
 	"\x15IngestAdEventsRequest\x12D\n" +
 	"\tad_events\x18\x01 \x03(\v2\".google.ads.datamanager.v1.AdEventB\x03\xe0A\x02R\badEvents\x12W\n" +
-	"\x0fencryption_info\x18\x02 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x03\xe0A\x01R\x0eencryptionInfo\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x18\n" +
+	"\x0fencryption_info\x18\x02 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x03\xe0A\x02R\x0eencryptionInfo\x12*\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x05\xe0A\x01\x18\x01R\fvalidateOnly\"\x18\n" +
 	"\x16IngestAdEventsResponse\"B\n" +
 	"\x1cRetrieveRequestStatusRequest\x12\"\n" +
 	"\n" +
@@ -790,10 +937,11 @@ const file_google_ads_datamanager_v1_ingestion_service_proto_rawDesc = "" +
 	"\x14ENCODING_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03HEX\x10\x01\x12\n" +
 	"\n" +
-	"\x06BASE64\x10\x022\xa0\a\n" +
+	"\x06BASE64\x10\x022\xe0\b\n" +
 	"\x10IngestionService\x12\xb1\x01\n" +
 	"\x15IngestAudienceMembers\x127.google.ads.datamanager.v1.IngestAudienceMembersRequest\x1a8.google.ads.datamanager.v1.IngestAudienceMembersResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/v1/audienceMembers:ingest\x12\xb1\x01\n" +
-	"\x15RemoveAudienceMembers\x127.google.ads.datamanager.v1.RemoveAudienceMembersRequest\x1a8.google.ads.datamanager.v1.RemoveAudienceMembersResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/v1/audienceMembers:remove\x12\x8d\x01\n" +
+	"\x15RemoveAudienceMembers\x127.google.ads.datamanager.v1.RemoveAudienceMembersRequest\x1a8.google.ads.datamanager.v1.RemoveAudienceMembersResponse\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/v1/audienceMembers:remove\x12\xbd\x01\n" +
+	"\x18RemoveAllAudienceMembers\x12:.google.ads.datamanager.v1.RemoveAllAudienceMembersRequest\x1a;.google.ads.datamanager.v1.RemoveAllAudienceMembersResponse\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/v1/audienceMembers:removeAll\x12\x8d\x01\n" +
 	"\fIngestEvents\x12..google.ads.datamanager.v1.IngestEventsRequest\x1a/.google.ads.datamanager.v1.IngestEventsResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/events:ingest\x12\x95\x01\n" +
 	"\x0eIngestAdEvents\x120.google.ads.datamanager.v1.IngestAdEventsRequest\x1a1.google.ads.datamanager.v1.IngestAdEventsResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/v1/adEvents:ingest\x12\xae\x01\n" +
 	"\x15RetrieveRequestStatus\x127.google.ads.datamanager.v1.RetrieveRequestStatusRequest\x1a8.google.ads.datamanager.v1.RetrieveRequestStatusResponse\"\"\x82\xd3\xe4\x93\x02\x1c\x12\x1a/v1/requestStatus:retrieve\x1aK\xcaA\x1adatamanager.googleapis.com\xd2A+https://www.googleapis.com/auth/datamanagerB\xd2\x01\n" +
@@ -812,62 +960,72 @@ func file_google_ads_datamanager_v1_ingestion_service_proto_rawDescGZIP() []byte
 }
 
 var file_google_ads_datamanager_v1_ingestion_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_google_ads_datamanager_v1_ingestion_service_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_google_ads_datamanager_v1_ingestion_service_proto_goTypes = []any{
-	(Encoding)(0),                         // 0: google.ads.datamanager.v1.Encoding
-	(*IngestAudienceMembersRequest)(nil),  // 1: google.ads.datamanager.v1.IngestAudienceMembersRequest
-	(*IngestAudienceMembersResponse)(nil), // 2: google.ads.datamanager.v1.IngestAudienceMembersResponse
-	(*RemoveAudienceMembersRequest)(nil),  // 3: google.ads.datamanager.v1.RemoveAudienceMembersRequest
-	(*RemoveAudienceMembersResponse)(nil), // 4: google.ads.datamanager.v1.RemoveAudienceMembersResponse
-	(*IngestEventsRequest)(nil),           // 5: google.ads.datamanager.v1.IngestEventsRequest
-	(*IngestEventsResponse)(nil),          // 6: google.ads.datamanager.v1.IngestEventsResponse
-	(*IngestAdEventsRequest)(nil),         // 7: google.ads.datamanager.v1.IngestAdEventsRequest
-	(*IngestAdEventsResponse)(nil),        // 8: google.ads.datamanager.v1.IngestAdEventsResponse
-	(*RetrieveRequestStatusRequest)(nil),  // 9: google.ads.datamanager.v1.RetrieveRequestStatusRequest
-	(*RetrieveRequestStatusResponse)(nil), // 10: google.ads.datamanager.v1.RetrieveRequestStatusResponse
-	(*Destination)(nil),                   // 11: google.ads.datamanager.v1.Destination
-	(*AudienceMember)(nil),                // 12: google.ads.datamanager.v1.AudienceMember
-	(*Consent)(nil),                       // 13: google.ads.datamanager.v1.Consent
-	(*EncryptionInfo)(nil),                // 14: google.ads.datamanager.v1.EncryptionInfo
-	(*TermsOfService)(nil),                // 15: google.ads.datamanager.v1.TermsOfService
-	(*Event)(nil),                         // 16: google.ads.datamanager.v1.Event
-	(*AdEvent)(nil),                       // 17: google.ads.datamanager.v1.AdEvent
-	(*RequestStatusPerDestination)(nil),   // 18: google.ads.datamanager.v1.RequestStatusPerDestination
+	(Encoding)(0),                            // 0: google.ads.datamanager.v1.Encoding
+	(*IngestAudienceMembersRequest)(nil),     // 1: google.ads.datamanager.v1.IngestAudienceMembersRequest
+	(*IngestAudienceMembersResponse)(nil),    // 2: google.ads.datamanager.v1.IngestAudienceMembersResponse
+	(*RemoveAudienceMembersRequest)(nil),     // 3: google.ads.datamanager.v1.RemoveAudienceMembersRequest
+	(*RemoveAudienceMembersResponse)(nil),    // 4: google.ads.datamanager.v1.RemoveAudienceMembersResponse
+	(*RemoveAllAudienceMembersRequest)(nil),  // 5: google.ads.datamanager.v1.RemoveAllAudienceMembersRequest
+	(*RemoveAllAudienceMembersResponse)(nil), // 6: google.ads.datamanager.v1.RemoveAllAudienceMembersResponse
+	(*IngestEventsRequest)(nil),              // 7: google.ads.datamanager.v1.IngestEventsRequest
+	(*IngestEventsResponse)(nil),             // 8: google.ads.datamanager.v1.IngestEventsResponse
+	(*IngestAdEventsRequest)(nil),            // 9: google.ads.datamanager.v1.IngestAdEventsRequest
+	(*IngestAdEventsResponse)(nil),           // 10: google.ads.datamanager.v1.IngestAdEventsResponse
+	(*RetrieveRequestStatusRequest)(nil),     // 11: google.ads.datamanager.v1.RetrieveRequestStatusRequest
+	(*RetrieveRequestStatusResponse)(nil),    // 12: google.ads.datamanager.v1.RetrieveRequestStatusResponse
+	(*Destination)(nil),                      // 13: google.ads.datamanager.v1.Destination
+	(*AudienceMember)(nil),                   // 14: google.ads.datamanager.v1.AudienceMember
+	(*Consent)(nil),                          // 15: google.ads.datamanager.v1.Consent
+	(*EncryptionInfo)(nil),                   // 16: google.ads.datamanager.v1.EncryptionInfo
+	(*TermsOfService)(nil),                   // 17: google.ads.datamanager.v1.TermsOfService
+	(*FieldWarning)(nil),                     // 18: google.ads.datamanager.v1.FieldWarning
+	(*timestamppb.Timestamp)(nil),            // 19: google.protobuf.Timestamp
+	(*Event)(nil),                            // 20: google.ads.datamanager.v1.Event
+	(*AdEvent)(nil),                          // 21: google.ads.datamanager.v1.AdEvent
+	(*RequestStatusPerDestination)(nil),      // 22: google.ads.datamanager.v1.RequestStatusPerDestination
 }
 var file_google_ads_datamanager_v1_ingestion_service_proto_depIdxs = []int32{
-	11, // 0: google.ads.datamanager.v1.IngestAudienceMembersRequest.destinations:type_name -> google.ads.datamanager.v1.Destination
-	12, // 1: google.ads.datamanager.v1.IngestAudienceMembersRequest.audience_members:type_name -> google.ads.datamanager.v1.AudienceMember
-	13, // 2: google.ads.datamanager.v1.IngestAudienceMembersRequest.consent:type_name -> google.ads.datamanager.v1.Consent
+	13, // 0: google.ads.datamanager.v1.IngestAudienceMembersRequest.destinations:type_name -> google.ads.datamanager.v1.Destination
+	14, // 1: google.ads.datamanager.v1.IngestAudienceMembersRequest.audience_members:type_name -> google.ads.datamanager.v1.AudienceMember
+	15, // 2: google.ads.datamanager.v1.IngestAudienceMembersRequest.consent:type_name -> google.ads.datamanager.v1.Consent
 	0,  // 3: google.ads.datamanager.v1.IngestAudienceMembersRequest.encoding:type_name -> google.ads.datamanager.v1.Encoding
-	14, // 4: google.ads.datamanager.v1.IngestAudienceMembersRequest.encryption_info:type_name -> google.ads.datamanager.v1.EncryptionInfo
-	15, // 5: google.ads.datamanager.v1.IngestAudienceMembersRequest.terms_of_service:type_name -> google.ads.datamanager.v1.TermsOfService
-	11, // 6: google.ads.datamanager.v1.RemoveAudienceMembersRequest.destinations:type_name -> google.ads.datamanager.v1.Destination
-	12, // 7: google.ads.datamanager.v1.RemoveAudienceMembersRequest.audience_members:type_name -> google.ads.datamanager.v1.AudienceMember
-	0,  // 8: google.ads.datamanager.v1.RemoveAudienceMembersRequest.encoding:type_name -> google.ads.datamanager.v1.Encoding
-	14, // 9: google.ads.datamanager.v1.RemoveAudienceMembersRequest.encryption_info:type_name -> google.ads.datamanager.v1.EncryptionInfo
-	11, // 10: google.ads.datamanager.v1.IngestEventsRequest.destinations:type_name -> google.ads.datamanager.v1.Destination
-	16, // 11: google.ads.datamanager.v1.IngestEventsRequest.events:type_name -> google.ads.datamanager.v1.Event
-	13, // 12: google.ads.datamanager.v1.IngestEventsRequest.consent:type_name -> google.ads.datamanager.v1.Consent
-	0,  // 13: google.ads.datamanager.v1.IngestEventsRequest.encoding:type_name -> google.ads.datamanager.v1.Encoding
-	14, // 14: google.ads.datamanager.v1.IngestEventsRequest.encryption_info:type_name -> google.ads.datamanager.v1.EncryptionInfo
-	17, // 15: google.ads.datamanager.v1.IngestAdEventsRequest.ad_events:type_name -> google.ads.datamanager.v1.AdEvent
-	14, // 16: google.ads.datamanager.v1.IngestAdEventsRequest.encryption_info:type_name -> google.ads.datamanager.v1.EncryptionInfo
-	18, // 17: google.ads.datamanager.v1.RetrieveRequestStatusResponse.request_status_per_destination:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination
-	1,  // 18: google.ads.datamanager.v1.IngestionService.IngestAudienceMembers:input_type -> google.ads.datamanager.v1.IngestAudienceMembersRequest
-	3,  // 19: google.ads.datamanager.v1.IngestionService.RemoveAudienceMembers:input_type -> google.ads.datamanager.v1.RemoveAudienceMembersRequest
-	5,  // 20: google.ads.datamanager.v1.IngestionService.IngestEvents:input_type -> google.ads.datamanager.v1.IngestEventsRequest
-	7,  // 21: google.ads.datamanager.v1.IngestionService.IngestAdEvents:input_type -> google.ads.datamanager.v1.IngestAdEventsRequest
-	9,  // 22: google.ads.datamanager.v1.IngestionService.RetrieveRequestStatus:input_type -> google.ads.datamanager.v1.RetrieveRequestStatusRequest
-	2,  // 23: google.ads.datamanager.v1.IngestionService.IngestAudienceMembers:output_type -> google.ads.datamanager.v1.IngestAudienceMembersResponse
-	4,  // 24: google.ads.datamanager.v1.IngestionService.RemoveAudienceMembers:output_type -> google.ads.datamanager.v1.RemoveAudienceMembersResponse
-	6,  // 25: google.ads.datamanager.v1.IngestionService.IngestEvents:output_type -> google.ads.datamanager.v1.IngestEventsResponse
-	8,  // 26: google.ads.datamanager.v1.IngestionService.IngestAdEvents:output_type -> google.ads.datamanager.v1.IngestAdEventsResponse
-	10, // 27: google.ads.datamanager.v1.IngestionService.RetrieveRequestStatus:output_type -> google.ads.datamanager.v1.RetrieveRequestStatusResponse
-	23, // [23:28] is the sub-list for method output_type
-	18, // [18:23] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	16, // 4: google.ads.datamanager.v1.IngestAudienceMembersRequest.encryption_info:type_name -> google.ads.datamanager.v1.EncryptionInfo
+	17, // 5: google.ads.datamanager.v1.IngestAudienceMembersRequest.terms_of_service:type_name -> google.ads.datamanager.v1.TermsOfService
+	18, // 6: google.ads.datamanager.v1.IngestAudienceMembersResponse.field_warnings:type_name -> google.ads.datamanager.v1.FieldWarning
+	13, // 7: google.ads.datamanager.v1.RemoveAudienceMembersRequest.destinations:type_name -> google.ads.datamanager.v1.Destination
+	14, // 8: google.ads.datamanager.v1.RemoveAudienceMembersRequest.audience_members:type_name -> google.ads.datamanager.v1.AudienceMember
+	0,  // 9: google.ads.datamanager.v1.RemoveAudienceMembersRequest.encoding:type_name -> google.ads.datamanager.v1.Encoding
+	16, // 10: google.ads.datamanager.v1.RemoveAudienceMembersRequest.encryption_info:type_name -> google.ads.datamanager.v1.EncryptionInfo
+	13, // 11: google.ads.datamanager.v1.RemoveAllAudienceMembersRequest.destinations:type_name -> google.ads.datamanager.v1.Destination
+	19, // 12: google.ads.datamanager.v1.RemoveAllAudienceMembersRequest.remove_as_of_time:type_name -> google.protobuf.Timestamp
+	13, // 13: google.ads.datamanager.v1.IngestEventsRequest.destinations:type_name -> google.ads.datamanager.v1.Destination
+	20, // 14: google.ads.datamanager.v1.IngestEventsRequest.events:type_name -> google.ads.datamanager.v1.Event
+	15, // 15: google.ads.datamanager.v1.IngestEventsRequest.consent:type_name -> google.ads.datamanager.v1.Consent
+	0,  // 16: google.ads.datamanager.v1.IngestEventsRequest.encoding:type_name -> google.ads.datamanager.v1.Encoding
+	16, // 17: google.ads.datamanager.v1.IngestEventsRequest.encryption_info:type_name -> google.ads.datamanager.v1.EncryptionInfo
+	18, // 18: google.ads.datamanager.v1.IngestEventsResponse.field_warnings:type_name -> google.ads.datamanager.v1.FieldWarning
+	21, // 19: google.ads.datamanager.v1.IngestAdEventsRequest.ad_events:type_name -> google.ads.datamanager.v1.AdEvent
+	16, // 20: google.ads.datamanager.v1.IngestAdEventsRequest.encryption_info:type_name -> google.ads.datamanager.v1.EncryptionInfo
+	22, // 21: google.ads.datamanager.v1.RetrieveRequestStatusResponse.request_status_per_destination:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination
+	1,  // 22: google.ads.datamanager.v1.IngestionService.IngestAudienceMembers:input_type -> google.ads.datamanager.v1.IngestAudienceMembersRequest
+	3,  // 23: google.ads.datamanager.v1.IngestionService.RemoveAudienceMembers:input_type -> google.ads.datamanager.v1.RemoveAudienceMembersRequest
+	5,  // 24: google.ads.datamanager.v1.IngestionService.RemoveAllAudienceMembers:input_type -> google.ads.datamanager.v1.RemoveAllAudienceMembersRequest
+	7,  // 25: google.ads.datamanager.v1.IngestionService.IngestEvents:input_type -> google.ads.datamanager.v1.IngestEventsRequest
+	9,  // 26: google.ads.datamanager.v1.IngestionService.IngestAdEvents:input_type -> google.ads.datamanager.v1.IngestAdEventsRequest
+	11, // 27: google.ads.datamanager.v1.IngestionService.RetrieveRequestStatus:input_type -> google.ads.datamanager.v1.RetrieveRequestStatusRequest
+	2,  // 28: google.ads.datamanager.v1.IngestionService.IngestAudienceMembers:output_type -> google.ads.datamanager.v1.IngestAudienceMembersResponse
+	4,  // 29: google.ads.datamanager.v1.IngestionService.RemoveAudienceMembers:output_type -> google.ads.datamanager.v1.RemoveAudienceMembersResponse
+	6,  // 30: google.ads.datamanager.v1.IngestionService.RemoveAllAudienceMembers:output_type -> google.ads.datamanager.v1.RemoveAllAudienceMembersResponse
+	8,  // 31: google.ads.datamanager.v1.IngestionService.IngestEvents:output_type -> google.ads.datamanager.v1.IngestEventsResponse
+	10, // 32: google.ads.datamanager.v1.IngestionService.IngestAdEvents:output_type -> google.ads.datamanager.v1.IngestAdEventsResponse
+	12, // 33: google.ads.datamanager.v1.IngestionService.RetrieveRequestStatus:output_type -> google.ads.datamanager.v1.RetrieveRequestStatusResponse
+	28, // [28:34] is the sub-list for method output_type
+	22, // [22:28] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_google_ads_datamanager_v1_ingestion_service_proto_init() }
@@ -881,6 +1039,7 @@ func file_google_ads_datamanager_v1_ingestion_service_proto_init() {
 	file_google_ads_datamanager_v1_destination_proto_init()
 	file_google_ads_datamanager_v1_encryption_info_proto_init()
 	file_google_ads_datamanager_v1_event_proto_init()
+	file_google_ads_datamanager_v1_processing_errors_proto_init()
 	file_google_ads_datamanager_v1_request_status_per_destination_proto_init()
 	file_google_ads_datamanager_v1_terms_of_service_proto_init()
 	type x struct{}
@@ -889,7 +1048,7 @@ func file_google_ads_datamanager_v1_ingestion_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_ads_datamanager_v1_ingestion_service_proto_rawDesc), len(file_google_ads_datamanager_v1_ingestion_service_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   10,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

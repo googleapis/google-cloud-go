@@ -87,7 +87,7 @@ func defaultRegionTargetTcpProxiesRESTCallOptions() *RegionTargetTcpProxiesCallO
 	}
 }
 
-// internalRegionTargetTcpProxiesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionTargetTcpProxiesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionTargetTcpProxiesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -99,7 +99,7 @@ type internalRegionTargetTcpProxiesClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRegionTargetTcpProxyRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// RegionTargetTcpProxiesClient is a client for interacting with Google Compute Engine API.
+// RegionTargetTcpProxiesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionTargetTcpProxies API.

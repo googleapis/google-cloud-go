@@ -108,7 +108,7 @@ func defaultMachineImagesRESTCallOptions() *MachineImagesCallOptions {
 	}
 }
 
-// internalMachineImagesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalMachineImagesClient is an interface that defines the methods available from Compute Engine API.
 type internalMachineImagesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -123,7 +123,7 @@ type internalMachineImagesClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsMachineImageRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// MachineImagesClient is a client for interacting with Google Compute Engine API.
+// MachineImagesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The MachineImages API.

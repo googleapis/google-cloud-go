@@ -74,7 +74,7 @@ func defaultNetworkProfilesRESTCallOptions() *NetworkProfilesCallOptions {
 	}
 }
 
-// internalNetworkProfilesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalNetworkProfilesClient is an interface that defines the methods available from Compute Engine API.
 type internalNetworkProfilesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -83,7 +83,7 @@ type internalNetworkProfilesClient interface {
 	List(context.Context, *computepb.ListNetworkProfilesRequest, ...gax.CallOption) *NetworkProfileIterator
 }
 
-// NetworkProfilesClient is a client for interacting with Google Compute Engine API.
+// NetworkProfilesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The NetworkProfiles API.

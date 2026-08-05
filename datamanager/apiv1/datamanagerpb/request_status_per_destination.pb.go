@@ -202,6 +202,7 @@ type RequestStatusPerDestination struct {
 	//	*RequestStatusPerDestination_AudienceMembersIngestionStatus
 	//	*RequestStatusPerDestination_EventsIngestionStatus
 	//	*RequestStatusPerDestination_AudienceMembersRemovalStatus
+	//	*RequestStatusPerDestination_RemoveAllAudienceMembersStatus_
 	Status        isRequestStatusPerDestination_Status `protobuf_oneof:"status"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -299,6 +300,15 @@ func (x *RequestStatusPerDestination) GetAudienceMembersRemovalStatus() *Request
 	return nil
 }
 
+func (x *RequestStatusPerDestination) GetRemoveAllAudienceMembersStatus() *RequestStatusPerDestination_RemoveAllAudienceMembersStatus {
+	if x != nil {
+		if x, ok := x.Status.(*RequestStatusPerDestination_RemoveAllAudienceMembersStatus_); ok {
+			return x.RemoveAllAudienceMembersStatus
+		}
+	}
+	return nil
+}
+
 type isRequestStatusPerDestination_Status interface {
 	isRequestStatusPerDestination_Status()
 }
@@ -318,12 +328,20 @@ type RequestStatusPerDestination_AudienceMembersRemovalStatus struct {
 	AudienceMembersRemovalStatus *RequestStatusPerDestination_RemoveAudienceMembersStatus `protobuf:"bytes,6,opt,name=audience_members_removal_status,json=audienceMembersRemovalStatus,proto3,oneof"`
 }
 
+type RequestStatusPerDestination_RemoveAllAudienceMembersStatus_ struct {
+	// The status of the remove all audience members request.
+	RemoveAllAudienceMembersStatus *RequestStatusPerDestination_RemoveAllAudienceMembersStatus `protobuf:"bytes,8,opt,name=remove_all_audience_members_status,json=removeAllAudienceMembersStatus,proto3,oneof"`
+}
+
 func (*RequestStatusPerDestination_AudienceMembersIngestionStatus) isRequestStatusPerDestination_Status() {
 }
 
 func (*RequestStatusPerDestination_EventsIngestionStatus) isRequestStatusPerDestination_Status() {}
 
 func (*RequestStatusPerDestination_AudienceMembersRemovalStatus) isRequestStatusPerDestination_Status() {
+}
+
+func (*RequestStatusPerDestination_RemoveAllAudienceMembersStatus_) isRequestStatusPerDestination_Status() {
 }
 
 // The status of the ingest audience members request.
@@ -339,6 +357,8 @@ type RequestStatusPerDestination_IngestAudienceMembersStatus struct {
 	//	*RequestStatusPerDestination_IngestAudienceMembersStatus_UserIdDataIngestionStatus
 	//	*RequestStatusPerDestination_IngestAudienceMembersStatus_PpidDataIngestionStatus
 	//	*RequestStatusPerDestination_IngestAudienceMembersStatus_CompositeDataIngestionStatus
+	//	*RequestStatusPerDestination_IngestAudienceMembersStatus_GoogleUserIdDataIngestionStatus
+	//	*RequestStatusPerDestination_IngestAudienceMembersStatus_PartnerProvidedIdDataIngestionStatus
 	Status        isRequestStatusPerDestination_IngestAudienceMembersStatus_Status `protobuf_oneof:"status"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -435,6 +455,24 @@ func (x *RequestStatusPerDestination_IngestAudienceMembersStatus) GetCompositeDa
 	return nil
 }
 
+func (x *RequestStatusPerDestination_IngestAudienceMembersStatus) GetGoogleUserIdDataIngestionStatus() *RequestStatusPerDestination_IngestGoogleUserIdDataStatus {
+	if x != nil {
+		if x, ok := x.Status.(*RequestStatusPerDestination_IngestAudienceMembersStatus_GoogleUserIdDataIngestionStatus); ok {
+			return x.GoogleUserIdDataIngestionStatus
+		}
+	}
+	return nil
+}
+
+func (x *RequestStatusPerDestination_IngestAudienceMembersStatus) GetPartnerProvidedIdDataIngestionStatus() *RequestStatusPerDestination_IngestPartnerProvidedIdDataStatus {
+	if x != nil {
+		if x, ok := x.Status.(*RequestStatusPerDestination_IngestAudienceMembersStatus_PartnerProvidedIdDataIngestionStatus); ok {
+			return x.PartnerProvidedIdDataIngestionStatus
+		}
+	}
+	return nil
+}
+
 type isRequestStatusPerDestination_IngestAudienceMembersStatus_Status interface {
 	isRequestStatusPerDestination_IngestAudienceMembersStatus_Status()
 }
@@ -469,6 +507,17 @@ type RequestStatusPerDestination_IngestAudienceMembersStatus_CompositeDataIngest
 	CompositeDataIngestionStatus *RequestStatusPerDestination_IngestCompositeDataStatus `protobuf:"bytes,6,opt,name=composite_data_ingestion_status,json=compositeDataIngestionStatus,proto3,oneof"`
 }
 
+type RequestStatusPerDestination_IngestAudienceMembersStatus_GoogleUserIdDataIngestionStatus struct {
+	// The status of the google user id data ingestion to the destination.
+	GoogleUserIdDataIngestionStatus *RequestStatusPerDestination_IngestGoogleUserIdDataStatus `protobuf:"bytes,7,opt,name=google_user_id_data_ingestion_status,json=googleUserIdDataIngestionStatus,proto3,oneof"`
+}
+
+type RequestStatusPerDestination_IngestAudienceMembersStatus_PartnerProvidedIdDataIngestionStatus struct {
+	// The status of the partner provided id data ingestion to the
+	// destination.
+	PartnerProvidedIdDataIngestionStatus *RequestStatusPerDestination_IngestPartnerProvidedIdDataStatus `protobuf:"bytes,8,opt,name=partner_provided_id_data_ingestion_status,json=partnerProvidedIdDataIngestionStatus,proto3,oneof"`
+}
+
 func (*RequestStatusPerDestination_IngestAudienceMembersStatus_UserDataIngestionStatus) isRequestStatusPerDestination_IngestAudienceMembersStatus_Status() {
 }
 
@@ -487,6 +536,12 @@ func (*RequestStatusPerDestination_IngestAudienceMembersStatus_PpidDataIngestion
 func (*RequestStatusPerDestination_IngestAudienceMembersStatus_CompositeDataIngestionStatus) isRequestStatusPerDestination_IngestAudienceMembersStatus_Status() {
 }
 
+func (*RequestStatusPerDestination_IngestAudienceMembersStatus_GoogleUserIdDataIngestionStatus) isRequestStatusPerDestination_IngestAudienceMembersStatus_Status() {
+}
+
+func (*RequestStatusPerDestination_IngestAudienceMembersStatus_PartnerProvidedIdDataIngestionStatus) isRequestStatusPerDestination_IngestAudienceMembersStatus_Status() {
+}
+
 // The status of the remove audience members request.
 type RequestStatusPerDestination_RemoveAudienceMembersStatus struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -500,6 +555,8 @@ type RequestStatusPerDestination_RemoveAudienceMembersStatus struct {
 	//	*RequestStatusPerDestination_RemoveAudienceMembersStatus_UserIdDataRemovalStatus
 	//	*RequestStatusPerDestination_RemoveAudienceMembersStatus_PpidDataRemovalStatus
 	//	*RequestStatusPerDestination_RemoveAudienceMembersStatus_CompositeDataRemovalStatus
+	//	*RequestStatusPerDestination_RemoveAudienceMembersStatus_GoogleUserIdDataRemovalStatus
+	//	*RequestStatusPerDestination_RemoveAudienceMembersStatus_PartnerProvidedIdDataRemovalStatus
 	Status        isRequestStatusPerDestination_RemoveAudienceMembersStatus_Status `protobuf_oneof:"status"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -596,6 +653,24 @@ func (x *RequestStatusPerDestination_RemoveAudienceMembersStatus) GetCompositeDa
 	return nil
 }
 
+func (x *RequestStatusPerDestination_RemoveAudienceMembersStatus) GetGoogleUserIdDataRemovalStatus() *RequestStatusPerDestination_RemoveGoogleUserIdDataStatus {
+	if x != nil {
+		if x, ok := x.Status.(*RequestStatusPerDestination_RemoveAudienceMembersStatus_GoogleUserIdDataRemovalStatus); ok {
+			return x.GoogleUserIdDataRemovalStatus
+		}
+	}
+	return nil
+}
+
+func (x *RequestStatusPerDestination_RemoveAudienceMembersStatus) GetPartnerProvidedIdDataRemovalStatus() *RequestStatusPerDestination_RemovePartnerProvidedIdDataStatus {
+	if x != nil {
+		if x, ok := x.Status.(*RequestStatusPerDestination_RemoveAudienceMembersStatus_PartnerProvidedIdDataRemovalStatus); ok {
+			return x.PartnerProvidedIdDataRemovalStatus
+		}
+	}
+	return nil
+}
+
 type isRequestStatusPerDestination_RemoveAudienceMembersStatus_Status interface {
 	isRequestStatusPerDestination_RemoveAudienceMembersStatus_Status()
 }
@@ -630,6 +705,17 @@ type RequestStatusPerDestination_RemoveAudienceMembersStatus_CompositeDataRemova
 	CompositeDataRemovalStatus *RequestStatusPerDestination_RemoveCompositeDataStatus `protobuf:"bytes,6,opt,name=composite_data_removal_status,json=compositeDataRemovalStatus,proto3,oneof"`
 }
 
+type RequestStatusPerDestination_RemoveAudienceMembersStatus_GoogleUserIdDataRemovalStatus struct {
+	// The status of the google user id data removal from the destination.
+	GoogleUserIdDataRemovalStatus *RequestStatusPerDestination_RemoveGoogleUserIdDataStatus `protobuf:"bytes,7,opt,name=google_user_id_data_removal_status,json=googleUserIdDataRemovalStatus,proto3,oneof"`
+}
+
+type RequestStatusPerDestination_RemoveAudienceMembersStatus_PartnerProvidedIdDataRemovalStatus struct {
+	// The status of the partner provided id data removal from the
+	// destination.
+	PartnerProvidedIdDataRemovalStatus *RequestStatusPerDestination_RemovePartnerProvidedIdDataStatus `protobuf:"bytes,8,opt,name=partner_provided_id_data_removal_status,json=partnerProvidedIdDataRemovalStatus,proto3,oneof"`
+}
+
 func (*RequestStatusPerDestination_RemoveAudienceMembersStatus_UserDataRemovalStatus) isRequestStatusPerDestination_RemoveAudienceMembersStatus_Status() {
 }
 
@@ -648,6 +734,49 @@ func (*RequestStatusPerDestination_RemoveAudienceMembersStatus_PpidDataRemovalSt
 func (*RequestStatusPerDestination_RemoveAudienceMembersStatus_CompositeDataRemovalStatus) isRequestStatusPerDestination_RemoveAudienceMembersStatus_Status() {
 }
 
+func (*RequestStatusPerDestination_RemoveAudienceMembersStatus_GoogleUserIdDataRemovalStatus) isRequestStatusPerDestination_RemoveAudienceMembersStatus_Status() {
+}
+
+func (*RequestStatusPerDestination_RemoveAudienceMembersStatus_PartnerProvidedIdDataRemovalStatus) isRequestStatusPerDestination_RemoveAudienceMembersStatus_Status() {
+}
+
+// The status of the remove all audience members request.
+type RequestStatusPerDestination_RemoveAllAudienceMembersStatus struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RequestStatusPerDestination_RemoveAllAudienceMembersStatus) Reset() {
+	*x = RequestStatusPerDestination_RemoveAllAudienceMembersStatus{}
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RequestStatusPerDestination_RemoveAllAudienceMembersStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestStatusPerDestination_RemoveAllAudienceMembersStatus) ProtoMessage() {}
+
+func (x *RequestStatusPerDestination_RemoveAllAudienceMembersStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestStatusPerDestination_RemoveAllAudienceMembersStatus.ProtoReflect.Descriptor instead.
+func (*RequestStatusPerDestination_RemoveAllAudienceMembersStatus) Descriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 2}
+}
+
 // The status of the events ingestion to the destination.
 type RequestStatusPerDestination_IngestEventsStatus struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -661,7 +790,7 @@ type RequestStatusPerDestination_IngestEventsStatus struct {
 
 func (x *RequestStatusPerDestination_IngestEventsStatus) Reset() {
 	*x = RequestStatusPerDestination_IngestEventsStatus{}
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[3]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -673,7 +802,7 @@ func (x *RequestStatusPerDestination_IngestEventsStatus) String() string {
 func (*RequestStatusPerDestination_IngestEventsStatus) ProtoMessage() {}
 
 func (x *RequestStatusPerDestination_IngestEventsStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[3]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -686,7 +815,7 @@ func (x *RequestStatusPerDestination_IngestEventsStatus) ProtoReflect() protoref
 
 // Deprecated: Use RequestStatusPerDestination_IngestEventsStatus.ProtoReflect.Descriptor instead.
 func (*RequestStatusPerDestination_IngestEventsStatus) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 2}
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 3}
 }
 
 func (x *RequestStatusPerDestination_IngestEventsStatus) GetRecordCount() int64 {
@@ -716,7 +845,7 @@ type RequestStatusPerDestination_IngestUserDataStatus struct {
 
 func (x *RequestStatusPerDestination_IngestUserDataStatus) Reset() {
 	*x = RequestStatusPerDestination_IngestUserDataStatus{}
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[4]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -728,7 +857,7 @@ func (x *RequestStatusPerDestination_IngestUserDataStatus) String() string {
 func (*RequestStatusPerDestination_IngestUserDataStatus) ProtoMessage() {}
 
 func (x *RequestStatusPerDestination_IngestUserDataStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[4]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -741,7 +870,7 @@ func (x *RequestStatusPerDestination_IngestUserDataStatus) ProtoReflect() protor
 
 // Deprecated: Use RequestStatusPerDestination_IngestUserDataStatus.ProtoReflect.Descriptor instead.
 func (*RequestStatusPerDestination_IngestUserDataStatus) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 3}
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 4}
 }
 
 func (x *RequestStatusPerDestination_IngestUserDataStatus) GetRecordCount() int64 {
@@ -782,7 +911,7 @@ type RequestStatusPerDestination_RemoveUserDataStatus struct {
 
 func (x *RequestStatusPerDestination_RemoveUserDataStatus) Reset() {
 	*x = RequestStatusPerDestination_RemoveUserDataStatus{}
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[5]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -794,7 +923,7 @@ func (x *RequestStatusPerDestination_RemoveUserDataStatus) String() string {
 func (*RequestStatusPerDestination_RemoveUserDataStatus) ProtoMessage() {}
 
 func (x *RequestStatusPerDestination_RemoveUserDataStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[5]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -807,7 +936,7 @@ func (x *RequestStatusPerDestination_RemoveUserDataStatus) ProtoReflect() protor
 
 // Deprecated: Use RequestStatusPerDestination_RemoveUserDataStatus.ProtoReflect.Descriptor instead.
 func (*RequestStatusPerDestination_RemoveUserDataStatus) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 4}
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 5}
 }
 
 func (x *RequestStatusPerDestination_RemoveUserDataStatus) GetRecordCount() int64 {
@@ -842,7 +971,7 @@ type RequestStatusPerDestination_IngestMobileDataStatus struct {
 
 func (x *RequestStatusPerDestination_IngestMobileDataStatus) Reset() {
 	*x = RequestStatusPerDestination_IngestMobileDataStatus{}
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[6]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -854,7 +983,7 @@ func (x *RequestStatusPerDestination_IngestMobileDataStatus) String() string {
 func (*RequestStatusPerDestination_IngestMobileDataStatus) ProtoMessage() {}
 
 func (x *RequestStatusPerDestination_IngestMobileDataStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[6]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -867,7 +996,7 @@ func (x *RequestStatusPerDestination_IngestMobileDataStatus) ProtoReflect() prot
 
 // Deprecated: Use RequestStatusPerDestination_IngestMobileDataStatus.ProtoReflect.Descriptor instead.
 func (*RequestStatusPerDestination_IngestMobileDataStatus) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 5}
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 6}
 }
 
 func (x *RequestStatusPerDestination_IngestMobileDataStatus) GetRecordCount() int64 {
@@ -901,7 +1030,7 @@ type RequestStatusPerDestination_RemoveMobileDataStatus struct {
 
 func (x *RequestStatusPerDestination_RemoveMobileDataStatus) Reset() {
 	*x = RequestStatusPerDestination_RemoveMobileDataStatus{}
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[7]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -913,7 +1042,7 @@ func (x *RequestStatusPerDestination_RemoveMobileDataStatus) String() string {
 func (*RequestStatusPerDestination_RemoveMobileDataStatus) ProtoMessage() {}
 
 func (x *RequestStatusPerDestination_RemoveMobileDataStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[7]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -926,7 +1055,7 @@ func (x *RequestStatusPerDestination_RemoveMobileDataStatus) ProtoReflect() prot
 
 // Deprecated: Use RequestStatusPerDestination_RemoveMobileDataStatus.ProtoReflect.Descriptor instead.
 func (*RequestStatusPerDestination_RemoveMobileDataStatus) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 6}
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 7}
 }
 
 func (x *RequestStatusPerDestination_RemoveMobileDataStatus) GetRecordCount() int64 {
@@ -961,7 +1090,7 @@ type RequestStatusPerDestination_IngestPairDataStatus struct {
 
 func (x *RequestStatusPerDestination_IngestPairDataStatus) Reset() {
 	*x = RequestStatusPerDestination_IngestPairDataStatus{}
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[8]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -973,7 +1102,7 @@ func (x *RequestStatusPerDestination_IngestPairDataStatus) String() string {
 func (*RequestStatusPerDestination_IngestPairDataStatus) ProtoMessage() {}
 
 func (x *RequestStatusPerDestination_IngestPairDataStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[8]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -986,7 +1115,7 @@ func (x *RequestStatusPerDestination_IngestPairDataStatus) ProtoReflect() protor
 
 // Deprecated: Use RequestStatusPerDestination_IngestPairDataStatus.ProtoReflect.Descriptor instead.
 func (*RequestStatusPerDestination_IngestPairDataStatus) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 7}
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 8}
 }
 
 func (x *RequestStatusPerDestination_IngestPairDataStatus) GetRecordCount() int64 {
@@ -1020,7 +1149,7 @@ type RequestStatusPerDestination_RemovePairDataStatus struct {
 
 func (x *RequestStatusPerDestination_RemovePairDataStatus) Reset() {
 	*x = RequestStatusPerDestination_RemovePairDataStatus{}
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[9]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1032,7 +1161,7 @@ func (x *RequestStatusPerDestination_RemovePairDataStatus) String() string {
 func (*RequestStatusPerDestination_RemovePairDataStatus) ProtoMessage() {}
 
 func (x *RequestStatusPerDestination_RemovePairDataStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[9]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1045,7 +1174,7 @@ func (x *RequestStatusPerDestination_RemovePairDataStatus) ProtoReflect() protor
 
 // Deprecated: Use RequestStatusPerDestination_RemovePairDataStatus.ProtoReflect.Descriptor instead.
 func (*RequestStatusPerDestination_RemovePairDataStatus) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 8}
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 9}
 }
 
 func (x *RequestStatusPerDestination_RemovePairDataStatus) GetRecordCount() int64 {
@@ -1080,7 +1209,7 @@ type RequestStatusPerDestination_IngestUserIdDataStatus struct {
 
 func (x *RequestStatusPerDestination_IngestUserIdDataStatus) Reset() {
 	*x = RequestStatusPerDestination_IngestUserIdDataStatus{}
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[10]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1092,7 +1221,7 @@ func (x *RequestStatusPerDestination_IngestUserIdDataStatus) String() string {
 func (*RequestStatusPerDestination_IngestUserIdDataStatus) ProtoMessage() {}
 
 func (x *RequestStatusPerDestination_IngestUserIdDataStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[10]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1105,7 +1234,7 @@ func (x *RequestStatusPerDestination_IngestUserIdDataStatus) ProtoReflect() prot
 
 // Deprecated: Use RequestStatusPerDestination_IngestUserIdDataStatus.ProtoReflect.Descriptor instead.
 func (*RequestStatusPerDestination_IngestUserIdDataStatus) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 9}
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 10}
 }
 
 func (x *RequestStatusPerDestination_IngestUserIdDataStatus) GetRecordCount() int64 {
@@ -1139,7 +1268,7 @@ type RequestStatusPerDestination_RemoveUserIdDataStatus struct {
 
 func (x *RequestStatusPerDestination_RemoveUserIdDataStatus) Reset() {
 	*x = RequestStatusPerDestination_RemoveUserIdDataStatus{}
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[11]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1151,7 +1280,7 @@ func (x *RequestStatusPerDestination_RemoveUserIdDataStatus) String() string {
 func (*RequestStatusPerDestination_RemoveUserIdDataStatus) ProtoMessage() {}
 
 func (x *RequestStatusPerDestination_RemoveUserIdDataStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[11]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1164,7 +1293,7 @@ func (x *RequestStatusPerDestination_RemoveUserIdDataStatus) ProtoReflect() prot
 
 // Deprecated: Use RequestStatusPerDestination_RemoveUserIdDataStatus.ProtoReflect.Descriptor instead.
 func (*RequestStatusPerDestination_RemoveUserIdDataStatus) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 10}
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 11}
 }
 
 func (x *RequestStatusPerDestination_RemoveUserIdDataStatus) GetRecordCount() int64 {
@@ -1199,7 +1328,7 @@ type RequestStatusPerDestination_IngestPpidDataStatus struct {
 
 func (x *RequestStatusPerDestination_IngestPpidDataStatus) Reset() {
 	*x = RequestStatusPerDestination_IngestPpidDataStatus{}
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[12]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1211,7 +1340,7 @@ func (x *RequestStatusPerDestination_IngestPpidDataStatus) String() string {
 func (*RequestStatusPerDestination_IngestPpidDataStatus) ProtoMessage() {}
 
 func (x *RequestStatusPerDestination_IngestPpidDataStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[12]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1224,7 +1353,7 @@ func (x *RequestStatusPerDestination_IngestPpidDataStatus) ProtoReflect() protor
 
 // Deprecated: Use RequestStatusPerDestination_IngestPpidDataStatus.ProtoReflect.Descriptor instead.
 func (*RequestStatusPerDestination_IngestPpidDataStatus) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 11}
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 12}
 }
 
 func (x *RequestStatusPerDestination_IngestPpidDataStatus) GetRecordCount() int64 {
@@ -1258,7 +1387,7 @@ type RequestStatusPerDestination_RemovePpidDataStatus struct {
 
 func (x *RequestStatusPerDestination_RemovePpidDataStatus) Reset() {
 	*x = RequestStatusPerDestination_RemovePpidDataStatus{}
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[13]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1270,7 +1399,7 @@ func (x *RequestStatusPerDestination_RemovePpidDataStatus) String() string {
 func (*RequestStatusPerDestination_RemovePpidDataStatus) ProtoMessage() {}
 
 func (x *RequestStatusPerDestination_RemovePpidDataStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[13]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1283,7 +1412,7 @@ func (x *RequestStatusPerDestination_RemovePpidDataStatus) ProtoReflect() protor
 
 // Deprecated: Use RequestStatusPerDestination_RemovePpidDataStatus.ProtoReflect.Descriptor instead.
 func (*RequestStatusPerDestination_RemovePpidDataStatus) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 12}
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 13}
 }
 
 func (x *RequestStatusPerDestination_RemovePpidDataStatus) GetRecordCount() int64 {
@@ -1321,7 +1450,7 @@ type RequestStatusPerDestination_IngestCompositeDataStatus struct {
 
 func (x *RequestStatusPerDestination_IngestCompositeDataStatus) Reset() {
 	*x = RequestStatusPerDestination_IngestCompositeDataStatus{}
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[14]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1333,7 +1462,7 @@ func (x *RequestStatusPerDestination_IngestCompositeDataStatus) String() string 
 func (*RequestStatusPerDestination_IngestCompositeDataStatus) ProtoMessage() {}
 
 func (x *RequestStatusPerDestination_IngestCompositeDataStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[14]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1346,7 +1475,7 @@ func (x *RequestStatusPerDestination_IngestCompositeDataStatus) ProtoReflect() p
 
 // Deprecated: Use RequestStatusPerDestination_IngestCompositeDataStatus.ProtoReflect.Descriptor instead.
 func (*RequestStatusPerDestination_IngestCompositeDataStatus) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 13}
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 14}
 }
 
 func (x *RequestStatusPerDestination_IngestCompositeDataStatus) GetRecordCount() int64 {
@@ -1387,7 +1516,7 @@ type RequestStatusPerDestination_RemoveCompositeDataStatus struct {
 
 func (x *RequestStatusPerDestination_RemoveCompositeDataStatus) Reset() {
 	*x = RequestStatusPerDestination_RemoveCompositeDataStatus{}
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[15]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1399,7 +1528,7 @@ func (x *RequestStatusPerDestination_RemoveCompositeDataStatus) String() string 
 func (*RequestStatusPerDestination_RemoveCompositeDataStatus) ProtoMessage() {}
 
 func (x *RequestStatusPerDestination_RemoveCompositeDataStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[15]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1412,7 +1541,7 @@ func (x *RequestStatusPerDestination_RemoveCompositeDataStatus) ProtoReflect() p
 
 // Deprecated: Use RequestStatusPerDestination_RemoveCompositeDataStatus.ProtoReflect.Descriptor instead.
 func (*RequestStatusPerDestination_RemoveCompositeDataStatus) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 14}
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 15}
 }
 
 func (x *RequestStatusPerDestination_RemoveCompositeDataStatus) GetRecordCount() int64 {
@@ -1429,6 +1558,244 @@ func (x *RequestStatusPerDestination_RemoveCompositeDataStatus) GetDataTypeCount
 	return nil
 }
 
+// The status of the google user id data ingestion to the destination
+// containing stats related to the ingestion.
+type RequestStatusPerDestination_IngestGoogleUserIdDataStatus struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The total count of audience members sent in the upload request for the
+	// destination. Includes all audience members in the request, regardless of
+	// whether they were successfully ingested or not.
+	RecordCount int64 `protobuf:"varint,1,opt,name=record_count,json=recordCount,proto3" json:"record_count,omitempty"`
+	// The total count of google user ids sent in the upload request for the
+	// destination. Includes all google user ids in the request, regardless of
+	// whether they were successfully ingested or not.
+	GoogleUserIdCount int64 `protobuf:"varint,2,opt,name=google_user_id_count,json=googleUserIdCount,proto3" json:"google_user_id_count,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *RequestStatusPerDestination_IngestGoogleUserIdDataStatus) Reset() {
+	*x = RequestStatusPerDestination_IngestGoogleUserIdDataStatus{}
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RequestStatusPerDestination_IngestGoogleUserIdDataStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestStatusPerDestination_IngestGoogleUserIdDataStatus) ProtoMessage() {}
+
+func (x *RequestStatusPerDestination_IngestGoogleUserIdDataStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestStatusPerDestination_IngestGoogleUserIdDataStatus.ProtoReflect.Descriptor instead.
+func (*RequestStatusPerDestination_IngestGoogleUserIdDataStatus) Descriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 16}
+}
+
+func (x *RequestStatusPerDestination_IngestGoogleUserIdDataStatus) GetRecordCount() int64 {
+	if x != nil {
+		return x.RecordCount
+	}
+	return 0
+}
+
+func (x *RequestStatusPerDestination_IngestGoogleUserIdDataStatus) GetGoogleUserIdCount() int64 {
+	if x != nil {
+		return x.GoogleUserIdCount
+	}
+	return 0
+}
+
+// The status of the google user id data removal from the destination.
+type RequestStatusPerDestination_RemoveGoogleUserIdDataStatus struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The total count of audience members sent in the removal request. Includes
+	// all audience members in the request, regardless of whether they were
+	// successfully removed or not.
+	RecordCount int64 `protobuf:"varint,1,opt,name=record_count,json=recordCount,proto3" json:"record_count,omitempty"`
+	// The total count of google user ids sent in the removal request. Includes
+	// all google user ids in the request, regardless of whether they were
+	// successfully removed or not.
+	GoogleUserIdCount int64 `protobuf:"varint,2,opt,name=google_user_id_count,json=googleUserIdCount,proto3" json:"google_user_id_count,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *RequestStatusPerDestination_RemoveGoogleUserIdDataStatus) Reset() {
+	*x = RequestStatusPerDestination_RemoveGoogleUserIdDataStatus{}
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RequestStatusPerDestination_RemoveGoogleUserIdDataStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestStatusPerDestination_RemoveGoogleUserIdDataStatus) ProtoMessage() {}
+
+func (x *RequestStatusPerDestination_RemoveGoogleUserIdDataStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestStatusPerDestination_RemoveGoogleUserIdDataStatus.ProtoReflect.Descriptor instead.
+func (*RequestStatusPerDestination_RemoveGoogleUserIdDataStatus) Descriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 17}
+}
+
+func (x *RequestStatusPerDestination_RemoveGoogleUserIdDataStatus) GetRecordCount() int64 {
+	if x != nil {
+		return x.RecordCount
+	}
+	return 0
+}
+
+func (x *RequestStatusPerDestination_RemoveGoogleUserIdDataStatus) GetGoogleUserIdCount() int64 {
+	if x != nil {
+		return x.GoogleUserIdCount
+	}
+	return 0
+}
+
+// The status of the partner provided id data ingestion to the destination
+// containing stats related to the ingestion.
+type RequestStatusPerDestination_IngestPartnerProvidedIdDataStatus struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The total count of audience members sent in the upload request for the
+	// destination. Includes all audience members in the request, regardless of
+	// whether they were successfully ingested or not.
+	RecordCount int64 `protobuf:"varint,1,opt,name=record_count,json=recordCount,proto3" json:"record_count,omitempty"`
+	// The total count of partner provided ids sent in the upload request for
+	// the destination. Includes all partner provided ids in the request,
+	// regardless of whether they were successfully ingested or not.
+	PartnerProvidedIdCount int64 `protobuf:"varint,2,opt,name=partner_provided_id_count,json=partnerProvidedIdCount,proto3" json:"partner_provided_id_count,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *RequestStatusPerDestination_IngestPartnerProvidedIdDataStatus) Reset() {
+	*x = RequestStatusPerDestination_IngestPartnerProvidedIdDataStatus{}
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RequestStatusPerDestination_IngestPartnerProvidedIdDataStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestStatusPerDestination_IngestPartnerProvidedIdDataStatus) ProtoMessage() {}
+
+func (x *RequestStatusPerDestination_IngestPartnerProvidedIdDataStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestStatusPerDestination_IngestPartnerProvidedIdDataStatus.ProtoReflect.Descriptor instead.
+func (*RequestStatusPerDestination_IngestPartnerProvidedIdDataStatus) Descriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 18}
+}
+
+func (x *RequestStatusPerDestination_IngestPartnerProvidedIdDataStatus) GetRecordCount() int64 {
+	if x != nil {
+		return x.RecordCount
+	}
+	return 0
+}
+
+func (x *RequestStatusPerDestination_IngestPartnerProvidedIdDataStatus) GetPartnerProvidedIdCount() int64 {
+	if x != nil {
+		return x.PartnerProvidedIdCount
+	}
+	return 0
+}
+
+// The status of the partner provided id data removal from the destination.
+type RequestStatusPerDestination_RemovePartnerProvidedIdDataStatus struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The total count of audience members sent in the removal request. Includes
+	// all audience members in the request, regardless of whether they were
+	// successfully removed or not.
+	RecordCount int64 `protobuf:"varint,1,opt,name=record_count,json=recordCount,proto3" json:"record_count,omitempty"`
+	// The total count of partner provided ids sent in the removal request.
+	// Includes all partner provided ids in the request, regardless of whether
+	// they were successfully removed or not.
+	PartnerProvidedIdCount int64 `protobuf:"varint,2,opt,name=partner_provided_id_count,json=partnerProvidedIdCount,proto3" json:"partner_provided_id_count,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *RequestStatusPerDestination_RemovePartnerProvidedIdDataStatus) Reset() {
+	*x = RequestStatusPerDestination_RemovePartnerProvidedIdDataStatus{}
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RequestStatusPerDestination_RemovePartnerProvidedIdDataStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestStatusPerDestination_RemovePartnerProvidedIdDataStatus) ProtoMessage() {}
+
+func (x *RequestStatusPerDestination_RemovePartnerProvidedIdDataStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestStatusPerDestination_RemovePartnerProvidedIdDataStatus.ProtoReflect.Descriptor instead.
+func (*RequestStatusPerDestination_RemovePartnerProvidedIdDataStatus) Descriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 19}
+}
+
+func (x *RequestStatusPerDestination_RemovePartnerProvidedIdDataStatus) GetRecordCount() int64 {
+	if x != nil {
+		return x.RecordCount
+	}
+	return 0
+}
+
+func (x *RequestStatusPerDestination_RemovePartnerProvidedIdDataStatus) GetPartnerProvidedIdCount() int64 {
+	if x != nil {
+		return x.PartnerProvidedIdCount
+	}
+	return 0
+}
+
 // The count for a specific data type.
 type RequestStatusPerDestination_DataTypeCount struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1442,7 +1809,7 @@ type RequestStatusPerDestination_DataTypeCount struct {
 
 func (x *RequestStatusPerDestination_DataTypeCount) Reset() {
 	*x = RequestStatusPerDestination_DataTypeCount{}
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[16]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1454,7 +1821,7 @@ func (x *RequestStatusPerDestination_DataTypeCount) String() string {
 func (*RequestStatusPerDestination_DataTypeCount) ProtoMessage() {}
 
 func (x *RequestStatusPerDestination_DataTypeCount) ProtoReflect() protoreflect.Message {
-	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[16]
+	mi := &file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1467,7 +1834,7 @@ func (x *RequestStatusPerDestination_DataTypeCount) ProtoReflect() protoreflect.
 
 // Deprecated: Use RequestStatusPerDestination_DataTypeCount.ProtoReflect.Descriptor instead.
 func (*RequestStatusPerDestination_DataTypeCount) Descriptor() ([]byte, []int) {
-	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 15}
+	return file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDescGZIP(), []int{0, 20}
 }
 
 func (x *RequestStatusPerDestination_DataTypeCount) GetType() RequestStatusPerDestination_DataType {
@@ -1488,7 +1855,7 @@ var File_google_ads_datamanager_v1_request_status_per_destination_proto protoref
 
 const file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDesc = "" +
 	"\n" +
-	">google/ads/datamanager/v1/request_status_per_destination.proto\x12\x19google.ads.datamanager.v1\x1a+google/ads/datamanager/v1/destination.proto\x1a*google/ads/datamanager/v1/match_rate.proto\x1a1google/ads/datamanager/v1/processing_errors.proto\"\xc8#\n" +
+	">google/ads/datamanager/v1/request_status_per_destination.proto\x12\x19google.ads.datamanager.v1\x1a+google/ads/datamanager/v1/destination.proto\x1a*google/ads/datamanager/v1/match_rate.proto\x1a1google/ads/datamanager/v1/processing_errors.proto\"\xb2.\n" +
 	"\x1bRequestStatusPerDestination\x12H\n" +
 	"\vdestination\x18\x01 \x01(\v2&.google.ads.datamanager.v1.DestinationR\vdestination\x12k\n" +
 	"\x0erequest_status\x18\x02 \x01(\x0e2D.google.ads.datamanager.v1.RequestStatusPerDestination.RequestStatusR\rrequestStatus\x12C\n" +
@@ -1497,23 +1864,29 @@ const file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDes
 	"\fwarning_info\x18\a \x01(\v2&.google.ads.datamanager.v1.WarningInfoR\vwarningInfo\x12\x9f\x01\n" +
 	"!audience_members_ingestion_status\x18\x04 \x01(\v2R.google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatusH\x00R\x1eaudienceMembersIngestionStatus\x12\x83\x01\n" +
 	"\x17events_ingestion_status\x18\x05 \x01(\v2I.google.ads.datamanager.v1.RequestStatusPerDestination.IngestEventsStatusH\x00R\x15eventsIngestionStatus\x12\x9b\x01\n" +
-	"\x1faudience_members_removal_status\x18\x06 \x01(\v2R.google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatusH\x00R\x1caudienceMembersRemovalStatus\x1a\x91\a\n" +
+	"\x1faudience_members_removal_status\x18\x06 \x01(\v2R.google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatusH\x00R\x1caudienceMembersRemovalStatus\x12\xa3\x01\n" +
+	"\"remove_all_audience_members_status\x18\b \x01(\v2U.google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAllAudienceMembersStatusH\x00R\x1eremoveAllAudienceMembersStatus\x1a\xee\t\n" +
 	"\x1bIngestAudienceMembersStatus\x12\x8a\x01\n" +
 	"\x1auser_data_ingestion_status\x18\x01 \x01(\v2K.google.ads.datamanager.v1.RequestStatusPerDestination.IngestUserDataStatusH\x00R\x17userDataIngestionStatus\x12\x90\x01\n" +
 	"\x1cmobile_data_ingestion_status\x18\x02 \x01(\v2M.google.ads.datamanager.v1.RequestStatusPerDestination.IngestMobileDataStatusH\x00R\x19mobileDataIngestionStatus\x12\x8a\x01\n" +
 	"\x1apair_data_ingestion_status\x18\x03 \x01(\v2K.google.ads.datamanager.v1.RequestStatusPerDestination.IngestPairDataStatusH\x00R\x17pairDataIngestionStatus\x12\x91\x01\n" +
 	"\x1duser_id_data_ingestion_status\x18\x04 \x01(\v2M.google.ads.datamanager.v1.RequestStatusPerDestination.IngestUserIdDataStatusH\x00R\x19userIdDataIngestionStatus\x12\x8a\x01\n" +
 	"\x1appid_data_ingestion_status\x18\x05 \x01(\v2K.google.ads.datamanager.v1.RequestStatusPerDestination.IngestPpidDataStatusH\x00R\x17ppidDataIngestionStatus\x12\x99\x01\n" +
-	"\x1fcomposite_data_ingestion_status\x18\x06 \x01(\v2P.google.ads.datamanager.v1.RequestStatusPerDestination.IngestCompositeDataStatusH\x00R\x1ccompositeDataIngestionStatusB\b\n" +
-	"\x06status\x1a\xf9\x06\n" +
+	"\x1fcomposite_data_ingestion_status\x18\x06 \x01(\v2P.google.ads.datamanager.v1.RequestStatusPerDestination.IngestCompositeDataStatusH\x00R\x1ccompositeDataIngestionStatus\x12\xa4\x01\n" +
+	"$google_user_id_data_ingestion_status\x18\a \x01(\v2S.google.ads.datamanager.v1.RequestStatusPerDestination.IngestGoogleUserIdDataStatusH\x00R\x1fgoogleUserIdDataIngestionStatus\x12\xb3\x01\n" +
+	")partner_provided_id_data_ingestion_status\x18\b \x01(\v2X.google.ads.datamanager.v1.RequestStatusPerDestination.IngestPartnerProvidedIdDataStatusH\x00R$partnerProvidedIdDataIngestionStatusB\b\n" +
+	"\x06status\x1a\xce\t\n" +
 	"\x1bRemoveAudienceMembersStatus\x12\x86\x01\n" +
 	"\x18user_data_removal_status\x18\x01 \x01(\v2K.google.ads.datamanager.v1.RequestStatusPerDestination.RemoveUserDataStatusH\x00R\x15userDataRemovalStatus\x12\x8c\x01\n" +
 	"\x1amobile_data_removal_status\x18\x02 \x01(\v2M.google.ads.datamanager.v1.RequestStatusPerDestination.RemoveMobileDataStatusH\x00R\x17mobileDataRemovalStatus\x12\x86\x01\n" +
 	"\x18pair_data_removal_status\x18\x03 \x01(\v2K.google.ads.datamanager.v1.RequestStatusPerDestination.RemovePairDataStatusH\x00R\x15pairDataRemovalStatus\x12\x8d\x01\n" +
 	"\x1buser_id_data_removal_status\x18\x04 \x01(\v2M.google.ads.datamanager.v1.RequestStatusPerDestination.RemoveUserIdDataStatusH\x00R\x17userIdDataRemovalStatus\x12\x86\x01\n" +
 	"\x18ppid_data_removal_status\x18\x05 \x01(\v2K.google.ads.datamanager.v1.RequestStatusPerDestination.RemovePpidDataStatusH\x00R\x15ppidDataRemovalStatus\x12\x95\x01\n" +
-	"\x1dcomposite_data_removal_status\x18\x06 \x01(\v2P.google.ads.datamanager.v1.RequestStatusPerDestination.RemoveCompositeDataStatusH\x00R\x1acompositeDataRemovalStatusB\b\n" +
-	"\x06status\x1a7\n" +
+	"\x1dcomposite_data_removal_status\x18\x06 \x01(\v2P.google.ads.datamanager.v1.RequestStatusPerDestination.RemoveCompositeDataStatusH\x00R\x1acompositeDataRemovalStatus\x12\xa0\x01\n" +
+	"\"google_user_id_data_removal_status\x18\a \x01(\v2S.google.ads.datamanager.v1.RequestStatusPerDestination.RemoveGoogleUserIdDataStatusH\x00R\x1dgoogleUserIdDataRemovalStatus\x12\xaf\x01\n" +
+	"'partner_provided_id_data_removal_status\x18\b \x01(\v2X.google.ads.datamanager.v1.RequestStatusPerDestination.RemovePartnerProvidedIdDataStatusH\x00R\"partnerProvidedIdDataRemovalStatusB\b\n" +
+	"\x06status\x1a \n" +
+	"\x1eRemoveAllAudienceMembersStatus\x1a7\n" +
 	"\x12IngestEventsStatus\x12!\n" +
 	"\frecord_count\x18\x01 \x01(\x03R\vrecordCount\x1a\xcf\x01\n" +
 	"\x14IngestUserDataStatus\x12!\n" +
@@ -1555,7 +1928,19 @@ const file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDes
 	"\x17upload_match_rate_range\x18\x03 \x01(\x0e2).google.ads.datamanager.v1.MatchRateRangeR\x14uploadMatchRateRange\x1a\xae\x01\n" +
 	"\x19RemoveCompositeDataStatus\x12!\n" +
 	"\frecord_count\x18\x01 \x01(\x03R\vrecordCount\x12n\n" +
-	"\x10data_type_counts\x18\x02 \x03(\v2D.google.ads.datamanager.v1.RequestStatusPerDestination.DataTypeCountR\x0edataTypeCounts\x1az\n" +
+	"\x10data_type_counts\x18\x02 \x03(\v2D.google.ads.datamanager.v1.RequestStatusPerDestination.DataTypeCountR\x0edataTypeCounts\x1ar\n" +
+	"\x1cIngestGoogleUserIdDataStatus\x12!\n" +
+	"\frecord_count\x18\x01 \x01(\x03R\vrecordCount\x12/\n" +
+	"\x14google_user_id_count\x18\x02 \x01(\x03R\x11googleUserIdCount\x1ar\n" +
+	"\x1cRemoveGoogleUserIdDataStatus\x12!\n" +
+	"\frecord_count\x18\x01 \x01(\x03R\vrecordCount\x12/\n" +
+	"\x14google_user_id_count\x18\x02 \x01(\x03R\x11googleUserIdCount\x1a\x81\x01\n" +
+	"!IngestPartnerProvidedIdDataStatus\x12!\n" +
+	"\frecord_count\x18\x01 \x01(\x03R\vrecordCount\x129\n" +
+	"\x19partner_provided_id_count\x18\x02 \x01(\x03R\x16partnerProvidedIdCount\x1a\x81\x01\n" +
+	"!RemovePartnerProvidedIdDataStatus\x12!\n" +
+	"\frecord_count\x18\x01 \x01(\x03R\vrecordCount\x129\n" +
+	"\x19partner_provided_id_count\x18\x02 \x01(\x03R\x16partnerProvidedIdCount\x1az\n" +
 	"\rDataTypeCount\x12S\n" +
 	"\x04type\x18\x01 \x01(\x0e2?.google.ads.datamanager.v1.RequestStatusPerDestination.DataTypeR\x04type\x12\x14\n" +
 	"\x05count\x18\x02 \x01(\x03R\x05count\"i\n" +
@@ -1590,62 +1975,72 @@ func file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDesc
 }
 
 var file_google_ads_datamanager_v1_request_status_per_destination_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_google_ads_datamanager_v1_request_status_per_destination_proto_goTypes = []any{
-	(RequestStatusPerDestination_RequestStatus)(0),                  // 0: google.ads.datamanager.v1.RequestStatusPerDestination.RequestStatus
-	(RequestStatusPerDestination_DataType)(0),                       // 1: google.ads.datamanager.v1.RequestStatusPerDestination.DataType
-	(*RequestStatusPerDestination)(nil),                             // 2: google.ads.datamanager.v1.RequestStatusPerDestination
-	(*RequestStatusPerDestination_IngestAudienceMembersStatus)(nil), // 3: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus
-	(*RequestStatusPerDestination_RemoveAudienceMembersStatus)(nil), // 4: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus
-	(*RequestStatusPerDestination_IngestEventsStatus)(nil),          // 5: google.ads.datamanager.v1.RequestStatusPerDestination.IngestEventsStatus
-	(*RequestStatusPerDestination_IngestUserDataStatus)(nil),        // 6: google.ads.datamanager.v1.RequestStatusPerDestination.IngestUserDataStatus
-	(*RequestStatusPerDestination_RemoveUserDataStatus)(nil),        // 7: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveUserDataStatus
-	(*RequestStatusPerDestination_IngestMobileDataStatus)(nil),      // 8: google.ads.datamanager.v1.RequestStatusPerDestination.IngestMobileDataStatus
-	(*RequestStatusPerDestination_RemoveMobileDataStatus)(nil),      // 9: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveMobileDataStatus
-	(*RequestStatusPerDestination_IngestPairDataStatus)(nil),        // 10: google.ads.datamanager.v1.RequestStatusPerDestination.IngestPairDataStatus
-	(*RequestStatusPerDestination_RemovePairDataStatus)(nil),        // 11: google.ads.datamanager.v1.RequestStatusPerDestination.RemovePairDataStatus
-	(*RequestStatusPerDestination_IngestUserIdDataStatus)(nil),      // 12: google.ads.datamanager.v1.RequestStatusPerDestination.IngestUserIdDataStatus
-	(*RequestStatusPerDestination_RemoveUserIdDataStatus)(nil),      // 13: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveUserIdDataStatus
-	(*RequestStatusPerDestination_IngestPpidDataStatus)(nil),        // 14: google.ads.datamanager.v1.RequestStatusPerDestination.IngestPpidDataStatus
-	(*RequestStatusPerDestination_RemovePpidDataStatus)(nil),        // 15: google.ads.datamanager.v1.RequestStatusPerDestination.RemovePpidDataStatus
-	(*RequestStatusPerDestination_IngestCompositeDataStatus)(nil),   // 16: google.ads.datamanager.v1.RequestStatusPerDestination.IngestCompositeDataStatus
-	(*RequestStatusPerDestination_RemoveCompositeDataStatus)(nil),   // 17: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveCompositeDataStatus
-	(*RequestStatusPerDestination_DataTypeCount)(nil),               // 18: google.ads.datamanager.v1.RequestStatusPerDestination.DataTypeCount
-	(*Destination)(nil), // 19: google.ads.datamanager.v1.Destination
-	(*ErrorInfo)(nil),   // 20: google.ads.datamanager.v1.ErrorInfo
-	(*WarningInfo)(nil), // 21: google.ads.datamanager.v1.WarningInfo
-	(MatchRateRange)(0), // 22: google.ads.datamanager.v1.MatchRateRange
+	(RequestStatusPerDestination_RequestStatus)(0),                        // 0: google.ads.datamanager.v1.RequestStatusPerDestination.RequestStatus
+	(RequestStatusPerDestination_DataType)(0),                             // 1: google.ads.datamanager.v1.RequestStatusPerDestination.DataType
+	(*RequestStatusPerDestination)(nil),                                   // 2: google.ads.datamanager.v1.RequestStatusPerDestination
+	(*RequestStatusPerDestination_IngestAudienceMembersStatus)(nil),       // 3: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus
+	(*RequestStatusPerDestination_RemoveAudienceMembersStatus)(nil),       // 4: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus
+	(*RequestStatusPerDestination_RemoveAllAudienceMembersStatus)(nil),    // 5: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAllAudienceMembersStatus
+	(*RequestStatusPerDestination_IngestEventsStatus)(nil),                // 6: google.ads.datamanager.v1.RequestStatusPerDestination.IngestEventsStatus
+	(*RequestStatusPerDestination_IngestUserDataStatus)(nil),              // 7: google.ads.datamanager.v1.RequestStatusPerDestination.IngestUserDataStatus
+	(*RequestStatusPerDestination_RemoveUserDataStatus)(nil),              // 8: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveUserDataStatus
+	(*RequestStatusPerDestination_IngestMobileDataStatus)(nil),            // 9: google.ads.datamanager.v1.RequestStatusPerDestination.IngestMobileDataStatus
+	(*RequestStatusPerDestination_RemoveMobileDataStatus)(nil),            // 10: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveMobileDataStatus
+	(*RequestStatusPerDestination_IngestPairDataStatus)(nil),              // 11: google.ads.datamanager.v1.RequestStatusPerDestination.IngestPairDataStatus
+	(*RequestStatusPerDestination_RemovePairDataStatus)(nil),              // 12: google.ads.datamanager.v1.RequestStatusPerDestination.RemovePairDataStatus
+	(*RequestStatusPerDestination_IngestUserIdDataStatus)(nil),            // 13: google.ads.datamanager.v1.RequestStatusPerDestination.IngestUserIdDataStatus
+	(*RequestStatusPerDestination_RemoveUserIdDataStatus)(nil),            // 14: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveUserIdDataStatus
+	(*RequestStatusPerDestination_IngestPpidDataStatus)(nil),              // 15: google.ads.datamanager.v1.RequestStatusPerDestination.IngestPpidDataStatus
+	(*RequestStatusPerDestination_RemovePpidDataStatus)(nil),              // 16: google.ads.datamanager.v1.RequestStatusPerDestination.RemovePpidDataStatus
+	(*RequestStatusPerDestination_IngestCompositeDataStatus)(nil),         // 17: google.ads.datamanager.v1.RequestStatusPerDestination.IngestCompositeDataStatus
+	(*RequestStatusPerDestination_RemoveCompositeDataStatus)(nil),         // 18: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveCompositeDataStatus
+	(*RequestStatusPerDestination_IngestGoogleUserIdDataStatus)(nil),      // 19: google.ads.datamanager.v1.RequestStatusPerDestination.IngestGoogleUserIdDataStatus
+	(*RequestStatusPerDestination_RemoveGoogleUserIdDataStatus)(nil),      // 20: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveGoogleUserIdDataStatus
+	(*RequestStatusPerDestination_IngestPartnerProvidedIdDataStatus)(nil), // 21: google.ads.datamanager.v1.RequestStatusPerDestination.IngestPartnerProvidedIdDataStatus
+	(*RequestStatusPerDestination_RemovePartnerProvidedIdDataStatus)(nil), // 22: google.ads.datamanager.v1.RequestStatusPerDestination.RemovePartnerProvidedIdDataStatus
+	(*RequestStatusPerDestination_DataTypeCount)(nil),                     // 23: google.ads.datamanager.v1.RequestStatusPerDestination.DataTypeCount
+	(*Destination)(nil), // 24: google.ads.datamanager.v1.Destination
+	(*ErrorInfo)(nil),   // 25: google.ads.datamanager.v1.ErrorInfo
+	(*WarningInfo)(nil), // 26: google.ads.datamanager.v1.WarningInfo
+	(MatchRateRange)(0), // 27: google.ads.datamanager.v1.MatchRateRange
 }
 var file_google_ads_datamanager_v1_request_status_per_destination_proto_depIdxs = []int32{
-	19, // 0: google.ads.datamanager.v1.RequestStatusPerDestination.destination:type_name -> google.ads.datamanager.v1.Destination
+	24, // 0: google.ads.datamanager.v1.RequestStatusPerDestination.destination:type_name -> google.ads.datamanager.v1.Destination
 	0,  // 1: google.ads.datamanager.v1.RequestStatusPerDestination.request_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RequestStatus
-	20, // 2: google.ads.datamanager.v1.RequestStatusPerDestination.error_info:type_name -> google.ads.datamanager.v1.ErrorInfo
-	21, // 3: google.ads.datamanager.v1.RequestStatusPerDestination.warning_info:type_name -> google.ads.datamanager.v1.WarningInfo
+	25, // 2: google.ads.datamanager.v1.RequestStatusPerDestination.error_info:type_name -> google.ads.datamanager.v1.ErrorInfo
+	26, // 3: google.ads.datamanager.v1.RequestStatusPerDestination.warning_info:type_name -> google.ads.datamanager.v1.WarningInfo
 	3,  // 4: google.ads.datamanager.v1.RequestStatusPerDestination.audience_members_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus
-	5,  // 5: google.ads.datamanager.v1.RequestStatusPerDestination.events_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestEventsStatus
+	6,  // 5: google.ads.datamanager.v1.RequestStatusPerDestination.events_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestEventsStatus
 	4,  // 6: google.ads.datamanager.v1.RequestStatusPerDestination.audience_members_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus
-	6,  // 7: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus.user_data_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestUserDataStatus
-	8,  // 8: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus.mobile_data_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestMobileDataStatus
-	10, // 9: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus.pair_data_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestPairDataStatus
-	12, // 10: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus.user_id_data_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestUserIdDataStatus
-	14, // 11: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus.ppid_data_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestPpidDataStatus
-	16, // 12: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus.composite_data_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestCompositeDataStatus
-	7,  // 13: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus.user_data_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemoveUserDataStatus
-	9,  // 14: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus.mobile_data_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemoveMobileDataStatus
-	11, // 15: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus.pair_data_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemovePairDataStatus
-	13, // 16: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus.user_id_data_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemoveUserIdDataStatus
-	15, // 17: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus.ppid_data_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemovePpidDataStatus
-	17, // 18: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus.composite_data_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemoveCompositeDataStatus
-	22, // 19: google.ads.datamanager.v1.RequestStatusPerDestination.IngestUserDataStatus.upload_match_rate_range:type_name -> google.ads.datamanager.v1.MatchRateRange
-	18, // 20: google.ads.datamanager.v1.RequestStatusPerDestination.IngestCompositeDataStatus.data_type_counts:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.DataTypeCount
-	22, // 21: google.ads.datamanager.v1.RequestStatusPerDestination.IngestCompositeDataStatus.upload_match_rate_range:type_name -> google.ads.datamanager.v1.MatchRateRange
-	18, // 22: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveCompositeDataStatus.data_type_counts:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.DataTypeCount
-	1,  // 23: google.ads.datamanager.v1.RequestStatusPerDestination.DataTypeCount.type:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.DataType
-	24, // [24:24] is the sub-list for method output_type
-	24, // [24:24] is the sub-list for method input_type
-	24, // [24:24] is the sub-list for extension type_name
-	24, // [24:24] is the sub-list for extension extendee
-	0,  // [0:24] is the sub-list for field type_name
+	5,  // 7: google.ads.datamanager.v1.RequestStatusPerDestination.remove_all_audience_members_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAllAudienceMembersStatus
+	7,  // 8: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus.user_data_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestUserDataStatus
+	9,  // 9: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus.mobile_data_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestMobileDataStatus
+	11, // 10: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus.pair_data_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestPairDataStatus
+	13, // 11: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus.user_id_data_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestUserIdDataStatus
+	15, // 12: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus.ppid_data_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestPpidDataStatus
+	17, // 13: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus.composite_data_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestCompositeDataStatus
+	19, // 14: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus.google_user_id_data_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestGoogleUserIdDataStatus
+	21, // 15: google.ads.datamanager.v1.RequestStatusPerDestination.IngestAudienceMembersStatus.partner_provided_id_data_ingestion_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.IngestPartnerProvidedIdDataStatus
+	8,  // 16: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus.user_data_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemoveUserDataStatus
+	10, // 17: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus.mobile_data_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemoveMobileDataStatus
+	12, // 18: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus.pair_data_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemovePairDataStatus
+	14, // 19: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus.user_id_data_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemoveUserIdDataStatus
+	16, // 20: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus.ppid_data_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemovePpidDataStatus
+	18, // 21: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus.composite_data_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemoveCompositeDataStatus
+	20, // 22: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus.google_user_id_data_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemoveGoogleUserIdDataStatus
+	22, // 23: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveAudienceMembersStatus.partner_provided_id_data_removal_status:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.RemovePartnerProvidedIdDataStatus
+	27, // 24: google.ads.datamanager.v1.RequestStatusPerDestination.IngestUserDataStatus.upload_match_rate_range:type_name -> google.ads.datamanager.v1.MatchRateRange
+	23, // 25: google.ads.datamanager.v1.RequestStatusPerDestination.IngestCompositeDataStatus.data_type_counts:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.DataTypeCount
+	27, // 26: google.ads.datamanager.v1.RequestStatusPerDestination.IngestCompositeDataStatus.upload_match_rate_range:type_name -> google.ads.datamanager.v1.MatchRateRange
+	23, // 27: google.ads.datamanager.v1.RequestStatusPerDestination.RemoveCompositeDataStatus.data_type_counts:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.DataTypeCount
+	1,  // 28: google.ads.datamanager.v1.RequestStatusPerDestination.DataTypeCount.type:type_name -> google.ads.datamanager.v1.RequestStatusPerDestination.DataType
+	29, // [29:29] is the sub-list for method output_type
+	29, // [29:29] is the sub-list for method input_type
+	29, // [29:29] is the sub-list for extension type_name
+	29, // [29:29] is the sub-list for extension extendee
+	0,  // [0:29] is the sub-list for field type_name
 }
 
 func init() { file_google_ads_datamanager_v1_request_status_per_destination_proto_init() }
@@ -1660,6 +2055,7 @@ func file_google_ads_datamanager_v1_request_status_per_destination_proto_init() 
 		(*RequestStatusPerDestination_AudienceMembersIngestionStatus)(nil),
 		(*RequestStatusPerDestination_EventsIngestionStatus)(nil),
 		(*RequestStatusPerDestination_AudienceMembersRemovalStatus)(nil),
+		(*RequestStatusPerDestination_RemoveAllAudienceMembersStatus_)(nil),
 	}
 	file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[1].OneofWrappers = []any{
 		(*RequestStatusPerDestination_IngestAudienceMembersStatus_UserDataIngestionStatus)(nil),
@@ -1668,6 +2064,8 @@ func file_google_ads_datamanager_v1_request_status_per_destination_proto_init() 
 		(*RequestStatusPerDestination_IngestAudienceMembersStatus_UserIdDataIngestionStatus)(nil),
 		(*RequestStatusPerDestination_IngestAudienceMembersStatus_PpidDataIngestionStatus)(nil),
 		(*RequestStatusPerDestination_IngestAudienceMembersStatus_CompositeDataIngestionStatus)(nil),
+		(*RequestStatusPerDestination_IngestAudienceMembersStatus_GoogleUserIdDataIngestionStatus)(nil),
+		(*RequestStatusPerDestination_IngestAudienceMembersStatus_PartnerProvidedIdDataIngestionStatus)(nil),
 	}
 	file_google_ads_datamanager_v1_request_status_per_destination_proto_msgTypes[2].OneofWrappers = []any{
 		(*RequestStatusPerDestination_RemoveAudienceMembersStatus_UserDataRemovalStatus)(nil),
@@ -1676,6 +2074,8 @@ func file_google_ads_datamanager_v1_request_status_per_destination_proto_init() 
 		(*RequestStatusPerDestination_RemoveAudienceMembersStatus_UserIdDataRemovalStatus)(nil),
 		(*RequestStatusPerDestination_RemoveAudienceMembersStatus_PpidDataRemovalStatus)(nil),
 		(*RequestStatusPerDestination_RemoveAudienceMembersStatus_CompositeDataRemovalStatus)(nil),
+		(*RequestStatusPerDestination_RemoveAudienceMembersStatus_GoogleUserIdDataRemovalStatus)(nil),
+		(*RequestStatusPerDestination_RemoveAudienceMembersStatus_PartnerProvidedIdDataRemovalStatus)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1683,7 +2083,7 @@ func file_google_ads_datamanager_v1_request_status_per_destination_proto_init() 
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDesc), len(file_google_ads_datamanager_v1_request_status_per_destination_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   17,
+			NumMessages:   22,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

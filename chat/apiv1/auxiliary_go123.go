@@ -51,6 +51,12 @@ func (it *ReactionIterator) All() iter.Seq2[*chatpb.Reaction, error] {
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *SearchMessageResultIterator) All() iter.Seq2[*chatpb.SearchMessageResult, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *SectionItemIterator) All() iter.Seq2[*chatpb.SectionItem, error] {
 	return iterator.RangeAdapter(it.Next)
 }

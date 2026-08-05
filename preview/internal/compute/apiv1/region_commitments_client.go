@@ -97,7 +97,7 @@ func defaultRegionCommitmentsRESTCallOptions() *RegionCommitmentsCallOptions {
 	}
 }
 
-// internalRegionCommitmentsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionCommitmentsClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionCommitmentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -109,7 +109,7 @@ type internalRegionCommitmentsClient interface {
 	Update(context.Context, *computepb.UpdateRegionCommitmentRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RegionCommitmentsClient is a client for interacting with Google Compute Engine API.
+// RegionCommitmentsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionCommitments API.

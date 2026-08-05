@@ -118,7 +118,7 @@ func defaultInstanceTemplatesRESTCallOptions() *InstanceTemplatesCallOptions {
 	}
 }
 
-// internalInstanceTemplatesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalInstanceTemplatesClient is an interface that defines the methods available from Compute Engine API.
 type internalInstanceTemplatesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -133,7 +133,7 @@ type internalInstanceTemplatesClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsInstanceTemplateRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// InstanceTemplatesClient is a client for interacting with Google Compute Engine API.
+// InstanceTemplatesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The InstanceTemplates API.

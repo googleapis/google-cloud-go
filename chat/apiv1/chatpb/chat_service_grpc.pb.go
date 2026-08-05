@@ -42,6 +42,7 @@ const (
 	ChatService_GetMessage_FullMethodName                     = "/google.chat.v1.ChatService/GetMessage"
 	ChatService_UpdateMessage_FullMethodName                  = "/google.chat.v1.ChatService/UpdateMessage"
 	ChatService_DeleteMessage_FullMethodName                  = "/google.chat.v1.ChatService/DeleteMessage"
+	ChatService_SearchMessages_FullMethodName                 = "/google.chat.v1.ChatService/SearchMessages"
 	ChatService_GetAttachment_FullMethodName                  = "/google.chat.v1.ChatService/GetAttachment"
 	ChatService_UploadAttachment_FullMethodName               = "/google.chat.v1.ChatService/UploadAttachment"
 	ChatService_ListSpaces_FullMethodName                     = "/google.chat.v1.ChatService/ListSpaces"
@@ -300,6 +301,34 @@ type ChatServiceClient interface {
 	// When using app authentication, requests can only delete messages
 	// created by the calling Chat app.
 	DeleteMessage(ctx context.Context, in *DeleteMessageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Searches for messages in Google Chat that the calling user has access to.
+	// Returns a list of messages matching the search criteria.
+	//
+	// To search across all spaces the user has access to, set `parent` to
+	// `spaces/-`. Using any other value for `parent` results in an
+	// `INVALID_ARGUMENT` error. The returned messages have their `name` field
+	// populated with the full resource name, which includes the specific `space`
+	// in which the message resides.
+	//
+	// This API doesn't return all message types. The types of messages listed
+	// below aren't included in the response. Use
+	// [ListMessages][google.chat.v1.ChatService.ListMessages] to list all
+	// messages.
+	//
+	// - Private Messages that are visible to the authenticated user.
+	// - Messages posted by Chat apps in spaces or group chats.
+	// - Messages in a Chat app DM.
+	// - Messages from blocked users.
+	// - Messages in spaces that the caller has muted.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	SearchMessages(ctx context.Context, in *SearchMessagesRequest, opts ...grpc.CallOption) (*SearchMessagesResponse, error)
 	// Gets the metadata of a message attachment. The attachment data is fetched
 	// using the [media
 	// API](https://developers.google.com/workspace/chat/api/reference/rest/v1/media/download).
@@ -354,17 +383,28 @@ type ChatServiceClient interface {
 	// [`spaces.search()`](https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces/search)
 	// method using Workspace administrator privileges instead.
 	ListSpaces(ctx context.Context, in *ListSpacesRequest, opts ...grpc.CallOption) (*ListSpacesResponse, error)
-	// Returns a list of spaces in a Google Workspace organization based on an
-	// administrator's search. In the request, set `use_admin_access` to `true`.
-	// For an example, see [Search for and manage
+	// Returns a list of spaces in a Google Workspace organization. For an
+	// example, see [Search for and manage
 	// spaces](https://developers.google.com/workspace/chat/search-manage-admin).
 	//
-	// Requires [user
+	// When `use_admin_access` is set to `false`, the results are limited to
+	// spaces where the calling user is a joined member. To search with
+	// administrator privileges, set `use_admin_access` to `true`.
+	//
+	// Supports the following types of
+	// [authentication](https://developers.google.com/workspace/chat/authenticate-authorize):
+	//
+	// - [User
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	//
+	// - [User
 	// authentication with administrator
 	// privileges](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges)
 	// and one of the following [authorization
 	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
-	//
 	//   - `https://www.googleapis.com/auth/chat.admin.spaces.readonly`
 	//   - `https://www.googleapis.com/auth/chat.admin.spaces`
 	SearchSpaces(ctx context.Context, in *SearchSpacesRequest, opts ...grpc.CallOption) (*SearchSpacesResponse, error)
@@ -1228,6 +1268,15 @@ func (c *chatServiceClient) DeleteMessage(ctx context.Context, in *DeleteMessage
 	return out, nil
 }
 
+func (c *chatServiceClient) SearchMessages(ctx context.Context, in *SearchMessagesRequest, opts ...grpc.CallOption) (*SearchMessagesResponse, error) {
+	out := new(SearchMessagesResponse)
+	err := c.cc.Invoke(ctx, ChatService_SearchMessages_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *chatServiceClient) GetAttachment(ctx context.Context, in *GetAttachmentRequest, opts ...grpc.CallOption) (*Attachment, error) {
 	out := new(Attachment)
 	err := c.cc.Invoke(ctx, ChatService_GetAttachment_FullMethodName, in, out, opts...)
@@ -1812,6 +1861,34 @@ type ChatServiceServer interface {
 	// When using app authentication, requests can only delete messages
 	// created by the calling Chat app.
 	DeleteMessage(context.Context, *DeleteMessageRequest) (*emptypb.Empty, error)
+	// Searches for messages in Google Chat that the calling user has access to.
+	// Returns a list of messages matching the search criteria.
+	//
+	// To search across all spaces the user has access to, set `parent` to
+	// `spaces/-`. Using any other value for `parent` results in an
+	// `INVALID_ARGUMENT` error. The returned messages have their `name` field
+	// populated with the full resource name, which includes the specific `space`
+	// in which the message resides.
+	//
+	// This API doesn't return all message types. The types of messages listed
+	// below aren't included in the response. Use
+	// [ListMessages][google.chat.v1.ChatService.ListMessages] to list all
+	// messages.
+	//
+	// - Private Messages that are visible to the authenticated user.
+	// - Messages posted by Chat apps in spaces or group chats.
+	// - Messages in a Chat app DM.
+	// - Messages from blocked users.
+	// - Messages in spaces that the caller has muted.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	SearchMessages(context.Context, *SearchMessagesRequest) (*SearchMessagesResponse, error)
 	// Gets the metadata of a message attachment. The attachment data is fetched
 	// using the [media
 	// API](https://developers.google.com/workspace/chat/api/reference/rest/v1/media/download).
@@ -1866,17 +1943,28 @@ type ChatServiceServer interface {
 	// [`spaces.search()`](https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces/search)
 	// method using Workspace administrator privileges instead.
 	ListSpaces(context.Context, *ListSpacesRequest) (*ListSpacesResponse, error)
-	// Returns a list of spaces in a Google Workspace organization based on an
-	// administrator's search. In the request, set `use_admin_access` to `true`.
-	// For an example, see [Search for and manage
+	// Returns a list of spaces in a Google Workspace organization. For an
+	// example, see [Search for and manage
 	// spaces](https://developers.google.com/workspace/chat/search-manage-admin).
 	//
-	// Requires [user
+	// When `use_admin_access` is set to `false`, the results are limited to
+	// spaces where the calling user is a joined member. To search with
+	// administrator privileges, set `use_admin_access` to `true`.
+	//
+	// Supports the following types of
+	// [authentication](https://developers.google.com/workspace/chat/authenticate-authorize):
+	//
+	// - [User
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	//
+	// - [User
 	// authentication with administrator
 	// privileges](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges)
 	// and one of the following [authorization
 	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
-	//
 	//   - `https://www.googleapis.com/auth/chat.admin.spaces.readonly`
 	//   - `https://www.googleapis.com/auth/chat.admin.spaces`
 	SearchSpaces(context.Context, *SearchSpacesRequest) (*SearchSpacesResponse, error)
@@ -2694,6 +2782,9 @@ func (UnimplementedChatServiceServer) UpdateMessage(context.Context, *UpdateMess
 func (UnimplementedChatServiceServer) DeleteMessage(context.Context, *DeleteMessageRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteMessage not implemented")
 }
+func (UnimplementedChatServiceServer) SearchMessages(context.Context, *SearchMessagesRequest) (*SearchMessagesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchMessages not implemented")
+}
 func (UnimplementedChatServiceServer) GetAttachment(context.Context, *GetAttachmentRequest) (*Attachment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAttachment not implemented")
 }
@@ -2951,6 +3042,24 @@ func _ChatService_DeleteMessage_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ChatServiceServer).DeleteMessage(ctx, req.(*DeleteMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_SearchMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchMessagesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).SearchMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_SearchMessages_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).SearchMessages(ctx, req.(*SearchMessagesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3727,6 +3836,10 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteMessage",
 			Handler:    _ChatService_DeleteMessage_Handler,
+		},
+		{
+			MethodName: "SearchMessages",
+			Handler:    _ChatService_SearchMessages_Handler,
 		},
 		{
 			MethodName: "GetAttachment",

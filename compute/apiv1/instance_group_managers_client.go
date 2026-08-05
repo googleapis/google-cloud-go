@@ -182,7 +182,7 @@ func defaultInstanceGroupManagersRESTCallOptions() *InstanceGroupManagersCallOpt
 	}
 }
 
-// internalInstanceGroupManagersClient is an interface that defines the methods available from Google Compute Engine API.
+// internalInstanceGroupManagersClient is an interface that defines the methods available from Compute Engine API.
 type internalInstanceGroupManagersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -213,7 +213,7 @@ type internalInstanceGroupManagersClient interface {
 	UpdatePerInstanceConfigs(context.Context, *computepb.UpdatePerInstanceConfigsInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// InstanceGroupManagersClient is a client for interacting with Google Compute Engine API.
+// InstanceGroupManagersClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The InstanceGroupManagers API.

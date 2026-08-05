@@ -95,7 +95,7 @@ func defaultGlobalNetworkEndpointGroupsRESTCallOptions() *GlobalNetworkEndpointG
 	}
 }
 
-// internalGlobalNetworkEndpointGroupsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalGlobalNetworkEndpointGroupsClient is an interface that defines the methods available from Compute Engine API.
 type internalGlobalNetworkEndpointGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -109,7 +109,7 @@ type internalGlobalNetworkEndpointGroupsClient interface {
 	ListNetworkEndpoints(context.Context, *computepb.ListNetworkEndpointsGlobalNetworkEndpointGroupsRequest, ...gax.CallOption) *NetworkEndpointWithHealthStatusIterator
 }
 
-// GlobalNetworkEndpointGroupsClient is a client for interacting with Google Compute Engine API.
+// GlobalNetworkEndpointGroupsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The GlobalNetworkEndpointGroups API.

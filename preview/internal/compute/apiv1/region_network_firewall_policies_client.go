@@ -171,7 +171,7 @@ func defaultRegionNetworkFirewallPoliciesRESTCallOptions() *RegionNetworkFirewal
 	}
 }
 
-// internalRegionNetworkFirewallPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionNetworkFirewallPoliciesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionNetworkFirewallPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -195,7 +195,7 @@ type internalRegionNetworkFirewallPoliciesClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRegionNetworkFirewallPolicyRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// RegionNetworkFirewallPoliciesClient is a client for interacting with Google Compute Engine API.
+// RegionNetworkFirewallPoliciesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionNetworkFirewallPolicies API.

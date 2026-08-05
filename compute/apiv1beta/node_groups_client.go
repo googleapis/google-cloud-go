@@ -146,7 +146,7 @@ func defaultNodeGroupsRESTCallOptions() *NodeGroupsCallOptions {
 	}
 }
 
-// internalNodeGroupsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalNodeGroupsClient is an interface that defines the methods available from Compute Engine API.
 type internalNodeGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -168,7 +168,7 @@ type internalNodeGroupsClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsNodeGroupRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// NodeGroupsClient is a client for interacting with Google Compute Engine API.
+// NodeGroupsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The NodeGroups API.

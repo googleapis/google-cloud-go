@@ -101,7 +101,7 @@ func defaultGlobalVmExtensionPoliciesRESTCallOptions() *GlobalVmExtensionPolicie
 	}
 }
 
-// internalGlobalVmExtensionPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalGlobalVmExtensionPoliciesClient is an interface that defines the methods available from Compute Engine API.
 type internalGlobalVmExtensionPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -114,7 +114,7 @@ type internalGlobalVmExtensionPoliciesClient interface {
 	Update(context.Context, *computepb.UpdateGlobalVmExtensionPolicyRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// GlobalVmExtensionPoliciesClient is a client for interacting with Google Compute Engine API.
+// GlobalVmExtensionPoliciesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The GlobalVmExtensionPolicies API.

@@ -95,7 +95,7 @@ func defaultGlobalForwardingRulesRESTCallOptions() *GlobalForwardingRulesCallOpt
 	}
 }
 
-// internalGlobalForwardingRulesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalGlobalForwardingRulesClient is an interface that defines the methods available from Compute Engine API.
 type internalGlobalForwardingRulesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -109,7 +109,7 @@ type internalGlobalForwardingRulesClient interface {
 	SetTarget(context.Context, *computepb.SetTargetGlobalForwardingRuleRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// GlobalForwardingRulesClient is a client for interacting with Google Compute Engine API.
+// GlobalForwardingRulesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The GlobalForwardingRules API.

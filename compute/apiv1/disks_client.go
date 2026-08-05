@@ -166,7 +166,7 @@ func defaultDisksRESTCallOptions() *DisksCallOptions {
 	}
 }
 
-// internalDisksClient is an interface that defines the methods available from Google Compute Engine API.
+// internalDisksClient is an interface that defines the methods available from Compute Engine API.
 type internalDisksClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -193,7 +193,7 @@ type internalDisksClient interface {
 	UpdateKmsKey(context.Context, *computepb.UpdateKmsKeyDiskRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// DisksClient is a client for interacting with Google Compute Engine API.
+// DisksClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Disks API.

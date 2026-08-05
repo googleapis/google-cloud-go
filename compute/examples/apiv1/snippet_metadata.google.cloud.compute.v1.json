@@ -7972,6 +7972,144 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1.HostsClient",
+          "shortName": "HostsClient"
+        },
+        "fullName": "google.cloud.compute.v1.HostsClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1.Hosts.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1.Hosts",
+            "shortName": "Hosts"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetHostRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.Host",
+        "shortName": "Get"
+      },
+      "description": "Get retrieves information about the specified host.",
+      "file": "HostsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_Hosts_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.HostsClient",
+          "shortName": "HostsClient"
+        },
+        "fullName": "google.cloud.compute.v1.HostsClient.GetVersion",
+        "method": {
+          "fullName": "google.cloud.compute.v1.Hosts.GetVersion",
+          "service": {
+            "fullName": "google.cloud.compute.v1.Hosts",
+            "shortName": "Hosts"
+          },
+          "shortName": "GetVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetVersionHostRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "GetVersion"
+      },
+      "description": "GetVersion allows customers to get SBOM versions of a host.",
+      "file": "HostsClient/GetVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_Hosts_GetVersion_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute GetVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.HostsClient",
+          "shortName": "HostsClient"
+        },
+        "fullName": "google.cloud.compute.v1.HostsClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1.Hosts.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1.Hosts",
+            "shortName": "Hosts"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListHostsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "HostIterator",
+        "shortName": "List"
+      },
+      "description": "List retrieves a list of hosts.",
+      "file": "HostsClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_Hosts_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1.ImageFamilyViewsClient",
           "shortName": "ImageFamilyViewsClient"
         },
@@ -33858,6 +33996,98 @@
       "language": "GO",
       "origin": "API_DEFINITION",
       "regionTag": "compute_v1_generated_Regions_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.ReliabilityRisksClient",
+          "shortName": "ReliabilityRisksClient"
+        },
+        "fullName": "google.cloud.compute.v1.ReliabilityRisksClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1.ReliabilityRisks.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1.ReliabilityRisks",
+            "shortName": "ReliabilityRisks"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetReliabilityRiskRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.ReliabilityRisk",
+        "shortName": "Get"
+      },
+      "description": "Get returns the specified ReliabilityRisk resource.",
+      "file": "ReliabilityRisksClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_ReliabilityRisks_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.ReliabilityRisksClient",
+          "shortName": "ReliabilityRisksClient"
+        },
+        "fullName": "google.cloud.compute.v1.ReliabilityRisksClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1.ReliabilityRisks.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1.ReliabilityRisks",
+            "shortName": "ReliabilityRisks"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListReliabilityRisksRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ReliabilityRiskIterator",
+        "shortName": "List"
+      },
+      "description": "List retrieves the list of reliabilityRisks available in the specified project.",
+      "file": "ReliabilityRisksClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_ReliabilityRisks_List_sync",
       "segments": [
         {
           "end": 68,

@@ -58,7 +58,7 @@ func defaultProjectViewsRESTCallOptions() *ProjectViewsCallOptions {
 	}
 }
 
-// internalProjectViewsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalProjectViewsClient is an interface that defines the methods available from Compute Engine API.
 type internalProjectViewsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -66,7 +66,7 @@ type internalProjectViewsClient interface {
 	Get(context.Context, *computepb.GetProjectViewRequest, ...gax.CallOption) (*computepb.ProjectView, error)
 }
 
-// ProjectViewsClient is a client for interacting with Google Compute Engine API.
+// ProjectViewsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The ProjectViews API.
@@ -103,6 +103,12 @@ func (c *ProjectViewsClient) Connection() *grpc.ClientConn {
 
 // Get returns the specified global ProjectViews resource, with a regional
 // context.
+// This regional API endpoint reads resource metadata from regional
+// read-only replicas. Because changes are copied to these regional replicas
+// asynchronously, for real-time resource reads or any write operations
+// (creating, updating, or deleting resources), use the global
+// projects.get (at https://cloud.google.com/compute/docs/reference/rest/v1/projects/get)
+// endpoint.
 func (c *ProjectViewsClient) Get(ctx context.Context, req *computepb.GetProjectViewRequest, opts ...gax.CallOption) (*computepb.ProjectView, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -211,6 +217,12 @@ func (c *projectViewsRESTClient) Connection() *grpc.ClientConn {
 
 // Get returns the specified global ProjectViews resource, with a regional
 // context.
+// This regional API endpoint reads resource metadata from regional
+// read-only replicas. Because changes are copied to these regional replicas
+// asynchronously, for real-time resource reads or any write operations
+// (creating, updating, or deleting resources), use the global
+// projects.get (at https://cloud.google.com/compute/docs/reference/rest/v1/projects/get)
+// endpoint.
 func (c *projectViewsRESTClient) Get(ctx context.Context, req *computepb.GetProjectViewRequest, opts ...gax.CallOption) (*computepb.ProjectView, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

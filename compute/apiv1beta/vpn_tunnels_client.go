@@ -105,7 +105,7 @@ func defaultVpnTunnelsRESTCallOptions() *VpnTunnelsCallOptions {
 	}
 }
 
-// internalVpnTunnelsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalVpnTunnelsClient is an interface that defines the methods available from Compute Engine API.
 type internalVpnTunnelsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -119,7 +119,7 @@ type internalVpnTunnelsClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsVpnTunnelRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// VpnTunnelsClient is a client for interacting with Google Compute Engine API.
+// VpnTunnelsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The VpnTunnels API.

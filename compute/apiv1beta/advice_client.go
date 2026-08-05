@@ -58,7 +58,7 @@ func defaultAdviceRESTCallOptions() *AdviceCallOptions {
 	}
 }
 
-// internalAdviceClient is an interface that defines the methods available from Google Compute Engine API.
+// internalAdviceClient is an interface that defines the methods available from Compute Engine API.
 type internalAdviceClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -68,7 +68,7 @@ type internalAdviceClient interface {
 	CapacityHistory(context.Context, *computepb.CapacityHistoryAdviceRequest, ...gax.CallOption) (*computepb.CapacityHistoryResponse, error)
 }
 
-// AdviceClient is a client for interacting with Google Compute Engine API.
+// AdviceClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Advice API.

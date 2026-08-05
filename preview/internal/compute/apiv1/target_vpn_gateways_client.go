@@ -101,7 +101,7 @@ func defaultTargetVpnGatewaysRESTCallOptions() *TargetVpnGatewaysCallOptions {
 	}
 }
 
-// internalTargetVpnGatewaysClient is an interface that defines the methods available from Google Compute Engine API.
+// internalTargetVpnGatewaysClient is an interface that defines the methods available from Compute Engine API.
 type internalTargetVpnGatewaysClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -114,7 +114,7 @@ type internalTargetVpnGatewaysClient interface {
 	SetLabels(context.Context, *computepb.SetLabelsTargetVpnGatewayRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// TargetVpnGatewaysClient is a client for interacting with Google Compute Engine API.
+// TargetVpnGatewaysClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The TargetVpnGateways API.

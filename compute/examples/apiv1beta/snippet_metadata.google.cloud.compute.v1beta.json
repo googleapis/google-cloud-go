@@ -23595,7 +23595,7 @@
         "resultType": "*computepb.ProjectView",
         "shortName": "Get"
       },
-      "description": "Get returns the specified global ProjectViews resource, with a regional\ncontext.",
+      "description": "Get returns the specified global ProjectViews resource, with a regional\ncontext.\nThis regional API endpoint reads resource metadata from regional\nread-only replicas. Because changes are copied to these regional replicas\nasynchronously, for real-time resource reads or any write operations\n(creating, updating, or deleting resources), use the global\n[projects.get](https: //cloud.google.com/compute/docs/reference/rest/v1/projects/get)\nendpoint.",
       "file": "ProjectViewsClient/Get/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

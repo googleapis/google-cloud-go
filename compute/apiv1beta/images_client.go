@@ -129,7 +129,7 @@ func defaultImagesRESTCallOptions() *ImagesCallOptions {
 	}
 }
 
-// internalImagesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalImagesClient is an interface that defines the methods available from Compute Engine API.
 type internalImagesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -147,7 +147,7 @@ type internalImagesClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsImageRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// ImagesClient is a client for interacting with Google Compute Engine API.
+// ImagesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Images API.
