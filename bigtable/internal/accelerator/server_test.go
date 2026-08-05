@@ -18,6 +18,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 func TestServer_Permissions(t *testing.T) {
@@ -137,6 +138,40 @@ func TestServer_ReadSecretEmpty(t *testing.T) {
 				t.Error("expected Start() to fail on empty auth secret, but got nil")
 			}
 		})
+	}
+}
+
+func TestServer_ReadSecretTimeout(t *testing.T) {
+	// Parent opens the pipe but never writes the secret. Start must fail on the
+	// handshake deadline rather than blocking forever in readSecret.
+	tmpDir, err := os.MkdirTemp("", "accelerator-secrettimeout-*")
+	if err != nil {
+		t.Fatalf("failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tmpDir)
+	udsPath := filepath.Join(tmpDir, "bt_proxy.sock")
+
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("failed to create pipe: %v", err)
+	}
+	defer r.Close()
+	defer w.Close() // keep the write end open so the read blocks (no EOF).
+
+	channel := &Channel{}
+	server := NewServer(udsPath, channel, WithStdinReader(r), WithHandshakeTimeout(50*time.Millisecond))
+
+	done := make(chan error, 1)
+	go func() { done <- server.Start() }()
+
+	select {
+	case err := <-done:
+		if err == nil {
+			server.Stop()
+			t.Fatal("expected Start() to fail on handshake timeout, but got nil")
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("Start() did not return within 2s; handshake timeout not enforced")
 	}
 }
 

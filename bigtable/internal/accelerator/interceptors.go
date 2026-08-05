@@ -16,9 +16,10 @@ package accelerator
 
 import (
 	"context"
+	"crypto/sha256"
 	"crypto/subtle"
 	"io"
-	"log/slog"
+	"log"
 	"strings"
 	"sync"
 
@@ -47,11 +48,10 @@ func newBigtableServerStub() *bigtableServerStub {
 }
 
 // authUnaryInterceptor validates the x-accelerator-token metadata header on
-// every unary RPC. An empty secret disables the check — a state reachable only
-// by tests that pass WithStdinReader(nil) (so readSecret never runs). The shipped
-// daemon always reads stdin and readSecret rejects an empty secret, so the
-// serving binary can never reach this branch. Mismatches are rejected with
-// codes.Internal (see checkAuthToken for why not Unauthenticated).
+// every unary RPC. It is only chained into the server when a non-empty secret
+// was read from stdin (see Server.Start); the shipped daemon always reads one,
+// so auth is disabled only in test mode (WithStdinReader(nil)). Mismatches are
+// rejected with codes.Internal (see checkAuthToken for why not Unauthenticated).
 func authUnaryInterceptor(secret string) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		if err := checkAuthToken(ctx, secret); err != nil {
@@ -72,9 +72,15 @@ func authStreamInterceptor(secret string) grpc.StreamServerInterceptor {
 }
 
 // checkAuthToken pulls the x-accelerator-token from incoming metadata and
-// constant-time-compares it against secret. Returns nil when the token matches,
-// or when secret is empty — the latter only in the test-only WithStdinReader(nil)
-// path (readSecret guarantees a non-empty secret for the shipped daemon).
+// constant-time-compares its SHA-256 digest against the secret's. Hashing first
+// makes both ConstantTimeCompare inputs a fixed 32 bytes, so a mismatched-length
+// token cannot leak the secret's length through the early-return timing side
+// channel (ConstantTimeCompare returns immediately when its inputs differ in
+// length).
+//
+// It returns nil when the token matches. The secret == "" guard is defense in
+// depth: Server.Start only chains this interceptor for a non-empty secret, so
+// the shipped daemon never hits it.
 //
 // On failure it returns codes.Internal with a generic message, NOT
 // codes.Unauthenticated: the accelerator is a transparent proxy, so the only
@@ -97,23 +103,25 @@ func checkAuthToken(ctx context.Context, secret string) error {
 	if len(vals) == 0 {
 		return authFailure("missing x-accelerator-token")
 	}
-	if subtle.ConstantTimeCompare([]byte(vals[0]), []byte(secret)) != 1 {
+	secretHash := sha256.Sum256([]byte(secret))
+	tokenHash := sha256.Sum256([]byte(vals[0]))
+	if subtle.ConstantTimeCompare(tokenHash[:], secretHash[:]) != 1 {
 		return authFailure("invalid x-accelerator-token")
 	}
 	return nil
 }
 
-// authRejectMsg is the single message used both for the server-side warning log
-// and for the codes.Internal error returned to the caller, so the two never drift
-// apart. The specific reason (which check failed) is attached to the log as a
-// structured attribute and is never returned, so a same-UID probe gets no oracle.
+// authRejectMsg is the single message used both for the server-side log line and
+// for the codes.Internal error returned to the caller, so the two never drift
+// apart. The specific reason (which check failed) is appended only to the log and
+// is never returned, so a same-UID probe gets no oracle.
 const authRejectMsg = "accelerator: rejecting RPC from mismatched token"
 
-// authFailure logs the handshake rejection server-side at warning level (the
-// specific reason kept as a structured attribute, never returned) and returns a
-// codes.Internal error carrying the same authRejectMsg to the caller.
+// authFailure logs the handshake rejection server-side (with the specific reason,
+// which is never returned) and returns a codes.Internal error carrying the
+// generic authRejectMsg to the caller.
 func authFailure(reason string) error {
-	slog.Warn(authRejectMsg, "reason", reason)
+	log.Printf("%s (reason: %s)", authRejectMsg, reason)
 	return status.Error(codes.Internal, authRejectMsg)
 }
 
