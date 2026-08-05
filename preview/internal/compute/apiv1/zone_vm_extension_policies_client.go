@@ -87,7 +87,7 @@ func defaultZoneVmExtensionPoliciesRESTCallOptions() *ZoneVmExtensionPoliciesCal
 	}
 }
 
-// internalZoneVmExtensionPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalZoneVmExtensionPoliciesClient is an interface that defines the methods available from Compute Engine API.
 type internalZoneVmExtensionPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -99,7 +99,7 @@ type internalZoneVmExtensionPoliciesClient interface {
 	Update(context.Context, *computepb.UpdateZoneVmExtensionPolicyRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// ZoneVmExtensionPoliciesClient is a client for interacting with Google Compute Engine API.
+// ZoneVmExtensionPoliciesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The ZoneVmExtensionPolicies API.

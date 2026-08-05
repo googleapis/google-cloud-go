@@ -82,7 +82,7 @@ func defaultRegionOperationsRESTCallOptions() *RegionOperationsCallOptions {
 	}
 }
 
-// internalRegionOperationsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionOperationsClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionOperationsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -93,7 +93,7 @@ type internalRegionOperationsClient interface {
 	Wait(context.Context, *computepb.WaitRegionOperationRequest, ...gax.CallOption) (*computepb.Operation, error)
 }
 
-// RegionOperationsClient is a client for interacting with Google Compute Engine API.
+// RegionOperationsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionOperations API.

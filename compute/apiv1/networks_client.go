@@ -137,7 +137,7 @@ func defaultNetworksRESTCallOptions() *NetworksCallOptions {
 	}
 }
 
-// internalNetworksClient is an interface that defines the methods available from Google Compute Engine API.
+// internalNetworksClient is an interface that defines the methods available from Compute Engine API.
 type internalNetworksClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -157,7 +157,7 @@ type internalNetworksClient interface {
 	UpdatePeering(context.Context, *computepb.UpdatePeeringNetworkRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// NetworksClient is a client for interacting with Google Compute Engine API.
+// NetworksClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Networks API.

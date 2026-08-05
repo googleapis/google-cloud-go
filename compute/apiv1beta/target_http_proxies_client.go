@@ -109,7 +109,7 @@ func defaultTargetHttpProxiesRESTCallOptions() *TargetHttpProxiesCallOptions {
 	}
 }
 
-// internalTargetHttpProxiesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalTargetHttpProxiesClient is an interface that defines the methods available from Compute Engine API.
 type internalTargetHttpProxiesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -124,7 +124,7 @@ type internalTargetHttpProxiesClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsTargetHttpProxyRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// TargetHttpProxiesClient is a client for interacting with Google Compute Engine API.
+// TargetHttpProxiesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The TargetHttpProxies API.

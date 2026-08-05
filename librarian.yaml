@@ -19,8 +19,8 @@ sources:
     commit: 1c6496fb0cf9fa04a35e24e8af871c58298ae37e
     sha256: c3cd1ca564a28485970bdf348cac9bcde65d45792a5c2df1c179654d3ad8b877
   googleapis:
-    commit: b8486a2f44f15dc578a9dc1e17b144253079d5c1
-    sha256: 12411ca5cb6c70d7c873d7058c5182a8d23fa88af8d984b0e73b1c3ad1d83766
+    commit: 57394718a71457aa37ab002352b22081976bdd91
+    sha256: 633d12eb239bf48648613a8e8f1e4b4875ae8116150fdee0ba4abc910ffb9777
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic

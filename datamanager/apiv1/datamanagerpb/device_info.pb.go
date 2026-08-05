@@ -42,7 +42,8 @@ type DeviceInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Optional. The user-agent string of the device for the given context.
 	UserAgent string `protobuf:"bytes,1,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
-	// Optional. The IP address of the device for the given context.
+	// Optional. The IP address of the device for the given context. Required when
+	// used in an [AdEvent][google.ads.datamanager.v1.AdEvent].
 	//
 	// **Note:** Google Ads does not support IP address matching for end users in
 	// the European Economic Area (EEA), United Kingdom (UK), or Switzerland (CH).

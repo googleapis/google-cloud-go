@@ -104,7 +104,7 @@ func defaultSnapshotGroupsRESTCallOptions() *SnapshotGroupsCallOptions {
 	}
 }
 
-// internalSnapshotGroupsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalSnapshotGroupsClient is an interface that defines the methods available from Compute Engine API.
 type internalSnapshotGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -118,7 +118,7 @@ type internalSnapshotGroupsClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsSnapshotGroupRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// SnapshotGroupsClient is a client for interacting with Google Compute Engine API.
+// SnapshotGroupsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The SnapshotGroups API.

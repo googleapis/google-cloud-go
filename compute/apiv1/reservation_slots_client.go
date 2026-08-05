@@ -83,7 +83,7 @@ func defaultReservationSlotsRESTCallOptions() *ReservationSlotsCallOptions {
 	}
 }
 
-// internalReservationSlotsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalReservationSlotsClient is an interface that defines the methods available from Compute Engine API.
 type internalReservationSlotsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -94,7 +94,7 @@ type internalReservationSlotsClient interface {
 	Update(context.Context, *computepb.UpdateReservationSlotRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// ReservationSlotsClient is a client for interacting with Google Compute Engine API.
+// ReservationSlotsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The ReservationSlots API.

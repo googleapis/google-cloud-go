@@ -310,6 +310,12 @@ const (
 	ErrorReason_BASELINE_LOCATION_AUTO_DETECTION_FAILED ErrorReason = 122
 	// Insights missing for this dimension.
 	ErrorReason_INSIGHTS_MISSING_FOR_DIMENSION ErrorReason = 123
+	// A required prerequisite link (such as a Google Ads link) must exist for
+	// the Google Analytics property to perform this operation.
+	ErrorReason_REQUIRED_PREREQUISITE_LINK_MISSING ErrorReason = 124
+	// The remove as of time must be in the past or present. Future timestamps are
+	// not permitted for removing audience members.
+	ErrorReason_INVALID_REMOVE_AS_OF_TIME ErrorReason = 125
 )
 
 // Enum value maps for ErrorReason.
@@ -438,6 +444,8 @@ var (
 		120: "CUSTOM_VARIABLE_NOT_FOUND",
 		122: "BASELINE_LOCATION_AUTO_DETECTION_FAILED",
 		123: "INSIGHTS_MISSING_FOR_DIMENSION",
+		124: "REQUIRED_PREREQUISITE_LINK_MISSING",
+		125: "INVALID_REMOVE_AS_OF_TIME",
 	}
 	ErrorReason_value = map[string]int32{
 		"ERROR_REASON_UNSPECIFIED":                              0,
@@ -563,6 +571,8 @@ var (
 		"CUSTOM_VARIABLE_NOT_FOUND":                                      120,
 		"BASELINE_LOCATION_AUTO_DETECTION_FAILED":                        122,
 		"INSIGHTS_MISSING_FOR_DIMENSION":                                 123,
+		"REQUIRED_PREREQUISITE_LINK_MISSING":                             124,
+		"INVALID_REMOVE_AS_OF_TIME":                                      125,
 	}
 )
 
@@ -597,7 +607,7 @@ var File_google_ads_datamanager_v1_error_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_error_proto_rawDesc = "" +
 	"\n" +
-	"%google/ads/datamanager/v1/error.proto\x12\x19google.ads.datamanager.v1*\xfb!\n" +
+	"%google/ads/datamanager/v1/error.proto\x12\x19google.ads.datamanager.v1*\xc2\"\n" +
 	"\vErrorReason\x12\x1c\n" +
 	"\x18ERROR_REASON_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eINTERNAL_ERROR\x10\x01\x12\x15\n" +
@@ -722,7 +732,9 @@ const file_google_ads_datamanager_v1_error_proto_rawDesc = "" +
 	"\x1dINVALID_CUSTOM_VARIABLE_VALUE\x10w\x12\x1d\n" +
 	"\x19CUSTOM_VARIABLE_NOT_FOUND\x10x\x12+\n" +
 	"'BASELINE_LOCATION_AUTO_DETECTION_FAILED\x10z\x12\"\n" +
-	"\x1eINSIGHTS_MISSING_FOR_DIMENSION\x10{B\xc7\x01\n" +
+	"\x1eINSIGHTS_MISSING_FOR_DIMENSION\x10{\x12&\n" +
+	"\"REQUIRED_PREREQUISITE_LINK_MISSING\x10|\x12\x1d\n" +
+	"\x19INVALID_REMOVE_AS_OF_TIME\x10}B\xc7\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\n" +
 	"ErrorProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 

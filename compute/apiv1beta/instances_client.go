@@ -382,7 +382,7 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 	}
 }
 
-// internalInstancesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalInstancesClient is an interface that defines the methods available from Compute Engine API.
 type internalInstancesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -445,7 +445,7 @@ type internalInstancesClient interface {
 	UpdateShieldedVmConfig(context.Context, *computepb.UpdateShieldedVmConfigInstanceRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// InstancesClient is a client for interacting with Google Compute Engine API.
+// InstancesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Instances API.

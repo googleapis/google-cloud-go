@@ -116,7 +116,7 @@ func defaultRegionSecurityPoliciesRESTCallOptions() *RegionSecurityPoliciesCallO
 	}
 }
 
-// internalRegionSecurityPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionSecurityPoliciesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionSecurityPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -133,7 +133,7 @@ type internalRegionSecurityPoliciesClient interface {
 	SetLabels(context.Context, *computepb.SetLabelsRegionSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RegionSecurityPoliciesClient is a client for interacting with Google Compute Engine API.
+// RegionSecurityPoliciesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionSecurityPolicies API.

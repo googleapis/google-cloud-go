@@ -709,7 +709,7 @@ type AdEvent struct {
 	// email address). The more data provided, the more likely a match will be
 	// found.
 	UserData *UserData `protobuf:"bytes,7,opt,name=user_data,json=userData,proto3" json:"user_data,omitempty"`
-	// Optional. Information gathered about the device being used when the ad
+	// Required. Information gathered about the device being used when the ad
 	// event happened.
 	DeviceInfo *DeviceInfo `protobuf:"bytes,8,opt,name=device_info,json=deviceInfo,proto3" json:"device_info,omitempty"`
 	// Optional. The device ID of the device that the ad was served to.
@@ -756,7 +756,7 @@ type AdEvent struct {
 	AdHeight int32 `protobuf:"varint,20,opt,name=ad_height,json=adHeight,proto3" json:"ad_height,omitempty"`
 	// Optional. The width of the ad in pixels.
 	AdWidth int32 `protobuf:"varint,21,opt,name=ad_width,json=adWidth,proto3" json:"ad_width,omitempty"`
-	// Required. The ISO 3166-2 country plus subdivision.
+	// Optional. The ISO 3166-2 country plus subdivision.
 	RegionCode string `protobuf:"bytes,22,opt,name=region_code,json=regionCode,proto3" json:"region_code,omitempty"`
 	// Required. The platform source of the ad, akin to the Google Analytics
 	// source.
@@ -1286,7 +1286,7 @@ const file_google_ads_datamanager_v1_ad_event_proto_rawDesc = "" +
 	"\ttimestamp\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\ttimestamp\x12\x1e\n" +
 	"\bevent_id\x18\x06 \x01(\tB\x03\xe0A\x01R\aeventId\x12E\n" +
 	"\tuser_data\x18\a \x01(\v2#.google.ads.datamanager.v1.UserDataB\x03\xe0A\x01R\buserData\x12K\n" +
-	"\vdevice_info\x18\b \x01(\v2%.google.ads.datamanager.v1.DeviceInfoB\x03\xe0A\x01R\n" +
+	"\vdevice_info\x18\b \x01(\v2%.google.ads.datamanager.v1.DeviceInfoB\x03\xe0A\x02R\n" +
 	"deviceInfo\x12-\n" +
 	"\x10mobile_device_id\x18\t \x01(\tB\x03\xe0A\x01R\x0emobileDeviceId\x12$\n" +
 	"\vcampaign_id\x18\n" +
@@ -1303,7 +1303,7 @@ const file_google_ads_datamanager_v1_ad_event_proto_rawDesc = "" +
 	"\x13ad_placement_string\x18\x13 \x01(\tH\x03R\x11adPlacementString\x12 \n" +
 	"\tad_height\x18\x14 \x01(\x05B\x03\xe0A\x01R\badHeight\x12\x1e\n" +
 	"\bad_width\x18\x15 \x01(\x05B\x03\xe0A\x01R\aadWidth\x12$\n" +
-	"\vregion_code\x18\x16 \x01(\tB\x03\xe0A\x02R\n" +
+	"\vregion_code\x18\x16 \x01(\tB\x03\xe0A\x01R\n" +
 	"regionCode\x12\x1b\n" +
 	"\x06source\x18\x17 \x01(\tB\x03\xe0A\x02R\x06source\x12\x1b\n" +
 	"\x06medium\x18\x18 \x01(\tB\x03\xe0A\x02R\x06medium\x12Q\n" +

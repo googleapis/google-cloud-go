@@ -104,7 +104,7 @@ func defaultRegionSslPoliciesRESTCallOptions() *RegionSslPoliciesCallOptions {
 	}
 }
 
-// internalRegionSslPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionSslPoliciesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionSslPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -118,7 +118,7 @@ type internalRegionSslPoliciesClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRegionSslPolicyRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// RegionSslPoliciesClient is a client for interacting with Google Compute Engine API.
+// RegionSslPoliciesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionSslPolicies API.

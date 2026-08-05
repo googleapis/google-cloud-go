@@ -132,7 +132,7 @@ func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
 	}
 }
 
-// internalProjectsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalProjectsClient is an interface that defines the methods available from Compute Engine API.
 type internalProjectsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -153,7 +153,7 @@ type internalProjectsClient interface {
 	SetUsageExportBucket(context.Context, *computepb.SetUsageExportBucketProjectRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// ProjectsClient is a client for interacting with Google Compute Engine API.
+// ProjectsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Projects API.

@@ -91,7 +91,7 @@ func defaultExternalVpnGatewaysRESTCallOptions() *ExternalVpnGatewaysCallOptions
 	}
 }
 
-// internalExternalVpnGatewaysClient is an interface that defines the methods available from Google Compute Engine API.
+// internalExternalVpnGatewaysClient is an interface that defines the methods available from Compute Engine API.
 type internalExternalVpnGatewaysClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -104,7 +104,7 @@ type internalExternalVpnGatewaysClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsExternalVpnGatewayRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// ExternalVpnGatewaysClient is a client for interacting with Google Compute Engine API.
+// ExternalVpnGatewaysClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The ExternalVpnGateways API.

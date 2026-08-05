@@ -87,7 +87,7 @@ func defaultRegionInstanceGroupManagerResizeRequestsRESTCallOptions() *RegionIns
 	}
 }
 
-// internalRegionInstanceGroupManagerResizeRequestsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionInstanceGroupManagerResizeRequestsClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionInstanceGroupManagerResizeRequestsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -99,7 +99,7 @@ type internalRegionInstanceGroupManagerResizeRequestsClient interface {
 	List(context.Context, *computepb.ListRegionInstanceGroupManagerResizeRequestsRequest, ...gax.CallOption) *InstanceGroupManagerResizeRequestIterator
 }
 
-// RegionInstanceGroupManagerResizeRequestsClient is a client for interacting with Google Compute Engine API.
+// RegionInstanceGroupManagerResizeRequestsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionInstanceGroupManagerResizeRequests API.
