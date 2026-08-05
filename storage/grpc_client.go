@@ -26,6 +26,7 @@ import (
 	"strconv"
 	"strings"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
@@ -180,17 +181,26 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	var metricsCleanup func()
 	if isOtelMetricsEnabled(&config) {
 		var project string
-		var creds *google.Credentials
+		var googleCreds *google.Credentials
+		var authCreds *auth.Credentials
+
 		credsOpts := append([]option.ClientOption{option.WithScopes(gapic.DefaultAuthScopes()...)}, s.clientOption...)
-		if c, err := transport.Creds(ctx, credsOpts...); err == nil {
+		if c, err := internaloption.AuthCreds(ctx, credsOpts); err == nil {
+			authCreds = c
+			project, _ = authCreds.ProjectID(ctx)
+		} else if c, err := transport.Creds(ctx, credsOpts...); err == nil {
 			project = c.ProjectID
-			creds = c
+			googleCreds = c
 		}
+
 		clientMetrics, metricsCleanup = initClientMetrics(ctx, project, &config)
 		if clientMetrics != nil {
-			if creds != nil {
-				creds = wrapGoogleCredentials(creds, clientMetrics)
-				s.clientOption = append(s.clientOption, option.WithCredentials(creds))
+			if authCreds != nil {
+				authCreds = wrapAuthCredentials(authCreds, clientMetrics)
+				s.clientOption = append(s.clientOption, option.WithAuthCredentials(authCreds))
+			} else if googleCreds != nil {
+				googleCreds = wrapGoogleCredentials(googleCreds, clientMetrics)
+				s.clientOption = append(s.clientOption, option.WithCredentials(googleCreds))
 			}
 			unaryInt, streamInt := metricsInterceptors(clientMetrics)
 			s.clientOption = append(s.clientOption,

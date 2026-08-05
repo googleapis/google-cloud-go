@@ -75,6 +75,9 @@ type clientMetrics struct {
 	tlsHandshakeDuration      metric.Float64Histogram
 	gfeDuration               metric.Float64Histogram
 	credentialRefreshDuration metric.Float64Histogram
+	networkBytesSent          metric.Int64Counter
+	networkBytesReceived      metric.Int64Counter
+	stallDuration             metric.Float64Histogram
 }
 
 func formatMetricWithPrefix(m metricdata.Metrics, prefix string) string {
@@ -329,6 +332,37 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	var gfeDuration metric.Float64Histogram
 	var credentialRefreshDuration metric.Float64Histogram
 
+	var networkBytesSent metric.Int64Counter
+	var networkBytesReceived metric.Int64Counter
+	var stallDuration metric.Float64Histogram
+
+	networkBytesSent, err = meter.Int64Counter(
+		"gcp.storage.client.network.egress_bytes_count",
+		metric.WithDescription("Total physical compressed bytes sent over the wire socket (gRPC only)."),
+		metric.WithUnit("By"),
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	networkBytesReceived, err = meter.Int64Counter(
+		"gcp.storage.client.network.ingress_bytes_count",
+		metric.WithDescription("Total physical compressed bytes received over the wire socket (gRPC only)."),
+		metric.WithUnit("By"),
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	stallDuration, err = meter.Float64Histogram(
+		"gcp.storage.client.stall.duration",
+		metric.WithDescription("Measure time delta where a streaming connection yields 0 bytes of progress."),
+		metric.WithUnit("s"),
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	if isOtelDebugMetricsEnabled(config) {
 		activeRequests, err = meter.Int64UpDownCounter(
 			"gcp.storage.client.active_requests",
@@ -384,14 +418,15 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 			return nil, nil, err
 		}
 
-		credentialRefreshDuration, err = meter.Float64Histogram(
-			"gcp.storage.client.auth.credential_refresh.duration",
-			metric.WithDescription("Duration of the background API/network calls made to refresh OAuth2/JWT access credentials."),
-			metric.WithUnit("s"),
-		)
-		if err != nil {
-			return nil, nil, err
-		}
+	}
+
+	credentialRefreshDuration, err = meter.Float64Histogram(
+		"gcp.storage.client.auth.credential_refresh.duration",
+		metric.WithDescription("Duration of the background API/network calls made to refresh OAuth2/JWT access credentials."),
+		metric.WithUnit("s"),
+	)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	cm := &clientMetrics{
@@ -412,6 +447,9 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		tlsHandshakeDuration:      tlsHandshakeDuration,
 		gfeDuration:               gfeDuration,
 		credentialRefreshDuration: credentialRefreshDuration,
+		networkBytesSent:          networkBytesSent,
+		networkBytesReceived:      networkBytesReceived,
+		stallDuration:             stallDuration,
 	}
 
 	var cleanup func()
@@ -1499,10 +1537,35 @@ type grpcMetricsStatsHandler struct {
 	dialTimes *sync.Map
 }
 
+type contextKeyRPCTag string
+
 func (h *grpcMetricsStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
-	return ctx
+	return context.WithValue(ctx, contextKeyRPCTag("rpcMethod"), info.FullMethodName)
 }
-func (h *grpcMetricsStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {}
+func (h *grpcMetricsStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
+	if h.metrics == nil {
+		return
+	}
+	method := ""
+	if v := ctx.Value(contextKeyRPCTag("rpcMethod")); v != nil {
+		method = v.(string)
+		if idx := strings.LastIndex(method, "/"); idx != -1 {
+			method = method[idx+1:]
+		}
+	}
+	attrs := metric.WithAttributes(attribute.String("rpc.method", method))
+
+	switch st := s.(type) {
+	case *stats.InPayload:
+		if h.metrics.networkBytesReceived != nil {
+			h.metrics.networkBytesReceived.Add(ctx, int64(st.WireLength), attrs)
+		}
+	case *stats.OutPayload:
+		if h.metrics.networkBytesSent != nil {
+			h.metrics.networkBytesSent.Add(ctx, int64(st.WireLength), attrs)
+		}
+	}
+}
 func (h *grpcMetricsStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
 	if info.LocalAddr != nil && h.dialTimes != nil {
 		if val, ok := h.dialTimes.LoadAndDelete(info.LocalAddr.String()); ok {
@@ -1528,7 +1591,7 @@ func (h *grpcMetricsStatsHandler) HandleConn(ctx context.Context, s stats.ConnSt
 
 // grpcNetworkMetricsDialOptions returns dial options that instrument TCP and TLS handshake metrics.
 func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option.ClientOption {
-	if metrics == nil || (metrics.tcpConnectDuration == nil && metrics.tlsHandshakeDuration == nil) {
+	if metrics == nil || (metrics.tcpConnectDuration == nil && metrics.tlsHandshakeDuration == nil && metrics.networkBytesSent == nil && metrics.networkBytesReceived == nil) {
 		return nil
 	}
 	var dialTimes sync.Map
@@ -1582,8 +1645,8 @@ func (p *metricsTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 }
 
 func wrapAuthCredentials(c *auth.Credentials, m *clientMetrics) *auth.Credentials {
-	if c == nil || m == nil {
-		return c
+	if c == nil {
+		return nil
 	}
 	// Avoid double wrapping
 	if _, ok := c.TokenProvider.(*metricsTokenProvider); ok {
