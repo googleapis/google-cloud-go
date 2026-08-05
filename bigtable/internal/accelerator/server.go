@@ -13,11 +13,11 @@
 // limitations under the License.
 
 // Package accelerator implements the in-process Bigtable accelerator daemon.
-// It hosts the gRPC server-side scaffolding — a UDS listener and proxy
-// interceptors that forward every RPC through a Channel — alongside the
-// Channel itself, which backs those RPCs with internal/session. The
-// interceptor implementations live in interceptors.go alongside
-// bigtableServerStub.
+// It hosts the gRPC server-side scaffolding — a UDS listener, lifecycle
+// watchdogs (stdin EOF and parent-PID reparent), and proxy interceptors that
+// forward every RPC through a Channel — alongside the Channel itself, which
+// backs those RPCs with internal/session. The interceptor implementations
+// live in interceptors.go alongside bigtableServerStub.
 package accelerator
 
 import (
@@ -179,6 +179,9 @@ func (s *Server) Start() error {
 		s.Stop()
 	}()
 
+	go s.monitorStdin()
+	go s.monitorParentPid()
+
 	return nil
 }
 
@@ -189,7 +192,21 @@ func (s *Server) Stop() {
 		close(s.shutdownChan)
 
 		if s.grpcServer != nil {
-			s.grpcServer.GracefulStop()
+			// GracefulStop blocks until all in-flight RPCs finish. A wedged or
+			// slow-draining RPC would otherwise hang shutdown forever, which is
+			// especially harmful on the watchdog paths (stdin EOF, parent-PID
+			// reparent) whose whole purpose is to guarantee the daemon exits.
+			// Bound the graceful drain and fall back to a hard Stop().
+			stopped := make(chan struct{})
+			go func() {
+				s.grpcServer.GracefulStop()
+				close(stopped)
+			}()
+			select {
+			case <-stopped:
+			case <-time.After(5 * time.Second):
+				s.grpcServer.Stop()
+			}
 		}
 
 		if s.listener != nil {
@@ -249,6 +266,57 @@ func (s *Server) readSecret(ctx context.Context) error {
 		}
 		s.authSecret = secret
 		return nil
+	}
+}
+
+// monitorStdin monitors standard input for an EOF signal. Tests that don't
+// want this watchdog pass WithStdinReader(nil).
+func (s *Server) monitorStdin() {
+	if s.stdinReader == nil {
+		return
+	}
+	// Use the buffered reader created by readSecret so bytes already consumed
+	// into the buffer are not lost (in practice stdin only carries the secret
+	// line followed by EOF, but using the same reader is correct).
+	var r io.Reader
+	if s.stdinBuf != nil {
+		r = s.stdinBuf
+	} else {
+		r = s.stdinReader
+	}
+	buf := make([]byte, 1)
+	for {
+		select {
+		case <-s.shutdownChan:
+			return
+		default:
+			_, err := r.Read(buf)
+			if err != nil {
+				s.Stop()
+				return
+			}
+		}
+	}
+}
+
+// monitorParentPid stops the daemon if the parent PID becomes 1 (orphaned)
+// or otherwise changes.
+func (s *Server) monitorParentPid() {
+	initialPpid := os.Getppid()
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-s.shutdownChan:
+			return
+		case <-ticker.C:
+			currentPpid := os.Getppid()
+			if currentPpid == 1 || currentPpid != initialPpid {
+				s.Stop()
+				return
+			}
+		}
 	}
 }
 
