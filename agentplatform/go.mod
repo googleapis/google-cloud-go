@@ -3,12 +3,12 @@ module cloud.google.com/go/agentplatform
 go 1.25.0
 
 require (
+	cloud.google.com/go v0.123.0
 	github.com/google/go-cmp v0.7.0
-	google.golang.org/genai v1.66.0
+	google.golang.org/genai v1.67.0
 )
 
 require (
-	cloud.google.com/go v0.123.0 // indirect
 	cloud.google.com/go/auth v0.22.0 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
