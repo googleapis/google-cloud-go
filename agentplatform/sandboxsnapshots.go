@@ -26,7 +26,7 @@ import (
 	"google.golang.org/genai"
 )
 
-func createAgentEngineSessionConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func createAgentEngineSandboxSnapshotConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromDisplayName := genai.InternalGetValueByPath(fromObject, []string{"displayName"})
@@ -34,9 +34,9 @@ func createAgentEngineSessionConfigToVertex(fromObject map[string]any, parentObj
 		genai.InternalSetValueByPath(parentObject, []string{"displayName"}, fromDisplayName)
 	}
 
-	fromSessionState := genai.InternalGetValueByPath(fromObject, []string{"sessionState"})
-	if fromSessionState != nil {
-		genai.InternalSetValueByPath(parentObject, []string{"sessionState"}, fromSessionState)
+	fromOwner := genai.InternalGetValueByPath(fromObject, []string{"owner"})
+	if fromOwner != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"owner"}, fromOwner)
 	}
 
 	fromTtl := genai.InternalGetValueByPath(fromObject, []string{"ttl"})
@@ -44,40 +44,20 @@ func createAgentEngineSessionConfigToVertex(fromObject map[string]any, parentObj
 		genai.InternalSetValueByPath(parentObject, []string{"ttl"}, fromTtl)
 	}
 
-	fromExpireTime := genai.InternalGetValueByPath(fromObject, []string{"expireTime"})
-	if fromExpireTime != nil {
-		genai.InternalSetValueByPath(parentObject, []string{"expireTime"}, fromExpireTime)
-	}
-
-	fromLabels := genai.InternalGetValueByPath(fromObject, []string{"labels"})
-	if fromLabels != nil {
-		genai.InternalSetValueByPath(parentObject, []string{"labels"}, fromLabels)
-	}
-
-	fromSessionId := genai.InternalGetValueByPath(fromObject, []string{"sessionId"})
-	if fromSessionId != nil {
-		genai.InternalSetValueByPath(parentObject, []string{"_query", "sessionId"}, fromSessionId)
-	}
-
 	return toObject, nil
 }
 
-func createAgentEngineSessionRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func createSandboxEnvironmentSnapshotRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
-	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
-	if fromName != nil {
-		genai.InternalSetValueByPath(toObject, []string{"_url", "name"}, fromName)
-	}
-
-	fromUserId := genai.InternalGetValueByPath(fromObject, []string{"userId"})
-	if fromUserId != nil {
-		genai.InternalSetValueByPath(toObject, []string{"userId"}, fromUserId)
+	fromSourceSandboxEnvironmentName := genai.InternalGetValueByPath(fromObject, []string{"sourceSandboxEnvironmentName"})
+	if fromSourceSandboxEnvironmentName != nil {
+		genai.InternalSetValueByPath(toObject, []string{"_url", "name"}, fromSourceSandboxEnvironmentName)
 	}
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		_, err = createAgentEngineSessionConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = createAgentEngineSandboxSnapshotConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
@@ -86,7 +66,7 @@ func createAgentEngineSessionRequestParametersToVertex(fromObject map[string]any
 	return toObject, nil
 }
 
-func deleteAgentEngineSessionRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func deleteSandboxEnvironmentSnapshotRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
@@ -97,7 +77,7 @@ func deleteAgentEngineSessionRequestParametersToVertex(fromObject map[string]any
 	return toObject, nil
 }
 
-func getAgentEngineSessionOperationParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func getAgentEngineSandboxSnapshotOperationParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromOperationName := genai.InternalGetValueByPath(fromObject, []string{"operationName"})
@@ -108,7 +88,7 @@ func getAgentEngineSessionOperationParametersToVertex(fromObject map[string]any,
 	return toObject, nil
 }
 
-func getAgentEngineSessionRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func getSandboxEnvironmentSnapshotRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
@@ -119,7 +99,7 @@ func getAgentEngineSessionRequestParametersToVertex(fromObject map[string]any, p
 	return toObject, nil
 }
 
-func listAgentEngineSessionsConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func listSandboxEnvironmentSnapshotsConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromPageSize := genai.InternalGetValueByPath(fromObject, []string{"pageSize"})
@@ -140,7 +120,7 @@ func listAgentEngineSessionsConfigToVertex(fromObject map[string]any, parentObje
 	return toObject, nil
 }
 
-func listAgentEngineSessionsRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func listSandboxEnvironmentSnapshotsRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
@@ -150,7 +130,7 @@ func listAgentEngineSessionsRequestParametersToVertex(fromObject map[string]any,
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		_, err = listAgentEngineSessionsConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = listSandboxEnvironmentSnapshotsConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
@@ -159,79 +139,14 @@ func listAgentEngineSessionsRequestParametersToVertex(fromObject map[string]any,
 	return toObject, nil
 }
 
-func updateAgentEngineSessionConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromDisplayName := genai.InternalGetValueByPath(fromObject, []string{"displayName"})
-	if fromDisplayName != nil {
-		genai.InternalSetValueByPath(parentObject, []string{"displayName"}, fromDisplayName)
-	}
-
-	fromSessionState := genai.InternalGetValueByPath(fromObject, []string{"sessionState"})
-	if fromSessionState != nil {
-		genai.InternalSetValueByPath(parentObject, []string{"sessionState"}, fromSessionState)
-	}
-
-	fromTtl := genai.InternalGetValueByPath(fromObject, []string{"ttl"})
-	if fromTtl != nil {
-		genai.InternalSetValueByPath(parentObject, []string{"ttl"}, fromTtl)
-	}
-
-	fromExpireTime := genai.InternalGetValueByPath(fromObject, []string{"expireTime"})
-	if fromExpireTime != nil {
-		genai.InternalSetValueByPath(parentObject, []string{"expireTime"}, fromExpireTime)
-	}
-
-	fromLabels := genai.InternalGetValueByPath(fromObject, []string{"labels"})
-	if fromLabels != nil {
-		genai.InternalSetValueByPath(parentObject, []string{"labels"}, fromLabels)
-	}
-
-	fromSessionId := genai.InternalGetValueByPath(fromObject, []string{"sessionId"})
-	if fromSessionId != nil {
-		genai.InternalSetValueByPath(parentObject, []string{"_query", "sessionId"}, fromSessionId)
-	}
-
-	fromUpdateMask := genai.InternalGetValueByPath(fromObject, []string{"updateMask"})
-	if fromUpdateMask != nil {
-		genai.InternalSetValueByPath(parentObject, []string{"_query", "updateMask"}, fromUpdateMask)
-	}
-
-	fromUserId := genai.InternalGetValueByPath(fromObject, []string{"userId"})
-	if fromUserId != nil {
-		genai.InternalSetValueByPath(parentObject, []string{"userId"}, fromUserId)
-	}
-
-	return toObject, nil
-}
-
-func updateAgentEngineSessionRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
-	if fromName != nil {
-		genai.InternalSetValueByPath(toObject, []string{"_url", "name"}, fromName)
-	}
-
-	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		_, err = updateAgentEngineSessionConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return toObject, nil
-}
-
-type Sessions struct {
+type SandboxSnapshots struct {
 	apiClient *genai.InternalAPIClient
 }
 
-func (m Sessions) create(ctx context.Context, name string, userId string, config *types.CreateAgentEngineSessionConfig) (*types.AgentEngineSessionOperation, error) {
+func (m SandboxSnapshots) create(ctx context.Context, sourceSandboxEnvironmentName string, config *types.CreateAgentEngineSandboxSnapshotConfig) (*types.AgentEngineSandboxSnapshotOperation, error) {
 	parameterMap := make(map[string]any)
 
-	kwargs := map[string]any{"name": name, "userId": userId, "config": config}
+	kwargs := map[string]any{"sourceSandboxEnvironmentName": sourceSandboxEnvironmentName, "config": config}
 	genai.InternalDeepMarshal(kwargs, &parameterMap)
 
 	var httpOptions *genai.HTTPOptions
@@ -243,11 +158,11 @@ func (m Sessions) create(ctx context.Context, name string, userId string, config
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(types.AgentEngineSessionOperation)
+	var response = new(types.AgentEngineSandboxSnapshotOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = createAgentEngineSessionRequestParametersToVertex
+		toConverter = createSandboxEnvironmentSnapshotRequestParametersToVertex
 
 	} else {
 
@@ -267,7 +182,7 @@ func (m Sessions) create(ctx context.Context, name string, userId string, config
 		delete(body, "_url")
 	}
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		path, err = genai.InternalFormatMap("{name}/sessions", urlParams)
+		path, err = genai.InternalFormatMap("{name}:snapshot", urlParams)
 	} else {
 		path, err = genai.InternalFormatMap("None", urlParams)
 	}
@@ -304,7 +219,7 @@ func (m Sessions) create(ctx context.Context, name string, userId string, config
 	return response, nil
 }
 
-func (m Sessions) Delete(ctx context.Context, name string, config *types.DeleteAgentEngineSessionConfig) (*types.DeleteAgentEngineSessionOperation, error) {
+func (m SandboxSnapshots) delete(ctx context.Context, name string, config *types.DeleteSandboxEnvironmentSnapshotConfig) (*types.DeleteSandboxEnvironmentSnapshotOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -319,11 +234,11 @@ func (m Sessions) Delete(ctx context.Context, name string, config *types.DeleteA
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(types.DeleteAgentEngineSessionOperation)
+	var response = new(types.DeleteSandboxEnvironmentSnapshotOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = deleteAgentEngineSessionRequestParametersToVertex
+		toConverter = deleteSandboxEnvironmentSnapshotRequestParametersToVertex
 
 	} else {
 
@@ -380,7 +295,7 @@ func (m Sessions) Delete(ctx context.Context, name string, config *types.DeleteA
 	return response, nil
 }
 
-func (m Sessions) Get(ctx context.Context, name string, config *types.GetAgentEngineSessionConfig) (*types.Session, error) {
+func (m SandboxSnapshots) get(ctx context.Context, name string, config *types.GetSandboxEnvironmentSnapshotConfig) (*types.SandboxEnvironmentSnapshot, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -395,11 +310,11 @@ func (m Sessions) Get(ctx context.Context, name string, config *types.GetAgentEn
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(types.Session)
+	var response = new(types.SandboxEnvironmentSnapshot)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = getAgentEngineSessionRequestParametersToVertex
+		toConverter = getSandboxEnvironmentSnapshotRequestParametersToVertex
 
 	} else {
 
@@ -456,7 +371,7 @@ func (m Sessions) Get(ctx context.Context, name string, config *types.GetAgentEn
 	return response, nil
 }
 
-func (m Sessions) list(ctx context.Context, name string, config *types.ListAgentEngineSessionsConfig) (*types.ListReasoningEnginesSessionsResponse, error) {
+func (m SandboxSnapshots) list(ctx context.Context, name string, config *types.ListSandboxEnvironmentSnapshotsConfig) (*types.ListSandboxEnvironmentSnapshotsResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -471,11 +386,11 @@ func (m Sessions) list(ctx context.Context, name string, config *types.ListAgent
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(types.ListReasoningEnginesSessionsResponse)
+	var response = new(types.ListSandboxEnvironmentSnapshotsResponse)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = listAgentEngineSessionsRequestParametersToVertex
+		toConverter = listSandboxEnvironmentSnapshotsRequestParametersToVertex
 
 	} else {
 
@@ -495,7 +410,7 @@ func (m Sessions) list(ctx context.Context, name string, config *types.ListAgent
 		delete(body, "_url")
 	}
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		path, err = genai.InternalFormatMap("{name}/sessions", urlParams)
+		path, err = genai.InternalFormatMap("{name}/sandboxEnvironmentSnapshots", urlParams)
 	} else {
 		path, err = genai.InternalFormatMap("None", urlParams)
 	}
@@ -532,7 +447,7 @@ func (m Sessions) list(ctx context.Context, name string, config *types.ListAgent
 	return response, nil
 }
 
-func (m Sessions) getSessionOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineSessionOperation, error) {
+func (m SandboxSnapshots) GetSandboxSnapshotOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineSandboxSnapshotOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"operationName": operationName, "config": config}
@@ -547,15 +462,15 @@ func (m Sessions) getSessionOperation(ctx context.Context, operationName string,
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(types.AgentEngineSessionOperation)
+	var response = new(types.AgentEngineSandboxSnapshotOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = getAgentEngineSessionOperationParametersToVertex
+		toConverter = getAgentEngineSandboxSnapshotOperationParametersToVertex
 
 	} else {
 
-		return nil, fmt.Errorf("method GetSessionOperation is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
+		return nil, fmt.Errorf("method GetSandboxSnapshotOperation is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -608,101 +523,25 @@ func (m Sessions) getSessionOperation(ctx context.Context, operationName string,
 	return response, nil
 }
 
-func (m Sessions) update(ctx context.Context, name string, config *types.UpdateAgentEngineSessionConfig) (*types.AgentEngineSessionOperation, error) {
-	parameterMap := make(map[string]any)
-
-	kwargs := map[string]any{"name": name, "config": config}
-	genai.InternalDeepMarshal(kwargs, &parameterMap)
-
-	var httpOptions *genai.HTTPOptions
-	if config == nil || config.HTTPOptions == nil {
-		httpOptions = &genai.HTTPOptions{}
-	} else {
-		httpOptions = config.HTTPOptions
-	}
-	if httpOptions.Headers == nil {
-		httpOptions.Headers = http.Header{}
-	}
-	var response = new(types.AgentEngineSessionOperation)
-	var responseMap map[string]any
-	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
-	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = updateAgentEngineSessionRequestParametersToVertex
-
-	} else {
-
-		return nil, fmt.Errorf("method Update is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
-
-	}
-
-	body, err := toConverter(parameterMap, nil, parameterMap)
-	if err != nil {
-		return nil, err
-	}
-	delete(body, "config")
-	var path string
-	var urlParams map[string]any
-	if _, ok := body["_url"]; ok {
-		urlParams = body["_url"].(map[string]any)
-		delete(body, "_url")
-	}
-	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		path, err = genai.InternalFormatMap("{name}", urlParams)
-	} else {
-		path, err = genai.InternalFormatMap("None", urlParams)
-	}
-	if err != nil {
-		return nil, fmt.Errorf("invalid url params: %#v.\n%w", urlParams, err)
-	}
-	if _, ok := body["_query"]; ok {
-		query, err := genai.InternalCreateURLQuery(body["_query"].(map[string]any))
-		if err != nil {
-			return nil, err
-		}
-		path += "?" + query
-		delete(body, "_query")
-	}
-	responseMap, err = genai.SendRequest(ctx, m.apiClient, path, http.MethodPatch, body, httpOptions)
-	if err != nil {
-		return nil, err
-	}
-	err = genai.InternalMapToStruct(responseMap, response)
-	if err != nil {
-		return nil, err
-	}
-
-	if field, ok := reflect.TypeOf(response).Elem().FieldByName("SDKHTTPResponse"); ok {
-		{
-			if reflect.ValueOf(response).Elem().FieldByName("SDKHTTPResponse").IsValid() {
-				{
-					reflect.ValueOf(response).Elem().FieldByName("SDKHTTPResponse").Set(reflect.Zero(field.Type))
-				}
-			}
-		}
-	}
-
-	return response, nil
+// Create creates a snapshot of the given source sandbox environment and returns
+// the operation.
+func (m SandboxSnapshots) Create(ctx context.Context, sourceSandboxEnvironmentName string, config *types.CreateAgentEngineSandboxSnapshotConfig) (*types.AgentEngineSandboxSnapshotOperation, error) {
+	return m.create(ctx, sourceSandboxEnvironmentName, config)
 }
 
-// Create creates a session for the given name, user ID, and config, and returns the session
-// operation.
-func (m Sessions) Create(ctx context.Context, name string, userId string, config *types.CreateAgentEngineSessionConfig) (*types.AgentEngineSessionOperation, error) {
-	return m.create(ctx, name, userId, config)
+// Get returns the sandbox environment snapshot with the specified name.
+func (m SandboxSnapshots) Get(ctx context.Context, name string, config *types.GetSandboxEnvironmentSnapshotConfig) (*types.SandboxEnvironmentSnapshot, error) {
+	return m.get(ctx, name, config)
 }
 
-// List lists the sessions for the given name and config, and returns the response.
-func (m Sessions) List(ctx context.Context, name string, config *types.ListAgentEngineSessionsConfig) (*types.ListReasoningEnginesSessionsResponse, error) {
+// List lists the sandbox environment snapshots for the given name and config, and
+// returns the response.
+func (m SandboxSnapshots) List(ctx context.Context, name string, config *types.ListSandboxEnvironmentSnapshotsConfig) (*types.ListSandboxEnvironmentSnapshotsResponse, error) {
 	return m.list(ctx, name, config)
 }
 
-// GetSessionOperation returns the session operation for the given operation name and config, and
-// returns the session operation representing the get session process.
-func (m Sessions) GetSessionOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineSessionOperation, error) {
-	return m.getSessionOperation(ctx, operationName, config)
-}
-
-// Update updates the session with the specified name and returns the session operation representing
-// the update session process.
-func (m Sessions) Update(ctx context.Context, name string, config *types.UpdateAgentEngineSessionConfig) (*types.AgentEngineSessionOperation, error) {
-	return m.update(ctx, name, config)
+// Delete deletes the sandbox environment snapshot with the specified name and
+// returns the operation representing the deletion process.
+func (m SandboxSnapshots) Delete(ctx context.Context, name string, config *types.DeleteSandboxEnvironmentSnapshotConfig) (*types.DeleteSandboxEnvironmentSnapshotOperation, error) {
+	return m.delete(ctx, name, config)
 }
