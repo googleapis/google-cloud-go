@@ -1693,3 +1693,14 @@ func (cm *clientMetrics) recordCredentialRefreshDuration(ctx context.Context, du
 	attrs := []attribute.KeyValue{attribute.String("error.type", errorType)}
 	cm.credentialRefreshDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attrs...))
 }
+
+func injectHTTPClientMetrics(creds *auth.Credentials, tc storageClient) {
+	if creds == nil {
+		return
+	}
+	if mtp, ok := creds.TokenProvider.(*metricsTokenProvider); ok {
+		if hcTc, ok := tc.(*httpStorageClient); ok {
+			mtp.metrics = hcTc.metrics
+		}
+	}
+}
