@@ -146,8 +146,8 @@ func TestReadRows_MutateReadRoundTrip_Prod(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewChannel: %v", err)
 	}
-	// startRoundTripServer (below) registers channel/server/conn teardown via
-	// t.Cleanup.
+	t.Cleanup(func() { channel.Close() })
+	// startRoundTripServer (below) registers server/conn teardown via t.Cleanup.
 	conn := startRoundTripServer(t, channel)
 	client := btpb.NewBigtableClient(conn)
 
@@ -332,10 +332,12 @@ func retryTransient(ctx context.Context, fn func() error) error {
 		}
 		switch status.Code(err) {
 		case codes.Unavailable, codes.FailedPrecondition, codes.NotFound, codes.DeadlineExceeded:
+			timer := time.NewTimer(time.Duration(1<<uint(i)) * time.Second)
 			select {
 			case <-ctx.Done():
+				timer.Stop()
 				return ctx.Err()
-			case <-time.After(time.Duration(1<<uint(i)) * time.Second):
+			case <-timer.C:
 			}
 			continue
 		default:
