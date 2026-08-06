@@ -25,7 +25,10 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 
 	"go.opentelemetry.io/otel/attribute"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
@@ -980,4 +983,58 @@ func TestRecordCredentialRefreshDuration(t *testing.T) {
 	if !found {
 		t.Errorf("metric not found")
 	}
+}
+
+func TestWrapAuthCredentials(t *testing.T) {
+	if wrapAuthCredentials(nil, nil) != nil {
+		t.Errorf("expected nil when c is nil")
+	}
+	c := &auth.Credentials{}
+	if wrapAuthCredentials(c, nil) != c {
+		t.Errorf("expected original credentials when TokenProvider is nil")
+	}
+	c.TokenProvider = &mockTokenProvider{}
+	m := &clientMetrics{}
+	wrapped := wrapAuthCredentials(c, m)
+	if wrapped == c {
+		t.Errorf("expected a new copy of credentials, got original")
+	}
+	if _, ok := wrapped.TokenProvider.(*metricsTokenProvider); !ok {
+		t.Errorf("expected TokenProvider to be *metricsTokenProvider")
+	}
+	wrapped2 := wrapAuthCredentials(wrapped, m)
+	if wrapped2 != wrapped {
+		t.Errorf("expected original wrapped credentials on double wrap")
+	}
+}
+
+type mockTokenProvider struct{}
+
+func (m *mockTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
+	return &auth.Token{}, nil
+}
+
+func TestWrapGoogleCredentials(t *testing.T) {
+	if wrapGoogleCredentials(nil, nil) != nil {
+		t.Errorf("expected nil when c is nil")
+	}
+	c := &google.Credentials{}
+	if wrapGoogleCredentials(c, nil) != c {
+		t.Errorf("expected original credentials when TokenSource is nil")
+	}
+	c.TokenSource = &mockTokenSource{}
+	m := &clientMetrics{}
+	wrapped := wrapGoogleCredentials(c, m)
+	if wrapped == c {
+		t.Errorf("expected a new copy of credentials, got original")
+	}
+	if _, ok := wrapped.TokenSource.(*metricsTokenSource); !ok {
+		t.Errorf("expected TokenSource to be *metricsTokenSource")
+	}
+}
+
+type mockTokenSource struct{}
+
+func (m *mockTokenSource) Token() (*oauth2.Token, error) {
+	return &oauth2.Token{}, nil
 }
