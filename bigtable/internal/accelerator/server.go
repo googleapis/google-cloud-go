@@ -13,11 +13,11 @@
 // limitations under the License.
 
 // Package accelerator implements the in-process Bigtable accelerator daemon.
-// It hosts the gRPC server-side scaffolding — a UDS listener and proxy
-// interceptors that forward every RPC through a Channel — alongside the
-// Channel itself, which backs those RPCs with internal/session. The
-// interceptor implementations live in interceptors.go alongside
-// bigtableServerStub.
+// It hosts the gRPC server-side scaffolding — a UDS listener, lifecycle
+// watchdogs (stdin EOF and parent-PID reparent), and proxy interceptors that
+// forward every RPC through a Channel — alongside the Channel itself, which
+// backs those RPCs with internal/session. The interceptor implementations
+// live in interceptors.go alongside bigtableServerStub.
 package accelerator
 
 import (
@@ -42,6 +42,14 @@ import (
 // leave the daemon blocked in readSecret forever — never binding the socket and
 // never exiting.
 const defaultHandshakeTimeout = 5 * time.Second
+
+// gracefulStopTimeout bounds the graceful drain in Stop before falling back to a
+// hard grpc.Server.Stop, so a wedged in-flight RPC can't hang shutdown forever.
+const gracefulStopTimeout = 5 * time.Second
+
+// parentPidPollInterval is how often monitorParentPid samples the parent PID to
+// detect reparenting (original parent death).
+const parentPidPollInterval = 500 * time.Millisecond
 
 // Server manages the lifecycle of the local gRPC UDS server.
 type Server struct {
@@ -96,6 +104,16 @@ func NewServer(udsPath string, channel *Channel, opts ...ServerOption) *Server {
 
 // Start boots the gRPC server on the Unix Domain Socket asynchronously.
 func (s *Server) Start() error {
+	// Capture the parent PID before serving so monitorParentPid can detect a
+	// later reparent (the original parent dying). A ppid of 1 is ambiguous — it
+	// means either we were orphaned and reparented to init, OR the parent
+	// legitimately IS pid 1 (e.g. the SDK process running as a container's
+	// entrypoint, `CMD ["python", "app.py"]`). We can't distinguish the two from
+	// ppid alone, so we don't refuse to serve; instead we skip the parent-PID
+	// watchdog below and rely on monitorStdin, whose EOF signal detects parent
+	// death without the ppid ambiguity.
+	initialPpid := os.Getppid()
+
 	// Read the auth secret from stdin BEFORE binding — the parent process writes
 	// the secret before the daemon starts serving, so it is always present on the
 	// pipe.
@@ -179,6 +197,15 @@ func (s *Server) Start() error {
 		s.Stop()
 	}()
 
+	go s.monitorStdin()
+	// Skip the parent-PID watchdog when initialPpid is 1: it's ambiguous (orphan
+	// vs. legitimate child of pid 1), and monitorStdin already covers parent
+	// death. When initialPpid is a real parent, any later change to it means the
+	// parent we shadow has died.
+	if initialPpid != 1 {
+		go s.monitorParentPid(initialPpid)
+	}
+
 	return nil
 }
 
@@ -189,7 +216,21 @@ func (s *Server) Stop() {
 		close(s.shutdownChan)
 
 		if s.grpcServer != nil {
-			s.grpcServer.GracefulStop()
+			// GracefulStop blocks until all in-flight RPCs finish. A wedged or
+			// slow-draining RPC would otherwise hang shutdown forever, which is
+			// especially harmful on the watchdog paths (stdin EOF, parent-PID
+			// reparent) whose whole purpose is to guarantee the daemon exits.
+			// Bound the graceful drain and fall back to a hard Stop().
+			stopped := make(chan struct{})
+			go func() {
+				s.grpcServer.GracefulStop()
+				close(stopped)
+			}()
+			select {
+			case <-stopped:
+			case <-time.After(gracefulStopTimeout):
+				s.grpcServer.Stop()
+			}
 		}
 
 		if s.listener != nil {
@@ -249,6 +290,58 @@ func (s *Server) readSecret(ctx context.Context) error {
 		}
 		s.authSecret = secret
 		return nil
+	}
+}
+
+// monitorStdin monitors standard input for an EOF signal. Tests that don't
+// want this watchdog pass WithStdinReader(nil).
+func (s *Server) monitorStdin() {
+	if s.stdinReader == nil {
+		return
+	}
+	// Use the buffered reader created by readSecret so bytes already consumed
+	// into the buffer are not lost (in practice stdin only carries the secret
+	// line followed by EOF, but using the same reader is correct).
+	var r io.Reader
+	if s.stdinBuf != nil {
+		r = s.stdinBuf
+	} else {
+		r = s.stdinReader
+	}
+	buf := make([]byte, 1)
+	for {
+		select {
+		case <-s.shutdownChan:
+			return
+		default:
+			_, err := r.Read(buf)
+			if err != nil {
+				s.Stop()
+				return
+			}
+		}
+	}
+}
+
+// monitorParentPid stops the daemon if its parent PID changes from initialPpid,
+// which happens when the original parent dies and the process is reparented (to
+// init or a subreaper). initialPpid is captured and passed in by Start, which
+// only launches this watchdog when initialPpid is a real parent (not 1) — see
+// Start for why a ppid of 1 is ambiguous and handled by monitorStdin instead.
+func (s *Server) monitorParentPid(initialPpid int) {
+	ticker := time.NewTicker(parentPidPollInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-s.shutdownChan:
+			return
+		case <-ticker.C:
+			if os.Getppid() != initialPpid {
+				s.Stop()
+				return
+			}
+		}
 	}
 }
 
