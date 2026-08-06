@@ -1,5 +1,12 @@
 # Changes
 
+## Unreleased
+
+
+### Features
+
+* **bigtable:** Multiple `bigtable.NewClient` calls with matching (project, instance, app profile, endpoint) now share a single underlying `session.Client` — one channel pool and one config-poll goroutine across all equivalent clients. Applications that construct many logical clients (multi-tenant serving, notebooks) get O(1) connection cost instead of O(N). Passing incompatible options (mismatched `MetricsProvider`, `EnableDebug`, or `FeatureFlags`) with the same identity now returns an error at `NewClient` time rather than silently ignoring later options. ([#20335](https://github.com/googleapis/google-cloud-go/pull/20335))
+
 ## [1.52.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.51.0...bigtable/v1.52.0) (2026-08-03)
 
 

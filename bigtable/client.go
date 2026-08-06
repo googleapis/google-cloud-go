@@ -162,6 +162,17 @@ type NoopMetricsProvider = metrics.NoopMetricsProvider
 
 // NewClient creates a new Client for a given project and instance.
 // The default ClientConfig will be used.
+//
+// Two NewClient calls with the same (project, instance, app profile,
+// endpoint) automatically share ONE underlying session.Client — one
+// gRPC channel pool and one config-poll goroutine — so applications
+// that construct many logical Clients against the same instance pay
+// O(1) session-side connection cost instead of O(N). Passing
+// incompatible options (mismatched MetricsProvider, feature flags,
+// etc.) with the same identity returns an error at NewClient time.
+// To opt out of sharing, use a distinct app profile or set
+// ClientConfig.DisableSession. See NewClientWithConfig for the full
+// option surface.
 func NewClient(ctx context.Context, project, instance string, opts ...option.ClientOption) (*Client, error) {
 	return NewClientWithConfig(ctx, project, instance, ClientConfig{}, opts...)
 }
