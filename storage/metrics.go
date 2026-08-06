@@ -1704,3 +1704,10 @@ func injectHTTPClientMetrics(creds *auth.Credentials, tc storageClient) {
 		}
 	}
 }
+
+func (cm *clientMetrics) recordStallDuration(ctx context.Context, duration time.Duration, method string) {
+	if cm == nil || cm.stallDuration == nil {
+		return
+	}
+	cm.stallDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attribute.String("rpc.method", method)))
+}
