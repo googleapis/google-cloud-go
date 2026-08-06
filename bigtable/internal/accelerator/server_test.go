@@ -48,6 +48,44 @@ func TestServer_Permissions(t *testing.T) {
 	}
 }
 
+func TestServer_LifecycleStdinEOF(t *testing.T) {
+	tmpDir, err := os.MkdirTemp("", "accelerator-lifecycle-*")
+	if err != nil {
+		t.Fatalf("failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tmpDir)
+	udsPath := filepath.Join(tmpDir, "bt_proxy.sock")
+
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("failed to create pipe: %v", err)
+	}
+	defer r.Close()
+
+	// Write the handshake secret before Start() blocks on ReadString.
+	go func() {
+		w.WriteString("test-handshake-secret\n")
+	}()
+
+	channel := &Channel{}
+	server := NewServer(udsPath, channel, WithStdinReader(r)) // inject the pipe instead of os.Stdin
+	if err := server.Start(); err != nil {
+		t.Fatalf("failed to start server: %v", err)
+	}
+	defer server.Stop()
+
+	if err := w.Close(); err != nil {
+		t.Fatalf("failed to close write pipe: %v", err)
+	}
+
+	select {
+	case <-server.shutdownChan:
+		// success
+	case <-time.After(3 * time.Second):
+		t.Error("server failed to shut down within timeout after stdin EOF")
+	}
+}
+
 func TestServer_ReadSecret(t *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "accelerator-secret-*")
 	if err != nil {

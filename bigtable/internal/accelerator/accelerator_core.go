@@ -53,8 +53,13 @@ import (
 const (
 	prodAddr     = "bigtable.UNIVERSE_DOMAIN:443"
 	mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
-	dataScope    = "https://www.googleapis.com/auth/bigtable.data"
 )
+
+// DataScope is the default OAuth scope the channel dials with when the caller
+// supplies no scope override. Exported so the daemon binary can resolve ADC
+// once with the same effective scope the channel would, then hand the resolved
+// credentials back via option.WithCredentials (avoiding a second ADC lookup).
+const DataScope = "https://www.googleapis.com/auth/bigtable.data"
 
 var userAgent = "cbt-go-accelerator/v" + internal.Version
 
@@ -139,7 +144,7 @@ func NewChannel(
 	// Bigtable data-plane endpoint, scope, and user agent first, then let the
 	// caller's opts override. Mirrors bigtable.NewClient's use of
 	// btopt.DefaultClientOptions.
-	defaultOpts, err := btopt.DefaultClientOptions(prodAddr, mtlsProdAddr, dataScope, userAgent)
+	defaultOpts, err := btopt.DefaultClientOptions(prodAddr, mtlsProdAddr, DataScope, userAgent)
 	if err != nil {
 		return nil, err
 	}
