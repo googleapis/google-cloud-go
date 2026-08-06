@@ -19,6 +19,7 @@ package spanner
 import (
 	"context"
 	"sync"
+	"time"
 
 	"google.golang.org/grpc"
 )
@@ -41,6 +42,14 @@ type channelEndpointCache interface {
 	Evict(address string)
 	DefaultChannel() channelEndpoint
 	ClientFor(ep channelEndpoint) spannerClient
+	isCoolingDown(address string) bool
+	remainingCooldown(address string) time.Duration
+	recordFailure(address string)
+	selectionCost(operationUID uint64, preferLeader bool, endpoint channelEndpoint, address string) float64
+	recordLatency(operationUID uint64, preferLeader bool, address string, latency time.Duration)
+	recordError(operationUID uint64, preferLeader bool, address string)
+	hasScore(operationUID uint64, preferLeader bool, address string) bool
+	pruneStaleRoutingState(maxAge time.Duration)
 	Close() error
 }
 
@@ -117,6 +126,16 @@ func (c *passthroughChannelEndpointCache) GetIfPresent(address string) channelEn
 	return endpoint
 }
 
+func (c *passthroughChannelEndpointCache) addresses() []string {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	addresses := make([]string, 0, len(c.endpoints))
+	for address := range c.endpoints {
+		addresses = append(addresses, address)
+	}
+	return addresses
+}
+
 func (c *passthroughChannelEndpointCache) Evict(address string) {
 	if address == c.defaultEndpoint.Address() {
 		return
@@ -133,6 +152,30 @@ func (c *passthroughChannelEndpointCache) DefaultChannel() channelEndpoint {
 func (c *passthroughChannelEndpointCache) ClientFor(_ channelEndpoint) spannerClient {
 	return nil
 }
+
+func (*passthroughChannelEndpointCache) isCoolingDown(string) bool {
+	return false
+}
+
+func (*passthroughChannelEndpointCache) remainingCooldown(string) time.Duration {
+	return 0
+}
+
+func (*passthroughChannelEndpointCache) recordFailure(string) {}
+
+func (*passthroughChannelEndpointCache) selectionCost(uint64, bool, channelEndpoint, string) float64 {
+	return 0
+}
+
+func (*passthroughChannelEndpointCache) recordLatency(uint64, bool, string, time.Duration) {}
+
+func (*passthroughChannelEndpointCache) recordError(uint64, bool, string) {}
+
+func (*passthroughChannelEndpointCache) hasScore(uint64, bool, string) bool {
+	return false
+}
+
+func (*passthroughChannelEndpointCache) pruneStaleRoutingState(time.Duration) {}
 
 func (c *passthroughChannelEndpointCache) Close() error {
 	return nil

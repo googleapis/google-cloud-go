@@ -235,6 +235,8 @@ type mockEndpointCache struct {
 	clients         map[string]spannerClient
 	seen            map[string]channelEndpoint
 	defaultEndpoint channelEndpoint
+	routingConfig   endpointRoutingConfig
+	routingState    map[string]endpointRoutingStateSnapshot
 }
 
 func newMockEndpointCache() *mockEndpointCache {
@@ -242,6 +244,8 @@ func newMockEndpointCache() *mockEndpointCache {
 		clients:         make(map[string]spannerClient),
 		seen:            make(map[string]channelEndpoint),
 		defaultEndpoint: &passthroughChannelEndpoint{address: ""},
+		routingConfig:   defaultEndpointRoutingConfig(),
+		routingState:    make(map[string]endpointRoutingStateSnapshot),
 	}
 }
 
@@ -305,6 +309,39 @@ func (c *mockEndpointCache) ClientFor(ep channelEndpoint) spannerClient {
 }
 
 func (c *mockEndpointCache) Close() error { return nil }
+
+func (c *mockEndpointCache) setRoutingConfigForTest(cfg endpointRoutingConfig) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.routingConfig = cfg.normalize()
+}
+
+func (c *mockEndpointCache) isCoolingDown(address string) bool {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return testRoutingStateIsCoolingDownLocked(c.routingState, c.routingConfig, address)
+}
+
+func (c *mockEndpointCache) remainingCooldown(address string) time.Duration {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return testRoutingStateRemainingCooldownLocked(c.routingState, c.routingConfig, address)
+}
+
+func (c *mockEndpointCache) recordFailure(address string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	testRoutingStateRecordFailureLocked(c.routingState, c.routingConfig, address)
+}
+
+func (*mockEndpointCache) selectionCost(uint64, bool, channelEndpoint, string) float64 {
+	return float64(endpointLatencyDefaultRTT) / 1e3
+}
+
+func (*mockEndpointCache) recordLatency(uint64, bool, string, time.Duration) {}
+func (*mockEndpointCache) recordError(uint64, bool, string)                  {}
+func (*mockEndpointCache) hasScore(uint64, bool, string) bool                { return false }
+func (*mockEndpointCache) pruneStaleRoutingState(time.Duration)              {}
 
 func (c *mockEndpointCache) addEndpoint(address string, client spannerClient) {
 	c.mu.Lock()
@@ -413,9 +450,7 @@ func TestLocationAwareSpannerClient_ExecuteSQLReroutesOnResourceExhaustedAndMark
 
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
-		return n - 1
-	})
+	setEndpointRoutingConfigForTest(t, lac.endpointCache, clock.Now)
 
 	opts := testCallOptionsWithRequestID("1.proc.1.1.77.1")
 	resp, err := lac.ExecuteSql(
@@ -441,10 +476,10 @@ func TestLocationAwareSpannerClient_ExecuteSQLReroutesOnResourceExhaustedAndMark
 	if got, want := requestIDFromTestCallOptions(endpointClientA.executeSQLOptsHistory[0]), "1.proc.1.1.77.1"; got != want {
 		t.Fatalf("first attempt request ID = %q, want %q", got, want)
 	}
-	if got, want := requestIDFromTestCallOptions(endpointClientB.executeSQLOptsHistory[0]), "1.proc.1.1.77.2"; got != want {
+	if got, want := requestIDFromTestCallOptions(endpointClientB.executeSQLOptsHistory[0]), "1.proc.1.1.77.1"; got != want {
 		t.Fatalf("reroute attempt request ID = %q, want %q", got, want)
 	}
-	if !lac.endpointCooldowns.isCoolingDown("server-a:443") {
+	if !lac.endpointCache.isCoolingDown("server-a:443") {
 		t.Fatal("expected routed endpoint to enter cooldown after RESOURCE_EXHAUSTED")
 	}
 }
@@ -488,9 +523,7 @@ func TestLocationAwareSpannerClient_ReadReroutesOnResourceExhaustedAndMarksCoold
 
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
-		return n - 1
-	})
+	setEndpointRoutingConfigForTest(t, lac.endpointCache, clock.Now)
 	opts := testCallOptionsWithRequestID("1.proc.1.1.78.1")
 	resp, err := lac.Read(context.Background(), &sppb.ReadRequest{
 		Session:     "projects/p/instances/i/databases/d/sessions/s",
@@ -516,10 +549,10 @@ func TestLocationAwareSpannerClient_ReadReroutesOnResourceExhaustedAndMarksCoold
 	if got, want := requestIDFromTestCallOptions(endpointClientA.readOptsHistory[0]), "1.proc.1.1.78.1"; got != want {
 		t.Fatalf("first attempt request ID = %q, want %q", got, want)
 	}
-	if got, want := requestIDFromTestCallOptions(endpointClientB.readOptsHistory[0]), "1.proc.1.1.78.2"; got != want {
+	if got, want := requestIDFromTestCallOptions(endpointClientB.readOptsHistory[0]), "1.proc.1.1.78.1"; got != want {
 		t.Fatalf("reroute attempt request ID = %q, want %q", got, want)
 	}
-	if !lac.endpointCooldowns.isCoolingDown("server-a:443") {
+	if !lac.endpointCache.isCoolingDown("server-a:443") {
 		t.Fatal("expected routed endpoint to enter cooldown after RESOURCE_EXHAUSTED")
 	}
 }
@@ -574,9 +607,7 @@ func TestLocationAwareSpannerClient_BeginTransactionReroutesOnResourceExhaustedA
 
 	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	lac.endpointCooldowns = newEndpointOverloadCooldownTrackerWithOptions(time.Minute, time.Minute, 10*time.Minute, clock.Now, func(n int64) int64 {
-		return n - 1
-	})
+	setEndpointRoutingConfigForTest(t, lac.endpointCache, clock.Now)
 	opts := testCallOptionsWithRequestID("1.proc.1.1.79.1")
 	resp, err := lac.BeginTransaction(context.Background(), &sppb.BeginTransactionRequest{
 		Session:     "projects/p/instances/i/databases/d/sessions/s",
@@ -600,10 +631,10 @@ func TestLocationAwareSpannerClient_BeginTransactionReroutesOnResourceExhaustedA
 	if got, want := requestIDFromTestCallOptions(endpointClientA.beginTxOptsHistory[0]), "1.proc.1.1.79.1"; got != want {
 		t.Fatalf("first attempt request ID = %q, want %q", got, want)
 	}
-	if got, want := requestIDFromTestCallOptions(endpointClientB.beginTxOptsHistory[0]), "1.proc.1.1.79.2"; got != want {
+	if got, want := requestIDFromTestCallOptions(endpointClientB.beginTxOptsHistory[0]), "1.proc.1.1.79.1"; got != want {
 		t.Fatalf("reroute attempt request ID = %q, want %q", got, want)
 	}
-	if !lac.endpointCooldowns.isCoolingDown("server-a:443") {
+	if !lac.endpointCache.isCoolingDown("server-a:443") {
 		t.Fatal("expected routed endpoint to enter cooldown after RESOURCE_EXHAUSTED")
 	}
 }
@@ -1620,6 +1651,17 @@ func (c *mockCloseCache) DefaultChannel() channelEndpoint {
 }
 func (c *mockCloseCache) ClientFor(_ channelEndpoint) spannerClient { return nil }
 func (c *mockCloseCache) Close() error                              { return c.closeFn() }
+
+func (*mockCloseCache) isCoolingDown(string) bool              { return false }
+func (*mockCloseCache) remainingCooldown(string) time.Duration { return 0 }
+func (*mockCloseCache) recordFailure(string)                   {}
+func (*mockCloseCache) selectionCost(uint64, bool, channelEndpoint, string) float64 {
+	return float64(endpointLatencyDefaultRTT) / 1e3
+}
+func (*mockCloseCache) recordLatency(uint64, bool, string, time.Duration) {}
+func (*mockCloseCache) recordError(uint64, bool, string)                  {}
+func (*mockCloseCache) hasScore(uint64, bool, string) bool                { return false }
+func (*mockCloseCache) pruneStaleRoutingState(time.Duration)              {}
 
 func seedTwoRangeRoutingCache(t *testing.T, router *locationRouter) {
 	router.observeResultSet(&sppb.ResultSet{

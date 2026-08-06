@@ -20,6 +20,7 @@ import (
 	"context"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
@@ -31,11 +32,22 @@ type grpcChannelEndpoint struct {
 	client  spannerClient
 	conn    *grpc.ClientConn
 	active  atomic.Int64
+
+	stateMu             sync.Mutex
+	consecutiveFailures int
+	cooldownUntil       time.Time
+	lastFailureAt       time.Time
+	scores              map[endpointScoreKey]*endpointScoreState
+
+	lifecycleMu       sync.Mutex
+	lastRealTrafficAt time.Time
+	transientFailures int
 }
 
 var (
-	_ channelEndpoint      = (*grpcChannelEndpoint)(nil)
-	_ channelEndpointCache = (*endpointClientCache)(nil)
+	_                     channelEndpoint      = (*grpcChannelEndpoint)(nil)
+	_                     channelEndpointCache = (*endpointClientCache)(nil)
+	endpointCacheRegistry sync.Map
 )
 
 func (e *grpcChannelEndpoint) Address() string {
@@ -84,6 +96,46 @@ func (e *grpcChannelEndpoint) ActiveRequestCount() int {
 	return int(e.active.Load())
 }
 
+func (e *grpcChannelEndpoint) recordRealTrafficAt(now time.Time) {
+	if e == nil {
+		return
+	}
+	e.lifecycleMu.Lock()
+	defer e.lifecycleMu.Unlock()
+	e.lastRealTrafficAt = now
+}
+
+func (e *grpcChannelEndpoint) resetLifecycleTransientFailures() {
+	if e == nil {
+		return
+	}
+	e.lifecycleMu.Lock()
+	defer e.lifecycleMu.Unlock()
+	e.transientFailures = 0
+}
+
+func (e *grpcChannelEndpoint) incrementLifecycleTransientFailures() int {
+	if e == nil {
+		return 0
+	}
+	e.lifecycleMu.Lock()
+	defer e.lifecycleMu.Unlock()
+	e.transientFailures++
+	return e.transientFailures
+}
+
+func (e *grpcChannelEndpoint) lifecycleStateSnapshot() endpointLifecycleState {
+	if e == nil {
+		return endpointLifecycleState{}
+	}
+	e.lifecycleMu.Lock()
+	defer e.lifecycleMu.Unlock()
+	return endpointLifecycleState{
+		lastRealTrafficAt:            e.lastRealTrafficAt,
+		consecutiveTransientFailures: e.transientFailures,
+	}
+}
+
 // endpointClientCache implements channelEndpointCache with actual gRPC
 // connections to specific server addresses.
 type endpointClientCache struct {
@@ -94,6 +146,7 @@ type endpointClientCache struct {
 	defaultEndpoint channelEndpoint
 	clientFactory   func(ctx context.Context, address string) (spannerClient, error)
 	closed          bool
+	routingConfig   endpointRoutingConfig
 }
 
 type endpointClientCreation struct {
@@ -106,13 +159,22 @@ func newEndpointClientCache(clientFactory func(ctx context.Context, address stri
 }
 
 func newEndpointClientCacheWithDefaultAddress(clientFactory func(ctx context.Context, address string) (spannerClient, error), defaultAddress string) *endpointClientCache {
-	return &endpointClientCache{
+	cache := &endpointClientCache{
 		endpoints:       make(map[string]*grpcChannelEndpoint),
 		inflight:        make(map[string]*endpointClientCreation),
 		evicted:         make(map[string]struct{}),
 		defaultEndpoint: &passthroughChannelEndpoint{address: defaultAddress},
 		clientFactory:   clientFactory,
+		routingConfig:   defaultEndpointRoutingConfig(),
 	}
+	endpointCacheRegistry.Store(cache, struct{}{})
+	return cache
+}
+
+func (c *endpointClientCache) setRoutingConfigForTest(cfg endpointRoutingConfig) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.routingConfig = cfg.normalize()
 }
 
 // Get returns a channelEndpoint for the given address, creating a new gRPC
@@ -194,6 +256,16 @@ func (c *endpointClientCache) GetIfPresent(address string) channelEndpoint {
 	return ep
 }
 
+func (c *endpointClientCache) addresses() []string {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	addresses := make([]string, 0, len(c.endpoints))
+	for address := range c.endpoints {
+		addresses = append(addresses, address)
+	}
+	return addresses
+}
+
 // Evict removes a cached endpoint and closes its underlying client.
 func (c *endpointClientCache) Evict(address string) {
 	if address == c.defaultEndpoint.Address() {
@@ -218,6 +290,154 @@ func (c *endpointClientCache) DefaultChannel() channelEndpoint {
 	return c.defaultEndpoint
 }
 
+func (c *endpointClientCache) isCoolingDown(address string) bool {
+	if address == "" {
+		return false
+	}
+	c.mu.RLock()
+	ep := c.endpoints[address]
+	c.mu.RUnlock()
+	if ep == nil {
+		return false
+	}
+	return ep.isCoolingDown(c.routingConfig)
+}
+
+func (c *endpointClientCache) remainingCooldown(address string) time.Duration {
+	if address == "" {
+		return 0
+	}
+	c.mu.RLock()
+	ep := c.endpoints[address]
+	c.mu.RUnlock()
+	if ep == nil {
+		return 0
+	}
+	return ep.remainingCooldown(c.routingConfig)
+}
+
+func (c *endpointClientCache) recordFailure(address string) {
+	if address == "" {
+		return
+	}
+	c.mu.RLock()
+	ep := c.endpoints[address]
+	c.mu.RUnlock()
+	if ep == nil {
+		return
+	}
+	ep.recordFailure(c.routingConfig)
+}
+
+func (c *endpointClientCache) selectionCost(operationUID uint64, preferLeader bool, endpoint channelEndpoint, address string) float64 {
+	if gep, ok := endpoint.(*grpcChannelEndpoint); ok && gep != nil {
+		return gep.selectionCost(c.routingConfig, operationUID, preferLeader)
+	}
+	c.mu.RLock()
+	ep := c.endpoints[address]
+	c.mu.RUnlock()
+	if ep == nil {
+		return endpointLatencyDefaultPenaltyValue
+	}
+	return ep.selectionCost(c.routingConfig, operationUID, preferLeader)
+}
+
+func (c *endpointClientCache) recordLatency(operationUID uint64, preferLeader bool, address string, latency time.Duration) {
+	if operationUID == 0 || address == "" {
+		return
+	}
+	c.mu.RLock()
+	ep := c.endpoints[address]
+	c.mu.RUnlock()
+	if ep == nil {
+		return
+	}
+	ep.recordLatency(c.routingConfig, operationUID, preferLeader, latency)
+}
+
+func (c *endpointClientCache) recordError(operationUID uint64, preferLeader bool, address string) {
+	if operationUID == 0 || address == "" {
+		return
+	}
+	c.mu.RLock()
+	ep := c.endpoints[address]
+	c.mu.RUnlock()
+	if ep == nil {
+		return
+	}
+	ep.recordError(c.routingConfig, operationUID, preferLeader)
+}
+
+func (c *endpointClientCache) hasScore(operationUID uint64, preferLeader bool, address string) bool {
+	if operationUID == 0 || address == "" {
+		return false
+	}
+	c.mu.RLock()
+	ep := c.endpoints[address]
+	c.mu.RUnlock()
+	if ep == nil {
+		return false
+	}
+	return ep.hasScore(c.routingConfig, operationUID, preferLeader)
+}
+
+func (c *endpointClientCache) pruneStaleRoutingState(maxAge time.Duration) {
+	if maxAge <= 0 {
+		return
+	}
+	c.mu.RLock()
+	endpoints := make([]*grpcChannelEndpoint, 0, len(c.endpoints))
+	for _, ep := range c.endpoints {
+		endpoints = append(endpoints, ep)
+	}
+	c.mu.RUnlock()
+	for _, ep := range endpoints {
+		ep.pruneRoutingState(c.routingConfig, maxAge)
+	}
+}
+
+func (c *endpointClientCache) clearLatencyScores() {
+	c.mu.RLock()
+	endpoints := make([]*grpcChannelEndpoint, 0, len(c.endpoints))
+	for _, ep := range c.endpoints {
+		endpoints = append(endpoints, ep)
+	}
+	c.mu.RUnlock()
+	for _, ep := range endpoints {
+		ep.clearScores()
+	}
+}
+
+func (c *endpointClientCache) routingStateSnapshot(address string) (endpointRoutingStateSnapshot, bool) {
+	if address == "" {
+		return endpointRoutingStateSnapshot{}, false
+	}
+	c.mu.RLock()
+	ep := c.endpoints[address]
+	cfg := c.routingConfig
+	c.mu.RUnlock()
+	if ep == nil {
+		return endpointRoutingStateSnapshot{}, false
+	}
+	cfg = cfg.normalize()
+	now := cfg.now()
+
+	ep.stateMu.Lock()
+	defer ep.stateMu.Unlock()
+	if !ep.lastFailureAt.IsZero() && !ep.cooldownUntil.After(now) && now.Sub(ep.lastFailureAt) >= cfg.resetAfter {
+		ep.resetCooldownLocked()
+		return endpointRoutingStateSnapshot{}, false
+	}
+	if ep.lastFailureAt.IsZero() && ep.cooldownUntil.IsZero() && ep.consecutiveFailures == 0 {
+		return endpointRoutingStateSnapshot{}, false
+	}
+	return endpointRoutingStateSnapshot{
+		consecutiveFailures: ep.consecutiveFailures,
+		cooldownUntil:       ep.cooldownUntil,
+		lastFailureAt:       ep.lastFailureAt,
+	}, true
+}
+
 // ClientFor resolves a channelEndpoint to the underlying spannerClient.
 func (c *endpointClientCache) ClientFor(ep channelEndpoint) spannerClient {
 	if ep == nil {
@@ -235,6 +455,7 @@ func (c *endpointClientCache) Close() error {
 	c.mu.Lock()
 	c.closed = true
 	defer c.mu.Unlock()
+	endpointCacheRegistry.Delete(c)
 	var firstErr error
 	for addr, ep := range c.endpoints {
 		if ep.client != nil {
