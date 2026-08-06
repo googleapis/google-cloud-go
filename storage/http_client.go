@@ -35,8 +35,6 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2/callctx"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -1032,9 +1030,7 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 			select {
 			case <-timer:
 				log.Printf("[%s] stalled read-req cancelled after %fs", requestID, stallTimeout.Seconds())
-				if c.metrics != nil && c.metrics.stallDuration != nil {
-					c.metrics.stallDuration.Record(ctx, stallTimeout.Seconds(), metric.WithAttributes(attribute.String("rpc.method", "ReadObject")))
-				}
+				c.metrics.recordStallDuration(ctx, stallTimeout, "ReadObject")
 				cancel()
 				<-done
 				if res != nil && res.Body != nil {
