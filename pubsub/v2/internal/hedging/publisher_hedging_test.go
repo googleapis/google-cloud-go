@@ -177,21 +177,21 @@ func TestPublishHedgingPerformance(t *testing.T) {
 		runHedgingSimulation(t, "MaxTokens5", &pubsub.HedgingSettings{
 			Delay:      50 * time.Millisecond,
 			MaxTokens:  5,
-			TokenRatio: 0.1,
+			RefillRatio: 0.1,
 		})
 	})
 	t.Run("MaxTokens25", func(t *testing.T) {
 		runHedgingSimulation(t, "MaxTokens25", &pubsub.HedgingSettings{
 			Delay:      50 * time.Millisecond,
 			MaxTokens:  25,
-			TokenRatio: 0.1,
+			RefillRatio: 0.1,
 		})
 	})
 	t.Run("MaxTokens50", func(t *testing.T) {
 		runHedgingSimulation(t, "MaxTokens50", &pubsub.HedgingSettings{
 			Delay:      50 * time.Millisecond,
 			MaxTokens:  50,
-			TokenRatio: 0.1,
+			RefillRatio: 0.1,
 		})
 	})
 
@@ -200,21 +200,21 @@ func TestPublishHedgingPerformance(t *testing.T) {
 		runHedgingSimulation(t, "Ratio0.05", &pubsub.HedgingSettings{
 			Delay:      50 * time.Millisecond,
 			MaxTokens:  100,
-			TokenRatio: 0.05,
+			RefillRatio: 0.05,
 		})
 	})
 	t.Run("Ratio0.1", func(t *testing.T) {
 		runHedgingSimulation(t, "Ratio0.1", &pubsub.HedgingSettings{
 			Delay:      50 * time.Millisecond,
 			MaxTokens:  100,
-			TokenRatio: 0.1,
+			RefillRatio: 0.1,
 		})
 	})
 	t.Run("Ratio0.2", func(t *testing.T) {
 		runHedgingSimulation(t, "Ratio0.2", &pubsub.HedgingSettings{
 			Delay:      50 * time.Millisecond,
 			MaxTokens:  100,
-			TokenRatio: 0.2,
+			RefillRatio: 0.2,
 		})
 	})
 }

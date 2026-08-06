@@ -320,10 +320,9 @@ func TestTrace_PublishHedgedSpan(t *testing.T) {
 	defer publisher.Stop()
 
 	publisher.PublishSettings.HedgingSettings = &HedgingSettings{
-		MaxHedgedAttempts: 1,
-		Delay:             10 * time.Millisecond,
-		MaxTokens:         50,
-		TokenRatio:        0.1,
+		Delay:       10 * time.Millisecond,
+		MaxTokens:   50,
+		RefillRatio: 0.1,
 	}
 
 	r := publisher.Publish(ctx, m)
